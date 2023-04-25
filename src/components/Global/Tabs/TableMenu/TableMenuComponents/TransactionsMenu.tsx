@@ -39,7 +39,7 @@ interface propsIF {
     isTokenABase: boolean;
     tx: TransactionIF;
     blockExplorer?: string;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
@@ -47,24 +47,19 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
-
     isShowAllEnabled: boolean;
-
     handleWalletClick: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const menuItemRef = useRef<HTMLDivElement>(null);
     const {
         account,
         tradeData,
-        // isTokenABase,
-        // userPosition,
         isBaseTokenMoneynessGreaterOrEqual,
         tx,
         blockExplorer,
-        showSidebar,
+        isSidebarOpen,
         openGlobalModal,
         closeGlobalModal,
         handlePulseAnimation,
@@ -73,35 +68,8 @@ export default function TransactionsMenu(props: propsIF) {
         chainData,
     } = props;
 
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-    // const [isModalOpen, openModal, closeModal] = useModal();
-    // const [currentModal, setCurrentModal] = useState('edit');
-    // ---------------------MODAL FUNCTIONALITY----------------
-    // let modalContent: ReactNode;
+    const menuItemRef = useRef<HTMLDivElement>(null);
 
-    // let modalTitle;
-
-    // function openRemoveModal() {
-    //     setCurrentModal('remove');
-    //     openModal();
-    // }
-
-    // function openDetailsModal() {
-    //     setCurrentModal('details');
-    //     openModal();
-    // }
-    // function openHarvestModal() {
-    //     setCurrentModal('harvest');
-    //     openModal();
-    // }
-
-    // -----------------SNACKBAR----------------
-    // function handleCopyAddress() {
-    //     copy('Not Yet Implemented');
-
-    //     setOpenSnackbar(true);
-    // }
     const dispatch = useAppDispatch();
 
     const handleCopyClick = () => {
@@ -171,18 +139,15 @@ export default function TransactionsMenu(props: propsIF) {
                     }
                     if (sellQtyField) {
                         sellQtyField.value = '';
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                     }
                 } else {
                     if (sellQtyField) {
                         sellQtyField.value = buyQtyField.value;
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                     }
                     if (buyQtyField) {
                         buyQtyField.value = '';
                     }
                 }
-                // }, 500);
                 dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
                 dispatch(setShouldLimitConverterUpdate(true));
             } else if (shouldClearNonPrimaryQty) {
@@ -208,8 +173,6 @@ export default function TransactionsMenu(props: propsIF) {
             }, 500);
         }
         setShowDropdownMenu(false);
-
-        // dispatch(setRangeModuleTriggered(true));
     };
 
     function handleOpenExplorer() {
@@ -218,34 +181,6 @@ export default function TransactionsMenu(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value}
-    //     </SnackbarComponent>
-    // );
-    // -----------------END OF SNACKBAR----------------
-
-    // TODO:  @Junior please add a `default` to this with debugging code
-    // switch (currentModal) {
-    //     case 'remove':
-    //         modalContent = 'Remove';
-    //         modalTitle = 'Remove Position';
-    //         break;
-
-    //     case 'details':
-    //         modalContent = 'details';
-    //         modalTitle = '';
-    //         break;
-    //     case 'harvest':
-    //         modalContent = 'harvest';
-    //         modalTitle = 'Harvest';
-    //         break;
-    // }
 
     const openDetailsModal = () => {
         openGlobalModal(
@@ -379,48 +314,19 @@ export default function TransactionsMenu(props: propsIF) {
             Details
         </button>
     );
-    // const harvestButton = userPosition ? (
-    //     <button className={styles.option_button} onClick={openHarvestModal}>
-    //         Harvest
-    //     </button>
-    // ) : null;
-    // const editButton = userPosition ? (
-    //     <Link className={styles.option_button} to={'/trade/edit'}>
-    //         Edit
-    //     </Link>
-    // ) : null;
 
-    // --------------------------------
-
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
-    // const view3 = useMediaQuery('(min-width: 2300px)');
     // eslint-disable-next-line
-    const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    const view1NoSidebar =
+        useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
     const desktopView = useMediaQuery('(min-width: 768px)');
 
-    // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
-    // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
-
     // --------------------------------
-    // const notRelevantButton = false;
     const transactionsMenu = (
-        <div className={styles.actions_menu}>
-            {/* {notRelevantButton && editButton} */}
-            {/* {notRelevantButton && removeButton} */}
-            {/* {notRelevantButton && harvestButton} */}
-            {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
-            {/* {view2 && explorerButton} */}
-            {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
-            {isTxCopiable && copyButton}
-        </div>
+        <div className={styles.actions_menu}>{isTxCopiable && copyButton}</div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {/* {editButton} */}
-            {/* {removeButton} */}
-            {/* {harvestButton} */}
             {detailsButton}
             {explorerButton}
             {!desktopView && copyButton}
@@ -466,11 +372,7 @@ export default function TransactionsMenu(props: propsIF) {
     return (
         <div className={styles.main_container}>
             {desktopView && transactionsMenu}
-
             {dropdownTransactionsMenu}
-
-            {/* {modalOrNull} */}
-            {/* {snackbarContent} */}
         </div>
     );
 }

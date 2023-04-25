@@ -51,11 +51,13 @@ interface propsIF {
     username?: string | null;
     topPools: topPoolIF[];
     isChatEnabled: boolean;
+    areSubscriptionsEnabled: boolean;
 }
 
 export default function ChatPanel(props: propsIF) {
     const {
         isChatEnabled,
+        areSubscriptionsEnabled,
         isFullScreen,
         favePools,
         currentPool,
@@ -85,7 +87,10 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+        room,
+        areSubscriptionsEnabled,
+    );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 

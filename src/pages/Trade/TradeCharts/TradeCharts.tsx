@@ -93,8 +93,7 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: React.Dispatch<
         React.SetStateAction<boolean>
     >;
-    showSidebar: boolean;
-
+    isSidebarOpen: boolean;
     isTutorialMode: boolean;
     setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
@@ -192,12 +191,12 @@ export default function TradeCharts(props: propsIF) {
         setMinPrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
         chartSettings,
         setChartTriggeredBy,
         chartTriggeredBy,
+        isSidebarOpen,
     } = props;
 
     const { pathname } = useLocation();
@@ -650,7 +649,7 @@ export default function TradeCharts(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider={
                             setRescaleRangeBoundariesWithSlider
                         }
-                        showSidebar={showSidebar}
+                        showSidebar={isSidebarOpen}
                         setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}

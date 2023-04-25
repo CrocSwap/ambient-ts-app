@@ -6,9 +6,6 @@ import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    openSidebar: () => void;
-    closeSidebar: () => void;
-    togggggggleSidebar: () => void;
     walletToS: tosMethodsIF;
     chartSettings: chartSettingsMethodsIF;
     bypassConf: allSkipConfirmMethodsIF;

@@ -71,7 +71,7 @@ interface propsIF {
     portfolio?: boolean;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -110,7 +110,7 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
-        showSidebar,
+        isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         dexBalancePrefs,
@@ -331,7 +331,7 @@ export default function Ranges(props: propsIF) {
     );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -503,7 +503,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             crocEnv={crocEnv}
             chainData={chainData}
@@ -539,7 +538,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             crocEnv={crocEnv}
             chainData={chainData}

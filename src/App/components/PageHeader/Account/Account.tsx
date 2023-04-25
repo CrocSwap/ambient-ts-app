@@ -180,7 +180,7 @@ export default function Account(props: AccountPropsIF) {
         >
             <div className={styles.block_number_div}>
                 <div className={styles.page_block_sign} />
-                <span>{lastBlockNumber}</span>
+                <span>{lastBlockNumber ? lastBlockNumber : '…'}</span>
             </div>
         </DefaultTooltip>
     );

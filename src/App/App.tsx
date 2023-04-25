@@ -140,7 +140,7 @@ import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
-import { useSidebar } from './hooks/useSidebar';
+import { sidebarMethodsIF, useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -202,16 +202,18 @@ const startMoralis = async () => {
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
-startMoralis();
-
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
-
+    const location = useLocation();
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
+
+    useEffect(() => {
+        startMoralis();
+    }, []);
 
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(
@@ -256,6 +258,9 @@ export default function App() {
     const skin = useSkin('purple_dark');
     false && skin;
 
+    // hook to track user's sidebar preference open or closed
+    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
+
     const { address: account, isConnected } = useAccount();
 
     useEffect(() => {
@@ -269,7 +274,6 @@ export default function App() {
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const location = useLocation();
 
     const ticksInParams =
         location.pathname.includes('lowTick') &&
@@ -377,6 +381,13 @@ export default function App() {
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
             : true;
 
@@ -586,7 +597,15 @@ export default function App() {
     }, [tokenListsReceived]);
 
     async function pollBlockNum(): Promise<void> {
-        return fetch(chainData.nodeUrl, {
+        // if default RPC is Infura, use key from env variable
+        const nodeUrl =
+            chainData.nodeUrl.toLowerCase().includes('infura') &&
+            process.env.REACT_APP_INFURA_KEY
+                ? chainData.nodeUrl.slice(0, -32) +
+                  process.env.REACT_APP_INFURA_KEY
+                : chainData.nodeUrl;
+
+        return fetch(nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -689,10 +708,6 @@ export default function App() {
             ),
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
-
-    const [sidebarManuallySet, setSidebarManuallySet] =
-        useState<boolean>(false);
-    const [showSidebar, setShowSidebar] = useState<boolean>(false);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
 
@@ -826,15 +841,10 @@ export default function App() {
         const tokenAddress = token.address;
         const key =
             tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-
         const tokenName = tokensOnActiveLists.get(key)?.name;
-
         const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-
         newToken.name = tokenName ?? '';
-
         newToken.logoURI = tokenLogoURI ?? '';
-
         return newToken;
     };
 
@@ -892,7 +902,6 @@ export default function App() {
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol, setDailyVol] = useState<number | undefined>();
 
-    // TODO:  @Emily useMemo() this value
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
@@ -1540,7 +1549,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1605,7 +1617,10 @@ export default function App() {
             shouldReconnect: () => true,
         },
         // only connect if base/quote token addresses are available
-        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            baseTokenAddress !== '' &&
+            quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1682,6 +1697,7 @@ export default function App() {
         },
         // only connect if base/quote token addresses are available
         isServerEnabled &&
+            areSubscriptionsEnabled &&
             mainnetBaseTokenAddress !== '' &&
             mainnetQuoteTokenAddress !== '',
     );
@@ -1862,7 +1878,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     function isJsonString(str: string) {
@@ -1877,14 +1896,13 @@ export default function App() {
     useEffect(() => {
         try {
             if (lastUserPositionsMessage !== null) {
-                console.log({ lastUserPositionsMessage });
                 if (!isJsonString(lastUserPositionsMessage.data)) return;
+
                 const lastMessageData = JSON.parse(
                     lastUserPositionsMessage.data,
                 ).data;
+
                 if (lastMessageData && crocEnv) {
-                    IS_LOCAL_ENV &&
-                        console.debug('new user position message received');
                     Promise.all(
                         lastMessageData.map((position: PositionIF) => {
                             return getPositionData(
@@ -1935,7 +1953,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
@@ -1991,7 +2012,10 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== undefined,
+        isServerEnabled &&
+            areSubscriptionsEnabled &&
+            account !== null &&
+            account !== undefined,
     );
 
     useEffect(() => {
@@ -2271,7 +2295,6 @@ export default function App() {
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
-                            // omitEmpty: 'true',
                             omitKnockout: 'true',
                             addValue: 'true',
                         }),
@@ -2438,7 +2461,6 @@ export default function App() {
                                 }
                             }
                         }
-                        // const transactedTokensMinusAmbientTokens = result.filter((token) => )
                         dispatch(setRecentTokens(result));
                     })
                     .catch(console.error);
@@ -2456,32 +2478,21 @@ export default function App() {
         crocEnv,
     ]);
 
-    // run function to initialize local storage
-    // internal controls will only initialize values that don't exist
-    // existing values will not be overwritten
-
-    // determine whether the user is connected to a supported chain
-    // the user being connected to a non-supported chain or not being
-    // ... connected at all are both reflected as `false`
-    // later we can make this available to the rest of the app through
-    // ... the React Router context provider API
-    // const isChainValid = chainData.chainId ? validateChain(chainData.chainId as string) : false;
-
     const currentLocation = location.pathname;
 
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (sidebarManuallySet || !showSidebarByDefault) {
+        if (!showSidebarByDefault) {
             return;
         } else {
-            setShowSidebar(true);
+            sidebar.open();
             if (
                 currentLocation === '/' ||
                 currentLocation === '/swap' ||
                 currentLocation.includes('/account')
             ) {
-                setShowSidebar(false);
+                sidebar.close();
             }
         }
     }
@@ -2518,7 +2529,6 @@ export default function App() {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        // dispatch(resetTradeData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
@@ -2974,11 +2984,6 @@ export default function App() {
         chainData: chainData,
     };
 
-    function toggleSidebar() {
-        setShowSidebar(!showSidebar);
-        setSidebarManuallySet(true);
-    }
-
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -2989,11 +2994,9 @@ export default function App() {
 
     // props for <Sidebar/> React element
     const sidebarProps = {
+        sidebar: sidebar,
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
-        showSidebar: showSidebar,
-        toggleSidebar: toggleSidebar,
-        setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
 
@@ -3111,13 +3114,19 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        const interval = setInterval(() => {
-            getStatus().then((isChatUp) => {
-                setIsChatEnabled(isChatUp);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, [isChatEnabled]);
+        if (
+            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+                : true
+        ) {
+            const interval = setInterval(() => {
+                getStatus().then((isChatUp) => {
+                    setIsChatEnabled(isChatUp);
+                });
+            }, 10000);
+            return () => clearInterval(interval);
+        }
+    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
@@ -3125,7 +3134,7 @@ export default function App() {
         }
     }, [currentLocation]);
 
-    const sidebarDislayStyle = showSidebar
+    const sidebarDislayStyle = sidebar.isOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -3137,14 +3146,6 @@ export default function App() {
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
-
-    // hook to track user's sidebar preference open or closed
-    // also functions to toggle sidebar status between open and closed
-    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] =
-        useSidebar(location.pathname);
-    // these lines are just here to make the linter happy
-    // take them out before production, they serve no other purpose
-    false && sidebarStatus;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -3198,7 +3199,7 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            setShowSidebar(!showSidebar);
+            sidebar.toggle('persist');
         },
     );
     useKeyboardShortcuts(
@@ -3248,7 +3249,6 @@ export default function App() {
         chainId: chainData.chainId,
         chainData,
         currentTxActiveInTransactions,
-
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -3273,7 +3273,6 @@ export default function App() {
         searchableTokens: searchableTokens,
         poolExists,
         setTokenPairLocal,
-        showSidebar,
         handlePulseAnimation,
         isCandleSelected,
         setIsCandleSelected,
@@ -3308,6 +3307,7 @@ export default function App() {
             mintSlippage,
             repoSlippage,
         },
+        isSidebarOpen: sidebar.isOpen,
     };
 
     const accountProps = {
@@ -3326,7 +3326,6 @@ export default function App() {
         isTokenABase,
         provider,
         cachedFetchErc20TokenBalances,
-
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
         ensName,
@@ -3339,14 +3338,12 @@ export default function App() {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
-        // userAccount:true,
         openGlobalModal,
         closeGlobalModal,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
         account: account ?? '',
-        showSidebar,
         isUserLoggedIn,
         baseTokenBalance,
         quoteTokenBalance,
@@ -3374,6 +3371,7 @@ export default function App() {
         },
         ackTokens,
         setExpandTradeTable,
+        isSidebarOpen: sidebar.isOpen,
     };
 
     const repositionProps = {
@@ -3407,6 +3405,7 @@ export default function App() {
 
     const chatProps = {
         isChatEnabled: isChatEnabled,
+        areSubscriptionsEnabled: areSubscriptionsEnabled,
         isChatOpen: true,
         onClose: () => {
             console.error('Function not implemented.');
@@ -3541,7 +3540,6 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     gasPriceInGwei={gasPriceInGwei}
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    showSidebar={showSidebar}
                                     openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
@@ -3590,9 +3588,6 @@ export default function App() {
                                 element={
                                     <TestPage
                                         openGlobalModal={openGlobalModal}
-                                        openSidebar={openSidebar}
-                                        closeSidebar={closeSidebar}
-                                        togggggggleSidebar={togggggggleSidebar}
                                         walletToS={walletToS}
                                         chartSettings={chartSettings}
                                         bypassConf={{
@@ -3635,6 +3630,7 @@ export default function App() {
                             userImageData={imageData}
                             topPools={topPools}
                             isChatEnabled={isChatEnabled}
+                            areSubscriptionsEnabled={areSubscriptionsEnabled}
                         />
                     )}
             </div>
