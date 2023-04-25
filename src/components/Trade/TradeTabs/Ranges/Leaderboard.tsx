@@ -8,10 +8,7 @@ import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    graphData,
-    updateLeaderboard,
-} from '../../../../utils/state/graphDataSlice';
+import { updateLeaderboard } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import {
@@ -39,7 +36,6 @@ interface propsIF {
     chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -77,7 +73,6 @@ export default function Leaderboard(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
@@ -94,6 +89,7 @@ export default function Leaderboard(props: propsIF) {
         ethMainnetUsdPrice,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tradeData.baseToken.address;

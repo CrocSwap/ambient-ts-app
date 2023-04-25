@@ -9,6 +9,7 @@ import {
     ReactNode,
 } from 'react';
 import { ethers } from 'ethers';
+import sum from 'hash-sum';
 import { motion } from 'framer-motion';
 import {
     concDepositSkew,
@@ -71,7 +72,6 @@ import {
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import {
@@ -115,7 +115,6 @@ interface propsIF {
     dailyVol: number | undefined;
     openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
-    graphData: graphData;
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -189,7 +188,6 @@ export default function Range(props: propsIF) {
         dailyVol,
         openGlobalModal,
         poolExists,
-        graphData,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -248,23 +246,9 @@ export default function Range(props: propsIF) {
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
-
-    const userPositions = graphData.positionsByUser.positions;
-    const [isAdd, setIsAdd] = useState<boolean>(false);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
+    const userPositions = useAppSelector(
+        (state) => state.graphData,
+    ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
 
@@ -416,14 +400,24 @@ export default function Range(props: propsIF) {
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
-        if (isAdd) {
-            setIsAdd(true);
+    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
+        if (isAmbient && position.positionType === 'ambient') {
+            return true;
+        } else if (
+            !isAmbient &&
+            defaultLowTick === position.bidTick &&
+            defaultHighTick === position.askTick
+        ) {
+            return true;
         } else {
-            setIsAdd(false);
+            return false;
         }
-    }, [userPositions.length, isAmbient, defaultLowTick, defaultHighTick]);
+    };
+
+    const isAdd = useMemo(
+        () => userPositions.some(selectedRangeMatchesOpenPosition),
+        [sum(userPositions), isAmbient, defaultLowTick, defaultHighTick],
+    );
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
@@ -1810,6 +1804,9 @@ export default function Range(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenA.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenA.symbol ||
                                                 tokenPair.dataTokenA.name}{' '}
@@ -1825,6 +1822,9 @@ export default function Range(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenB.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenB.symbol ||
                                                 tokenPair.dataTokenB.name}{' '}
