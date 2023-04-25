@@ -20,7 +20,6 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
-    graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 import {
@@ -58,7 +57,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -100,7 +98,6 @@ export default function Ranges(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
@@ -120,7 +117,9 @@ export default function Ranges(props: propsIF) {
         cachedPositionUpdateQuery,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
