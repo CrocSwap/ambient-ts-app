@@ -3367,7 +3367,7 @@ export default function Chart(props: propsIF) {
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
     ) {
-        const rectPadding = text.length > 8 ? 15 : 0;
+        const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
         context.fillStyle = color;
         context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
@@ -3437,14 +3437,6 @@ export default function Chart(props: propsIF) {
                 context.textBaseline = 'middle';
                 context.fillStyle = 'rgba(189,189,189,0.8)';
                 context.font = '11.425px Lexend Deca';
-
-                const latestCandleIndex = d3.maxIndex(
-                    parsedChartData?.chartData,
-                    (d) => d.date,
-                );
-
-                const lastCandle =
-                    parsedChartData?.chartData[latestCandleIndex];
 
                 const yScaleTicks = yScale.ticks(factor);
 
