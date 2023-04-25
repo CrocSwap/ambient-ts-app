@@ -47,6 +47,7 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
+import { PositionUpdateFn } from '../../App/functions/getPositionData';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -91,7 +92,7 @@ interface propsIF {
     poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     isCandleSelected: boolean | undefined;
@@ -124,6 +125,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // React functional component
@@ -133,6 +135,7 @@ export default function Trade(props: propsIF) {
         pool,
         tokenList,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -160,7 +163,7 @@ export default function Trade(props: propsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -544,7 +547,7 @@ export default function Trade(props: propsIF) {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
         isTutorialMode: props.isTutorialMode,
         setIsTutorialMode: props.setIsTutorialMode,
@@ -559,6 +562,7 @@ export default function Trade(props: propsIF) {
     const tradeTabsProps = {
         tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,
         crocEnv: crocEnv,
@@ -591,7 +595,7 @@ export default function Trade(props: propsIF) {
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
         searchableTokens: searchableTokens,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,

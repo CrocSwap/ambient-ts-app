@@ -515,7 +515,12 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (minPrice !== 0 && maxPrice !== 0) {
+        if (
+            minPrice !== 0 &&
+            maxPrice !== 0 &&
+            !isNaN(maxPrice) &&
+            !isNaN(minPrice)
+        ) {
             setRanges((prevState) => {
                 const newTargets = [...prevState];
                 newTargets.filter(
@@ -2261,7 +2266,8 @@ export default function Chart(props: propsIF) {
     const setLimitLineValue = () => {
         if (
             tradeData.limitTick === undefined ||
-            Array.isArray(tradeData.limitTick)
+            Array.isArray(tradeData.limitTick) ||
+            isNaN(tradeData.limitTick)
         )
             return;
         const limitDisplayPrice = pool?.toDisplayPrice(
@@ -3077,7 +3083,7 @@ export default function Chart(props: propsIF) {
 
                     setghostLineValuesRange([]);
 
-                    setIsCrosshairActive('chart');
+                    setIsCrosshairActive('none');
                 });
 
             let oldLimitValue: number | undefined = undefined;
@@ -3244,7 +3250,7 @@ export default function Chart(props: propsIF) {
                         'default',
                     );
 
-                    setIsCrosshairActive('chart');
+                    setIsCrosshairActive('none');
                 });
 
             setDragRange(() => {
@@ -3312,11 +3318,11 @@ export default function Chart(props: propsIF) {
 
             d3.select(d3Yaxis.current).on('draw', function () {
                 if (yAxis) {
-                    setCanvasResolution(canvas);
+                    setCanvasResolution(d3YaxisCanvas);
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
-                        d3YaxisCanvas.width / 2,
+                        d3YaxisCanvas.width / 6,
                     );
                 }
             });
@@ -3361,18 +3367,19 @@ export default function Chart(props: propsIF) {
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
     ) {
+        const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth, 20);
+        context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
-        context.textAlign = 'center';
+        context.textAlign = 'left';
         context.textBaseline = 'middle';
         context.fillText(text, x, y + 2);
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth, 20);
+            context.strokeRect(1, y - 10, yAxisWidth + rectPadding, 20);
         }
     }
 
@@ -3426,18 +3433,10 @@ export default function Chart(props: propsIF) {
                 const factor = height > 400 ? 7 : 4;
 
                 context.stroke();
-                context.textAlign = 'center';
+                context.textAlign = 'left';
                 context.textBaseline = 'middle';
                 context.fillStyle = 'rgba(189,189,189,0.8)';
                 context.font = '11.425px Lexend Deca';
-
-                const latestCandleIndex = d3.maxIndex(
-                    parsedChartData?.chartData,
-                    (d) => d.date,
-                );
-
-                const lastCandle =
-                    parsedChartData?.chartData[latestCandleIndex];
 
                 const yScaleTicks = yScale.ticks(factor);
 
@@ -3456,10 +3455,10 @@ export default function Chart(props: propsIF) {
                     context,
                     yScale(market[0].value),
                     X - tickSize,
-                    lastCandle.close > lastCandle.open ? '#EAEFF2' : '#1d1d30',
-                    lastCandle.close > lastCandle.open ? 'black' : 'white',
+                    'white',
+                    'black',
                     formatAmountChartData(market[0].value, undefined),
-                    '#6c69fc',
+                    undefined,
                     yAxisCanvasWidth,
                 );
 
@@ -6245,6 +6244,7 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
+                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,

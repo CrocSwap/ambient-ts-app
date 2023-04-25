@@ -8,6 +8,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 
 interface propsIF {
     isServerEnabled: boolean;
@@ -19,6 +20,7 @@ interface propsIF {
     lastBlockNumber: number;
     chainId: string;
     topPools: topPoolIF[];
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function TopPools(props: propsIF) {
@@ -31,6 +33,7 @@ export default function TopPools(props: propsIF) {
         chainId,
         cachedQuerySpotPrice,
         topPools,
+        cachedPoolStatsFetch,
     } = props;
 
     const { t } = useTranslation();
@@ -63,6 +66,7 @@ export default function TopPools(props: propsIF) {
                         lastBlockNumber={lastBlockNumber}
                         chainId={chainId}
                         pool={pool}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
                     />
                 ))}
             </div>

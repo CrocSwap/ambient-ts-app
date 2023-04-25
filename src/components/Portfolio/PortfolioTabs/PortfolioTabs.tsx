@@ -4,7 +4,6 @@ import {
     useState,
     Dispatch,
     SetStateAction,
-    ReactNode,
 } from 'react';
 import sum from 'hash-sum';
 // START: Import JSX Functional Components
@@ -19,7 +18,10 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { getPositionData } from '../../../App/functions/getPositionData';
+import {
+    PositionUpdateFn,
+    getPositionData,
+} from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
     PositionIF,
@@ -54,6 +56,7 @@ interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
@@ -68,7 +71,6 @@ interface propsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     searchableTokens: TokenIF[];
-
     openTokenModal: () => void;
     chainData: ChainSpec;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -76,7 +78,7 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -100,6 +102,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
@@ -129,6 +132,7 @@ export default function PortfolioTabs(props: propsIF) {
         slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        isSidebarOpen,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -136,11 +140,11 @@ export default function PortfolioTabs(props: propsIF) {
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
         graphData.positionsByUser.positions.filter(
-            (x) => x.chainId === chainId,
+            (position) => position.chainId === chainId,
         );
     const connectedAccountLimitOrderData =
         graphData.limitOrdersByUser.limitOrders.filter(
-            (x) => x.chainId === chainId,
+            (position) => position.chainId === chainId,
         );
     const connectedAccountTransactionData =
         graphData.changesByUser.changes.filter((x) => x.chainId === chainId);
@@ -374,17 +378,17 @@ export default function PortfolioTabs(props: propsIF) {
     // props for <Range/> React Element
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
         account: account,
-        graphData: graphData,
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: props.currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        showSidebar: props.showSidebar,
+        isSidebarOpen: isSidebarOpen,
         activeAccountPositionData: activeAccountPositionData,
         isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
@@ -415,7 +419,6 @@ export default function PortfolioTabs(props: propsIF) {
         isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
         tokenList: tokenList,
-        graphData: graphData,
         chainData: props.chainData,
         blockExplorer: props.chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
@@ -426,7 +429,7 @@ export default function PortfolioTabs(props: propsIF) {
         isCandleSelected: false,
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
-        showSidebar: props.showSidebar,
+        isSidebarOpen: isSidebarOpen,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
         tokenMap: tokenMap,
@@ -445,12 +448,11 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: props.chainData,
         isShowAllEnabled: false,
         account: account,
-        graphData: graphData,
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: props.currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        showSidebar: props.showSidebar,
+        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
         lastBlockNumber: lastBlockNumber,

@@ -163,11 +163,6 @@ div.tooltip {
     transition: 0.8s all ease-in-out;
 }
 
-d3fc-canvas>canvas, d3fc-svg>svg {
-    height: inherit;
-    width: inherit;
-}
-
 @keyframes hideAnimation {
     to {
         visibility: hidden;
@@ -247,7 +242,7 @@ label {
     box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
 }
 
-@media (max-width: 1280px) and (min-width: 700px) {
+@media (max-width: 1200px) and (min-width: 700px) {
     #d3fc_group {
         height: 90%;
         padding: 1%;
@@ -305,10 +300,15 @@ label {
     }
 }
 
-@media (max-width: 1267px) and (min-width: 1200px) {
-
+@media (max-height: 899px) {
     .chart_grid {
-        height: 50%;
+        height: 85%;
+    }
+}
+
+@media (max-width: 1200px) {
+    .chart_grid {
+        height: 85%;
     }
 }
 

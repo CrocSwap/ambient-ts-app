@@ -309,7 +309,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 {daySeparator === '' ? (
                     ''
                 ) : daySeparator !== '' ? (
-                    <p className={styles.seperator}>{daySeparator}</p>
+                    <p className={styles.separator}>{daySeparator}</p>
                 ) : (
                     ''
                 )}
@@ -396,6 +396,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         <FiDelete
                             color='red'
                             onClick={() => deleteMessages(props.message._id)}
+                            style={{ cursor: 'pointer' }}
                         />
                     ) : (
                         ''
@@ -408,7 +409,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
                     {/* {snackbarContent} */}
                 </div>
-                {hasSeparator ? <hr /> : ''}
+                {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
             </div>
         </div>
     );

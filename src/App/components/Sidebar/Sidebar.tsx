@@ -1,15 +1,16 @@
 // START: Import React and Dongles
 import {
-    MouseEvent,
     SetStateAction,
     Dispatch,
     useState,
     useEffect,
     useRef,
+    useMemo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
+import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -29,12 +30,9 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import {
-    LimitOrderIF,
-    PositionIF,
     TokenIF,
     TokenPairIF,
     TempPoolIF,
-    TransactionIF,
 } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
@@ -44,25 +42,23 @@ import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch } from './useSidebarSearch';
+import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
+import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface propsIF {
+    sidebar: sidebarMethodsIF;
     tradeData: tradeData;
     isDenomBase: boolean;
-    showSidebar: boolean;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
     chainId: string;
     poolId: number;
     currentTxActiveInTransactions: string;
@@ -89,19 +85,15 @@ interface propsIF {
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    positionsByUser: PositionIF[];
-    txsByUser: TransactionIF[];
-    limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
 }
 
 export default function Sidebar(props: propsIF) {
     const {
+        sidebar,
         tradeData,
         isDenomBase,
-        toggleSidebar,
-        showSidebar,
         chainId,
         poolId,
         currentTxActiveInTransactions,
@@ -114,7 +106,6 @@ export default function Sidebar(props: propsIF) {
         tokenMap,
         lastBlockNumber,
         favePools,
-        setShowSidebar,
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
@@ -123,20 +114,53 @@ export default function Sidebar(props: propsIF) {
         tokenPair,
         recentPools,
         isConnected,
-        positionsByUser,
+        outsideControl,
         setOutsideControl,
+        selectedOutsideTab,
         setSelectedOutsideTab,
-        txsByUser,
-        limitsByUser,
         ackTokens,
         topPools,
     } = props;
 
     const location = useLocation();
 
-    const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
-    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const positionsByUser = useMemo(
+        () =>
+            graphData.positionsByUser.positions.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.positionsByUser.positions), chainId],
+    );
+
+    const txsByUser = useMemo(
+        () =>
+            graphData.changesByUser.changes.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.changesByUser.changes), chainId],
+    );
+
+    const limitsByUser = useMemo(
+        () =>
+            graphData.limitOrdersByUser.limitOrders.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.limitOrdersByUser.limitOrders), chainId],
+    );
+    const mostRecentTxs = useMemo(
+        () => txsByUser.slice(0, 4),
+        [sum(txsByUser)],
+    );
+    const mostRecentPositions = useMemo(
+        () => positionsByUser.slice(0, 4),
+        [sum(positionsByUser)],
+    );
+    const mostRecentLimitOrders = useMemo(
+        () => limitsByUser.slice(0, 4),
+        [sum(limitsByUser)],
+    );
 
     const recentPoolsData = [
         {
@@ -185,7 +209,7 @@ export default function Sidebar(props: propsIF) {
                     setOutsideControl={setOutsideControl}
                     setCurrentPositionActive={setCurrentPositionActive}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    setShowSidebar={setShowSidebar}
+                    closeSidebar={sidebar.close}
                     isUserLoggedIn={isConnected}
                 />
             ),
@@ -202,17 +226,17 @@ export default function Sidebar(props: propsIF) {
                     tokenMap={tokenMap}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
-                    selectedOutsideTab={props.selectedOutsideTab}
+                    selectedOutsideTab={selectedOutsideTab}
                     setSelectedOutsideTab={setSelectedOutsideTab}
-                    outsideControl={props.outsideControl}
+                    outsideControl={outsideControl}
                     setOutsideControl={setOutsideControl}
                     isShowAllEnabled={isShowAllEnabled}
                     setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={props.setIsShowAllEnabled}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
                     isUserLoggedIn={isConnected}
-                    setShowSidebar={setShowSidebar}
+                    closeSidebar={sidebar.close}
                 />
             ),
         },
@@ -255,25 +279,18 @@ export default function Sidebar(props: propsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
-                    selectedOutsideTab={props.selectedOutsideTab}
+                    selectedOutsideTab={selectedOutsideTab}
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
-                    outsideControl={props.outsideControl}
+                    outsideControl={outsideControl}
                     isUserLoggedIn={isConnected}
-                    setShowSidebar={setShowSidebar}
+                    closeSidebar={sidebar.close}
                 />
             ),
         },
     ];
 
-    const [
-        setRawInput,
-        isInputValid,
-        searchedPools,
-        searchedPositions,
-        searchedTxs,
-        searchedLimitOrders,
-    ] = useSidebarSearch(
+    const searchData: sidebarSearchIF = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
@@ -317,7 +334,10 @@ export default function Sidebar(props: propsIF) {
     };
     const AnalyticsSearchContainer = (
         <div className={styles.search_container}>
-            <div className={styles.search__icon} onClick={toggleSidebar}>
+            <div
+                className={styles.search__icon}
+                onClick={() => sidebar.toggle()}
+            >
                 <BiSearch size={18} color='#CDC1FF' />
             </div>
             <input
@@ -346,7 +366,7 @@ export default function Sidebar(props: propsIF) {
     // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
-        setRawInput(e.target.value);
+        searchData.setInput(e.target.value);
     };
     const searchContainer = (
         <div className={styles.search_container}>
@@ -378,15 +398,15 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (!showSidebar) {
-                    setShowSidebar(true);
+                if (sidebar.status === 'closed') {
+                    sidebar.open();
                 }
                 setOpenAllDefault(true);
             }}
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {!showSidebar || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
         </button>
     );
 
@@ -410,12 +430,11 @@ export default function Sidebar(props: propsIF) {
             {location.pathname.includes('analytics')
                 ? AnalyticsSearchContainer
                 : searchContainer}
-            {showSidebar ? (
+            {sidebar.isOpen ? (
                 <DefaultTooltip
                     interactive
                     title={!openAllDefault ? openAllButton : collapseButton}
-                    // placement={'bottom'}
-                    placement={showSidebar ? 'right' : 'right'}
+                    placement={'right'}
                     arrow
                     enterDelay={100}
                     leaveDelay={200}
@@ -424,7 +443,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='close sidebar'
-                            onClick={toggleSidebar}
+                            onClick={() => sidebar.close('persist')}
                         />
                     </div>
                 </DefaultTooltip>
@@ -432,8 +451,7 @@ export default function Sidebar(props: propsIF) {
                 <DefaultTooltip
                     interactive
                     title={openAllButton}
-                    // placement={'bottom'}
-                    placement={showSidebar ? 'bottom' : 'right'}
+                    placement={sidebar.isOpen ? 'bottom' : 'right'}
                     arrow
                     enterDelay={100}
                     leaveDelay={200}
@@ -442,7 +460,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='open sidebar'
-                            onClick={toggleSidebar}
+                            onClick={() => sidebar.open('persist')}
                         />
                     </div>
                 </DefaultTooltip>
@@ -454,32 +472,29 @@ export default function Sidebar(props: propsIF) {
     const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
 
     useEffect(() => {
-        if (overflowSidebarMQ) {
-            setShowSidebar(false);
-        } else setShowSidebar(true);
+        overflowSidebarMQ ? sidebar.close() : sidebar.open();
     }, [overflowSidebarMQ]);
 
     function handleSidebarClickOutside() {
         if (!overflowSidebarMQ) return;
-
-        setShowSidebar(false);
+        sidebar.close();
     }
 
     useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
-    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+    const sidebarStyle = sidebar.isOpen
+        ? styles.sidebar_active
+        : styles.sidebar;
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
-                    showSidebar={showSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
-                    toggleSidebar={toggleSidebar}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -487,13 +502,11 @@ export default function Sidebar(props: propsIF) {
             ))}
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -501,13 +514,11 @@ export default function Sidebar(props: propsIF) {
             ))}
             {recentPoolsData.map((item, idx) => (
                 <SidebarAccordion
-                    showSidebar={showSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
-                    toggleSidebar={toggleSidebar}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -520,13 +531,11 @@ export default function Sidebar(props: propsIF) {
         <div className={styles.bottom_elements}>
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -534,13 +543,11 @@ export default function Sidebar(props: propsIF) {
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -548,13 +555,11 @@ export default function Sidebar(props: propsIF) {
             ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
@@ -570,28 +575,26 @@ export default function Sidebar(props: propsIF) {
         </>
     );
 
-    const handleClosedSidebarClick = () => {
-        showSidebar ? null : setShowSidebar(true);
-    };
     return (
         <div ref={sidebarRef}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
-                onClick={handleClosedSidebarClick}
-                style={!showSidebar ? { cursor: 'pointer' } : undefined}
+                onClick={() => {
+                    sidebar.isOpen || sidebar.open('persist');
+                }}
+                style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
                 <ul className={styles.sidebar_nav}>
                     {searchContainerDisplay}
-                    {isInputValid && showSidebar && searchMode ? (
+                    {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
-                            searchedPools={searchedPools}
+                            searchData={searchData}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            searchedPositions={searchedPositions}
                             setOutsideControl={setOutsideControl}
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
@@ -599,8 +602,6 @@ export default function Sidebar(props: propsIF) {
                                 setCurrentTxActiveInTransactions
                             }
                             setIsShowAllEnabled={setIsShowAllEnabled}
-                            searchedTxs={searchedTxs}
-                            searchedLimitOrders={searchedLimitOrders}
                             ackTokens={ackTokens}
                         />
                     ) : (

@@ -8,10 +8,7 @@ import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    graphData,
-    updateLeaderboard,
-} from '../../../../utils/state/graphDataSlice';
+import { updateLeaderboard } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import {
@@ -21,13 +18,13 @@ import {
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { updatePositionStats } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 
 // interface for props
 interface propsIF {
@@ -39,7 +36,6 @@ interface propsIF {
     chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -51,11 +47,12 @@ interface propsIF {
     portfolio?: boolean;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
@@ -76,7 +73,6 @@ export default function Leaderboard(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
@@ -84,7 +80,8 @@ export default function Leaderboard(props: propsIF) {
         account,
         handlePulseAnimation,
         cachedQuerySpotPrice,
-        showSidebar,
+        cachedPositionUpdateQuery,
+        isSidebarOpen,
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
@@ -92,6 +89,7 @@ export default function Leaderboard(props: propsIF) {
         ethMainnetUsdPrice,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -109,11 +107,17 @@ export default function Leaderboard(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    // prevent query from running multiple times for the same position more than once per minute
+    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+
     useEffect(() => {
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updatePositionStats(position);
+                    return cachedPositionUpdateQuery(
+                        position,
+                        currentTimeForPositionUpdateCaching,
+                    );
                 }),
             )
                 .then((updatedPositions) => {
@@ -131,7 +135,7 @@ export default function Leaderboard(props: propsIF) {
             id1: topThreePositions[1]?.positionId,
             id2: topThreePositions[2]?.positionId,
         }),
-        lastBlockNumber,
+        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
     ]);
 
@@ -176,7 +180,7 @@ export default function Leaderboard(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const showColumns = useMediaQuery('(max-width: 1900px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -352,7 +356,6 @@ export default function Leaderboard(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             crocEnv={crocEnv}
             chainData={chainData}

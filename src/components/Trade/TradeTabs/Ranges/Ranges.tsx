@@ -20,7 +20,6 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
-    graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 import {
@@ -30,7 +29,7 @@ import {
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { updatePositionStats } from '../../../../App/functions/getPositionData';
+import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
@@ -58,7 +57,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -71,7 +69,7 @@ interface propsIF {
     portfolio?: boolean;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -82,6 +80,7 @@ interface propsIF {
     slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // react functional component
@@ -99,7 +98,6 @@ export default function Ranges(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
@@ -109,16 +107,19 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
-        showSidebar,
+        isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        cachedPositionUpdateQuery,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -226,13 +227,19 @@ export default function Ranges(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    // prevent query from running multiple times for the same position more than once per minute
+    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+
     useEffect(() => {
         const topThreePositions = sortedPositions.slice(0, 3);
 
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updatePositionStats(position);
+                    return cachedPositionUpdateQuery(
+                        position,
+                        currentTimeForPositionUpdateCaching,
+                    );
                 }),
             )
                 .then((updatedPositions) => {
@@ -269,7 +276,7 @@ export default function Ranges(props: propsIF) {
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,
         }),
-        lastBlockNumber,
+        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
     ]);
@@ -323,7 +330,7 @@ export default function Ranges(props: propsIF) {
     );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -495,7 +502,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             crocEnv={crocEnv}
             chainData={chainData}
@@ -531,7 +537,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             crocEnv={crocEnv}
             chainData={chainData}

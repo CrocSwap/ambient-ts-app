@@ -1,38 +1,25 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
 
 // START: Import Local Files
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import {
-    addLimitOrderChangesByPool,
-    CandleData,
-    graphData,
-    setDataLoadingStatus,
-    setLimitOrdersByPool,
-} from '../../../../utils/state/graphDataSlice';
-import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { IS_LOCAL_ENV } from '../../../../constants';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -45,7 +32,6 @@ interface propsIF {
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
-    graphData: graphData;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
@@ -58,7 +44,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     lastBlockNumber: number;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
 
@@ -66,23 +52,23 @@ interface propsIF {
 export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
-        searchableTokens,
         connectedAccountActive,
         crocEnv,
         chainData,
         expandTradeTable,
         account,
-        graphData,
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
-        showSidebar,
+        isSidebarOpen,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
         lastBlockNumber,
     } = props;
+
+    const graphData = useAppSelector((state) => state?.graphData);
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
         (x) => x.chainId === chainData.chainId,
@@ -91,14 +77,6 @@ export default function Orders(props: propsIF) {
         (x) => x.chainId === chainData.chainId,
     );
     const dataLoadingStatus = graphData?.dataLoadingStatus;
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
-
-    // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -145,8 +123,6 @@ export default function Orders(props: propsIF) {
         },
     );
 
-    const dispatch = useAppDispatch();
-
     // const isDenomBase = tradeData.isDenomBase;
 
     const [limitOrderData, setLimitOrderData] = useState(
@@ -154,9 +130,6 @@ export default function Orders(props: propsIF) {
             ? activeAccountLimitOrderData || []
             : limitOrdersByPool,
     );
-
-    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] =
-        useState(false);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -174,15 +147,6 @@ export default function Orders(props: propsIF) {
         sum(limitOrdersByPool),
     ]);
 
-    // wait 5 seconds to open a subscription to pool changes
-    useEffect(() => {
-        const handler = setTimeout(
-            () => setDebouncedIsShowAllEnabled(isShowAllEnabled),
-            5000,
-        );
-        return () => clearTimeout(handler);
-    }, [isShowAllEnabled]);
-
     const nonEmptyOrders = isShowAllEnabled
         ? limitOrdersByPool.filter(
               (limitOrder) => limitOrder.totalValueUSD !== 0,
@@ -191,109 +155,9 @@ export default function Orders(props: propsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', nonEmptyOrders);
-    useEffect(() => {
-        if (isServerEnabled && isShowAllEnabled) {
-            fetchPoolLimitOrderStates({
-                chainId: chainData.chainId,
-                base: tradeData.baseToken.address,
-                quote: tradeData.quoteToken.address,
-                poolIdx: chainData.poolIndex,
-                ensResolution: true,
-            })
-                .then((orderJsonData) => {
-                    if (orderJsonData) {
-                        Promise.all(
-                            orderJsonData.map((limitOrder: LimitOrderIF) => {
-                                return getLimitOrderData(
-                                    limitOrder,
-                                    searchableTokens,
-                                );
-                            }),
-                        ).then((updatedLimitOrderStates) => {
-                            dispatch(
-                                setLimitOrdersByPool({
-                                    dataReceived: true,
-                                    limitOrders: updatedLimitOrderStates,
-                                }),
-                            );
-                        });
-                    }
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'poolOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
-                })
-                .catch(console.error);
-        }
-    }, [isServerEnabled, isShowAllEnabled]);
-
-    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-
-    const poolLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                chainId: chainData.chainId,
-                base: tradeData.baseToken.address,
-                quote: tradeData.quoteToken.address,
-                poolIdx: chainData.poolIndex.toString(),
-                ensResolution: 'true',
-            }),
-        [
-            chainData.chainId,
-            account,
-            tradeData.baseToken.address,
-            tradeData.quoteToken.address,
-            chainData.poolIndex,
-        ],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolLimitOrderChangeMessage,
-        //  readyState
-    } = useWebSocket(
-        poolLimitOrderChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('pool limit orders subscription opened');
-            },
-            onClose: (event: CloseEvent) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            shouldReconnect: () => true,
-        },
-        // only connect if user is viewing pool changes
-        isServerEnabled && debouncedIsShowAllEnabled,
-    );
-
-    useEffect(() => {
-        if (lastPoolLimitOrderChangeMessage !== null) {
-            const lastMessageData = JSON.parse(
-                lastPoolLimitOrderChangeMessage.data,
-            ).data;
-            if (lastMessageData) {
-                IS_LOCAL_ENV && console.debug({ lastMessageData });
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByPool(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastPoolLimitOrderChangeMessage]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const view2 = useMediaQuery('(max-width: 1568px)');
     const showColumns = useMediaQuery('(max-width: 1800px)');
 
@@ -328,13 +192,6 @@ export default function Orders(props: propsIF) {
             slug: 'time',
             sortable: true,
         },
-        // {
-        //     name: '',
-        //     className: '',
-        //     show: isOnPortfolioPage,
-        //     slug: 'token_images',
-        //     sortable: false,
-        // },
         {
             name: 'Pair',
             className: '',
@@ -523,7 +380,7 @@ export default function Orders(props: propsIF) {
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
@@ -550,7 +407,6 @@ export default function Orders(props: propsIF) {
             setIsShowAllEnabled={setIsShowAllEnabled}
             changeState={changeState}
             isOnPortfolioPage={isOnPortfolioPage}
-            // setIsCandleSelected={setIsCandleSelected}
         />
     );
 

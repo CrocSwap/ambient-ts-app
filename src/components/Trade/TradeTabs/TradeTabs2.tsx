@@ -41,6 +41,7 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -76,7 +77,7 @@ interface propsIF {
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     searchableTokens: TokenIF[];
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
@@ -103,11 +104,13 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
+    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 export default function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         isUserLoggedIn,
         isTokenABase,
         crocEnv,
@@ -138,7 +141,7 @@ export default function TradeTabs2(props: propsIF) {
         outsideControl,
         setOutsideControl,
         searchableTokens,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         changeState,
         selectedDate,
@@ -393,6 +396,7 @@ export default function TradeTabs2(props: propsIF) {
     // Props for <Ranges/> React Element
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,
@@ -406,7 +410,6 @@ export default function TradeTabs2(props: propsIF) {
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
-        graphData: graphData,
         lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
@@ -414,7 +417,7 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentPositionActive: setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
@@ -435,7 +438,6 @@ export default function TradeTabs2(props: propsIF) {
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         tokenList: tokenList,
-        graphData: graphData,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -449,7 +451,7 @@ export default function TradeTabs2(props: propsIF) {
         closeGlobalModal: props.closeGlobalModal,
         changeState: changeState,
         openGlobalModal: props.openGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
@@ -466,12 +468,11 @@ export default function TradeTabs2(props: propsIF) {
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
-        graphData: graphData,
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
         setIsShowAllEnabled: setIsShowAllEnabled,
@@ -549,7 +550,12 @@ export default function TradeTabs2(props: propsIF) {
               },
               {
                   label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
+                  content: (
+                      <Leaderboard
+                          {...rangesProps}
+                          isSidebarOpen={isSidebarOpen}
+                      />
+                  ),
                   icon: leaderboard,
                   showRightSideOption: false,
               },

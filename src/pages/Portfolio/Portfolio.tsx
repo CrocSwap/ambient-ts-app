@@ -39,6 +39,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
+import { PositionUpdateFn } from '../../App/functions/getPositionData';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -59,6 +60,7 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
     ensName: string;
     lastBlockNumber: number;
@@ -79,7 +81,7 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -107,6 +109,7 @@ export default function Portfolio(props: propsIF) {
     const {
         searchableTokens,
         cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
         crocEnv,
         addRecentToken,
         getRecentTokens,
@@ -134,7 +137,7 @@ export default function Portfolio(props: propsIF) {
         quoteTokenDexBalance,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         openModalWallet,
         outputTokens,
@@ -556,6 +559,7 @@ export default function Portfolio(props: propsIF) {
         tokenList: searchableTokens,
         searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
+        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: crocEnv,
         isTokenABase: isTokenABase,
         provider: provider,
@@ -575,7 +579,7 @@ export default function Portfolio(props: propsIF) {
         openTokenModal: openTokenModal,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         account: props.account,
         chainData: chainData,
         currentPositionActive: props.currentPositionActive,
