@@ -366,7 +366,6 @@ export default function Chart(props: propsIF) {
     const [boundaries, setBoundaries] = useState<any>();
 
     // Rules
-    const [isDrag, setIsDrag] = useState(false);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
 
@@ -2722,8 +2721,6 @@ export default function Chart(props: propsIF) {
                                 ? 'Min'
                                 : 'Max';
                     }
-
-                    setIsCrosshairActive('none');
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
@@ -3095,9 +3092,6 @@ export default function Chart(props: propsIF) {
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
-                    setIsMouseMoveCrosshair(false);
-                    setIsCrosshairActive('none');
-
                     d3.select(d3CanvasLimitLine.current).style(
                         'cursor',
                         'none',
@@ -3106,6 +3100,8 @@ export default function Chart(props: propsIF) {
                     oldLimitValue = limit[0].value;
                 })
                 .on('drag', function (event) {
+                    setIsMouseMoveCrosshair(false);
+                    setIsCrosshairActive('none');
                     setIsLineDrag(true);
 
                     newLimitValue = scaleData?.yScale.invert(
@@ -3274,16 +3270,11 @@ export default function Chart(props: propsIF) {
         location,
         scaleData,
         isAdvancedModeActive,
-        isDrag,
         ranges,
         limit,
         minPrice,
         maxPrice,
     ]);
-
-    useEffect(() => {
-        setIsDrag(false);
-    }, [parsedChartData]);
 
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
@@ -3363,6 +3354,8 @@ export default function Chart(props: propsIF) {
         sellOrderStyle,
         checkLimitOrder,
         location,
+        d3CanvasCrHorizontal,
+        d3CanvasCrVertical,
     ]);
 
     function createRectLabel(
@@ -3593,7 +3586,11 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
+                if (
+                    d3
+                        .select(d3CanvasCrHorizontal.current)
+                        .style('visibility') == 'visible'
+                ) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
@@ -3689,8 +3686,8 @@ export default function Chart(props: propsIF) {
             context.beginPath();
             if (
                 dateCrosshair &&
-                isMouseMoveCrosshair &&
-                isCrosshairActive !== 'none'
+                d3.select(d3CanvasCrVertical.current).style('visibility') ==
+                    'visible'
             ) {
                 context.fillText(
                     dateCrosshair,
@@ -6439,7 +6436,6 @@ export default function Chart(props: propsIF) {
 
                 d3.select(d3Container.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
-
                     setIsMouseMoveCrosshair(false);
 
                     mouseOutFuncForLiq();
