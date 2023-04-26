@@ -527,7 +527,10 @@ export default function Chart(props: propsIF) {
                 )[0].value = maxPrice;
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
-                )[0].value = simpleRangeWidth === 100 ? 0 : minPrice;
+                )[0].value =
+                    !isAdvancedModeActive && simpleRangeWidth === 100
+                        ? 0
+                        : minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
                 scaleWithButtons(minPrice, maxPrice);
@@ -537,7 +540,7 @@ export default function Chart(props: propsIF) {
 
             setTriangleRangeValues(maxPrice, minPrice);
         }
-    }, [minPrice, maxPrice]);
+    }, [minPrice, maxPrice, isAdvancedModeActive]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
