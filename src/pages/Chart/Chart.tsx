@@ -2704,6 +2704,8 @@ export default function Chart(props: propsIF) {
                         'none',
                     );
 
+                    d3.select(d3Yaxis.current).style('cursor', 'none');
+
                     const advancedValue = scaleData?.yScale.invert(
                         event.sourceEvent.clientY - rectRange.top,
                     );
@@ -3085,6 +3087,8 @@ export default function Chart(props: propsIF) {
                         'default',
                     );
 
+                    d3.select(d3Yaxis.current).style('cursor', 'default');
+
                     setghostLineValuesRange([]);
 
                     setIsCrosshairActive('none');
@@ -3099,6 +3103,8 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'none',
                     );
+
+                    d3.select(d3Yaxis.current).style('cursor', 'none');
 
                     oldLimitValue = limit[0].value;
                 })
@@ -3255,6 +3261,8 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'default',
                     );
+
+                    d3.select(d3Yaxis.current).style('cursor', 'default');
 
                     setIsMouseMoveCrosshair(false);
                     setIsCrosshairActive('none');
