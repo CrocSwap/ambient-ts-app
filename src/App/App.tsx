@@ -809,36 +809,6 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
-    // Fetch liquidity every minute
-    const fetchLiquidity = async () => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        cachedLiquidityQuery(
-            chainData.chainId,
-            baseTokenAddress.toLowerCase(),
-            quoteTokenAddress.toLowerCase(),
-            chainData.poolIndex,
-            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-        )
-            .then((jsonData) => {
-                dispatch(setLiquidity(jsonData));
-            })
-            .catch(console.error);
-    };
-
-    // Runs nyquist of our 1 minute caching function.
-    useEffect(() => {
-        const id = setInterval(() => {
-            fetchLiquidity();
-        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
-        return () => clearInterval(id);
-    }, []);
-
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
         const tokenAddress = token.address;
@@ -918,6 +888,54 @@ export default function App() {
             ),
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
+
+    // Fetch liquidity every minute
+    const fetchLiquidity = async () => {
+        console.log({
+            baseTokenAddress,
+            quoteTokenAddress,
+            chainData,
+            lastBlockNumber,
+        });
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+        cachedLiquidityQuery(
+            chainData.chainId,
+            baseTokenAddress.toLowerCase(),
+            quoteTokenAddress.toLowerCase(),
+            chainData.poolIndex,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
+        )
+            .then((jsonData) => {
+                dispatch(setLiquidity(jsonData));
+            })
+            .catch(console.error);
+    };
+
+    // Runs nyquist of our 1 minute caching function.
+    useEffect(() => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
+    }, [
+        baseTokenAddress === '',
+        quoteTokenAddress === '',
+        chainData === undefined,
+        lastBlockNumber === 0,
+    ]);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -1181,15 +1199,12 @@ export default function App() {
 
                     // retrieve pool liquidity
 
-                    // const poolLiquidityCacheEndpoint =
-                    //     httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
-
                     cachedLiquidityQuery(
                         chainData.chainId,
                         sortedTokens[0].toLowerCase(),
                         sortedTokens[1].toLowerCase(),
                         chainData.poolIndex,
-                        lastBlockNumber,
+                        Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
                     )
                         .then((jsonData) => {
                             dispatch(setLiquidity(jsonData));
