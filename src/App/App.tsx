@@ -329,14 +329,8 @@ export default function App() {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
-        //    onComet,
-        //    onCupid,
-        //    onDonner,
-        //    onBlitzen,
         timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
