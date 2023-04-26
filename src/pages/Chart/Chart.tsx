@@ -366,7 +366,7 @@ export default function Chart(props: propsIF) {
     const [boundaries, setBoundaries] = useState<any>();
 
     // Rules
-    const [dragControl, setDragControl] = useState(false);
+    const [isDrag, setIsDrag] = useState(false);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
 
@@ -3274,7 +3274,7 @@ export default function Chart(props: propsIF) {
         location,
         scaleData,
         isAdvancedModeActive,
-        dragControl,
+        isDrag,
         ranges,
         limit,
         minPrice,
@@ -3282,7 +3282,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setDragControl(false);
+        setIsDrag(false);
     }, [parsedChartData]);
 
     useEffect(() => {
@@ -6223,21 +6223,22 @@ export default function Chart(props: propsIF) {
     const setCrossHairLocation = (event: any, showHr = true) => {
         if (snap(parsedChartData?.chartData, event)[0] !== undefined) {
             crosshairData[0] = snap(parsedChartData?.chartData, event)[0];
-            if (isCrosshairActive !== 'none') {
-                setIsMouseMoveCrosshair(showHr);
-            }
-            setCrosshairData([
-                {
-                    x: crosshairData[0].x,
-                    y: !showHr
-                        ? 0
-                        : Number(
-                              formatAmountChartData(
-                                  scaleData?.yScale.invert(event.layerY),
+            if (!isLineDrag) {
+                setIsMouseMoveCrosshair(true);
+
+                setCrosshairData([
+                    {
+                        x: crosshairData[0].x,
+                        y: !showHr
+                            ? 0
+                            : Number(
+                                  formatAmountChartData(
+                                      scaleData?.yScale.invert(event.layerY),
+                                  ),
                               ),
-                          ),
-                },
-            ]);
+                    },
+                ]);
+            }
 
             render();
         }
@@ -6483,7 +6484,9 @@ export default function Chart(props: propsIF) {
                 });
 
                 const mouseEnterCanvas = () => {
-                    setIsCrosshairActive('chart');
+                    if (!isLineDrag) {
+                        setIsCrosshairActive('chart');
+                    }
 
                     props.setShowTooltip(true);
                 };
@@ -6518,6 +6521,7 @@ export default function Chart(props: propsIF) {
             liquidityScale,
             liquidityDepthScale,
             isCrosshairActive,
+            isLineDrag,
         ],
     );
 
