@@ -397,8 +397,11 @@ export default function Chart(props: propsIF) {
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
+    const [lastCrDataTooltip, setLastCrDataTooltip] = useState<any>();
     const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
     const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
+    const [isCrDataToolTipActive, setIsCrDataToolTipActive] =
+        useState<boolean>(false);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
@@ -419,8 +422,6 @@ export default function Chart(props: propsIF) {
     const [limitLine, setLimitLine] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [triangle, setTriangle] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [lastCrData, setLastCrData] = useState<any>();
 
     // Line Joins
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1592,31 +1593,6 @@ export default function Chart(props: propsIF) {
                                         scaleData?.yScale.domain(domain);
                                     }
 
-                                    const topPlacement =
-                                        event.sourceEvent.y -
-                                        80 -
-                                        (event.sourceEvent.offsetY -
-                                            scaleData?.yScale(
-                                                poolPriceDisplay,
-                                            )) /
-                                            2;
-
-                                    liqTooltip
-                                        .style(
-                                            'top',
-                                            topPlacement > 500
-                                                ? 500
-                                                : (topPlacement < 115
-                                                      ? 115
-                                                      : topPlacement) + 'px',
-                                        )
-                                        .style(
-                                            'left',
-                                            event.sourceEvent.offsetX -
-                                                80 +
-                                                'px',
-                                        );
-
                                     if (isAdvancedModeActive && liquidityData) {
                                         const liqAllBidPrices =
                                             liquidityData?.liqBidData.map(
@@ -1643,6 +1619,8 @@ export default function Chart(props: propsIF) {
                                 renderCanvas();
 
                                 setZoomAndYdragControl(event);
+
+                                relocateTooltip();
                             }
                         }
 
@@ -3804,25 +3782,6 @@ export default function Chart(props: propsIF) {
                     context.fillStyle = 'rgba(235, 235, 255)';
                 });
 
-            const lastCrData = d3fc
-                .seriesCanvasPoint()
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .crossValue((d: any) => {
-                    return new Date(d.time * 1000);
-                })
-                .mainValue(scaleData?.yScale.domain()[0])
-                .size(150)
-                .type(d3.symbolCircle)
-                .decorate((context: any) => {
-                    context.strokeStyle = 'rgba(235, 235, 255)';
-                    context.fillStyle = 'rgba(235, 235, 255)';
-                });
-
-            setLastCrData(() => {
-                return lastCrData;
-            });
-
             setTriangle(() => {
                 return triangle;
             });
@@ -4554,6 +4513,23 @@ export default function Chart(props: propsIF) {
             setCrDataIndicator(() => {
                 return crDataIndicator;
             });
+
+            if (
+                d3
+                    .select(d3Container.current)
+                    .select('.lastCrDataTooltip')
+                    .node() === null
+            ) {
+                const lastCrDataTooltip = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'lastCrDataTooltip')
+                    .style('visibility', 'hidden');
+
+                setLastCrDataTooltip(() => {
+                    return lastCrDataTooltip;
+                });
+            }
         }
     }, [scaleData]);
 
@@ -5798,6 +5774,7 @@ export default function Chart(props: propsIF) {
         selectedDate,
         showSidebar,
         liqMode,
+        isCrDataToolTipActive,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -6336,10 +6313,53 @@ export default function Chart(props: propsIF) {
         if (crDataIndicator) {
             d3.select(d3CanvasCrIndicator.current).style(
                 'visibility',
-                isCrDataIndActive ? 'visible' : 'hidden',
+                isCrDataIndActive || isCrDataToolTipActive
+                    ? 'visible'
+                    : 'hidden',
             );
         }
-    }, [isCrDataIndActive, crDataIndicator]);
+    }, [isCrDataIndActive, crDataIndicator, isCrDataToolTipActive]);
+
+    useEffect(() => {
+        if (lastCrDataTooltip && scaleData) {
+            lastCrDataTooltip.html('<p> 🐊 End of Crocswap Data </p>');
+
+            lastCrDataTooltip.style(
+                'visibility',
+                isCrDataToolTipActive ? 'visible' : 'hidden',
+            );
+
+            relocateTooltip();
+
+            d3.select(d3CanvasCrIndicator.current).style(
+                'visibility',
+                isCrDataIndActive || isCrDataToolTipActive
+                    ? 'visible'
+                    : 'hidden',
+            );
+        }
+    }, [isCrDataToolTipActive, lastCrDataTooltip, isCrDataIndActive]);
+
+    const relocateTooltip = () => {
+        if (lastCrDataTooltip) {
+            const width = lastCrDataTooltip.style('width').split('p')[0] / 2;
+            const height = lastCrDataTooltip.style('height').split('p')[0];
+
+            lastCrDataTooltip
+                .style(
+                    'top',
+                    scaleData.yScale(scaleData.yScale.domain()[0]) +
+                        height * 2 +
+                        'px',
+                )
+                .style(
+                    'left',
+                    scaleData.xScale(parsedChartData?.lastCrDate) -
+                        width +
+                        'px',
+                );
+        }
+    };
 
     // Draw Chart
     const drawChart = useCallback(
@@ -6533,6 +6553,28 @@ export default function Chart(props: propsIF) {
                     setIsCrosshairActive('none');
                 });
 
+                d3.select(d3Xaxis.current).on('click', (event: any) => {
+                    if (
+                        !isCrDataToolTipActive &&
+                        parsedChartData &&
+                        scaleData &&
+                        scaleData.xScale(
+                            scaleData.xScale.invert(event.layerX),
+                        ) >
+                            scaleData.xScale(parsedChartData.lastCrDate) - 15 &&
+                        scaleData.xScale(
+                            scaleData.xScale.invert(event.layerX),
+                        ) <
+                            scaleData.xScale(parsedChartData.lastCrDate) + 15 &&
+                        scaleData.xScale.invert(event.layerX) !==
+                            parsedChartData.lastCrDate
+                    ) {
+                        setIsCrDataToolTipActive(true);
+                    } else {
+                        setIsCrDataToolTipActive(false);
+                    }
+                });
+
                 d3.select(d3Xaxis.current).on(
                     'measure.range',
                     function (event: any) {
@@ -6632,6 +6674,7 @@ export default function Chart(props: propsIF) {
             liqMode,
             liquidityScale,
             liquidityDepthScale,
+            isCrDataToolTipActive,
         ],
     );
 
