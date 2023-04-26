@@ -11,17 +11,17 @@ export default function Footer() {
         {
             title: 'Terms of Service',
             content: 'Our rules for using the platform',
-            link: '',
+            link: '/tos',
         },
         {
             title: 'Privacy Policy',
             content: 'View our policies around data',
-            link: '',
+            link: '/privacy',
         },
         {
             title: 'Docs',
             content: 'View our documentation',
-            link: '',
+            link: 'https://crocswap.gitbook.io/crocswap-docs/',
         },
 
         {
@@ -31,7 +31,7 @@ export default function Footer() {
                 </>
             ),
             content: 'View our smart contracts, SDK, and more',
-            link: '',
+            link: 'https://github.com/CrocSwap',
         },
         {
             title: (
@@ -40,7 +40,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Keep up with the latest on twitter',
-            link: '',
+            link: 'https://twitter.com/crocswap',
         },
         {
             title: (
@@ -49,7 +49,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Join the community ',
-            link: '',
+            link: 'https://discord.com/invite/crocswap',
         },
         {
             title: (
@@ -58,7 +58,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Read the latest from our team on Medium',
-            link: '',
+            link: 'https://crocswap.medium.com/',
         },
     ];
 
