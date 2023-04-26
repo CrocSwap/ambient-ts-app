@@ -3640,7 +3640,7 @@ export default function Chart(props: propsIF) {
                         isMouseMoveCrosshair &&
                         xScale(d) > LastCrDate - _width / 2 &&
                         xScale(d) < LastCrDate + _width / 2 &&
-                        d !== new Date(1682341200 * 1000)
+                        d !== parsedChartData?.lastCrDate
                     ) {
                         context.filter = ' blur(7px)';
                     }
@@ -3687,7 +3687,15 @@ export default function Chart(props: propsIF) {
                 );
             }
 
-            context.fillText('🐊', LastCrDate, Y + tickSize);
+            if (
+                !(
+                    LastCrDate > xScale(crosshairData[0].x) - _width &&
+                    LastCrDate < xScale(crosshairData[0].x) + _width
+                ) &&
+                LastCrDate !== crosshairData[0].x
+            ) {
+                context.fillText('🐊', LastCrDate, Y + tickSize);
+            }
 
             context.restore();
         });
