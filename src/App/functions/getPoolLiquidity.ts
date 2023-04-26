@@ -1,7 +1,7 @@
 import { IS_LOCAL_ENV } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolLiquidityCacheEndpoint =
+export const poolLiquidityCacheEndpoint =
     'https://809821320828123.de:5000/pool_liquidity_distribution?';
 
 const getPoolLiquidity = async (
