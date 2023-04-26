@@ -153,7 +153,10 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
-import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
+import {
+    memoizePoolLiquidity,
+    poolLiquidityCacheEndpoint,
+} from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
@@ -177,6 +180,7 @@ import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
+import Accessibility from '../pages/Accessibility/Accessibility';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -275,6 +279,8 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+
     const ticksInParams =
         location.pathname.includes('lowTick') &&
         location.pathname.includes('highTick');
@@ -328,10 +334,8 @@ export default function App() {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
         timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
@@ -809,36 +813,6 @@ export default function App() {
     );
     // check for token balances every eight blocks
 
-    // Fetch liquidity every minute
-    const fetchLiquidity = async () => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        cachedLiquidityQuery(
-            chainData.chainId,
-            baseTokenAddress.toLowerCase(),
-            quoteTokenAddress.toLowerCase(),
-            chainData.poolIndex,
-            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-        )
-            .then((jsonData) => {
-                dispatch(setLiquidity(jsonData));
-            })
-            .catch(console.error);
-    };
-
-    // Runs nyquist of our 1 minute caching function.
-    useEffect(() => {
-        const id = setInterval(() => {
-            fetchLiquidity();
-        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
-        return () => clearInterval(id);
-    }, []);
-
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
         const tokenAddress = token.address;
@@ -918,6 +892,105 @@ export default function App() {
             ),
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
+
+    // Fetch liquidity every minute
+    const fetchLiquidity = async () => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+
+        cachedLiquidityQuery(
+            chainData.chainId,
+            baseTokenAddress.toLowerCase(),
+            quoteTokenAddress.toLowerCase(),
+            chainData.poolIndex,
+            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
+        )
+            .then((jsonData) => {
+                dispatch(setLiquidity(jsonData));
+            })
+            .catch(console.error);
+    };
+
+    // Runs nyquist of our 1 minute caching function.
+    useEffect(() => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+        const id = setInterval(() => {
+            fetchLiquidity();
+        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        return () => clearInterval(id);
+    }, [
+        baseTokenAddress === '',
+        quoteTokenAddress === '',
+        chainData === undefined,
+        lastBlockNumber === 0,
+    ]);
+
+    useEffect(() => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+        const timer1 = setTimeout(() => {
+            fetch(
+                poolLiquidityCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainData.chainId,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: chainData.poolIndex.toString(),
+                        concise: 'true',
+                        latestTick: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    return json.data;
+                })
+                .then((jsonData) => {
+                    dispatch(setLiquidity(jsonData));
+                })
+                .catch(console.error);
+        }, 2000);
+        const timer2 = setTimeout(() => {
+            fetch(
+                poolLiquidityCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainData.chainId,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: chainData.poolIndex.toString(),
+                        concise: 'true',
+                        latestTick: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    return json.data;
+                })
+                .then((jsonData) => {
+                    dispatch(setLiquidity(jsonData));
+                })
+                .catch(console.error);
+        }, 15000);
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
+    }, [sessionReceipts.length]);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -1181,15 +1254,12 @@ export default function App() {
 
                     // retrieve pool liquidity
 
-                    // const poolLiquidityCacheEndpoint =
-                    //     httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
-
                     cachedLiquidityQuery(
                         chainData.chainId,
                         sortedTokens[0].toLowerCase(),
                         sortedTokens[1].toLowerCase(),
                         chainData.poolIndex,
-                        lastBlockNumber,
+                        Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
                     )
                         .then((jsonData) => {
                             dispatch(setLiquidity(jsonData));
@@ -2047,8 +2117,6 @@ export default function App() {
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         number | undefined
     >();
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
         IS_LOCAL_ENV &&
@@ -3429,6 +3497,10 @@ export default function App() {
                                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
+                        />
+                        <Route
+                            path='accessibility'
+                            element={<Accessibility />}
                         />
                         <Route path='trade' element={<Trade {...tradeProps} />}>
                             <Route

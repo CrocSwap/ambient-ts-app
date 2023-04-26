@@ -42,6 +42,13 @@ const client = createClient({
                 shimDisconnect: true,
             },
         }),
+        new InjectedConnector({
+            chains,
+            options: {
+                name: 'Injected',
+                shimDisconnect: true,
+            },
+        }),
     ],
     provider,
     webSocketProvider,
