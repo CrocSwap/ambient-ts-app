@@ -77,7 +77,11 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                     <div className={styles.settings_container}>
                         <button
                             onClick={() => {
-                                setLatest(true);
+                                if (rescale) {
+                                    setReset(true);
+                                } else {
+                                    setLatest(true);
+                                }
                             }}
                             className={styles.non_active_selected_button}
                             aria-label='Show latest.'
