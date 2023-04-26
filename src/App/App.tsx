@@ -946,7 +946,6 @@ export default function App() {
         )
             return;
         const timer1 = setTimeout(() => {
-            console.log('fetching based on session receipt');
             fetch(
                 poolLiquidityCacheEndpoint +
                     new URLSearchParams({
@@ -968,7 +967,6 @@ export default function App() {
                 .catch(console.error);
         }, 2000);
         const timer2 = setTimeout(() => {
-            console.log('fetching based on session receipt');
             fetch(
                 poolLiquidityCacheEndpoint +
                     new URLSearchParams({
