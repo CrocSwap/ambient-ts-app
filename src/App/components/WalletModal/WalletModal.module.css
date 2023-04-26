@@ -20,7 +20,7 @@
 .email_button {
     cursor: pointer;
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     outline: none;
     border: none;
     display: flex;

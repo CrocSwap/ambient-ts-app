@@ -23,7 +23,7 @@
 
     border: double 1px transparent;
 
-    background-image: linear-gradient(var(--dark3), var(--dark3)), var(--title-gradient);
+    background-image: linear-gradient(var(--dark2), var(--dark2)), var(--title-gradient);
     background-origin: border-box;
     background-clip: content-box, border-box;
 } */

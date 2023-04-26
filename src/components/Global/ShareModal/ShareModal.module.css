@@ -72,7 +72,7 @@
 
 .social_link_container:hover , .social_link_container:focus-visible{
     color: var(--text-grey-white);
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .social_link_container:focus-visible svg{

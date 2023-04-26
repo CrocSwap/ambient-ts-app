@@ -52,7 +52,7 @@
     background: transparent;
     text-transform: capitalize;
     /* background: var(--text-highlight); */
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
 
     border-radius: 4px;
@@ -65,7 +65,7 @@
 
 .extra_info_container {
     padding: 8px;
-    background: var(--dark3);
+    background: var(--dark2);
     margin: 8px;
 }
 .loading_animation {

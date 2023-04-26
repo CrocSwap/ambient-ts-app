@@ -1,6 +1,6 @@
 .active_position_style,
 .active_transaction_style {
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
 
     background-image: linear-gradient(
         to right,
@@ -70,7 +70,7 @@
     /* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); */
 
     background: var(--dark1);
-    border-bottom: 1px solid var(--dark3);
+    border-bottom: 1px solid var(--dark2);
 }
 
 .header li {
@@ -227,14 +227,14 @@
 }
 
 .view_wallet_link{
-    background: var(--dark3);
+    background: var(--dark2);
     width: 100%;
     border: none;
     outline: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
     height: 23px;
@@ -265,7 +265,7 @@
 
 
     margin-left: -60px;
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
     padding: 12px;
     border-radius: 4px;
@@ -281,7 +281,7 @@
 .wallet_tooltip_div{
 
     margin-right: -80px;
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
     padding: 12px;
     border-radius: 4px;
@@ -309,7 +309,7 @@
 .order_tooltip{
 
  margin-left: -70px;
- background: var(--dark3);
+ background: var(--dark2);
  padding: 12px;
  border-radius: 4px;
  cursor: pointer;

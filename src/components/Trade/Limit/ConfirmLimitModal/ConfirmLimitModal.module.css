@@ -73,7 +73,7 @@
 
 .currency_row_container {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     display: grid;
     grid-template-columns: auto 140px;
     align-items: center;
@@ -111,7 +111,7 @@
 
 .limit_row_container {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     justify-content: center;
     align-items: center;

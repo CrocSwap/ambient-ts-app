@@ -87,19 +87,13 @@
 }
 
 .mono_space{
-    width: 350px;
-    background: var(--dark3);
     color: var(--text-grey-white);
     border-radius: 4px;
-    padding: 12px;
-  
+    padding: 8px;
 }
 
 .mono_space p{
     font-family: monospace !important;
-    white-space: nowrap;
-
- 
 }
 .mono_space svg{
     cursor: pointer;

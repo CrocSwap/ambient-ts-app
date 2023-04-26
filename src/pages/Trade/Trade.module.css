@@ -1,6 +1,6 @@
 .main_layout {
     transition: all var(--animation-speed) ease-in-out;
-    border-top: 1px solid var(--dark3);
+    border-top: 1px solid var(--dark2);
 }
 
 .middle_col,
@@ -29,7 +29,7 @@
     align-items: center;
     gap: 0.5rem;
 
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     border-radius: var(--border-radius);
 }
 
@@ -39,7 +39,7 @@
     color: var(--text-grey-white);
     width: 116.67px;
     height: 25px;
-    background: var(--dark3);
+    background: var(--dark2);
 
     border-radius: var(--border-radius);
 }
@@ -283,7 +283,7 @@
 }
 
 .mobile_trades_dropdown .active_mobile_trade_dropdown {
-    background: var(--dark3);
+    background: var(--dark2);
     outline: none;
     border: none;
     color: var(--text-grey-light);
@@ -413,7 +413,7 @@
         height: 100%;
 
         padding: 0.5rem 0rem 0rem 0.5rem;
-        background: var(--dark3);
+        background: var(--dark2);
 
         display: grid;
         grid-template-rows: auto 300px;
@@ -471,7 +471,7 @@
         top: 56px;
         z-index: 10;
 
-        /* background-image: radial-gradient(circle,var(--dark3), var(--dark1) ); 
+        /* background-image: radial-gradient(circle,var(--dark2), var(--dark1) ); 
         background-image: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );  */
         background: var(--dark2);
         /* background:radial-gradient(circle at 3% 25%, rgb(1, 28, 56) 0%, rgba(4, 12, 24, 1) 25%); */

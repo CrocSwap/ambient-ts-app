@@ -38,7 +38,7 @@
 }
 
 .stat_card_container {
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     flex-direction: column;
     justify-content: center;
