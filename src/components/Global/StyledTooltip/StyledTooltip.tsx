@@ -16,7 +16,7 @@ export const DefaultTooltip = withStyles({
 export const TextOnlyTooltip = withStyles({
     tooltip: {
         color: '#ffffff',
-        backgroundColor: 'var(--dark3)',
+        backgroundColor: 'transparent',
         zIndex: 999,
     },
 })(Tooltip);

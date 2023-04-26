@@ -246,7 +246,10 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         );
 
     const tokenSymbols = (
-        <div className={styles.mono_space} style={{ cursor: 'default' }}>
+        <div
+            className={styles.mono_space_tooltip}
+            style={{ cursor: 'default' }}
+        >
             {baseTokenTooltipContentOrNull}
             <p>
                 {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
