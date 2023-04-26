@@ -366,7 +366,6 @@ export default function Chart(props: propsIF) {
     const [boundaries, setBoundaries] = useState<any>();
 
     // Rules
-    const [dragControl, setDragControl] = useState(false);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
 
@@ -2697,6 +2696,9 @@ export default function Chart(props: propsIF) {
             const dragRange = d3
                 .drag()
                 .on('start', (event) => {
+                    setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
+
                     d3.select(d3CanvasRangeLine.current).style(
                         'cursor',
                         'none',
@@ -2724,11 +2726,10 @@ export default function Chart(props: propsIF) {
                                 ? 'Min'
                                 : 'Max';
                     }
-
-                    setIsCrosshairActive('none');
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
+                    setIsCrosshairActive('none');
                     let dragedValue =
                         scaleData?.yScale.invert(
                             event.sourceEvent.clientY - rectRange.top,
@@ -3091,6 +3092,7 @@ export default function Chart(props: propsIF) {
                     setghostLineValuesRange([]);
 
                     setIsCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
                 });
 
             let oldLimitValue: number | undefined = undefined;
@@ -3105,9 +3107,10 @@ export default function Chart(props: propsIF) {
                     d3.select(d3Yaxis.current).style('cursor', 'none');
 
                     oldLimitValue = limit[0].value;
-                    setIsCrosshairActive('none');
                 })
                 .on('drag', function (event) {
+                    setIsMouseMoveCrosshair(false);
+                    setIsCrosshairActive('none');
                     setIsLineDrag(true);
 
                     newLimitValue = scaleData?.yScale.invert(
@@ -3261,6 +3264,7 @@ export default function Chart(props: propsIF) {
 
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
+                    setIsMouseMoveCrosshair(false);
                     setIsCrosshairActive('none');
                 });
 
@@ -3277,16 +3281,11 @@ export default function Chart(props: propsIF) {
         location,
         scaleData,
         isAdvancedModeActive,
-        dragControl,
         ranges,
         limit,
         minPrice,
         maxPrice,
     ]);
-
-    useEffect(() => {
-        setDragControl(false);
-    }, [parsedChartData]);
 
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
@@ -3366,6 +3365,8 @@ export default function Chart(props: propsIF) {
         sellOrderStyle,
         checkLimitOrder,
         location,
+        d3CanvasCrHorizontal,
+        d3CanvasCrVertical,
     ]);
 
     function createRectLabel(
@@ -3588,7 +3589,11 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
+                if (
+                    d3
+                        .select(d3CanvasCrHorizontal.current)
+                        .style('visibility') == 'visible'
+                ) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
@@ -3684,8 +3689,8 @@ export default function Chart(props: propsIF) {
             context.beginPath();
             if (
                 dateCrosshair &&
-                isMouseMoveCrosshair &&
-                isCrosshairActive !== 'none'
+                d3.select(d3CanvasCrVertical.current).style('visibility') ==
+                    'visible'
             ) {
                 context.fillText(
                     dateCrosshair,
@@ -6218,19 +6223,22 @@ export default function Chart(props: propsIF) {
     const setCrossHairLocation = (event: any, showHr = true) => {
         if (snap(parsedChartData?.chartData, event)[0] !== undefined) {
             crosshairData[0] = snap(parsedChartData?.chartData, event)[0];
-            setIsMouseMoveCrosshair(showHr);
-            setCrosshairData([
-                {
-                    x: crosshairData[0].x,
-                    y: !showHr
-                        ? 0
-                        : Number(
-                              formatAmountChartData(
-                                  scaleData?.yScale.invert(event.layerY),
+            if (!isLineDrag) {
+                setIsMouseMoveCrosshair(true);
+
+                setCrosshairData([
+                    {
+                        x: crosshairData[0].x,
+                        y: !showHr
+                            ? 0
+                            : Number(
+                                  formatAmountChartData(
+                                      scaleData?.yScale.invert(event.layerY),
+                                  ),
                               ),
-                          ),
-                },
-            ]);
+                    },
+                ]);
+            }
 
             render();
         }
@@ -6432,7 +6440,6 @@ export default function Chart(props: propsIF) {
 
                 d3.select(d3Container.current).on('mouseleave', () => {
                     setIsCrosshairActive('none');
-
                     setIsMouseMoveCrosshair(false);
 
                     mouseOutFuncForLiq();
@@ -6477,7 +6484,9 @@ export default function Chart(props: propsIF) {
                 });
 
                 const mouseEnterCanvas = () => {
-                    setIsCrosshairActive('chart');
+                    if (!isLineDrag) {
+                        setIsCrosshairActive('chart');
+                    }
 
                     props.setShowTooltip(true);
                 };
@@ -6511,6 +6520,8 @@ export default function Chart(props: propsIF) {
             liqMode,
             liquidityScale,
             liquidityDepthScale,
+            isCrosshairActive,
+            isLineDrag,
         ],
     );
 
