@@ -175,7 +175,7 @@ interface propsIF {
 }
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
-    const ratio = window.devicePixelRatio;
+    const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
     const context = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (canvas !== null) {
         const width = canvas.width;
