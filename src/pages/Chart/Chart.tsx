@@ -6486,6 +6486,7 @@ export default function Chart(props: propsIF) {
                 const mouseEnterCanvas = () => {
                     if (!isLineDrag) {
                         setIsCrosshairActive('chart');
+                        setIsMouseMoveCrosshair(true);
                     }
 
                     props.setShowTooltip(true);
