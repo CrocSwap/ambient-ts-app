@@ -153,7 +153,10 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
-import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
+import {
+    memoizePoolLiquidity,
+    poolLiquidityCacheEndpoint,
+} from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
@@ -274,6 +277,8 @@ export default function App() {
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     const ticksInParams =
         location.pathname.includes('lowTick') &&
@@ -891,12 +896,6 @@ export default function App() {
 
     // Fetch liquidity every minute
     const fetchLiquidity = async () => {
-        console.log({
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData,
-            lastBlockNumber,
-        });
         if (
             !baseTokenAddress ||
             !quoteTokenAddress ||
@@ -904,6 +903,7 @@ export default function App() {
             !lastBlockNumber
         )
             return;
+
         cachedLiquidityQuery(
             chainData.chainId,
             baseTokenAddress.toLowerCase(),
@@ -945,20 +945,54 @@ export default function App() {
             !lastBlockNumber
         )
             return;
-        const timer = setTimeout(() => {
-            cachedLiquidityQuery(
-                chainData.chainId,
-                baseTokenAddress.toLowerCase(),
-                quoteTokenAddress.toLowerCase(),
-                chainData.poolIndex,
-                Math.floor(Date.now()),
+        const timer1 = setTimeout(() => {
+            console.log('fetching based on session receipt');
+            fetch(
+                poolLiquidityCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainData.chainId,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: chainData.poolIndex.toString(),
+                        concise: 'true',
+                        latestTick: 'true',
+                    }),
             )
+                .then((response) => response.json())
+                .then((json) => {
+                    return json.data;
+                })
                 .then((jsonData) => {
                     dispatch(setLiquidity(jsonData));
                 })
                 .catch(console.error);
         }, 2000);
-        return () => clearTimeout(timer);
+        const timer2 = setTimeout(() => {
+            console.log('fetching based on session receipt');
+            fetch(
+                poolLiquidityCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainData.chainId,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: chainData.poolIndex.toString(),
+                        concise: 'true',
+                        latestTick: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    return json.data;
+                })
+                .then((jsonData) => {
+                    dispatch(setLiquidity(jsonData));
+                })
+                .catch(console.error);
+        }, 15000);
+        return () => {
+            clearTimeout(timer1);
+            clearTimeout(timer2);
+        };
     }, [sessionReceipts.length]);
 
     // value for whether a pool exists on current chain and token pair
@@ -2086,8 +2120,6 @@ export default function App() {
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         number | undefined
     >();
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
         IS_LOCAL_ENV &&
