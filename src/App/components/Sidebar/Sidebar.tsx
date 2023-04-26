@@ -1,8 +1,16 @@
 // START: Import React and Dongles
-import { SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
+import {
+    SetStateAction,
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useMemo,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
+import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -22,12 +30,9 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import {
-    LimitOrderIF,
-    PositionIF,
     TokenIF,
     TokenPairIF,
     TempPoolIF,
-    TransactionIF,
 } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
@@ -45,6 +50,7 @@ import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -79,9 +85,6 @@ interface propsIF {
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    positionsByUser: PositionIF[];
-    txsByUser: TransactionIF[];
-    limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
 }
@@ -111,22 +114,53 @@ export default function Sidebar(props: propsIF) {
         tokenPair,
         recentPools,
         isConnected,
-        positionsByUser,
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        txsByUser,
-        limitsByUser,
         ackTokens,
         topPools,
     } = props;
 
     const location = useLocation();
 
-    const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
-    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const positionsByUser = useMemo(
+        () =>
+            graphData.positionsByUser.positions.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.positionsByUser.positions), chainId],
+    );
+
+    const txsByUser = useMemo(
+        () =>
+            graphData.changesByUser.changes.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.changesByUser.changes), chainId],
+    );
+
+    const limitsByUser = useMemo(
+        () =>
+            graphData.limitOrdersByUser.limitOrders.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.limitOrdersByUser.limitOrders), chainId],
+    );
+    const mostRecentTxs = useMemo(
+        () => txsByUser.slice(0, 4),
+        [sum(txsByUser)],
+    );
+    const mostRecentPositions = useMemo(
+        () => positionsByUser.slice(0, 4),
+        [sum(positionsByUser)],
+    );
+    const mostRecentLimitOrders = useMemo(
+        () => limitsByUser.slice(0, 4),
+        [sum(limitsByUser)],
+    );
 
     const recentPoolsData = [
         {
