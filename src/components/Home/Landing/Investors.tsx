@@ -40,10 +40,10 @@ export default function Investors() {
 
     const row4 = (
         <div className={styles.row4}>
-            <img src={yunt} alt='yunt capital' />
-            <img src={susa} alt='susa ' />
-            <img src={quantstamp} alt='quantstamp ' />
-            <img src={hypotenuse} alt='hypotenuse ' />
+            <img src={yunt} alt='yunt capital' width='200px' />
+            <img src={susa} alt='susa ' width='50px' />
+            <img src={quantstamp} alt='quantstamp ' width='200px' />
+            <img src={hypotenuse} alt='hypotenuse ' width='200px' />
         </div>
     );
     const row5 = (
@@ -58,7 +58,7 @@ export default function Investors() {
     );
     const row6 = (
         <div className={styles.row6}>
-            <img src={PreSeed} alt='pre-seed' />
+            <img src={PreSeed} alt='pre-seed' width='80px' />
         </div>
     );
     const row7 = (
