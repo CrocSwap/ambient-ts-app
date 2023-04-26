@@ -937,6 +937,30 @@ export default function App() {
         lastBlockNumber === 0,
     ]);
 
+    useEffect(() => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !chainData ||
+            !lastBlockNumber
+        )
+            return;
+        const timer = setTimeout(() => {
+            cachedLiquidityQuery(
+                chainData.chainId,
+                baseTokenAddress.toLowerCase(),
+                quoteTokenAddress.toLowerCase(),
+                chainData.poolIndex,
+                Math.floor(Date.now()),
+            )
+                .then((jsonData) => {
+                    dispatch(setLiquidity(jsonData));
+                })
+                .catch(console.error);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [sessionReceipts.length]);
+
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
     // ... false => pool does not exist
