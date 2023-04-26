@@ -32,7 +32,6 @@ export async function getNFTs(account: string) {
                 const metadata = nft.metadata;
 
                 if (metadata) {
-                    // const parsedMetadata = JSON.parse(metadata);
                     let imageGatewayURL;
                     const imageUrl = (metadata as unknown as metadata).image;
                     if (

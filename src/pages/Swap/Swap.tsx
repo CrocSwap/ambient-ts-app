@@ -630,6 +630,7 @@ export default function Swap(props: propsIF) {
                 rel='noreferrer'
                 href={`https://telegram.me/share/url?url=${swapLink}`}
                 className={styles.share_icon}
+                aria-label='telegram'
             >
                 Telegram{' '}
             </a>
@@ -638,6 +639,7 @@ export default function Swap(props: propsIF) {
                 rel='noreferrer'
                 href={`https://twitter.com/intent/tweet?text=${swapLink}`}
                 className={styles.share_icon}
+                aria-label='twitter'
             >
                 Twitter{' '}
             </a>
@@ -646,6 +648,7 @@ export default function Swap(props: propsIF) {
                 rel='noreferrer'
                 href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
                 className={styles.share_icon}
+                aria-label='facebook'
             >
                 Facebook{' '}
             </a>
@@ -654,6 +657,7 @@ export default function Swap(props: propsIF) {
                 rel='noreferrer'
                 href=''
                 className={styles.share_icon}
+                aria-label='discord'
             >
                 Discord{' '}
             </a>
@@ -959,6 +963,7 @@ export default function Swap(props: propsIF) {
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
+                                                aria-label={`approve ${tokenA.symbol}`}
                                             >
                                                 {tokenPair.dataTokenA.symbol ||
                                                     tokenPair.dataTokenA
@@ -975,6 +980,7 @@ export default function Swap(props: propsIF) {
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
+                                                aria-label={`approve ${tokenB.symbol}`}
                                             >
                                                 {tokenPair.dataTokenB.symbol ||
                                                     tokenPair.dataTokenB

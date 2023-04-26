@@ -211,17 +211,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         parseData();
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
-    }, [props.candleData]);
-
-    useEffect(() => {
-        if (parsedChartData === undefined) {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'parsing chart data because parsedChartData === undefined',
-                );
-            parseData();
-        }
-    }, [parsedChartData]);
+    }, [sum(props.candleData)]);
 
     // Parse price data
     const parseData = () => {
@@ -671,22 +661,35 @@ export default function TradeCandleStickChart(props: propsIF) {
         IS_LOCAL_ENV &&
             console.debug(
                 'resetting scale for chart because timeframe changed',
+                parsedChartData?.period,
             );
-        setScaleData(() => {
-            return undefined;
-        });
-        setScaleForChart(parsedChartData);
+        if (
+            !(
+                parsedChartData?.chartData?.length &&
+                parsedChartData.chartData.length > 0
+            )
+        ) {
+            setScaleData(() => {
+                return undefined;
+            });
+        } else {
+            setScaleForChart(parsedChartData);
+        }
     }, [
         parsedChartData?.period,
-        parsedChartData && parsedChartData.chartData.length === 0,
+        parsedChartData?.chartData?.length &&
+            parsedChartData.chartData.length > 0,
     ]);
 
     // Liq Scale
     useEffect(() => {
-        setLiquidityScale(() => {
-            return undefined;
-        });
-        setScaleForChartLiquidity(liquidityData);
+        if (liquidityData === undefined) {
+            setLiquidityScale(() => {
+                return undefined;
+            });
+        } else {
+            setScaleForChartLiquidity(liquidityData);
+        }
     }, [
         liquidityData === undefined,
         liquidityData?.liqAskData.length === 0,
