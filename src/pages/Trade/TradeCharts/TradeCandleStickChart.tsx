@@ -211,7 +211,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         parseData();
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
-    }, [sum(props.candleData)]);
+    }, [sum(props.candleData), denominationsInBase]);
 
     // Parse price data
     const parseData = () => {
@@ -829,6 +829,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         }, 500);
         return () => clearTimeout(timer);
     }, [
+        parsedChartData === undefined,
         parsedChartData?.chartData.length,
         poolPriceDisplay,
         poolPriceNonDisplay,
@@ -836,6 +837,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         liquidityScale,
         liquidityDepthScale,
         liquidityData,
+        isLoading,
     ]);
 
     return (
