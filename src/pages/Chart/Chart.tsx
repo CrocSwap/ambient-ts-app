@@ -615,7 +615,7 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             if (
                 border + standardDeviation >=
-                liquidityData?.liqBidData[0].liqPrices
+                liquidityData?.liqBidData[0]?.liqPrices
             ) {
                 for (let index = 0; index < filledTickNumber; index++) {
                     liquidityData?.liqBidData.unshift({
@@ -3689,7 +3689,7 @@ export default function Chart(props: propsIF) {
             context.beginPath();
             if (
                 dateCrosshair &&
-                d3.select(d3CanvasCrVertical.current).style('visibility') ==
+                d3.select(d3CanvasCrVertical?.current).style('visibility') ==
                     'visible'
             ) {
                 context.fillText(
