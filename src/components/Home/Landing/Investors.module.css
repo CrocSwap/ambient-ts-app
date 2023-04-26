@@ -38,7 +38,7 @@ margin: 1rem 0;
 
 
     .content{
-        max-width: 759px;
+        max-width: 1020px;
   
     }
 
@@ -61,6 +61,10 @@ margin: 1rem 0;
   
     .row4{ grid-template-columns: repeat(4, 1fr);}
     .row5{ grid-template-columns: repeat(6, 1fr);}
+.row5 img{
+    width: 120px;
+}
+
     
     /* .row7{ grid-template-columns: 1fr 1fr;} */
 
