@@ -180,6 +180,7 @@ import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
+import Accessibility from '../pages/Accessibility/Accessibility';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -333,10 +334,8 @@ export default function App() {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
         timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
         promptTimeout: 0,
         events: [
@@ -3498,6 +3497,10 @@ export default function App() {
                                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                                 />
                             }
+                        />
+                        <Route
+                            path='accessibility'
+                            element={<Accessibility />}
                         />
                         <Route path='trade' element={<Trade {...tradeProps} />}>
                             <Route
