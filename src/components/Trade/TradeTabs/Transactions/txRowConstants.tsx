@@ -167,7 +167,7 @@ export const txRowConstants = (props: Props) => {
                 <div
                     style={{
                         marginRight: '-80px',
-                        background: 'var(--dark2)',
+                        background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
@@ -322,7 +322,7 @@ export const txRowConstants = (props: Props) => {
                 <p
                     style={{
                         marginLeft: '-70px',
-                        background: 'var(--dark2)',
+                        background: 'var(--dark3)',
                         color: 'var(--text-grey-white)',
                         padding: '12px',
                         borderRadius: '4px',
