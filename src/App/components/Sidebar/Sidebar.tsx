@@ -80,7 +80,6 @@ interface propsIF {
     openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
@@ -109,7 +108,6 @@ export default function Sidebar(props: propsIF) {
         openModalWallet,
         poolList,
         verifyToken,
-        getTokenByAddress,
         tokenPair,
         recentPools,
         isConnected,
@@ -581,7 +579,6 @@ export default function Sidebar(props: propsIF) {
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
                             searchData={searchData}
-                            getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}
@@ -594,7 +591,6 @@ export default function Sidebar(props: propsIF) {
                                 setCurrentTxActiveInTransactions
                             }
                             setIsShowAllEnabled={setIsShowAllEnabled}
-                            ackTokens={ackTokens}
                         />
                     ) : (
                         regularSidebarDisplay
