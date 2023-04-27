@@ -61,6 +61,8 @@ export default function TvlSubChart(props: TvlData) {
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
         useState<any>();
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
+    const [buffer, setBuffer] = useState<any>();
+    const [resize, setResize] = useState<boolean>();
 
     useEffect(() => {
         const yScale = d3.scaleSymlog();
@@ -76,16 +78,28 @@ export default function TvlSubChart(props: TvlData) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
             const minYBoundary = d3.min(filtered, (d: any) => d.value);
 
-            const buffer =
-                Math.abs(Math.log10(maxYBoundary) - Math.log10(minYBoundary)) /
-                5;
+            if (maxYBoundary === minYBoundary) {
+                const domainLog = [
+                    Math.pow(10, Math.log10(maxYBoundary / 2)),
+                    Math.pow(10, Math.log10(maxYBoundary * 2)),
+                ];
 
-            const domainLog = [
-                Math.pow(10, Math.log10(minYBoundary) - buffer),
-                Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
-            ];
+                yScale.domain(domainLog);
+            } else {
+                const buffer =
+                    Math.abs(
+                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
+                    ) / 5;
 
-            yScale.domain(domainLog);
+                setBuffer(() => buffer);
+
+                const domainLog = [
+                    Math.pow(10, Math.log10(minYBoundary) - buffer),
+                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
+                ];
+
+                yScale.domain(domainLog);
+            }
         }
 
         setTvlyScale(() => {
@@ -157,10 +171,21 @@ export default function TvlSubChart(props: TvlData) {
                         Math.log10(maxYBoundary) - Math.log10(minYBoundary),
                     ) / 5;
 
-                const domainLog = [
-                    Math.pow(10, Math.log10(minYBoundary) - buffer),
-                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
-                ];
+                setBuffer(() => buffer);
+
+                const domainLog =
+                    maxYBoundary === minYBoundary
+                        ? [
+                              Math.pow(10, Math.log10(maxYBoundary / 2)),
+                              Math.pow(10, Math.log10(maxYBoundary * 2)),
+                          ]
+                        : [
+                              Math.pow(10, Math.log10(minYBoundary) - buffer),
+                              Math.pow(
+                                  10,
+                                  Math.log10(maxYBoundary) + buffer * 2,
+                              ),
+                          ];
 
                 yAxis
                     .tickValues([
@@ -206,20 +231,58 @@ export default function TvlSubChart(props: TvlData) {
     ]);
 
     useEffect(() => {
-        if (d3CanvasArea) {
-            const ctx = (
-                d3.select(d3CanvasArea.current).select('canvas').node() as any
-            ).getContext('2d');
+        if (d3CanvasArea && tvlyScale) {
+            const canvas = d3
+                .select(d3CanvasArea.current)
+                .select('canvas')
+                .node() as any;
 
-            const tvlGradient = ctx.createLinearGradient(100, 0, 100, 100);
-            tvlGradient.addColorStop(0.9, 'transparent');
-            tvlGradient.addColorStop(0.1, 'rgba(115, 113, 252, 0.7)');
+            if (canvas !== null) {
+                const ctx = canvas.getContext('2d');
 
-            setTvlGradient(() => {
-                return tvlGradient;
-            });
+                const startPoint =
+                    buffer === 0
+                        ? 4
+                        : (Math.log10(tvlyScale.domain()[1]) -
+                              Math.log10(tvlyScale.domain()[0])) /
+                          (buffer * 2);
+
+                const tvlGradient = ctx.createLinearGradient(
+                    0,
+                    0,
+                    0,
+                    canvas.height,
+                );
+                tvlGradient.addColorStop(1, 'transparent');
+                tvlGradient.addColorStop(
+                    1 / (startPoint + 1),
+                    'rgba(115, 113, 252, 0.7)',
+                );
+
+                setTvlGradient(() => {
+                    return tvlGradient;
+                });
+
+                setResize(false);
+
+                renderCanvas();
+            }
         }
-    }, [d3CanvasArea]);
+    }, [d3CanvasArea, tvlyScale, buffer, resize]);
+
+    useEffect(() => {
+        if (d3CanvasArea) {
+            const canvasDiv = d3.select(d3CanvasArea.current) as any;
+
+            const resizeObserver = new ResizeObserver(() => {
+                setResize(true);
+            });
+
+            resizeObserver.observe(canvasDiv.node());
+
+            return () => resizeObserver.unobserve(canvasDiv.node());
+        }
+    }, []);
 
     useEffect(() => {
         if (
