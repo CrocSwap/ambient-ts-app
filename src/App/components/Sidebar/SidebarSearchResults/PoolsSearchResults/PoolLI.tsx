@@ -1,8 +1,7 @@
-import { formatAmountOld } from '../../../../../utils/numbers';
 import styles from '../SidebarSearchResults.module.css';
 import { TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import { useState, useEffect } from 'react';
+import { poolStatsIF, usePoolStats } from './usePoolStats';
 
 interface propsIF {
     pool: TempPoolIF;
@@ -14,32 +13,12 @@ interface propsIF {
 export default function PoolLI(props: propsIF) {
     const { pool, chainId, handleClick, cachedPoolStatsFetch } = props;
 
-    // volume of pool to be displayed in the DOM
-    const [poolVolume, setPoolVolume] = useState<string | undefined>();
-    // TVL of pool to be displayed in the DOM
-    const [poolTvl, setPoolTvl] = useState<string | undefined>();
-
-    // logic to pull current values of volume and TVL for pool
-    // this runs once and does not update after initial load
-    useEffect(() => {
-        (async () => {
-            const poolStatsFresh = await cachedPoolStatsFetch(
-                chainId,
-                pool.base,
-                pool.quote,
-                pool.poolIdx,
-                1,
-            );
-            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
-            const volumeString = volume
-                ? '$' + formatAmountOld(volume)
-                : undefined;
-            setPoolVolume(volumeString);
-            const tvl = poolStatsFresh?.tvl;
-            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
-            setPoolTvl(tvlString);
-        })();
-    }, []);
+    // hook to get volume and TVL for the current pool
+    const poolStats: poolStatsIF = usePoolStats(
+        pool,
+        chainId,
+        cachedPoolStatsFetch,
+    );
 
     return (
         <li
@@ -49,8 +28,8 @@ export default function PoolLI(props: propsIF) {
             <p>
                 {pool.baseSymbol ?? '--'} / {pool.quoteSymbol ?? '--'}
             </p>
-            <p style={{ textAlign: 'center' }}>{poolVolume ?? '--'}</p>
-            <p style={{ textAlign: 'center' }}>{poolTvl ?? '--'}</p>
+            <p style={{ textAlign: 'center' }}>{poolStats.volume ?? '--'}</p>
+            <p style={{ textAlign: 'center' }}>{poolStats.tvl ?? '--'}</p>
         </li>
     );
 }
