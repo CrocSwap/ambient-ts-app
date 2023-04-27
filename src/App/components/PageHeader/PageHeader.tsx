@@ -17,6 +17,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
+import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -303,6 +304,23 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [showNotificationTable, setShowNotificationTable] = useState(false);
+    const [show, handleShow] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 280 && location.pathname === '/') {
+                handleShow(true);
+            } else {
+                handleShow(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     // TODO (#1436): logo padding is problematic in mobile views
     return (
@@ -312,30 +330,36 @@ export default function PageHeader(props: HeaderPropsIF) {
                 <img src='./ambient_logo_1.png' alt='' width='25' />
             </Link>
             {routeDisplay}
-            <div>
-                <div className={styles.account}>
-                    <div className={styles.branch_name}>
-                        {APP_ENVIRONMENT !== 'local' &&
-                        APP_ENVIRONMENT !== 'production' ? (
-                            <div className={styles.branch}>
-                                {BRANCH_NAME} <BiGitBranch color='yellow' />
-                            </div>
-                        ) : null}
-                    </div>
-                    <NetworkSelector
-                        chainId={chainId}
-                        switchNetwork={switchNetwork}
-                    />
-                    {!isConnected && connectWagmiButton}
-                    <Account {...accountProps} />
-                    <NotificationCenter
-                        showNotificationTable={showNotificationTable}
-                        setShowNotificationTable={setShowNotificationTable}
-                        lastBlockNumber={lastBlockNumber}
-                        chainId={chainId}
-                    />
+            {show ? (
+                <div style={{ margin: '0 1rem' }}>
+                    <TradeNowButton inNav />{' '}
                 </div>
-            </div>
+            ) : (
+                <div>
+                    <div className={styles.account}>
+                        <div className={styles.branch_name}>
+                            {APP_ENVIRONMENT !== 'local' &&
+                            APP_ENVIRONMENT !== 'production' ? (
+                                <div className={styles.branch}>
+                                    {BRANCH_NAME} <BiGitBranch color='yellow' />
+                                </div>
+                            ) : null}
+                        </div>
+                        <NetworkSelector
+                            chainId={chainId}
+                            switchNetwork={switchNetwork}
+                        />
+                        {!isConnected && connectWagmiButton}
+                        <Account {...accountProps} />
+                        <NotificationCenter
+                            showNotificationTable={showNotificationTable}
+                            setShowNotificationTable={setShowNotificationTable}
+                            lastBlockNumber={lastBlockNumber}
+                            chainId={chainId}
+                        />
+                    </div>
+                </div>
+            )}
             {isChainSupported || <SwitchNetwork />}
         </header>
     );

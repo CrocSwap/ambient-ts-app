@@ -15,7 +15,6 @@ export default function Home1() {
         <div className={styles.slide_container}>
             <div className={styles.content_container}>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
-                <TradeNowButton />
             </div>
         </div>
     );
@@ -29,7 +28,6 @@ export default function Home1() {
                         contract, allowing for low fee transactions, greater
                         liquidity rewards, and a fairer trading experience.
                     </p>
-                    <TradeNowButton />
                 </section>
                 <img src={row1Image} alt='wallets' />
             </div>
@@ -53,7 +51,6 @@ export default function Home1() {
                         (‘V2’) and knock-out liquidity in the same liquidity
                         pool.
                     </p>
-                    <TradeNowButton />
                 </section>
             </div>
         </div>
@@ -74,7 +71,6 @@ export default function Home1() {
                         for greater rewards for liquidity providers, and less
                         impact for traders.
                     </p>
-                    <TradeNowButton />
                 </section>
                 <img
                     src={row3Image}
@@ -97,8 +93,6 @@ export default function Home1() {
                         array of quality-of-life improvements allowing for a
                         best-in-class user experience.
                     </p>
-
-                    <TradeNowButton />
                 </section>
             </div>
         </div>
