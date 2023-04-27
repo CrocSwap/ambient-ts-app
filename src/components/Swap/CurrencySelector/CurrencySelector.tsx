@@ -218,6 +218,9 @@ export default function CurrencySelector(props: propsIF) {
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
 
+    const isCombinedBalanceNonZero =
+        !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
+
     // Wallet balance function and styles-----------------------------
 
     function handleWalletBalanceClick() {
@@ -423,7 +426,7 @@ export default function CurrencySelector(props: propsIF) {
                     <div
                         className={styles.balance_column}
                         style={
-                            isSellTokenSelector
+                            isSellTokenSelector && isCombinedBalanceNonZero
                                 ? { cursor: 'pointer' }
                                 : { cursor: 'default' }
                         }
@@ -431,8 +434,10 @@ export default function CurrencySelector(props: propsIF) {
                             if (
                                 handleChangeClick &&
                                 isUserLoggedIn &&
-                                !isSellTokenEth
+                                !isSellTokenEth &&
+                                isCombinedBalanceNonZero
                             ) {
+                                console.log({ balanceNonLocaleString });
                                 handleChangeClick(balanceNonLocaleString);
                                 setUserClickedCombinedMax(true);
                             }
