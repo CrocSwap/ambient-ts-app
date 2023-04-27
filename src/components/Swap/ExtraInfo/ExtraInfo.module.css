@@ -1,4 +1,3 @@
-
 .extra_info_content {
     width: 100%;
     display: flex;
@@ -17,12 +16,13 @@
     border-radius: var(--border-radius);
 }
 
-.extra_info_content:hover, .extra_info_content:focus-visible{
-    background: var(--dark2)
+.extra_info_content:hover,
+.extra_info_content:focus-visible {
+    background: var(--dark2);
 }
 
-.extra_info_content_active:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.extra_info_content_active:focus-visible {
+    border: 1px solid var(--text-grey-white);
 }
 
 .gas_pump,
@@ -42,7 +42,7 @@
 .extra_details {
     /* background-color: var(--dark2); */
     border: 1px solid var(--dark3);
-    margin: 5px 5px;
+    margin: 10px 5px;
 
     border-radius: var(--border-radius);
 
