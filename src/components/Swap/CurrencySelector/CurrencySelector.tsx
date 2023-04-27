@@ -256,13 +256,46 @@ export default function CurrencySelector(props: propsIF) {
         handleChangeClick === undefined,
     ]);
 
+    const maxButtonTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() => {
+                isWithdrawFromDexChecked &&
+                !!tokenADexBalance &&
+                parseFloat(tokenADexBalance) > 0
+                    ? openGlobalPopup(
+                          <ExchangeBalanceExplanation />,
+                          'Exchange Balance',
+                          'right',
+                      )
+                    : openGlobalPopup(
+                          <WalletBalanceExplanation />,
+                          'Wallet Balance',
+                          'right',
+                      );
+            }}
+        >
+            {isWithdrawFromDexChecked &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+                ? 'Use Maximum Exchange Balance'
+                : 'Use Maximum Wallet Balance'}
+            <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
+
     const maxButton =
         isWithdrawFromDexChecked &&
         !!tokenADexBalance &&
         parseFloat(tokenADexBalance) > 0 ? (
             <DefaultTooltip
                 interactive
-                title={'Use Maximum Exchange Balance'}
+                title={maxButtonTitle}
                 placement={'bottom'}
                 arrow
                 enterDelay={700}
@@ -299,7 +332,7 @@ export default function CurrencySelector(props: propsIF) {
         ) : (
             <DefaultTooltip
                 interactive
-                title={'Use Maximum Wallet Balance'}
+                title={maxButtonTitle}
                 placement={'bottom'}
                 arrow
                 enterDelay={700}
@@ -365,12 +398,15 @@ export default function CurrencySelector(props: propsIF) {
                 )
             }
         >
-            {(isSellTokenSelector && isWithdrawFromDexChecked) ||
-            (!isSellTokenSelector && isSaveAsDexSurplusChecked)
-                ? isCombinedBalanceNonZero
+            {!isSellTokenSelector
+                ? isSaveAsDexSurplusChecked
+                    ? 'Wallet + Exchange Balance'
+                    : 'Wallet Balance'
+                : isSaveAsDexSurplusChecked
+                ? isCombinedBalanceNonZero && !isSellTokenEth
                     ? 'Use Max Wallet + Exchange Balance'
                     : 'Wallet + Exchange Balance'
-                : isCombinedBalanceNonZero
+                : isCombinedBalanceNonZero && !isSellTokenEth
                 ? 'Use Max Wallet Balance'
                 : 'Wallet Balance'}
             <AiOutlineQuestionCircle size={14} />
@@ -393,14 +429,11 @@ export default function CurrencySelector(props: propsIF) {
                 )
             }
         >
-            {(isSellTokenSelector && isWithdrawFromDexChecked) ||
-            (!isSellTokenSelector && isSaveAsDexSurplusChecked)
-                ? isCombinedBalanceNonZero
+            {isSellTokenSelector
+                ? isCombinedBalanceNonZero && !isSellTokenEth
                     ? 'Use Max Wallet + Exchange Balance'
                     : 'Wallet + Exchange Balance'
-                : isCombinedBalanceNonZero
-                ? 'Use Max Wallet Balance'
-                : 'Wallet Balance'}
+                : 'Wallet + Exchange Balance'}
             <AiOutlineQuestionCircle size={14} />
         </p>
     );
@@ -451,7 +484,8 @@ export default function CurrencySelector(props: propsIF) {
                 <DefaultTooltip
                     interactive
                     title={
-                        isWithdrawFromDexChecked
+                        (isSellTokenSelector && isWithdrawFromDexChecked) ||
+                        (!isSellTokenSelector && isSaveAsDexSurplusChecked)
                             ? exchangeBalanceTitle
                             : walletBalanceTitle
                     }
@@ -463,7 +497,9 @@ export default function CurrencySelector(props: propsIF) {
                     <div
                         className={styles.balance_column}
                         style={
-                            isSellTokenSelector && isCombinedBalanceNonZero
+                            isSellTokenSelector &&
+                            isCombinedBalanceNonZero &&
+                            !isSellTokenEth
                                 ? { cursor: 'pointer' }
                                 : { cursor: 'default' }
                         }
@@ -472,7 +508,8 @@ export default function CurrencySelector(props: propsIF) {
                                 handleChangeClick &&
                                 isUserLoggedIn &&
                                 !isSellTokenEth &&
-                                isCombinedBalanceNonZero
+                                isCombinedBalanceNonZero &&
+                                !isSellTokenEth
                             ) {
                                 console.log({ balanceNonLocaleString });
                                 handleChangeClick(balanceNonLocaleString);
@@ -483,7 +520,7 @@ export default function CurrencySelector(props: propsIF) {
                         <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
-                {isCombinedBalanceNonZero ? maxButton : null}
+                {isCombinedBalanceNonZero && !isSellTokenEth ? maxButton : null}
             </div>
         </section>
     );
