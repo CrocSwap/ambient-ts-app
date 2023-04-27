@@ -41,7 +41,7 @@
 
 .extra_details {
     /* background-color: var(--dark2); */
-    border: 1px solid var(--border);
+    border: 1px solid var(--dark3);
     margin: 5px 5px;
 
     border-radius: var(--border-radius);
@@ -53,7 +53,7 @@
 
 .price_impact {
     /* background-color: var(--dark2); */
-    border: 1px solid var(--border);
+    border: 1px solid var(--dark3);
     margin: 5px 5px;
 
     border-radius: var(--border-radius);
