@@ -3054,7 +3054,6 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
-
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
@@ -3064,27 +3063,20 @@ export default function App() {
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
-
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: outsideControl,
         setOutsideControl: setOutsideControl,
-
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
         verifyToken: verifyToken,
-        getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
-
-        // Filter positions from graph cache for this specific chain
-
         ackTokens: ackTokens,
         topPools: topPools,
     };
