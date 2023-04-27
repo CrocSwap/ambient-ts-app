@@ -45,7 +45,7 @@
 }
 
 .extra_details {
-    border: 1px solid var(--border);
+    border: 1px solid var(--dark3);
 
     margin-top: 10px;
     border-radius: var(--border-radius);
