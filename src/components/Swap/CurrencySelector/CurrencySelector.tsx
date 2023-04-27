@@ -401,7 +401,7 @@ export default function CurrencySelector(props: propsIF) {
             {!isSellTokenSelector
                 ? 'Wallet Balance'
                 : isCombinedBalanceNonZero && !isSellTokenEth
-                ? 'Use Max Wallet Balance'
+                ? 'Use Maximum Wallet Balance'
                 : 'Wallet Balance'}
             <AiOutlineQuestionCircle size={14} />
         </p>
@@ -425,7 +425,7 @@ export default function CurrencySelector(props: propsIF) {
         >
             {isSellTokenSelector
                 ? isCombinedBalanceNonZero && !isSellTokenEth
-                    ? 'Use Max Wallet + Exchange Balance'
+                    ? 'Use Maximum Wallet + Exchange Balance'
                     : 'Wallet + Exchange Balance'
                 : 'Wallet + Exchange Balance'}
             <AiOutlineQuestionCircle size={14} />
