@@ -265,7 +265,11 @@ export default function CurrencySelector(props: propsIF) {
                 isSellTokenSelector &&
                 !isSellTokenEth ? (
                     <button
-                        className={`${styles.max_button} ${styles.max_button_enable}`}
+                        className={
+                            isWithdrawFromDexChecked
+                                ? `${styles.max_dex_button} ${styles.max_button_enable}`
+                                : `${styles.max_button} ${styles.max_button_enable}`
+                        }
                         onClick={() => {
                             handleMaxButtonClick();
                             setUserClickedCombinedMax(false);
@@ -274,7 +278,13 @@ export default function CurrencySelector(props: propsIF) {
                         Max DEX
                     </button>
                 ) : (
-                    <p className={styles.max_button} />
+                    <p
+                        className={
+                            isWithdrawFromDexChecked
+                                ? styles.max_dex_button
+                                : styles.max_button
+                        }
+                    />
                 )}
             </DefaultTooltip>
         ) : (
@@ -290,13 +300,23 @@ export default function CurrencySelector(props: propsIF) {
                 isSellTokenSelector &&
                 !isSellTokenEth ? (
                     <button
-                        className={`${styles.max_button} ${styles.max_button_enable}`}
+                        className={
+                            isWithdrawFromDexChecked
+                                ? `${styles.max_dex_button} ${styles.max_button_enable}`
+                                : `${styles.max_button} ${styles.max_button_enable}`
+                        }
                         onClick={() => handleMaxButtonClick()}
                     >
                         Max
                     </button>
                 ) : (
-                    <p className={styles.max_button} />
+                    <p
+                        className={
+                            isWithdrawFromDexChecked
+                                ? styles.max_dex_button
+                                : styles.max_button
+                        }
+                    />
                 )}
             </DefaultTooltip>
         );

@@ -236,8 +236,24 @@
     gap: 10px;
 }
 
-
 .max_button {
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white);
+    outline: none;
+    border: none;
+    background: transparent;
+
+    width: 60px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 4px 0 4px 5px;
+    max-height: 20px;
+    transition: all var(--animation-speed) ease-in-out;
+}
+.max_dex_button {
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -247,11 +263,11 @@
     /* background: var(--dark3); */
     background: transparent;
 
-    width: 100px;
+    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 4px;
+    padding: 4px 0 4px 1px;
     /* margin-right: 8px; */
     max-height: 20px;
     /* padding: 0 8px; */
@@ -259,10 +275,13 @@
 }
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark2);
+    background: var(--dark1);
 }
 
 .max_button:hover {
+    color: var(--text-highlight-dark);
+}
+.max_dex_button:hover {
     color: var(--text-highlight-dark);
 }
 
