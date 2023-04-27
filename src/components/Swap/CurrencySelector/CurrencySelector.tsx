@@ -450,7 +450,7 @@ export default function CurrencySelector(props: propsIF) {
                         <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
-                {maxButton}
+                {isCombinedBalanceNonZero ? maxButton : null}
             </div>
         </section>
     );
