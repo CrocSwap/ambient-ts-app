@@ -399,13 +399,7 @@ export default function CurrencySelector(props: propsIF) {
             }
         >
             {!isSellTokenSelector
-                ? isSaveAsDexSurplusChecked
-                    ? 'Wallet + Exchange Balance'
-                    : 'Wallet Balance'
-                : isSaveAsDexSurplusChecked
-                ? isCombinedBalanceNonZero && !isSellTokenEth
-                    ? 'Use Max Wallet + Exchange Balance'
-                    : 'Wallet + Exchange Balance'
+                ? 'Wallet Balance'
                 : isCombinedBalanceNonZero && !isSellTokenEth
                 ? 'Use Max Wallet Balance'
                 : 'Wallet Balance'}
