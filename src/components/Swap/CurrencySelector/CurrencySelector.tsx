@@ -25,6 +25,7 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -348,6 +349,34 @@ export default function CurrencySelector(props: propsIF) {
         }
     }
 
+    const walletBalanceTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() =>
+                openGlobalPopup(
+                    <WalletBalanceExplanation />,
+                    'Wallet Balance',
+                    'right',
+                )
+            }
+        >
+            {(isSellTokenSelector && isWithdrawFromDexChecked) ||
+            (!isSellTokenSelector && isSaveAsDexSurplusChecked)
+                ? isCombinedBalanceNonZero
+                    ? 'Use Max Wallet + Exchange Balance'
+                    : 'Wallet + Exchange Balance'
+                : isCombinedBalanceNonZero
+                ? 'Use Max Wallet Balance'
+                : 'Wallet Balance'}
+            <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
+
     const exchangeBalanceTitle = (
         <p
             style={{
@@ -421,7 +450,11 @@ export default function CurrencySelector(props: propsIF) {
                 </IconWithTooltip>
                 <DefaultTooltip
                     interactive
-                    title={exchangeBalanceTitle}
+                    title={
+                        isWithdrawFromDexChecked
+                            ? exchangeBalanceTitle
+                            : walletBalanceTitle
+                    }
                     placement={'bottom'}
                     arrow
                     enterDelay={700}

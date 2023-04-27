@@ -10,15 +10,19 @@ export default function ExchangeBalanceExplanation() {
             }}
         >
             <p>
-                Collateral deposited into the Ambient Finance exchange can be
-                traded at lower gas costs.
+                An exchange balance is the quantity of a token previously
+                deposited and currently available for the connected wallet to
+                trade at lower gas costs.
             </p>
+
+            <p></p>
             <p>
-                To deposit collateral, select Exchange Balance as the
-                destination for the output of a trade, or you can deposit
-                directly from your wallet on the Account page.
+                To deposit collateral for later use, select Exchange Balance as
+                the destination for the output of a trade, or deposit directly
+                from your wallet on the Account page.
             </p>
-            <p>Collateral can be withdrawn at any time.</p>
+            <p></p>
+            <p>Collateral can be withdrawn any time.</p>
             <Link
                 to='/account'
                 style={{
