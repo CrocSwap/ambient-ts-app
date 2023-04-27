@@ -45,7 +45,6 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
@@ -469,18 +468,11 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 4000px)');
 
     useEffect(() => {
         overflowSidebarMQ ? sidebar.close() : sidebar.open();
     }, [overflowSidebarMQ]);
-
-    function handleSidebarClickOutside() {
-        if (!overflowSidebarMQ) return;
-        sidebar.close();
-    }
-
-    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
