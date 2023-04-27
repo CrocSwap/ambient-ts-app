@@ -469,18 +469,11 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 4000px)');
 
     useEffect(() => {
         overflowSidebarMQ ? sidebar.close() : sidebar.open();
     }, [overflowSidebarMQ]);
-
-    function handleSidebarClickOutside() {
-        if (!overflowSidebarMQ) return;
-        sidebar.close();
-    }
-
-    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
