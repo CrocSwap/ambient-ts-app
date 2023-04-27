@@ -265,7 +265,7 @@ export default function CurrencySelector(props: propsIF) {
                 isSellTokenSelector &&
                 !isSellTokenEth ? (
                     <button
-                        className={`${styles.max_dex_button} ${styles.max_button_enable}`}
+                        className={`${styles.max_button} ${styles.max_button_enable}`}
                         onClick={() => {
                             handleMaxButtonClick();
                             setUserClickedCombinedMax(false);

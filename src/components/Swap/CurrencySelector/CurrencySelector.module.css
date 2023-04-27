@@ -236,6 +236,7 @@
     gap: 10px;
 }
 
+
 .max_button {
     cursor: pointer;
     font-size: var(--body-size);
@@ -246,23 +247,11 @@
     /* background: var(--dark3); */
     background: transparent;
 
-    width: 25px;
-    /* margin-right: 8px; */
-    max-height: 20px;
-    /* padding: 0 8px; */
-    transition: all var(--animation-speed) ease-in-out;
-}
-.max_dex_button {
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-white);
-    outline: none;
-    border: none;
-    /* background: var(--dark3); */
-    background: transparent;
-
-    width: 60px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
     /* margin-right: 8px; */
     max-height: 20px;
     /* padding: 0 8px; */
@@ -270,7 +259,7 @@
 }
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .max_button:hover {
