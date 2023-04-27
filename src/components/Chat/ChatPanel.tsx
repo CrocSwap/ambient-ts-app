@@ -157,7 +157,6 @@ export default function ChatPanel(props: propsIF) {
     }, [lastMessage]);
 
     useEffect(() => {
-        console.log('Open or close: ', props.isChatOpen);
         setScrollDirection('Scroll Down');
         if (address) {
             if (ens === null || ens === undefined) {
