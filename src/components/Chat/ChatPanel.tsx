@@ -90,6 +90,7 @@ export default function ChatPanel(props: propsIF) {
     const { messages, getMsg, lastMessage, messageUser } = useSocket(
         room,
         areSubscriptionsEnabled,
+        props.isChatOpen,
     );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
@@ -156,6 +157,7 @@ export default function ChatPanel(props: propsIF) {
     }, [lastMessage]);
 
     useEffect(() => {
+        console.log('Open or close: ', props.isChatOpen);
         setScrollDirection('Scroll Down');
         if (address) {
             if (ens === null || ens === undefined) {
@@ -212,7 +214,7 @@ export default function ChatPanel(props: propsIF) {
         scrollToBottom();
         setNotification(0);
         getMsg();
-    }, [room]);
+    }, [room, props.isChatOpen === false]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -468,6 +470,8 @@ export default function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            areSubscriptionsEnabled={areSubscriptionsEnabled}
+            isChatOpen={props.isChatOpen}
         />
     );
 
