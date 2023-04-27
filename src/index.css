@@ -61,9 +61,11 @@
     --shimmer: linear-gradient(to right, #141e30, #243b55);
     --blur-bg: rgba(14, 19, 26, 0.5);
     --body-bg: #0e131a;
-    --dark1: #0d1117;
-    --dark2: #12171f;
-    --dark3: #171d27;
+    --dark1: #0D1117;
+    --dark2: #171D27;
+    --dark3: #242F3F;
+    --dark4: #141922;
+    --accent1: #7371FC;
     --border: #171d27;
     --navbar-border: transparent;
 
@@ -75,6 +77,9 @@
     --text-grey-light: #bdbdbd;
     --text-grey-dark: #555555;
     --text-grey-white: #ebebff;
+    --text1: #CECEE1;
+    --text2: #8B8D97;
+    --text3: #61646F;
     --text-accent: #cdc1ff;
     --light-blue: #cdc1ff;
 
