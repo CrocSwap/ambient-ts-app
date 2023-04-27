@@ -28,6 +28,7 @@ const useSocket = (
         socketRef.current.on('connection');
 
         socketRef.current.on('send-msg', () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
                 setLastMessage(data[0]);
@@ -36,18 +37,10 @@ const useSocket = (
             });
         });
 
-        // Call getMsg function initially when chat is open
         if (isChatOpen) {
             getMsg();
         }
-
-        // Call getMsg function whenever chat status changes to open
-        socketRef.current.on('chat-status-change', (isOpen: boolean) => {
-            if (isOpen) {
-                getMsg();
-            }
-        });
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socketRef.current.on('msg-recieve', (data: any) => {
             setMessages(data);
         });
