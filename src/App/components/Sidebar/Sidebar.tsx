@@ -45,7 +45,6 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
