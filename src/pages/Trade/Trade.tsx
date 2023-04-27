@@ -203,7 +203,7 @@ export default function Trade(props: propsIF) {
     const routes = [
         {
             path: '/market',
-            name: 'Market',
+            name: 'Swap',
         },
         {
             path: '/limit',
@@ -211,7 +211,7 @@ export default function Trade(props: propsIF) {
         },
         {
             path: '/range',
-            name: 'Range',
+            name: 'Pool',
         },
     ];
 

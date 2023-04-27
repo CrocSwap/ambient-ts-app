@@ -58,6 +58,7 @@ export default function SoloTokenImport(props: propsIF) {
                     style={{
                         color: 'var(--accent-secondary)',
                     }}
+                    aria-label={customToken.symbol}
                 >
                     {' '}
                     this{' '}

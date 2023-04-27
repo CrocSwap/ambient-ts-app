@@ -1,8 +1,16 @@
 // START: Import React and Dongles
-import { SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
+import {
+    SetStateAction,
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useMemo,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
+import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -22,12 +30,9 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import {
-    LimitOrderIF,
-    PositionIF,
     TokenIF,
     TokenPairIF,
     TempPoolIF,
-    TransactionIF,
 } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
@@ -37,14 +42,14 @@ import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch } from './useSidebarSearch';
+import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -75,13 +80,9 @@ interface propsIF {
     openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    positionsByUser: PositionIF[];
-    txsByUser: TransactionIF[];
-    limitsByUser: LimitOrderIF[];
     ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
 }
@@ -107,26 +108,56 @@ export default function Sidebar(props: propsIF) {
         openModalWallet,
         poolList,
         verifyToken,
-        getTokenByAddress,
         tokenPair,
         recentPools,
         isConnected,
-        positionsByUser,
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        txsByUser,
-        limitsByUser,
         ackTokens,
         topPools,
     } = props;
 
     const location = useLocation();
 
-    const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
-    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const positionsByUser = useMemo(
+        () =>
+            graphData.positionsByUser.positions.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.positionsByUser.positions), chainId],
+    );
+
+    const txsByUser = useMemo(
+        () =>
+            graphData.changesByUser.changes.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.changesByUser.changes), chainId],
+    );
+
+    const limitsByUser = useMemo(
+        () =>
+            graphData.limitOrdersByUser.limitOrders.filter(
+                (x) => x.chainId === chainId,
+            ),
+        [sum(graphData.limitOrdersByUser.limitOrders), chainId],
+    );
+    const mostRecentTxs = useMemo(
+        () => txsByUser.slice(0, 4),
+        [sum(txsByUser)],
+    );
+    const mostRecentPositions = useMemo(
+        () => positionsByUser.slice(0, 4),
+        [sum(positionsByUser)],
+    );
+    const mostRecentLimitOrders = useMemo(
+        () => limitsByUser.slice(0, 4),
+        [sum(limitsByUser)],
+    );
 
     const recentPoolsData = [
         {
@@ -256,14 +287,7 @@ export default function Sidebar(props: propsIF) {
         },
     ];
 
-    const [
-        setRawInput,
-        isInputValid,
-        searchedPools,
-        searchedPositions,
-        searchedTxs,
-        searchedLimitOrders,
-    ] = useSidebarSearch(
+    const searchData: sidebarSearchIF = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
@@ -339,7 +363,7 @@ export default function Sidebar(props: propsIF) {
     // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
-        setRawInput(e.target.value);
+        searchData.setInput(e.target.value);
     };
     const searchContainer = (
         <div className={styles.search_container}>
@@ -442,18 +466,11 @@ export default function Sidebar(props: propsIF) {
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 4000px)');
 
     useEffect(() => {
         overflowSidebarMQ ? sidebar.close() : sidebar.open();
     }, [overflowSidebarMQ]);
-
-    function handleSidebarClickOutside() {
-        if (!overflowSidebarMQ) return;
-        sidebar.close();
-    }
-
-    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
@@ -559,16 +576,14 @@ export default function Sidebar(props: propsIF) {
             >
                 <ul className={styles.sidebar_nav}>
                     {searchContainerDisplay}
-                    {isInputValid && sidebar.isOpen && searchMode ? (
+                    {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
-                            searchedPools={searchedPools}
-                            getTokenByAddress={getTokenByAddress}
+                            searchData={searchData}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            searchedPositions={searchedPositions}
                             setOutsideControl={setOutsideControl}
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
@@ -576,9 +591,6 @@ export default function Sidebar(props: propsIF) {
                                 setCurrentTxActiveInTransactions
                             }
                             setIsShowAllEnabled={setIsShowAllEnabled}
-                            searchedTxs={searchedTxs}
-                            searchedLimitOrders={searchedLimitOrders}
-                            ackTokens={ackTokens}
                         />
                     ) : (
                         regularSidebarDisplay
