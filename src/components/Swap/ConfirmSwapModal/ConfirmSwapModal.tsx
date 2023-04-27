@@ -290,7 +290,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     // REGULAR CONFIRMATION MESSAGE STARTS HERE
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={`Swapping ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}.`}
+            content={`Swapping ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}`}
         />
     );
 
