@@ -226,7 +226,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-                    if (isMouseMoveCrosshair) {
+                    if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'feeRate') {
                             crosshairHorizontalCanvas([
@@ -252,6 +252,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         crosshairForSubChart,
         feeRateHorizontalyValue,
         isCrosshairActive,
+        isMouseMoveCrosshair,
     ]);
 
     const renderCanvas = () => {

@@ -3651,6 +3651,7 @@ export default function Chart(props: propsIF) {
 
                     if (
                         isMouseMoveCrosshair &&
+                        isCrosshairActive !== 'none' &&
                         xScale(d) > xScale(crosshairData[0].x) - _width &&
                         xScale(d) < xScale(crosshairData[0].x) + _width &&
                         d !== crosshairData[0].x

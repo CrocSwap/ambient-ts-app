@@ -329,7 +329,7 @@ export default function TvlSubChart(props: TvlData) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-                    if (isMouseMoveCrosshair) {
+                    if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'tvl') {
                             crosshairHorizontalCanvas([
@@ -356,6 +356,7 @@ export default function TvlSubChart(props: TvlData) {
         crosshairHorizontalCanvas,
         tvlHorizontalyValue,
         isCrosshairActive,
+        isMouseMoveCrosshair,
     ]);
 
     const renderCanvas = () => {
