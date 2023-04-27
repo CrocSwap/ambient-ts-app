@@ -772,65 +772,79 @@ export default function Chart(props: propsIF) {
         const oldTickValues = scaleData?.xScale.ticks();
         let result = oldTickValues;
 
-        const _bandwidth = reset ? defaultCandleBandwith : bandwidth;
+        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
-        const domainX = scaleData?.xScale.domain();
-        if (parsedChartData?.period === 3600) {
-            result = await getHourAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-                1,
-            );
+        const filtered = parsedChartData?.chartData.filter(
+            (data: any) => data.date >= xmin && data.date <= xmax,
+        );
+
+        if (filtered && scaleData) {
+            const xminData = d3.min(filtered, (d: any) => d.time) * 1000;
+            const xmaxData = d3.max(filtered, (d: any) => d.time) * 1000;
+
+            const _bandwidth =
+                Math.abs(
+                    scaleData.xScale(xminData) - scaleData.xScale(xmaxData),
+                ) / filtered.length;
+
+            const domainX = scaleData?.xScale.domain();
+            if (parsedChartData?.period === 3600) {
+                result = await getHourAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                    1,
+                );
+            }
+
+            if (parsedChartData?.period === 86400) {
+                result = await getOneDayAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 14400) {
+                result = await getHourAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                    4,
+                );
+            }
+
+            if (parsedChartData?.period === 900) {
+                result = get15MinutesAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 300) {
+                result = get5MinutesAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 60) {
+                result = get1MinuteAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
         }
-
-        if (parsedChartData?.period === 86400) {
-            result = await getOneDayAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 14400) {
-            result = await getHourAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-                4,
-            );
-        }
-
-        if (parsedChartData?.period === 900) {
-            result = get15MinutesAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 300) {
-            result = get5MinutesAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 60) {
-            result = get1MinuteAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
         return result;
     }
 
