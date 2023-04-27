@@ -264,7 +264,7 @@ export default function CurrencySelector(props: propsIF) {
                 title={'Use Maximum Exchange Balance'}
                 placement={'bottom'}
                 arrow
-                enterDelay={100}
+                enterDelay={700}
                 leaveDelay={200}
             >
                 {balanceLocaleString !== '0.00' &&
@@ -301,7 +301,7 @@ export default function CurrencySelector(props: propsIF) {
                 title={'Use Maximum Wallet Balance'}
                 placement={'bottom'}
                 arrow
-                enterDelay={100}
+                enterDelay={700}
                 leaveDelay={200}
             >
                 {balanceLocaleString !== '0.00' &&
@@ -366,7 +366,11 @@ export default function CurrencySelector(props: propsIF) {
         >
             {(isSellTokenSelector && isWithdrawFromDexChecked) ||
             (!isSellTokenSelector && isSaveAsDexSurplusChecked)
-                ? 'Wallet + Exchange Balance'
+                ? isCombinedBalanceNonZero
+                    ? 'Use Max Wallet + Exchange Balance'
+                    : 'Wallet + Exchange Balance'
+                : isCombinedBalanceNonZero
+                ? 'Use Max Wallet Balance'
                 : 'Wallet Balance'}
             <AiOutlineQuestionCircle size={14} />
         </p>
@@ -420,7 +424,7 @@ export default function CurrencySelector(props: propsIF) {
                     title={exchangeBalanceTitle}
                     placement={'bottom'}
                     arrow
-                    enterDelay={500}
+                    enterDelay={700}
                     leaveDelay={200}
                 >
                     <div
@@ -479,7 +483,7 @@ export default function CurrencySelector(props: propsIF) {
                 title={thisToken.symbol}
                 placement={'top'}
                 arrow
-                enterDelay={100}
+                enterDelay={700}
                 leaveDelay={200}
             >
                 <div className={styles.token_list_text}>{thisToken.symbol}</div>
