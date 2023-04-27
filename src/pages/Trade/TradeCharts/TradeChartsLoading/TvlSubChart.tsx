@@ -237,7 +237,7 @@ export default function TvlSubChart(props: TvlData) {
                 .select('canvas')
                 .node() as any;
 
-            if (canvas !== null) {
+            if (canvas !== null && buffer && !isNaN(buffer)) {
                 const ctx = canvas.getContext('2d');
 
                 const startPoint =
