@@ -1,7 +1,7 @@
 import blocktower from '../../../assets/images/investors/blocktower.svg';
 import jane from '../../../assets/images/investors/jane.svg';
 import circle from '../../../assets/images/investors/circle.svg';
-import tensai from '../../../assets/images/investors/tensai.svg';
+import tensai from '../../../assets/images/investors/tensai.png';
 import naval from '../../../assets/images/investors/naval.svg';
 import yunt from '../../../assets/images/investors/yunt.svg';
 import susa from '../../../assets/images/investors/susa.svg';
@@ -40,10 +40,10 @@ export default function Investors() {
 
     const row4 = (
         <div className={styles.row4}>
-            <img src={yunt} alt='yunt capital' />
-            <img src={susa} alt='susa ' />
-            <img src={quantstamp} alt='quantstamp ' />
-            <img src={hypotenuse} alt='hypotenuse ' />
+            <img src={yunt} alt='yunt capital' width='200px' />
+            <img src={susa} alt='susa ' width='50px' />
+            <img src={quantstamp} alt='quantstamp ' width='200px' />
+            <img src={hypotenuse} alt='hypotenuse ' width='200px' />
         </div>
     );
     const row5 = (
@@ -58,7 +58,7 @@ export default function Investors() {
     );
     const row6 = (
         <div className={styles.row6}>
-            <img src={PreSeed} alt='pre-seed' />
+            <img src={PreSeed} alt='pre-seed' width='80px' />
         </div>
     );
     const row7 = (
