@@ -308,7 +308,7 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 280 && location.pathname === '/') {
+            if (window.scrollY > 1300 && location.pathname === '/') {
                 handleShow(true);
             } else {
                 handleShow(false);
