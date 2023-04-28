@@ -72,7 +72,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
             const yAxis = d3fc
                 .axisRight()
                 .scale(feeRateyScale)
-                .tickValues([0.0005, 0.003, 0.01]);
+                .tickValues([0.0005, 0.004, 0.01]);
 
             const d3YaxisCanvas = d3
                 .select(d3Yaxis.current)
