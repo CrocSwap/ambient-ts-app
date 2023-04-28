@@ -3689,7 +3689,7 @@ export default function Chart(props: propsIF) {
             context.beginPath();
             if (
                 dateCrosshair &&
-                d3.select(d3CanvasCrVertical?.current).style('visibility') ==
+                d3.select(d3CanvasCrVertical?.current)?.style('visibility') ==
                     'visible'
             ) {
                 context.fillText(
