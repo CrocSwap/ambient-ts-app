@@ -250,6 +250,12 @@ export default function TvlSubChart(props: TvlData) {
                               Math.log10(tvlyScale.domain()[0])) /
                           (buffer * 2);
 
+                const DFLT_COLOR_STOP = 0.2;
+                const calcStop = 1 / (startPoint + 1);
+                const colorStop = isFinite(calcStop)
+                    ? calcStop
+                    : DFLT_COLOR_STOP;
+
                 const tvlGradient = ctx.createLinearGradient(
                     0,
                     0,
@@ -257,10 +263,7 @@ export default function TvlSubChart(props: TvlData) {
                     canvas.height / ratio,
                 );
                 tvlGradient.addColorStop(1, 'transparent');
-                tvlGradient.addColorStop(
-                    1 / (startPoint + 1),
-                    'rgba(115, 113, 252, 0.7)',
-                );
+                tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
 
                 setTvlGradient(() => {
                     return tvlGradient;
