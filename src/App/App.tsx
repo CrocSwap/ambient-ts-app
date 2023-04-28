@@ -930,8 +930,7 @@ export default function App() {
         }, LIQUIDITY_FETCH_PERIOD_MS / 2);
         return () => clearInterval(id);
     }, [
-        baseTokenAddress === '',
-        quoteTokenAddress === '',
+        baseTokenAddress + quoteTokenAddress,
         chainData === undefined,
         lastBlockNumber === 0,
     ]);

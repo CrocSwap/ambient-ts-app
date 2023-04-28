@@ -2252,6 +2252,7 @@ export default function Chart(props: propsIF) {
             liquidityData?.depthLiqAskData,
         );
         try {
+            if (liqDataAll && liqDataAll.length === 0) return;
             const { min, max }: any = findLiqNearest(liqDataAll);
             const visibleDomain = liqDataAll.filter(
                 (liqData: LiquidityDataLocal) =>
