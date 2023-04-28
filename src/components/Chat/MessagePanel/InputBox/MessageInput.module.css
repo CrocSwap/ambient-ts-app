@@ -60,7 +60,7 @@
     grid-gap: 4px;
     gap: 4px;
     width: 97%;
-    height: 40px;
+    height: 25px;
     background: #242f3f;
     border-radius: 4px;
     flex: none;
@@ -150,6 +150,8 @@
 .svgButton {
     transition: fill 0.2s ease-in-out;
     cursor: pointer;
+    color: var(--text3);
+    margin-right: 2px;
 }
 
 .svgButton:hover {

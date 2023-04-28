@@ -1,6 +1,6 @@
 import { useAccount } from 'wagmi';
 import useSocket from '../../Service/useSocket';
-import { BsEmojiSmileFill } from 'react-icons/bs';
+import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
@@ -198,7 +198,7 @@ export default function MessageInput(
                     autoFocus={props.appPage}
                 />
 
-                <BsEmojiSmileFill
+                <BsEmojiSmile
                     className={
                         isUserLoggedIn
                             ? styles.svgButton

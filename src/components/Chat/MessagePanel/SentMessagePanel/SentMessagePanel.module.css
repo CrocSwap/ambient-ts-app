@@ -6,8 +6,17 @@
     padding: 2px;
     flex-grow: 1;
     align-self: end;
-    vertical-align: middle;
+    vertical-align: middle; 
     margin: 10px;
+}
+
+.avatar_blockies {
+    display: flex;
+}
+
+.avatar_blockies canvas {
+    border-radius: 50%;
+    border: 1px solid var(--text-highlight-dark);
 }
 .nft_container{
     
@@ -82,12 +91,12 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
-    margin: 10px;
+    margin-left: 10px;
     width: 85%;
-    color: #ebebff;
+    color: var(--text-grey-white);
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
@@ -103,12 +112,12 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    color: #ebebff;
+    color: var(--text-grey-white);
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
@@ -215,14 +224,14 @@
     align-items: center;
 
     /* accent/secondary */
-    color: #e480ff;
+    color: var(--accent-secondary);
 
     /* Inside auto layout */
     flex: none;
     order: 0;
     flex-grow: 0;
 
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 .current_user_name {

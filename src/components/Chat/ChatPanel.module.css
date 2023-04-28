@@ -59,8 +59,9 @@
 .chat_header h2 {
     font-size: var(--header2-size);
     line-height: var(--body-lh);
-    font-weight: 180;
+    font-weight: 100;
     font-family: var(--font-logo);
+    color: var(--text1);
 }
 
 .chat_header svg {
