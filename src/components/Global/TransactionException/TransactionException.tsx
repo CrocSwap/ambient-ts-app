@@ -28,7 +28,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
 
     return (
         <div className={styles.removal_pending}>
-            <h2>Transaction Exception.</h2>
+            <h2>Transaction Exception</h2>
 
             {rangeModuleActive && isEthSecondary ? (
                 <>
