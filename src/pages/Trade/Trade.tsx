@@ -122,7 +122,7 @@ interface propsIF {
     chartTriggeredBy: string;
     slippage: allSlippageMethodsIF;
     ethMainnetUsdPrice: number | undefined;
-    gasPriceInGwei: gasPriceInGwei;
+    gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 

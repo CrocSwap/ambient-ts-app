@@ -2,7 +2,7 @@ import styles from './HarvestPosition.module.css';
 import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 
 import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -78,6 +78,7 @@ export default function HarvestPosition(props: propsIF) {
         handleModalClose,
         slippage,
         ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     // settings

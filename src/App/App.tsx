@@ -178,7 +178,6 @@ import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
-import { GasPriceContext } from '../contexts/GasPriceContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -3280,7 +3279,7 @@ export default function App() {
         chainId: chainData.chainId,
         chainData,
         currentTxActiveInTransactions,
-
+        gasPriceInGwei,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -3494,11 +3493,7 @@ export default function App() {
                             element={
                                 <CrocEnvContext.Provider value={crocEnv}>
                                     <PoolContext.Provider value={pool}>
-                                        <GasPriceContext.Provider
-                                            value={gasPriceInGwei}
-                                        >
-                                            <Trade {...tradeProps} />
-                                        </GasPriceContext.Provider>
+                                        <Trade {...tradeProps} />
                                     </PoolContext.Provider>
                                 </CrocEnvContext.Provider>
                             }
