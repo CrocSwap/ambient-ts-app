@@ -208,7 +208,9 @@ const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquid
 
 const isChartEnabled =
     !!process.env.REACT_APP_CHART_IS_ENABLED &&
-    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'true';
+    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+        ? false
+        : true;
 
 /** ***** React Function *******/
 export default function App() {
