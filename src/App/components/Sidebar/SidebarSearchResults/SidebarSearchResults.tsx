@@ -1,16 +1,14 @@
 import { Dispatch, SetStateAction } from 'react';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
-import { ackTokensMethodsIF } from '../../../hooks/useAckTokens';
 import { sidebarSearchIF } from '../useSidebarSearch';
 
 interface propsIF {
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     isConnected: boolean;
@@ -21,14 +19,12 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    ackTokens: ackTokensMethodsIF;
     searchData: sidebarSearchIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
     const {
         searchData,
-        getTokenByAddress,
         tokenPair,
         chainId,
         isConnected,
@@ -39,7 +35,6 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
-        ackTokens,
     } = props;
 
     return (
@@ -47,11 +42,9 @@ export default function SidebarSearchResults(props: propsIF) {
             <div className={styles.search_result_title}>Search Results</div>
             <PoolsSearchResults
                 searchedPools={searchData.pools}
-                getTokenByAddress={getTokenByAddress}
                 tokenPair={tokenPair}
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
-                ackTokens={ackTokens}
             />
             {isConnected && (
                 <>

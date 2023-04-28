@@ -27,7 +27,7 @@ export default function Footer() {
         {
             title: (
                 <>
-                    <BsGithub size={15} /> Github
+                    <BsGithub size={15} /> GitHub
                 </>
             ),
             content: 'View our smart contracts, SDK, and more',

@@ -127,7 +127,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 Medium
             </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>
-                Github
+                GitHub
             </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<HiDocumentDuplicate size={20} />}>
                 Docs

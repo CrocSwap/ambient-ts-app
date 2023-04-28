@@ -1,32 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import {
-    TokenIF,
     TokenPairIF,
     TempPoolIF,
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
-import { ackTokensMethodsIF } from '../../../../hooks/useAckTokens';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
-    ackTokens: ackTokensMethodsIF;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const {
-        searchedPools,
-        getTokenByAddress,
-        tokenPair,
-        chainId,
-        cachedPoolStatsFetch,
-        ackTokens,
-    } = props;
+    const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
     const navigate = useNavigate();
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
@@ -68,9 +57,7 @@ export default function PoolsSearchResults(props: propsIF) {
                                 chainId={chainId}
                                 handleClick={handleClick}
                                 pool={pool}
-                                getTokenByAddress={getTokenByAddress}
                                 cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                ackTokens={ackTokens}
                             />
                         ))}
                     </ol>
