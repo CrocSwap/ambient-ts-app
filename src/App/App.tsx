@@ -401,29 +401,29 @@ export default function App() {
             : true,
     );
 
-    const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
-
     useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting login check delay');
-        const timer = setTimeout(() => {
-            setLoginCheckDelayElapsed(true);
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (isConnected || (isConnected === false && loginCheckDelayElapsed)) {
-            if (isConnected && userData.isLoggedIn !== isConnected && account) {
+        if (isConnected) {
+            if (userData.isLoggedIn === false && account) {
                 IS_LOCAL_ENV && console.debug('settting to logged in');
                 dispatch(setIsLoggedIn(true));
                 dispatch(setAddressAtLogin(account));
-            } else if (!isConnected && userData.isLoggedIn !== false) {
-                IS_LOCAL_ENV && console.debug('setting to logged out');
+            } else if (userData.isLoggedIn === false) {
+                IS_LOCAL_ENV &&
+                    console.debug('settting to logged in - no address');
+                dispatch(setIsLoggedIn(true));
+            } else if (userData.isLoggedIn === undefined) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
+                dispatch(setIsLoggedIn(false));
+                dispatch(resetUserAddresses());
+            }
+        } else {
+            if (userData.isLoggedIn === true) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
                 dispatch(setIsLoggedIn(false));
                 dispatch(resetUserAddresses());
             }
         }
-    }, [loginCheckDelayElapsed, isConnected]);
+    }, [isConnected, userData.isLoggedIn, account]);
 
     // Used in Portfolio/Account related pages for defining token universe.
     // Ideally this is inefficient, because we're also using useToken() hook
@@ -3054,7 +3054,6 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
-
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
@@ -3064,27 +3063,20 @@ export default function App() {
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
-
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: outsideControl,
         setOutsideControl: setOutsideControl,
-
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
         verifyToken: verifyToken,
-        getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
-
-        // Filter positions from graph cache for this specific chain
-
         ackTokens: ackTokens,
         topPools: topPools,
     };

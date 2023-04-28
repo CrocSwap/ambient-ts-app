@@ -114,7 +114,7 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): TempPoolIF[] =>
-            verifiedPools.filter(
+            poolList.filter(
                 (pool: TempPoolIF) =>
                     pool.base.toLowerCase() === addr.toLowerCase() ||
                     pool.quote.toLowerCase() === addr.toLowerCase(),
