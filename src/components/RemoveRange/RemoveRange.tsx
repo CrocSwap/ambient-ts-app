@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
@@ -41,7 +41,6 @@ import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV } from '../../constants';
-import { GasPriceContext } from '../../contexts/GasPriceContext';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -71,6 +70,7 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
+    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
 
@@ -85,6 +85,7 @@ export default function RemoveRange(props: propsIF) {
         quoteTokenAddress,
         chainId,
         handleModalClose,
+        gasPriceInGwei,
         ethMainnetUsdPrice,
         isAmbient,
     } = props;
@@ -108,7 +109,6 @@ export default function RemoveRange(props: propsIF) {
         'https://809821320828123.de:5000/position_stats?';
 
     const dispatch = useAppDispatch();
-    const gasPriceInGwei = useContext(GasPriceContext);
 
     const positionsPendingUpdate = useAppSelector(
         (state) => state.receiptData,

@@ -2,7 +2,7 @@ import styles from './HarvestPosition.module.css';
 import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -36,7 +36,6 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV } from '../../constants';
-import { GasPriceContext } from '../../contexts/GasPriceContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
@@ -85,7 +84,6 @@ export default function HarvestPosition(props: propsIF) {
     const [showSettings, setShowSettings] = useState(false);
 
     const crocEnv = useContext(CrocEnvContext);
-    const gasPriceInGwei = useContext(GasPriceContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,

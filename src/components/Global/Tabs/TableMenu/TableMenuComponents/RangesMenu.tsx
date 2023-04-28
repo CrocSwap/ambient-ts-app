@@ -52,6 +52,7 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     slippage: allSlippageMethodsIF;
     isPositionInRange: boolean;
+    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 
     handleAccountClick: () => void;
@@ -75,6 +76,7 @@ export default function RangesMenu(props: propsIF) {
         dexBalancePrefs,
         slippage,
         isPositionInRange,
+        gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
     } = props;
@@ -323,6 +325,7 @@ export default function RangesMenu(props: propsIF) {
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
                         slippage={slippage}
+                        gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
@@ -339,6 +342,7 @@ export default function RangesMenu(props: propsIF) {
                         handleModalClose={handleModalClose}
                         dexBalancePrefs={dexBalancePrefs}
                         slippage={slippage}
+                        gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
