@@ -85,6 +85,10 @@
 /* .row_container:hover {
     background: var(--dark2);
 } */
+
+.row_container:hover{
+    background-color: var(--dark2);
+}
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
