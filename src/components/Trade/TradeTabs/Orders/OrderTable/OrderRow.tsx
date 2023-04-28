@@ -185,6 +185,8 @@ export default function OrderRow(props: propsIF) {
             ? styles.active_position_style
             : '';
 
+    console.log(activePositionStyle);
+
     const [highlightRow, setHighlightRow] = useState(false);
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
