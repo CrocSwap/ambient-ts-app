@@ -2217,7 +2217,7 @@ export default function Chart(props: propsIF) {
                     return a.liqPrices - b.liqPrices;
                 });
 
-                if (!sortLiqaData) return;
+                if (!sortLiqaData || sortLiqaData.length === 0) return;
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
                     return Math.abs(
@@ -3702,9 +3702,10 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
+            if (d3.select(d3CanvasCrVertical?.current) === null) return;
             if (
                 dateCrosshair &&
-                d3.select(d3CanvasCrVertical?.current)?.style('visibility') ==
+                d3.select(d3CanvasCrVertical?.current).style('visibility') ===
                     'visible'
             ) {
                 context.fillText(
@@ -5839,6 +5840,7 @@ export default function Chart(props: propsIF) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
+        if (!allData || allData.length === 0) return;
         const { min }: any = findLiqNearest(allData);
 
         let filteredAllData = allData.filter(
