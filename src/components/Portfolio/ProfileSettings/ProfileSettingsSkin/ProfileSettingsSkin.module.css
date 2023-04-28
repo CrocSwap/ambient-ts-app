@@ -17,7 +17,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--select);
+    background: var(--dark3);
 }
 .main_container {
     position: absolute;
@@ -40,7 +40,7 @@
     padding: 2px 10px 2px 4px;
     height: 40px;
     border-radius: 4px;
-    background: var(--select);
+    background: var(--dark3);
     border: none;
 
     cursor: pointer;

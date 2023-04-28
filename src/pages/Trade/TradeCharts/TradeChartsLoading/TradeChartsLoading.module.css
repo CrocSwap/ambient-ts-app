@@ -62,7 +62,7 @@
         #19193b 100%
     );
     background: var(--title-gradient);
-    background: var(--dark3);
+    background: var(--dark2);
 }
 .overlay_container .overlay:nth-child(2) {
     transform: scaleX(0);
@@ -76,7 +76,7 @@
         #19193b 100%
     );
     background: var(--title-gradient);
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 @keyframes overlay_1 {

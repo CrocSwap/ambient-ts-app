@@ -5,7 +5,7 @@
     transition: all var(--animation-speed) ease-in-out;
     font-size: 14px;
     line-height: 18px;
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
 }
 
 .tab_list {

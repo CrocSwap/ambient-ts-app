@@ -23,7 +23,7 @@ interface propsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     ipadView: boolean;
     showPair: boolean;
     view2: boolean;
@@ -31,14 +31,12 @@ interface propsIF {
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
 }
 export default function TransactionRow(props: propsIF) {
-    // const navigate = useNavigate();
     const {
         account,
         showColumns,
@@ -48,7 +46,6 @@ export default function TransactionRow(props: propsIF) {
         tx,
         blockExplorer,
         handlePulseAnimation,
-
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
@@ -58,6 +55,7 @@ export default function TransactionRow(props: propsIF) {
         showPair,
         setSimpleRangeWidth,
         chainData,
+        isSidebarOpen,
     } = props;
 
     const {
@@ -325,7 +323,7 @@ export default function TransactionRow(props: propsIF) {
                     tradeData={tradeData}
                     isTokenABase={isTokenABase}
                     blockExplorer={blockExplorer}
-                    showSidebar={props.showSidebar}
+                    isSidebarOpen={isSidebarOpen}
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}

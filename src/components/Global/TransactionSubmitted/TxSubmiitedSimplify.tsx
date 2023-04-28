@@ -23,6 +23,7 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
+            aria-label='view on etherscan'
         >
             View on Etherscan
             <FiExternalLink size={20} color='var(--text-grey-white)' />

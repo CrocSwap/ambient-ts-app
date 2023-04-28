@@ -8,13 +8,7 @@ import styles from './Orders.module.css';
 
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import {
-    CandleData,
-    graphData,
-    // setDataLoadingStatus,
-    // setLimitOrdersByPool,
-} from '../../../../utils/state/graphDataSlice';
-// import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
@@ -38,7 +32,6 @@ interface propsIF {
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
-    graphData: graphData;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
@@ -51,7 +44,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     lastBlockNumber: number;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
 
@@ -64,17 +57,18 @@ export default function Orders(props: propsIF) {
         chainData,
         expandTradeTable,
         account,
-        graphData,
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
-        showSidebar,
+        isSidebarOpen,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
         lastBlockNumber,
     } = props;
+
+    const graphData = useAppSelector((state) => state?.graphData);
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
         (x) => x.chainId === chainData.chainId,
@@ -163,7 +157,7 @@ export default function Orders(props: propsIF) {
         useSortedLimits('time', nonEmptyOrders);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const view2 = useMediaQuery('(max-width: 1568px)');
     const showColumns = useMediaQuery('(max-width: 1800px)');
 
@@ -198,13 +192,6 @@ export default function Orders(props: propsIF) {
             slug: 'time',
             sortable: true,
         },
-        // {
-        //     name: '',
-        //     className: '',
-        //     show: isOnPortfolioPage,
-        //     slug: 'token_images',
-        //     sortable: false,
-        // },
         {
             name: 'Pair',
             className: '',
@@ -393,7 +380,7 @@ export default function Orders(props: propsIF) {
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
@@ -420,7 +407,6 @@ export default function Orders(props: propsIF) {
             setIsShowAllEnabled={setIsShowAllEnabled}
             changeState={changeState}
             isOnPortfolioPage={isOnPortfolioPage}
-            // setIsCandleSelected={setIsCandleSelected}
         />
     );
 

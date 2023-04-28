@@ -4,7 +4,7 @@
     grid-template-columns: 2fr 1fr 1fr;
     align-items: center;
     padding-bottom: 4px;
-    border-bottom: 1px solid var(--dark3);
+    border-bottom: 1px solid var(--dark2);
 }
 
 .exchange_row p {

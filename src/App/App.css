@@ -14,12 +14,11 @@
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {
-    scrollbar-width: auto;
-    scrollbar-color: #8f54a0 #ffffff;
+    scrollbar-width: none;
 }
 
 body::-webkit-scrollbar {
-    width: 5px;
+    display: none;
 }
 
 body::-webkit-scrollbar-track {
@@ -36,7 +35,7 @@ body {
 
 html {
     background: var(--body-bg);
-
+    scrollbar-width: none;
     color: var(--text-grey-white);
     height: 100%;
 }
@@ -109,17 +108,21 @@ footer {
 } */
 .swap-body {
     /* height: 100vh; */
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     height: calc(100vh - (var(--footer-height) + 2rem));
 }
 
-
-h3:focus-visible, h2:focus-visible, h1:focus-visible, h4:focus-visible, h5:focus-visible, h6:focus-visible, p:focus-visible{
+h3:focus-visible,
+h2:focus-visible,
+h1:focus-visible,
+h4:focus-visible,
+h5:focus-visible,
+h6:focus-visible,
+p:focus-visible {
     text-decoration: underline;
     border: none;
     outline: none;
-    text-decoration-color:var(--text-grey-white) ;
-
+    text-decoration-color: var(--text-grey-white);
 }
 .footer_container {
     color: white;

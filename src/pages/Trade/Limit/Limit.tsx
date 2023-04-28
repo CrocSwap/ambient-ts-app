@@ -1036,6 +1036,7 @@ export default function Limit(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={`approve ${tokenPair.dataTokenA.symbol}`}
                                         >
                                             {tokenPair.dataTokenA.symbol ||
                                                 tokenPair.dataTokenA.name}{' '}
@@ -1051,6 +1052,9 @@ export default function Limit(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenB.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenB.symbol ||
                                                 tokenPair.dataTokenB.name}{' '}

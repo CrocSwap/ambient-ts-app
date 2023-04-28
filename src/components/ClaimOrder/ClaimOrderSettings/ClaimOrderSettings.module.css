@@ -60,7 +60,7 @@ text-align: center; */
     margin-bottom: 0.2em;
 }
 .slippage_box {
-    background-color: var(--dark3);
+    background-color: var(--dark2);
     border-radius: 4px;
     /* border: 1px solid var(--text-grey-dark); */
     padding: 0.5rem;
@@ -115,7 +115,7 @@ text-align: center; */
         linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
     background-origin: border-box;
     background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: box-shadow var(--animation-speed) ease-in-out; */
 }
 

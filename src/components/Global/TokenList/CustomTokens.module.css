@@ -44,7 +44,7 @@
 
 .search_input input {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
 
     text-align: center;
     color: var(--text-grey-light);

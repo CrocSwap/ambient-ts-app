@@ -1,58 +1,70 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-export const useSidebar = (
-    pathname: string,
-): [
-    sidebar: string,
-    openSidebar: () => void,
-    closeSidebar: () => void,
-    toggleSidebar: () => void,
-] => {
+export interface sidebarMethodsIF {
+    status: string;
+    isOpen: boolean;
+    isHiddenOnRoute: boolean;
+    open: (persist?: string) => void;
+    close: (persist?: string) => void;
+    toggle: (persist?: string) => void;
+}
+
+export const useSidebar = (pathname: string): sidebarMethodsIF => {
+    // local storage key for persisted data
+    const localStorageKey = 'sidebarStatus';
+
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
     const [sidebar, setSidebar] = useState<string>(
-        localStorage.getItem('sidebarOpen') || 'open',
+        localStorage.getItem(localStorageKey) || 'open',
     );
 
-    // hook to update local storage when the user toggles the sidebar
-    useEffect(() => {
-        localStorage.setItem('sidebarOpen', sidebar);
-    }, [sidebar]);
+    // reusable logic to update state and optionally persist data in local storage
+    const changeSidebar = (newStatus: string, persist: string): void => {
+        setSidebar(newStatus);
+        persist && localStorage.setItem(localStorageKey, newStatus);
+    };
 
     // fn to open the sidebar
-    const openSidebar = (): void => setSidebar('open');
+    const openSidebar = (persist = ''): void => changeSidebar('open', persist);
+
     // fn to close the sidebar
-    const closeSidebar = (): void => setSidebar('closed');
+    const closeSidebar = (persist = ''): void =>
+        changeSidebar('closed', persist);
+
     // fn to toggle the sidebar
-    const toggleSidebar = (): void => {
+    const toggleSidebar = (persist = ''): void => {
         // logic router as desired action is conditional on current value
         // default action is to open the sidebar
         switch (sidebar) {
             case 'open':
-                closeSidebar();
+                closeSidebar(persist);
                 break;
             case 'closed':
             default:
-                openSidebar();
+                openSidebar(persist);
         }
     };
 
     // value whether to sidebar should be hidden on the current URL path
     const hidden = useMemo<boolean>(() => {
         // array of url paths on which to hide the sidebar
-        const hiddenPaths = ['/', '/swap'];
+        const hiddenPaths = ['/swap', '/chat', '/404', '/account'];
         // determine if the current URL path starts with any proscribed strings
-        const isPathHidden = hiddenPaths.some((path: string) =>
-            pathname.startsWith(path),
-        );
+        const isPathHidden =
+            pathname === '/' ||
+            hiddenPaths.some((path: string) => pathname.startsWith(path));
         // return boolean value showing if sidebar is hidden on current route
         return isPathHidden;
     }, [pathname]);
-    // this is just here to make the linter happy
-    // please remove it once we're returning the value from the hook
-    false && hidden;
 
-    // return sidebar status and functions to update value
-    return [sidebar, openSidebar, closeSidebar, toggleSidebar];
+    return {
+        status: sidebar,
+        isOpen: sidebar === 'open',
+        isHiddenOnRoute: hidden,
+        open: openSidebar,
+        close: closeSidebar,
+        toggle: toggleSidebar,
+    };
 };

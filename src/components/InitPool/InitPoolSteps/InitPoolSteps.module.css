@@ -28,7 +28,7 @@
 }
 
 .step_active div {
-    background: var(--dark3);
+    background: var(--dark2);
     width: 90%;
     height: 90%;
     border-radius: 50%;
@@ -52,7 +52,7 @@
 }
 
 .step_completed div {
-    background: var(--dark3);
+    background: var(--dark2);
     width: 90%;
     height: 90%;
     border-radius: 50%;

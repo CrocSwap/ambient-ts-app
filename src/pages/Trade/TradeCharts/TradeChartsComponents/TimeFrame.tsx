@@ -34,7 +34,7 @@ export default function TimeFrame(props: propsIF) {
                 tabIndex={0}
                 aria-label='Open time frame dropdown.'
             >
-                {candleTime.readableTime}
+                Candle Duration
             </button>
 
             <div className={wrapperStyle}>

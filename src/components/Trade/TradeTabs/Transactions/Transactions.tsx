@@ -3,7 +3,6 @@ import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     CandleData,
-    graphData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
@@ -35,7 +34,6 @@ interface propsIF {
     portfolio?: boolean;
     tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
-    graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
     currentTxActiveInTransactions: string;
@@ -53,7 +51,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -67,14 +65,13 @@ export default function Transactions(props: propsIF) {
         isShowAllEnabled,
         account,
         changesInSelectedCandle,
-        graphData,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        showSidebar,
+        isSidebarOpen,
         openGlobalModal,
         closeGlobalModal,
         isOnPortfolioPage,
@@ -89,11 +86,12 @@ export default function Transactions(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const graphData = useAppSelector((state) => state?.graphData);
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
     const dataLoadingStatus = graphData?.dataLoadingStatus;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase =
@@ -213,12 +211,12 @@ export default function Transactions(props: propsIF) {
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const max1400px = useMediaQuery('(max-width: 1400px)');
     const max1700px = useMediaQuery('(max-width: 1700px)');
 
     const showColumns =
-        (max1400px && !showSidebar) || (max1700px && showSidebar);
+        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -439,7 +437,7 @@ export default function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
@@ -463,7 +461,7 @@ export default function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            showSidebar={showSidebar}
+            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
