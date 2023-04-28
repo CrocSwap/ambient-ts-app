@@ -108,7 +108,7 @@ footer {
 } */
 .swap-body {
     /* height: 100vh; */
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     height: calc(100vh - (var(--footer-height) + 2rem));
 }
 

@@ -27,7 +27,7 @@
 .main_container section {
     backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--dark2);
     padding: 8px;
     height: 70%;
     display: flex;

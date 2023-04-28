@@ -19,7 +19,7 @@
 }
 .tutorial_button {
     outline: none;
-    background: var(--dark3);
+    background: var(--dark2);
     border: 1px solid var(--text-highlight-dark);
     color: var(--text-grey-light);
     border-radius: 4px;

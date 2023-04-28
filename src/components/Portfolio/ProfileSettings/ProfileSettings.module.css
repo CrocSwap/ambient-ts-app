@@ -2,7 +2,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
     /* background: red; */
     z-index: 3;
