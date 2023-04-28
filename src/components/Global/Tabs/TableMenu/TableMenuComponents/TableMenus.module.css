@@ -15,7 +15,7 @@
 }
 
 .option_button {
-    background: var(--dark3);
+    background: var(--dark2);
     width: 100%;
     border: none;
     outline: none;
@@ -23,7 +23,7 @@
     justify-content: center;
     align-items: center;
     /* border: 1px solid #242f3f; */
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
     height: 23px;
@@ -120,7 +120,7 @@
     padding: 8px;
 
     position: absolute;
-    background: var(--dark3);
+    background: var(--dark2);
 
     border-radius: 4px;
     box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
@@ -136,7 +136,7 @@
     left: 98%;
     top: 0;
     border: 10px solid transparent;
-    border-left: 10px solid var(--dark3);
+    border-left: 10px solid var(--dark2);
 }
 
 .dropdown_wrapper {

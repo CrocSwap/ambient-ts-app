@@ -116,7 +116,7 @@
     width: 65%;
 } */
 .token_select {
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -131,7 +131,7 @@
 }
 
 .token_select:hover {
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .token_select:focus-visible {
@@ -221,7 +221,7 @@
 .manage_token_list_container {
     width: 100%;
     padding: 20px;
-    background-color: var(--dark3);
+    background-color: var(--dark2);
     border-top: 1px solid rgb(44, 47, 54);
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -275,7 +275,7 @@
 }
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark1);
+    background: var(--dark2);
 }
 
 .max_button:hover {

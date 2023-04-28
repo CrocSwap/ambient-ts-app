@@ -1,7 +1,7 @@
 .activity_indicator {
     height: 34px;
     width: 34px;
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     justify-content: center;
     align-items: center;

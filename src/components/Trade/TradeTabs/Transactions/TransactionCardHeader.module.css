@@ -6,7 +6,7 @@
     font-size: 10px;
 
     padding-bottom: 4px;
-    border-bottom: 1px solid var(--dark3);
+    border-bottom: 1px solid var(--dark2);
 }
 .row_container {
     display: flex;
@@ -82,7 +82,7 @@
         font-size: 10px;
 
         padding-bottom: 4px;
-        border-bottom: 1px solid var(--dark3);
+        border-bottom: 1px solid var(--dark2);
     }
 }
 

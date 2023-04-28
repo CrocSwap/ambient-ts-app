@@ -16,7 +16,7 @@
 .container input {
     width: 100%;
     height: 30px;
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
     outline: none;
     border: none;

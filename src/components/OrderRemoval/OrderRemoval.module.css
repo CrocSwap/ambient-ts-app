@@ -80,7 +80,7 @@
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--dark2);
 
     color: var(--text-grey-light);
     font-size: var(--body-size);

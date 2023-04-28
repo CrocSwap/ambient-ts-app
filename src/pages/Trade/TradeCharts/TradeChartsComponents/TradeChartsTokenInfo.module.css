@@ -86,22 +86,19 @@
 
 }
 
-.mono_space{
-    width: 350px;
-    background: var(--dark3);
+.mono_space_tooltip{
     color: var(--text-grey-white);
     border-radius: 4px;
     padding: 12px;
-  
-}
-
-.mono_space p{
-    font-family: monospace !important;
     white-space: nowrap;
-
- 
+    width: 350px;
+    background: var(--dark3);
 }
-.mono_space svg{
+
+.mono_space_tooltip p{
+    font-family: monospace !important;
+}
+.mono_space_tooltip svg{
     cursor: pointer;
 }
 .tokens_images,

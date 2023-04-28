@@ -13,7 +13,7 @@
     height: calc(100% - 5rem);
     cursor: default;
     padding: 1rem 2rem;
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--dark2);
     backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
     /* margin: 0 1rem; */
