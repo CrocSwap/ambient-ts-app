@@ -3271,7 +3271,6 @@ export default function App() {
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        pool,
         isUserLoggedIn,
         provider,
         candleData,
