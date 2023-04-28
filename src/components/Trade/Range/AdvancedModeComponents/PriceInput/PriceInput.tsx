@@ -36,7 +36,8 @@ export default function PriceInput(props: priceInputProps) {
             !allowedChars.test(e.key) &&
             e.key !== '.' &&
             e.key !== ',' &&
-            e.key !== 'Backspace'
+            e.key !== 'Backspace' &&
+            e.key !== 'Tab'
         ) {
             e.preventDefault();
         }
