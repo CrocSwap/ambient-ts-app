@@ -100,7 +100,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
-import { memoizePoolStats } from './functions/getPoolStats';
+import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -205,6 +205,10 @@ const startMoralis = async () => {
 };
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
+
+const isChartEnabled =
+    !!process.env.REACT_APP_CHART_IS_ENABLED &&
+    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'true';
 
 /** ***** React Function *******/
 export default function App() {
@@ -475,7 +479,7 @@ export default function App() {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [expandTradeTable, setExpandTradeTable] = useState(false);
+    const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
@@ -919,6 +923,7 @@ export default function App() {
     // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
         if (
+            !isChartEnabled ||
             !baseTokenAddress ||
             !quoteTokenAddress ||
             !chainData ||
@@ -933,6 +938,7 @@ export default function App() {
         baseTokenAddress + quoteTokenAddress,
         chainData === undefined,
         lastBlockNumber === 0,
+        isChartEnabled,
     ]);
 
     useEffect(() => {
@@ -1044,6 +1050,7 @@ export default function App() {
         dispatch(setPrimaryQuantityRange(''));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setPoolPriceChangePercent(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
@@ -1499,11 +1506,16 @@ export default function App() {
     ]);
 
     useEffect(() => {
+        console.log({ isChartEnabled });
         setCandleData(undefined);
-        setIsCandleDataNull(false);
-        setExpandTradeTable(false);
-        fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
+        setIsCandleDataNull(true);
+        isChartEnabled && fetchCandles();
+    }, [
+        isChartEnabled,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        candleTimeLocal,
+    ]);
 
     const fetchCandles = () => {
         if (
@@ -1564,6 +1576,8 @@ export default function App() {
                                         candles: candles,
                                     });
                                 }
+                                setIsCandleDataNull(false);
+                                setExpandTradeTable(false);
                             }
                         })
                         .catch(console.error);
@@ -1576,6 +1590,60 @@ export default function App() {
             setExpandTradeTable(true);
         }
     };
+
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
+        string | undefined
+    >();
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
+        useState<boolean>(true);
+
+    useEffect(() => {
+        (async () => {
+            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainData.chainId,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        chainData.poolIndex,
+                        tradeData.isDenomBase,
+                    );
+
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                        setIsPoolPriceChangePositive(true);
+                    } else if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [
+        isServerEnabled,
+        tradeData.isDenomBase,
+        baseTokenAddress + quoteTokenAddress,
+        lastBlockNumber,
+    ]);
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -3263,6 +3331,8 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chartSettings,
