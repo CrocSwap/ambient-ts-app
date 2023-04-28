@@ -1508,14 +1508,10 @@ export default function App() {
     ]);
 
     useEffect(() => {
-        console.log({ isChartEnabled });
-        setCandleData(undefined);
-        setIsCandleDataNull(true);
         isChartEnabled && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
         candleTimeLocal,
     ]);
 
