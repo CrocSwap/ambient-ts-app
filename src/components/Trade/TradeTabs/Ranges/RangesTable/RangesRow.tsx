@@ -31,7 +31,6 @@ interface propsIF {
     quoteTokenDexBalance: string;
     account: string;
     lastBlockNumber: number;
-    showSidebar: boolean;
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
@@ -86,7 +85,6 @@ export default function RangesRow(props: propsIF) {
         baseTokenLogo,
         userMatchesConnectedAccount,
         usdValue,
-        // usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -135,7 +133,6 @@ export default function RangesRow(props: propsIF) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: props.lastBlockNumber,
         positionApy: position.apy,
-
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
@@ -392,7 +389,6 @@ export default function RangesRow(props: propsIF) {
                 <li data-label='menu' className={styles.menu}>
                     <RangesMenu
                         {...rangeMenuProps}
-                        showSidebar={props.showSidebar}
                         isEmpty={position.totalValueUSD === 0}
                         showHighlightedButton={showHighlightedButton}
                         setSimpleRangeWidth={setSimpleRangeWidth}

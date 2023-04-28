@@ -1,16 +1,13 @@
 // START: Import React and Dongles
 import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
-// import { Link } from 'react-router-dom';
 import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
-// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
-// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -39,10 +36,9 @@ interface propsIF {
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     isShowAllEnabled: boolean;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOrderFilled: boolean;
     handlePulseAnimation?: (type: string) => void;
-    // orderDetailsProps: any;
     account: string;
     lastBlockNumber: number;
     showHighlightedButton: boolean;
@@ -64,16 +60,13 @@ export default function OrdersMenu(props: propsIF) {
         isOrderFilled,
         isOwnerActiveAccount,
         closeGlobalModal,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         lastBlockNumber,
         account,
         isBaseTokenMoneynessGreaterOrEqual,
-        // showHighlightedButton,
         isOnPortfolioPage,
     } = props;
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const [
         isModalOpen,
@@ -136,12 +129,10 @@ export default function OrdersMenu(props: propsIF) {
                 }
                 if (sellQtyField) {
                     sellQtyField.value = '';
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                 }
             } else {
                 if (sellQtyField) {
                     sellQtyField.value = buyQtyField.value;
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                 }
                 if (buyQtyField) {
                     buyQtyField.value = '';
@@ -180,15 +171,6 @@ export default function OrdersMenu(props: propsIF) {
         setShowDropdownMenu(false);
     }
 
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value}
-    //     </SnackbarComponent>
-    // );
     // -----------------END OF SNACKBAR----------------
 
     const openRemoveModal = () =>
@@ -244,7 +226,7 @@ export default function OrdersMenu(props: propsIF) {
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
     const view2WithNoSidebar =
-        useMediaQuery('(min-width: 1680px)') && !showSidebar;
+        useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
     const removeButtonOnClick = () => {
         setShowDropdownMenu(false);
@@ -335,12 +317,8 @@ export default function OrdersMenu(props: propsIF) {
         <div className={styles.actions_menu}>
             {minView && claimButton}
             {minView && removeButton}
-            {/* {view1 && removeButton} */}
-            {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
             {!isOwnerActiveAccount && copyButton}
-            {/* {view1 && !isOwnerActiveAccount && copyButton} */}
-            {/* {view1 && !isOrderFilled && copyButton} */}
         </div>
     );
 
@@ -348,8 +326,6 @@ export default function OrdersMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {detailsButton}
             {isOwnerActiveAccount && copyButton}
-            {/* {!view1 && copyButton} */}
-            {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {!minView && removeButton}
             {walletButton}
         </div>
@@ -388,7 +364,6 @@ export default function OrdersMenu(props: propsIF) {
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}
-            {/* {snackbarContent} */}
         </div>
     );
 }

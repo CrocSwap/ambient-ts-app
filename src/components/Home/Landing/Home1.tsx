@@ -6,6 +6,8 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 import row1Image from '../../../assets/images/newHome/row1.svg';
 import row2Image from '../../../assets/images/newHome/row2.png';
 import row3Image from '../../../assets/images/newHome/row3.png';
+import Investors from './Investors';
+import Footer from '../../Footer/Footer';
 export default function Home1() {
     // const { t } = useTranslation();
 
@@ -109,6 +111,8 @@ export default function Home1() {
             {thirdRow}
             {fourthRow}
             {fifthRow}
+            <Investors />
+            <Footer />
         </div>
     );
 }

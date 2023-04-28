@@ -78,6 +78,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 href='https://ethereum.org/en/wallets/'
                 target='_blank'
                 rel='noreferrer'
+                aria-label='wallets'
             >
                 Learn more about Wallets
             </a>

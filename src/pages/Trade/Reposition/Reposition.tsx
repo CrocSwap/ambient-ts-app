@@ -768,6 +768,7 @@ export default function Reposition(props: propsIF) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
+            aria-label='view on etherscan'
         >
             View on Etherscan
             <FiExternalLink size={12} color='var(--text-grey-white)' />

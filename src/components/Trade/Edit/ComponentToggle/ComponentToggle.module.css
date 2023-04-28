@@ -32,5 +32,5 @@
 }
 .non_active_button {
     color: var(--text-grey-white);
-    background: var(--dark3);
+    background: var(--dark2);
 }

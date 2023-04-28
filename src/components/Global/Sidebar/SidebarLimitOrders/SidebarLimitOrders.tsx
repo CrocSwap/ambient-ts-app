@@ -19,7 +19,7 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
+    closeSidebar: () => void;
 }
 export default function SidebarLimitOrders(props: propsIF) {
     const {
@@ -32,8 +32,9 @@ export default function SidebarLimitOrders(props: propsIF) {
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
-        setShowSidebar,
+        closeSidebar,
     } = props;
+
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -42,10 +43,6 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
-        // if (onTradeRoute || onAccountRoute) return;
-        // if (onTradeRoute) return;
-        // navigate('/trade');
-
         if (onAccountRoute) return;
         navigate('/account');
     }
@@ -67,13 +64,9 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
-        setShowSidebar(false);
-
-        // props.setIsShowAllEnabled(false);
-        // props.setExpandTradeTable(true);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        closeSidebar();
     };
 
     return (

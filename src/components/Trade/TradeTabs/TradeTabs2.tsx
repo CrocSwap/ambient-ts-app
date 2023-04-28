@@ -76,7 +76,7 @@ interface propsIF {
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     searchableTokens: TokenIF[];
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
@@ -139,7 +139,7 @@ export default function TradeTabs2(props: propsIF) {
         outsideControl,
         setOutsideControl,
         searchableTokens,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         changeState,
         selectedDate,
@@ -407,7 +407,6 @@ export default function TradeTabs2(props: propsIF) {
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
-        graphData: graphData,
         lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
@@ -415,7 +414,7 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentPositionActive: setCurrentPositionActive,
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
@@ -436,7 +435,6 @@ export default function TradeTabs2(props: propsIF) {
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         tokenList: tokenList,
-        graphData: graphData,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -450,7 +448,7 @@ export default function TradeTabs2(props: propsIF) {
         closeGlobalModal: props.closeGlobalModal,
         changeState: changeState,
         openGlobalModal: props.openGlobalModal,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
@@ -466,12 +464,11 @@ export default function TradeTabs2(props: propsIF) {
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
-        graphData: graphData,
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
         setIsShowAllEnabled: setIsShowAllEnabled,
@@ -549,7 +546,12 @@ export default function TradeTabs2(props: propsIF) {
               },
               {
                   label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
+                  content: (
+                      <Leaderboard
+                          {...rangesProps}
+                          isSidebarOpen={isSidebarOpen}
+                      />
+                  ),
                   icon: leaderboard,
                   showRightSideOption: false,
               },

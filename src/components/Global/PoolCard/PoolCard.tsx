@@ -336,7 +336,6 @@ export default function PoolCard(props: propsIF) {
             tabIndex={0}
             role='presentation'
             aria-label={ariaDescription}
-            aria-description={ariaDescription}
         >
             <div className={styles.main_container}>
                 <div className={styles.row}>

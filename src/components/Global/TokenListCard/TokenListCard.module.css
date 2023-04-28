@@ -16,7 +16,7 @@
 }
 
 .token_list_card_content:hover {
-    background: var(--dark3);
+    background: var(--dark2);
     color: var(--text-grey-white);
 }
 

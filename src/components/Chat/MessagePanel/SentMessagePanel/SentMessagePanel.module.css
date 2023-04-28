@@ -56,7 +56,7 @@
     order: 0;
 }
 
-.seperator {
+.separator {
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -69,6 +69,7 @@
 
     /* Inside auto layout */
     order: 0;
+    cursor: default;
 }
 
 .message {
@@ -177,6 +178,7 @@
     box-sizing: border-box;
     order: 4;
     align-self: stretch;
+    cursor: default;
 }
 
 .sent_message_body_with_mention {

@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    MouseEvent,
-    ReactNode,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-} from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
@@ -14,19 +7,14 @@ import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { sidebarMethodsIF } from '../../../hooks/useSidebar';
 
 // interface for React functional component props
 interface propsIF {
     children?: ReactNode;
-    showSidebar: boolean;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
     shouldDisplayContentWhenUserNotLoggedIn: boolean;
-
     openModalWallet: () => void;
     isDefaultOverridden: boolean;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
     item: {
         name: string;
         icon: string;
@@ -34,17 +22,17 @@ interface propsIF {
     };
     idx: number | string;
     openAllDefault?: boolean;
+    sidebar: sidebarMethodsIF;
 }
 
 export default function SidebarAccordion(props: propsIF) {
     const {
-        showSidebar,
         shouldDisplayContentWhenUserNotLoggedIn,
         idx,
         item,
-        setShowSidebar,
         openModalWallet,
         isDefaultOverridden,
+        sidebar,
     } = props;
 
     const { isConnected } = useAccount();
@@ -74,26 +62,24 @@ export default function SidebarAccordion(props: propsIF) {
         >
             <div
                 className={styles.sidebar_item_content}
-                onClick={
-                    overflowSidebarMQ ? () => setShowSidebar(false) : undefined
-                }
+                onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
             >
                 {item.data}
             </div>
         </motion.div>
     );
 
-    // This is to prevent the sidebar items from rendering their contents when the sidebar is closed
-    const showOpenContentOrNull = showSidebar ? openStateContent : '';
+    // prevent sidebar items from rendering their contents when the sidebar is closed
+    const showOpenContentOrNull = sidebar.isOpen ? openStateContent : '';
 
     const sidebarIconStyle = isOpen ? styles.open_link : null;
 
     function handleAccordionClick() {
-        if (showSidebar) {
+        if (sidebar.isOpen) {
             setIsOpen(!isOpen);
         } else {
             setIsOpen(true);
-            setShowSidebar(true);
+            sidebar.open();
         }
         IS_LOCAL_ENV && console.debug('clicked');
     }
@@ -111,7 +97,7 @@ export default function SidebarAccordion(props: propsIF) {
     const accordionContentToShow =
         !isConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
-        showSidebar ? (
+        sidebar.isOpen ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <button onClick={openModalWallet}>Connect Wallet</button>
@@ -129,7 +115,7 @@ export default function SidebarAccordion(props: propsIF) {
             >
                 <div>
                     <div className={styles.sidebar_link}>
-                        {showSidebar && (
+                        {sidebar.isOpen && (
                             <MdPlayArrow
                                 size={12}
                                 className={sidebarIconStyle}

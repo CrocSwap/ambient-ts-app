@@ -90,7 +90,7 @@ interface propsIF {
     poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     isCandleSelected: boolean | undefined;
@@ -159,7 +159,7 @@ export default function Trade(props: propsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
-        showSidebar,
+        isSidebarOpen,
         handlePulseAnimation,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -199,7 +199,7 @@ export default function Trade(props: propsIF) {
     const routes = [
         {
             path: '/market',
-            name: 'Market',
+            name: 'Swap',
         },
         {
             path: '/limit',
@@ -207,7 +207,7 @@ export default function Trade(props: propsIF) {
         },
         {
             path: '/range',
-            name: 'Range',
+            name: 'Pool',
         },
     ];
 
@@ -542,7 +542,7 @@ export default function Trade(props: propsIF) {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
         isTutorialMode: props.isTutorialMode,
         setIsTutorialMode: props.setIsTutorialMode,
@@ -589,7 +589,7 @@ export default function Trade(props: propsIF) {
         openGlobalModal: props.openGlobalModal,
         closeGlobalModal: props.closeGlobalModal,
         searchableTokens: searchableTokens,
-        showSidebar: showSidebar,
+        isSidebarOpen: isSidebarOpen,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,

@@ -4,7 +4,6 @@ import styles from './Ranges.module.css';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { NavLink } from 'react-router-dom';
-import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -260,9 +259,9 @@ export default function rangeRowConstants(props: Props) {
     const tokenPair = (
         <CustomLI className='base_color' noClick>
             <NavLink to={tradeLinkPath}>
-                <p>
+                <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
-                </p>
+                </div>
             </NavLink>
         </CustomLI>
     );
@@ -291,23 +290,23 @@ export default function rangeRowConstants(props: Props) {
     );
 
     const rangeTimeWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p className={styles.range_time_p}>
-                    {moment(position.latestUpdateTime * 1000).format(
-                        'MM/DD/YYYY HH:mm',
-                    )}
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <CustomLI style={{ textTransform: 'lowercase' }}>
-                <p className='base_color'>{elapsedTimeString}</p>
-            </CustomLI>
-        </TextOnlyTooltip>
+        // <TextOnlyTooltip
+        //     interactive
+        //     title={
+        //         ''
+        //         // <p className={styles.range_time_p}>
+        //         //     {moment(position.latestUpdateTime * 1000).format(
+        //         //         'MM/DD/YYYY HH:mm',
+        //         //     )}
+        //         // </p>
+        //     }
+        //     placement={'right'}
+        //     enterDelay={750}
+        //     leaveDelay={0}
+        // >
+        <CustomLI style={{ textTransform: 'lowercase' }}>
+            <p className='base_color'>{elapsedTimeString}</p>
+        </CustomLI>
     );
 
     const txIdColumnComponent = (

@@ -23,7 +23,7 @@
 .modal_body {
     border: solid 1px transparent;
 
-    background: var(--dark3);
+    background: var(--dark2);
     cursor: pointer;
 
     width: 300px;

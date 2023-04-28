@@ -143,7 +143,7 @@
 
 .theme_toggler_content {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -189,7 +189,7 @@
     content: ' ';
     position: absolute;
 
-    background: linear-gradient(var(--dark2), var(--dark3));
+    background: linear-gradient(var(--dark2), var(--dark2));
     border-radius: inherit;
 }
 .page_block_sign:before {

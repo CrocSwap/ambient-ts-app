@@ -25,7 +25,7 @@ interface propsIF {
     view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     lastBlockNumber: number;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -47,7 +47,7 @@ export default function OrderRow(props: propsIF) {
         ipadView,
         showPair,
         limitOrder,
-        showSidebar,
+        isSidebarOpen,
         openGlobalModal,
         closeGlobalModal,
         currentPositionActive,
@@ -284,9 +284,7 @@ export default function OrderRow(props: propsIF) {
     const {
         IDWithTooltip,
         ValueWithTooltip,
-
         walletWithTooltip,
-
         tokenPair,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
@@ -341,7 +339,7 @@ export default function OrderRow(props: propsIF) {
                         tradeData={tradeData}
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        showSidebar={showSidebar}
+                        isSidebarOpen={isSidebarOpen}
                         handlePulseAnimation={handlePulseAnimation}
                         lastBlockNumber={lastBlockNumber}
                         showHighlightedButton={showHighlightedButton}

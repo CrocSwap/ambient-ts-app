@@ -20,7 +20,6 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
-    graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 import {
@@ -57,7 +56,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -70,7 +68,7 @@ interface propsIF {
     portfolio?: boolean;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -98,7 +96,6 @@ export default function Ranges(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
@@ -108,7 +105,7 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
-        showSidebar,
+        isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         dexBalancePrefs,
@@ -118,7 +115,9 @@ export default function Ranges(props: propsIF) {
         cachedPositionUpdateQuery,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -329,7 +328,7 @@ export default function Ranges(props: propsIF) {
     );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -501,7 +500,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}
@@ -536,7 +534,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}

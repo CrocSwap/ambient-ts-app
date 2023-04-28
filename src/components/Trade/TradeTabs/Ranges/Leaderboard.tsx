@@ -8,10 +8,7 @@ import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    graphData,
-    updateLeaderboard,
-} from '../../../../utils/state/graphDataSlice';
+import { updateLeaderboard } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import {
@@ -38,7 +35,6 @@ interface propsIF {
     chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -50,7 +46,7 @@ interface propsIF {
     portfolio?: boolean;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    showSidebar: boolean;
+    isSidebarOpen: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
@@ -75,7 +71,6 @@ export default function Leaderboard(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
@@ -84,7 +79,7 @@ export default function Leaderboard(props: propsIF) {
         handlePulseAnimation,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        showSidebar,
+        isSidebarOpen,
         setSimpleRangeWidth,
         dexBalancePrefs,
         slippage,
@@ -92,6 +87,7 @@ export default function Leaderboard(props: propsIF) {
         ethMainnetUsdPrice,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -182,7 +178,7 @@ export default function Leaderboard(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const showColumns = useMediaQuery('(max-width: 1900px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -358,7 +354,6 @@ export default function Leaderboard(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
             isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}
