@@ -401,16 +401,6 @@ export default function App() {
             : true,
     );
 
-    const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
-
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting login check delay');
-        const timer = setTimeout(() => {
-            setLoginCheckDelayElapsed(true);
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
     useEffect(() => {
         if (isConnected) {
             if (userData.isLoggedIn === false && account) {
