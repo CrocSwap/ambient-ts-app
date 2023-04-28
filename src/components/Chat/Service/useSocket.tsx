@@ -8,7 +8,11 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
-const useSocket = (room: string, areSubscriptionsEnabled = true) => {
+const useSocket = (
+    room: string,
+    areSubscriptionsEnabled = true,
+    isChatOpen = true,
+) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -17,7 +21,8 @@ const useSocket = (room: string, areSubscriptionsEnabled = true) => {
     const [messageUser, setMessageUser] = useState<string>();
 
     useEffect(() => {
-        if (!areSubscriptionsEnabled) return;
+        if (!areSubscriptionsEnabled || !isChatOpen) return;
+
         const roomId = room;
         socketRef.current = io(host, { query: { roomId } });
         socketRef.current.on('connection');
@@ -31,6 +36,10 @@ const useSocket = (room: string, areSubscriptionsEnabled = true) => {
                 setMessageUser(data[0].sender);
             });
         });
+
+        if (isChatOpen) {
+            getMsg();
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socketRef.current.on('msg-recieve', (data: any) => {
             setMessages(data);
@@ -39,7 +48,7 @@ const useSocket = (room: string, areSubscriptionsEnabled = true) => {
         return () => {
             socketRef.current.disconnect();
         };
-    }, [room, areSubscriptionsEnabled]);
+    }, [room, areSubscriptionsEnabled, isChatOpen]);
 
     async function getMsg() {
         if (!socketRef.current) return;

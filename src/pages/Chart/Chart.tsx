@@ -772,65 +772,79 @@ export default function Chart(props: propsIF) {
         const oldTickValues = scaleData?.xScale.ticks();
         let result = oldTickValues;
 
-        const _bandwidth = reset ? defaultCandleBandwith : bandwidth;
+        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
 
-        const domainX = scaleData?.xScale.domain();
-        if (parsedChartData?.period === 3600) {
-            result = await getHourAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-                1,
-            );
+        const filtered = parsedChartData?.chartData.filter(
+            (data: any) => data.date >= xmin && data.date <= xmax,
+        );
+
+        if (filtered && scaleData) {
+            const xminData = d3.min(filtered, (d: any) => d.time) * 1000;
+            const xmaxData = d3.max(filtered, (d: any) => d.time) * 1000;
+
+            const _bandwidth =
+                Math.abs(
+                    scaleData.xScale(xminData) - scaleData.xScale(xmaxData),
+                ) / filtered.length;
+
+            const domainX = scaleData?.xScale.domain();
+            if (parsedChartData?.period === 3600) {
+                result = await getHourAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                    1,
+                );
+            }
+
+            if (parsedChartData?.period === 86400) {
+                result = await getOneDayAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 14400) {
+                result = await getHourAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                    4,
+                );
+            }
+
+            if (parsedChartData?.period === 900) {
+                result = get15MinutesAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 300) {
+                result = get5MinutesAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
+
+            if (parsedChartData?.period === 60) {
+                result = get1MinuteAxisTicks(
+                    domainX[0],
+                    domainX[1],
+                    oldTickValues,
+                    _bandwidth,
+                );
+            }
         }
-
-        if (parsedChartData?.period === 86400) {
-            result = await getOneDayAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 14400) {
-            result = await getHourAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-                4,
-            );
-        }
-
-        if (parsedChartData?.period === 900) {
-            result = get15MinutesAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 300) {
-            result = get5MinutesAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
-        if (parsedChartData?.period === 60) {
-            result = get1MinuteAxisTicks(
-                domainX[0],
-                domainX[1],
-                oldTickValues,
-                _bandwidth,
-            );
-        }
-
         return result;
     }
 
@@ -2203,7 +2217,7 @@ export default function Chart(props: propsIF) {
                     return a.liqPrices - b.liqPrices;
                 });
 
-                if (!sortLiqaData) return;
+                if (!sortLiqaData || sortLiqaData.length === 0) return;
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
                     return Math.abs(
@@ -2238,6 +2252,7 @@ export default function Chart(props: propsIF) {
             liquidityData?.depthLiqAskData,
         );
         try {
+            if (liqDataAll && liqDataAll.length === 0) return;
             const { min, max }: any = findLiqNearest(liqDataAll);
             const visibleDomain = liqDataAll.filter(
                 (liqData: LiquidityDataLocal) =>
@@ -3651,6 +3666,7 @@ export default function Chart(props: propsIF) {
 
                     if (
                         isMouseMoveCrosshair &&
+                        isCrosshairActive !== 'none' &&
                         xScale(d) > xScale(crosshairData[0].x) - _width &&
                         xScale(d) < xScale(crosshairData[0].x) + _width &&
                         d !== crosshairData[0].x
@@ -3687,9 +3703,10 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
+            if (d3.select(d3CanvasCrVertical?.current) === null) return;
             if (
                 dateCrosshair &&
-                d3.select(d3CanvasCrVertical?.current).style('visibility') ==
+                d3.select(d3CanvasCrVertical?.current).style('visibility') ===
                     'visible'
             ) {
                 context.fillText(
@@ -5824,6 +5841,7 @@ export default function Chart(props: propsIF) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
+        if (!allData || allData.length === 0) return;
         const { min }: any = findLiqNearest(allData);
 
         let filteredAllData = allData.filter(

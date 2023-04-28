@@ -110,7 +110,7 @@
 .action_button p:hover {
     color: var(--dark2);
 
-    /* color: var(--dark3); */
+    /* color: var(--dark2); */
 }
 
 @media only screen and (min-width: 768px) {

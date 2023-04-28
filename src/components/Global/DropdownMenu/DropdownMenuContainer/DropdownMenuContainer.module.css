@@ -4,7 +4,7 @@
     width: 100px;
     transform: translateX(-45%);
 
-    background: var(--dark3);
+    background: var(--dark2);
 
     backdrop-filter: blur(16.5px);
     -webkit-backdrop-filter: blur(16.5px);

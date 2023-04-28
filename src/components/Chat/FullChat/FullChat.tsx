@@ -412,7 +412,7 @@ export default function FullChat(props: FullChatPropsIF) {
             <div
                 className={styles.option_item}
                 style={{
-                    background: currentRoomIsGlobal ? 'var(--dark3)' : '',
+                    background: currentRoomIsGlobal ? 'var(--dark2)' : '',
                 }}
                 onClick={handleGlobalClick}
             >

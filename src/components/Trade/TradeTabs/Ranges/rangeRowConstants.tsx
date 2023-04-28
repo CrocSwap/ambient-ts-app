@@ -70,8 +70,7 @@ export default function rangeRowConstants(props: Props) {
         posHashTruncated,
         usdValue,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
+
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
@@ -119,8 +118,6 @@ export default function rangeRowConstants(props: Props) {
         return (
             <li
                 onClick={noClick ? undefined : openDetailsModal}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
                 className={className}
                 style={style}
             >

@@ -1,5 +1,5 @@
 .wallet_content {
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 8px 1rem;
     border-radius: var(--border-radius);
     display: flex;
@@ -73,7 +73,7 @@
 .actions_container a {
     cursor: pointer;
     background: transparent;
-    background: var(--dark3);
+    background: var(--dark2);
     border: none;
     outline: none;
     padding: 8px;
