@@ -48,7 +48,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -156,7 +156,7 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const userPositionsCacheEndpoint =
         httpGraphCacheServerDomain + '/user_positions?';

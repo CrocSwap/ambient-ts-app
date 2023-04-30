@@ -120,7 +120,14 @@ import {
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
-import { APP_ENVIRONMENT, IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
+import {
+    APP_ENVIRONMENT,
+    GRAPHCACHE_URL,
+    GRAPHCACHE_WSS_URL,
+    IS_LOCAL_ENV,
+    MORALIS_KEY,
+    ZERO_ADDRESS,
+} from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 import { getVolumeSeries } from './functions/getVolumeSeries';
@@ -191,16 +198,15 @@ const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
 const cachedPoolStatsFetch = memoizePoolStats();
 
-const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
 const startMoralis = async () => {
     await Moralis.start({
-        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
-        // ...and any other configuration
+        apiKey: MORALIS_KEY,
     });
 };
 
@@ -1050,8 +1056,7 @@ export default function App() {
         (async () => {
             if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
                 const poolAmbientApyCacheEndpoint =
-                    'https://809821320828123.de:5000' +
-                    '/pool_ambient_apy_cached?';
+                    GRAPHCACHE_URL + '/pool_ambient_apy_cached?';
 
                 fetch(
                     poolAmbientApyCacheEndpoint +

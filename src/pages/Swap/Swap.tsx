@@ -50,7 +50,7 @@ import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 
@@ -313,8 +313,7 @@ export default function Swap(props: propsIF) {
             setIsWaitingForWallet(false);
         }
 
-        const newSwapCacheEndpoint =
-            'https://809821320828123.de:5000/new_swap?';
+        const newSwapCacheEndpoint = GRAPHCACHE_URL + '/new_swap?';
 
         const inBaseQty =
             (isSellTokenBase && isTokenAPrimary) ||
