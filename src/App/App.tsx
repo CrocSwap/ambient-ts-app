@@ -519,7 +519,10 @@ export default function App() {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else if (provider && !crocEnv) {
-            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            const newCrocEnv = new CrocEnv(
+                provider,
+                signer ? signer : undefined,
+            );
             setCrocEnv(newCrocEnv);
         } else {
             // If signer and provider are set to different chains (as can happen)
@@ -529,7 +532,10 @@ export default function App() {
                 (await signer?.getChainId()) ==
                 (await provider.getNetwork()).chainId
             ) {
-                const newCrocEnv = new CrocEnv(signer?.provider || provider);
+                const newCrocEnv = new CrocEnv(
+                    provider,
+                    signer ? signer : undefined,
+                );
                 APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
                 setCrocEnv(newCrocEnv);
             }

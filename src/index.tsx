@@ -12,7 +12,6 @@ import './i18n/config.ts';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
-import { publicProvider } from 'wagmi/providers/public';
 
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
@@ -26,7 +25,6 @@ const { chains, provider, webSocketProvider } = configureChains(
                 process.env.REACT_APP_INFURA_KEY ||
                 '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
         }),
-        publicProvider(),
     ],
 );
 
