@@ -1,7 +1,6 @@
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 

@@ -3536,15 +3536,15 @@ export default function App() {
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                <section
-                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
-                >
-                    {!currentLocation.startsWith('/swap') && sidebarRender}
-                    <Routes>
-                        <Route
-                            index
-                            element={
-                                <CrocEnvContext.Provider value={crocEnv}>
+                <CrocEnvContext.Provider value={crocEnv}>
+                    <section
+                        className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                    >
+                        {!currentLocation.startsWith('/swap') && sidebarRender}
+                        <Routes>
+                            <Route
+                                index
+                                element={
                                     <Home
                                         cachedQuerySpotPrice={
                                             cachedQuerySpotPrice
@@ -3558,184 +3558,187 @@ export default function App() {
                                             cachedPoolStatsFetch
                                         }
                                     />
-                                </CrocEnvContext.Provider>
-                            }
-                        />
-                        <Route
-                            path='accessibility'
-                            element={<Accessibility />}
-                        />
-                        <Route
-                            path='trade'
-                            element={
-                                <CrocEnvContext.Provider value={crocEnv}>
+                                }
+                            />
+                            <Route
+                                path='accessibility'
+                                element={<Accessibility />}
+                            />
+                            <Route
+                                path='trade'
+                                element={
                                     <PoolContext.Provider value={pool}>
                                         <Trade {...tradeProps} />
                                     </PoolContext.Provider>
-                                </CrocEnvContext.Provider>
-                            }
-                        >
-                            <Route
-                                path=''
-                                element={
-                                    <Navigate to='/trade/market' replace />
                                 }
-                            />
+                            >
+                                <Route
+                                    path=''
+                                    element={
+                                        <Navigate to='/trade/market' replace />
+                                    }
+                                />
+                                <Route
+                                    path='market'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.market}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='market/:params'
+                                    element={<Swap {...swapPropsTrade} />}
+                                />
+
+                                <Route
+                                    path='limit'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.limit}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='limit/:params'
+                                    element={<Limit {...limitPropsTrade} />}
+                                />
+
+                                <Route
+                                    path='range'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.range}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='range/:params'
+                                    element={<Range {...rangeProps} />}
+                                />
+                                <Route
+                                    path='reposition'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.range}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='reposition/:params'
+                                    element={
+                                        <Reposition {...repositionProps} />
+                                    }
+                                />
+                                <Route path='add' element={<RangeAdd />} />
+                                <Route
+                                    path='edit/'
+                                    element={
+                                        <Navigate to='/trade/market' replace />
+                                    }
+                                />
+                            </Route>
                             <Route
-                                path='market'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.market}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='market/:params'
-                                element={<Swap {...swapPropsTrade} />}
+                                path='chat'
+                                element={<ChatPanel {...chatProps} />}
                             />
 
                             <Route
-                                path='limit'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.limit}
-                                        replace
-                                    />
-                                }
+                                path='chat/:params'
+                                element={<ChatPanel {...chatProps} />}
                             />
                             <Route
-                                path='limit/:params'
-                                element={<Limit {...limitPropsTrade} />}
-                            />
-
-                            <Route
-                                path='range'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.range}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='range/:params'
+                                path='range2'
                                 element={<Range {...rangeProps} />}
                             />
                             <Route
-                                path='reposition'
+                                path='initpool/:params'
+                                element={
+                                    <InitPool
+                                        isUserLoggedIn={isUserLoggedIn}
+                                        crocEnv={crocEnv}
+                                        gasPriceInGwei={gasPriceInGwei}
+                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
+                                        openModalWallet={openWagmiModalWallet}
+                                        tokenAAllowance={tokenAAllowance}
+                                        tokenBAllowance={tokenBAllowance}
+                                        setRecheckTokenAApproval={
+                                            setRecheckTokenAApproval
+                                        }
+                                        setRecheckTokenBApproval={
+                                            setRecheckTokenBApproval
+                                        }
+                                    />
+                                }
+                            />
+                            <Route
+                                path='account'
+                                element={
+                                    <Portfolio
+                                        {...accountProps}
+                                        userAccount={true}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='account/:address'
+                                element={
+                                    <Portfolio
+                                        {...accountProps}
+                                        userAccount={false}
+                                    />
+                                }
+                            />
+
+                            <Route
+                                path='swap'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
                                         replace
+                                        to={defaultUrlParams.swap}
                                     />
                                 }
                             />
                             <Route
-                                path='reposition/:params'
-                                element={<Reposition {...repositionProps} />}
+                                path='swap/:params'
+                                element={<Swap {...swapProps} />}
                             />
-                            <Route path='add' element={<RangeAdd />} />
-                            <Route
-                                path='edit/'
-                                element={
-                                    <Navigate to='/trade/market' replace />
-                                }
-                            />
-                        </Route>
-                        <Route
-                            path='chat'
-                            element={<ChatPanel {...chatProps} />}
-                        />
-
-                        <Route
-                            path='chat/:params'
-                            element={<ChatPanel {...chatProps} />}
-                        />
-                        <Route
-                            path='range2'
-                            element={<Range {...rangeProps} />}
-                        />
-                        <Route
-                            path='initpool/:params'
-                            element={
-                                <InitPool
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    crocEnv={crocEnv}
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    openModalWallet={openWagmiModalWallet}
-                                    tokenAAllowance={tokenAAllowance}
-                                    tokenBAllowance={tokenBAllowance}
-                                    setRecheckTokenAApproval={
-                                        setRecheckTokenAApproval
-                                    }
-                                    setRecheckTokenBApproval={
-                                        setRecheckTokenBApproval
+                            <Route path='tos' element={<TermsOfService />} />
+                            {IS_LOCAL_ENV && (
+                                <Route
+                                    path='testpage'
+                                    element={
+                                        <TestPage
+                                            openGlobalModal={openGlobalModal}
+                                            walletToS={walletToS}
+                                            chartSettings={chartSettings}
+                                            bypassConf={{
+                                                swap: bypassConfirmSwap,
+                                                limit: bypassConfirmLimit,
+                                                range: bypassConfirmRange,
+                                                repo: bypassConfirmRepo,
+                                            }}
+                                        />
                                     }
                                 />
-                            }
-                        />
-                        <Route
-                            path='account'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={true}
-                                />
-                            }
-                        />
-                        <Route
-                            path='account/:address'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={false}
-                                />
-                            }
-                        />
-
-                        <Route
-                            path='swap'
-                            element={
-                                <Navigate replace to={defaultUrlParams.swap} />
-                            }
-                        />
-                        <Route
-                            path='swap/:params'
-                            element={<Swap {...swapProps} />}
-                        />
-                        <Route path='tos' element={<TermsOfService />} />
-                        {IS_LOCAL_ENV && (
+                            )}
                             <Route
-                                path='testpage'
+                                path='/:address'
                                 element={
-                                    <TestPage
-                                        openGlobalModal={openGlobalModal}
-                                        walletToS={walletToS}
-                                        chartSettings={chartSettings}
-                                        bypassConf={{
-                                            swap: bypassConfirmSwap,
-                                            limit: bypassConfirmLimit,
-                                            range: bypassConfirmRange,
-                                            repo: bypassConfirmRepo,
-                                        }}
+                                    <Portfolio
+                                        {...accountProps}
+                                        userAccount={false}
                                     />
                                 }
                             />
-                        )}
-                        <Route
-                            path='/:address'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={false}
-                                />
-                            }
-                        />
-                        <Route path='/404' element={<NotFound />} />
-                    </Routes>
-                </section>
+                            <Route path='/404' element={<NotFound />} />
+                        </Routes>
+                    </section>
+                </CrocEnvContext.Provider>
                 {snackbarContent}
             </div>
             <div className='footer_container'>

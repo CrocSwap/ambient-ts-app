@@ -1,9 +1,15 @@
 // START: Import React and Dongles
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import {
+    useEffect,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import sum from 'hash-sum';
 
 // START: Import JSX Components
@@ -40,9 +46,9 @@ import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: {
         onCurrentChain?: boolean;
@@ -110,7 +116,6 @@ export default function Portfolio(props: propsIF) {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        crocEnv,
         addRecentToken,
         getRecentTokens,
         getTokensByName,
@@ -157,6 +162,8 @@ export default function Portfolio(props: propsIF) {
 
     const { isConnected, address } = useAccount();
     const { data: ensName } = useEnsName({ address });
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
