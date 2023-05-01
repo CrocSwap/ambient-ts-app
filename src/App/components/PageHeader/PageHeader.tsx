@@ -324,7 +324,12 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // TODO (#1436): logo padding is problematic in mobile views
     return (
-        <header data-testid={'page-header'} className={styles.primary_header}>
+        <header
+            data-testid={'page-header'}
+            className={`${styles.primary_header} ${
+                location.pathname === '/' && styles.fixed
+            }`}
+        >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
                 <img src={headerLogo} alt='ambient' />
                 <img src='./ambient_logo_1.png' alt='' width='25' />
