@@ -109,7 +109,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                             : ''
                     }`}
                     disabled={!connector.ready}
-                    key={connector.id}
+                    key={connector.id + '|' + connector.name} // Join both to ensure uniqueness
                     action={() => {
                         connect({ connector });
                         IS_LOCAL_ENV && console.debug({ connector });
