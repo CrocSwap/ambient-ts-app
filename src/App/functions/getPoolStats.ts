@@ -1,8 +1,7 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolStatsFreshEndpoint =
-    'https://809821320828123.de:5000/pool_stats_fresh?';
+const poolStatsFreshEndpoint = GRAPHCACHE_URL + '/pool_stats_fresh?';
 
 const getPoolStatsFresh = async (
     chainId: string,
@@ -28,7 +27,7 @@ const getPoolStatsFresh = async (
         });
 };
 
-const poolVolumeCacheEndpoint = 'https://809821320828123.de:5000/pool_volume?';
+const poolVolumeCacheEndpoint = GRAPHCACHE_URL + '/pool_volume?';
 
 const getPoolVolume = async (
     tokenA: string,
@@ -57,7 +56,7 @@ const getPoolVolume = async (
     }
 };
 
-const poolTvlCacheEndpoint = 'https://809821320828123.de:5000/pool_tvl?';
+const poolTvlCacheEndpoint = GRAPHCACHE_URL + '/pool_tvl?';
 
 const getPoolTVL = async (
     tokenA: string,
@@ -86,8 +85,7 @@ const getPoolTVL = async (
     }
 };
 
-const poolPriceChangeCacheEndpoint =
-    'https://809821320828123.de:5000/pool_price_change?';
+const poolPriceChangeCacheEndpoint = GRAPHCACHE_URL + '/pool_price_change?';
 
 const getPoolPriceChange = async (
     chainId: string,

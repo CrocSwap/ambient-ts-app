@@ -344,6 +344,7 @@ export default function Sidebar(props: propsIF) {
                 id='search_input'
                 ref={searchInputRef}
                 placeholder='Search anything...'
+                maxLength={40}
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
