@@ -1080,6 +1080,7 @@ export default function Chart(props: propsIF) {
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
+            IS_LOCAL_ENV && console.log({ rescaling: scaleData });
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
@@ -2056,21 +2057,19 @@ export default function Chart(props: propsIF) {
             }
         }
     }, [
-        parsedChartData?.chartData,
-        scaleData,
+        scaleData !== undefined,
+        parsedChartData !== undefined,
+        candlestick === undefined,
         rescale,
         location,
-        candlestick,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale?.domain()[1]),
-        sum(showLatest),
-        liquidityData?.liqBidData,
+        showLatest,
+        liquidityData?.liqBidData.length,
         simpleRangeWidth,
-        ranges,
-        limit,
+        ranges.length,
+        limit.length,
         dragEvent,
         isLineDrag,
-        sum(yAxisLabels),
+        yAxisLabels.length,
     ]);
 
     useEffect(() => {
@@ -3308,6 +3307,7 @@ export default function Chart(props: propsIF) {
 
     // Axis's
     useEffect(() => {
+        console.log({ scaleData });
         if (scaleData) {
             const _yAxis = d3fc
                 .axisRight()
@@ -3366,9 +3366,9 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [
-        sum(scaleData),
+        scaleData,
         market,
-        sum(crosshairData),
+        crosshairData.length,
         isMouseMoveCrosshair,
         limit,
         isLineDrag,
@@ -5185,7 +5185,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        scaleData,
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5277,7 +5277,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        scaleData,
         liqMode,
         gradientForBid,
         liquidityScale,
@@ -5412,7 +5412,7 @@ export default function Chart(props: propsIF) {
             renderCanvas();
         }
     }, [
-        sum(scaleData),
+        scaleData,
         liquidityData?.liqBidData,
         liquidityData?.depthLiqBidData,
         lineBidSeries,
@@ -5526,7 +5526,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        sum(scaleData),
+        scaleData,
         liquidityData?.liqAskData,
         liquidityData?.depthLiqAskData,
         lineAskSeries,

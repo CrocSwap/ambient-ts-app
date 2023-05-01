@@ -1550,20 +1550,18 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                if (sum(candleData) !== sum(candles)) {
-                                    setCandleData({
-                                        pool: {
-                                            baseAddress:
-                                                baseTokenAddress.toLowerCase(),
-                                            quoteAddress:
-                                                quoteTokenAddress.toLowerCase(),
-                                            poolIdx: chainData.poolIndex,
-                                            network: chainData.chainId,
-                                        },
-                                        duration: candleTimeLocal,
-                                        candles: candles,
-                                    });
-                                }
+                                setCandleData({
+                                    pool: {
+                                        baseAddress:
+                                            baseTokenAddress.toLowerCase(),
+                                        quoteAddress:
+                                            quoteTokenAddress.toLowerCase(),
+                                        poolIdx: chainData.poolIndex,
+                                        network: chainData.chainId,
+                                    },
+                                    duration: candleTimeLocal,
+                                    candles: candles,
+                                });
                             }
                         })
                         .catch(console.error);

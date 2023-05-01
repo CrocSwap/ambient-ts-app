@@ -87,12 +87,15 @@ export const useSortedTransactions = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const ordersHashSum = useMemo(() => sum(transactions), [transactions]);
+    const transactionsHashSum = useMemo(
+        () => sum(transactions),
+        [transactions],
+    );
 
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo(
         () => sortData(transactions),
-        [sortBy, reverseSort, ordersHashSum],
+        [sortBy, reverseSort, transactionsHashSum],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
