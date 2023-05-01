@@ -17,6 +17,7 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
+import { GRAPHCACHE_URL } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -91,7 +92,7 @@ export default function RangeDetails(props: propsIF) {
         (state) => state.graphData,
     ).lastBlock;
 
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
