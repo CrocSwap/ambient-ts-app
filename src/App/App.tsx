@@ -101,7 +101,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
-import { memoizePoolStats } from './functions/getPoolStats';
+import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -121,7 +121,13 @@ import {
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
-import { APP_ENVIRONMENT, IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
+import {
+    APP_ENVIRONMENT,
+    GRAPHCACHE_URL,
+    GRAPHCACHE_WSS_URL,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 import { getVolumeSeries } from './functions/getVolumeSeries';
@@ -146,7 +152,6 @@ import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
-import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
@@ -193,20 +198,19 @@ const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
 const cachedPoolStatsFetch = memoizePoolStats();
 
-const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
-const startMoralis = async () => {
-    await Moralis.start({
-        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
-        // ...and any other configuration
-    });
-};
-
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
+
+const isChartEnabled =
+    !!process.env.REACT_APP_CHART_IS_ENABLED &&
+    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+        ? false
+        : true;
 
 /** ***** React Function *******/
 export default function App() {
@@ -216,10 +220,6 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
-
-    useEffect(() => {
-        startMoralis();
-    }, []);
 
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(
@@ -477,7 +477,7 @@ export default function App() {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [expandTradeTable, setExpandTradeTable] = useState(false);
+    const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
@@ -521,7 +521,10 @@ export default function App() {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
             return;
         } else if (provider && !crocEnv) {
-            const newCrocEnv = new CrocEnv(signer?.provider || provider);
+            const newCrocEnv = new CrocEnv(
+                provider,
+                signer ? signer : undefined,
+            );
             setCrocEnv(newCrocEnv);
         } else {
             // If signer and provider are set to different chains (as can happen)
@@ -531,7 +534,10 @@ export default function App() {
                 (await signer?.getChainId()) ==
                 (await provider.getNetwork()).chainId
             ) {
-                const newCrocEnv = new CrocEnv(signer?.provider || provider);
+                const newCrocEnv = new CrocEnv(
+                    provider,
+                    signer ? signer : undefined,
+                );
                 APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
                 setCrocEnv(newCrocEnv);
             }
@@ -921,6 +927,7 @@ export default function App() {
     // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
         if (
+            !isChartEnabled ||
             !baseTokenAddress ||
             !quoteTokenAddress ||
             !chainData ||
@@ -932,10 +939,10 @@ export default function App() {
         }, LIQUIDITY_FETCH_PERIOD_MS / 2);
         return () => clearInterval(id);
     }, [
-        baseTokenAddress === '',
-        quoteTokenAddress === '',
+        baseTokenAddress + quoteTokenAddress,
         chainData === undefined,
         lastBlockNumber === 0,
+        isChartEnabled,
     ]);
 
     useEffect(() => {
@@ -1047,14 +1054,14 @@ export default function App() {
         dispatch(setPrimaryQuantityRange(''));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setPoolPriceChangePercent(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         (async () => {
             if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
                 const poolAmbientApyCacheEndpoint =
-                    'https://809821320828123.de:5000' +
-                    '/pool_ambient_apy_cached?';
+                    GRAPHCACHE_URL + '/pool_ambient_apy_cached?';
 
                 fetch(
                     poolAmbientApyCacheEndpoint +
@@ -1502,11 +1509,12 @@ export default function App() {
     ]);
 
     useEffect(() => {
-        setCandleData(undefined);
-        setIsCandleDataNull(false);
-        setExpandTradeTable(false);
-        fetchCandles();
-    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, candleTimeLocal]);
+        isChartEnabled && fetchCandles();
+    }, [
+        isChartEnabled,
+        mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
+        candleTimeLocal,
+    ]);
 
     const fetchCandles = () => {
         if (
@@ -1567,6 +1575,8 @@ export default function App() {
                                         candles: candles,
                                     });
                                 }
+                                setIsCandleDataNull(false);
+                                setExpandTradeTable(false);
                             }
                         })
                         .catch(console.error);
@@ -1579,6 +1589,60 @@ export default function App() {
             setExpandTradeTable(true);
         }
     };
+
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
+        string | undefined
+    >();
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
+        useState<boolean>(true);
+
+    useEffect(() => {
+        (async () => {
+            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
+                try {
+                    const priceChangeResult = await get24hChange(
+                        chainData.chainId,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        chainData.poolIndex,
+                        tradeData.isDenomBase,
+                    );
+
+                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                        setPoolPriceChangePercent('No Change');
+                        setIsPoolPriceChangePositive(true);
+                    } else if (priceChangeResult) {
+                        priceChangeResult > 0
+                            ? setIsPoolPriceChangePositive(true)
+                            : setIsPoolPriceChangePositive(false);
+
+                        const priceChangeString =
+                            priceChangeResult > 0
+                                ? '+' +
+                                  priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) +
+                                  '%'
+                                : priceChangeResult.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }) + '%';
+                        setPoolPriceChangePercent(priceChangeString);
+                    } else {
+                        setPoolPriceChangePercent(undefined);
+                    }
+                } catch (error) {
+                    setPoolPriceChangePercent(undefined);
+                }
+            }
+        })();
+    }, [
+        isServerEnabled,
+        tradeData.isDenomBase,
+        baseTokenAddress + quoteTokenAddress,
+        lastBlockNumber,
+    ]);
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -3266,6 +3330,9 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        gasPriceInGwei,
         ethMainnetUsdPrice,
         chartSettings,
         tokenList: searchableTokens,

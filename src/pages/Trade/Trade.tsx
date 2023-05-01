@@ -124,11 +124,15 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    poolPriceChangePercent: string | undefined;
+    isPoolPriceChangePositive: boolean;
 }
 
 // React functional component
 export default function Trade(props: propsIF) {
     const {
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
         chartSettings,
         tokenList,
         cachedQuerySpotPrice,
@@ -491,15 +495,11 @@ export default function Trade(props: propsIF) {
             </div>
         ) : null;
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
-        string | undefined
-    >();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
-        useState<boolean>(true);
-
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
+        fetchingCandle: fetchingCandle,
+        isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
         chainData: chainData,
@@ -530,10 +530,6 @@ export default function Trade(props: propsIF) {
         setSelectedDate: setSelectedDate,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
-        fetchingCandle: fetchingCandle,
         setFetchingCandle: setFetchingCandle,
         minPrice: minPrice,
         maxPrice: maxPrice,
@@ -600,9 +596,7 @@ export default function Trade(props: propsIF) {
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,

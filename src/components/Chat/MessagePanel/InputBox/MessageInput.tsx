@@ -17,6 +17,8 @@ interface MessageInputProps {
     currentUser: string;
     ensName: string;
     appPage?: boolean;
+    areSubscriptionsEnabled: boolean;
+    isChatOpen: boolean;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -57,7 +59,11 @@ export default function MessageInput(
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
 
-    const { sendMsg } = useSocket(props.room.toUpperCase());
+    const { sendMsg } = useSocket(
+        props.room.toUpperCase(),
+        props.areSubscriptionsEnabled,
+        props.isChatOpen,
+    );
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;

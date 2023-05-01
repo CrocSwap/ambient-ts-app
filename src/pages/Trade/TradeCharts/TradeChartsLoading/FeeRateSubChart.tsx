@@ -72,7 +72,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
             const yAxis = d3fc
                 .axisRight()
                 .scale(feeRateyScale)
-                .tickValues([0.0005, 0.003, 0.01]);
+                .tickValues([0.0005, 0.004, 0.01]);
 
             const d3YaxisCanvas = d3
                 .select(d3Yaxis.current)
@@ -226,7 +226,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-                    if (isMouseMoveCrosshair) {
+                    if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (isCrosshairActive === 'feeRate') {
                             crosshairHorizontalCanvas([
@@ -252,6 +252,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         crosshairForSubChart,
         feeRateHorizontalyValue,
         isCrosshairActive,
+        isMouseMoveCrosshair,
     ]);
 
     const renderCanvas = () => {

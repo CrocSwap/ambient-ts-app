@@ -344,6 +344,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             poolPriceDisplay > 0
         ) {
             IS_LOCAL_ENV && console.debug('parsing liquidity data');
+
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
             const depthLiqBidData: LiquidityDataLocal[] = [];
@@ -501,6 +502,13 @@ export default function TradeCandleStickChart(props: propsIF) {
                 }
 
                 if (!denominationsInBase) {
+                    // console.log({
+                    //     data,
+                    //     liqUpperPrices,
+                    //     liqLowerPrices,
+                    //     limitBoundary,
+                    //     liqBoundary,
+                    // });
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
@@ -536,6 +544,13 @@ export default function TradeCandleStickChart(props: propsIF) {
                         liqBoundaryDepth = liqLowerPrices;
                     }
                 } else {
+                    // console.log({
+                    //     data,
+                    //     liqUpperPrices,
+                    //     liqLowerPrices,
+                    //     limitBoundary,
+                    //     liqBoundary,
+                    // });
                     if (
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
@@ -653,7 +668,12 @@ export default function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [sum(props.liquidityData?.ranges), poolPriceDisplay]);
+    }, [
+        sum(props.liquidityData),
+        poolPriceDisplay,
+        denominationsInBase,
+        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
+    ]);
 
     useEffect(() => {
         IS_LOCAL_ENV &&
@@ -698,7 +718,6 @@ export default function TradeCandleStickChart(props: propsIF) {
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         IS_LOCAL_ENV && console.debug('parse Liq Scale');
-
         if (liquidityData !== undefined) {
             const liquidityScale = d3.scaleLinear();
             const liquidityDepthScale = d3.scaleLinear();
@@ -813,8 +832,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
                 poolPriceDisplay === 0 ||
-                liquidityData?.liqAskData.length === 0 ||
-                liquidityData?.liqBidData.length === 0 ||
+                // liquidityData?.liqAskData.length === 0 ||
+                // liquidityData?.liqBidData.length === 0 ||
                 poolPriceNonDisplay === 0 ||
                 liquidityData === undefined;
 

@@ -275,7 +275,6 @@
 }
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark2);
 }
 
 .max_button:hover {

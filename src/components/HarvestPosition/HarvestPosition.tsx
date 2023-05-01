@@ -35,8 +35,8 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
-import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     chainData: ChainSpec;
@@ -155,8 +155,7 @@ export default function HarvestPosition(props: propsIF) {
         setTxErrorCode('');
     };
 
-    const positionStatsCacheEndpoint =
-        'https://809821320828123.de:5000/position_stats?';
+    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
     const dispatch = useAppDispatch();
 
     const positionsPendingUpdate = useAppSelector(
@@ -342,8 +341,7 @@ export default function HarvestPosition(props: propsIF) {
             console.error('unsupported position type for harvest');
         }
 
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
         if (tx?.hash) {
             fetch(
                 newLiqChangeCacheEndpoint +

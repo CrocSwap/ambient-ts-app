@@ -56,8 +56,7 @@ export const orderRowConstants = (props: Props) => {
     const {
         posHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
+
         posHash,
         handleCopyPosHash,
         sellOrderStyle,
@@ -110,8 +109,6 @@ export const orderRowConstants = (props: Props) => {
         return (
             <li
                 onClick={noClick ? undefined : openDetailsModal}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
                 className={className}
                 style={style}
             >

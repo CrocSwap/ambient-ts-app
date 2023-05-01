@@ -126,7 +126,6 @@ export default function CurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         openGlobalPopup,
-        lastBlockNumber,
         dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
@@ -139,6 +138,10 @@ export default function CurrencyConverter(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const lastBlockNumber = useAppSelector(
+        (state) => state.graphData.lastBlock,
+    );
 
     const [tokenALocal, setTokenALocal] = useState<string>(
         tradeData.tokenA.address,
@@ -337,11 +340,7 @@ export default function CurrencyConverter(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        if (
-            !disableReverseTokens &&
-            tokenAQtyLocal !== '' &&
-            tokenBQtyLocal !== ''
-        ) {
+        if (!disableReverseTokens) {
             setDisableReverseTokens(true);
 
             isTokenAPrimaryLocal
