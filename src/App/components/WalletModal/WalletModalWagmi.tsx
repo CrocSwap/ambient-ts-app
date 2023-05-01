@@ -36,6 +36,12 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 if (isBlacklisted) disconnect();
             },
         });
+    useEffect(() => {
+        if (error && error.name === 'UserRejectedRequestError') {
+            IS_LOCAL_ENV && console.error({ error });
+            setPage('metamaskError');
+        }
+    }, [error]);
     const { address, connector, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
@@ -131,8 +137,6 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                     }
                 ></WalletButton>
             ))}
-
-            {error && <div>{error.message}</div>}
         </div>
     );
 
@@ -182,17 +186,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const metamaskErrorPage = (
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed />
-            <p>
-                Check the MetaMask extension in your browser for notifications,
-                or click &quot;Try Again&quot;. You can also click the left
-                arrow above to choose a different wallet.
-            </p>
+            <p>The connection to MetaMask was rejected. </p>
+            <p>Please try again.</p>
             <Button
                 title='Try Again'
                 flat={true}
                 action={() => {
-                    connect({ connector });
-                    setPage('metamaskPending');
+                    setPage('wallets');
                 }}
             />
         </div>
