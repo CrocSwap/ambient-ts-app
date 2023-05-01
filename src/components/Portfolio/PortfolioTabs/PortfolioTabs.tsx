@@ -348,7 +348,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        crocEnv: crocEnv,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
@@ -362,7 +361,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        crocEnv: crocEnv,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
@@ -379,7 +377,6 @@ export default function PortfolioTabs(props: propsIF) {
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
@@ -443,7 +440,6 @@ export default function PortfolioTabs(props: propsIF) {
         searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
-        crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
