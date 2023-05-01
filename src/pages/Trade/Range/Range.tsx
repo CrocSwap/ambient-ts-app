@@ -9,7 +9,6 @@ import {
     ReactNode,
 } from 'react';
 import { ethers } from 'ethers';
-import sum from 'hash-sum';
 import { motion } from 'framer-motion';
 import {
     concDepositSkew,
@@ -86,6 +85,7 @@ import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 interface propsIF {
     account: string | undefined;
@@ -416,7 +416,12 @@ export default function Range(props: propsIF) {
 
     const isAdd = useMemo(
         () => userPositions.some(selectedRangeMatchesOpenPosition),
-        [sum(userPositions), isAmbient, defaultLowTick, defaultHighTick],
+        [
+            diffHashSig(userPositions),
+            isAmbient,
+            defaultLowTick,
+            defaultHighTick,
+        ],
     );
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =

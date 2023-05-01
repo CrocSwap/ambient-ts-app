@@ -10,7 +10,6 @@ import {
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
-import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -50,6 +49,7 @@ import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -128,7 +128,7 @@ export default function Sidebar(props: propsIF) {
             graphData.positionsByUser.positions.filter(
                 (x) => x.chainId === chainId,
             ),
-        [sum(graphData.positionsByUser.positions), chainId],
+        [diffHashSig(graphData.positionsByUser.positions), chainId],
     );
 
     const txsByUser = useMemo(
@@ -136,7 +136,7 @@ export default function Sidebar(props: propsIF) {
             graphData.changesByUser.changes.filter(
                 (x) => x.chainId === chainId,
             ),
-        [sum(graphData.changesByUser.changes), chainId],
+        [diffHashSig(graphData.changesByUser.changes), chainId],
     );
 
     const limitsByUser = useMemo(
@@ -144,19 +144,19 @@ export default function Sidebar(props: propsIF) {
             graphData.limitOrdersByUser.limitOrders.filter(
                 (x) => x.chainId === chainId,
             ),
-        [sum(graphData.limitOrdersByUser.limitOrders), chainId],
+        [diffHashSig(graphData.limitOrdersByUser.limitOrders), chainId],
     );
     const mostRecentTxs = useMemo(
         () => txsByUser.slice(0, 4),
-        [sum(txsByUser)],
+        [diffHashSig(txsByUser)],
     );
     const mostRecentPositions = useMemo(
         () => positionsByUser.slice(0, 4),
-        [sum(positionsByUser)],
+        [diffHashSig(positionsByUser)],
     );
     const mostRecentLimitOrders = useMemo(
         () => limitsByUser.slice(0, 4),
-        [sum(limitsByUser)],
+        [diffHashSig(limitsByUser)],
     );
 
     const recentPoolsData = [
