@@ -3,7 +3,10 @@
 Please follow these items as close to as possible for your PR. Please add a description or link a Git issue for context. Check off relevant items and remove as not needed. These will help your reviewer find similar ground for starting their review from. 
 
 - [ ] Does the code stick to our formatting and code standards? Does running prettier and ESLint over the code yield no warnings or errors?
-- [ ] Are we using comments correctly? Use /* */ for block comments for new functions.
+- [ ] Are we using comments correctly? Use /* */ for block comments for new functions, especially when adding type definitions to functions.
+- [ ] Are function names descriptive and follow the camelCase convention?
+- [ ] Is error handling consistent and thorough throughout the codebase?
+- [ ] Are performance implications considered when writing code, especially for code that will be executed frequently or in a loop?
 - [ ] Does this PR have a linked GitHub issue or a short description for context above?
 - [ ] Does the change re-implement code that would be better served by pulling an existing module instead?
 - [ ] Are we using instances of other classes where possible? 
