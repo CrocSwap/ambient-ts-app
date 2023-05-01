@@ -125,7 +125,6 @@ import {
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
-    MORALIS_KEY,
     ZERO_ADDRESS,
 } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';

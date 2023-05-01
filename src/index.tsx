@@ -16,6 +16,7 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
+import { MORALIS_KEY } from './constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -70,7 +71,7 @@ if (!doReload) {
     });
 
     Moralis.start({
-        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
+        apiKey: MORALIS_KEY,
     });
 
     const root = ReactDOM.createRoot(
