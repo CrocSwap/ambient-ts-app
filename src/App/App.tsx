@@ -145,7 +145,6 @@ import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
-import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
@@ -197,13 +196,6 @@ const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
-const startMoralis = async () => {
-    await Moralis.start({
-        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
-        // ...and any other configuration
-    });
-};
-
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
 /** ***** React Function *******/
@@ -214,10 +206,6 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
     const [isTutorialMode, setIsTutorialMode] = useState(false);
-
-    useEffect(() => {
-        startMoralis();
-    }, []);
 
     // hooks to manage ToS agreements in the app
     const walletToS: tosMethodsIF = useTermsOfService(
