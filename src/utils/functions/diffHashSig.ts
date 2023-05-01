@@ -1,4 +1,4 @@
-import sum from 'hash-sum';
+// import sum from 'hash-sum';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {

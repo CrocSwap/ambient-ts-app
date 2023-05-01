@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useMemo,
-} from 'react';
+import { SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
@@ -49,7 +42,6 @@ import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -123,41 +115,18 @@ export default function Sidebar(props: propsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const positionsByUser = useMemo(
-        () =>
-            graphData.positionsByUser.positions.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [diffHashSig(graphData.positionsByUser.positions), chainId],
-    );
+    const filterFn = <T extends { chainId: string }>(x: T) =>
+        x.chainId === chainId;
 
-    const txsByUser = useMemo(
-        () =>
-            graphData.changesByUser.changes.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [diffHashSig(graphData.changesByUser.changes), chainId],
-    );
+    const positionsByUser =
+        graphData.positionsByUser.positions.filter(filterFn);
+    const txsByUser = graphData.changesByUser.changes.filter(filterFn);
+    const limitsByUser =
+        graphData.limitOrdersByUser.limitOrders.filter(filterFn);
 
-    const limitsByUser = useMemo(
-        () =>
-            graphData.limitOrdersByUser.limitOrders.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [diffHashSig(graphData.limitOrdersByUser.limitOrders), chainId],
-    );
-    const mostRecentTxs = useMemo(
-        () => txsByUser.slice(0, 4),
-        [diffHashSig(txsByUser)],
-    );
-    const mostRecentPositions = useMemo(
-        () => positionsByUser.slice(0, 4),
-        [diffHashSig(positionsByUser)],
-    );
-    const mostRecentLimitOrders = useMemo(
-        () => limitsByUser.slice(0, 4),
-        [diffHashSig(limitsByUser)],
-    );
+    const mostRecentTxs = txsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
         {
