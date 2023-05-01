@@ -331,7 +331,15 @@ export default function PageHeader(props: HeaderPropsIF) {
             </Link>
             {routeDisplay}
             {show ? (
-                <div style={{ margin: '0 1rem' }}>
+                <div
+                    style={{
+                        width: '380px',
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        padding: '0 1rem',
+                    }}
+                >
                     <TradeNowButton inNav />{' '}
                 </div>
             ) : (

@@ -140,7 +140,12 @@
         background-position: 200% center;
     }
 }
+@media only screen and (min-width: 768px){
+    .account{
+    width: 380px
+}
 
+}
 @media (max-width: 600px) {
     .header_gradient {
         display: none;
