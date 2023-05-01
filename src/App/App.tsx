@@ -180,6 +180,7 @@ import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import Accessibility from '../pages/Accessibility/Accessibility';
+import { useNewTokens } from './hooks/useNewTokens/useNewTokens';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -220,6 +221,8 @@ export default function App() {
     // it should be removed when the chatToS line is moved
     // please and thank you
     false && chatToS;
+
+    useNewTokens();
 
     // hooks to manage slippage in the app
     const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
