@@ -1081,7 +1081,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined && parsedChartData !== undefined) {
             IS_LOCAL_ENV && console.log({ rescaling: scaleData });
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
             let clickedForLine = false;
             let zoomTimeout: any | undefined = undefined;
             let previousTouch: any | undefined = undefined;
@@ -3307,7 +3307,6 @@ export default function Chart(props: propsIF) {
 
     // Axis's
     useEffect(() => {
-        console.log({ scaleData });
         if (scaleData) {
             const _yAxis = d3fc
                 .axisRight()
