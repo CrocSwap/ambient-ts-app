@@ -1,16 +1,30 @@
+import { useEffect, useState } from 'react';
 import { tokenListURIs } from '../../../utils/data/tokenListURIs';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 import fetchTokenList from '../../../utils/functions/fetchTokenList';
-import { TokenListIF } from '../../../utils/interfaces/TokenListIF';
+import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useNewTokens = () => {
-    console.log('ran custom hook useNewTokens() in App.tsx file!');
-    // create an array of promises to fetch all token lists in the URIs file
-    const tokenListPromises: Promise<TokenListIF>[] = Object.values(
-        tokenListURIs,
-    ).map((uri: string) => fetchTokenList(uri, false));
+    const [tokenLists, setTokenLists] = useState<TokenListIF[]>();
+    
+    useEffect(() => {
+        // create an array of promises to fetch all token lists in the URIs file
+        const tokenListPromises: Promise<TokenListIF>[] = Object.values(
+            tokenListURIs,
+        ).map((uri: string) => fetchTokenList(uri, false));
+        Promise.allSettled(tokenListPromises)
+            .then((promises) => promises.flatMap((promise) => Object.entries(promise))
+                .filter((promise) => promise[0] === 'value')
+                .map((promise) => promise[1])
+            ).then((lists) => {
+                // indicate which list each token data object was imported with
+                lists.forEach((list) =>
+                    list.tokens.forEach(
+                        (token: TokenIF) => (token.fromList = list.uri),
+                    ),
+                );
+                setTokenLists(lists);
+            });
+    }, []);
 
-    Promise.allSettled(tokenListPromises).then((promises) =>
-        console.log(promises),
-    );
+    useEffect(() => console.log(tokenLists), [tokenLists]);
 };
