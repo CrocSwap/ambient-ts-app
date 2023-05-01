@@ -23,6 +23,7 @@ export const useNewTokens = () => {
                     ),
                 );
                 setTokenLists(lists);
+                localStorage.setItem('tokenLists', JSON.stringify(lists));
             });
     }, []);
 
