@@ -26,7 +26,7 @@ export default function Home1() {
                     <h2 tabIndex={0}>Faster, Easier, and Cheaper</h2>
                     <p tabIndex={0}>
                         Ambient runs the entire DEX inside a single smart
-                        contract, allowing for low fee transactions, greater
+                        contract, allowing for low-fee transactions, greater
                         liquidity rewards, and a fairer trading experience.
                     </p>
                     <TradeNowButton />
