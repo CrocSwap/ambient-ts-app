@@ -227,7 +227,7 @@ export default function Limit(props: propsIF) {
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken === tokenPair.dataTokenA.address,
+        () => pool?.baseToken.tokenAddr === tokenPair.dataTokenA.address,
         [pool?.baseToken, tokenPair.dataTokenA.address],
     );
 
@@ -246,8 +246,8 @@ export default function Limit(props: propsIF) {
 
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
-                    pool.baseToken,
-                    pool.quoteToken,
+                    pool.baseToken.tokenAddr,
+                    pool.quoteToken.tokenAddr,
                     chainData.chainId,
                     lastBlockNumber,
                 );

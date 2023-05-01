@@ -5,8 +5,6 @@ import { store } from './utils/state/store';
 import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
-import reportWebVitals from './reportWebVitals';
-// import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
@@ -17,62 +15,77 @@ import { publicProvider } from 'wagmi/providers/public';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
+import Moralis from 'moralis/.';
 
-const { chains, provider, webSocketProvider } = configureChains(
-    getWagmiChains(),
-    [
-        infuraProvider({
-            apiKey:
-                process.env.REACT_APP_INFURA_KEY ||
-                '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
-        }),
-        publicProvider(),
-    ],
+/* Perform a single forcible reload when the page first loads. Without this, there
+ * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
+ * cost of higher load times, especially when pre-loading isn't happening. See:
+ * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042 */
+const doReload = JSON.parse(
+    localStorage.getItem('ambiAppReloadTrigger') || 'true',
 );
+if (doReload) {
+    localStorage.setItem('ambiAppReloadTrigger', 'false');
+    location.reload();
+} else {
+    localStorage.setItem('ambiAppReloadTrigger', 'true');
+}
 
-// Set up client
-const client = createClient({
-    autoConnect: true,
-    connectors: [
-        new MetaMaskConnector({ chains }),
-        new InjectedConnector({
-            chains,
-            options: {
-                name: 'Brave',
-                shimDisconnect: true,
-            },
-        }),
-        new InjectedConnector({
-            chains,
-            options: {
-                name: 'Injected',
-                shimDisconnect: true,
-            },
-        }),
-    ],
-    provider,
-    webSocketProvider,
-});
+// Don't bother rendering page if this is a reload, because it'll slow down the full load
+if (!doReload) {
+    const { chains, provider, webSocketProvider } = configureChains(
+        getWagmiChains(),
+        [
+            infuraProvider({
+                apiKey:
+                    process.env.REACT_APP_INFURA_KEY ||
+                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            }),
+            publicProvider(),
+        ],
+    );
 
-const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement,
-);
+    // Set up client
+    const client = createClient({
+        autoConnect: true,
+        connectors: [
+            new MetaMaskConnector({ chains }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'Brave',
+                    shimDisconnect: true,
+                },
+            }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'Injected Wallet',
+                    shimDisconnect: true,
+                },
+            }),
+        ],
+        provider,
+        webSocketProvider,
+    });
 
-root.render(
-    <React.StrictMode>
-        <WagmiConfig client={client}>
-            <Provider store={store}>
-                {/* <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}> */}
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-                {/* </MoralisProvider> */}
-            </Provider>
-        </WagmiConfig>
-    </React.StrictMode>,
-);
+    Moralis.start({
+        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
+    });
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    const root = ReactDOM.createRoot(
+        document.getElementById('root') as HTMLElement,
+    );
+
+    root.render(
+        <React.StrictMode>
+            <WagmiConfig client={client}>
+                <Provider store={store}>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </Provider>
+            </WagmiConfig>
+        </React.StrictMode>,
+    );
+}
