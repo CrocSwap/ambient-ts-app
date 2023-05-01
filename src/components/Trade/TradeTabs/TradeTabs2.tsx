@@ -91,9 +91,7 @@ interface propsIF {
     favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
-    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
     isPoolPriceChangePositive: boolean;
-    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
@@ -153,7 +151,6 @@ export default function TradeTabs2(props: propsIF) {
         favePools,
         poolPriceDisplay,
         poolPriceChangePercent,
-        setPoolPriceChangePercent,
         isPoolPriceChangePositive,
         isCandleDataNull,
         isCandleArrived,
@@ -513,7 +510,6 @@ export default function TradeTabs2(props: propsIF) {
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
         chainData: chainData,
