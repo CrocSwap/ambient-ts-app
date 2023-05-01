@@ -44,7 +44,7 @@ export default function Deposit(props: propsIF) {
         connectedAccount,
         selectedToken,
         tokenWalletBalance,
-        tokenDexBalance,
+        // tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         openTokenModal,
@@ -102,25 +102,6 @@ export default function Deposit(props: propsIF) {
             : tokenWalletBalanceDisplayNum < 2
             ? tokenWalletBalanceDisplayNum.toPrecision(3)
             : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
-
-    const tokenExchangeDepositsDisplay = tokenDexBalance
-        ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
-        : undefined;
-
-    const tokenExchangeDepositsDisplayNum = tokenExchangeDepositsDisplay
-        ? parseFloat(tokenExchangeDepositsDisplay)
-        : undefined;
-
-    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
-        ? tokenExchangeDepositsDisplayNum < 0.0001
-            ? tokenExchangeDepositsDisplayNum.toExponential(2)
-            : tokenExchangeDepositsDisplayNum < 2
-            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -397,20 +378,22 @@ export default function Deposit(props: propsIF) {
                 inputValue={inputValue}
                 setInputValue={setInputValue}
             />
-            <div
-                onClick={isTokenEth ? () => null : handleBalanceClick}
-                className={
-                    isTokenWalletBalanceGreaterThanZero && !isTokenEth
-                        ? styles.info_text_clickable
-                        : styles.info_text_non_clickable
-                }
-            >
-                Your Wallet Balance ({selectedToken.symbol}):{' '}
-                {tokenWalletBalanceTruncated || '0.0'}
-            </div>
-            <div className={styles.info_text_non_clickable}>
-                Your Exchange Balance ({selectedToken.symbol}):{' '}
-                <span>{tokenDexBalanceTruncated || '0.0'}</span>
+            <div className={styles.additional_info}>
+                <div className={styles.info_text_non_clickable}>
+                    Available: {tokenWalletBalanceTruncated || '0.0'}
+                    <button
+                        className={`${styles.max_button} ${styles.max_button_enable}`}
+                        onClick={handleBalanceClick}
+                    >
+                        Max
+                    </button>
+                </div>
+                <div className={styles.gas_pump}>
+                    <div className={styles.svg_container}>
+                        <FaGasPump size={12} />{' '}
+                    </div>
+                    {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
+                </div>
             </div>
             <DepositButton
                 onClick={() => {
@@ -419,12 +402,6 @@ export default function Deposit(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
-            <div className={styles.gas_pump}>
-                <div className={styles.svg_container}>
-                    <FaGasPump size={12} />{' '}
-                </div>
-                {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
-            </div>
         </div>
     );
 }

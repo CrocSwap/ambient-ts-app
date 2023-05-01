@@ -52,7 +52,7 @@ export default function Withdraw(props: propsIF) {
         // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
-        tokenWalletBalance,
+        // tokenWalletBalance,
         tokenDexBalance,
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
@@ -69,27 +69,6 @@ export default function Withdraw(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const selectedTokenDecimals = selectedToken.decimals;
-
-    const tokenWalletBalanceDisplay = tokenWalletBalance
-        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
-        : undefined;
-
-    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
-        ? parseFloat(tokenWalletBalanceDisplay)
-        : undefined;
-
-    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
-        ? tokenWalletBalanceDisplayNum < 0.0001
-            ? tokenWalletBalanceDisplayNum.toExponential(2)
-            : tokenWalletBalanceDisplayNum < 2
-            ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : // : tokenWalletBalanceNum >= 100000
-              // ? formatAmountOld(tokenWalletBalanceNum)
-              tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
 
     const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
 
@@ -124,33 +103,6 @@ export default function Withdraw(props: propsIF) {
 
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
-    const [sendToAddressWalletBalance, setSendToAddressWalletBalance] =
-        useState<string>('');
-    const [
-        recheckSendToAddressWalletBalance,
-        setRecheckSendToAddressWalletBalance,
-    ] = useState<boolean>(false);
-
-    const sendToAddressBalanceDisplay = sendToAddressWalletBalance
-        ? toDisplayQty(sendToAddressWalletBalance, selectedTokenDecimals)
-        : undefined;
-
-    const sendToAddressBalanceDisplayNum = sendToAddressBalanceDisplay
-        ? parseFloat(sendToAddressBalanceDisplay)
-        : undefined;
-
-    const sendToAddressBalanceTruncated = sendToAddressBalanceDisplayNum
-        ? sendToAddressBalanceDisplayNum < 0.0001
-            ? sendToAddressBalanceDisplayNum.toExponential(2)
-            : sendToAddressBalanceDisplayNum < 2
-            ? sendToAddressBalanceDisplayNum.toPrecision(3)
-            : // : tokenWalletBalanceNum >= 100000
-              // ? formatAmountOld(tokenWalletBalanceNum)
-              sendToAddressBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
 
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
@@ -163,34 +115,6 @@ export default function Withdraw(props: propsIF) {
             resolvedAddress.startsWith('0x')
         );
     }, [resolvedAddress]);
-
-    useEffect(() => {
-        if (
-            crocEnv &&
-            selectedToken.address &&
-            resolvedAddress &&
-            isSendToAddressChecked &&
-            isResolvedAddressValid
-        ) {
-            crocEnv
-                .token(selectedToken.address)
-                .wallet(resolvedAddress)
-                .then((bal: BigNumber) => {
-                    setSendToAddressWalletBalance(bal.toString());
-                })
-                .catch(console.error);
-        } else {
-            setSendToAddressWalletBalance('');
-        }
-        setRecheckSendToAddressWalletBalance(false);
-    }, [
-        crocEnv,
-        selectedToken.address,
-        resolvedAddress,
-        lastBlockNumber,
-        isSendToAddressChecked,
-        recheckSendToAddressWalletBalance,
-    ]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -334,8 +258,6 @@ export default function Withdraw(props: propsIF) {
             } finally {
                 setIsWithdrawPending(false);
                 setRecheckTokenBalances(true);
-                if (isSendToAddressChecked)
-                    setRecheckSendToAddressWalletBalance(true);
             }
         }
     };
@@ -467,24 +389,24 @@ export default function Withdraw(props: propsIF) {
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
             />
-            <div
-                onClick={handleBalanceClick}
-                className={
-                    isTokenDexBalanceGreaterThanZero
-                        ? styles.info_text_clickable
-                        : styles.info_text_non_clickable
-                }
-            >
-                Your Exchange Balance ({selectedToken.symbol}):{' '}
-                {tokenDexBalanceTruncated || '0.0'}
-            </div>
-            <div className={styles.info_text_non_clickable}>
-                {isSendToAddressChecked
-                    ? `Destination Wallet Balance (${selectedToken.symbol}): `
-                    : `Your Wallet Balance (${selectedToken.symbol}): `}
-                {isSendToAddressChecked
-                    ? sendToAddressBalanceTruncated || '0.0'
-                    : tokenWalletBalanceTruncated || '0.0'}
+            <div className={styles.additional_info}>
+                <div className={styles.info_text_non_clickable}>
+                    Available: {tokenDexBalanceTruncated || '0.0'}
+                    <button
+                        className={`${styles.max_button} ${styles.max_button_enable}`}
+                        onClick={handleBalanceClick}
+                    >
+                        Max
+                    </button>
+                </div>
+                <div className={styles.gas_pump}>
+                    <div className={styles.svg_container}>
+                        <FaGasPump size={12} />{' '}
+                    </div>
+                    {withdrawGasPriceinDollars
+                        ? withdrawGasPriceinDollars
+                        : '…'}
+                </div>
             </div>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
@@ -498,12 +420,6 @@ export default function Withdraw(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
-            <div className={styles.gas_pump}>
-                <div className={styles.svg_container}>
-                    <FaGasPump size={12} />{' '}
-                </div>
-                {withdrawGasPriceinDollars ? withdrawGasPriceinDollars : '…'}
-            </div>
         </div>
     );
 }
