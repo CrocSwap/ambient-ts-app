@@ -14,7 +14,7 @@ import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -159,7 +159,7 @@ export default function OrderDetails(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     useEffect(() => {
         const positionStatsCacheEndpoint =

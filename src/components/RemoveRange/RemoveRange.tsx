@@ -40,7 +40,7 @@ import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -105,8 +105,7 @@ export default function RemoveRange(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
-    const positionStatsCacheEndpoint =
-        'https://809821320828123.de:5000/position_stats?';
+    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -378,8 +377,7 @@ export default function RemoveRange(props: propsIF) {
                 console.debug('unsupported position type for removal');
         }
 
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
         if (tx?.hash) {
             if (position.positionType === 'ambient') {
                 fetch(

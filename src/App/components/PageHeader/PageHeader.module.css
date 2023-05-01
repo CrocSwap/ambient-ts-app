@@ -1,4 +1,5 @@
 .primary_header {
+    width: 100%;
     background: var(--dark1);
     display: flex;
     justify-content: space-between;
@@ -6,6 +7,14 @@
     padding: 1rem 0;
     height: 56px;
     border-bottom: 1px solid var(--navbar-border);
+
+}
+.fixed{
+    position: fixed;
+    top: 0;
+    z-index: 3
+    ;
+
 }
 
 .branch {
@@ -103,7 +112,7 @@
     background: var(--title-gradient);
     border: none;
     outline: none;
-    color: var(--dark3);
+    color: var(--dark2);
     font-weight: 200;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 4px;
@@ -134,7 +143,12 @@
         background-position: 200% center;
     }
 }
+@media only screen and (min-width: 768px){
+    .account{
+    width: 380px
+}
 
+}
 @media (max-width: 600px) {
     .header_gradient {
         display: none;

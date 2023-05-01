@@ -83,7 +83,7 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
@@ -1111,8 +1111,7 @@ export default function Range(props: propsIF) {
             setIsWaitingForWallet(false);
         }
 
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
         if (tx?.hash) {
             if (isAmbient) {
                 fetch(

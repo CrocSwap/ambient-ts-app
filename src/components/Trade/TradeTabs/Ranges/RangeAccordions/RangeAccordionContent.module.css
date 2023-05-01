@@ -1,5 +1,5 @@
 .scroll_container {
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 0 1rem;
     height: 80px;
     overflow-y: scroll;
@@ -52,7 +52,7 @@
 
     background: #0d1117;
     border: 1px solid #242f3f;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
     cursor: pointer;
 }

@@ -10,6 +10,6 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     text-align: center;
-    border-bottom: 1px solid var(--dark3);
+    border-bottom: 1px solid var(--dark2);
     padding-bottom: 1rem;
 }

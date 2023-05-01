@@ -1,10 +1,12 @@
+import { GRAPHCACHE_URL } from '../../constants';
+
 export const getLiquidityFee = async (
     base: string,
     quote: string,
     poolIdx: number,
     chainId: string,
 ): Promise<number | undefined> => {
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const liquidityFeeCacheEndpoint =
         httpGraphCacheServerDomain + '/pool_liquidity_fee?';

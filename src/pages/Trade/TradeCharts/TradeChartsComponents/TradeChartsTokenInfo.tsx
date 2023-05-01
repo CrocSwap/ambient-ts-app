@@ -8,7 +8,7 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -23,7 +23,6 @@ interface propsIF {
     isPoolPriceChangePositive: boolean;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
-    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
     favePools: favePoolsMethodsIF;
     chainId: string;
     simplifyVersion?: boolean;
@@ -246,7 +245,10 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         );
 
     const tokenSymbols = (
-        <div className={styles.mono_space} style={{ cursor: 'default' }}>
+        <div
+            className={styles.mono_space_tooltip}
+            style={{ cursor: 'default' }}
+        >
             {baseTokenTooltipContentOrNull}
             <p>
                 {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
