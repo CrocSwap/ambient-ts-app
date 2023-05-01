@@ -4,6 +4,8 @@ import fetchTokenList from '../../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useNewTokens = () => {
+    const tokenListsLocalStorageKey = 'tokenLists';
+
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>();
     
     useEffect(() => {
@@ -23,7 +25,7 @@ export const useNewTokens = () => {
                     ),
                 );
                 setTokenLists(lists);
-                localStorage.setItem('tokenLists', JSON.stringify(lists));
+                localStorage.setItem(tokenListsLocalStorageKey, JSON.stringify(lists));
             });
     }, []);
 
