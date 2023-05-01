@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -20,6 +19,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -142,9 +142,9 @@ export default function Orders(props: propsIF) {
     }, [
         isShowAllEnabled,
         connectedAccountActive,
-        sum(activeAccountLimitOrderData),
-        sum(ordersByUserMatchingSelectedTokens),
-        sum(limitOrdersByPool),
+        diffHashSig(activeAccountLimitOrderData),
+        diffHashSig(ordersByUserMatchingSelectedTokens),
+        diffHashSig(limitOrdersByPool),
     ]);
 
     const nonEmptyOrders = isShowAllEnabled
