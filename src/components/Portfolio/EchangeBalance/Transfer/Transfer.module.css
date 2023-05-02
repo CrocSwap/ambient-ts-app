@@ -12,12 +12,12 @@
 .info_text_non_clickable {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .info_text_clickable {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     cursor: pointer;
 }
 

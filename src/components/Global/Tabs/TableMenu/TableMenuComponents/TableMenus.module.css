@@ -22,7 +22,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid #242f3f; */
+    /* border: 1px solid var(--dark3); */
     box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
@@ -33,14 +33,14 @@
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .reposition_button {
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     height: 23px;
     padding: 5px 8px;
     display: flex;
@@ -50,9 +50,9 @@
         90deg,
         rgba(115, 113, 252, 0) 0%,
         rgba(115, 113, 252, 0) 71.21%,
-        #7371fc 100%
+        var(--accent1) 100%
     );
-    border: 1px solid #7371fc;
+    border: 1px solid var(--accent1);
     border-radius: 50px;
 
     transition: background var(--animation-speed) ease-in-out;
@@ -80,14 +80,14 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     background: transparent;
     outline: none;
     border: none;
 }
 
 .dropdown_menu button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .actions_menu {
@@ -113,7 +113,7 @@
 
 }
 .dropdown_button:focus-visible, .option_button:focus-visible{
-    border: 1px solid var(--text-grey-white)
+    border: 1px solid var(--text1)
 }
 .dropdown_wrapper,
 .dropdown_wrapper_active {

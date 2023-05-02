@@ -20,7 +20,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -58,7 +58,7 @@
     line-height: 22px;
     display: flex;
     justify-content: center;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .pool_price_change {
@@ -72,7 +72,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: 12px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .row_title {
@@ -91,7 +91,7 @@
 
     /* text/grey light */
 
-    color: #bdbdbd;
+    color: var(--text2);
 }
 
 .apr {
@@ -100,12 +100,7 @@
     line-height: 22px;
     letter-spacing: -0.02em;
 
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -119,7 +114,7 @@
 
     /* text/white */
 
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .change_positive {
     font-weight: 200;
@@ -149,7 +144,7 @@
     line-height: 30px;
 
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-family: sans-serif;
     /* font-family: var(--mono); */
 }

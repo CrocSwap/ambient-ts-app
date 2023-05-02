@@ -21,7 +21,7 @@
     font-size: 24px;
     line-height: 30px;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .earned_container,
@@ -39,7 +39,7 @@
     justify-content: space-between;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .earned_container {
@@ -83,7 +83,7 @@
 .price_status_content p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .price_status_content h2 {
@@ -93,11 +93,11 @@
 }
 
 .low_range {
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 
 .high_range {
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
 }
 
 .ambi_info_text {
@@ -114,7 +114,7 @@
     justify-content: space-between;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light)
+    color: var(--text2)
 } */
 
 @media only screen and (min-width: 768px) {

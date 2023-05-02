@@ -6,7 +6,7 @@
 .main_container a:hover,
 .main_container a:focus-visible {
     text-decoration: underline;
-    text-decoration-color: var(--text-grey-white);
+    text-decoration-color: var(--text1);
 }
 
 .main_container,
@@ -53,12 +53,12 @@
     height: 100px;
     justify-content: flex-end;
 
-    color: #ebebff;
+    color: var(--text1);
 }
 
 .learn_container a {
     text-decoration: none;
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 /* connect with email */
@@ -68,7 +68,7 @@
     grid-template-columns: auto 30px;
     align-items: center;
     gap: 8px;
-    background: #171d27;
+    background: var(--dark2);
     border-radius: 4px;
     height: 48px;
 }
@@ -83,7 +83,7 @@
     outline: none;
     border: none;
     padding: 0 8px;
-    color: #ebebff;
+    color: var(--text1);
 }
 
 .magic_login_container h2 {
@@ -105,7 +105,7 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: #7371fc;
+    color: var(--accent1);
 
     bottom: 0;
 }
@@ -116,14 +116,14 @@
     align-items: center;
     text-align: center;
     white-space: nowrap;
-    color: #ebebff;
+    color: var(--text1);
     font-weight: 300;
     font-size: 12px;
     line-height: 15px;
 }
 .tos_content a {
     text-decoration: none;
-    color: #7371fc;
+    color: var(--accent1);
     white-space: nowrap;
 }
 

@@ -41,7 +41,7 @@
 }
 
 .header_text {
-    color: var(--text-highlight);
+    color: var(--accent5);
     font-weight: 100;
 }
 
@@ -54,13 +54,13 @@
 }
 
 .highlight_text {
-    color: var(--text-highlight);
+    color: var(--accent5);
     font-weight: 300;
     margin: 0 5px;
 }
 .amm_pools {
     font-size: 16px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .row {
@@ -95,14 +95,14 @@
     font-weight: 300;
     font-size: 16px;
     line-height: 20px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 .content_text {
     font-weight: 100;
     font-size: 12px;
     line-height: 15px;
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     word-wrap: break-word;
 }
 

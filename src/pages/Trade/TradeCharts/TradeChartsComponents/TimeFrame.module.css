@@ -13,7 +13,7 @@
 }
 
 .main_time_frame_container:not(:last-child) {
-    border-right: 1px solid var(--text-grey-light);
+    border-right: 1px solid var(--text2);
 }
 
 .active_selected_button,
@@ -23,7 +23,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     text-align: center;
 
     outline: none;
@@ -35,27 +35,27 @@
 .active_selected_button:hover,
 .non_active_selected_button:hover {
     /* background: var(--title-gradient); */
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .active_selected_button {
     width: 100%;
     height: 100%;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
 
 .non_active_selected_button {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .time_frame_mobile_button {
     background: var(--dark2);
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 2px 8px;
     border-radius: 4px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
 }
 
 .dropdown_menu {
@@ -113,6 +113,6 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
     0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
     0px 0px 2px rgba(205, 193, 255, 0.2);
 }

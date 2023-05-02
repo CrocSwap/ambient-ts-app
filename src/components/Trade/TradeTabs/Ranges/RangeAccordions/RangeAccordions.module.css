@@ -65,7 +65,7 @@
 
     font-size: 12px;
     line-height: 12px;
-    color: #5ffff2;
+    color: var(--accent3);
 }
 
 .min_display,
@@ -98,12 +98,7 @@
 
         width: 50px;
 
-        background: linear-gradient(
-            90deg,
-            #15be6f 32.38%,
-            #8fe9bf 51.39%,
-            #15be6f 68.17%
-        );
+        background: var(--apr-gradient-primary);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;

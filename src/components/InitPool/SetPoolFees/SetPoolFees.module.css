@@ -13,19 +13,19 @@
     width: fit-content;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     margin-bottom: 0.2em;
 }
 
 .help_guide {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .slippage_box {
     background-color: var(--dark2);
     border-radius: 4px;
-    /* border: 1px solid var(--text-grey-dark); */
+    /* border: 1px solid var(--text3); */
     padding: 0.5rem;
 }
 .slippage_content {
@@ -64,12 +64,12 @@
     min-width: 3.5rem;
 
     margin-right: 8px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
     border-radius: 50px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     padding: 0.5rem 1rem;
 }
@@ -77,7 +77,7 @@
 .slippage_content button:hover {
     box-shadow: none;
     cursor: pointer;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .ambient_control {
@@ -88,6 +88,6 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 0 1rem;
 }
