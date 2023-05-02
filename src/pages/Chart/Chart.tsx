@@ -3661,7 +3661,6 @@ export default function Chart(props: propsIF) {
                     }
 
                     if (
-                        isMouseMoveCrosshair &&
                         xScale(d) > LastCrDate - _width / 2 &&
                         xScale(d) < LastCrDate + _width / 2 &&
                         d !== parsedChartData?.lastCrDate
@@ -3708,7 +3707,11 @@ export default function Chart(props: propsIF) {
                 .select('canvas');
             if (element === null) return;
 
-            if (dateCrosshair && element.style('visibility') === 'visible') {
+            if (
+                element &&
+                dateCrosshair &&
+                element.style('visibility') === 'visible'
+            ) {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
@@ -6363,7 +6366,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (lastCrDataTooltip && scaleData) {
-            lastCrDataTooltip.html('<p> 🐊 End of Crocswap Data </p>');
+            lastCrDataTooltip.html('<p> 🐊 Start of Crocswap Data </p>');
 
             lastCrDataTooltip.style(
                 'visibility',
