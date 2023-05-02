@@ -258,7 +258,7 @@ export default function TvlSubChart(props: TvlData) {
                     0,
                     resizeHeight,
                 );
-                tvlGradient.addColorStop(1, 'transparent');
+                tvlGradient.addColorStop(1, 'rgba(115, 113, 252, 0)');
                 tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
 
                 setTvlGradient(() => {
