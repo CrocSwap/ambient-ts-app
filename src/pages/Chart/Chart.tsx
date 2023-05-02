@@ -3649,6 +3649,8 @@ export default function Chart(props: propsIF) {
         });
 
         let dateCrosshair;
+        context.filter = ' blur(0px)';
+
         context.font = '800 13px Lexend Deca';
         if (parsedChartData?.period === 86400) {
             dateCrosshair = moment(crosshairData[0].x)
