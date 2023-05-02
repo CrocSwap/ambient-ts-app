@@ -1,7 +1,8 @@
 import styles from './Pagination.module.css';
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 import { motion } from 'framer-motion';
+import useDebounce from '../../../App/hooks/useDebounce';
 interface PaginationPropsIF {
     itemsPerPage: number;
     totalItems: number;
@@ -52,20 +53,38 @@ export default function Pagination(props: PaginationPropsIF) {
     const start = (currentPage - 1) * itemsPerPage + 1;
     const [end, setEnd] = useState(totalItems);
 
-    function handleUpdatePageShow() {
-        if (itemsPerPage < totalItems) {
-            if (totalItems > currentPage * itemsPerPage) {
-                setEnd(itemsPerPage * currentPage);
-            } else if (totalItems % itemsPerPage === 0) {
-                setEnd(totalItems);
-            } else {
-                setEnd(
-                    itemsPerPage * (currentPage - 1) +
-                        (totalItems % itemsPerPage),
-                );
+    // function handleUpdatePageShow() {
+    //     if (itemsPerPage < totalItems) {
+    //         if (totalItems > currentPage * itemsPerPage) {
+    //             setEnd(itemsPerPage * currentPage);
+    //         } else if (totalItems % itemsPerPage === 0) {
+    //             setEnd(totalItems);
+    //         } else {
+    //             setEnd(
+    //                 itemsPerPage * (currentPage - 1) +
+    //                     (totalItems % itemsPerPage),
+    //             );
+    //         }
+    //     }
+    // }
+
+    const handleUpdatePageShow = useCallback(
+        useDebounce(() => {
+            if (itemsPerPage < totalItems) {
+                if (totalItems > currentPage * itemsPerPage) {
+                    setEnd(itemsPerPage * currentPage);
+                } else if (totalItems % itemsPerPage === 0) {
+                    setEnd(totalItems);
+                } else {
+                    setEnd(
+                        itemsPerPage * (currentPage - 1) +
+                            (totalItems % itemsPerPage),
+                    );
+                }
             }
-        }
-    }
+        }, 200),
+        [currentPage, itemsPerPage, totalItems],
+    );
 
     useEffect(() => {
         handleUpdatePageShow();
