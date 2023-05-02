@@ -472,6 +472,8 @@ export default function TradeTabs2(props: propsIF) {
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
         lastBlockNumber: lastBlockNumber,
+        isAccountView: false,
+        setExpandTradeTable,
     };
 
     const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] =

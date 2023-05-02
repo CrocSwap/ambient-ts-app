@@ -453,6 +453,8 @@ export default function PortfolioTabs(props: propsIF) {
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
         lastBlockNumber: lastBlockNumber,
+        setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     const accountTabDataWithTokens = [
