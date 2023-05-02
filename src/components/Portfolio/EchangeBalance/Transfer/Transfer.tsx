@@ -59,7 +59,7 @@ export default function Transfer(props: propsIF) {
         tokenDexBalance,
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        lastBlockNumber,
+        // lastBlockNumber,
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
