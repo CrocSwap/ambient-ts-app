@@ -10,7 +10,6 @@ import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import sum from 'hash-sum';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -47,6 +46,7 @@ import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { diffHashSig } from '../../utils/functions/diffHashSig';
 
 interface propsIF {
     addRecentToken: (tkn: TokenIF) => void;
@@ -455,7 +455,8 @@ export default function Portfolio(props: propsIF) {
                     );
 
                     if (
-                        sum(resolvedAddressNativeToken) !== sum(newNativeToken)
+                        diffHashSig(resolvedAddressNativeToken) !==
+                        diffHashSig(newNativeToken)
                     ) {
                         setResolvedAddressNativeToken(newNativeToken);
                     }
@@ -482,11 +483,11 @@ export default function Portfolio(props: propsIF) {
                         if (indexOfExistingToken === -1) {
                             updatedTokens.push(newToken);
                         } else if (
-                            sum(
+                            diffHashSig(
                                 resolvedAddressErc20Tokens[
                                     indexOfExistingToken
                                 ],
-                            ) !== sum(newToken)
+                            ) !== diffHashSig(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }

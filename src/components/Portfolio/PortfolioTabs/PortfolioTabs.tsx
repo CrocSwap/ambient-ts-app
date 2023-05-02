@@ -6,7 +6,6 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import sum from 'hash-sum';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
@@ -49,6 +48,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
@@ -321,7 +321,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, sum(tokenList)]);
+    }, [resolvedAddress, connectedAccountActive, diffHashSig(tokenList)]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData

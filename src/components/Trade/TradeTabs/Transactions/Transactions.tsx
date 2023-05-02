@@ -11,7 +11,6 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
-import sum from 'hash-sum';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -22,6 +21,7 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -178,7 +178,7 @@ export default function Transactions(props: propsIF) {
         if (isOnPortfolioPage && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
         }
-    }, [isOnPortfolioPage, sum(activeAccountTransactionData)]);
+    }, [isOnPortfolioPage, diffHashSig(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
@@ -204,10 +204,10 @@ export default function Transactions(props: propsIF) {
         isOnPortfolioPage,
 
         isCandleSelected
-            ? sum(changesInSelectedCandle)
+            ? diffHashSig(changesInSelectedCandle)
             : isShowAllEnabled
-            ? sum(changesByPoolWithoutFills)
-            : sum(changesByUserMatchingSelectedTokens),
+            ? diffHashSig(changesByPoolWithoutFills)
+            : diffHashSig(changesByUserMatchingSelectedTokens),
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');

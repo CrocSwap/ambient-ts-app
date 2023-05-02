@@ -11,7 +11,6 @@ import {
 } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
-import sum from 'hash-sum';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
 import {
@@ -32,6 +31,7 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -205,12 +205,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         });
     }, [candleTimeInSeconds, denominationsInBase]);
 
-    useEffect(() => {
-        parseData();
-        IS_LOCAL_ENV && console.debug('setting candle added to true');
-        setIsCandleAdded(true);
-    }, [sum(props.candleData), denominationsInBase]);
-
     // Parse price data
     const parseData = () => {
         IS_LOCAL_ENV && console.debug('parsing candle data');
@@ -294,6 +288,12 @@ export default function TradeCandleStickChart(props: propsIF) {
             });
         }
     };
+
+    useEffect(() => {
+        parseData();
+        IS_LOCAL_ENV && console.debug('setting candle added to true');
+        setIsCandleAdded(true);
+    }, [diffHashSig(props.candleData), denominationsInBase]);
 
     // const standardDeviation = (arr: any, usePopulation = false) => {
     //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
@@ -669,7 +669,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        sum(props.liquidityData),
+        diffHashSig(props.liquidityData),
         poolPriceDisplay,
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
