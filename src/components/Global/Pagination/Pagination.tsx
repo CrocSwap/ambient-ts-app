@@ -80,6 +80,7 @@ export default function Pagination(props: PaginationPropsIF) {
     const expandStyle = expandPaginationContainer
         ? styles.expand
         : styles.not_expanded;
+
     const handleButtonClick = (newPage: number, scrollStep: number) => {
         if (newPage >= 1 && newPage <= totalPages) {
             sideScroll(containerRef.current, 25, 100, scrollStep);
