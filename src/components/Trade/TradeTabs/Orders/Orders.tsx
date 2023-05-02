@@ -331,7 +331,7 @@ export default function Orders(props: propsIF) {
 
     const regularOrdersItems = Math.round((height - 250) / 30);
     const showColumnOrdersItems = Math.round((height - 250) / 50);
-    const ordersPerPage = showColumns
+    const limitsPerPage = showColumns
         ? showColumnOrdersItems
         : regularOrdersItems;
 
@@ -340,11 +340,11 @@ export default function Orders(props: propsIF) {
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
-    const indexOfLastRanges = currentPage * ordersPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
-    const currentRangess = sortedLimits?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
+    const indexOfLastLimits = currentPage * limitsPerPage;
+    const indexOfFirstLimits = indexOfLastLimits - limitsPerPage;
+    const currentLimits = sortedLimits?.slice(
+        indexOfFirstLimits,
+        indexOfLastLimits,
     );
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -355,7 +355,7 @@ export default function Orders(props: propsIF) {
         <div className={styles.footer}>
             {expandTradeTable && sortedLimits.length > 30 && (
                 <Pagination
-                    itemsPerPage={ordersPerPage}
+                    itemsPerPage={limitsPerPage}
                     totalItems={sortedLimits.length}
                     paginate={paginate}
                     currentPage={currentPage}
@@ -381,7 +381,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const currentRowItemContent = currentRangess.map((order, idx) => (
+    const currentRowItemContent = currentLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             chainData={chainData}
