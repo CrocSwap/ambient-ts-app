@@ -1,14 +1,16 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useEffect, useMemo } from 'react';
+import {
+    useState,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useContext,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import {
-    CrocEnv,
-    ChainSpec,
-    CrocImpact,
-    CrocPoolView,
-} from '@crocswap-libs/sdk';
+import { ChainSpec, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -53,9 +55,9 @@ import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
     swapSlippage: SlippageMethodsIF;
@@ -117,7 +119,6 @@ interface propsIF {
 export default function Swap(props: propsIF) {
     const {
         pool,
-        crocEnv,
         isUserLoggedIn,
         account,
         swapSlippage,
@@ -162,6 +163,8 @@ export default function Swap(props: propsIF) {
 
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
+
+    const crocEnv = useContext(CrocEnvContext);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented

@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     useLocation,
     // useNavigate,
@@ -8,7 +15,6 @@ import {
 } from 'react-router-dom';
 import {
     ChainSpec,
-    CrocEnv,
     CrocPositionView,
     CrocReposition,
     toDisplayPrice,
@@ -53,9 +59,9 @@ import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/
 import { FiExternalLink } from 'react-icons/fi';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     isDenomBase: boolean;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
@@ -85,7 +91,6 @@ interface propsIF {
 
 export default function Reposition(props: propsIF) {
     const {
-        crocEnv,
         isDenomBase,
         ambientApy,
         dailyVol,
@@ -110,6 +115,8 @@ export default function Reposition(props: propsIF) {
 
     // current URL parameter string
     const { params } = useParams();
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
