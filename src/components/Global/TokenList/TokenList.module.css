@@ -32,7 +32,7 @@
 
 .search_input input {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
 
     text-align: center;
     color: var(--text-grey-light);
@@ -67,7 +67,7 @@
     padding: 0 2rem;
 }
 .header_content {
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 0.3rem 10px;
     display: flex;
     flex-direction: row;

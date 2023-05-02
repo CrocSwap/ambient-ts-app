@@ -1,3 +1,4 @@
+import { GRAPHCACHE_URL } from '../../constants';
 import { TvlSeriesByPoolTimeAndResolution } from '../../utils/state/graphDataSlice';
 
 export const getTvlSeries = async (
@@ -7,7 +8,7 @@ export const getTvlSeries = async (
     chainId: string,
     resolution: number,
 ): Promise<TvlSeriesByPoolTimeAndResolution | undefined> => {
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const poolTvlSeriesCacheEndpoint =
         httpGraphCacheServerDomain + '/pool_tvl_series?';

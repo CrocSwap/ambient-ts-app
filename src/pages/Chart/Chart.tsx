@@ -3,7 +3,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
-import sum from 'hash-sum';
 
 import {
     DetailedHTMLProps,
@@ -61,6 +60,7 @@ import {
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
+import { diffHashSig } from '../../utils/functions/diffHashSig';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -712,7 +712,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        sum(props.chartItemStates),
+        diffHashSig(props.chartItemStates),
         expandTradeTable,
         parsedChartData?.chartData.length,
         parsedChartData?.chartData[0]?.time,
@@ -2061,16 +2061,16 @@ export default function Chart(props: propsIF) {
         rescale,
         location,
         candlestick,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale?.domain()[1]),
-        sum(showLatest),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale?.domain()[1]),
+        diffHashSig(showLatest),
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
         limit,
         dragEvent,
         isLineDrag,
-        sum(yAxisLabels),
+        diffHashSig(yAxisLabels),
     ]);
 
     useEffect(() => {
@@ -2217,7 +2217,7 @@ export default function Chart(props: propsIF) {
                     return a.liqPrices - b.liqPrices;
                 });
 
-                if (!sortLiqaData) return;
+                if (!sortLiqaData || sortLiqaData.length === 0) return;
 
                 const closestMin = sortLiqaData.reduce(function (prev, curr) {
                     return Math.abs(
@@ -2252,6 +2252,7 @@ export default function Chart(props: propsIF) {
             liquidityData?.depthLiqAskData,
         );
         try {
+            if (liqDataAll && liqDataAll.length === 0) return;
             const { min, max }: any = findLiqNearest(liqDataAll);
             const visibleDomain = liqDataAll.filter(
                 (liqData: LiquidityDataLocal) =>
@@ -3365,9 +3366,9 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         market,
-        sum(crosshairData),
+        diffHashSig(crosshairData),
         isMouseMoveCrosshair,
         limit,
         isLineDrag,
@@ -3702,11 +3703,14 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
-            if (
-                dateCrosshair &&
-                d3.select(d3CanvasCrVertical?.current).style('visibility') ==
-                    'visible'
-            ) {
+
+            // Access the element in a single place, instead of repeating d3.select
+            // in both conditions, because d3.select() value could change in a race
+            // condition
+            const element = d3.select(d3CanvasCrVertical?.current);
+            if (element === null) return;
+
+            if (dateCrosshair && element.style('visibility') === 'visible') {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
@@ -5183,7 +5187,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5275,7 +5279,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liqMode,
         gradientForBid,
         liquidityScale,
@@ -5410,7 +5414,7 @@ export default function Chart(props: propsIF) {
             renderCanvas();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liquidityData?.liqBidData,
         liquidityData?.depthLiqBidData,
         lineBidSeries,
@@ -5524,7 +5528,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liquidityData?.liqAskData,
         liquidityData?.depthLiqAskData,
         lineAskSeries,
@@ -5708,7 +5712,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         parsedChartData?.period,
-        sum(parsedChartData?.chartData[0]),
+        diffHashSig(parsedChartData?.chartData[0]),
     ]);
 
     // Call drawChart()
@@ -5839,6 +5843,7 @@ export default function Chart(props: propsIF) {
 
         const allData = liqDataBid.concat(liqDataAsk);
 
+        if (!allData || allData.length === 0) return;
         const { min }: any = findLiqNearest(allData);
 
         let filteredAllData = allData.filter(

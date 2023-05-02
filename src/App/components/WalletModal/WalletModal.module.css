@@ -3,9 +3,10 @@
     padding: 1rem 0;
 }
 
-.main_container a:hover, .main_container a:focus-visible{
-   text-decoration: underline;
-   text-decoration-color: var(--text-grey-white);
+.main_container a:hover,
+.main_container a:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--text-grey-white);
 }
 
 .main_container,
@@ -20,7 +21,7 @@
 .email_button {
     cursor: pointer;
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     outline: none;
     border: none;
     display: flex;
@@ -137,6 +138,7 @@
     text-align: center;
     font-weight: 200;
     gap: 10px;
+    padding: 1rem;
 }
 
 .wall_buttons_container {
@@ -144,7 +146,5 @@
     flex-direction: column;
     gap: 4px;
 
-    padding: 0 1rem;
+    padding: 1rem;
 }
-
-

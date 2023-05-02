@@ -1,7 +1,7 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolListEndpoint = 'https://809821320828123.de:5000/pool_list?';
+const poolListEndpoint = GRAPHCACHE_URL + '/pool_list?';
 
 export const fetchPoolList = async (chainId: string, poolIdx?: number) => {
     IS_LOCAL_ENV && console.debug('fetching pool list ');

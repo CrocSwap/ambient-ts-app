@@ -13,7 +13,7 @@
 }
 
 .right_container {
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 4px 1rem;
 }
 .user_wallet {
@@ -111,7 +111,7 @@
 
 .pool_display:hover,
 .option_item:hover {
-    background: var(--dark3);
+    background: var(--dark2);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 }
@@ -124,7 +124,7 @@
 }
 
 .active_room {
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .pool_display img {
