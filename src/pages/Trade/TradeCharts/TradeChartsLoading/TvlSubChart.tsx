@@ -62,7 +62,7 @@ export default function TvlSubChart(props: TvlData) {
         useState<any>();
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
     const [buffer, setBuffer] = useState<any>();
-    const [resize, setResize] = useState<boolean>();
+    const [resizeHeight, setResizeHeight] = useState<number>();
 
     useEffect(() => {
         const yScale = d3.scaleSymlog();
@@ -269,19 +269,17 @@ export default function TvlSubChart(props: TvlData) {
                     return tvlGradient;
                 });
 
-                setResize(false);
-
                 renderCanvas();
             }
         }
-    }, [d3CanvasArea, tvlyScale, buffer, resize]);
+    }, [d3CanvasArea, tvlyScale, buffer, resizeHeight]);
 
     useEffect(() => {
         if (d3CanvasArea) {
             const canvasDiv = d3.select(d3CanvasArea.current) as any;
 
-            const resizeObserver = new ResizeObserver(() => {
-                setResize(true);
+            const resizeObserver = new ResizeObserver((event: any) => {
+                setResizeHeight(event[0].contentRect?.height);
             });
 
             resizeObserver.observe(canvasDiv.node());
