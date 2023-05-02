@@ -83,12 +83,12 @@
     user-select: none;
     margin: -5px auto;
     position: relative;
+    background: var(--dark3);
     padding: 3px;
 }
 
 .dropdown_btn {
-    padding: 4px 16px;
-    background: #171d27;
+    padding: 2px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
     color: #ebebff;
@@ -108,14 +108,12 @@
     font-weight: 500;
     color: rgba(235, 235, 255, 0.4);
     width: 95%;
+    text-align: center;
 }
 
 .star_icon {
-    height: 20px;
-    width: 20px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     cursor: pointer;
-    opacity: 0.5;
 }
 
 
