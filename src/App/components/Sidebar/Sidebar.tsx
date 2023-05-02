@@ -265,14 +265,14 @@ export default function Sidebar(props: propsIF) {
         ackTokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string[][]>();
+    const [searchInput, setSearchInput] = useState<string | undefined>();
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
-        setSearchInput([]);
+        setSearchInput(undefined);
         setSearchMode(false);
         const currentInput = document.getElementById(
             'search_input',
@@ -325,14 +325,11 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    const inputContent = document.getElementById(
-        'search_input',
-    ) as HTMLInputElement;
-
     // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
+        setSearchInput(e.target.value);
     };
     const searchContainer = (
         <div className={styles.search_container}>
@@ -350,7 +347,7 @@ export default function Sidebar(props: propsIF) {
                 spellCheck='false'
                 autoFocus
             />
-            {inputContent?.value && (
+            {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
                     <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
