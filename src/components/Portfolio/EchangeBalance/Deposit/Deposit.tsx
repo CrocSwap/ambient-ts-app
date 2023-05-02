@@ -19,6 +19,7 @@ import {
 import { BigNumber } from 'ethers';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FaGasPump } from 'react-icons/fa';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -85,12 +86,15 @@ export default function Deposit(props: propsIF) {
                   .toString()
             : tokenWalletBalance;
 
-    const tokenWalletBalanceDisplay = tokenWalletBalanceAdjustedNonDisplayString
-        ? toDisplayQty(
-              tokenWalletBalanceAdjustedNonDisplayString,
-              selectedTokenDecimals,
-          )
-        : undefined;
+    const tokenWalletBalanceDisplay = useDebounce(
+        tokenWalletBalanceAdjustedNonDisplayString
+            ? toDisplayQty(
+                  tokenWalletBalanceAdjustedNonDisplayString,
+                  selectedTokenDecimals,
+              )
+            : undefined,
+        500,
+    );
 
     const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
         ? parseFloat(tokenWalletBalanceDisplay)
@@ -381,12 +385,14 @@ export default function Deposit(props: propsIF) {
             <div className={styles.additional_info}>
                 <div className={styles.info_text_non_clickable}>
                     Available: {tokenWalletBalanceTruncated || '0.0'}
-                    <button
-                        className={`${styles.max_button} ${styles.max_button_enable}`}
-                        onClick={handleBalanceClick}
-                    >
-                        Max
-                    </button>
+                    {!isTokenEth && tokenWalletBalance !== '0' ? (
+                        <button
+                            className={`${styles.max_button} ${styles.max_button_enable}`}
+                            onClick={handleBalanceClick}
+                        >
+                            Max
+                        </button>
+                    ) : null}
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>

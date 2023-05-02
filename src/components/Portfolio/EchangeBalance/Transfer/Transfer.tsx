@@ -364,12 +364,14 @@ export default function Transfer(props: propsIF) {
             <div className={styles.additional_info}>
                 <div className={styles.info_text_non_clickable}>
                     Available: {tokenDexBalanceTruncated || '0.0'}
-                    <button
-                        className={`${styles.max_button} ${styles.max_button_enable}`}
-                        onClick={handleBalanceClick}
-                    >
-                        Max
-                    </button>
+                    {tokenDexBalance !== '0' ? (
+                        <button
+                            className={`${styles.max_button} ${styles.max_button_enable}`}
+                            onClick={handleBalanceClick}
+                        >
+                            Max
+                        </button>
+                    ) : null}
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>
