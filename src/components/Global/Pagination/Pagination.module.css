@@ -71,7 +71,7 @@
     cursor: pointer;
     /* background: var(--dark1); */
     text-shadow: 0px 0px 10px rgba(254, 255, 254, 0.75);
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .page button {
@@ -93,7 +93,7 @@
     cursor: pointer;
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
 
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .scroll_button svg {

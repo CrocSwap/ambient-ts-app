@@ -11,7 +11,6 @@ import {
     useMemo,
 } from 'react';
 import { ethers } from 'ethers';
-import sum from 'hash-sum';
 
 // START: Import JSX Components
 
@@ -20,7 +19,6 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
-    graphData,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 import {
@@ -41,6 +39,7 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -58,7 +57,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
-    graphData: graphData;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -100,7 +98,6 @@ export default function Ranges(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        graphData,
         lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
@@ -120,7 +117,9 @@ export default function Ranges(props: propsIF) {
         cachedPositionUpdateQuery,
     } = props;
 
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -181,19 +180,19 @@ export default function Ranges(props: propsIF) {
     );
 
     const sumHashActiveAccountPositionData = useMemo(
-        () => sum(activeAccountPositionData),
+        () => diffHashSig(activeAccountPositionData),
         [activeAccountPositionData],
     );
 
-    const sumHashRangeData = useMemo(() => sum(rangeData), [rangeData]);
+    const sumHashRangeData = useMemo(() => diffHashSig(rangeData), [rangeData]);
 
     const sumHashUserPositionsToDisplayOnTrade = useMemo(
-        () => sum(userPositionsToDisplayOnTrade),
+        () => diffHashSig(userPositionsToDisplayOnTrade),
         [userPositionsToDisplayOnTrade],
     );
 
     const sumHashPositionsByPool = useMemo(
-        () => sum(positionsByPool),
+        () => diffHashSig(positionsByPool),
         [positionsByPool],
     );
 
@@ -272,7 +271,7 @@ export default function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sum({
+        diffHashSig({
             id0: sortedPositions[0]?.positionId,
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,

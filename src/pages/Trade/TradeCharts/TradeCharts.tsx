@@ -6,7 +6,6 @@ import {
     AiOutlineDownload,
 } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -21,9 +20,7 @@ import {
     CandlesByPoolAndDuration,
     LiquidityData,
 } from '../../../utils/state/graphDataSlice';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
@@ -78,10 +75,8 @@ interface propsIF {
 
     poolPriceChangePercent: string | undefined;
 
-    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
     isPoolPriceChangePositive: boolean;
 
-    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
     fetchingCandle: boolean;
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -167,11 +162,9 @@ export default function TradeCharts(props: propsIF) {
         isUserLoggedIn,
         pool,
         chainData,
-        isTokenABase,
         poolPriceDisplay,
         fullScreenChart,
         setFullScreenChart,
-        lastBlockNumber,
         chainId,
         favePools,
         expandTradeTable,
@@ -179,9 +172,7 @@ export default function TradeCharts(props: propsIF) {
         setSelectedDate,
         TradeSettingsColor,
         poolPriceChangePercent,
-        setPoolPriceChangePercent,
         isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive,
         handlePulseAnimation,
         fetchingCandle,
         setFetchingCandle,
@@ -205,25 +196,14 @@ export default function TradeCharts(props: propsIF) {
         pathname.includes('market') || pathname.includes('limit');
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
-
-    const { tradeData } = useAppSelector((state) => state);
-    const { poolIndex } = lookupChain(chainId);
 
     const [rescale, setRescale] = useState(true);
     const [latest, setLatest] = useState(false);
     const [showLatest, setShowLatest] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
-
-    const denomInBase = tradeData.isDenomBase;
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
 
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
@@ -247,20 +227,7 @@ export default function TradeCharts(props: propsIF) {
             printDomToImage(canvasRef.current);
         }
     };
-    const saveImageContent = (
-        <div className={styles.save_image_container}>
-            <div
-                className={styles.save_image_content}
-                onClick={downloadAsImage}
-                role='button'
-                tabIndex={0}
-                aria-label='Download chart image button'
-            >
-                <AiOutlineDownload />
-                Save Chart Image
-            </div>
-        </div>
-    );
+
     // CHART SETTINGS------------------------------------------------------------
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
     const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
@@ -270,16 +237,6 @@ export default function TradeCharts(props: propsIF) {
     const [showVolume, setShowVolume] = useState(
         chartSettings.volumeSubchart.isEnabled,
     );
-
-    // const [liqMode, setLiqMode] = useState('Curve'); // TODO: switch default back to depth once depth mode is fixed
-
-    // useEffect(() => {
-    //     if (isMarketOrLimitModule) {
-    //         // setLiqMode('Depth'); // TODO: the following code will be uncommented once depth mode is fixed
-    //     } else {
-    //         setLiqMode('Curve');
-    //     }
-    // }, [isMarketOrLimitModule]);
 
     const chartItemStates = {
         showFeeRate,
@@ -370,86 +327,69 @@ export default function TradeCharts(props: propsIF) {
             </div>
         </div>
     );
+
+    const saveImageContent = (
+        <div
+            className={styles.save_image_content}
+            onClick={downloadAsImage}
+            role='button'
+            tabIndex={0}
+            aria-label='Download chart image button'
+        >
+            Save Chart Image
+            <AiOutlineDownload />
+        </div>
+    );
+
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <button
-                onClick={() => setFullScreenChart(!fullScreenChart)}
-                className={styles.fullscreen_button}
+            <DefaultTooltip
+                interactive
+                title={
+                    <div
+                        className={styles.save_image_content}
+                        onClick={() => setFullScreenChart(!fullScreenChart)}
+                    >
+                        Toggle Full Screen Chart
+                    </div>
+                }
+                enterDelay={500}
             >
-                <AiOutlineFullscreen
-                    size={20}
-                    id='trade_chart_full_screen_button'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Full screen chart button'
-                />
-            </button>
-
-            <DefaultTooltip interactive title={saveImageContent}>
-                <AiOutlineCamera
-                    size={20}
-                    id='trade_chart_save_image'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Save chart image button'
-                />
+                <button
+                    onClick={() => setFullScreenChart(!fullScreenChart)}
+                    className={styles.fullscreen_button}
+                >
+                    <AiOutlineFullscreen
+                        size={20}
+                        id='trade_chart_full_screen_button'
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Full screen chart button'
+                    />
+                </button>
+            </DefaultTooltip>
+            <DefaultTooltip
+                interactive
+                title={saveImageContent}
+                enterDelay={500}
+            >
+                <button
+                    onClick={downloadAsImage}
+                    className={styles.fullscreen_button}
+                >
+                    <AiOutlineCamera
+                        size={20}
+                        id='trade_chart_save_image'
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Save chart image button'
+                    />
+                </button>
             </DefaultTooltip>
         </div>
     );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
-
-    const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
-    const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && tokenAAddress && tokenBAddress) {
-                try {
-                    const priceChangeResult = await get24hChange(
-                        chainId,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        poolIndex,
-                        denomInBase,
-                    );
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
-                        setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
-                        priceChangeResult > 0
-                            ? setIsPoolPriceChangePositive(true)
-                            : setIsPoolPriceChangePositive(false);
-
-                        const priceChangeString =
-                            priceChangeResult > 0
-                                ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) +
-                                  '%'
-                                : priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) + '%';
-                        setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
-                    }
-                } catch (error) {
-                    setPoolPriceChangePercent(undefined);
-                }
-            }
-        })();
-    }, [
-        isServerEnabled,
-        denomInBase,
-        baseTokenAddress,
-        quoteTokenAddress,
-        lastBlockNumber,
-    ]);
 
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
@@ -521,7 +461,6 @@ export default function TradeCharts(props: propsIF) {
                 isPoolPriceChangePositive={isPoolPriceChangePositive}
                 poolPriceDisplay={poolPriceDisplay}
                 poolPriceChangePercent={poolPriceChangePercent}
-                setPoolPriceChangePercent={setPoolPriceChangePercent}
                 favePools={favePools}
                 chainId={chainId}
                 chainData={chainData}

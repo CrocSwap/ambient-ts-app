@@ -66,7 +66,7 @@
 .emoji-picker-react .emoji-group:before,
 .emoji-picker-react input.emoji-search {
     color: var(--text-grey-light) !important;
-    background: var(--dark3) !important;
+    background: var(--dark2) !important;
 }
 
 aside.emoji-picker-react {
@@ -84,7 +84,7 @@ aside.emoji-picker-react {
 }
 
 .introjs-tooltip {
-    background: var(--dark3) !important;
+    background: var(--dark2) !important;
     /* background: #fff !important; */
 }
 .introjs-tooltip-header {
@@ -102,7 +102,7 @@ aside.emoji-picker-react {
     line-height: 15px;
 }
 .introjs-button {
-    background: var(--dark3) !important;
+    background: var(--dark2) !important;
 
     outline: none !important;
     border: none !important;

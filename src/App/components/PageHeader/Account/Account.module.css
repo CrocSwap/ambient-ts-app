@@ -53,7 +53,7 @@
 .title_gradient {
     outline: none;
     border: none;
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 7.5px 12px 7.5px 6px;
     border-radius: 4px;
     display: flex;
@@ -128,7 +128,7 @@
     background: var(--title-gradient);
     border: none;
     outline: none;
-    color: var(--dark3);
+    color: var(--dark2);
     font-weight: 200;
 
     border-radius: var(--border-radius);

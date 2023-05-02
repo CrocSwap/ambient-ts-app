@@ -91,9 +91,7 @@ interface propsIF {
     favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
-    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
     isPoolPriceChangePositive: boolean;
-    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
@@ -153,7 +151,6 @@ export default function TradeTabs2(props: propsIF) {
         favePools,
         poolPriceDisplay,
         poolPriceChangePercent,
-        setPoolPriceChangePercent,
         isPoolPriceChangePositive,
         isCandleDataNull,
         isCandleArrived,
@@ -410,7 +407,6 @@ export default function TradeTabs2(props: propsIF) {
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
-        graphData: graphData,
         lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
@@ -439,7 +435,6 @@ export default function TradeTabs2(props: propsIF) {
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         tokenList: tokenList,
-        graphData: graphData,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -470,7 +465,6 @@ export default function TradeTabs2(props: propsIF) {
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
-        graphData: graphData,
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
@@ -516,7 +510,6 @@ export default function TradeTabs2(props: propsIF) {
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
         chainData: chainData,

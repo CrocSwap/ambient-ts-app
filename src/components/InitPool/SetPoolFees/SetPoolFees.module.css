@@ -23,7 +23,7 @@
     color: var(--text-grey-light);
 }
 .slippage_box {
-    background-color: var(--dark3);
+    background-color: var(--dark2);
     border-radius: 4px;
     /* border: 1px solid var(--text-grey-dark); */
     padding: 0.5rem;

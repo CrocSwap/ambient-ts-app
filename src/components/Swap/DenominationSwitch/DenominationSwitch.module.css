@@ -13,7 +13,7 @@
 
 .denomination_switch button {
     cursor: pointer;
-    background: var(--dark3);
+    background: var(--dark2);
     min-width: 1.5rem;
     /* padding: 0.1rem; */
     font-size: var(--body-size);

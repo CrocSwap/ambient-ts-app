@@ -1,20 +1,13 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
 
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import {
-    CandleData,
-    graphData,
-    // setDataLoadingStatus,
-    // setLimitOrdersByPool,
-} from '../../../../utils/state/graphDataSlice';
-// import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
@@ -26,6 +19,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -38,7 +32,6 @@ interface propsIF {
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
-    graphData: graphData;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
@@ -64,7 +57,6 @@ export default function Orders(props: propsIF) {
         chainData,
         expandTradeTable,
         account,
-        graphData,
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
@@ -75,6 +67,8 @@ export default function Orders(props: propsIF) {
         changeState,
         lastBlockNumber,
     } = props;
+
+    const graphData = useAppSelector((state) => state?.graphData);
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
         (x) => x.chainId === chainData.chainId,
@@ -148,9 +142,9 @@ export default function Orders(props: propsIF) {
     }, [
         isShowAllEnabled,
         connectedAccountActive,
-        sum(activeAccountLimitOrderData),
-        sum(ordersByUserMatchingSelectedTokens),
-        sum(limitOrdersByPool),
+        diffHashSig(activeAccountLimitOrderData),
+        diffHashSig(ordersByUserMatchingSelectedTokens),
+        diffHashSig(limitOrdersByPool),
     ]);
 
     const nonEmptyOrders = isShowAllEnabled

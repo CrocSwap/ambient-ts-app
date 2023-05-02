@@ -20,7 +20,7 @@
 }
 
 .container:hover {
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     width: 30px;
     height: 30px;
     border-radius: 50%;

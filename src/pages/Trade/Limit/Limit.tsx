@@ -63,7 +63,7 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 
@@ -227,7 +227,7 @@ export default function Limit(props: propsIF) {
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken === tokenPair.dataTokenA.address,
+        () => pool?.baseToken.tokenAddr === tokenPair.dataTokenA.address,
         [pool?.baseToken, tokenPair.dataTokenA.address],
     );
 
@@ -246,8 +246,8 @@ export default function Limit(props: propsIF) {
 
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
-                    pool.baseToken,
-                    pool.quoteToken,
+                    pool.baseToken.tokenAddr,
+                    pool.quoteToken.tokenAddr,
                     chainData.chainId,
                     lastBlockNumber,
                 );
@@ -593,7 +593,7 @@ export default function Limit(props: propsIF) {
         }
 
         const newLimitOrderChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_limit_order_change?';
+            GRAPHCACHE_URL + '/new_limit_order_change?';
 
         if (tx?.hash) {
             fetch(
@@ -1036,6 +1036,7 @@ export default function Limit(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={`approve ${tokenPair.dataTokenA.symbol}`}
                                         >
                                             {tokenPair.dataTokenA.symbol ||
                                                 tokenPair.dataTokenA.name}{' '}
@@ -1051,6 +1052,9 @@ export default function Limit(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenB.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenB.symbol ||
                                                 tokenPair.dataTokenB.name}{' '}

@@ -71,7 +71,6 @@ import {
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import {
@@ -83,9 +82,10 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 interface propsIF {
     account: string | undefined;
@@ -115,7 +115,6 @@ interface propsIF {
     dailyVol: number | undefined;
     openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
-    graphData: graphData;
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -189,7 +188,6 @@ export default function Range(props: propsIF) {
         dailyVol,
         openGlobalModal,
         poolExists,
-        graphData,
         isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
@@ -248,23 +246,9 @@ export default function Range(props: propsIF) {
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
-
-    const userPositions = graphData.positionsByUser.positions;
-    const [isAdd, setIsAdd] = useState<boolean>(false);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
+    const userPositions = useAppSelector(
+        (state) => state.graphData,
+    ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
 
@@ -416,14 +400,29 @@ export default function Range(props: propsIF) {
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
-        if (isAdd) {
-            setIsAdd(true);
+    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
+        if (isAmbient && position.positionType === 'ambient') {
+            return true;
+        } else if (
+            !isAmbient &&
+            defaultLowTick === position.bidTick &&
+            defaultHighTick === position.askTick
+        ) {
+            return true;
         } else {
-            setIsAdd(false);
+            return false;
         }
-    }, [userPositions.length, isAmbient, defaultLowTick, defaultHighTick]);
+    };
+
+    const isAdd = useMemo(
+        () => userPositions.some(selectedRangeMatchesOpenPosition),
+        [
+            diffHashSig(userPositions),
+            isAmbient,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
@@ -1117,8 +1116,7 @@ export default function Range(props: propsIF) {
             setIsWaitingForWallet(false);
         }
 
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
         if (tx?.hash) {
             if (isAmbient) {
                 fetch(
@@ -1810,6 +1808,9 @@ export default function Range(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenA.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenA.symbol ||
                                                 tokenPair.dataTokenA.name}{' '}
@@ -1825,6 +1826,9 @@ export default function Range(props: propsIF) {
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
+                                            aria-label={
+                                                tokenPair.dataTokenB.symbol
+                                            }
                                         >
                                             {tokenPair.dataTokenB.symbol ||
                                                 tokenPair.dataTokenB.name}{' '}

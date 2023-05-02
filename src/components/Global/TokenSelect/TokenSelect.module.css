@@ -119,7 +119,7 @@
     border-radius: var(--border-radius);
     bottom: 0;
     right: 0;
-    background-color: var(--dark3);
+    background-color: var(--dark2);
     overflow: hidden;
     height: 100%;
     transition: all var(--animation-speed) ease-in-out;

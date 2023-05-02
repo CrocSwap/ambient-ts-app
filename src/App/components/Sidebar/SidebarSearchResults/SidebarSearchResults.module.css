@@ -55,7 +55,7 @@
 .header {
     padding: 5px 0;
 
-    border-bottom: 1px solid var(--dark3);
+    border-bottom: 1px solid var(--dark2);
     color: var(--text-grey-dark);
 }
 
