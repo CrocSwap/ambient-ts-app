@@ -25,6 +25,7 @@
     border-radius: 50%;
     position: relative;
     cursor: pointer;
+    display: flex;
 
     outline: none;
     border: none;

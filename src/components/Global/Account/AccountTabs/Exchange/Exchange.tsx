@@ -1,12 +1,10 @@
 import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
@@ -24,11 +22,8 @@ export default function Exchange(props: propsIF) {
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        //  resolvedAddress,
         chainId,
         tokenMap,
-        //   lastBlockNumber,
-        //    crocEnv
     } = props;
 
     // const items = [1, 2, 3, 4, 5, 6];
