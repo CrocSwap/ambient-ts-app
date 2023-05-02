@@ -239,10 +239,6 @@ export default function TvlSubChart(props: TvlData) {
 
             if (canvas !== null && buffer && !isNaN(buffer) && resizeHeight) {
                 const ctx = canvas.getContext('2d');
-
-                const ratio =
-                    window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
-
                 const startPoint =
                     buffer === 0
                         ? 4
