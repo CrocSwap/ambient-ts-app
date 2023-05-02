@@ -2862,7 +2862,6 @@ export default function App() {
     const swapProps = {
         pool: pool,
         tokenPairLocal: tokenPairLocal,
-        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
         provider: provider,
@@ -2917,7 +2916,6 @@ export default function App() {
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         pool: pool,
-        crocEnv: crocEnv,
         isUserLoggedIn: isConnected,
         account: account,
         provider: provider,
@@ -2975,7 +2973,6 @@ export default function App() {
     const limitPropsTrade = {
         account: account,
         pool: pool,
-        crocEnv: crocEnv,
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
@@ -3034,7 +3031,6 @@ export default function App() {
 
     const rangeProps = {
         account: account,
-        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
         mintSlippage: mintSlippage,
@@ -3422,7 +3418,6 @@ export default function App() {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        crocEnv: crocEnv,
         addRecentToken,
         getRecentTokens,
         getAmbientTokens,
