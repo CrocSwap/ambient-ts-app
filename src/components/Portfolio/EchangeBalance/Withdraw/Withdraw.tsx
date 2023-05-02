@@ -24,6 +24,7 @@ import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -72,9 +73,12 @@ export default function Withdraw(props: propsIF) {
 
     const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
 
-    const tokenExchangeDepositsDisplay = tokenDexBalance
-        ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
-        : undefined;
+    const tokenExchangeDepositsDisplay = useDebounce(
+        tokenDexBalance
+            ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
+            : undefined,
+        500,
+    );
 
     const tokenExchangeDepositsDisplayNum = tokenExchangeDepositsDisplay
         ? parseFloat(tokenExchangeDepositsDisplay)
