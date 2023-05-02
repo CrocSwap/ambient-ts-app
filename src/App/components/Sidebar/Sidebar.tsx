@@ -265,14 +265,14 @@ export default function Sidebar(props: propsIF) {
         ackTokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string | undefined>();
+    const [searchInput, setSearchInput] = useState<string>('');
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
-        setSearchInput(undefined);
+        setSearchInput('');
         setSearchMode(false);
         const currentInput = document.getElementById(
             'search_input',
@@ -313,7 +313,7 @@ export default function Sidebar(props: propsIF) {
                 className={styles.search__box}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {searchInput !== undefined && (
+            {!searchInput && (
                 <div
                     onClick={handleInputClearAnalytics}
                     className={styles.close_icon}

@@ -28,7 +28,7 @@
 .main_result_container {
     margin: 10px 0;
 
-    max-height: 100px;
+    max-height: 140px;
     overflow-y: scroll;
 }
 .card_container,
