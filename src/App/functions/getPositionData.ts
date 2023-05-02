@@ -3,6 +3,7 @@ import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
+import { GRAPHCACHE_URL } from '../../constants';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
@@ -231,7 +232,7 @@ export const getPositionStatsJsonAsync = async (
     positionType: string,
     addValue: boolean,
 ) => {
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
     const positionStatsCacheEndpoint =
         httpGraphCacheServerDomain + '/position_stats?';
 
@@ -330,7 +331,7 @@ export const updatePositionStats = async (
 };
 
 export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
     const positionApyCacheEndpoint =
         httpGraphCacheServerDomain + '/position_apy?';
 

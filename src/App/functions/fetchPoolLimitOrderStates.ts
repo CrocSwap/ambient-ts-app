@@ -1,4 +1,4 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface IFetchPoolLimitOrderStatesProps {
     chainId: string;
@@ -14,7 +14,7 @@ export const fetchPoolLimitOrderStates = (
     const { chainId, base, quote, poolIdx, ensResolution } = props;
 
     const poolLimitOrderStatesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/pool_limit_order_states?';
+        GRAPHCACHE_URL + '/pool_limit_order_states?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 

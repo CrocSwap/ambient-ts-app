@@ -12,12 +12,12 @@ import {
     priceHalfBelowTick,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import sum from 'hash-sum';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
+import { diffHashSig } from '../functions/diffHashSig';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -330,7 +330,7 @@ export const useProcessOrder = (
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [sum(limitOrder), isDenomBase, isOnPortfolioPage]);
+    }, [diffHashSig(limitOrder), isDenomBase, isOnPortfolioPage]);
 
     const isBid = limitOrder.isBid;
 

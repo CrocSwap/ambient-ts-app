@@ -1,3 +1,4 @@
+import { GRAPHCACHE_URL } from '../../constants';
 import { VolumeSeriesByPoolTimeAndResolution } from '../../utils/state/graphDataSlice';
 
 export const getVolumeSeries = async (
@@ -7,7 +8,7 @@ export const getVolumeSeries = async (
     chainId: string,
     resolution: number,
 ): Promise<VolumeSeriesByPoolTimeAndResolution | undefined> => {
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const poolVolumeSeriesCacheEndpoint =
         httpGraphCacheServerDomain + '/pool_volume_series?';
