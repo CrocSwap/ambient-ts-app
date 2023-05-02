@@ -85,6 +85,7 @@
     position: relative;
     background: var(--dark3);
     padding: 3px;
+    border-radius: 4px;
 }
 
 .dropdown_btn {
@@ -116,8 +117,6 @@
     cursor: pointer;
 }
 
-
-
 .dropdown_btn_isActive {
     padding: 4px 16px;
     background: #171d27;
@@ -128,6 +127,7 @@
     cursor: pointer;
     justify-content: space-between;
     color: rgba(235, 235, 255, 0.4);
+    border-radius: 4px;
 }
 
 .star_icon_selected_room {
