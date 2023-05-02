@@ -142,7 +142,11 @@ export default function Deposit(props: propsIF) {
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
-        if (!depositQtyNonDisplay) {
+        if (isDepositPending) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
+        } else if (!depositQtyNonDisplay) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
@@ -150,10 +154,6 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        } else if (isDepositPending) {
-            setIsButtonDisabled(true);
-            setIsCurrencyFieldDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);

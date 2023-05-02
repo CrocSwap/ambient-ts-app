@@ -138,7 +138,11 @@ export default function Withdraw(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (isSendToAddressChecked && !isResolvedAddressValid) {
+        if (isWithdrawPending) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
+        } else if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
@@ -152,10 +156,6 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        } else if (isWithdrawPending) {
-            setIsButtonDisabled(true);
-            setIsCurrencyFieldDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Withdrawal Pending`);
         } else if (isWithdrawQtyValid) {
             setIsButtonDisabled(false);
             setIsCurrencyFieldDisabled(false);

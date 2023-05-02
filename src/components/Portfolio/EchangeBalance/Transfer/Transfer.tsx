@@ -139,7 +139,12 @@ export default function Transfer(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (!isResolvedAddressValid) {
+        if (isTransferPending) {
+            setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(true);
+            setIsCurrencyFieldDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
+        } else if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
@@ -156,11 +161,6 @@ export default function Transfer(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        } else if (isTransferPending) {
-            setIsButtonDisabled(true);
-            setIsAddressFieldDisabled(true);
-            setIsCurrencyFieldDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
         } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
             setIsAddressFieldDisabled(false);
