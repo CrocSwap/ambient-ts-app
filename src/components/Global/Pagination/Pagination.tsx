@@ -98,19 +98,33 @@ export default function Pagination(props: PaginationPropsIF) {
     const expandStyle = expandPaginationContainer
         ? styles.expand
         : styles.not_expanded;
+    const handleButtonClick = (newPage: number, scrollStep: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            sideScroll(containerRef.current, 25, 100, scrollStep);
+            paginate(newPage);
+        }
+    };
 
     const handleLeftButtonClick = () => {
-        sideScroll(containerRef.current, 25, 100, -60);
-        if (currentPage > 1) {
-            paginate(currentPage - 1);
-        } else return;
+        handleButtonClick(currentPage - 1, -60);
     };
-    const handlerightButtonClick = () => {
-        sideScroll(containerRef.current, 25, 100, 60);
-        if (currentPage < totalPages) {
-            paginate(currentPage + 1);
-        } else return;
+
+    const handleRightButtonClick = () => {
+        handleButtonClick(currentPage + 1, 60);
     };
+
+    // const handleLeftButtonClick = () => {
+    //     sideScroll(containerRef.current, 25, 100, -60);
+    //     if (currentPage > 1) {
+    //         paginate(currentPage - 1);
+    //     } else return;
+    // };
+    // const handlerightButtonClick = () => {
+    //     sideScroll(containerRef.current, 25, 100, 60);
+    //     if (currentPage < totalPages) {
+    //         paginate(currentPage + 1);
+    //     } else return;
+    // };
 
     const handleNumberClick = (page: number) => {
         paginate(page);
@@ -118,7 +132,7 @@ export default function Pagination(props: PaginationPropsIF) {
     const rightButton = (
         <div
             className={styles.scroll_button}
-            onClick={() => handlerightButtonClick()}
+            onClick={() => handleRightButtonClick()}
         >
             <IoMdArrowDropright size={30} />
         </div>
