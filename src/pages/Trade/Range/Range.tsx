@@ -14,7 +14,6 @@ import { motion } from 'framer-motion';
 import {
     concDepositSkew,
     capitalConcFactor,
-    CrocEnv,
     ChainSpec,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
