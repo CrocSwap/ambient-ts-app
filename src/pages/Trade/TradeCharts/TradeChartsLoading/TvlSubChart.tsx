@@ -237,7 +237,7 @@ export default function TvlSubChart(props: TvlData) {
                 .select('canvas')
                 .node() as any;
 
-            if (canvas !== null && buffer && !isNaN(buffer)) {
+            if (canvas !== null && buffer && !isNaN(buffer) && resizeHeight) {
                 const ctx = canvas.getContext('2d');
 
                 const ratio =
@@ -260,7 +260,7 @@ export default function TvlSubChart(props: TvlData) {
                     0,
                     0,
                     0,
-                    canvas.height / ratio,
+                    resizeHeight,
                 );
                 tvlGradient.addColorStop(1, 'transparent');
                 tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
@@ -286,7 +286,7 @@ export default function TvlSubChart(props: TvlData) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [d3CanvasArea === undefined]);
 
     useEffect(() => {
         if (
@@ -376,7 +376,7 @@ export default function TvlSubChart(props: TvlData) {
                     lineSeries.context(ctx);
                 });
         }
-    }, [areaSeries, lineSeries, tvlyScale]);
+    }, [areaSeries, lineSeries, tvlData]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {
