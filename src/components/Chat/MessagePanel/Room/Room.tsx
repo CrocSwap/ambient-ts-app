@@ -69,7 +69,7 @@ export default function RoomDropdown(props: propsIF) {
     const defaultRooms = [
         {
             id: 100,
-            name: '   @Global',
+            name: 'Global',
             value: 'Global',
         },
     ];
@@ -77,7 +77,7 @@ export default function RoomDropdown(props: propsIF) {
     const isFullScreenDefaultRooms = [
         {
             id: 100,
-            name: '@Global',
+            name: 'Global',
             value: 'Global',
         },
     ];

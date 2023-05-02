@@ -84,7 +84,7 @@
     margin: -5px auto;
     position: relative;
     background: var(--dark3);
-    padding: 3px;
+    padding: 1px;
     border-radius: 4px;
 }
 
@@ -118,8 +118,7 @@
 }
 
 .dropdown_btn_isActive {
-    padding: 4px 16px;
-    background: #171d27;
+    padding: 4px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
     display: flex;
