@@ -144,7 +144,7 @@
     }
 }
 @media only screen and (min-width: 768px){
-    .account{
+ .fixed   .account{
     width: 380px
 }
 
