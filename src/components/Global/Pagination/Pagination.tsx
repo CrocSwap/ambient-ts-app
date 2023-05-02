@@ -1,6 +1,5 @@
 import styles from './Pagination.module.css';
-import { useRef, useEffect, useState } from 'react';
-// import { BiDotsHorizontal } from 'react-icons/bi';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 import { motion } from 'framer-motion';
 interface PaginationPropsIF {
@@ -11,11 +10,20 @@ interface PaginationPropsIF {
 }
 export default function Pagination(props: PaginationPropsIF) {
     const { itemsPerPage, totalItems, paginate, currentPage } = props;
-    const pageNumbers: number[] = [];
+    // const pageNumbers: number[] = [];
 
-    for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-        pageNumbers.push(i);
-    }
+    // for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+    //     pageNumbers.push(i);
+    // }
+
+    const pageNumbers = useMemo(() => {
+        const nums = [];
+        for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+            nums.push(i);
+        }
+        return nums;
+    }, [itemsPerPage, totalItems]);
+
     // eslint-disable-next-line
     const containerRef = useRef<any>();
 
@@ -68,7 +76,6 @@ export default function Pagination(props: PaginationPropsIF) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const [expandPaginationContainer] = useState(true);
-    // const [expandPaginationContainer, setExpandPaginationContainer] = useState(false);
     const expandStyle = expandPaginationContainer
         ? styles.expand
         : styles.not_expanded;
@@ -87,10 +94,6 @@ export default function Pagination(props: PaginationPropsIF) {
     };
 
     const handleNumberClick = (page: number) => {
-        // const rightScrollNumber = 60 * page
-
-        // sideScroll(containerRef.current, 25, 100, rightScrollNumber);
-
         paginate(page);
     };
     const rightButton = (
@@ -105,24 +108,11 @@ export default function Pagination(props: PaginationPropsIF) {
     const leftButton = (
         <div
             className={styles.scroll_button}
-            // onClick={() => {
-            //     sideScroll(containerRef.current, 25, 100, -60);
-            // }}
             onClick={() => handleLeftButtonClick()}
         >
             <IoMdArrowDropleft size={30} />
         </div>
     );
-
-    // const lastPageClick = (
-    //     <div
-    //         onClick={() => paginate(totalPages)}
-    //         className={totalPages === currentPage ? styles.page_active : styles.page}
-    //         style={{ cursor: 'pointer' }}
-    //     >
-    //         {totalPages > 10 && totalPages}
-    //     </div>
-    // );
 
     return (
         <>
@@ -133,12 +123,10 @@ export default function Pagination(props: PaginationPropsIF) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className={`${styles.pagination_inside_container} ${expandStyle}`}
-                    // onMouseLeave={() => setExpandPaginationContainer(false)}
                 >
                     {currentPage > 1 && leftButton}
                     <div
                         className={styles.pagination_content}
-                        // onMouseEnter={() => setExpandPaginationContainer(true)}
                         ref={containerRef}
                     >
                         {pageNumbers.map((number) => (
@@ -158,13 +146,6 @@ export default function Pagination(props: PaginationPropsIF) {
                             </li>
                         ))}
                     </div>
-                    {/* {expandPaginationContainer && (
-                        <div className={styles.dot}>
-                            <BiDotsHorizontal />
-                        </div>
-                    )} */}
-
-                    {/* {expandPaginationContainer && currentPage !== totalPages && lastPageClick} */}
                     {currentPage !== totalPages && rightButton}
                 </motion.div>
             </nav>
