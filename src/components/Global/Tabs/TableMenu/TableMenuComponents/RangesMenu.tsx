@@ -12,7 +12,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
@@ -31,7 +31,6 @@ import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 // interface for React functional component props
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -65,7 +64,6 @@ export default function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        crocEnv,
         isEmpty,
         isPositionEmpty,
         userMatchesConnectedAccount,
@@ -323,7 +321,6 @@ export default function RangesMenu(props: propsIF) {
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
                     <HarvestPosition
                         handleModalClose={handleModalClose}
-                        crocEnv={crocEnv}
                         position={position}
                         dexBalancePrefs={dexBalancePrefs}
                         slippage={slippage}

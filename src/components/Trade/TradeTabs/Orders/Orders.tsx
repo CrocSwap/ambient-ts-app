@@ -8,7 +8,7 @@ import styles from './Orders.module.css';
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
@@ -28,7 +28,6 @@ interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
-    crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
@@ -53,7 +52,6 @@ export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
-        crocEnv,
         chainData,
         expandTradeTable,
         account,
@@ -375,7 +373,6 @@ export default function Orders(props: propsIF) {
 
     const rowItemContent = usePaginateDataOrNull?.map((order, idx) => (
         <OrderRow
-            crocEnv={crocEnv}
             chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}

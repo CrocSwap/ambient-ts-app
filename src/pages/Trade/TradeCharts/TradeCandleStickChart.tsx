@@ -25,7 +25,7 @@ import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
@@ -53,7 +53,6 @@ declare global {
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -136,7 +135,6 @@ type chartItemStates = {
 export default function TradeCandleStickChart(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         baseTokenAddress,
         chainId,
@@ -865,7 +863,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}

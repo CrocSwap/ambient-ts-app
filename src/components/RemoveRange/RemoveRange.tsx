@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
@@ -11,7 +11,6 @@ import {
     ambientPosSlot,
     ChainSpec,
     concPosSlot,
-    CrocEnv,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
@@ -41,9 +40,9 @@ import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
     chainId: string;
@@ -76,7 +75,6 @@ interface propsIF {
 
 export default function RemoveRange(props: propsIF) {
     const {
-        crocEnv,
         chainData,
         position,
         dexBalancePrefs,
@@ -93,6 +91,8 @@ export default function RemoveRange(props: propsIF) {
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
     ).lastBlock;
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
