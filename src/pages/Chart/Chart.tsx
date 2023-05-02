@@ -3604,11 +3604,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (
-                    d3
-                        .select(d3CanvasCrHorizontal.current)
-                        .style('visibility') == 'visible'
-                ) {
+                if (isMouseMoveCrosshair) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
@@ -3704,13 +3700,7 @@ export default function Chart(props: propsIF) {
 
             context.beginPath();
 
-            // Access the element in a single place, instead of repeating d3.select
-            // in both conditions, because d3.select() value could change in a race
-            // condition
-            const element = d3.select(d3CanvasCrVertical?.current);
-            if (element === null) return;
-
-            if (dateCrosshair && element.style('visibility') === 'visible') {
+            if (dateCrosshair && isMouseMoveCrosshair) {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
