@@ -50,13 +50,7 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get15MinutesAxisTicks,
-    get1MinuteAxisTicks,
-    get5MinutesAxisTicks,
-    getHourAxisTicks,
-    getOneDayAxisTicks,
-} from './calcuteDateAxis';
+import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
@@ -767,86 +761,6 @@ export default function Chart(props: propsIF) {
             };
         }
     };
-
-    async function getXAxisTick() {
-        const oldTickValues = scaleData?.xScale.ticks();
-        let result = oldTickValues;
-
-        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
-        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
-
-        const filtered = parsedChartData?.chartData.filter(
-            (data: any) => data.date >= xmin && data.date <= xmax,
-        );
-
-        if (filtered && scaleData) {
-            const xminData = d3.min(filtered, (d: any) => d.time) * 1000;
-            const xmaxData = d3.max(filtered, (d: any) => d.time) * 1000;
-
-            const _bandwidth =
-                Math.abs(
-                    scaleData.xScale(xminData) - scaleData.xScale(xmaxData),
-                ) / filtered.length;
-
-            const domainX = scaleData?.xScale.domain();
-            if (parsedChartData?.period === 3600) {
-                result = await getHourAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                    1,
-                );
-            }
-
-            if (parsedChartData?.period === 86400) {
-                result = await getOneDayAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                );
-            }
-
-            if (parsedChartData?.period === 14400) {
-                result = await getHourAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                    4,
-                );
-            }
-
-            if (parsedChartData?.period === 900) {
-                result = get15MinutesAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                );
-            }
-
-            if (parsedChartData?.period === 300) {
-                result = get5MinutesAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                );
-            }
-
-            if (parsedChartData?.period === 60) {
-                result = get1MinuteAxisTicks(
-                    domainX[0],
-                    domainX[1],
-                    oldTickValues,
-                    _bandwidth,
-                );
-            }
-        }
-        return result;
-    }
 
     function changeyAxisWidth() {
         let yTickValueLength = scaleData?.yScale.ticks()[0]?.toString().length;
@@ -3625,91 +3539,136 @@ export default function Chart(props: propsIF) {
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
-        getXAxisTick().then((res) => {
-            const _res = res.map((item: any) => item.date);
+        const data = correctStyleForData(
+            scaleData?.xScale.domain()[0],
+            scaleData?.xScale.domain()[1],
+            scaleData?.xScale.ticks(),
+        );
 
-            xAxis.tickValues([..._res]);
+        const filteredData = data.reduce((acc: any, d: any) => {
+            const sameTime = acc.find(
+                (d1: any) =>
+                    d1.date.getTime() === d.date.getTime() &&
+                    d1.date.getMinutes() === d.date.getMinutes(),
+            );
+            if (!sameTime) {
+                acc.push(d);
+            }
+            return acc;
+        }, []);
 
-            xAxis.tickValues().forEach((d: any) => {
-                if (d instanceof Date) {
-                    let formatValue = undefined;
-                    context.textAlign = 'center';
-                    context.textBaseline = 'top';
-                    context.fillStyle = 'rgba(189,189,189,0.8)';
-                    context.font = '50 11.425px Lexend Deca';
-                    context.filter = ' blur(0px)';
+        filteredData.forEach((d: any) => {
+            if (d.date instanceof Date) {
+                let formatValue = undefined;
+                context.textAlign = 'center';
+                context.textBaseline = 'top';
+                context.fillStyle = 'rgba(189,189,189,0.8)';
+                context.font = '50 11.425px Lexend Deca';
+                context.filter = ' blur(0px)';
 
-                    if (
-                        moment(d).format('HH:mm') === '00:00' ||
-                        parsedChartData?.period === 86400
-                    ) {
-                        formatValue = moment(d).format('DD');
-                    } else {
-                        formatValue = moment(d).format('HH:mm');
-                    }
-
-                    if (
-                        moment(d)
-                            .format('DD')
-                            .match(/^(01)$/) &&
-                        moment(d).format('HH:mm') === '00:00'
-                    ) {
-                        formatValue =
-                            moment(d).format('MMM') === 'Jan'
-                                ? moment(d).format('YYYY')
-                                : moment(d).format('MMM');
-                    }
-
-                    if (
-                        isMouseMoveCrosshair &&
-                        isCrosshairActive !== 'none' &&
-                        xScale(d) > xScale(crosshairData[0].x) - _width &&
-                        xScale(d) < xScale(crosshairData[0].x) + _width &&
-                        d !== crosshairData[0].x
-                    ) {
-                        context.filter = ' blur(7px)';
-                    }
-                    if (
-                        res.find((item: any) => {
-                            return item.date?.getTime() === d?.getTime();
-                        })?.style
-                    ) {
-                        context.font = '900 12px Lexend Deca';
-                    }
-
-                    context.beginPath();
-                    if (formatValue) {
-                        context.fillText(formatValue, xScale(d), Y + tickSize);
-                    }
-
-                    context.restore();
+                if (
+                    moment(d.date).format('HH:mm') === '00:00' ||
+                    parsedChartData?.period === 86400
+                ) {
+                    formatValue = moment(d.date).format('DD');
+                } else {
+                    formatValue = moment(d.date).format('HH:mm');
                 }
-            });
 
-            let dateCrosshair;
-            context.font = '800 13px Lexend Deca';
-            if (parsedChartData?.period === 86400) {
-                dateCrosshair = moment(crosshairData[0].x)
-                    .subtract(utcDiffHours, 'hours')
-                    .format('MMM DD YYYY');
-            } else {
-                dateCrosshair = moment(crosshairData[0].x).format(
-                    'MMM DD HH:mm',
-                );
+                if (
+                    moment(d.date)
+                        .format('DD')
+                        .match(/^(01)$/) &&
+                    moment(d.date).format('HH:mm') === '00:00'
+                ) {
+                    formatValue =
+                        moment(d.date).format('MMM') === 'Jan'
+                            ? moment(d.date).format('YYYY')
+                            : moment(d.date).format('MMM');
+                }
+
+                if (
+                    isMouseMoveCrosshair &&
+                    isCrosshairActive !== 'none' &&
+                    xScale(d.date) > xScale(crosshairData[0].x) - _width &&
+                    xScale(d.date) < xScale(crosshairData[0].x) + _width &&
+                    d.date !== crosshairData[0].x
+                ) {
+                    context.filter = ' blur(7px)';
+                }
+                if (d.style) {
+                    context.font = '900 12px Lexend Deca';
+                }
+
+                context.beginPath();
+                if (formatValue) {
+                    const indexValue = filteredData.findIndex(
+                        (d1: any) => d1.date.getTime() === d.date.getTime(),
+                    );
+                    if (
+                        !d.style &&
+                        indexValue !== filteredData.length - 1 &&
+                        indexValue !== 0
+                    ) {
+                        const lastData = filteredData[indexValue + 1];
+
+                        const beforeData = filteredData[indexValue - 1];
+                        if (beforeData.style || lastData.style) {
+                            if (
+                                Math.abs(
+                                    xScale(beforeData.date) - xScale(d.date),
+                                ) > _width &&
+                                Math.abs(
+                                    xScale(lastData.date) - xScale(d.date),
+                                ) > _width
+                            ) {
+                                context.fillText(
+                                    formatValue,
+                                    xScale(d.date),
+                                    Y + tickSize,
+                                );
+                            }
+                        } else {
+                            context.fillText(
+                                formatValue,
+                                xScale(d.date),
+                                Y + tickSize,
+                            );
+                        }
+                    } else {
+                        context.fillText(
+                            formatValue,
+                            xScale(d.date),
+                            Y + tickSize,
+                        );
+                    }
+                }
+
+                context.restore();
             }
-
-            context.beginPath();
-
-            if (dateCrosshair && isMouseMoveCrosshair) {
-                context.fillText(
-                    dateCrosshair,
-                    xScale(crosshairData[0].x),
-                    Y + tickSize,
-                );
-            }
-
-            context.restore();
         });
+
+        let dateCrosshair;
+        context.font = '800 13px Lexend Deca';
+        if (parsedChartData?.period === 86400) {
+            dateCrosshair = moment(crosshairData[0].x)
+                .subtract(utcDiffHours, 'hours')
+                .format('MMM DD YYYY');
+        } else {
+            dateCrosshair = moment(crosshairData[0].x).format('MMM DD HH:mm');
+        }
+
+        context.beginPath();
+
+        if (dateCrosshair && isMouseMoveCrosshair) {
+            context.fillText(
+                dateCrosshair,
+                xScale(crosshairData[0].x),
+                Y + tickSize,
+            );
+        }
+
+        context.restore();
     };
 
     // Horizontal Lines
