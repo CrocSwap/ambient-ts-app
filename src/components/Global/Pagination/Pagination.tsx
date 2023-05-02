@@ -1,8 +1,7 @@
 import styles from './Pagination.module.css';
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { IoMdArrowDropleft, IoMdArrowDropright } from 'react-icons/io';
 import { motion } from 'framer-motion';
-import useDebounce from '../../../App/hooks/useDebounce';
 interface PaginationPropsIF {
     itemsPerPage: number;
     totalItems: number;
@@ -11,11 +10,6 @@ interface PaginationPropsIF {
 }
 export default function Pagination(props: PaginationPropsIF) {
     const { itemsPerPage, totalItems, paginate, currentPage } = props;
-    // const pageNumbers: number[] = [];
-
-    // for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    //     pageNumbers.push(i);
-    // }
 
     const pageNumbers = useMemo(() => {
         const nums = [];
@@ -53,42 +47,30 @@ export default function Pagination(props: PaginationPropsIF) {
     const start = (currentPage - 1) * itemsPerPage + 1;
     const [end, setEnd] = useState(totalItems);
 
-    // function handleUpdatePageShow() {
-    //     if (itemsPerPage < totalItems) {
-    //         if (totalItems > currentPage * itemsPerPage) {
-    //             setEnd(itemsPerPage * currentPage);
-    //         } else if (totalItems % itemsPerPage === 0) {
-    //             setEnd(totalItems);
-    //         } else {
-    //             setEnd(
-    //                 itemsPerPage * (currentPage - 1) +
-    //                     (totalItems % itemsPerPage),
-    //             );
-    //         }
-    //     }
-    // }
+    function handleUpdatePageShow() {
+        if (itemsPerPage >= totalItems) {
+            setEnd(totalItems);
+            return;
+        }
 
-    const handleUpdatePageShow = useCallback(
-        useDebounce(() => {
-            if (itemsPerPage < totalItems) {
-                if (totalItems > currentPage * itemsPerPage) {
-                    setEnd(itemsPerPage * currentPage);
-                } else if (totalItems % itemsPerPage === 0) {
-                    setEnd(totalItems);
-                } else {
-                    setEnd(
-                        itemsPerPage * (currentPage - 1) +
-                            (totalItems % itemsPerPage),
-                    );
-                }
-            }
-        }, 200),
+        switch (totalItems % itemsPerPage) {
+            case 0:
+                setEnd(itemsPerPage * currentPage);
+                break;
+            default:
+                setEnd(Math.min(itemsPerPage * currentPage, totalItems));
+                break;
+        }
+    }
+
+    const memoizedHandleUpdatePageShow = useMemo(
+        () => handleUpdatePageShow,
         [currentPage, itemsPerPage, totalItems],
     );
 
     useEffect(() => {
-        handleUpdatePageShow();
-    }, [currentPage, paginate]);
+        memoizedHandleUpdatePageShow();
+    }, [currentPage, itemsPerPage, totalItems, memoizedHandleUpdatePageShow]);
 
     const detailPageRendered = ` showing ${start} - ${end} of ${totalItems} `;
 
@@ -112,19 +94,6 @@ export default function Pagination(props: PaginationPropsIF) {
     const handleRightButtonClick = () => {
         handleButtonClick(currentPage + 1, 60);
     };
-
-    // const handleLeftButtonClick = () => {
-    //     sideScroll(containerRef.current, 25, 100, -60);
-    //     if (currentPage > 1) {
-    //         paginate(currentPage - 1);
-    //     } else return;
-    // };
-    // const handlerightButtonClick = () => {
-    //     sideScroll(containerRef.current, 25, 100, 60);
-    //     if (currentPage < totalPages) {
-    //         paginate(currentPage + 1);
-    //     } else return;
-    // };
 
     const handleNumberClick = (page: number) => {
         paginate(page);
