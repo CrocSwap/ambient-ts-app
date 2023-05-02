@@ -7,7 +7,6 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
-import { TbTableExport } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -19,6 +18,7 @@ import trimString from '../../utils/functions/trimString';
 import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import NotFound from '../../pages/NotFound/NotFound';
 import { topPoolIF } from '../../App/hooks/useTopPools';
+import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -297,16 +297,18 @@ export default function ChatPanel(props: propsIF) {
                 {isFullScreen || !props.isChatOpen ? (
                     <></>
                 ) : (
-                    <TbTableExport
-                        size={18}
+                    <div
                         className={styles.open_full_button}
                         onClick={() =>
                             window.open('/chat/' + convertCurreny(room))
                         }
-                        role='button'
-                        tabIndex={0}
                         aria-label='Open chat in full screen'
-                    />
+                    >
+                        <img
+                            src={ExpandChatIcon}
+                            alt='Open chat in full screen'
+                        />
+                    </div>
                 )}
                 {isFullScreen || !props.isChatOpen ? (
                     <></>

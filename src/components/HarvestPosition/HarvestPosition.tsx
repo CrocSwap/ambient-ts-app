@@ -2,7 +2,7 @@ import styles from './HarvestPosition.module.css';
 import HarvestPositionTokenHeader from './HarvestPositionTokenHeader/HarvestPositionTokenHeader';
 import HarvestPositionInfo from './HarvestPositionInfo/HarvestPositionInfo';
 import HarvestPositionButton from './HarvestPositionButton/HarvestPositionButton';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 
 import { RiListSettingsLine } from 'react-icons/ri';
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -10,12 +10,7 @@ import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 
-import {
-    ambientPosSlot,
-    ChainSpec,
-    concPosSlot,
-    CrocEnv,
-} from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -40,10 +35,10 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider;
     chainId: string;
@@ -75,7 +70,6 @@ interface propsIF {
 
 export default function HarvestPosition(props: propsIF) {
     const {
-        crocEnv,
         chainData,
         baseTokenLogoURI,
         quoteTokenLogoURI,
@@ -83,12 +77,14 @@ export default function HarvestPosition(props: propsIF) {
         dexBalancePrefs,
         handleModalClose,
         slippage,
-        gasPriceInGwei,
         ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,

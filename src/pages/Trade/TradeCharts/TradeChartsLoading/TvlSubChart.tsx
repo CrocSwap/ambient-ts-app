@@ -62,7 +62,7 @@ export default function TvlSubChart(props: TvlData) {
         useState<any>();
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
     const [buffer, setBuffer] = useState<any>();
-    const [resize, setResize] = useState<boolean>();
+    const [resizeHeight, setResizeHeight] = useState<number>();
 
     useEffect(() => {
         const yScale = d3.scaleSymlog();
@@ -237,12 +237,8 @@ export default function TvlSubChart(props: TvlData) {
                 .select('canvas')
                 .node() as any;
 
-            if (canvas !== null && buffer && !isNaN(buffer)) {
+            if (canvas !== null && buffer && !isNaN(buffer) && resizeHeight) {
                 const ctx = canvas.getContext('2d');
-
-                const ratio =
-                    window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
-
                 const startPoint =
                     buffer === 0
                         ? 4
@@ -260,7 +256,7 @@ export default function TvlSubChart(props: TvlData) {
                     0,
                     0,
                     0,
-                    canvas.height / ratio,
+                    resizeHeight,
                 );
                 tvlGradient.addColorStop(1, 'transparent');
                 tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
@@ -269,26 +265,24 @@ export default function TvlSubChart(props: TvlData) {
                     return tvlGradient;
                 });
 
-                setResize(false);
-
                 renderCanvas();
             }
         }
-    }, [d3CanvasArea, tvlyScale, buffer, resize]);
+    }, [d3CanvasArea, tvlyScale, buffer, resizeHeight]);
 
     useEffect(() => {
         if (d3CanvasArea) {
             const canvasDiv = d3.select(d3CanvasArea.current) as any;
 
-            const resizeObserver = new ResizeObserver(() => {
-                setResize(true);
+            const resizeObserver = new ResizeObserver((event: any) => {
+                setResizeHeight(event[0].contentRect?.height);
             });
 
             resizeObserver.observe(canvasDiv.node());
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [d3CanvasArea === undefined]);
 
     useEffect(() => {
         if (
@@ -378,7 +372,7 @@ export default function TvlSubChart(props: TvlData) {
                     lineSeries.context(ctx);
                 });
         }
-    }, [areaSeries, lineSeries, tvlyScale]);
+    }, [areaSeries, lineSeries, tvlData]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {

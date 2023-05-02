@@ -1,12 +1,10 @@
 import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
