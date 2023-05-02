@@ -3707,7 +3707,9 @@ export default function Chart(props: propsIF) {
             // Access the element in a single place, instead of repeating d3.select
             // in both conditions, because d3.select() value could change in a race
             // condition
-            const element = d3.select(d3CanvasCrVertical?.current);
+            const element = d3
+                .select(d3CanvasCrVertical?.current)
+                .select('canvas');
             if (element === null) return;
 
             if (dateCrosshair && element.style('visibility') === 'visible') {
