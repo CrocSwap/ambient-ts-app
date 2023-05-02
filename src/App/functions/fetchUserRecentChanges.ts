@@ -1,4 +1,4 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
@@ -30,7 +30,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
     } = args;
 
     const userRecentChangesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/user_recent_changes?';
+        GRAPHCACHE_URL + '/user_recent_changes?';
 
     IS_LOCAL_ENV && console.debug('fetching user recent changes');
 

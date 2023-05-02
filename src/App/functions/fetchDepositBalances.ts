@@ -1,4 +1,4 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { IDepositedTokenBalance } from './fetchTokenBalances';
 
 interface IFetchDepositBalancesProps {
@@ -20,8 +20,7 @@ export const fetchDepositBalances = (
 > => {
     const { chainId, user } = props;
 
-    const depositBalancesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/user_balances?';
+    const depositBalancesCacheEndpoint = GRAPHCACHE_URL + '/user_balances?';
 
     IS_LOCAL_ENV && console.debug('fetching deposit balances');
 

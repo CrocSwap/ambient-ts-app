@@ -1,8 +1,8 @@
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { memoizeTransactionGraphFn } from './memoizePromiseFn';
 
-const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
 export const fetchTransactionGraphData = async (
     isFetchEnabled: boolean,

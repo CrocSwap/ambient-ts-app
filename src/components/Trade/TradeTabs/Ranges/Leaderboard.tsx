@@ -4,7 +4,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
@@ -25,6 +24,7 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 // interface for props
 interface propsIF {
@@ -130,7 +130,7 @@ export default function Leaderboard(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sum({
+        diffHashSig({
             id0: topThreePositions[0]?.positionId,
             id1: topThreePositions[1]?.positionId,
             id2: topThreePositions[2]?.positionId,

@@ -31,7 +31,7 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     account: string;
@@ -178,7 +178,7 @@ export default function OrderRemoval(props: propsIF) {
             }
 
             const newLimitOrderChangeCacheEndpoint =
-                'https://809821320828123.de:5000/new_limit_order_change?';
+                GRAPHCACHE_URL + '/new_limit_order_change?';
 
             if (tx?.hash) {
                 fetch(
