@@ -5,8 +5,8 @@ import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { TvlChartData } from '../TradeCharts';
 import './Subcharts.css';
-import sum from 'hash-sum';
 import { setCanvasResolution } from '../../../Chart/Chart';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 interface TvlData {
     tvlData: TvlChartData[] | undefined;
@@ -147,8 +147,8 @@ export default function TvlSubChart(props: TvlData) {
     }, [
         tvlData,
         scaleData,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale.domain()[1]),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {
@@ -226,8 +226,8 @@ export default function TvlSubChart(props: TvlData) {
         }
     }, [
         tvlyScale,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale.domain()[1]),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {

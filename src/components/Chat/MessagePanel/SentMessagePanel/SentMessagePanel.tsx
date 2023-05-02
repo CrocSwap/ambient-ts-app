@@ -329,10 +329,8 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     }
                 >
                     {showAvatar && (
-                        <div>
-                            <div style={{ borderRadius: '50%' }}>
-                                {myBlockies}
-                            </div>
+                        <div className={styles.avatar_blockies}>
+                            {myBlockies}
                         </div>
                     )}
                     {!showAvatar && (

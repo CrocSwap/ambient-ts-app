@@ -63,7 +63,6 @@ import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
-import sum from 'hash-sum';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -186,6 +185,7 @@ import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import Accessibility from '../pages/Accessibility/Accessibility';
+import { diffHashSig } from '../utils/functions/diffHashSig';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -752,7 +752,7 @@ export default function App() {
     );
 
     const lastReceiptHash = useMemo(
-        () => (lastReceipt ? sum(lastReceipt) : undefined),
+        () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
     );
     useEffect(() => {
@@ -1559,20 +1559,18 @@ export default function App() {
                                 setIsCandleDataNull(true);
                                 setExpandTradeTable(true);
                             } else if (candles) {
-                                if (sum(candleData) !== sum(candles)) {
-                                    setCandleData({
-                                        pool: {
-                                            baseAddress:
-                                                baseTokenAddress.toLowerCase(),
-                                            quoteAddress:
-                                                quoteTokenAddress.toLowerCase(),
-                                            poolIdx: chainData.poolIndex,
-                                            network: chainData.chainId,
-                                        },
-                                        duration: candleTimeLocal,
-                                        candles: candles,
-                                    });
-                                }
+                                setCandleData({
+                                    pool: {
+                                        baseAddress:
+                                            baseTokenAddress.toLowerCase(),
+                                        quoteAddress:
+                                            quoteTokenAddress.toLowerCase(),
+                                        poolIdx: chainData.poolIndex,
+                                        network: chainData.chainId,
+                                    },
+                                    duration: candleTimeLocal,
+                                    candles: candles,
+                                });
                                 setIsCandleDataNull(false);
                                 setExpandTradeTable(false);
                             }
@@ -1908,8 +1906,9 @@ export default function App() {
                         if (indexOfExistingCandle === -1) {
                             newCandles.push(messageCandle);
                         } else if (
-                            sum(candleData.candles[indexOfExistingCandle]) !==
-                            sum(messageCandle)
+                            diffHashSig(
+                                candleData.candles[indexOfExistingCandle],
+                            ) !== diffHashSig(messageCandle)
                         ) {
                             updatedCandles[indexOfExistingCandle] =
                                 messageCandle;
@@ -1954,8 +1953,9 @@ export default function App() {
                             console.debug('pushing new candle from message');
                         newCandles.push(messageCandle);
                     } else if (
-                        sum(candleData.candles[indexOfExistingCandle]) !==
-                        sum(messageCandle)
+                        diffHashSig(
+                            candleData.candles[indexOfExistingCandle],
+                        ) !== diffHashSig(messageCandle)
                     ) {
                         updatedCandles[indexOfExistingCandle] = messageCandle;
                     }

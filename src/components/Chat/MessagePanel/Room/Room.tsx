@@ -367,6 +367,7 @@ export default function RoomDropdown(props: propsIF) {
                 <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
                         className={styles.star_icon}
+                        size={22}
                         id='room dropdown'
                     />
                 </div>
