@@ -167,6 +167,8 @@ export default function Swap(props: propsIF) {
     // it should possibly be renamed something different or better documented
     const [showBypassConfirm, setShowBypassConfirm] = useState(false);
     const [showExtraInfo, setShowExtraInfo] = useState(false);
+    const [isLiquidityInsufficient, setIsLiquidityInsufficient] =
+        useState<boolean>(false);
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -690,6 +692,8 @@ export default function Swap(props: propsIF) {
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     const currencyConverterProps = {
+        isLiquidityInsufficient: isLiquidityInsufficient,
+        setIsLiquidityInsufficient: setIsLiquidityInsufficient,
         tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         poolExists: poolExists,
@@ -761,8 +765,30 @@ export default function Swap(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
+    const liquidityInsufficientWarningOrNull = isLiquidityInsufficient ? (
+        <div className={styles.price_impact}>
+            <div className={styles.extra_row}>
+                <div className={styles.align_center}>
+                    <div
+                        style={{
+                            color: '#f6385b',
+                        }}
+                    >
+                        Current Pool Liquidity is Insufficient for this Swap
+                    </div>
+                </div>
+                <div>
+                    <TooltipComponent
+                        title='Current Pool Liquidity is Insufficient for this Swap'
+                        placement='bottom'
+                    />
+                </div>
+            </div>
+        </div>
+    ) : null;
+
     const priceImpactWarningOrNull =
-        priceImpactNum && priceImpactNum > 2 ? (
+        !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
             <div className={styles.price_impact}>
                 <div className={styles.extra_row}>
                     <div className={styles.align_center}>
@@ -994,6 +1020,7 @@ export default function Swap(props: propsIF) {
                             loginButton
                         )}
                         {priceImpactWarningOrNull}
+                        {liquidityInsufficientWarningOrNull}
                     </ContentContainer>
                     {confirmSwapModalOrNull}
                     {isRelativeModalOpen && (
