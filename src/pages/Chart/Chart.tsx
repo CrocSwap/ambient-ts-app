@@ -400,7 +400,7 @@ export default function Chart(props: propsIF) {
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
-    const [isCrosshairActive, setIsCrosshairActive] = useState<string>('chart');
+    const [crosshairActive, setCrosshairActive] = useState<string>('chart');
 
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2583,7 +2583,7 @@ export default function Chart(props: propsIF) {
             const dragRange = d3
                 .drag()
                 .on('start', (event) => {
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
 
                     d3.select(d3CanvasRangeLine.current).style(
@@ -2616,7 +2616,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('drag', function (event) {
                     setIsLineDrag(true);
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     let dragedValue =
                         scaleData?.yScale.invert(
                             event.sourceEvent.clientY - rectRange.top,
@@ -2957,7 +2957,7 @@ export default function Chart(props: propsIF) {
 
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                 });
 
@@ -2976,7 +2976,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('drag', function (event) {
                     setIsMouseMoveCrosshair(false);
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsLineDrag(true);
 
                     newLimitValue = scaleData?.yScale.invert(
@@ -3128,7 +3128,7 @@ export default function Chart(props: propsIF) {
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
                     setIsMouseMoveCrosshair(false);
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                 });
 
             setDragRange(() => {
@@ -3452,7 +3452,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isMouseMoveCrosshair) {
+                if (isMouseMoveCrosshair && crosshairActive !== 'none') {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
@@ -3523,7 +3523,7 @@ export default function Chart(props: propsIF) {
 
                 if (
                     isMouseMoveCrosshair &&
-                    isCrosshairActive !== 'none' &&
+                    crosshairActive !== 'none' &&
                     xScale(d.date) > xScale(crosshairData[0].x) - _width &&
                     xScale(d.date) < xScale(crosshairData[0].x) + _width &&
                     d.date !== crosshairData[0].x
@@ -3596,7 +3596,11 @@ export default function Chart(props: propsIF) {
 
         context.beginPath();
 
-        if (dateCrosshair && isMouseMoveCrosshair) {
+        if (
+            dateCrosshair &&
+            isMouseMoveCrosshair &&
+            crosshairActive !== 'none'
+        ) {
             context.fillText(
                 dateCrosshair,
                 xScale(crosshairData[0].x),
@@ -4529,18 +4533,18 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-                    if (isCrosshairActive === 'chart') {
+                    if (crosshairActive === 'chart') {
                         crosshairVertical(crosshairData);
                     }
                 })
                 .on('measure', () => {
-                    if (isCrosshairActive === 'chart') {
+                    if (crosshairActive === 'chart') {
                         ctx.setLineDash([0.6, 0.6]);
                         crosshairVertical.context(ctx);
                     }
                 });
         }
-    }, [crosshairData, crosshairVertical, isCrosshairActive]);
+    }, [crosshairData, crosshairVertical, crosshairActive]);
 
     useEffect(() => {
         const canvas = d3
@@ -6076,14 +6080,14 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         d3.select(d3CanvasCrHorizontal.current).style(
             'visibility',
-            isCrosshairActive !== 'none' ? 'visible' : 'hidden',
+            crosshairActive !== 'none' ? 'visible' : 'hidden',
         );
 
         d3.select(d3CanvasCrVertical.current).style(
             'visibility',
-            isCrosshairActive !== 'none' ? 'visible' : 'hidden',
+            crosshairActive !== 'none' ? 'visible' : 'hidden',
         );
-    }, [isCrosshairActive]);
+    }, [crosshairActive]);
 
     // Draw Chart
     const drawChart = useCallback(
@@ -6249,7 +6253,7 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'col-resize',
                     );
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                 });
 
                 d3.select(d3Xaxis.current).on(
@@ -6266,7 +6270,7 @@ export default function Chart(props: propsIF) {
                 render();
 
                 d3.select(d3Container.current).on('mouseleave', () => {
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
 
                     mouseOutFuncForLiq();
@@ -6310,7 +6314,7 @@ export default function Chart(props: propsIF) {
                 });
 
                 const mouseLeaveCanvas = () => {
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
 
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
@@ -6330,7 +6334,7 @@ export default function Chart(props: propsIF) {
 
                 const mouseEnterCanvas = () => {
                     if (!isLineDrag) {
-                        setIsCrosshairActive('chart');
+                        setCrosshairActive('chart');
                         setIsMouseMoveCrosshair(true);
                     }
 
@@ -6365,7 +6369,7 @@ export default function Chart(props: propsIF) {
             liqMode,
             liquidityScale,
             liquidityDepthScale,
-            isCrosshairActive,
+            crosshairActive,
             isLineDrag,
         ],
     );
@@ -6725,8 +6729,8 @@ export default function Chart(props: propsIF) {
                                 render={render}
                                 yAxisWidth={yAxisWidth}
                                 setCrossHairLocation={setCrossHairLocation}
-                                setIsCrosshairActive={setIsCrosshairActive}
-                                isCrosshairActive={isCrosshairActive}
+                                setCrosshairActive={setCrosshairActive}
+                                crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
                                 isMouseMoveCrosshair={isMouseMoveCrosshair}
                                 setIsMouseMoveCrosshair={
@@ -6753,8 +6757,8 @@ export default function Chart(props: propsIF) {
                                 render={render}
                                 yAxisWidth={yAxisWidth}
                                 setCrossHairLocation={setCrossHairLocation}
-                                setIsCrosshairActive={setIsCrosshairActive}
-                                isCrosshairActive={isCrosshairActive}
+                                setCrosshairActive={setCrosshairActive}
+                                crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
                                 isMouseMoveCrosshair={isMouseMoveCrosshair}
                                 setIsMouseMoveCrosshair={
