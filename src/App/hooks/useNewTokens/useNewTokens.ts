@@ -44,9 +44,18 @@ export const useNewTokens = (): void => {
                         )
                     });
                     const updatedListsArr = [...existingLists, ...lists];
-                    setTokenLists(updatedListsArr);
+                    // logic to put the Ambient token list at index 0 of the array
+                    const sequencedLists: TokenListIF[] = [
+                        updatedListsArr.find((list: TokenListIF) => 
+                            list.uri === tokenListURIs.ambient
+                        ),
+                        ...updatedListsArr.filter((list: TokenListIF) => 
+                        list.uri !== tokenListURIs.ambient
+                    )
+                    ];
+                    setTokenLists(sequencedLists);
                     localStorage.setItem(
-                        tokenListsLocalStorageKey, JSON.stringify(updatedListsArr)
+                        tokenListsLocalStorageKey, JSON.stringify(sequencedLists)
                     );
                 });
         }
