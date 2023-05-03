@@ -1,6 +1,7 @@
 .modal_container {
     width: 400px;
     padding: 1rem;
+    background: var(--dark1);
     /* min-height: 300px; */
 }
 
@@ -149,6 +150,6 @@
 .confSwap_detail_note {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var( --accent2);
+    color: var(--accent2);
     text-align: center;
 }

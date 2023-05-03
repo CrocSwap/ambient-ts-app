@@ -145,7 +145,7 @@ export default function SwapHeader(props: propsIF) {
                     centeredTitle
                 >
                     <TransactionSettings
-                        module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                        module={'Swap'}
                         slippage={swapSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}

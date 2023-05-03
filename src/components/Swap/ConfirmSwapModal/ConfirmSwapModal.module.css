@@ -1,8 +1,8 @@
 .modal_container {
     width: 400px;
     padding: 1rem;
+    background: var(--dark1);
 }
-
 
 /* Transaction details */
 
@@ -111,7 +111,7 @@
     line-height: var(--body-lh);
 }
 
-.warning_box{
+.warning_box {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -119,13 +119,13 @@
     gap: 4px;
 }
 
-.warning_box p{
+.warning_box p {
     color: var(--negative);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
 
-.warning_box button{
+.warning_box button {
     cursor: pointer;
     background: var(--dark2);
     color: var(--text2);
@@ -134,10 +134,8 @@
 
     padding: 3px 4px;
     border-radius: var(--border-radius);
-    border: 1px solid var(--border)
-
- 
+    border: 1px solid var(--border);
 }
-.warning_box button:hover{
-    color: var(--text1)
+.warning_box button:hover {
+    color: var(--text1);
 }

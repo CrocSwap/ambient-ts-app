@@ -1,8 +1,6 @@
 .remove_range_container {
     max-width: 400px;
     padding: 1rem;
-
-
 }
 
 .main_content {
@@ -53,6 +51,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 1rem;
+    background: var(--dark1);
     /* align-items: center; */
 }
 

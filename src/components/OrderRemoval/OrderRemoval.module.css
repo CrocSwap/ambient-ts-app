@@ -49,6 +49,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 1rem;
+    background: var(--dark1);
     /* align-items: center; */
 }
 
@@ -58,6 +59,7 @@
 
 .confirmation_content {
     width: 100%;
+    background: var(--dark1);
 }
 
 /* gasless container */
