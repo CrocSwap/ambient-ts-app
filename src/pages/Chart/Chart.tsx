@@ -337,14 +337,25 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
+    const lastTvlData = parsedChartData?.tvlChartData.find(
+        (item: any) =>
+            item.time ===
+            d3.max(parsedChartData?.tvlChartData, (data: any) => data.time),
+    );
+    const lastFeeRateData = parsedChartData?.feeChartData.find(
+        (item: any) =>
+            item.time ===
+            d3.max(parsedChartData?.feeChartData, (data: any) => data.time),
+    );
+
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
-            value: undefined,
+            value: lastFeeRateData?.value,
         },
         {
             name: 'tvl',
-            value: undefined,
+            value: lastTvlData?.value,
         },
         {
             name: 'volume',
@@ -6108,7 +6119,7 @@ export default function Chart(props: propsIF) {
             )[1];
 
             if (nearest) {
-                return nearest.linearValue;
+                return nearest.value;
             } else {
                 return 0;
             }
@@ -6415,21 +6426,39 @@ export default function Chart(props: propsIF) {
                     setIsMouseMoveCrosshair(false);
 
                     mouseOutFuncForLiq();
+                    if (parsedChartData) {
+                        const lastTvlData = parsedChartData.tvlChartData.find(
+                            (item: any) =>
+                                item.time ===
+                                d3.max(
+                                    parsedChartData?.tvlChartData,
+                                    (data: any) => data.time,
+                                ),
+                        );
+                        const feeRate = parsedChartData.feeChartData.find(
+                            (item: any) =>
+                                item.time ===
+                                d3.max(
+                                    parsedChartData?.feeChartData,
+                                    (data: any) => data.time,
+                                ),
+                        );
 
-                    setsubChartValues([
-                        {
-                            name: 'feeRate',
-                            value: undefined,
-                        },
-                        {
-                            name: 'tvl',
-                            value: undefined,
-                        },
-                        {
-                            name: 'volume',
-                            value: undefined,
-                        },
-                    ]);
+                        setsubChartValues((prevState: any) => {
+                            const newData = [...prevState];
+
+                            newData.filter(
+                                (target: any) => target.name === 'tvl',
+                            )[0].value = lastTvlData
+                                ? lastTvlData.value
+                                : undefined;
+
+                            newData.filter(
+                                (target: any) => target.name === 'feeRate',
+                            )[0].value = feeRate ? feeRate.value : undefined;
+                            return newData;
+                        });
+                    }
 
                     if (selectedDate === undefined) {
                         props.setShowTooltip(false);
