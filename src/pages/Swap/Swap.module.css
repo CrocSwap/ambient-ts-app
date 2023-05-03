@@ -50,7 +50,7 @@
 
     border-radius: var(--border-radius);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -87,7 +87,7 @@
 }
 
 .control_title {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .url_link {
@@ -95,7 +95,7 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 .url_link div {
@@ -137,7 +137,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -163,7 +163,7 @@
     transition: all var(--animation-speed) ease-in-out;
 
     border: none;
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
     color: var(--dark1);
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -178,18 +178,17 @@
 .tutorial_button {
     outline: none;
     background: var(--dark2);
-    border: 1px solid var(--text-highlight-dark);
-    color: var(--text-grey-light);
+    border: 1px solid var(--accent1);
+    color: var(--text2);
     border-radius: 4px;
     padding: 0 4px;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 
-    box-shadow: 0 0 3px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 30px #0ba9ca,
-        0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
+    box-shadow: var(--trade-box-shadow);
 }
 .tutorial_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .extra_row {
@@ -213,7 +212,7 @@
     line-height: var(--body-lh);
    border: 1px var(--border);
     border-radius: var(--border-radius);
-    border: 0.1px solid var(--text-grey-dark);
+    border: 0.1px solid var(--text3);
     text-align: center;
     padding: 4px;
     margin-top: 8px;
@@ -228,7 +227,7 @@ margin: 4px 0;
 
 .acknowledge_etherscan_links a{
     border: 1px solid transparent;
-    border-bottom:  1px solid #7371fc;
+    border-bottom:  1px solid var(--accent1);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -236,8 +235,8 @@ margin: 4px 0;
     transition: all var(--animation-speed) ease-in-out
 }
 .acknowledge_etherscan_links a:hover{
-    color: var(--text-grey-white);
-    border: 1px solid #7371fc;
+    color: var(--text1);
+    border: 1px solid var(--accent1);
 
 }
 

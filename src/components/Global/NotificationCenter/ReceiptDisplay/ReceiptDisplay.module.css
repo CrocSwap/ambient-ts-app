@@ -36,13 +36,13 @@ cursor: pointer;
 }
 
 .info div {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .info p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .pending {
@@ -50,7 +50,7 @@ cursor: pointer;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
 
     animation: animate 2s linear infinite;
 
@@ -67,7 +67,7 @@ cursor: pointer;
 }
 
 .row p {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .pending:before {
     content: '';
@@ -81,7 +81,7 @@ cursor: pointer;
     z-index: 2;
 }
 .pending:after {
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
 
     content: '';
     position: absolute;

@@ -7,7 +7,7 @@
         45deg,
         transparent,
         transparent 40%,
-        var(--text-highlight)
+        var(--accent5)
     );
 
     animation: animate 2s linear infinite;
@@ -39,7 +39,7 @@
         45deg,
         transparent,
         transparent 40%,
-        var(--text-highlight)
+        var(--accent5)
     );
 
     content: '';

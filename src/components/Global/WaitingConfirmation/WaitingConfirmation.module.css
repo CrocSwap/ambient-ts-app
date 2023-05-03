@@ -13,12 +13,12 @@
 }
 
 .wallet_confirm h2 {
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
 .wallet_confirm div {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -34,7 +34,7 @@
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
 
     animation: animate 2s linear infinite;
 
@@ -56,7 +56,7 @@
     z-index: 2;
 }
 .loader:after {
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
 
     content: '';
     position: absolute;

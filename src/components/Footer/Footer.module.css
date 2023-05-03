@@ -19,7 +19,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -30,7 +30,7 @@
     font-weight: 300;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .container {

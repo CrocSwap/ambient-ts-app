@@ -16,7 +16,7 @@
     line-height: var(--body-lh);
     text-align: center;
     font-weight: 200;
-    color: #f6385b;
+    color: var(--negative);
 }
 
 @keyframes shadow-pulse {

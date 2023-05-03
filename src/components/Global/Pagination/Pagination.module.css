@@ -53,7 +53,7 @@
     outline: none;
     border: none;
     background: transparent;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     width: 40px;
     height: 40px;
@@ -67,7 +67,7 @@
     align-items: center;
 }
 .page_active button {
-    color: var(--text-grey-white);
+    color: var(--text1);
     cursor: pointer;
     /* background: var(--dark1); */
     text-shadow: 0px 0px 10px rgba(254, 255, 254, 0.75);
@@ -80,7 +80,7 @@
 
 .page button:hover {
     background: var(--dark1);
-    color: var(--text-grey-white);
+    color: var(--text1);
     transition: all 500ms ease-in-out;
 }
 
@@ -97,11 +97,11 @@
 }
 
 .scroll_button svg {
-    color: '#555555';
+    color: var(--text3);
 }
 
 .scroll_button svg:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .text_info {
@@ -111,5 +111,5 @@
     justify-content: center;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }

@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: var(--text-grey-white);
+    color: var(--text1);
     width: 100%;
     padding: 5px 12px;
     border-right: 4px solid transparent;
@@ -35,7 +35,7 @@
 .link_text {
     white-space: nowrap;
     font-size: 15px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .icon {

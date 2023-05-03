@@ -75,7 +75,7 @@
     display: block;
     position: absolute;
     height: 5px;
-    background: #cdc1ff;
+    background: var(--accent5);
     width: 125px;
     left: 100%;
     top: calc(50% - 2px);

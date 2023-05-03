@@ -8,7 +8,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: right;
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 0 1rem;
 }
 
@@ -20,7 +20,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     outline: none;
     border: solid 0.2px transparent;
     border-radius: 50px;
@@ -37,7 +37,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -47,7 +47,7 @@
             rgba(255, 255, 255, 0),
             rgba(255, 255, 255, 0)
         ),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark2) inset;

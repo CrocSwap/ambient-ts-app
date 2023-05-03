@@ -14,12 +14,7 @@
     margin: 10px 0;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -47,7 +42,7 @@
     cursor: pointer;
 }
 .price_title {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -62,16 +57,16 @@
 }
 
 .min_price {
-    color: #cdc1ff;
+    color: var(--accent5);
 }
 
 .current_price {
-    color: var(--text-grey-white);
+    color: var(--text1);
     cursor: pointer;
 }
 
 .max_price {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 .collateral_container {
@@ -89,14 +84,14 @@
 }
 
 .collateral_title {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
 .collateral_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     /* font-weight: 400; */
     margin: 5px 0;
 }

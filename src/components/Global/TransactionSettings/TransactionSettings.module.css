@@ -26,11 +26,11 @@
 }
 
 .settings_title svg:hover{
-    color: var(--text-grey-white)
+    color: var(--text1)
 }
 
 .settings_title:focus-visible svg{
-    color: var(--text-grey-white)
+    color: var(--text1)
 
 }
 

@@ -46,7 +46,7 @@
 }
 
 .overlay_container .overlay {
-    background: #fff;
+    background: white;
     flex: 1;
     animation-fill-mode: forwards;
 }
@@ -54,28 +54,12 @@
     transform: scaleX(0);
     transform-origin: 100% 50%;
     animation: overlay_1 1.5s ease-in-out;
-    background: #7371fc;
-    background: linear-gradient(
-        90deg,
-        #1c1c41 0%,
-        #645e7e 49.48%,
-        #19193b 100%
-    );
-    background: var(--title-gradient);
     background: var(--dark2);
 }
 .overlay_container .overlay:nth-child(2) {
     transform: scaleX(0);
     transform-origin: 0% 50%;
     animation: overlay_2 1.5s ease-in-out;
-    background: #cdc1ff;
-    background: linear-gradient(
-        90deg,
-        #1c1c41 0%,
-        #645e7e 49.48%,
-        #19193b 100%
-    );
-    background: var(--title-gradient);
     background: var(--dark2);
 }
 

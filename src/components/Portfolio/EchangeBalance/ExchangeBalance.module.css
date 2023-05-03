@@ -35,7 +35,7 @@
 .control_container p {
     writing-mode: vertical-rl;
     text-orientation: upright;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .tabs_container {
@@ -61,7 +61,7 @@
 }
 
 ul.tab_navs {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -84,17 +84,17 @@ ul.tab_navs {
 .info_text {
     font-size: var(--body-size);
     line-height: 22.5px;
-    color: var(--text-grey-light);
+    color: var(--text2);
     background: var(--dark1);
     font-weight: 200;
     text-align: center;
     padding: 8px;
     margin: 0 0 0 -5px;
 }
-.info_text2 {
+.info_text-grey-light {
     font-size: var(--body-size);
     line-height: 22.5px;
-    color: var(--text-grey-light);
+    color: var(--text2);
     background: var(--dark1);
     font-weight: 200;
     text-align: center;
