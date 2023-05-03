@@ -53,7 +53,9 @@ export const useNewTokens = (): void => {
                         list.uri !== tokenListURIs.ambient
                     )
                     ];
+                    // send array of token lists to local state
                     setTokenLists(sequencedLists);
+                    // send array of tiken lists to local storage
                     localStorage.setItem(
                         tokenListsLocalStorageKey, JSON.stringify(sequencedLists)
                     );
