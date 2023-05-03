@@ -47,6 +47,9 @@
     gap: 1rem;
     align-items: center;
 }
+.name_display button {
+    cursor: pointer;
+}
 
 .wallet_display p {
     font-size: var(--body-size);
@@ -58,6 +61,7 @@
     background: transparent;
     outline: none;
     border: none;
+    cursor: pointer;
 }
 
 .actions_container {
@@ -73,7 +77,7 @@
 .actions_container a {
     cursor: pointer;
     background: transparent;
-    background: var(--dark2);
+    background: var(--dark3);
     border: none;
     outline: none;
     padding: 8px;
@@ -103,12 +107,12 @@
 }
 .actions_container a:hover,
 .actions_container a:focus-visible {
-    background: var(--dark2);
     color: var(--text1);
 }
 
 .copy_button:focus-visible {
     color: var(--text1);
+    cursor: pointer;
 }
 
 .token_container {
@@ -117,7 +121,9 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--dark1);
-    padding: 4px 0;
+    padding: 4px 10px;
+    background: var(--dark3);
+    border-radius: 4px;
 }
 
 .logo_name {
@@ -145,11 +151,10 @@
     text-align: right;
 }
 
-.blockie_container{
-   
+.blockie_container {
     border-radius: 50%;
 }
-.blockie_container canvas{
+.blockie_container canvas {
     max-width: 100%;
     max-height: 100%;
     margin: 0 auto;

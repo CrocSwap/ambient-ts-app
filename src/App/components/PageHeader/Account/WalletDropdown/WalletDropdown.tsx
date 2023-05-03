@@ -87,10 +87,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const actionContent = (
         <div className={styles.actions_container}>
-            <button onClick={clickLogout}>
-                {' '}
-                <AiOutlineLogout color='var(--text-highlight)' /> Logout
-            </button>
             <NavLink
                 to={'/account'}
                 aria-label='Go to the account page '
@@ -99,6 +95,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 <CgProfile />
                 My Account
             </NavLink>
+            <button onClick={clickLogout}>
+                <AiOutlineLogout color='var(--text-highlight)' /> Logout
+            </button>
         </div>
     );
 
