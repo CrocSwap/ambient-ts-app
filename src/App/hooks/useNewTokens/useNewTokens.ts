@@ -38,8 +38,11 @@ export const useNewTokens = () => {
                             (token: TokenIF) => (token.fromList = list.uri),
                         )
                     });
-                    setTokenLists(lists);
-                    localStorage.setItem(tokenListsLocalStorageKey, JSON.stringify(lists));
+                    const updatedListsArr = [...tokenLists, ...lists];
+                    setTokenLists(updatedListsArr);
+                    localStorage.setItem(
+                        tokenListsLocalStorageKey, JSON.stringify(updatedListsArr)
+                    );
                 });
         }
 
@@ -52,7 +55,7 @@ export const useNewTokens = () => {
             // important if prior query failed, a new list is added to the app, etc
             const neededLists: string[] = Object.values(tokenListURIs)
                 .filter((uri: string) => !presentListURIs.includes(uri));
-            false && neededLists;
+            fetchAndFormatTokenLists(neededLists);
         };
     }, []);
 
