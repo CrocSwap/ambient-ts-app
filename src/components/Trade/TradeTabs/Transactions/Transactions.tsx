@@ -409,9 +409,14 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
+    console.log({ currentTransactions });
+
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && transactionData.length > 30 && (
+            <h1>I am showing</h1>
+            {((isAccountView && transactionData.length > 10) ||
+                (!isAccountView && tradePageCheck)) && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
                     totalItems={transactionData.length}
@@ -514,33 +519,27 @@ export default function Transactions(props: propsIF) {
             <ul ref={listRef}>
                 {expandTradeTable && largeScreenView
                     ? currentRowItemContent
-                    : isAccountView
-                    ? // NOTE: the account view of this content should not be paginated
-                      sortedRowItemContent
                     : sortedRowItemContent.slice(
                           0,
                           NUM_TRANSACTIONS_WHEN_COLLAPSED,
                       )}
+                {/* {currentRowItemContent} */}
             </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
-                    !isAccountView &&
-                    sortedRowItemContent.length >
-                        NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    setExpandTradeTable(true);
-                                }}
-                            >
-                                View More
-                            </button>
-                        </div>
-                    )
-            }
+
+            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
+            {!expandTradeTable &&
+                !isAccountView &&
+                sortedRowItemContent.length >
+                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
+                    <div className={styles.view_more_container}>
+                        <button
+                            className={styles.view_more_button}
+                            onClick={() => setExpandTradeTable(true)}
+                        >
+                            View More
+                        </button>
+                    </div>
+                )}
         </div>
     );
 
