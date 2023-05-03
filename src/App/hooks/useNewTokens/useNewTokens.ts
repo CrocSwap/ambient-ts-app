@@ -76,7 +76,8 @@ export const useNewTokens = (): void => {
             )).map((list: TokenListIF) => list.uri as string);
             // array of lists (full list) which were not marked stale
             const freshLists: TokenListIF[] = tokenLists.filter((list: TokenListIF) => (
-                !staleListURIs.includes(list.uri as string)
+                !staleListURIs.includes(list.uri as string) &&
+                Object.values(tokenListURIs).includes(list.uri as string)
             ));
             // logic to determine which lists the app currently has by URI
             // this uses `freshLists` so stale lists will be excluded
