@@ -49,10 +49,10 @@
 }
 
 .svg_container {
-    background: var(--dark2);
+    background: var(--dark1);
     width: 20px;
     height: 20px;
-    padding-right: 6px; 
+    padding-right: 6px;
 
     display: flex;
     justify-content: center;

@@ -245,7 +245,7 @@ export default function ConfirmRangeModal(props: propsIF) {
                 localeTokenAString ? localeTokenAString : '0'
             } ${dataTokenA.symbol} and ${
                 localeTokenBString ? localeTokenBString : '0'
-            } ${dataTokenB.symbol}. `}
+            } ${dataTokenB.symbol} `}
         />
     );
 

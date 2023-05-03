@@ -56,8 +56,6 @@
     font-size: 14px;
     color: var(--text1);
     padding: 1rem;
-    
-    
 }
 
 .modal_header h2 {
@@ -75,7 +73,7 @@
     /* min-height: 250px; */
 }
 
-.modal_header svg:hover{
+.modal_header svg:hover {
     color: var(--text1);
 }
 
