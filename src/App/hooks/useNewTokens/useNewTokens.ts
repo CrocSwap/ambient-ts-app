@@ -11,15 +11,16 @@ export const useNewTokens = () => {
     }
 
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
-        getTokenListsFromLS()
+        getTokenListsFromLS() ?? []
     );
     
     useEffect(() => {
-        if (tokenLists === null) {
+        // console.log(Object.values(tokenListURIs));
+        // console.log(tokenLists.map((list: TokenListIF) => list.uri));
+
+        function fetchAndFormatTokenLists(listURIs: string[]) {
             // create an array of promises to fetch all token lists in the URIs file
-            const tokenListPromises: Promise<TokenListIF>[] = Object.values(
-                tokenListURIs,
-            ).map((uri: string) => fetchTokenList(uri, false));
+            const tokenListPromises: Promise<TokenListIF>[] = listURIs.map((uri: string) => fetchTokenList(uri, false));
             Promise.allSettled(tokenListPromises)
                 // format returned data into a useful form for the app
                 // 1st val ➡ indicates if second val is a value
@@ -40,6 +41,18 @@ export const useNewTokens = () => {
                     setTokenLists(lists);
                     localStorage.setItem(tokenListsLocalStorageKey, JSON.stringify(lists));
                 });
+        }
+
+        if (tokenLists.length === 0) {
+            fetchAndFormatTokenLists(Object.values(tokenListURIs));
+        } else if (tokenLists.length > 1) {
+            // logic to determine which lists the app currently has by URI
+            const presentListURIs: string[] = tokenLists.map((list: TokenListIF) => list.uri as string);
+            // logic to determine which default lists are not present in local storage
+            // important if prior query failed, a new list is added to the app, etc
+            const neededLists: string[] = Object.values(tokenListURIs)
+                .filter((uri: string) => !presentListURIs.includes(uri));
+            false && neededLists;
         };
     }, []);
 
