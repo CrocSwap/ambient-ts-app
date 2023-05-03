@@ -65,7 +65,7 @@ export default function TvlSubChart(props: TvlData) {
     const [resizeHeight, setResizeHeight] = useState<number>();
 
     useEffect(() => {
-        const yScale = d3.scaleSymlog();
+        const yScale = d3.scaleLinear();
 
         const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
         const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
@@ -76,29 +76,20 @@ export default function TvlSubChart(props: TvlData) {
 
         if (filtered !== undefined) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
-            const minYBoundary = d3.min(filtered, (d: any) => d.value);
+            const minYBoundary = 0;
 
             if (maxYBoundary === minYBoundary) {
-                const domainLog = [
-                    Math.pow(10, Math.log10(maxYBoundary / 2)),
-                    Math.pow(10, Math.log10(maxYBoundary * 2)),
-                ];
+                const domain = [0, maxYBoundary * 2];
 
-                yScale.domain(domainLog);
+                yScale.domain(domain);
             } else {
-                const buffer =
-                    Math.abs(
-                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
-                    ) / 5;
+                const buffer = Math.abs(maxYBoundary - minYBoundary) / 4;
 
                 setBuffer(() => buffer);
 
-                const domainLog = [
-                    Math.pow(10, Math.log10(minYBoundary) - buffer),
-                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
-                ];
+                const domain = [0, maxYBoundary + buffer * 2];
 
-                yScale.domain(domainLog);
+                yScale.domain(domain);
             }
         }
 
@@ -163,35 +154,17 @@ export default function TvlSubChart(props: TvlData) {
             const yAxis = d3fc.axisRight().scale(tvlyScale);
 
             if (filtered !== undefined) {
-                const minYBoundary = d3.min(filtered, (d: any) => d.value);
+                const minYBoundary = 0;
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const buffer =
-                    Math.abs(
-                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
-                    ) / 5;
+                const buffer = Math.abs(maxYBoundary - minYBoundary) / 4;
 
                 setBuffer(() => buffer);
 
-                const domainLog =
-                    maxYBoundary === minYBoundary
-                        ? [
-                              Math.pow(10, Math.log10(maxYBoundary / 2)),
-                              Math.pow(10, Math.log10(maxYBoundary * 2)),
-                          ]
-                        : [
-                              Math.pow(10, Math.log10(minYBoundary) - buffer),
-                              Math.pow(
-                                  10,
-                                  Math.log10(maxYBoundary) + buffer * 2,
-                              ),
-                          ];
+                const domain = [0, maxYBoundary + buffer * 2];
 
                 yAxis
-                    .tickValues([
-                        Math.pow(10, Math.log10(minYBoundary) + buffer),
-                        Math.pow(10, Math.log10(maxYBoundary) - buffer),
-                    ])
+                    .tickValues([0, maxYBoundary])
                     .tickFormat(formatDollarAmountAxis);
 
                 const d3YaxisCanvas = d3
@@ -212,16 +185,25 @@ export default function TvlSubChart(props: TvlData) {
 
                         yAxis.tickValues().forEach((d: number) => {
                             d3YaxisContext.beginPath();
-                            d3YaxisContext.fillText(
-                                formatDollarAmountAxis(d),
-                                d3YaxisCanvas.width / 6,
-                                tvlyScale(d),
-                            );
+
+                            if (0.0 === d) {
+                                d3YaxisContext.fillText(
+                                    formatDollarAmountAxis(d),
+                                    d3YaxisCanvas.width / 6,
+                                    tvlyScale(buffer),
+                                );
+                            } else {
+                                d3YaxisContext.fillText(
+                                    formatDollarAmountAxis(d),
+                                    d3YaxisCanvas.width / 6,
+                                    tvlyScale(d),
+                                );
+                            }
                         });
                     }
                 });
 
-                tvlyScale.domain(domainLog);
+                tvlyScale.domain(domain);
             }
         }
     }, [
@@ -242,8 +224,7 @@ export default function TvlSubChart(props: TvlData) {
                 const startPoint =
                     buffer === 0
                         ? 4
-                        : (Math.log10(tvlyScale.domain()[1]) -
-                              Math.log10(tvlyScale.domain()[0])) /
+                        : (tvlyScale.domain()[1] - tvlyScale.domain()[0]) /
                           (buffer * 2);
 
                 const DFLT_COLOR_STOP = 0.2;
