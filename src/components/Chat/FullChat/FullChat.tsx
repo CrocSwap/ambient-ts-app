@@ -330,8 +330,8 @@ export default function FullChat(props: FullChatPropsIF) {
                         className={styles.current_pool}
                         style={{
                             color: activePoolIsCurrentPool
-                                ? 'var(--text-grey-white)'
-                                : 'var(--text-grey-dark)',
+                                ? 'var(--text1)'
+                                : 'var(--text3)',
                         }}
                     >
                         Current Pool
@@ -382,7 +382,7 @@ export default function FullChat(props: FullChatPropsIF) {
             <header>
                 <h3>OPTIONS</h3>
 
-                <IoOptions size={20} color='var(--text-grey-light)' />
+                <IoOptions size={20} color='var(--text2)' />
             </header>
             {chatOptionData.map((item, idx) => (
                 <div key={idx} className={styles.option_item}>
@@ -399,7 +399,7 @@ export default function FullChat(props: FullChatPropsIF) {
         <section className={styles.options}>
             <header>
                 <h3>CHANNELS</h3>
-                <MdOutlineChat size={20} color='var(--text-grey-light)' />
+                <MdOutlineChat size={20} color='var(--text2)' />
             </header>
 
             <div

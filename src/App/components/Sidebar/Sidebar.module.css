@@ -137,7 +137,7 @@
 
 .open_all_button {
     cursor: pointer;
-    background: var(--dark1);
+    background: var(--dark3);
     border: none;
     outline: none;
     color: var(--text1);
