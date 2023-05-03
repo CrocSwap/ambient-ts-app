@@ -227,10 +227,7 @@ export default function Transactions(props: propsIF) {
     const { height } = useWindowDimensions();
 
     const showColumnTransactionItems = showColumns
-        ? Math.round(
-              (height - (isAccountView ? 400 : 250)) /
-                  (isAccountView ? 80 : 50),
-          )
+        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
         : Math.round((height - (isAccountView ? 400 : 250)) / 38);
     const transactionsPerPage = showColumnTransactionItems;
 
