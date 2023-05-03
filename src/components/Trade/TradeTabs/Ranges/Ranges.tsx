@@ -313,7 +313,7 @@ export default function Ranges(props: propsIF) {
         setCurrentPage(pageNumber);
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-    console.log(rangeData.length);
+
     const footerDisplay = (
         <div className={styles.footer}>
             {expandTradeTable && rangeData.length > 18 && (
