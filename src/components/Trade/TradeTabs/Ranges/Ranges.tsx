@@ -316,7 +316,6 @@ export default function Ranges(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
     const tradePageCheck = expandTradeTable && rangeData.length > 30;
 
     const footerDisplay = (

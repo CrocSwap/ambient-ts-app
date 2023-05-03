@@ -249,8 +249,6 @@ export default function Transactions(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
