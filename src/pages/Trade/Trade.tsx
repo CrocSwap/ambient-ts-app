@@ -18,7 +18,7 @@ import {
 } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -52,9 +52,7 @@ import { PositionUpdateFn } from '../../App/functions/getPositionData';
 
 // interface for React functional component props
 interface propsIF {
-    pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
@@ -123,8 +121,8 @@ interface propsIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
     slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
     poolPriceChangePercent: string | undefined;
     isPoolPriceChangePositive: boolean;
@@ -136,12 +134,10 @@ export default function Trade(props: propsIF) {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
         chartSettings,
-        pool,
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
-        crocEnv,
         candleData,
         chainId,
         chainData,
@@ -506,7 +502,6 @@ export default function Trade(props: propsIF) {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
-        pool: pool,
         chainData: chainData,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,
@@ -561,7 +556,6 @@ export default function Trade(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,
-        crocEnv: crocEnv,
         provider: provider,
         account: account,
         lastBlockNumber: lastBlockNumber,

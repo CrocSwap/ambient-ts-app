@@ -144,12 +144,12 @@
     }
 }
 @media only screen and (min-width: 768px){
-    .account{
+ .fixed   .account{
     width: 380px
 }
 
 }
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .header_gradient {
         display: none;
     }

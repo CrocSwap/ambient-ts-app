@@ -26,7 +26,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -49,7 +49,6 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -89,7 +88,6 @@ export default function Ranges(props: propsIF) {
         activeAccountPositionData,
         connectedAccountActive,
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -503,7 +501,6 @@ export default function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}
@@ -538,7 +535,6 @@ export default function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

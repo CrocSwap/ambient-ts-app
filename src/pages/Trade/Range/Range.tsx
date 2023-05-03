@@ -7,13 +7,13 @@ import {
     Dispatch,
     SetStateAction,
     ReactNode,
+    useContext,
 } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import {
     concDepositSkew,
     capitalConcFactor,
-    CrocEnv,
     ChainSpec,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -85,11 +85,11 @@ import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 interface propsIF {
     account: string | undefined;
-    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
@@ -163,7 +163,6 @@ interface propsIF {
 export default function Range(props: propsIF) {
     const {
         account,
-        crocEnv,
         isUserLoggedIn,
         mintSlippage,
         isPairStable,
@@ -239,6 +238,7 @@ export default function Range(props: propsIF) {
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
 
+    const crocEnv = useContext(CrocEnvContext);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');

@@ -4,6 +4,7 @@ import {
     useState,
     Dispatch,
     SetStateAction,
+    useContext,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -32,7 +33,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import {
     resetLookupUserDataLoadingStatus,
@@ -49,10 +50,10 @@ import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 // interface for React functional component props
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -103,7 +104,6 @@ export default function PortfolioTabs(props: propsIF) {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
         tokenMap,
@@ -136,6 +136,7 @@ export default function PortfolioTabs(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+    const crocEnv = useContext(CrocEnvContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -348,7 +349,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        crocEnv: crocEnv,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
@@ -362,7 +362,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        crocEnv: crocEnv,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
@@ -379,7 +378,6 @@ export default function PortfolioTabs(props: propsIF) {
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
@@ -443,7 +441,6 @@ export default function PortfolioTabs(props: propsIF) {
         searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
-        crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
@@ -456,6 +453,8 @@ export default function PortfolioTabs(props: propsIF) {
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
         lastBlockNumber: lastBlockNumber,
+        setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     const accountTabDataWithTokens = [
