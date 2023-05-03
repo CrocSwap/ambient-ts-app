@@ -188,7 +188,7 @@ export default function TvlSubChart(props: TvlData) {
 
                             if (0.0 === d) {
                                 d3YaxisContext.fillText(
-                                    formatDollarAmountAxis(d),
+                                    '$' + 0,
                                     d3YaxisCanvas.width / 6,
                                     tvlyScale(buffer),
                                 );
