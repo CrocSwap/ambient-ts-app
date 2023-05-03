@@ -70,7 +70,7 @@
 }
 
 .modal_content {
-    background: var(--dark2);
+    background: var(--dark1);
     border-radius: var(--border-radius);
 
     /* min-height: 300px; */
