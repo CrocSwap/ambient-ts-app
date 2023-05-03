@@ -414,7 +414,6 @@ export default function Transactions(props: propsIF) {
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
     const footerDisplay = (
         <div className={styles.footer}>
-            <h1>I am showing</h1>
             {((isAccountView && transactionData.length > 10) ||
                 (!isAccountView && tradePageCheck)) && (
                 <Pagination
@@ -519,11 +518,10 @@ export default function Transactions(props: propsIF) {
             <ul ref={listRef}>
                 {expandTradeTable && largeScreenView
                     ? currentRowItemContent
-                    : sortedRowItemContent.slice(
+                    : currentRowItemContent.slice(
                           0,
                           NUM_TRANSACTIONS_WHEN_COLLAPSED,
                       )}
-                {/* {currentRowItemContent} */}
             </ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
