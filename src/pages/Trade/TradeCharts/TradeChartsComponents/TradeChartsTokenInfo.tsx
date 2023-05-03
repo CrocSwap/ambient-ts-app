@@ -12,7 +12,6 @@ import { useContext, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';

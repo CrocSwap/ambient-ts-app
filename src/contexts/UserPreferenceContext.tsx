@@ -1,12 +1,8 @@
-import { createContext, PropsWithChildren, useState } from 'react';
-import {
-    dexBalanceMethodsIF,
-    useExchangePrefs,
-} from '../App/hooks/useExchangePrefs';
-import { favePoolsMethodsIF, useFavePools } from '../App/hooks/useFavePools';
-import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
-import { slippage } from '../utils/data/slippage';
-import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
+import { createContext } from 'react';
+import { dexBalanceMethodsIF } from '../App/hooks/useExchangePrefs';
+import { favePoolsMethodsIF } from '../App/hooks/useFavePools';
+import { skipConfirmIF } from '../App/hooks/useSkipConfirm';
+import { SlippageMethodsIF } from '../App/hooks/useSlippage';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;
