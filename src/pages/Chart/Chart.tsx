@@ -261,7 +261,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasRangeLine = useRef<HTMLInputElement | null>(null);
-    const d3CanvasNoGoZone = useRef<HTMLInputElement | null>(null);
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -428,15 +427,7 @@ export default function Chart(props: propsIF) {
 
     // NoGoZone Joins
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [limitNoGoZone, setLimitNoGoZone] = useState<any>();
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
-
-    // Ghost Lines
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [ghostLines, setGhostLines] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [ghostLineValuesLimit, setghostLineValuesLimit] = useState<any>();
-    const [ghostLineValuesRange, setghostLineValuesRange] = useState<any>();
 
     // Liq Series
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2517,29 +2508,6 @@ export default function Chart(props: propsIF) {
         }
     }, [isAdvancedModeActive, ranges, liquidityData?.liqBidData, scaleData]);
 
-    // Ghost Lines
-    useEffect(() => {
-        if (scaleData !== undefined) {
-            const ghostLines = d3fc
-                .annotationCanvasLine()
-                .value((d: any) => d.tickValue)
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale);
-
-            ghostLines.decorate((selection: any) => {
-                selection.visibility = location.pathname.includes('/limit')
-                    ? 'visible'
-                    : 'hidden';
-                selection.pointerEvents = 'none';
-                selection.lineWidth = 0.5;
-            });
-
-            setGhostLines(() => {
-                return ghostLines;
-            });
-        }
-    }, [scaleData]);
-
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
             if (sellOrderStyle === 'order_sell') {
@@ -2560,28 +2528,6 @@ export default function Chart(props: propsIF) {
                 }
             }
         }
-    }
-
-    function adjTicks(linePrice: any) {
-        const boundary =
-            liqMode === 'depth'
-                ? liquidityData?.liqBoundaryDepth
-                : liquidityData?.liqBoundaryCurve;
-
-        const factors = [0.995, 0.99, 0.985, 1.005, 1.01, 1.015];
-        const result: { tickValue: number }[] = [];
-
-        factors.map((factor) => {
-            const value = factor * linePrice;
-            if (
-                isAdvancedModeActive ||
-                (linePrice < boundary ? value < boundary : value > boundary)
-            ) {
-                result.push({ tickValue: value });
-            }
-        });
-
-        return result;
     }
 
     const getNoZoneData = () => {
@@ -2828,17 +2774,6 @@ export default function Chart(props: propsIF) {
                                 rangeWidthPercentage,
                             );
 
-                            const lowLineGhostLines = adjTicks(
-                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                            );
-                            const highLineGhostLines = adjTicks(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            );
-
-                            setghostLineValuesRange(
-                                lowLineGhostLines.concat(highLineGhostLines),
-                            );
-
                             if (pinnedDisplayPrices !== undefined) {
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
@@ -2918,14 +2853,6 @@ export default function Chart(props: propsIF) {
                                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                             );
                         }
-
-                        setghostLineValuesRange(
-                            adjTicks(
-                                draggingLine === 'Max'
-                                    ? pinnedMaxPriceDisplayTruncated
-                                    : pinnedMinPriceDisplayTruncated,
-                            ),
-                        );
 
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
@@ -3030,8 +2957,6 @@ export default function Chart(props: propsIF) {
 
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
-                    setghostLineValuesRange([]);
-
                     setIsCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                 });
@@ -3103,8 +3028,6 @@ export default function Chart(props: propsIF) {
                                     limitRateTruncated.replace(',', ''),
                                 );
 
-                                setghostLineValuesLimit(adjTicks(limitValue));
-
                                 newLimitValue = limitValue;
                                 if (
                                     !(
@@ -3133,7 +3056,6 @@ export default function Chart(props: propsIF) {
                         'cursor',
                         'row-resize',
                     );
-                    setghostLineValuesLimit([]);
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
@@ -5504,82 +5426,6 @@ export default function Chart(props: propsIF) {
         liquidityDepthScale,
     ]);
 
-    // NoGoZone
-    useEffect(() => {
-        if (scaleData !== undefined) {
-            const limitNoGoZone = d3fc
-                .annotationCanvasBand()
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .fromValue((d: any) => d[0])
-                .toValue((d: any) => d[1])
-                .decorate((selection: any) => {
-                    selection.fillStyle = 'rgba(235, 235, 255, 0.1)';
-                    // selection.fillStyle = 'rgba(235, 235, 255, 0.1)';
-                });
-
-            setLimitNoGoZone(() => {
-                return limitNoGoZone;
-            });
-        }
-    }, [scaleData]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasNoGoZone.current)
-            .select('canvas')
-            .node() as any;
-        const ctx = canvas.getContext('2d');
-
-        if (limitNoGoZone && ghostLines) {
-            d3.select(d3CanvasNoGoZone.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    if (location.pathname.includes('/limit')) {
-                        if (ghostLineValuesLimit !== undefined) {
-                            ghostLines(ghostLineValuesLimit);
-                        }
-                        limitNoGoZone(noGoZoneBoudnaries);
-                    }
-                    if (
-                        ghostLineValuesRange &&
-                        (location.pathname.includes('range') ||
-                            location.pathname.includes('reposition'))
-                    ) {
-                        ghostLines(ghostLineValuesRange);
-                    }
-                })
-                .on('measure', () => {
-                    limitNoGoZone.context(ctx);
-                    ghostLines.context(ctx);
-                });
-        }
-    }, [
-        noGoZoneBoudnaries,
-        limitNoGoZone,
-        ghostLineValuesLimit,
-        ghostLines,
-        ghostLineValuesRange,
-        location,
-    ]);
-
-    useEffect(() => {
-        if (
-            isLineDrag &&
-            (location.pathname.includes('/limit') ||
-                location.pathname.includes('range') ||
-                location.pathname.includes('reposition'))
-        ) {
-            d3.select(d3CanvasNoGoZone.current)
-                .select('canvas')
-                .style('display', 'inline');
-        } else {
-            d3.select(d3CanvasNoGoZone.current)
-                .select('canvas')
-                .style('display', 'none');
-        }
-    }, [isLineDrag]);
-
     function noGoZone(poolPrice: any) {
         return [[poolPrice * 0.99, poolPrice * 1.01]];
     }
@@ -6287,8 +6133,6 @@ export default function Chart(props: propsIF) {
                             )
                         ) {
                             onBlurLimitRate(limit[0].value, newLimitValue);
-                        } else {
-                            flashNoGoZone();
                         }
                     }
                 };
@@ -6518,7 +6362,6 @@ export default function Chart(props: propsIF) {
             showTvl,
             showVolume,
             showFeeRate,
-            ghostLineValuesLimit,
             liqMode,
             liquidityScale,
             liquidityDepthScale,
@@ -6641,71 +6484,6 @@ export default function Chart(props: propsIF) {
             }
             dispatch(setIsLinesSwitched(isLinesSwitched));
         }
-    };
-
-    const flashNoGoZone = () => {
-        d3.select(d3CanvasNoGoZone.current)
-            .select('canvas')
-            .style('display', 'inline');
-
-        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-
-        const beforeCanvas = d3
-            .select(d3CanvasNoGoZone.current)
-            .select('canvas') as any;
-        const canvas = beforeCanvas.node() as any;
-        const ctx = canvas.getContext('2d');
-
-        let requestId: any = null;
-        let y = scaleData?.yScale(noGoZoneMax);
-
-        function animate() {
-            ctx.strokeStyle = 'rgba(235, 235, 255, 0.01)';
-            ctx.lineWidth = 1;
-            ctx.fillStyle = 'transparent';
-
-            ctx.strokeRect(
-                -1,
-                scaleData?.yScale(noGoZoneMax),
-                Math.abs(
-                    scaleData?.xScale(scaleData?.xScale.domain()[0]) -
-                        scaleData?.xScale(scaleData?.xScale.domain()[1]),
-                ) + 10,
-                Math.abs(
-                    scaleData?.yScale(noGoZoneMax) -
-                        scaleData?.yScale(noGoZoneMin),
-                ),
-            );
-
-            if (y > scaleData?.yScale(noGoZoneMax) - 50) {
-                ctx.strokeRect(
-                    -1,
-                    y,
-                    Math.abs(
-                        scaleData?.xScale(scaleData?.xScale.domain()[0]) -
-                            scaleData?.xScale(scaleData?.xScale.domain()[1]),
-                    ),
-                    Math.abs(
-                        scaleData?.yScale(noGoZoneMax) -
-                            scaleData?.yScale(noGoZoneMin),
-                    ) + 20,
-                );
-
-                y -= 10;
-
-                ctx.strokeStyle = 'transparent';
-            }
-
-            requestId = requestAnimationFrame(animate);
-        }
-
-        animate();
-        setTimeout(() => {
-            if (requestId !== null) cancelAnimationFrame(requestId);
-            d3.select(d3CanvasNoGoZone.current)
-                .select('canvas')
-                .style('display', 'none');
-        }, 1000);
     };
 
     const onBlurLimitRate = (limitPreviousData: number, newLimitValue: any) => {
@@ -6901,11 +6679,6 @@ export default function Chart(props: propsIF) {
                         <d3fc-canvas
                             ref={d3CanvasCrVertical}
                             className='cr-vertical-canvas'
-                        ></d3fc-canvas>
-
-                        <d3fc-canvas
-                            ref={d3CanvasNoGoZone}
-                            className='no-go-zone-canvas'
                         ></d3fc-canvas>
 
                         <d3fc-canvas
