@@ -5,7 +5,7 @@
 .main_container {
     width: 100%;
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
+    background: var(--dark1);
     cursor: default;
 
     display: flex;
