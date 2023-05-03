@@ -1,8 +1,7 @@
 ### Describe your changes 
-
 _Describe the purpose + content of these changes_
-### Link the related issue
 
+### Link the related issue
 _Closes #0000_
 
 ### Checklist before requesting a review
