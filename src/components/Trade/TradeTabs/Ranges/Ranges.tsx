@@ -316,7 +316,7 @@ export default function Ranges(props: propsIF) {
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && rangeData.length > 18 && (
+            {expandTradeTable && rangeData.length > 7 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
                     totalItems={rangeData.length}

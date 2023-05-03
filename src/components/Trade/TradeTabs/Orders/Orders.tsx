@@ -353,7 +353,7 @@ export default function Orders(props: propsIF) {
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && limitOrderData.length > 18 && (
+            {expandTradeTable && limitOrderData.length > 7 && (
                 <Pagination
                     itemsPerPage={limitsPerPage}
                     totalItems={limitOrderData.length}
