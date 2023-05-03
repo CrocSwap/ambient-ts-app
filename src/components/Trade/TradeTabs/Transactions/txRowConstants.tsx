@@ -123,7 +123,7 @@ export const txRowConstants = (props: Props) => {
             interactive
             title={
                 <div className={styles.id_tooltip_style}>
-                    {tx.tx + 'ㅤ'}
+                    <span onClick={handleOpenExplorer}> {tx.tx + 'ㅤ'}</span>
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
                         size={'12px'}

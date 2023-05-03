@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect } from 'react';
+import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
 import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
@@ -11,7 +11,7 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -25,12 +25,12 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
     tradeData: tradeData;
-    crocEnv: CrocEnv | undefined;
     limitOrder: LimitOrderIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
@@ -53,7 +53,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         // isShowAllEnabled,
-        crocEnv,
         chainData,
         tradeData,
         limitOrder,
@@ -74,6 +73,8 @@ export default function OrdersMenu(props: propsIF) {
         //  openModal,
         closeModal,
     ] = useModal();
+
+    const crocEnv = useContext(CrocEnvContext);
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;

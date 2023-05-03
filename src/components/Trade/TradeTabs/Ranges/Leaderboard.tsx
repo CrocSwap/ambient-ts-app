@@ -4,7 +4,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import sum from 'hash-sum';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
@@ -16,7 +15,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -25,11 +24,11 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 // interface for props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -64,7 +63,6 @@ interface propsIF {
 export default function Leaderboard(props: propsIF) {
     const {
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -130,7 +128,7 @@ export default function Leaderboard(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sum({
+        diffHashSig({
             id0: topThreePositions[0]?.positionId,
             id1: topThreePositions[1]?.positionId,
             id2: topThreePositions[2]?.positionId,
@@ -357,7 +355,6 @@ export default function Leaderboard(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

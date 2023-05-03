@@ -1,6 +1,9 @@
+import { GRAPHCACHE_URL } from '../../constants';
+
 export const getDexTvlSeries = async (day: string): Promise<ITvlSeriesData> => {
     return fetch(
-        'https://809821320828123.de:5000/dex_tvl_series?' +
+        GRAPHCACHE_URL +
+            '/dex_tvl_series?' +
             new URLSearchParams({
                 resolution: '86400',
                 n: day,
@@ -16,7 +19,8 @@ export const getDexTvlSeries = async (day: string): Promise<ITvlSeriesData> => {
 
 export const getDexFeeSeries = async () => {
     return fetch(
-        'https://809821320828123.de:5000/dex_fee_series?' +
+        GRAPHCACHE_URL +
+            '/dex_fee_series?' +
             new URLSearchParams({
                 resolution: '86400',
                 n: '60',
@@ -34,7 +38,8 @@ export const getDexVolumeSeries = async (
     day: string,
 ): Promise<IVolumeSeriesData> => {
     return fetch(
-        'https://809821320828123.de:5000/dex_volume_series?' +
+        GRAPHCACHE_URL +
+            '/dex_volume_series?' +
             new URLSearchParams({
                 resolution: '86400',
                 n: day,

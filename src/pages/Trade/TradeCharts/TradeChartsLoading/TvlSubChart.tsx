@@ -5,8 +5,8 @@ import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { TvlChartData } from '../TradeCharts';
 import './Subcharts.css';
-import sum from 'hash-sum';
 import { setCanvasResolution } from '../../../Chart/Chart';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 interface TvlData {
     tvlData: TvlChartData[] | undefined;
@@ -62,7 +62,7 @@ export default function TvlSubChart(props: TvlData) {
         useState<any>();
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
     const [buffer, setBuffer] = useState<any>();
-    const [resize, setResize] = useState<boolean>();
+    const [resizeHeight, setResizeHeight] = useState<number>();
 
     useEffect(() => {
         const yScale = d3.scaleSymlog();
@@ -147,8 +147,8 @@ export default function TvlSubChart(props: TvlData) {
     }, [
         tvlData,
         scaleData,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale.domain()[1]),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {
@@ -226,8 +226,8 @@ export default function TvlSubChart(props: TvlData) {
         }
     }, [
         tvlyScale,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale.domain()[1]),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale.domain()[1]),
     ]);
 
     useEffect(() => {
@@ -237,12 +237,8 @@ export default function TvlSubChart(props: TvlData) {
                 .select('canvas')
                 .node() as any;
 
-            if (canvas !== null && buffer && !isNaN(buffer)) {
+            if (canvas !== null && buffer && !isNaN(buffer) && resizeHeight) {
                 const ctx = canvas.getContext('2d');
-
-                const ratio =
-                    window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
-
                 const startPoint =
                     buffer === 0
                         ? 4
@@ -250,42 +246,43 @@ export default function TvlSubChart(props: TvlData) {
                               Math.log10(tvlyScale.domain()[0])) /
                           (buffer * 2);
 
+                const DFLT_COLOR_STOP = 0.2;
+                const calcStop = 1 / (startPoint + 1);
+                const colorStop = isFinite(calcStop)
+                    ? calcStop
+                    : DFLT_COLOR_STOP;
+
                 const tvlGradient = ctx.createLinearGradient(
                     0,
                     0,
                     0,
-                    canvas.height / ratio,
+                    resizeHeight,
                 );
                 tvlGradient.addColorStop(1, 'transparent');
-                tvlGradient.addColorStop(
-                    1 / (startPoint + 1),
-                    'rgba(115, 113, 252, 0.7)',
-                );
+                tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
 
                 setTvlGradient(() => {
                     return tvlGradient;
                 });
 
-                setResize(false);
-
                 renderCanvas();
             }
         }
-    }, [d3CanvasArea, tvlyScale, buffer, resize]);
+    }, [d3CanvasArea, tvlyScale, buffer, resizeHeight]);
 
     useEffect(() => {
         if (d3CanvasArea) {
             const canvasDiv = d3.select(d3CanvasArea.current) as any;
 
-            const resizeObserver = new ResizeObserver(() => {
-                setResize(true);
+            const resizeObserver = new ResizeObserver((event: any) => {
+                setResizeHeight(event[0].contentRect?.height);
             });
 
             resizeObserver.observe(canvasDiv.node());
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, []);
+    }, [d3CanvasArea === undefined]);
 
     useEffect(() => {
         if (
@@ -375,7 +372,7 @@ export default function TvlSubChart(props: TvlData) {
                     lineSeries.context(ctx);
                 });
         }
-    }, [areaSeries, lineSeries, tvlyScale]);
+    }, [areaSeries, lineSeries, tvlData]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {

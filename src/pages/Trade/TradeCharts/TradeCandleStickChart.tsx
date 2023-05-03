@@ -11,7 +11,6 @@ import {
 } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
-import sum from 'hash-sum';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
 import {
@@ -26,12 +25,13 @@ import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -53,7 +53,6 @@ declare global {
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -136,7 +135,6 @@ type chartItemStates = {
 export default function TradeCandleStickChart(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         baseTokenAddress,
         chainId,
@@ -206,12 +204,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             return undefined;
         });
     }, [candleTimeInSeconds, denominationsInBase]);
-
-    useEffect(() => {
-        parseData();
-        IS_LOCAL_ENV && console.debug('setting candle added to true');
-        setIsCandleAdded(true);
-    }, [sum(props.candleData), denominationsInBase]);
 
     // Parse price data
     const parseData = () => {
@@ -296,6 +288,12 @@ export default function TradeCandleStickChart(props: propsIF) {
             });
         }
     };
+
+    useEffect(() => {
+        parseData();
+        IS_LOCAL_ENV && console.debug('setting candle added to true');
+        setIsCandleAdded(true);
+    }, [diffHashSig(props.candleData), denominationsInBase]);
 
     // const standardDeviation = (arr: any, usePopulation = false) => {
     //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
@@ -671,7 +669,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        sum(props.liquidityData),
+        diffHashSig(props.liquidityData),
         poolPriceDisplay,
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
@@ -865,7 +863,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}

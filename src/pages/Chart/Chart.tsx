@@ -3,7 +3,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
-import sum from 'hash-sum';
 
 import {
     DetailedHTMLProps,
@@ -11,6 +10,7 @@ import {
     HTMLAttributes,
     SetStateAction,
     useCallback,
+    useContext,
     useEffect,
     useRef,
     useState,
@@ -37,10 +37,10 @@ import {
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
+import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import {
     ChainSpec,
-    CrocPoolView,
     pinTickLower,
     pinTickUpper,
     tickToPrice,
@@ -61,6 +61,7 @@ import {
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
+import { diffHashSig } from '../../utils/functions/diffHashSig';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -107,7 +108,6 @@ type lineValue = {
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     isTokenABase: boolean;
     expandTradeTable: boolean;
@@ -192,7 +192,6 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 export default function Chart(props: propsIF) {
     const {
         isUserLoggedIn,
-        pool,
         chainData,
         isTokenABase,
         denomInBase,
@@ -232,6 +231,8 @@ export default function Chart(props: propsIF) {
         chartTriggeredBy,
         // candleTime,
     } = props;
+
+    const pool = useContext(PoolContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -712,7 +713,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        sum(props.chartItemStates),
+        diffHashSig(props.chartItemStates),
         expandTradeTable,
         parsedChartData?.chartData.length,
         parsedChartData?.chartData[0]?.time,
@@ -2061,16 +2062,16 @@ export default function Chart(props: propsIF) {
         rescale,
         location,
         candlestick,
-        sum(scaleData?.xScale.domain()[0]),
-        sum(scaleData?.xScale?.domain()[1]),
-        sum(showLatest),
+        diffHashSig(scaleData?.xScale.domain()[0]),
+        diffHashSig(scaleData?.xScale?.domain()[1]),
+        diffHashSig(showLatest),
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
         limit,
         dragEvent,
         isLineDrag,
-        sum(yAxisLabels),
+        diffHashSig(yAxisLabels),
     ]);
 
     useEffect(() => {
@@ -3366,9 +3367,9 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         market,
-        sum(crosshairData),
+        diffHashSig(crosshairData),
         isMouseMoveCrosshair,
         limit,
         isLineDrag,
@@ -3604,11 +3605,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (
-                    d3
-                        .select(d3CanvasCrHorizontal.current)
-                        .style('visibility') == 'visible'
-                ) {
+                if (isMouseMoveCrosshair) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
@@ -3703,12 +3700,8 @@ export default function Chart(props: propsIF) {
             }
 
             context.beginPath();
-            if (d3.select(d3CanvasCrVertical?.current) === null) return;
-            if (
-                dateCrosshair &&
-                d3.select(d3CanvasCrVertical?.current).style('visibility') ===
-                    'visible'
-            ) {
+
+            if (dateCrosshair && isMouseMoveCrosshair) {
                 context.fillText(
                     dateCrosshair,
                     xScale(crosshairData[0].x),
@@ -5185,7 +5178,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         gradientForAsk,
         liqMode,
         liquidityScale,
@@ -5277,7 +5270,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liqMode,
         gradientForBid,
         liquidityScale,
@@ -5412,7 +5405,7 @@ export default function Chart(props: propsIF) {
             renderCanvas();
         }
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liquidityData?.liqBidData,
         liquidityData?.depthLiqBidData,
         lineBidSeries,
@@ -5526,7 +5519,7 @@ export default function Chart(props: propsIF) {
         render();
         renderCanvas();
     }, [
-        sum(scaleData),
+        diffHashSig(scaleData),
         liquidityData?.liqAskData,
         liquidityData?.depthLiqAskData,
         lineAskSeries,
@@ -5710,7 +5703,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         parsedChartData?.period,
-        sum(parsedChartData?.chartData[0]),
+        diffHashSig(parsedChartData?.chartData[0]),
     ]);
 
     // Call drawChart()

@@ -1,12 +1,18 @@
 // START: Import React and Dongles
-import { useState, useEffect, Dispatch, SetStateAction, useMemo } from 'react';
+import {
+    useState,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useMemo,
+    useContext,
+} from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import FocusTrap from 'focus-trap-react';
 
 import {
     tickToPrice,
-    CrocEnv,
     pinTickLower,
     pinTickUpper,
     priceHalfAboveTick,
@@ -63,14 +69,14 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
     account: string | undefined;
     pool: CrocPoolView | undefined;
-    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
@@ -131,7 +137,6 @@ export default function Limit(props: propsIF) {
         account,
         provider,
         pool,
-        crocEnv,
         isUserLoggedIn,
         mintSlippage,
         isPairStable,
@@ -171,6 +176,8 @@ export default function Limit(props: propsIF) {
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -593,7 +600,7 @@ export default function Limit(props: propsIF) {
         }
 
         const newLimitOrderChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_limit_order_change?';
+            GRAPHCACHE_URL + '/new_limit_order_change?';
 
         if (tx?.hash) {
             fetch(

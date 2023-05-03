@@ -11,7 +11,6 @@ import {
     useMemo,
 } from 'react';
 import { ethers } from 'ethers';
-import sum from 'hash-sum';
 
 // START: Import JSX Components
 
@@ -27,7 +26,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -40,6 +39,7 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -49,7 +49,6 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -89,7 +88,6 @@ export default function Ranges(props: propsIF) {
         activeAccountPositionData,
         connectedAccountActive,
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -180,19 +178,19 @@ export default function Ranges(props: propsIF) {
     );
 
     const sumHashActiveAccountPositionData = useMemo(
-        () => sum(activeAccountPositionData),
+        () => diffHashSig(activeAccountPositionData),
         [activeAccountPositionData],
     );
 
-    const sumHashRangeData = useMemo(() => sum(rangeData), [rangeData]);
+    const sumHashRangeData = useMemo(() => diffHashSig(rangeData), [rangeData]);
 
     const sumHashUserPositionsToDisplayOnTrade = useMemo(
-        () => sum(userPositionsToDisplayOnTrade),
+        () => diffHashSig(userPositionsToDisplayOnTrade),
         [userPositionsToDisplayOnTrade],
     );
 
     const sumHashPositionsByPool = useMemo(
-        () => sum(positionsByPool),
+        () => diffHashSig(positionsByPool),
         [positionsByPool],
     );
 
@@ -271,7 +269,7 @@ export default function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sum({
+        diffHashSig({
             id0: sortedPositions[0]?.positionId,
             id1: sortedPositions[1]?.positionId,
             id2: sortedPositions[2]?.positionId,
@@ -318,10 +316,10 @@ export default function Ranges(props: propsIF) {
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedPositions.length > 30 && (
+            {expandTradeTable && rangeData.length > 7 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
-                    totalItems={sortedPositions.length}
+                    totalItems={rangeData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
@@ -503,7 +501,6 @@ export default function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}
@@ -538,7 +535,6 @@ export default function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

@@ -1,4 +1,4 @@
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
@@ -37,7 +37,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
     } = args;
 
     const poolRecentChangesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/pool_recent_changes?';
+        GRAPHCACHE_URL + '/pool_recent_changes?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 

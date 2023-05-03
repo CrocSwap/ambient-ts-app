@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
@@ -11,7 +11,6 @@ import {
     ambientPosSlot,
     ChainSpec,
     concPosSlot,
-    CrocEnv,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
@@ -40,10 +39,10 @@ import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
-import { IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
     chainId: string;
@@ -76,7 +75,6 @@ interface propsIF {
 
 export default function RemoveRange(props: propsIF) {
     const {
-        crocEnv,
         chainData,
         position,
         dexBalancePrefs,
@@ -94,6 +92,8 @@ export default function RemoveRange(props: propsIF) {
         (state) => state.graphData,
     ).lastBlock;
 
+    const crocEnv = useContext(CrocEnvContext);
+
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
@@ -105,8 +105,7 @@ export default function RemoveRange(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
-    const positionStatsCacheEndpoint =
-        'https://809821320828123.de:5000/position_stats?';
+    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -378,8 +377,7 @@ export default function RemoveRange(props: propsIF) {
                 console.debug('unsupported position type for removal');
         }
 
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
+        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
         if (tx?.hash) {
             if (position.positionType === 'ambient') {
                 fetch(

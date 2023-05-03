@@ -18,7 +18,7 @@ import {
 } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -52,9 +52,7 @@ import { PositionUpdateFn } from '../../App/functions/getPositionData';
 
 // interface for React functional component props
 interface propsIF {
-    pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
@@ -123,21 +121,23 @@ interface propsIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
     slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    poolPriceChangePercent: string | undefined;
+    isPoolPriceChangePositive: boolean;
 }
 
 // React functional component
 export default function Trade(props: propsIF) {
     const {
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
         chartSettings,
-        pool,
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
-        crocEnv,
         candleData,
         chainId,
         chainData,
@@ -495,18 +495,13 @@ export default function Trade(props: propsIF) {
             </div>
         ) : null;
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
-        string | undefined
-    >();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
-        useState<boolean>(true);
-
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
+        fetchingCandle: fetchingCandle,
+        isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
-        pool: pool,
         chainData: chainData,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,
@@ -535,10 +530,6 @@ export default function Trade(props: propsIF) {
         setSelectedDate: setSelectedDate,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
-        fetchingCandle: fetchingCandle,
         setFetchingCandle: setFetchingCandle,
         minPrice: minPrice,
         maxPrice: maxPrice,
@@ -565,7 +556,6 @@ export default function Trade(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,
-        crocEnv: crocEnv,
         provider: provider,
         account: account,
         lastBlockNumber: lastBlockNumber,
@@ -606,9 +596,7 @@ export default function Trade(props: propsIF) {
         favePools: favePools,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         poolPriceChangePercent: poolPriceChangePercent,
-        setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive: setIsPoolPriceChangePositive,
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,

@@ -1,16 +1,8 @@
 // START: Import React and Dongles
-import {
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useMemo,
-} from 'react';
+import { SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
-import sum from 'hash-sum';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -123,41 +115,18 @@ export default function Sidebar(props: propsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const positionsByUser = useMemo(
-        () =>
-            graphData.positionsByUser.positions.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [sum(graphData.positionsByUser.positions), chainId],
-    );
+    const filterFn = <T extends { chainId: string }>(x: T) =>
+        x.chainId === chainId;
 
-    const txsByUser = useMemo(
-        () =>
-            graphData.changesByUser.changes.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [sum(graphData.changesByUser.changes), chainId],
-    );
+    const positionsByUser =
+        graphData.positionsByUser.positions.filter(filterFn);
+    const txsByUser = graphData.changesByUser.changes.filter(filterFn);
+    const limitsByUser =
+        graphData.limitOrdersByUser.limitOrders.filter(filterFn);
 
-    const limitsByUser = useMemo(
-        () =>
-            graphData.limitOrdersByUser.limitOrders.filter(
-                (x) => x.chainId === chainId,
-            ),
-        [sum(graphData.limitOrdersByUser.limitOrders), chainId],
-    );
-    const mostRecentTxs = useMemo(
-        () => txsByUser.slice(0, 4),
-        [sum(txsByUser)],
-    );
-    const mostRecentPositions = useMemo(
-        () => positionsByUser.slice(0, 4),
-        [sum(positionsByUser)],
-    );
-    const mostRecentLimitOrders = useMemo(
-        () => limitsByUser.slice(0, 4),
-        [sum(limitsByUser)],
-    );
+    const mostRecentTxs = txsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
         {
@@ -296,14 +265,14 @@ export default function Sidebar(props: propsIF) {
         ackTokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string[][]>();
+    const [searchInput, setSearchInput] = useState<string>('');
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
-        setSearchInput([]);
+        setSearchInput('');
         setSearchMode(false);
         const currentInput = document.getElementById(
             'search_input',
@@ -344,7 +313,7 @@ export default function Sidebar(props: propsIF) {
                 className={styles.search__box}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {searchInput !== undefined && (
+            {!searchInput && (
                 <div
                     onClick={handleInputClearAnalytics}
                     className={styles.close_icon}
@@ -356,14 +325,11 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    const inputContent = document.getElementById(
-        'search_input',
-    ) as HTMLInputElement;
-
     // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
+        setSearchInput(e.target.value);
     };
     const searchContainer = (
         <div className={styles.search_container}>
@@ -375,12 +341,13 @@ export default function Sidebar(props: propsIF) {
                 id='search_input'
                 ref={searchInputRef}
                 placeholder='Search anything...'
+                maxLength={40}
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
                 autoFocus
             />
-            {inputContent?.value && (
+            {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
                     <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
