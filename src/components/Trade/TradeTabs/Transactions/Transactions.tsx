@@ -513,11 +513,7 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : currentRowItemContent}
-            </ul>
+            <ul ref={listRef}>{currentRowItemContent}</ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
             {!expandTradeTable &&
