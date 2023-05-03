@@ -30,6 +30,7 @@ import { BigNumber } from 'ethers';
 import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -59,7 +60,7 @@ export default function Transfer(props: propsIF) {
         tokenDexBalance,
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        lastBlockNumber,
+        // lastBlockNumber,
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
@@ -73,9 +74,12 @@ export default function Transfer(props: propsIF) {
 
     const selectedTokenDecimals = selectedToken.decimals;
 
-    const tokenExchangeDepositsDisplay = tokenDexBalance
-        ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
-        : undefined;
+    const tokenExchangeDepositsDisplay = useDebounce(
+        tokenDexBalance
+            ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
+            : undefined,
+        500,
+    );
 
     const tokenExchangeDepositsDisplayNum = tokenExchangeDepositsDisplay
         ? parseFloat(tokenExchangeDepositsDisplay)
@@ -103,31 +107,6 @@ export default function Transfer(props: propsIF) {
         useState<boolean>(true);
     const [isAddressFieldDisabled, setIsAddressFieldDisabled] =
         useState<boolean>(true);
-    const [sendToAddressDexBalance, setSendToAddressDexBalance] =
-        useState<string>('');
-    const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
-        useState<boolean>(false);
-
-    const sendToAddressDexBalanceDisplay = sendToAddressDexBalance
-        ? toDisplayQty(sendToAddressDexBalance, selectedTokenDecimals)
-        : undefined;
-
-    const sendToAddressDexBalanceDisplayNum = sendToAddressDexBalanceDisplay
-        ? parseFloat(sendToAddressDexBalanceDisplay)
-        : undefined;
-
-    const sendToAddressBalanceTruncated = sendToAddressDexBalanceDisplayNum
-        ? sendToAddressDexBalanceDisplayNum < 0.0001
-            ? sendToAddressDexBalanceDisplayNum.toExponential(2)
-            : sendToAddressDexBalanceDisplayNum < 2
-            ? sendToAddressDexBalanceDisplayNum.toPrecision(3)
-            : // : tokenWalletBalanceNum >= 100000
-              // ? formatAmountOld(tokenWalletBalanceNum)
-              sendToAddressDexBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
 
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
@@ -140,32 +119,6 @@ export default function Transfer(props: propsIF) {
             resolvedAddress.startsWith('0x')
         );
     }, [resolvedAddress]);
-
-    useEffect(() => {
-        if (
-            crocEnv &&
-            selectedToken.address &&
-            resolvedAddress &&
-            isResolvedAddressValid
-        ) {
-            crocEnv
-                .token(selectedToken.address)
-                .balance(resolvedAddress)
-                .then((bal: BigNumber) => {
-                    setSendToAddressDexBalance(bal.toString());
-                })
-                .catch(console.error);
-        } else {
-            setSendToAddressDexBalance('');
-        }
-        setRecheckSendToAddressDexBalance(false);
-    }, [
-        crocEnv,
-        selectedToken.address,
-        resolvedAddress,
-        lastBlockNumber,
-        recheckSendToAddressDexBalance,
-    ]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -190,7 +143,12 @@ export default function Transfer(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     useEffect(() => {
-        if (!isResolvedAddressValid) {
+        if (isTransferPending) {
+            setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(true);
+            setIsCurrencyFieldDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
+        } else if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
@@ -207,11 +165,6 @@ export default function Transfer(props: propsIF) {
             setButtonMessage(
                 `${selectedToken.symbol} Exchange Balance Insufficient`,
             );
-        } else if (isTransferPending) {
-            setIsButtonDisabled(true);
-            setIsAddressFieldDisabled(true);
-            setIsCurrencyFieldDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
         } else if (isTransferQtyValid) {
             setIsButtonDisabled(false);
             setIsAddressFieldDisabled(false);
@@ -306,7 +259,6 @@ export default function Transfer(props: propsIF) {
             } finally {
                 setIsTransferPending(false);
                 setRecheckTokenBalances(true);
-                setRecheckSendToAddressDexBalance(true);
             }
         }
     };
@@ -413,20 +365,26 @@ export default function Transfer(props: propsIF) {
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
             />
-            <div
-                onClick={handleBalanceClick}
-                className={
-                    isTokenDexBalanceGreaterThanZero
-                        ? styles.info_text_clickable
-                        : styles.info_text_non_clickable
-                }
-            >
-                Your Exchange Balance ({selectedToken.symbol}):{' '}
-                {tokenDexBalanceTruncated || '0.0'}
-            </div>
-            <div className={styles.info_text_non_clickable}>
-                Destination Exchange Balance ({selectedToken.symbol}):{' '}
-                {sendToAddressBalanceTruncated || '0.0'}
+            <div className={styles.additional_info}>
+                <div className={styles.info_text_non_clickable}>
+                    Available: {tokenDexBalanceTruncated || '0.0'}
+                    {tokenDexBalance !== '0' ? (
+                        <button
+                            className={`${styles.max_button} ${styles.max_button_enable}`}
+                            onClick={handleBalanceClick}
+                        >
+                            Max
+                        </button>
+                    ) : null}
+                </div>
+                <div className={styles.gas_pump}>
+                    <div className={styles.svg_container}>
+                        <FaGasPump size={12} />{' '}
+                    </div>
+                    {transferGasPriceinDollars
+                        ? transferGasPriceinDollars
+                        : '…'}
+                </div>
             </div>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
@@ -437,12 +395,6 @@ export default function Transfer(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
-            <div className={styles.gas_pump}>
-                <div className={styles.svg_container}>
-                    <FaGasPump size={12} />{' '}
-                </div>
-                {transferGasPriceinDollars ? transferGasPriceinDollars : '…'}
-            </div>
         </div>
     );
 }

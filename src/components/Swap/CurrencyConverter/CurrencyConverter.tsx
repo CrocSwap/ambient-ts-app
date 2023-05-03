@@ -85,11 +85,15 @@ interface propsIF {
     dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
+    isLiquidityInsufficient: boolean;
+    setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function CurrencyConverter(props: propsIF) {
     const {
         crocEnv,
+        isLiquidityInsufficient,
+        setIsLiquidityInsufficient,
         poolExists,
         isUserLoggedIn,
         provider,
@@ -369,6 +373,7 @@ export default function CurrencyConverter(props: propsIF) {
         combinedTokenABalance,
         isWithdrawFromDexChecked,
         slippageTolerancePercentage,
+        isLiquidityInsufficient,
     ]);
 
     useEffect(() => {
@@ -392,6 +397,9 @@ export default function CurrencyConverter(props: propsIF) {
             } else if (poolExists === false) {
                 setSwapButtonErrorMessage('Pool Not Initialized');
             }
+        } else if (isLiquidityInsufficient) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Liquidity Insufficient');
         } else if (isNaN(tokenAAmount)) {
             return;
         } else if (tokenAAmount <= 0) {
@@ -473,8 +481,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
                 setSwapAllowed(false);
             }
         } else {
@@ -516,8 +528,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
             }
         }
         const truncatedTokenBQty = rawTokenBQty
@@ -565,8 +581,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
             }
         } else {
             if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
@@ -591,8 +611,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
             }
         }
         const truncatedTokenBQty = rawTokenBQty
@@ -654,8 +678,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
                 setSwapAllowed(false);
             }
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
@@ -698,8 +726,12 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
+                setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
+                if (error.errorName === 'Panic') {
+                    setIsLiquidityInsufficient(true);
+                }
             }
 
             handleSwapButtonMessage(rawTokenAQty ?? 0);

@@ -14,3 +14,4 @@ Please follow these items as close to as possible for your PR. Please add a desc
 - [ ] Is a minimum level of logging in place? Is the logging level is the right one?
 - [ ] Are unit tests used where possible? In most cases, tests should be present for APIs, interfaces with data access, transformation, backend elements and models, with the Arrange/Act/Assert pattern and documentation.
 - [ ] Checked against an interface via the implements keyword?
+- [ ] Are we passing any new data correctly? Use property passing when data is only needed by child components. If it is needed by multiple components across the app, or if it passing through multiple levels of child components, use Context API.
