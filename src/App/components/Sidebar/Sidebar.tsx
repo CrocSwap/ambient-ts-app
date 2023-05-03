@@ -365,7 +365,7 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
+            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
             {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
         </button>
     );
@@ -378,8 +378,7 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {'Collapse All'}
+            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
         </button>
     );
 

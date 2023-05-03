@@ -27,7 +27,7 @@
 
 
 .main_container p{
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: 12;
     line-height: var(--body-lh);
 }
@@ -40,5 +40,5 @@
 }
 
 .main_container a{
-    color: var(--text-highlight-dark)
+    color: var(--accent1)
 }

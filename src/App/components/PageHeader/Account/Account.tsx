@@ -139,7 +139,7 @@ export default function Account(props: AccountPropsIF) {
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
                 aria-label={ariaLabel}
             >
-                <MdAccountBalanceWallet color='var(--text-grey-white)' />
+                <MdAccountBalanceWallet color='var(--text1)' />
                 <p className={styles.wallet_name}>
                     {ensName !== '' ? ensName : props.accountAddress}
                 </p>

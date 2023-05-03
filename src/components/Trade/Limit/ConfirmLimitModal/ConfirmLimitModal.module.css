@@ -81,7 +81,7 @@
     /* font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     letter-spacing: -0.02em; */
     border-radius: var(--border-radius);
     padding: 0 2rem;
@@ -93,7 +93,7 @@
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     letter-spacing: -0.02em;
 }
 
@@ -118,7 +118,7 @@
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     letter-spacing: -0.02em;
     border-radius: var(--border-radius);
     padding: 0 2rem;
@@ -129,7 +129,7 @@
     flex-direction: column;
     gap: 10px;
     padding: 8px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
     border-radius: 4px;
 }
 .extra_info_container .row {
@@ -141,7 +141,7 @@
 
 .extra_info_container .row p {
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -149,6 +149,6 @@
 .confSwap_detail_note {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var( --accent-secondary);
+    color: var( --accent2);
     text-align: center;
 }

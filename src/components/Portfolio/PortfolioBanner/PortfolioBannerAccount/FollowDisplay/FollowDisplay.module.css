@@ -19,12 +19,12 @@
 .follow_card_container .name_display h3 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .follow_card_container .name_display h3 span {
     font-size: 12px;
-    color: var(--text-grey-dark);
+    color: var(--text3);
     background: var(--dark2);
     padding: 4px;
     border-radius: 4px;
@@ -32,7 +32,7 @@
 .follow_card_container .name_display p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .follow_card_container .button_container {
@@ -74,7 +74,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 
     box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
@@ -84,25 +84,18 @@
 .button_not_following {
     background: transparent;
 
-    color: var(--text-grey-dark);
+    color: var(--text3);
 
     transition: all var(--animation-speed) ease-in-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 100% 300%;
     text-decoration: none;
-    border: 1px solid var(--text-highlight);
+    border: 1px solid var(--accent5);
 }
 
 .button_not_following:hover {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
     box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
@@ -139,7 +132,7 @@
     padding: 12px 15px;
     position: relative;
     background: var(--dark2);
-    color: var(--text-grey-white);
+    color: var(--text1);
     cursor: pointer;
 
     display: flex;
@@ -157,7 +150,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: var(--text-highlight);
+    background: var(--accent5);
 }
 
 .header_active {

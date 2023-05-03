@@ -11,7 +11,7 @@
     align-items: center;
     cursor: pointer;
     margin-top: 4px;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     min-height: 33px;
@@ -37,7 +37,7 @@
     margin-top: 10px;
     border-radius: var(--border-radius);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
