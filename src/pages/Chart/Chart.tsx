@@ -3556,7 +3556,12 @@ export default function Chart(props: propsIF) {
                         const lastData = filteredData[indexValue + 1];
 
                         const beforeData = filteredData[indexValue - 1];
-                        if (beforeData.style || lastData.style) {
+                        if (
+                            beforeData.style ||
+                            lastData.style ||
+                            lastData.date.getDate() === 1 ||
+                            beforeData.date.getDate() === 1
+                        ) {
                             if (
                                 Math.abs(
                                     xScale(beforeData.date) - xScale(d.date),
