@@ -1298,7 +1298,10 @@ export default function Chart(props: propsIF) {
                                         lastCandleDate,
                                     );
 
-                                    if (lastCandleTime <= lastTime) {
+                                    if (
+                                        lastCandleTime <= lastTime &&
+                                        deltaX < 0
+                                    ) {
                                         changeCandleSize(
                                             domainX,
                                             deltaX,
