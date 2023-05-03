@@ -1,5 +1,11 @@
 import styles from './FullChat.module.css';
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import {
+    useState,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useContext,
+} from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import {
     TbLayoutSidebarLeftCollapse,
@@ -13,6 +19,7 @@ import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -24,7 +31,6 @@ interface FullChatPropsIF {
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
-    favePools: favePoolsMethodsIF;
     userCurrentPool: string;
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
@@ -42,6 +48,7 @@ export default function FullChat(props: FullChatPropsIF) {
     const { topPools } = props;
     const rooms = topPools;
     const { params } = useParams();
+    const { favePools } = useContext(UserPreferenceContext);
     const reconstructedReadableRoom =
         params && !params.includes('global')
             ? params.replace('&', ' / ').toUpperCase()
@@ -211,7 +218,7 @@ export default function FullChat(props: FullChatPropsIF) {
                   speed: number;
                   id: number;
               }[] = [];
-        props.favePools.pools.forEach((pool: PoolIF) => {
+        favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
@@ -252,7 +259,7 @@ export default function FullChat(props: FullChatPropsIF) {
         });
         const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
         props.favoritePoolsArray.splice(0, middleIndex);
-    }, [props.favePools]);
+    }, [favePools]);
 
     function handleGlobalClick() {
         props.setRoom('Global');
@@ -273,7 +280,7 @@ export default function FullChat(props: FullChatPropsIF) {
         const activePoolIsCurrentPool =
             poolIsCurrentPool && pool?.name === readableRoomName;
         const smallScrenView = useMediaQuery('(max-width: 968px)');
-        const isButtonFavorited = props.favePools.check(
+        const isButtonFavorited = favePools.check(
             pool.base.address,
             pool.quote.address,
             pool.chainId,
@@ -426,7 +433,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     key={idx}
                     isDropdown={false}
                     favoritePoolsArray={props.favoritePoolsArray}
-                    favePools={props.favePools}
+                    favePools={favePools}
                 />
             ))}
         </section>
@@ -454,7 +461,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             key={idx}
                             isDropdown={true}
                             favoritePoolsArray={props.favoritePoolsArray}
-                            favePools={props.favePools}
+                            favePools={favePools}
                         />
                     ))}
                     {rooms.length}
@@ -475,7 +482,7 @@ export default function FullChat(props: FullChatPropsIF) {
 
     const isButtonFavorited =
         readableRoom &&
-        props.favePools.check(
+        favePools.check(
             readableRoom.base.address,
             readableRoom.quote.address,
             readableRoom.chainId,
@@ -484,13 +491,13 @@ export default function FullChat(props: FullChatPropsIF) {
     function handleFavButton() {
         if (readableRoom) {
             isButtonFavorited
-                ? props.favePools.remove(
+                ? favePools.remove(
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,
                       readableRoom.poolId,
                   )
-                : props.favePools.add(
+                : favePools.add(
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,

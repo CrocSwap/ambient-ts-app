@@ -2,10 +2,10 @@ import styles from './FavoritePools.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { useContext } from 'react';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
-    favePools: favePoolsMethodsIF;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
     chainId: string;
@@ -13,15 +13,10 @@ interface propsIF {
 }
 
 export default function FavoritePools(props: propsIF) {
-    const {
-        favePools,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        chainId,
-        poolId,
-    } = props;
+    const { lastBlockNumber, cachedPoolStatsFetch, chainId, poolId } = props;
 
     const { tradeData } = useAppSelector((state) => state);
+    const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(
         tradeData.baseToken.address,

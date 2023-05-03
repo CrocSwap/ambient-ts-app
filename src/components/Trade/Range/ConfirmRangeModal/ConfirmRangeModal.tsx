@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useContext } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -16,7 +16,7 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 import styles from './ConfirmRangeModal.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -41,7 +41,6 @@ interface propsIF {
     txErrorCode: string;
     txErrorMessage: string;
     resetConfirmation: () => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
     isAdd: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -68,12 +67,17 @@ export default function ConfirmRangeModal(props: propsIF) {
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
-        bypassConfirm,
         isAdd,
         tokenAQtyLocal,
         tokenBQtyLocal,
     } = props;
 
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
     const { dataTokenA, dataTokenB } = tokenPair;
 
     const txApproved = newRangeTransactionHash !== '';
@@ -277,10 +281,10 @@ export default function ConfirmRangeModal(props: propsIF) {
                             // if user enables bypass, update all settings in parallel
                             // otherwise do not not make any change to persisted preferences
                             if (currentSkipConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             sendTransaction();
                             setShowConfirmation(false);

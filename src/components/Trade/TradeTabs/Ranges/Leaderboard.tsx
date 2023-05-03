@@ -21,8 +21,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
@@ -53,8 +51,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
@@ -81,8 +77,6 @@ export default function Leaderboard(props: propsIF) {
         cachedPositionUpdateQuery,
         isSidebarOpen,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
@@ -369,8 +363,6 @@ export default function Leaderboard(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />

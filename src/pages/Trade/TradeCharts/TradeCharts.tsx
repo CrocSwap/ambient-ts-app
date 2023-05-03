@@ -34,7 +34,6 @@ import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
-import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 
 // interface for React functional component props
@@ -56,7 +55,6 @@ interface propsIF {
     ) => void;
     candleData: CandlesByPoolAndDuration | undefined;
     limitTick: number | undefined;
-    favePools: favePoolsMethodsIF;
     liquidityData: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -164,7 +162,6 @@ export default function TradeCharts(props: propsIF) {
         fullScreenChart,
         setFullScreenChart,
         chainId,
-        favePools,
         expandTradeTable,
         selectedDate,
         setSelectedDate,
@@ -459,7 +456,6 @@ export default function TradeCharts(props: propsIF) {
                 isPoolPriceChangePositive={isPoolPriceChangePositive}
                 poolPriceDisplay={poolPriceDisplay}
                 poolPriceChangePercent={poolPriceChangePercent}
-                favePools={favePools}
                 chainId={chainId}
                 chainData={chainData}
             />

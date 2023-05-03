@@ -14,8 +14,6 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import rangeRowConstants from '../rangeRowConstants';
@@ -47,8 +45,6 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
@@ -70,8 +66,6 @@ export default function RangesRow(props: propsIF) {
         isLeaderboard,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
@@ -392,8 +386,6 @@ export default function RangesRow(props: propsIF) {
                         isEmpty={position.totalValueUSD === 0}
                         showHighlightedButton={showHighlightedButton}
                         setSimpleRangeWidth={setSimpleRangeWidth}
-                        dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         handleAccountClick={handleAccountClick}
                         isShowAllEnabled={isShowAllEnabled}
                     />
