@@ -3,7 +3,7 @@ import { tokenListURIs } from '../../../utils/data/tokenListURIs';
 import fetchTokenList from '../../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
-export const useNewTokens = () => {
+export const useNewTokens = (): void => {
     const tokenListsLocalStorageKey = 'tokenLists';
 
     function getTokenListsFromLS(): TokenListIF[] {
@@ -15,10 +15,12 @@ export const useNewTokens = () => {
     );
     
     useEffect(() => {
-        // console.log(Object.values(tokenListURIs));
-        // console.log(tokenLists.map((list: TokenListIF) => list.uri));
-
-        function fetchAndFormatTokenLists(listURIs: string[]) {
+        // fn to fetch token lists, apply middleware, and update data in state/local storage
+        // will patch fetched lists intelligently with current lists which are relevant
+        function fetchAndFormatTokenLists(
+            listURIs: string[],
+            existingLists: TokenListIF[] = []
+        ): void {
             // create an array of promises to fetch all token lists in the URIs file
             const tokenListPromises: Promise<TokenListIF>[] = listURIs.map((uri: string) => fetchTokenList(uri, false));
             Promise.allSettled(tokenListPromises)
@@ -31,14 +33,17 @@ export const useNewTokens = () => {
                 )
                 // middleware to add metadata used by the Ambient platform
                 .then((lists) => {
+                    // current UNIX time to mark when lists should be refreshed
+                    // const unixTimeInFourHours: number = Date.now() + 14400000;
+                    const unixTimeInFourHours: number = Date.now() + 14400000;
                     // indicate which list each token data object was imported with
                     lists.forEach((list) => {
-                        list.refreshAfter = Date.now() + 14400000;
+                        list.refreshAfter = unixTimeInFourHours;
                         list.tokens.forEach(
                             (token: TokenIF) => (token.fromList = list.uri),
                         )
                     });
-                    const updatedListsArr = [...tokenLists, ...lists];
+                    const updatedListsArr = [...existingLists, ...lists];
                     setTokenLists(updatedListsArr);
                     localStorage.setItem(
                         tokenListsLocalStorageKey, JSON.stringify(updatedListsArr)
@@ -46,18 +51,30 @@ export const useNewTokens = () => {
                 });
         }
 
+        // code block to manage fetching token lists
+        // no lists present ➡ will fetch all lists
+        // some lists present ➡ will only fetch missing and stale lists
         if (tokenLists.length === 0) {
             fetchAndFormatTokenLists(Object.values(tokenListURIs));
-        } else if (tokenLists.length > 1) {
+        } else if (tokenLists.length > 0) {
+            // current UNIX time when this code block runs
+            const unixTimeNow: number = Date.now();
+            // URIs of lists retrieved more than four hours ago
+            const staleListURIs: string[] = tokenLists.filter((list: TokenListIF) => (
+                (unixTimeNow - (list.refreshAfter ?? 0)) > 0
+            )).map((list: TokenListIF) => list.uri as string);
+            // array of lists (full list) which were not marked stale
+            const freshLists: TokenListIF[] = tokenLists.filter((list: TokenListIF) => (
+                !staleListURIs.includes(list.uri as string)
+            ));
             // logic to determine which lists the app currently has by URI
-            const presentListURIs: string[] = tokenLists.map((list: TokenListIF) => list.uri as string);
-            // logic to determine which default lists are not present in local storage
+            // this uses `freshLists` so stale lists will be excluded
+            const presentListURIs: string[] = freshLists.map((list: TokenListIF) => list.uri as string);
+            // logic to determine which default lists need to be retrieved
             // important if prior query failed, a new list is added to the app, etc
-            const neededLists: string[] = Object.values(tokenListURIs)
+            const neededListURIs: string[] = Object.values(tokenListURIs)
                 .filter((uri: string) => !presentListURIs.includes(uri));
-            fetchAndFormatTokenLists(neededLists);
+            fetchAndFormatTokenLists(neededListURIs, freshLists);
         };
     }, []);
-
-    // useEffect(() => console.log(tokenLists), [tokenLists]);
 };
