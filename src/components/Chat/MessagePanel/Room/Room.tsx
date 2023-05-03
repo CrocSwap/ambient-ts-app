@@ -2,11 +2,11 @@
 import styles from './Room.module.css';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -27,7 +27,6 @@ interface currentPoolInfo {
 }
 
 interface propsIF {
-    favePools: favePoolsMethodsIF;
     selectedRoom: any;
     setRoom: any;
     currentPool: currentPoolInfo;
@@ -48,7 +47,6 @@ interface propsIF {
 
 export default function RoomDropdown(props: propsIF) {
     const {
-        favePools,
         currentPool,
         isFullScreen,
         isCurrentPool,
@@ -59,6 +57,7 @@ export default function RoomDropdown(props: propsIF) {
         setFavoritePoolsArray,
         topPools,
     } = props;
+    const { favePools } = useContext(UserPreferenceContext);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);

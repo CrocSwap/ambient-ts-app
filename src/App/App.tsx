@@ -102,7 +102,6 @@ import {
 } from './functions/fetchTokenBalances';
 import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
-import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
@@ -165,19 +164,15 @@ import {
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
+import { useSlippage } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import {
     useChartSettings,
     chartSettingsMethodsIF,
 } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
-import {
-    useExchangePrefs,
-    dexBalanceMethodsIF,
-} from './hooks/useExchangePrefs';
-import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
+import { useExchangePrefs } from './hooks/useExchangePrefs';
+import { useSkipConfirm } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
@@ -188,6 +183,8 @@ import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
 import { diffHashSig } from '../utils/functions/diffHashSig';
+import { useFavePools } from './hooks/useFavePools';
+import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -222,43 +219,17 @@ export default function App() {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(
-        'wallet',
-        process.env.REACT_APP_WALLET_TOS_CID as string,
-    );
-    const chatToS: tosMethodsIF = useTermsOfService(
-        'chat',
-        process.env.REACT_APP_CHAT_TOS_CID as string,
-    );
-    // this line is just here to make the linter happy
-    // it should be removed when the chatToS line is moved
-    // please and thank you
-    false && chatToS;
-
-    // hooks to manage slippage in the app
-    const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
-    const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
-    const repoSlippage: SlippageMethodsIF = useSlippage(
-        'repo',
-        slippage.reposition,
-    );
+    // const walletToS: tosMethodsIF = useTermsOfService(
+    //     'wallet',
+    //     process.env.REACT_APP_WALLET_TOS_CID as string,
+    // );
+    // const chatToS: tosMethodsIF = useTermsOfService(
+    //     'chat',
+    //     process.env.REACT_APP_CHAT_TOS_CID as string,
+    // );
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
-
-    // hook to manage favorite pools in the app
-    const favePools: favePoolsMethodsIF = useFavePools();
-
-    // hook to manage exchange balance preferences
-    const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
-    const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
-    const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
-
-    // hooks to manage user preferences to skip confirmation modals
-    const bypassConfirmSwap: skipConfirmIF = useSkipConfirm('swap');
-    const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
-    const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
-    const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
 
     // hook to manage app skin
     const skin = useSkin('purple_dark');
@@ -268,6 +239,20 @@ export default function App() {
     const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
 
     const { address: account, isConnected } = useAccount();
+
+    const userPreferences = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap', slippage.swap),
+        mintSlippage: useSlippage('mint', slippage.mint),
+        repoSlippage: useSlippage('repo', slippage.reposition),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+    };
 
     useEffect(() => {
         if (account && checkBlacklist(account)) {
@@ -2865,7 +2850,6 @@ export default function App() {
         isUserLoggedIn: isUserLoggedIn,
         account: account,
         provider: provider,
-        swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
@@ -2898,17 +2882,6 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         chainData: chainData,
     };
@@ -2919,7 +2892,6 @@ export default function App() {
         isUserLoggedIn: isConnected,
         account: account,
         provider: provider,
-        swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
@@ -2954,17 +2926,6 @@ export default function App() {
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         chainData: chainData,
     };
@@ -2976,7 +2937,6 @@ export default function App() {
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
-        mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
@@ -3011,17 +2971,6 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
     };
 
@@ -3033,7 +2982,6 @@ export default function App() {
         account: account,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
-        mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         lastBlockNumber: lastBlockNumber,
         gasPriceInGwei: gasPriceInGwei,
@@ -3074,11 +3022,6 @@ export default function App() {
         openGlobalPopup: openGlobalPopup,
         isTutorialMode: isTutorialMode,
         setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
@@ -3090,12 +3033,6 @@ export default function App() {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainData: chainData,
@@ -3124,7 +3061,6 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
-        favePools: favePools,
         selectedOutsideTab: selectedOutsideTab,
         setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: outsideControl,
@@ -3357,7 +3293,6 @@ export default function App() {
         expandTradeTable,
         setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        favePools,
         selectedOutsideTab,
         setSelectedOutsideTab,
         outsideControl,
@@ -3397,18 +3332,8 @@ export default function App() {
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
         setChartTriggeredBy,
         chartTriggeredBy,
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
         isSidebarOpen: sidebar.isOpen,
     };
 
@@ -3460,16 +3385,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         mainnetProvider,
         setSimpleRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
         ackTokens,
         setExpandTradeTable,
         isSidebarOpen: sidebar.isOpen,
@@ -3487,7 +3402,6 @@ export default function App() {
         ambientApy,
         dailyVol,
         isDenomBase: tradeData.isDenomBase,
-        repoSlippage,
         isPairStable,
         setMaxPrice: setMaxRangePrice,
         setMinPrice: setMinRangePrice,
@@ -3495,12 +3409,6 @@ export default function App() {
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         openGlobalPopup,
     };
 
@@ -3511,7 +3419,6 @@ export default function App() {
         onClose: () => {
             console.error('Function not implemented.');
         },
-        favePools: favePools,
         currentPool: currentPoolInfo,
         setIsChatOpen: setIsChatOpen,
         isFullScreen: true,
@@ -3523,7 +3430,7 @@ export default function App() {
     };
 
     return (
-        <>
+        <UserPreferenceContext.Provider value={userPreferences}>
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
@@ -3704,22 +3611,7 @@ export default function App() {
                             />
                             <Route path='tos' element={<TermsOfService />} />
                             {IS_LOCAL_ENV && (
-                                <Route
-                                    path='testpage'
-                                    element={
-                                        <TestPage
-                                            openGlobalModal={openGlobalModal}
-                                            walletToS={walletToS}
-                                            chartSettings={chartSettings}
-                                            bypassConf={{
-                                                swap: bypassConfirmSwap,
-                                                limit: bypassConfirmLimit,
-                                                range: bypassConfirmRange,
-                                                repo: bypassConfirmRepo,
-                                            }}
-                                        />
-                                    }
-                                />
+                                <Route path='testpage' element={<TestPage />} />
                             )}
                             <Route
                                 path='/:address'
@@ -3745,7 +3637,6 @@ export default function App() {
                             onClose={() => {
                                 console.error('Function not implemented.');
                             }}
-                            favePools={favePools}
                             currentPool={currentPoolInfo}
                             setIsChatOpen={setIsChatOpen}
                             isFullScreen={false}
@@ -3775,6 +3666,6 @@ export default function App() {
             {isWagmiModalOpenWallet && (
                 <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
             )}
-        </>
+        </UserPreferenceContext.Provider>
     );
 }

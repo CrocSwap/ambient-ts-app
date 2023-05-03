@@ -1,7 +1,7 @@
 // START: Import Local Files
 import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -14,10 +14,10 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // import DividerDark from '../../../Global/DividerDark/DividerDark';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -55,7 +55,6 @@ interface IRepositionPriceInfoProps {
     newQuoteQtyDisplay: string;
     rangeGasPriceinDollars: string | undefined;
 
-    repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
 
     poolPriceDisplay: number | undefined;
@@ -91,13 +90,13 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         newQuoteQtyDisplay,
         rangeGasPriceinDollars,
 
-        repoSlippage,
-
         currentMinPrice,
         currentMaxPrice,
         openGlobalPopup,
         // isPairStable
     } = props;
+
+    const { repoSlippage } = useContext(UserPreferenceContext);
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;
