@@ -349,8 +349,6 @@ export default function Orders(props: propsIF) {
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    console.log(limitOrderData.length);
-
     const footerDisplay = (
         <div className={styles.footer}>
             {expandTradeTable && limitOrderData.length > 7 && (
