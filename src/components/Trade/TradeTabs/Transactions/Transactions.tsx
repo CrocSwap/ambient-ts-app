@@ -23,9 +23,6 @@ import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
-const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
-
 interface propsIF {
     isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
@@ -83,6 +80,9 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+
+    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+    // NOTE: this is done to improve rendering speed for this page.
 
     const dispatch = useAppDispatch();
 
@@ -227,8 +227,11 @@ export default function Transactions(props: propsIF) {
     const { height } = useWindowDimensions();
 
     const showColumnTransactionItems = showColumns
-        ? Math.round((height - 250) / 50)
-        : Math.round((height - 250) / 38);
+        ? Math.round(
+              (height - (isAccountView ? 400 : 250)) /
+                  (isAccountView ? 80 : 50),
+          )
+        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
     const transactionsPerPage = showColumnTransactionItems;
 
     useEffect(() => {
@@ -409,8 +412,6 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
-    console.log({ currentTransactions });
-
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
     const footerDisplay = (
         <div className={styles.footer}>
@@ -518,10 +519,7 @@ export default function Transactions(props: propsIF) {
             <ul ref={listRef}>
                 {expandTradeTable && largeScreenView
                     ? currentRowItemContent
-                    : currentRowItemContent.slice(
-                          0,
-                          NUM_TRANSACTIONS_WHEN_COLLAPSED,
-                      )}
+                    : currentRowItemContent}
             </ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
