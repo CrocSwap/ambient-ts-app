@@ -349,12 +349,14 @@ export default function Orders(props: propsIF) {
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
+    console.log(limitOrderData.length);
+
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedLimits.length > 30 && (
+            {expandTradeTable && limitOrderData.length > 18 && (
                 <Pagination
                     itemsPerPage={limitsPerPage}
-                    totalItems={sortedLimits.length}
+                    totalItems={limitOrderData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />

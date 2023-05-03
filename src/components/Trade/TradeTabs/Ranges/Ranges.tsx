@@ -313,13 +313,13 @@ export default function Ranges(props: propsIF) {
         setCurrentPage(pageNumber);
     };
     const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
+    console.log(rangeData.length);
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedPositions.length > 30 && (
+            {expandTradeTable && rangeData.length > 18 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
-                    totalItems={sortedPositions.length}
+                    totalItems={rangeData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
