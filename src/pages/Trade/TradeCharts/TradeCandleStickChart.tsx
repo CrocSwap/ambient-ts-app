@@ -247,7 +247,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 tvlChartData.push({
                     time: new Date(data.tvlData.time * 1000),
                     value: data.tvlData.tvl,
-                    linearValue: data.tvlData.tvl,
                 });
 
                 volumeChartData.push({
