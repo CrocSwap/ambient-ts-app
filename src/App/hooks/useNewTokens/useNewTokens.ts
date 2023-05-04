@@ -6,10 +6,33 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 export const useNewTokens = (): void => {
     const tokenListsLocalStorageKey = 'tokenLists';
 
-    function getTokenListsFromLS(): TokenListIF[] {
-        return JSON.parse(localStorage.getItem(tokenListsLocalStorageKey) as string);
+    // fn to retrieve and parse token lists from local storage
+    function getTokenListsFromLS(): TokenListIF[]|null {
+        // get entry from local storage
+        const entry: string|null = localStorage.getItem(tokenListsLocalStorageKey);
+        // declare an output variable
+        let output: TokenListIF[] | null;
+        // process data retrieved from local storage
+        // returns parsed data if persisted data was found
+        // returns `null` if no data was found or could not be parsed
+        // clears existing data if it could not be parsed
+        if (entry) {
+            try {
+                const data: TokenListIF[] = JSON.parse(entry);
+                output = data;
+            } catch {
+                console.warn('localStorage token lists corrupt, clearing data and re-fetching');
+                localStorage.removeItem(tokenListsLocalStorageKey);
+                output = null;
+            }
+        } else {
+            output = null;
+        }
+        // return output value
+        return output;
     }
 
+    // hook to memoize token lists in local storage
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
         getTokenListsFromLS() ?? []
     );
