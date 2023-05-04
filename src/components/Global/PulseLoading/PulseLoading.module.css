@@ -14,7 +14,7 @@
     background-size: cover;
 }
 .grow1 {
-    background-color: #7371fc;
+    background-color: var(--accent1);
     width: 200px;
     height: 200px;
     margin-top: -120px;
@@ -24,7 +24,7 @@
     opacity: 0.2;
 }
 .grow2 {
-    background-color: #7371fc;
+    background-color: var(--accent1);
     width: 140px;
     height: 140px;
     margin-top: -85px;
@@ -34,7 +34,7 @@
     opacity: 0.4;
 }
 .grow3 {
-    background-color: #7371fc;
+    background-color: var(--accent1);
     width: 70px;
     height: 70px;
     margin-top: -50px;

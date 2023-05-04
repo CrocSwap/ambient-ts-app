@@ -20,7 +20,7 @@
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .balance_with_pointer {
@@ -80,7 +80,7 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .wallet_logo {
@@ -135,7 +135,7 @@
 }
 
 .token_select:focus-visible {
-    border: 1px solid var(--text-grey-white);
+    border: 1px solid var(--text1);
 }
 .token_select:hover > .token_select svg {
     color: white;
@@ -150,7 +150,7 @@
     padding: 1px;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 
     width: 53px;
@@ -209,7 +209,7 @@
     background: var(--dark2);
 
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 1rem 0;
@@ -232,7 +232,7 @@
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-highlight);
+    color: var(--accent5);
     gap: 10px;
 }
 
@@ -240,7 +240,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     outline: none;
     border: none;
     background: transparent;
@@ -257,7 +257,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     outline: none;
     border: none;
     /* background: var(--dark3); */
@@ -278,10 +278,10 @@
 }
 
 .max_button:hover {
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
 }
 .max_dex_button:hover {
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
 }
 
 @keyframes shadow-pulse {

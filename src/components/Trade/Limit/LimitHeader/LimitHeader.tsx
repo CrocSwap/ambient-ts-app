@@ -17,23 +17,23 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { useContext } from 'react';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 // interface for component props
 interface propsIF {
     chainId: string;
-    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm } =
-        props;
+    const { isPairStable, openGlobalModal } = props;
+    const { mintSlippage, bypassConfirmLimit } = useContext(
+        UserPreferenceContext,
+    );
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -86,7 +86,7 @@ export default function LimitHeader(props: propsIF) {
                         slippage={mintSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.limit}
+                        bypassConfirm={bypassConfirmLimit}
                     />
                 </Modal>
             )}

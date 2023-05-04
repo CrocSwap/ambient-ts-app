@@ -11,7 +11,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     min-height: 33px;
@@ -28,7 +28,7 @@
 }
 
 .extra_info_content_active:focus-visible {
-    border: 1px solid var(--text-grey-white);
+    border: 1px solid var(--text1);
 }
 
 .gas_pump,
@@ -50,7 +50,7 @@
     margin: 5px;
     border-radius: var(--border-radius);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }

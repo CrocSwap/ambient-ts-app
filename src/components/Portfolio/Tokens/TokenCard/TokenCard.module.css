@@ -49,7 +49,7 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: #ebebff;
+    color: var(--text1);
 
     /* text-align: right; */
 }

@@ -10,7 +10,7 @@
     grid-template-columns: 100px auto;
     align-items: center;
     padding: 0.5rem 1rem;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .labels p:last-child {
     text-align: end;
@@ -23,7 +23,7 @@
     padding: 1rem 0;
 }
 .total_allocated p {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .extra_info {
@@ -78,5 +78,5 @@
     background: transparent;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

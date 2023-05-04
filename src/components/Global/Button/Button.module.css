@@ -21,44 +21,36 @@
 }
 
 .btn_gradient {
-    color: var(--text-highlight);
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    color: var(--accent5);
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    border: 1px solid var(--accent1);
 }
 .btn_flat {
     border: none;
-    background: var(--text-highlight-dark);
-    color: var(--text-grey-white);
+    background: var(--accent1);
+    color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .btn_gradient:hover, .btn_gradient:focus-visible {
-    color: var(--text-grey-white);
+    color: var(--text1);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
 
 .btn_flat:hover, .btn_flat:focus-visible {
-    color: var(--text-grey-white);
-    box-shadow: 4px 4px var(--text-highlight);
-    /* box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca */
+    color: var(--text1);
+    box-shadow: 4px 4px var(--accent5);
 }
 
 .disabled_btn {
     font-size: 18px;
     /* font-weight: 400; */
     line-height: 24px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     display: block;
 
@@ -76,6 +68,6 @@
 }
 
 .disabled_btn {
-    color: var(--text-grey-light);
+    color: var(--text2);
     pointer-events: none;
 }

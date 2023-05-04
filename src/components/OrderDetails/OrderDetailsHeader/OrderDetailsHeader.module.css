@@ -40,7 +40,7 @@
     font-size: 12px;
     line-height: 15px;
     font-family: var(--font-logo);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .settings_control div {
@@ -51,7 +51,7 @@
     cursor: pointer;
     outline: none;
     border: none;
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
     border-radius: var(--border-radius);
     width: 70px;
     height: 25px;

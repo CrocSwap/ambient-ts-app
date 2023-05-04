@@ -40,7 +40,7 @@
 }
 
 .title {
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-style: normal;
     font-weight: 200;
     font-size: 18px;
@@ -48,7 +48,7 @@
     letter-spacing: -0.02em;
 }
 .body {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-weight: 300;
     font-size: 12px;
     line-height: 15px;

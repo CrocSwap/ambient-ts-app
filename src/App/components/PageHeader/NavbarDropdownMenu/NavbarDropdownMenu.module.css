@@ -38,7 +38,7 @@
 
     cursor: pointer;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-family: var(--font-deca);
     font-weight: 300;
     font-size: 15px;
@@ -50,14 +50,6 @@
 }
 .topLevelContainer {
     transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
     background-position: 1% 50%;
     background-size: 400% 300%;
     text-decoration: none;
@@ -65,7 +57,8 @@
 }
 
 .topLevelContainer:hover, .topLevelContainer:focus-visible {
-    color: var(--text-grey-white);
+    color: var(--text1);
+    background: var(--title-gradient);
     background-position: 99% 50%;
 }
 
@@ -117,25 +110,18 @@
     border-radius: var(--border-radius);
     width: 100%;
     height: 30px;
-    color: var(--text-accent);
+    color: var(--accent5);
     border-radius: 0;
     transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    border: 1px solid var(--accent1);
 }
 
 .authenticate_button:hover, .authenticate_button:focus-visible {
-    color: var(--text-grey-white);
+    color: var(--text1);
     border: 1px solid rgba(223, 190, 106, 0);
     color: white;
     background-position: 99% 50%;

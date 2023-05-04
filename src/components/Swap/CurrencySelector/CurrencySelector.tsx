@@ -9,6 +9,7 @@ import {
     Dispatch,
     SetStateAction,
     useEffect,
+    useContext,
 } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -21,11 +22,11 @@ import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -86,7 +87,6 @@ interface propsIF {
         popupPlacement?: string,
     ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
@@ -131,12 +131,13 @@ export default function CurrencySelector(props: propsIF) {
         setInput,
         searchType,
         openGlobalPopup,
-        dexBalancePrefs,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
     } = props;
+
+    const { dexBalSwap } = useContext(UserPreferenceContext);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
@@ -231,7 +232,7 @@ export default function CurrencySelector(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault(true);
             }
         } else {
-            dexBalancePrefs.swap.outputToDexBal.disable();
+            dexBalSwap.outputToDexBal.disable();
             setIsSaveAsDexSurplusChecked(false);
         }
     }
@@ -377,7 +378,7 @@ export default function CurrencySelector(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault(false);
             }
         } else {
-            dexBalancePrefs.swap.outputToDexBal.enable();
+            dexBalSwap.outputToDexBal.enable();
             setIsSaveAsDexSurplusChecked(true);
         }
     }

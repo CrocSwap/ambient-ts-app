@@ -21,7 +21,7 @@
 
 .header_container svg {
     cursor: pointer;
-    color: var(--text-grey-light);
+    color: var(--text2);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +36,7 @@
 text-align: center; */
     letter-spacing: -0.02em;
 
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .slippage_tolerance_container {
@@ -56,13 +56,13 @@ text-align: center; */
     width: fit-content;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     margin-bottom: 0.2em;
 }
 .slippage_box {
     background-color: var(--dark2);
     border-radius: 4px;
-    /* border: 1px solid var(--text-grey-dark); */
+    /* border: 1px solid var(--text3); */
     padding: 0.5rem;
 }
 .slippage_content {
@@ -101,18 +101,18 @@ text-align: center; */
     min-width: 3.5rem;
 
     margin-right: 8px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
     border-radius: 50px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     padding: 0.5rem 1rem;
 
     /* border: solid 1px transparent;
     background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark2) inset;
@@ -122,5 +122,5 @@ text-align: center; */
 .slippage_content button:hover {
     box-shadow: none;
     cursor: pointer;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

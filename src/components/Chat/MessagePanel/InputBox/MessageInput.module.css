@@ -27,7 +27,7 @@
     width: 100%;
 
     /* dark/tertiary */
-    background: #171d27;
+    background: var(--dark2);
     border-radius: 4px;
 
     /* Inside auto layout */
@@ -61,7 +61,7 @@
     gap: 4px;
     width: 97%;
     height: 25px;
-    background: #242f3f;
+    background: var(--dark3);
     border-radius: 4px;
     flex: none;
     flex-grow: 0;
@@ -78,7 +78,7 @@
     gap: 4px;
     width: 97%;
     height: 25px;
-    background: #242f3f;
+    background: var(--dark3);
     border-radius: 4px;
     flex: none;
     flex-grow: 0;
@@ -124,7 +124,7 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: #ebebff;
+    color: var(--text1);
     background-color: transparent;
 
     /* Inside auto layout */
@@ -155,7 +155,7 @@
 }
 
 .svgButton:hover {
-    fill: #7371fc;
+    fill: var(--accent1);
 }
 
 .input_text_mention {
@@ -174,7 +174,7 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: #7371fc;
+    color: var(--accent1);
     background-color: transparent;
 
     /* Inside auto layout */
@@ -225,7 +225,7 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: #7371fc;
+    color: var(--accent1);
     background-color: transparent;
 
     /* Inside auto layout */

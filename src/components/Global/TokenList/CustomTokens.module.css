@@ -17,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #f6385b;
+    color: var(--negative);
     font-style: italic;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -32,7 +32,7 @@
     text-align: center;
     bottom: 0;
     padding: 1rem 0;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -47,7 +47,7 @@
     background: var(--dark2);
 
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 0.6rem 0;
@@ -105,28 +105,21 @@
     background: transparent;
     padding: 2px 14px;
 
-    color: #cdc1ff;
+    color: var(--accent5);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    border: 1px solid var(--accent1);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
 
 .token_result button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
@@ -156,7 +149,7 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: #ebebff;
+    color: var(--text1);
 }
 .action_menu {
     display: flex;
@@ -166,10 +159,10 @@
 }
 
 .action_menu svg {
-    color: #555555;
+    color: var(--text3);
 
-    color: #bdbdbd;
+    color: var(--text2);
 }
 .action_menu svg:hover {
-    color: #ffffff;
+    color: white;
 }
