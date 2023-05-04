@@ -60,39 +60,26 @@ export default function CurrencyQuantity(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // clear the previous timeout if it exists
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        if (event && fieldId === 'sell') {
+        if (timeoutId) clearTimeout(timeoutId);
+
+        const { value } = event.target;
+        const inputValue = value.startsWith('.') ? '0' + value : value;
+
+        if (fieldId === 'sell') {
             setIsBuyLoading(true);
             setBuyQtyString('');
-            const valueWithLeadingZero = event.target.value.startsWith('.')
-                ? '0' + event.target.value
-                : event.target.value;
-            setSellQtyString(valueWithLeadingZero);
+            setSellQtyString(inputValue);
 
-            timeoutId = setTimeout(() => {
-                setIsBuyLoading(false);
-            }, 1000);
-        } else if (event && fieldId === 'buy') {
+            timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
+        } else if (fieldId === 'buy') {
             setIsSellLoading(true);
             setSellQtyString('');
-            const valueWithLeadingZero = event.target.value.startsWith('.')
-                ? '0' + event.target.value
-                : event.target.value;
-            setBuyQtyString(valueWithLeadingZero);
-            timeoutId = setTimeout(() => {
-                setIsSellLoading(false);
-            }, 1000);
+            setBuyQtyString(inputValue);
+
+            timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
         }
 
-        const input = event.target.value.startsWith('.')
-            ? '0' + event.target.value
-            : event.target.value;
-
-        setDisplayValue(input);
-
+        setDisplayValue(inputValue);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };

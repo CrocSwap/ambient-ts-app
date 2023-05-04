@@ -41,6 +41,8 @@
     background-repeat: no-repeat;
     background: var(--title-gradient);
     background: var(--shimmer);
+    background:  linear-gradient(to right, #141e30, #7371FC,  var(--dark2));
+
     z-index: 2;
     animation: shimmer 1.5s infinite;
 }
