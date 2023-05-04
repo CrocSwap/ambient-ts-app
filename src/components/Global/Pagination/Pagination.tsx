@@ -63,14 +63,9 @@ export default function Pagination(props: PaginationPropsIF) {
         }
     }
 
-    const memoizedHandleUpdatePageShow = useMemo(
-        () => handleUpdatePageShow,
-        [currentPage, itemsPerPage, totalItems],
-    );
-
     useEffect(() => {
-        memoizedHandleUpdatePageShow();
-    }, [currentPage, itemsPerPage, totalItems, memoizedHandleUpdatePageShow]);
+        handleUpdatePageShow();
+    }, [currentPage, itemsPerPage, totalItems]);
 
     const detailPageRendered = ` showing ${start} - ${end} of ${totalItems} `;
 
