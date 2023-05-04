@@ -93,7 +93,7 @@
 
 .actions_container button:first-of-type {
     color: var(--accent5);
-    background: var(--title-gradient);
+    /* background: var(--title-gradient); */
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
@@ -102,7 +102,9 @@
 .actions_container button:first-of-type:hover,
 .actions_container button:first-of-type:focus-visible {
     color: var(--text1);
-    border: 1px solid rgba(223, 190, 106, 0);
+    border: 1px solid var(--accent1);
+
+    /* border: 1px solid rgba(223, 190, 106, 0); */
     background-position: 99% 50%;
 }
 .actions_container a:hover,
