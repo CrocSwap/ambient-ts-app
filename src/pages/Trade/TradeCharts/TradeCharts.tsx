@@ -99,37 +99,6 @@ interface propsIF {
     chartTriggeredBy: string;
 }
 
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
-
-export interface TvlChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-}
-
-export interface VolumeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-    volume: number;
-    color: string;
-}
-export interface FeeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-}
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeLiq: any;
@@ -443,9 +412,7 @@ export default function TradeCharts(props: propsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<
-        CandleChartData | undefined
-    >();
+    const [currentData, setCurrentData] = useState<CandleData | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();

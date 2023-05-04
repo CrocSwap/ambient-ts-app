@@ -2,11 +2,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { FeeChartData } from '../TradeCharts';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 interface FreeRateData {
-    feeData: FeeChartData[] | undefined;
+    feeData: Array<CandleData>;
     period: number | undefined;
     subChartValues: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
@@ -112,7 +112,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .scaleExtent([1, 10])
                 .on('start', () => {
                     if (date === undefined) {
-                        date = feeData[feeData.length - 1].time;
+                        date = new Date(
+                            feeData[feeData.length - 1].time * 1000,
+                        );
                     }
                 })
                 .on('zoom', (event: any) => {
@@ -147,8 +149,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .seriesCanvasLine()
                 .xScale(xScale)
                 .yScale(feeRateyScale)
-                .mainValue((d: any) => d.value)
-                .crossValue((d: any) => d.time)
+                .mainValue((d: any) => d.averageLiquidityFee)
+                .crossValue((d: any) => new Date(d.time * 1000))
                 .decorate((selection: any) => {
                     selection.strokeStyle = '#7371FC';
                     selection.strokeWidth = 1;
