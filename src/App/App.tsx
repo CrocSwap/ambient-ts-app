@@ -1427,7 +1427,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                n: '50',
+                                n: '200',
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                             }),
