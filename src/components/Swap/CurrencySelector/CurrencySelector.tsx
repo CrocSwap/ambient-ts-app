@@ -97,7 +97,6 @@ interface propsIF {
 export default function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
-        disableReverseTokens,
         provider,
         sellQtyString,
         setSellQtyString,
@@ -250,7 +249,6 @@ export default function CurrencySelector(props: propsIF) {
         if (
             handleChangeClick &&
             balanceNonLocaleString &&
-            !disableReverseTokens &&
             userClickedCombinedMax
         ) {
             handleChangeClick(balanceNonLocaleString);
@@ -264,7 +262,6 @@ export default function CurrencySelector(props: propsIF) {
         isWithdrawFromDexChecked,
         userClickedCombinedMax,
         balanceNonLocaleString,
-        disableReverseTokens,
     ]);
 
     const maxButtonTitle = (

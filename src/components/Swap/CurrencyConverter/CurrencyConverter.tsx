@@ -369,7 +369,6 @@ export default function CurrencyConverter(props: propsIF) {
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
-        isWithdrawFromDexChecked,
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
@@ -487,6 +486,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
+                console.log({ rawTokenBQty });
                 setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
