@@ -17,11 +17,7 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 .pool_card:hover, .pool_card:focus-visible {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
+    box-shadow: var(--glow-light-box-shadow);
 }
 
 .row {
