@@ -38,7 +38,7 @@ export default function CurrencyQuantity(props: propsIF) {
         setIsSellLoading,
         isLoading,
     } = props;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    // let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -60,23 +60,27 @@ export default function CurrencyQuantity(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        if (timeoutId) clearTimeout(timeoutId);
+        // if (timeoutId) clearTimeout(timeoutId);
 
         const { value } = event.target;
         const inputValue = value.startsWith('.') ? '0' + value : value;
 
         if (fieldId === 'sell') {
-            setIsBuyLoading(true);
             setBuyQtyString('');
-            setSellQtyString(inputValue);
+            if (inputValue) {
+                setIsBuyLoading(true);
+                setSellQtyString(inputValue);
+            }
 
-            timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
+            // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
         } else if (fieldId === 'buy') {
-            setIsSellLoading(true);
             setSellQtyString('');
-            setBuyQtyString(inputValue);
+            if (inputValue) {
+                setIsSellLoading(true);
+                setBuyQtyString(inputValue);
+            }
 
-            timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
+            // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
         }
 
         setDisplayValue(inputValue);

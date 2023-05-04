@@ -316,6 +316,10 @@ export default function CurrencyConverter(props: propsIF) {
             setDisableReverseTokens(true);
             setSwitchBoxes(!switchBoxes);
 
+            isTokenAPrimaryLocal
+                ? setIsSellLoading(true)
+                : setIsBuyLoading(true);
+
             setTokenALocal(tokenBLocal);
             setTokenBLocal(tokenALocal);
             setTokenASymbolLocal(tokenBSymbolLocal);
@@ -480,6 +484,10 @@ export default function CurrencyConverter(props: propsIF) {
 
                 setPriceImpact(impact);
 
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
+
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
             } catch (error) {
@@ -526,6 +534,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -579,6 +590,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -609,6 +623,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -676,6 +693,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -724,6 +744,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
                 setIsLiquidityInsufficient(false);
