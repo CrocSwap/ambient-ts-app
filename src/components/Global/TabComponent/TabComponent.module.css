@@ -57,7 +57,7 @@
     position: relative;
     user-select: none;
     list-style: none;
-    color: #a8a5a5;
+    color: var(--text2);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -72,7 +72,7 @@
 .tab_ul li.selected,
 .menu_content li.selected,
 .tab_ul_left li.selected {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 .tab_ul_left li {
@@ -86,7 +86,7 @@
 .tab_ul li:hover,
 .tab_ul_left li:hover,
 .menu_content li:hover, .selected {
-    color: #7371fc;
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -98,11 +98,11 @@
 
 
 .selected button{
-    color: var(--text-highlight-dark)
+    color: var(--accent1)
 }
 
 .non_selected button{
-    color: var(--text-grey-light);
+    color: var(--text2);
     opacity: 0.5;
 }
 
@@ -112,7 +112,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #7371fc;
+    background: var(--accent1);
 }
 .tab_with_option_container {
     display: flex;
@@ -138,7 +138,7 @@
 }
 
 .item_label:focus-visible{
-    border-bottom: 1px solid var(--text-grey-white);
+    border-bottom: 1px solid var(--text1);
 }
 
 @media (min-width: 500px) {
@@ -154,7 +154,7 @@
     }
 
     .selected{
-        color: #7371fc;
+        color: var(--accent1);
     }
 
     .tab_icon {

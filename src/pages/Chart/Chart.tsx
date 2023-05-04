@@ -3668,7 +3668,7 @@ export default function Chart(props: propsIF) {
                     location.pathname.includes('reposition')
                         ? 'visible'
                         : 'hidden';
-                context.strokeStyle = 'var(--accent-secondary)';
+                context.strokeStyle = 'var(--accent2)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 3;
             });

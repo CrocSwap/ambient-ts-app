@@ -12,11 +12,11 @@
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .title:focus-visible{
     text-decoration: underline;
-    text-decoration-color:var(--text-grey-white) ;
+    text-decoration-color:var(--text1) ;
     border: none;
     outline: none;
     }
@@ -54,7 +54,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -65,14 +65,14 @@
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .value {
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-family: var(--mono);
 }
 

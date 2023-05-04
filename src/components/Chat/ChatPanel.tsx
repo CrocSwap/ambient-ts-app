@@ -15,7 +15,6 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
-import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import NotFound from '../../pages/NotFound/NotFound';
 import { topPoolIF } from '../../App/hooks/useTopPools';
 import ExpandChatIcon from '../../assets/images/icons/expand.svg';
@@ -42,7 +41,6 @@ interface propsIF {
     isChatOpen: boolean;
     setIsChatOpen: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
-    favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     fullScreen?: boolean;
@@ -59,7 +57,6 @@ export default function ChatPanel(props: propsIF) {
         isChatEnabled,
         areSubscriptionsEnabled,
         isFullScreen,
-        favePools,
         currentPool,
         setIsChatOpen,
         topPools,
@@ -493,7 +490,6 @@ export default function ChatPanel(props: propsIF) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                favePools={favePools}
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
@@ -515,7 +511,6 @@ export default function ChatPanel(props: propsIF) {
                     {header}
 
                     <Room
-                        favePools={favePools}
                         selectedRoom={room}
                         setRoom={setRoom}
                         currentPool={currentPool}

@@ -37,7 +37,6 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
@@ -64,7 +63,6 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    favePools: favePoolsMethodsIF;
     selectedOutsideTab: number;
     outsideControl: boolean;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -95,7 +93,6 @@ export default function Sidebar(props: propsIF) {
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
-        favePools,
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
@@ -215,7 +212,6 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <FavoritePools
-                    favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
@@ -369,7 +365,7 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
+            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
             {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
         </button>
     );
@@ -382,8 +378,7 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {'Collapse All'}
+            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
         </button>
     );
 

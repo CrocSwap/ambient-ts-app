@@ -28,11 +28,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     } = props;
     // const [openSnackbar, setOpenSnackbar] = useState(false);
     const phIcon = (
-        <FiCopy
-            size={25}
-            color='var(--text-grey-dark)'
-            style={{ opacity: '0' }}
-        />
+        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
 
     // const [value, copy] = useCopyToClipboard();
@@ -49,7 +45,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
             placement='bottom'
         >
             <div onClick={handleCopyPositionId}>
-                <FiCopy size={25} color='var(--text-grey-dark)' />
+                <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -57,7 +53,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     // const downloadIconWithTooltip = (
     //     <IconWithTooltip title='Download shareable image' placement='bottom'>
     //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text-grey-dark)' />
+    //             <FiDownload size={25} color='var(--text3)' />
     //         </div>
     //     </IconWithTooltip>
     // );
@@ -90,7 +86,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
 
                 {/* {showShareComponent ? (
                     <div onClick={handleCopyAddress}>
-                        <FiCopy size={25} color='var(--text-grey-dark)' />
+                        <FiCopy size={25} color='var(--text3)' />
                     </div>
                 ) : (
                     phIcon
@@ -100,7 +96,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
                 {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
 
                 <div onClick={onClose}>
-                    <CgClose size={28} color='var(--text-grey-dark)' />
+                    <CgClose size={28} color='var(--text3)' />
                 </div>
             </section>
         </div>

@@ -2,7 +2,7 @@
 import Modal from '../../../components/Global/Modal/Modal';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 // START: Import Local Files
 import styles from './SwapHeader.module.css';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -15,28 +15,22 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 // interface for props
 interface propsIF {
-    swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
     shareOptionsDisplay: JSX.Element;
 }
 
 // main react functional component
 export default function SwapHeader(props: propsIF) {
-    const {
-        swapSlippage,
-        isPairStable,
-        isOnTradeRoute,
-        openGlobalModal,
-        bypassConfirm,
-    } = props;
+    const { isPairStable, isOnTradeRoute, openGlobalModal } = props;
+    const { swapSlippage, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -145,11 +139,11 @@ export default function SwapHeader(props: propsIF) {
                     centeredTitle
                 >
                     <TransactionSettings
-                        module={isOnTradeRoute ? 'Market Order' : 'Swap'}
+                        module={'Swap'}
                         slippage={swapSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.swap}
+                        bypassConfirm={bypassConfirmSwap}
                     />
                 </Modal>
             )}
