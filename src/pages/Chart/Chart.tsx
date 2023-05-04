@@ -1234,6 +1234,10 @@ export default function Chart(props: propsIF) {
                     const lastCandleTime =
                         parsedChartData.chartData[lastXIndex].date.getTime();
 
+                    const firstCandleTime =
+                        parsedChartData.chartData[
+                            parsedChartData?.chartData.length - 1
+                        ].date.getTime();
                     const lastTime = domainX[1].getTime();
 
                     const firstTime = domainX[0].getTime();
@@ -1308,10 +1312,24 @@ export default function Chart(props: propsIF) {
                                             event.sourceEvent.offsetX,
                                         );
                                     } else {
-                                        scaleData?.xScale.domain([
-                                            newBoundary,
-                                            lastTime,
-                                        ]);
+                                        if (deltaX > 0) {
+                                            scaleData?.xScale.domain([
+                                                newBoundary,
+                                                lastTime,
+                                            ]);
+                                        } else {
+                                            if (firstCandleTime < lastTime) {
+                                                scaleData?.xScale.domain([
+                                                    firstTime - deltaX * 1.3,
+                                                    lastTime,
+                                                ]);
+                                            } else {
+                                                scaleData?.xScale.domain([
+                                                    firstTime,
+                                                    new Date(lastTime - deltaX),
+                                                ]);
+                                            }
+                                        }
                                     }
                                 }
                             } else {
