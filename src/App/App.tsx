@@ -565,7 +565,12 @@ export default function App() {
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
+    }, [
+        // signerStatus === 'success',
+        crocEnv === undefined,
+        chainData.chainId,
+        signer,
+    ]);
 
     useEffect(() => {
         if (provider) {
