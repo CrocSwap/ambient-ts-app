@@ -13,19 +13,20 @@ export const useNewTokens = (): void => {
         // declare an output variable
         let output: TokenListIF[] | null;
         // process data retrieved from local storage
-        // returns parsed data if persisted data was found
-        // returns `null` if no data was found or could not be parsed
-        // clears existing data if it could not be parsed
         if (entry) {
             try {
+                // parse data from local storage and assign to output variable
                 const data: TokenListIF[] = JSON.parse(entry);
                 output = data;
             } catch {
+                // clear data from local storage and warn user if unable to parse
+                // assign `null` value to output variable
                 console.warn('localStorage token lists corrupt, clearing data and re-fetching');
                 localStorage.removeItem(tokenListsLocalStorageKey);
                 output = null;
             }
         } else {
+            // assign `null` to output variable if no persisted data was found
             output = null;
         }
         // return output value
