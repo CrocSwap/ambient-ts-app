@@ -39,11 +39,11 @@
     justify-content: center;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #71b5fc;
+    color: var(--accent4);
     cursor: pointer;
 }
 .view_more:hover {
-    color: #7371fc;
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
 }
 

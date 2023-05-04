@@ -327,8 +327,12 @@ export default function Orders(props: propsIF) {
     // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
     // 30 => Height of each paginated row item
 
-    const regularOrdersItems = Math.round((height - 250) / 30);
-    const showColumnOrdersItems = Math.round((height - 250) / 50);
+    const regularOrdersItems = Math.round(
+        (height - (isAccountView ? 400 : 250)) / 30,
+    );
+    const showColumnOrdersItems = Math.round(
+        (height - (isAccountView ? 400 : 250)) / 50,
+    );
     const limitsPerPage = showColumns
         ? showColumnOrdersItems
         : regularOrdersItems;
@@ -347,14 +351,16 @@ export default function Orders(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
+
+    const tradePageCheck = expandTradeTable && limitOrderData.length > 30;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedLimits.length > 30 && (
+            {((isAccountView && limitOrderData.length > 7) ||
+                (!isAccountView && tradePageCheck)) && (
                 <Pagination
                     itemsPerPage={limitsPerPage}
-                    totalItems={sortedLimits.length}
+                    totalItems={limitOrderData.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
@@ -466,14 +472,7 @@ export default function Orders(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : isAccountView
-                    ? // NOTE: the account view of this content should not be paginated
-                      sortedRowItemContent
-                    : sortedRowItemContent.slice(0, NUM_RANGES_WHEN_COLLAPSED)}
-            </ul>
+            <ul ref={listRef}>{currentRowItemContent}</ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK

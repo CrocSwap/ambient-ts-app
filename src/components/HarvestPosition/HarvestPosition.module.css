@@ -6,6 +6,7 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem;
+    background: var(--dark1);
 }
 
 .remove_range_container {
@@ -46,6 +47,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background: var(--dark1);
 
     /* align-items: center; */
 }

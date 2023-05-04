@@ -12,13 +12,7 @@
 .result {
     width: 100%;
     height: 20px;
-    background: var(--title-gradient);
-    background: linear-gradient(
-        90deg,
-        #1c1c41 0%,
-        #645e7e 49.48%,
-        #19193b 100%
-    );
+    background: var(--dark-gradient);
 }
 
 .container div {

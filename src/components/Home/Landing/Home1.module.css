@@ -1,5 +1,5 @@
 .slide_container {
-    background: linear-gradient(180deg, rgba(13, 17, 23, 0) 0%, #0d1117 88.54%);
+    background: linear-gradient(180deg, rgba(13, 17, 23, 0) 0%, var(--dark1) 88.54%);
     /* background: darkblue; */
     border-bottom: 1px solid var(--border);
     padding-bottom: 1rem;
@@ -19,7 +19,7 @@
 .content_container h1,
 .faster_section h1 {
     font-family: var(--font-logo);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
     font-size: 34px;
     line-height: 50px;
@@ -54,7 +54,7 @@ height: 420px;
 
 .row_container h2 {
     font-family: var(--font-logo);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
     font-size: 30px;
     line-height: 38px;
@@ -64,7 +64,7 @@ height: 420px;
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 @media only screen and (min-width: 768px) {

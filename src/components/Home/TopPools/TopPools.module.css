@@ -11,12 +11,12 @@
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .title:focus-visible{
 text-decoration: underline;
-text-decoration-color:var(--text-grey-white) ;
+text-decoration-color:var(--text1) ;
 border: none;
 outline: none;
 }

@@ -15,7 +15,7 @@
 
     /* dark/secondary */
 
-    background: #171d27;
+    background: var(--dark2);
     /* glow/standard */
 
     box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),

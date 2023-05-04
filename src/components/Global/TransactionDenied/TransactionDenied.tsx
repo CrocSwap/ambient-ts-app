@@ -25,10 +25,7 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
                 {!noAnimation && <CircleLoaderFailed size='8rem' />}
                 <h2>Transaction Denied in Wallet</h2>
             </div>
-            <p>
-                Please check your wallet for notifications, or click &quot;Try
-                Again&quot;.
-            </p>
+            <p>Please check your wallet for notifications or try again.</p>
             <Button
                 title='Try Again'
                 action={() => {

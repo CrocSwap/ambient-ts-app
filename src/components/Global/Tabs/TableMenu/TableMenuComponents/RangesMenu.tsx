@@ -24,10 +24,8 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
 } from '../../../../../utils/state/tradeDataSlice';
-import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
-import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 // interface for React functional component props
 interface propsIF {
@@ -48,8 +46,6 @@ interface propsIF {
     showHighlightedButton: boolean;
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
@@ -72,8 +68,6 @@ export default function RangesMenu(props: propsIF) {
         position,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         isPositionInRange,
         gasPriceInGwei,
         ethMainnetUsdPrice,
@@ -322,8 +316,6 @@ export default function RangesMenu(props: propsIF) {
                     <HarvestPosition
                         handleModalClose={handleModalClose}
                         position={position}
-                        dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
@@ -339,8 +331,6 @@ export default function RangesMenu(props: propsIF) {
                     <RemoveRange
                         position={position}
                         handleModalClose={handleModalClose}
-                        dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}

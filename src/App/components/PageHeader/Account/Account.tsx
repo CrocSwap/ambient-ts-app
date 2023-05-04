@@ -13,6 +13,7 @@ import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/Styl
 import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -51,6 +52,10 @@ export default function Account(props: AccountPropsIF) {
     } = props;
 
     const { connector, isConnected } = useAccount();
+
+    const ensOrAddressTruncated = useAppSelector(
+        (state) => state.userData.ensOrAddressTruncated,
+    );
 
     const isUserLoggedIn = isConnected;
 
@@ -139,10 +144,8 @@ export default function Account(props: AccountPropsIF) {
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
                 aria-label={ariaLabel}
             >
-                <MdAccountBalanceWallet color='var(--text-grey-white)' />
-                <p className={styles.wallet_name}>
-                    {ensName !== '' ? ensName : props.accountAddress}
-                </p>
+                <MdAccountBalanceWallet color='var(--text1)' />
+                <p className={styles.wallet_name}>{ensOrAddressTruncated}</p>
             </button>
             {showWalletDropdown ? (
                 <WalletDropdown

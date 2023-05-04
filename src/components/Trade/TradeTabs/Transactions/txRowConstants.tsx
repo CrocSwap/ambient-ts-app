@@ -168,7 +168,7 @@ export const txRowConstants = (props: Props) => {
                     style={{
                         marginRight: '-80px',
                         background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
+                        color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'default',
@@ -323,7 +323,7 @@ export const txRowConstants = (props: Props) => {
                     style={{
                         marginLeft: '-70px',
                         background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
+                        color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',

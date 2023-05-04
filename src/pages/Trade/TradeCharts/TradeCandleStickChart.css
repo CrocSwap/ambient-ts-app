@@ -9,35 +9,35 @@
 .main_layout {
     transition: all 600ms ease-in-out;
     width: 100%;
-    color: #bdbdbd;
+    color: var(--text2);
 }
 
 .domain,
 .tick > path,
 .gridline-y,
 .gridline-x {
-    stroke: #bdbdbd;
+    stroke: var(--text2);
     stroke-opacity: 0.1;
 }
 
 .candlestick .down {
-    background-color: #7371fc;
+    background-color: var(--accent1);
 }
 
 hr {
     display: block;
     height: 0.5px;
     border: 0;
-    border-top: 0.5px solid #242f3f;
+    border-top: 0.5px solid var(--dark3);
 }
 
 .img_shimmer {
     display: inline-block;
     -webkit-mask: linear-gradient(
             -60deg,
-            #000 30%,
+            black 30%,
             rgba(119, 117, 117, 0.333),
-            #000 70%
+            black 70%
         )
         right/300% 100%;
     background-repeat: no-repeat;
@@ -91,7 +91,7 @@ background-size: cover; */
     position: absolute;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .animatedImg_container img {
     object-fit: cover;

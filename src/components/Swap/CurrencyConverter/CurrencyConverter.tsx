@@ -25,7 +25,6 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 
@@ -82,7 +81,6 @@ interface propsIF {
         popupPlacement?: string,
     ) => void;
     lastBlockNumber: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
@@ -130,7 +128,6 @@ export default function CurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         openGlobalPopup,
-        dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
     } = props;
@@ -808,7 +805,6 @@ export default function CurrencyConverter(props: propsIF) {
                 searchType={searchType}
                 openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
-                dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
@@ -874,7 +870,6 @@ export default function CurrencyConverter(props: propsIF) {
                     searchType={searchType}
                     openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault

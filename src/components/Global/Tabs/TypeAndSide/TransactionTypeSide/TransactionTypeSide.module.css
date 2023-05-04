@@ -10,19 +10,19 @@
 
 .remove_style,
 .range_style {
-    color: #5fa2ff;
+    color: var(--accent4);
 }
 .buy_style,
 .market_style {
-    color: #7371fc;
+    color: var(--accent1);
 }
 .add_style,
 .range_style2 {
-    color: #5ffff2;
+    color: var(--accent3);
 }
 .sell_style,
 .limit_style {
-    color: #e480ff;
+    color: var(--accent2);
 }
 .add_style,
 .range_style,

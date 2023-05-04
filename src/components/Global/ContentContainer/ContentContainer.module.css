@@ -11,11 +11,11 @@
     position: relative;
     /* margin-top: 50px; */
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     border-radius: var(--border-radius);
 
     background-color: var(--dark1);
-    background: linear-gradient(to right, #4a489e, #56516b, #2e2d67);
+    background: var(--dark-gradient);
     /* background-size: 400% 400%;
 	animation: gradient 15s ease infinite; */
     /* box-shadow: 0px 0px 78px 4px rgba(4, 27, 49, 0.73); */
@@ -119,7 +119,7 @@
       pointer-events: none;
       z-index: -2;
 
-      background: linear-gradient(to right, #7371FC, #CDC1FF, #7371FC);
+      background: var(--title-gradient);
       background-size: 400% 400%;
     animation: gradient 10s ease infinite;
 

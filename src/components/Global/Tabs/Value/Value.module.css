@@ -16,7 +16,7 @@
 
     font-size: 12px;
     line-height: 12px;
-    color: #5ffff2;
+    color: var(--accent3);
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */

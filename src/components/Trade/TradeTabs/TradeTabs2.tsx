@@ -36,9 +36,6 @@ import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
@@ -87,7 +84,6 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    favePools: favePoolsMethodsIF;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
     isPoolPriceChangePositive: boolean;
@@ -96,8 +92,6 @@ interface propsIF {
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
@@ -146,7 +140,6 @@ export default function TradeTabs2(props: propsIF) {
         setHasInitialized,
         unselectCandle,
         tokenList,
-        favePools,
         poolPriceDisplay,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
@@ -154,8 +147,6 @@ export default function TradeTabs2(props: propsIF) {
         isCandleArrived,
         setIsCandleDataArrived,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         candleTime,
@@ -418,8 +409,6 @@ export default function TradeTabs2(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
@@ -505,7 +494,6 @@ export default function TradeTabs2(props: propsIF) {
     const TradeChartsTokenInfoProps = {
         chainId: chainId,
         poolId: chainData.poolIndex,
-        favePools: favePools,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,

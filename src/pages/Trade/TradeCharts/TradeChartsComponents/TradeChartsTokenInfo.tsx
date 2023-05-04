@@ -8,22 +8,21 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
-    favePools: favePoolsMethodsIF;
     chainId: string;
     simplifyVersion?: boolean;
     chainData: ChainSpec;
@@ -34,7 +33,6 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         isPoolPriceChangePositive,
         poolPriceDisplay,
         poolPriceChangePercent,
-        favePools,
         chainId,
         simplifyVersion,
         chainData,
@@ -42,6 +40,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const { tradeData } = useAppSelector((state) => state);
+    const { favePools } = useContext(UserPreferenceContext);
 
     const denomInBase = tradeData.isDenomBase;
 

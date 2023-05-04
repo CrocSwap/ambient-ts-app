@@ -13,7 +13,7 @@
 
 .header_container svg {
     cursor: pointer;
-    color: var(--text-grey-light);
+    color: var(--text2);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,7 +28,7 @@
 text-align: center; */
     letter-spacing: -0.02em;
 
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .align_center {

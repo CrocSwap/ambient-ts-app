@@ -42,7 +42,7 @@
 }
 
 .icon_button svg {
-    fill: var(--text-grey-white);
+    fill: var(--text1);
     width: 20px;
     height: 20px;
 }
