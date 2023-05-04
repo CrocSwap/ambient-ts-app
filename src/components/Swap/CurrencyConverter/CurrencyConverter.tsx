@@ -353,7 +353,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-    }, [tokenAQtyLocal, buyQtyString]);
+    }, [tokenAQtyLocal, buyQtyString, isWithdrawFromDexChecked]);
 
     useEffect(() => {
         handleBlockUpdate();
