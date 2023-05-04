@@ -172,7 +172,7 @@
     transition: background 0.5s ease-out;
 }
 
-.leaderboard > ul:nth-child(3) {
+.leaderboard > ul:nth-child(4) {
     background: linear-gradient(
         90deg,
         rgba(224, 224, 224, 0.35) 0%,
@@ -181,7 +181,7 @@
     );
     transition: background 0.5s ease-out;
 }
-.leaderboard > ul:nth-child(4) {
+.leaderboard > ul:nth-child(6) {
     background: linear-gradient(
         90deg,
         rgba(176, 141, 87, 0.35) 0%,
