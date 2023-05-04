@@ -29,6 +29,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
@@ -80,11 +81,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
@@ -121,12 +117,14 @@ export default function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
     const { dexBalLimit } = useContext(UserPreferenceContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const thisToken =
         fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;

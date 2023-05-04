@@ -6,7 +6,6 @@ import {
     useMemo,
     Dispatch,
     SetStateAction,
-    ReactNode,
     useContext,
 } from 'react';
 import { ethers } from 'ethers';
@@ -85,6 +84,7 @@ import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     account: string | undefined;
@@ -110,7 +110,6 @@ interface propsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
@@ -133,13 +132,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     setMaxPrice: Dispatch<SetStateAction<number>>;
@@ -179,7 +171,6 @@ export default function Range(props: propsIF) {
         openModalWallet,
         ambientApy,
         dailyVol,
-        openGlobalModal,
         poolExists,
         isRangeCopied,
         tokenAQtyLocal,
@@ -196,7 +187,6 @@ export default function Range(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setMaxPrice,
@@ -214,6 +204,9 @@ export default function Range(props: propsIF) {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const [
         isConfirmationModalOpen,
@@ -1246,7 +1239,6 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
         isAmbient: isAmbient,
-        openGlobalPopup,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1389,7 +1381,6 @@ export default function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         ackTokens: ackTokens,
     };
 
@@ -1398,7 +1389,6 @@ export default function Range(props: propsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
         isRangeCopied: isRangeCopied,
-        openGlobalPopup: openGlobalPopup,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
     };
@@ -1708,7 +1698,7 @@ export default function Range(props: propsIF) {
                 data-testid={'range'}
                 className={styles.scrollable_container}
             >
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -1727,7 +1717,6 @@ export default function Range(props: propsIF) {
                         isPairStable={isPairStable}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isTokenABase}
-                        openGlobalModal={openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}

@@ -71,6 +71,7 @@ import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     account: string | undefined;
@@ -93,8 +94,6 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
     openModalWallet: () => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
@@ -115,13 +114,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     ackTokens: ackTokensMethodsIF;
 }
 
@@ -161,7 +153,6 @@ export default function Limit(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        openGlobalPopup,
         ackTokens,
     } = props;
 
@@ -173,6 +164,9 @@ export default function Limit(props: propsIF) {
     const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -871,7 +865,6 @@ export default function Limit(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setResetLimitTick: setResetLimitTick,
-        openGlobalPopup: openGlobalPopup,
         ackTokens: ackTokens,
         isOrderValid: isOrderValid,
     };
@@ -941,7 +934,7 @@ export default function Limit(props: propsIF) {
             }}
         >
             <section className={styles.scrollable_container}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -955,7 +948,6 @@ export default function Limit(props: propsIF) {
                     <LimitHeader
                         chainId={chainId}
                         isPairStable={isPairStable}
-                        openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}

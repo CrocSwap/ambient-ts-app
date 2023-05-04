@@ -65,19 +65,12 @@ interface propsIF {
     chainId: string;
     tokenList: TokenIF[];
     tokenMap: Map<string, TokenIF>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     searchableTokens: TokenIF[];
     openTokenModal: () => void;
     chainData: ChainSpec;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -111,10 +104,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive,
         chainId,
         tokenList,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         openTokenModal,
         baseTokenBalance,
         quoteTokenBalance,
@@ -126,7 +115,6 @@ export default function PortfolioTabs(props: propsIF) {
         setSimpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
-        isSidebarOpen,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -376,11 +364,8 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: props.chainData,
         isShowAllEnabled: false,
         account: account,
-        openGlobalModal: props.openGlobalModal,
         currentPositionActive: props.currentPositionActive,
-        closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        isSidebarOpen: isSidebarOpen,
         activeAccountPositionData: activeAccountPositionData,
         isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
@@ -417,9 +402,6 @@ export default function PortfolioTabs(props: propsIF) {
             props.setCurrentTxActiveInTransactions,
         expandTradeTable: false,
         isCandleSelected: false,
-        closeGlobalModal: props.closeGlobalModal,
-        openGlobalModal: props.openGlobalModal,
-        isSidebarOpen: isSidebarOpen,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
         tokenMap: tokenMap,
@@ -437,11 +419,8 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: props.chainData,
         isShowAllEnabled: false,
         account: account,
-        openGlobalModal: props.openGlobalModal,
         currentPositionActive: props.currentPositionActive,
-        closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
         lastBlockNumber: lastBlockNumber,
@@ -514,10 +493,6 @@ export default function PortfolioTabs(props: propsIF) {
                         : accountTabDataWithoutTokens
                 }
                 rightTabOptions={false}
-                selectedOutsideTab={selectedOutsideTab}
-                setSelectedOutsideTab={setSelectedOutsideTab}
-                outsideControl={outsideControl}
-                setOutsideControl={setOutsideControl}
             />
         </div>
     );

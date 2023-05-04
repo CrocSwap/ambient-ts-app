@@ -4,7 +4,7 @@ import {
     Dispatch,
     SetStateAction,
     useRef,
-    ReactNode,
+    useContext,
 } from 'react';
 
 import {
@@ -39,6 +39,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -64,16 +65,9 @@ interface propsIF {
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    openGlobalModal: (content: ReactNode) => void;
-    closeGlobalModal: () => void;
     searchableTokens: TokenIF[];
-    isSidebarOpen: boolean;
     handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
@@ -126,12 +120,7 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentPositionActive,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         searchableTokens,
-        isSidebarOpen,
         handlePulseAnimation,
         changeState,
         selectedDate,
@@ -151,6 +140,13 @@ export default function TradeTabs2(props: propsIF) {
         ethMainnetUsdPrice,
         candleTime,
     } = props;
+    const {
+        outsideTab: { selected: outsideTabSelected },
+        outsideControl: {
+            isActive: outsideControlActive,
+            setIsActive: setOutsideControlActive,
+        },
+    } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
@@ -225,8 +221,8 @@ export default function TradeTabs2(props: propsIF) {
             userPositionsDataReceived
         ) {
             if (
-                (outsideControl && selectedOutsideTab === 0) ||
-                (!outsideControl && selectedInsideTab === 0)
+                (outsideControlActive && outsideTabSelected === 0) ||
+                (!outsideControlActive && selectedInsideTab === 0)
             ) {
                 if (isCandleSelected) {
                     setIsShowAllEnabled(false);
@@ -243,8 +239,8 @@ export default function TradeTabs2(props: propsIF) {
                     setIsShowAllEnabled(false);
                 }
             } else if (
-                (outsideControl && selectedOutsideTab === 1) ||
-                (!outsideControl && selectedInsideTab === 1)
+                (outsideControlActive && outsideTabSelected === 1) ||
+                (!outsideControlActive && selectedInsideTab === 1)
             ) {
                 if (
                     !isUserLoggedIn ||
@@ -262,8 +258,8 @@ export default function TradeTabs2(props: propsIF) {
                     setIsShowAllEnabled(false);
                 }
             } else if (
-                (outsideControl && selectedOutsideTab === 2) ||
-                (!outsideControl && selectedInsideTab === 2)
+                (outsideControlActive && outsideTabSelected === 2) ||
+                (!outsideControlActive && selectedInsideTab === 2)
             ) {
                 if (
                     !isUserLoggedIn ||
@@ -289,9 +285,9 @@ export default function TradeTabs2(props: propsIF) {
         isUserLoggedIn,
         hasInitialized,
         isCandleSelected,
-        outsideControl,
+        outsideControlActive,
         selectedInsideTab,
-        selectedOutsideTab,
+        outsideTabSelected,
         isShowAllEnabled,
         matchingUserPositionsLength,
         matchingUserChangesLength,
@@ -368,7 +364,7 @@ export default function TradeTabs2(props: propsIF) {
                             selectedCandleChangesWithoutFills,
                         );
                     }
-                    setOutsideControl(true);
+                    setOutsideControlActive(true);
                     setSelectedInsideTab(0);
                 })
                 .catch(console.error);
@@ -400,9 +396,6 @@ export default function TradeTabs2(props: propsIF) {
         setExpandTradeTable: setExpandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-        openGlobalModal: props.openGlobalModal,
-        closeGlobalModal: props.closeGlobalModal,
-        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
@@ -431,10 +424,7 @@ export default function TradeTabs2(props: propsIF) {
         setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,
         filter: filter,
-        closeGlobalModal: props.closeGlobalModal,
         changeState: changeState,
-        openGlobalModal: props.openGlobalModal,
-        isSidebarOpen: isSidebarOpen,
         setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
@@ -450,11 +440,8 @@ export default function TradeTabs2(props: propsIF) {
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
-        openGlobalModal: props.openGlobalModal,
         currentPositionActive: currentPositionActive,
-        closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
-        isSidebarOpen: isSidebarOpen,
         isOnPortfolioPage: false,
         handlePulseAnimation: handlePulseAnimation,
         setIsShowAllEnabled: setIsShowAllEnabled,
@@ -532,12 +519,7 @@ export default function TradeTabs2(props: propsIF) {
               },
               {
                   label: 'Leaderboard',
-                  content: (
-                      <Leaderboard
-                          {...rangesProps}
-                          isSidebarOpen={isSidebarOpen}
-                      />
-                  ),
+                  content: <Leaderboard {...rangesProps} />,
                   icon: leaderboard,
                   showRightSideOption: false,
               },
@@ -623,10 +605,6 @@ export default function TradeTabs2(props: propsIF) {
                 rightTabOptions={
                     <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                 }
-                selectedOutsideTab={selectedOutsideTab}
-                setSelectedOutsideTab={setSelectedOutsideTab}
-                outsideControl={outsideControl}
-                setOutsideControl={setOutsideControl}
                 setSelectedInsideTab={setSelectedInsideTab}
                 showPositionsOnlyToggle={showPositionsOnlyToggle}
                 setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
