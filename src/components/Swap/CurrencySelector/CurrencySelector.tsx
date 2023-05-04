@@ -64,7 +64,6 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -120,7 +119,6 @@ export default function CurrencySelector(props: propsIF) {
         isSwapCopied,
         isSellTokenEth,
         reverseTokens,
-        gasPriceInGwei,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -146,12 +144,9 @@ export default function CurrencySelector(props: propsIF) {
         : tokenPair.dataTokenB;
 
     const walletBalanceNonLocaleString = props.sellToken
-        ? tokenABalance && gasPriceInGwei
+        ? tokenABalance
             ? isSellTokenEth
-                ? (
-                      parseFloat(tokenABalance) -
-                      gasPriceInGwei * 400000 * 1e-9
-                  ).toFixed(18)
+                ? (parseFloat(tokenABalance) - 0.02).toFixed(18)
                 : tokenABalance
             : ''
         : tokenBBalance
@@ -173,12 +168,12 @@ export default function CurrencySelector(props: propsIF) {
         : '...';
 
     const walletAndSurplusBalanceNonLocaleString = props.sellToken
-        ? tokenADexBalance && gasPriceInGwei
+        ? tokenADexBalance
             ? isSellTokenEth
                 ? (
                       parseFloat(tokenADexBalance) +
                       parseFloat(tokenABalance) -
-                      gasPriceInGwei * 400000 * 1e-9
+                      0.02
                   ).toFixed(18)
                 : (
                       parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
@@ -239,7 +234,7 @@ export default function CurrencySelector(props: propsIF) {
     }
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+        if (handleChangeClick && isUserLoggedIn) {
             handleChangeClick(balanceNonLocaleString);
             setUserClickedCombinedMax(true);
         }
@@ -354,7 +349,7 @@ export default function CurrencySelector(props: propsIF) {
         >
             {!isSellTokenSelector
                 ? 'Wallet Balance'
-                : isCombinedBalanceNonZero && !isSellTokenEth
+                : isCombinedBalanceNonZero
                 ? 'Use Maximum Wallet Balance'
                 : 'Wallet Balance'}
             <AiOutlineQuestionCircle size={14} />
@@ -378,7 +373,7 @@ export default function CurrencySelector(props: propsIF) {
             }
         >
             {isSellTokenSelector
-                ? isCombinedBalanceNonZero && !isSellTokenEth
+                ? isCombinedBalanceNonZero
                     ? 'Use Maximum Wallet + Exchange Balance'
                     : 'Wallet + Exchange Balance'
                 : 'Wallet + Exchange Balance'}
@@ -445,9 +440,7 @@ export default function CurrencySelector(props: propsIF) {
                     <div
                         className={styles.balance_column}
                         style={
-                            isSellTokenSelector &&
-                            isCombinedBalanceNonZero &&
-                            !isSellTokenEth
+                            isSellTokenSelector && isCombinedBalanceNonZero
                                 ? { cursor: 'pointer' }
                                 : { cursor: 'default' }
                         }
@@ -455,11 +448,8 @@ export default function CurrencySelector(props: propsIF) {
                             if (
                                 handleChangeClick &&
                                 isUserLoggedIn &&
-                                !isSellTokenEth &&
-                                isCombinedBalanceNonZero &&
-                                !isSellTokenEth
+                                isCombinedBalanceNonZero
                             ) {
-                                console.log({ balanceNonLocaleString });
                                 handleChangeClick(balanceNonLocaleString);
                                 setUserClickedCombinedMax(true);
                             }
@@ -468,7 +458,7 @@ export default function CurrencySelector(props: propsIF) {
                         <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
-                {isCombinedBalanceNonZero && !isSellTokenEth ? maxButton : null}
+                {isCombinedBalanceNonZero ? maxButton : null}
             </div>
         </section>
     );

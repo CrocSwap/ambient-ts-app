@@ -116,7 +116,6 @@ export default function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        gasPriceInGwei,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -487,7 +486,6 @@ export default function CurrencyConverter(props: propsIF) {
                 setPriceImpact(impact);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
-                console.log({ rawTokenBQty });
                 setIsLiquidityInsufficient(false);
             } catch (error) {
                 console.error({ error });
@@ -802,7 +800,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
                 verifyToken={verifyToken}
@@ -868,7 +865,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
                     verifyToken={verifyToken}
