@@ -750,6 +750,9 @@ export default function CurrencyConverter(props: propsIF) {
             setSellQtyString(truncatedTokenAQty);
     };
 
+    const [isSellLoading, setIsSellLoading] = useState(false);
+    const [isBuyLoading, setIsBuyLoading] = useState(false);
+
     return (
         <section
             className={`${styles.currency_converter} ${
@@ -767,6 +770,7 @@ export default function CurrencyConverter(props: propsIF) {
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
+                isLoading={isSellLoading}
                 tokenAorB={'A'}
                 sellToken
                 handleChangeEvent={handleTokenAChangeEvent}
@@ -815,6 +819,8 @@ export default function CurrencyConverter(props: propsIF) {
                 }
                 setUserClickedCombinedMax={setUserClickedCombinedMax}
                 userClickedCombinedMax={userClickedCombinedMax}
+                setIsSellLoading={setIsSellLoading}
+                setIsBuyLoading={setIsBuyLoading}
             />
             <div
                 className={
@@ -839,6 +845,7 @@ export default function CurrencyConverter(props: propsIF) {
                     chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
+                    isLoading={isBuyLoading}
                     tokenAorB={'B'}
                     handleChangeEvent={handleTokenBChangeEvent}
                     tokenABalance={tokenABalance}
@@ -881,6 +888,8 @@ export default function CurrencyConverter(props: propsIF) {
                     }
                     setUserClickedCombinedMax={setUserClickedCombinedMax}
                     userClickedCombinedMax={userClickedCombinedMax}
+                    setIsSellLoading={setIsSellLoading}
+                    setIsBuyLoading={setIsBuyLoading}
                 />
             </div>
         </section>

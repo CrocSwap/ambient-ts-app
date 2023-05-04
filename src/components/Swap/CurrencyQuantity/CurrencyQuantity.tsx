@@ -18,6 +18,10 @@ interface propsIF {
     setBuyQtyString: Dispatch<SetStateAction<string>>;
     thisToken: TokenIF;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
+
+    setIsSellLoading: Dispatch<SetStateAction<boolean>>;
+    setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
+    isLoading: boolean;
 }
 
 export default function CurrencyQuantity(props: propsIF) {
@@ -30,7 +34,11 @@ export default function CurrencyQuantity(props: propsIF) {
         setSellQtyString,
         setBuyQtyString,
         setDisableReverseTokens,
+        setIsBuyLoading,
+        setIsSellLoading,
+        isLoading,
     } = props;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -52,18 +60,31 @@ export default function CurrencyQuantity(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
+        // clear the previous timeout if it exists
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
         if (event && fieldId === 'sell') {
+            setIsBuyLoading(true);
             setBuyQtyString('');
             const valueWithLeadingZero = event.target.value.startsWith('.')
                 ? '0' + event.target.value
                 : event.target.value;
             setSellQtyString(valueWithLeadingZero);
+
+            timeoutId = setTimeout(() => {
+                setIsBuyLoading(false);
+            }, 1000);
         } else if (event && fieldId === 'buy') {
+            setIsSellLoading(true);
             setSellQtyString('');
             const valueWithLeadingZero = event.target.value.startsWith('.')
                 ? '0' + event.target.value
                 : event.target.value;
             setBuyQtyString(valueWithLeadingZero);
+            timeoutId = setTimeout(() => {
+                setIsSellLoading(false);
+            }, 1000);
         }
 
         const input = event.target.value.startsWith('.')
@@ -113,12 +134,17 @@ export default function CurrencyQuantity(props: propsIF) {
 
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
     return (
-        <div className={styles.token_amount}>
+        <div
+            className={`${styles.token_amount} ${
+                isLoading && styles.shimmer_wrapper
+            }`}
+        >
+            {/* <h1>{fieldId === 'sell' && isbuyLoading && 'loading'}{ fieldId}</h1> */}
             <input
                 id={`${fieldId}-quantity`}
                 autoFocus={fieldId === 'sell'}
                 className={styles.currency_quantity}
-                placeholder='0.0'
+                placeholder={isLoading ? '' : '0.0'}
                 tabIndex={0}
                 aria-live={ariaLive}
                 aria-label={`Enter ${fieldId} amount`}
