@@ -249,8 +249,6 @@ export default function Transactions(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
-
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
@@ -513,11 +511,7 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : currentRowItemContent}
-            </ul>
+            <ul ref={listRef}>{currentRowItemContent}</ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
             {!expandTradeTable &&
