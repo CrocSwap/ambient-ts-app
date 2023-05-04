@@ -49,6 +49,7 @@
     flex-direction: column;
     justify-content: center;
     padding: 1rem;
+    background: var(--dark1);
     /* align-items: center; */
 }
 
@@ -58,6 +59,7 @@
 
 .confirmation_content {
     width: 100%;
+    background: var(--dark1);
 }
 
 /* gasless container */
@@ -72,7 +74,7 @@
 .gasless_container h3 {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 /* tooltip explanation */
@@ -82,7 +84,7 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--dark2);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 0.2rem 0.5rem;

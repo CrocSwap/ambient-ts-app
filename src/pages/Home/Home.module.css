@@ -36,7 +36,7 @@
     width: 30em;
     height: 30em;
     border-radius: 100vw;
-    background-color: #08011a;
+    background-color: var(--dark1);
     background-image: linear-gradient(230deg, #03395d 22%, #0e131a);
     opacity: 1;
     -webkit-filter: blur(180px);
@@ -52,7 +52,7 @@
     width: 30em;
     height: 30em;
     border-radius: 100vw;
-    background-color: #08002a;
+    background-color: var(--dark1);
     background-image: linear-gradient(230deg, #3814c9 22%, #0e131a);
     opacity: 1;
     -webkit-filter: blur(180px);

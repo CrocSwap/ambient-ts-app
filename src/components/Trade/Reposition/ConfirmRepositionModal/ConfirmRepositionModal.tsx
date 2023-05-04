@@ -1,7 +1,7 @@
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
@@ -12,7 +12,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     onClose: () => void;
@@ -48,7 +48,6 @@ interface propsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -75,8 +74,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
         isDenomBase,
         isTokenABase,
         isPositionInRange,
-        bypassConfirm,
     } = props;
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
     const { dataTokenA, dataTokenB } = tokenPair;
 
@@ -283,10 +287,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             // if user enables bypass, update all settings in parallel
                             // otherwise do not not make any change to persisted preferences
                             if (currentSkipConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             setShowConfirmation(false);
                             onSend();

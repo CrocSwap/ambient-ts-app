@@ -8,7 +8,7 @@
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     font-weight: 300;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .settings_icon,

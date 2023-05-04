@@ -37,8 +37,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
@@ -75,8 +73,6 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -108,8 +104,6 @@ export default function Ranges(props: propsIF) {
         isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
@@ -292,8 +286,12 @@ export default function Ranges(props: propsIF) {
     // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
     // 30 => Height of each paginated row item
 
-    const regularRangesItems = Math.round((height - 250) / 36);
-    const showColumnRangesItems = Math.round((height - 250) / 60);
+    const regularRangesItems = Math.round(
+        (height - (isOnPortfolioPage ? 400 : 250)) / 36,
+    );
+    const showColumnRangesItems = Math.round(
+        (height - (isOnPortfolioPage ? 400 : 250)) / 60,
+    );
     const rangesPerPage = showColumns
         ? showColumnRangesItems
         : regularRangesItems;
@@ -312,11 +310,12 @@ export default function Ranges(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
+    const tradePageCheck = expandTradeTable && rangeData.length > 30;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && rangeData.length > 7 && (
+            {((isOnPortfolioPage && rangeData.length > 7) ||
+                (!isOnPortfolioPage && tradePageCheck)) && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
                     totalItems={rangeData.length}
@@ -514,8 +513,6 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
@@ -548,8 +545,6 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
@@ -567,11 +562,7 @@ export default function Ranges(props: propsIF) {
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         <div>
-            {expandTradeTable && largeScreenView
-                ? currentRowItemContent
-                : props.isOnPortfolioPage
-                ? sortedRowItemContent
-                : sortedRowItemContent.slice(0, NUM_RANGES_WHEN_COLLAPSED)}
+            {currentRowItemContent}
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK

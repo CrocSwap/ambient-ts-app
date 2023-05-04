@@ -23,7 +23,7 @@
 }
 
 .liqtype_buttons_container button:hover {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .active_button {
     color: var(--dark1);
@@ -31,6 +31,6 @@
     background: var(--title-gradient);
 }
 .non_active_button {
-    color: var(--text-grey-white);
+    color: var(--text1);
     background: var(--dark2);
 }

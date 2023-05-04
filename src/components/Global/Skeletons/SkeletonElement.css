@@ -50,7 +50,6 @@
 .shimmer {
     width: 50%;
     height: 100%;
-    background: #12171f;
     background: var(--shimmer);
 
     transform: skewX(-20deg);

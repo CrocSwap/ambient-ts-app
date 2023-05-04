@@ -3,7 +3,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     gap: 6px;

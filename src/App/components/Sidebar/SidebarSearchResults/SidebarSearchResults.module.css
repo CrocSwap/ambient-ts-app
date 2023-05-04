@@ -20,7 +20,7 @@
 .search_input_container {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 /* individual search results */
@@ -40,7 +40,7 @@
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     cursor: pointer;
     padding: 5px;
 }
@@ -56,7 +56,7 @@
     padding: 5px 0;
 
     border-bottom: 1px solid var(--dark2);
-    color: var(--text-grey-dark);
+    color: var(--text3);
 }
 
 .card_title {
@@ -67,13 +67,13 @@
     font-weight: 500;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 .search_result_title {
     margin: 10px 0;
-    color: #cdc1ff;
-    color: var(--text-grey-dark);
+    color: var(--accent5);
+    color: var(--text3);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
@@ -86,6 +86,6 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 0 2rem;
 }

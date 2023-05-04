@@ -27,12 +27,7 @@
 }
 
 .indicators > div.active {
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    );
+    background: var(--title-gradient);
     color: white;
 }
 

@@ -10,7 +10,7 @@
     margin-top: 10px;
     padding: 0 16px;
     border-radius: var(--border-radius);
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -28,12 +28,7 @@
     margin: 10px 0;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -70,5 +65,5 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     margin: 5px 0;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

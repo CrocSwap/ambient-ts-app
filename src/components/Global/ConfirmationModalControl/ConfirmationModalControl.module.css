@@ -5,7 +5,7 @@
     flex-direction: row;
     align-items: center;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 0 15px 0 15px;
