@@ -14,6 +14,9 @@ export const useNewTokens = (): void => {
         getTokenListsFromLS() ?? []
     );
     
+    // this hook fetches external token lists and sends them to local state and local
+    // ... storage, it runs asynchronously after initial render of the app only; it is
+    // ... intelligent and will only fetch lists that are missing or stale-dated
     useEffect(() => {
         // fn to fetch token lists, apply middleware, and update data in state/local storage
         // will patch fetched lists intelligently with current lists which are relevant
