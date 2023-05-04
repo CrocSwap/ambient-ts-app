@@ -5612,11 +5612,28 @@ export default function Chart(props: propsIF) {
             nearest?.date.getTime() < lastDate.getTime();
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
+        const maxCanvas = d3
+            .select(d3CanvasMarketLine.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+
+        const volumeCanvas = d3
+            .select(d3CanvasBar.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+
+        const volumeY =
+            (event.offsetY / maxCanvas.height) * volumeCanvas.height +
+            (maxCanvas.height - volumeCanvas.height);
+        console.log({ volumeY }, event.offsetY / 2);
+
+        const yValueVolume = scaleData?.volumeScale.invert(volumeY);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
+
+        console.log({ yValueVolume });
 
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
