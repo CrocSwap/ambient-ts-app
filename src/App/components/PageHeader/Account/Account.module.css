@@ -23,7 +23,6 @@
     font-size: var(--header-size);
     line-height: var(--body-lh);
     text-align: center;
-    cursor: default;
     z-index: 9999;
 }
 
@@ -74,7 +73,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-transform: lowercase;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -214,6 +212,10 @@
         rgb(40, 2, 2)
     );
     filter: blur(32px);
+}
+
+.wallet_name {
+    min-width: 80px;
 }
 
 @keyframes rotate {
