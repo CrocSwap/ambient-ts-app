@@ -311,8 +311,6 @@ export default function App() {
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
         dispatch(setIsUserIdle(true));
-        // reload to avoid stale wallet connections and excessive state accumulation
-        window.location.reload();
     };
 
     const onActive = () => {
