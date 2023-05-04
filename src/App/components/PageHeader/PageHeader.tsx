@@ -7,7 +7,7 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import headerLogo from '../../../assets/images/logos/header_logo.svg';
+import headerLogo from '../../../assets/images/logos/header_logo.png';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
