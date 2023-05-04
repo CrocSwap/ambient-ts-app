@@ -27,6 +27,7 @@ import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalan
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -81,11 +82,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
@@ -129,7 +125,6 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
@@ -137,6 +132,9 @@ export default function CurrencySelector(props: propsIF) {
     } = props;
 
     const { dexBalSwap } = useContext(UserPreferenceContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector

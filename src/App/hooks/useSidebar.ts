@@ -7,6 +7,8 @@ export interface sidebarMethodsIF {
     open: (persist?: string) => void;
     close: (persist?: string) => void;
     toggle: (persist?: string) => void;
+    isMobileOpen: boolean;
+    setIsMobileOpen: (val: boolean) => void;
 }
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
@@ -19,6 +21,8 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     const [sidebar, setSidebar] = useState<string>(
         localStorage.getItem(localStorageKey) || 'open',
     );
+
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     // reusable logic to update state and optionally persist data in local storage
     const changeSidebar = (newStatus: string, persist: string): void => {
@@ -66,5 +70,7 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
         open: openSidebar,
         close: closeSidebar,
         toggle: toggleSidebar,
+        isMobileOpen,
+        setIsMobileOpen,
     };
 };

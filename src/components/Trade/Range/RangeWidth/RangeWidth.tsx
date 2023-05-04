@@ -1,8 +1,9 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
@@ -17,11 +18,6 @@ interface RangeWidthPropsIF {
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     isRangeCopied: boolean;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
 }
 
 // React functional component
@@ -30,9 +26,11 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         isRangeCopied,
-        openGlobalPopup,
         setRescaleRangeBoundariesWithSlider,
     } = props;
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const PercentageOptionContent = (
         <>

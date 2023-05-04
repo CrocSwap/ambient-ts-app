@@ -76,11 +76,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     priceImpact: CrocImpact | undefined;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     lastBlockNumber: number;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
@@ -127,7 +122,6 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
     } = props;
@@ -811,7 +805,6 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
@@ -876,7 +869,6 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={

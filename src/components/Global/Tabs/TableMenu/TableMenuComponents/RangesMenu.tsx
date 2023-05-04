@@ -6,7 +6,6 @@ import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
@@ -39,7 +38,6 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    posHash: string;
     isOnPortfolioPage: boolean;
     isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
@@ -64,7 +62,6 @@ export default function RangesMenu(props: propsIF) {
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
-        posHash,
         position,
         handlePulseAnimation,
         setSimpleRangeWidth,
@@ -77,7 +74,6 @@ export default function RangesMenu(props: propsIF) {
     const { openGlobalModal } = rangeDetailsProps;
 
     const { isAmbient } = rangeDetailsProps;
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
 
@@ -129,19 +125,6 @@ export default function RangesMenu(props: propsIF) {
         }
         setShowDropdownMenu(false);
     };
-
-    // -----------------SNACKBAR----------------
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {posHash} copied
-        </SnackbarComponent>
-    );
-    // -----------------END OF SNACKBAR----------------
 
     const repositionButton = (
         <Link
@@ -310,7 +293,6 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.main_container}>
             {rangesMenu}
             {dropdownRangesMenu}
-            {snackbarContent}
             {isHarvestModalOpen && (
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
                     <HarvestPosition

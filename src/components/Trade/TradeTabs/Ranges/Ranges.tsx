@@ -5,10 +5,10 @@
 import {
     Dispatch,
     SetStateAction,
-    ReactNode,
     useEffect,
     useState,
     useMemo,
+    useContext,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -38,6 +38,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -64,9 +65,6 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    openGlobalModal: (content: ReactNode) => void;
-    closeGlobalModal: () => void;
-    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -101,13 +99,15 @@ export default function Ranges(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
-        isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -494,8 +494,6 @@ export default function Ranges(props: propsIF) {
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
@@ -526,8 +524,6 @@ export default function Ranges(props: propsIF) {
             position={position}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}

@@ -16,9 +16,9 @@ import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
@@ -47,7 +47,6 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    closeGlobalModal: () => void;
     chainData: ChainSpec;
 }
 
@@ -69,7 +68,6 @@ export default function RangeDetails(props: propsIF) {
         askTick,
         position,
         positionApy,
-        closeGlobalModal,
         // isPositionInRange,
         isAmbient,
         cachedQuerySpotPrice,
@@ -81,6 +79,10 @@ export default function RangeDetails(props: propsIF) {
         chainData,
     } = props;
 
+    const {
+        globalModal: { close: closeGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const crocEnv = useContext(CrocEnvContext);
 
     const detailsRef = useRef(null);
@@ -120,23 +122,12 @@ export default function RangeDetails(props: propsIF) {
 
     const { posHash } = useProcessRange(position, account);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionId() {
         copy(posHash.toString());
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
@@ -400,7 +391,6 @@ export default function RangeDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

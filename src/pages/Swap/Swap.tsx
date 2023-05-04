@@ -54,6 +54,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -78,14 +79,6 @@ interface propsIF {
     isInitialized: boolean;
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
-
-    openGlobalModal: (content: React.ReactNode) => void;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -103,8 +96,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
     ackTokens: ackTokensMethodsIF;
     chainData: ChainSpec;
@@ -144,7 +135,6 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
         ackTokens,
@@ -731,11 +721,14 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         ackTokens: ackTokens,
     };
+
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
         IS_LOCAL_ENV && console.debug('setting to true');
@@ -870,7 +863,7 @@ export default function Swap(props: propsIF) {
             }}
         >
             <section data-testid={'swap'} className={swapPageStyle}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -888,7 +881,6 @@ export default function Swap(props: propsIF) {
                         <SwapHeader
                             isPairStable={isPairStable}
                             isOnTradeRoute={isOnTradeRoute}
-                            openGlobalModal={props.openGlobalModal}
                             shareOptionsDisplay={shareOptionsDisplay}
                         />
                         {navigationMenu}

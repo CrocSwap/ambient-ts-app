@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { ReactNode, useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -24,6 +24,7 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -42,25 +43,16 @@ interface NavbarDropdownMenuPropsIF {
     clickLogout: () => void;
     closeMenu?: () => void;
     chainId: string;
-    isAppOverlayActive: boolean;
-    setIsAppOverlayActive: React.Dispatch<React.SetStateAction<boolean>>;
-    isTutorialMode: boolean;
-    setIsTutorialMode: React.Dispatch<React.SetStateAction<boolean>>;
-
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    switchTheme: () => void;
-    theme: string;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+    const { isUserLoggedIn, clickLogout, closeMenu, setIsNavbarMenuOpen } =
+        props;
+
     const {
-        isUserLoggedIn,
-        clickLogout,
-        closeMenu,
-        setIsNavbarMenuOpen,
-        isTutorialMode,
-        setIsTutorialMode,
-    } = props;
+        tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
+    } = useContext(AppStateContext);
 
     const navigate = useNavigate();
 
