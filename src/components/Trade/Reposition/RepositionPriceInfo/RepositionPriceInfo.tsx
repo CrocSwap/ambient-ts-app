@@ -18,6 +18,7 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -63,12 +64,6 @@ interface IRepositionPriceInfoProps {
 
     currentMinPrice: string;
     currentMaxPrice: string;
-
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -92,11 +87,13 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
         currentMinPrice,
         currentMaxPrice,
-        openGlobalPopup,
         // isPairStable
     } = props;
 
     const { repoSlippage } = useContext(UserPreferenceContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;

@@ -3,8 +3,6 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { Dispatch, SetStateAction } from 'react';
-// import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-// import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
@@ -26,18 +24,10 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         showShareComponent,
         setShowShareComponent,
     } = props;
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
+
     const phIcon = (
         <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
-
-    // const [value, copy] = useCopyToClipboard();
-
-    //    function handleCopyAddress() {
-    //        const txHash = position.tx;
-    //        copy(txHash);
-    //        setOpenSnackbar(true);
-    //    }
 
     const copyIconWithTooltip = (
         <IconWithTooltip
@@ -56,17 +46,6 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     //             <FiDownload size={25} color='var(--text3)' />
     //         </div>
     //     </IconWithTooltip>
-    // );
-
-    // eslint-disable-next-line
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value} copied
-    //     </SnackbarComponent>
     // );
 
     return (
