@@ -312,6 +312,7 @@ export default function CurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
+            setUserClickedCombinedMax(false);
             setSwitchBoxes(!switchBoxes);
 
             setTokenALocal(tokenBLocal);
