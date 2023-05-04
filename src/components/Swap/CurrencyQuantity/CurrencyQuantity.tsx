@@ -138,7 +138,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
-                value={displayValue}
+                value={isLoading ? '' : displayValue}
                 type='text'
                 inputMode='decimal'
                 autoComplete='off'
