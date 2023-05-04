@@ -126,7 +126,6 @@ export default function CurrencyQuantity(props: propsIF) {
                 isLoading && styles.shimmer_wrapper
             }`}
         >
-            {/* <h1>{fieldId === 'sell' && isbuyLoading && 'loading'}{ fieldId}</h1> */}
             <input
                 id={`${fieldId}-quantity`}
                 autoFocus={fieldId === 'sell'}
