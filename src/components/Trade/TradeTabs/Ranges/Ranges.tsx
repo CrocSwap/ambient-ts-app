@@ -37,8 +37,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
@@ -75,8 +73,6 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -108,8 +104,6 @@ export default function Ranges(props: propsIF) {
         isSidebarOpen,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
@@ -519,8 +513,6 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
@@ -553,8 +545,6 @@ export default function Ranges(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />

@@ -41,10 +41,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
@@ -77,7 +74,6 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
-    favePools: favePoolsMethodsIF;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -117,10 +113,8 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     chartTriggeredBy: string;
-    slippage: allSlippageMethodsIF;
     ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -151,7 +145,6 @@ export default function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        favePools,
         searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
@@ -185,10 +178,8 @@ export default function Trade(props: propsIF) {
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        dexBalancePrefs,
         setChartTriggeredBy,
         chartTriggeredBy,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
@@ -515,7 +506,6 @@ export default function Trade(props: propsIF) {
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
         limitTick: limitTick,
-        favePools: favePools,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
         upBodyColor: upBodyColor,
@@ -593,7 +583,6 @@ export default function Trade(props: propsIF) {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        favePools: favePools,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         poolPriceChangePercent: poolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
@@ -601,8 +590,6 @@ export default function Trade(props: propsIF) {
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         candleTime: isMarketOrLimitModule

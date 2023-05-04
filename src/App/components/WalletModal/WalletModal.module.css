@@ -1,6 +1,7 @@
 .main_container {
     justify-content: space-between;
     padding: 1rem 0;
+    background: var(--dark1);
 }
 
 .main_container a:hover,
@@ -132,6 +133,7 @@
     flex-direction: column;
     max-width: 400px;
     min-height: 220px;
+    background: var(--dark1);
 
     justify-content: space-between;
     align-items: center;

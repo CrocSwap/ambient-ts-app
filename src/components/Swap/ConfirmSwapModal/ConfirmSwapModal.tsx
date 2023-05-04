@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -15,9 +22,9 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 // START: Import Other Local Files
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { AiOutlineWarning } from 'react-icons/ai';
 import DividerDark from '../../Global/DividerDark/DividerDark';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -39,7 +46,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    bypassConfirm: allSkipConfirmMethodsIF;
     lastBlockNumber: number;
     pool: CrocPoolView | undefined;
 }
@@ -61,10 +67,15 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        bypassConfirm,
         lastBlockNumber,
         pool,
     } = props;
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -344,10 +355,10 @@ export default function ConfirmSwapModal(props: propsIF) {
                             // if user enables bypass, update all settings in parallel
                             // otherwise do not not make any change to persisted preferences
                             if (tempBypassConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             initiateSwapMethod();
                             setShowConfirmation(false);
