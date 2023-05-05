@@ -11,7 +11,6 @@ import { topPoolIF } from '../../App/hooks/useTopPools';
 import { PoolStatsFn } from '../../App/functions/getPoolStats';
 
 interface propsIF {
-    isServerEnabled: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
@@ -21,7 +20,6 @@ interface propsIF {
 }
 export default function Home(props: propsIF) {
     const {
-        isServerEnabled,
         tokenMap,
         lastBlockNumber,
         chainId,
@@ -38,7 +36,6 @@ export default function Home(props: propsIF) {
             <HomeSlider />
             <div className={styles.pools_container}>
                 <TopPools
-                    isServerEnabled={isServerEnabled}
                     tradeData={tradeData}
                     userData={userData}
                     cachedQuerySpotPrice={cachedQuerySpotPrice}
@@ -50,7 +47,6 @@ export default function Home(props: propsIF) {
                 />
                 <DividerDark />
                 <Stats
-                    isServerEnabled={isServerEnabled}
                     lastBlockNumber={lastBlockNumber}
                     userData={userData}
                     chainId={chainId}

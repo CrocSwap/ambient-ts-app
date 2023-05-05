@@ -1,17 +1,14 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
-import { SetStateAction, Dispatch } from 'react';
+import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     tokenMap: Map<string, TokenIF>;
     chainId: string;
     isDenomBase: boolean;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     limitOrderByUser?: LimitOrderIF[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -19,7 +16,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    closeSidebar: () => void;
 }
 export default function SidebarLimitOrders(props: propsIF) {
     const {
@@ -27,13 +23,16 @@ export default function SidebarLimitOrders(props: propsIF) {
         tokenMap,
         chainId,
         isDenomBase,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
-        closeSidebar,
     } = props;
+
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+        sidebar: { close: closeSidebar },
+    } = useContext(AppStateContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -48,8 +47,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(1);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
         navigate(
@@ -64,8 +63,8 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

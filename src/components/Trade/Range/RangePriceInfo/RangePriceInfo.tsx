@@ -6,7 +6,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
@@ -15,6 +15,7 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
@@ -49,11 +50,6 @@ interface propsIF {
           }
         | undefined;
     isAmbient: boolean;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
 }
 
 // central react functional component
@@ -73,8 +69,10 @@ export default function RangePriceInfo(props: propsIF) {
         baseToken,
         quoteToken,
         isAmbient,
-        openGlobalPopup,
     } = props;
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const { pathname } = useLocation();
 

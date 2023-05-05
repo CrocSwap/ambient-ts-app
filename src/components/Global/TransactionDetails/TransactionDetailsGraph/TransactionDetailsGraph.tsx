@@ -129,9 +129,15 @@ export default function TransactionDetailsGraph(
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 if (period !== undefined) {
-                    const numberofCandleNeeded = Math.floor(
+                    const calcNumberCandlesNeeded = Math.floor(
                         (diff * 2) / (period * 1000),
                     );
+                    const maxNumCandlesNeeded = 3000;
+
+                    const numCandlesNeeded =
+                        calcNumberCandlesNeeded < maxNumCandlesNeeded
+                            ? calcNumberCandlesNeeded
+                            : maxNumCandlesNeeded;
 
                     const startBoundary = Math.floor(
                         new Date().getTime() / 1000,
@@ -147,7 +153,7 @@ export default function TransactionDetailsGraph(
                             baseTokenAddress,
                             quoteTokenAddress,
                             startBoundary.toString(),
-                            numberofCandleNeeded.toString(),
+                            numCandlesNeeded.toString(),
                         );
 
                         if (graphData) {

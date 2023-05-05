@@ -5,10 +5,6 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import styles from './SwitchNetwork.module.css';
 import NetworkButtons from '../NetworkButton/NetworkButtons';
 
-// interface SwitchNetworkPropsIF {
-//     switchNetwork: (providedChainId: string) => Promise<void>;
-// }
-
 export default function SwitchNetwork() {
     return (
         <div className={styles.outside_modal}>

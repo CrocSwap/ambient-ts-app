@@ -25,7 +25,6 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 
@@ -76,13 +75,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     priceImpact: CrocImpact | undefined;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     lastBlockNumber: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
@@ -129,8 +122,6 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
-        dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
     } = props;
@@ -849,9 +840,7 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
-                dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
@@ -918,9 +907,7 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault

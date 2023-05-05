@@ -1,12 +1,12 @@
 import styles from './ShareModal.module.css';
 import { FiCopy } from 'react-icons/fi';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FaDiscord, FaTelegram, FaFacebook } from 'react-icons/fa';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
 import FocusTrap from 'focus-trap-react';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
@@ -38,6 +38,10 @@ export default function ShareModal() {
     // const currentUrl = location.href
     const currentPathname = location.pathname;
 
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
     const [linkToShare, setLinkToShare] = useState(
         `ambient-finance.netlify.app${currentPathname}`,
     );
@@ -66,24 +70,13 @@ export default function ShareModal() {
         },
     ];
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
         copy(linkToShare);
-        setOpenSnackbar(true);
+        openSnackbar(`${linkToShare} copied`, 'info');
     }
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     // const [shareOptions, setShareOptions] = useState([
     //     { slug: 'first', name: 'Include Swap 1', checked: false },
@@ -166,7 +159,6 @@ export default function ShareModal() {
                         <FiCopy color='#cdc1ff' size={25} />
                     </button>
                 </p>
-                {snackbarContent}
             </div>
         </FocusTrap>
     );

@@ -51,25 +51,22 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     isDenomBase: boolean;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    repoSlippage: SlippageMethodsIF;
     provider: ethers.providers.Provider;
     chainId: string;
     isPairStable: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
@@ -81,12 +78,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     chainData: ChainSpec;
-
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
 }
 
 export default function Reposition(props: propsIF) {
@@ -94,11 +85,9 @@ export default function Reposition(props: propsIF) {
         isDenomBase,
         ambientApy,
         dailyVol,
-        repoSlippage,
         provider,
         chainId,
         isPairStable,
-        bypassConfirm,
         setMinPrice,
         setMaxPrice,
         setRescaleRangeBoundariesWithSlider,
@@ -110,13 +99,13 @@ export default function Reposition(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
-        openGlobalPopup,
     } = props;
 
     // current URL parameter string
     const { params } = useParams();
 
     const crocEnv = useContext(CrocEnvContext);
+    const { bypassConfirmRepo } = useContext(UserPreferenceContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -739,7 +728,6 @@ export default function Reposition(props: propsIF) {
         isDenomBase: isDenomBase,
         isTokenABase: isTokenABase,
         poolPriceDisplayNum: poolPriceDisplay || 0,
-        bypassConfirm: bypassConfirm,
         // showBypassConfirm,
         // setShowBypassConfirm,
 
@@ -788,9 +776,7 @@ export default function Reposition(props: propsIF) {
                 setRangeWidthPercentage={setRangeWidthPercentage}
                 setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
-                repoSlippage={repoSlippage}
                 isPairStable={isPairStable}
-                bypassConfirm={bypassConfirm}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>
@@ -821,13 +807,11 @@ export default function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    repoSlippage={repoSlippage}
                     isPairStable={isPairStable}
                     poolPriceDisplay={poolPriceDisplay}
                     isDenomBase={isDenomBase}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}
-                    openGlobalPopup={openGlobalPopup}
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (
@@ -837,12 +821,12 @@ export default function Reposition(props: propsIF) {
                                     ? 'Reposition Sent'
                                     : isPositionInRange
                                     ? 'Position Currently In Range'
-                                    : bypassConfirm.repo.isEnabled
+                                    : bypassConfirmRepo.isEnabled
                                     ? 'Reposition'
                                     : 'Open Confirmation'
                             }
                             action={
-                                bypassConfirm.repo.isEnabled
+                                bypassConfirmRepo.isEnabled
                                     ? handleRepoButtonClickWithBypass
                                     : openModal
                             }

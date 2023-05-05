@@ -29,8 +29,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
@@ -49,8 +47,6 @@ export default function Withdraw(props: propsIF) {
     const {
         crocEnv,
         connectedAccount,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         // tokenWalletBalance,

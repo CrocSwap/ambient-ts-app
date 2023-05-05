@@ -35,7 +35,6 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
@@ -93,12 +92,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
 }
@@ -149,8 +142,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        openGlobalPopup,
-        dexBalancePrefs,
         ackTokens,
         isOrderValid,
     } = props;
@@ -556,8 +547,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
-                dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
@@ -630,8 +619,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
-                    dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault

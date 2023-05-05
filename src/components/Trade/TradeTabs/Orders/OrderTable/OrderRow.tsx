@@ -3,7 +3,14 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -12,9 +19,9 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     chainData: ChainSpec;
@@ -25,10 +32,7 @@ interface propsIF {
     view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
-    isSidebarOpen: boolean;
     lastBlockNumber: number;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
 
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -47,9 +51,6 @@ export default function OrderRow(props: propsIF) {
         ipadView,
         showPair,
         limitOrder,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
         currentPositionActive,
         setCurrentPositionActive,
         isShowAllEnabled,
@@ -57,6 +58,10 @@ export default function OrderRow(props: propsIF) {
         handlePulseAnimation,
         lastBlockNumber,
     } = props;
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const {
         posHash,
@@ -86,8 +91,6 @@ export default function OrderRow(props: propsIF) {
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
     const orderMenuProps = {
-        closeGlobalModal: props.closeGlobalModal,
-        openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
         isOnPortfolioPage: isOnPortfolioPage,
@@ -186,32 +189,16 @@ export default function OrderRow(props: propsIF) {
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [valueToCopy, setValueToCopy] = useState('');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {valueToCopy} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
-        setValueToCopy(limitOrder.user);
         copy(limitOrder.user);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${limitOrder.user} copied`, 'info');
     }
 
     function handleCopyPosHash() {
-        setValueToCopy(posHash.toString());
         copy(posHash.toString());
-
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     function handleWalletLinkClick() {
@@ -339,7 +326,6 @@ export default function OrderRow(props: propsIF) {
                         tradeData={tradeData}
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        isSidebarOpen={isSidebarOpen}
                         handlePulseAnimation={handlePulseAnimation}
                         lastBlockNumber={lastBlockNumber}
                         showHighlightedButton={showHighlightedButton}
@@ -351,7 +337,6 @@ export default function OrderRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            {snackbarContent}
         </>
     );
 }
