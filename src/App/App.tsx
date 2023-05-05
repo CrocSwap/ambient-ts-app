@@ -2624,35 +2624,44 @@ export default function App() {
             currentLocation.includes('/account')
         ) {
             appState.sidebar.close();
-        } else if (appState.sidebar.status === 'open') {
-            if (showSidebarByDefault) appState.sidebar.open();
+        } else if (showSidebarByDefault) {
+            appState.sidebar.open();
+        } else {
+            appState.sidebar.close();
         }
     }
 
     function toggleTradeTabBasedOnRoute() {
-        appState.outsideControl.setIsActive(true);
-        if (currentLocation.includes('/market')) {
-            appState.outsideTab.setSelected(0);
-        } else if (currentLocation.includes('/limit')) {
-            appState.outsideTab.setSelected(1);
-        } else if (
-            currentLocation.includes('/range') ||
-            currentLocation.includes('reposition') ||
-            currentLocation.includes('add')
-        ) {
-            appState.outsideTab.setSelected(2);
+        if (!isCandleSelected) {
+            appState.outsideControl.setIsActive(true);
+            if (currentLocation.includes('/market')) {
+                appState.outsideTab.setSelected(0);
+            } else if (currentLocation.includes('/limit')) {
+                appState.outsideTab.setSelected(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                appState.outsideTab.setSelected(2);
+            }
         }
     }
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
+
+    useEffect(() => {
         if (
-            !isCandleSelected &&
             !currentTxActiveInTransactions &&
-            !currentPositionActive
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location, isCandleSelected]);
+    }, [location]);
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
