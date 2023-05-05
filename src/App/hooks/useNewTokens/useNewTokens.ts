@@ -7,6 +7,7 @@ export interface tokenMethodsIF {
     verify: (addr: string, chainId: string) => boolean;
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
     getByChain: (chn: string) => TokenIF[];
+    getBySource: (uri: string) => TokenIF[];
 }
 
 export const useNewTokens = (chainId: string): tokenMethodsIF => {
@@ -223,9 +224,17 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return tokensAsArray.filter((tkn: TokenIF) => tkn.chainId === parseInt(chn));
     }
 
+    function getTokensFromList(uri: string) {
+        // array of all tokens currently in `tokenMap`
+        const tokensAsArray: TokenIF[] = convertTokenMapToArray();
+        // return tokens filtered for a given list URI
+        return tokensAsArray.filter((tkn: TokenIF) => tkn.fromListArr?.includes(uri));
+    }
+
     return {
         verify: verifyToken,
         getByAddress: getTokenByAddress,
         getByChain: getTokensByChain,
+        getBySource: getTokensFromList,
     };
 };
