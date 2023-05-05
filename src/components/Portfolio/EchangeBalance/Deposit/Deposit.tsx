@@ -119,7 +119,8 @@ export default function Deposit(props: propsIF) {
                 ? BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(depositQtyNonDisplay))
-                : BigNumber.from(
+                : tokenWalletBalanceAdjustedNonDisplayString &&
+                  BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(0))
                 ? true
