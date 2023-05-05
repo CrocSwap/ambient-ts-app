@@ -1,7 +1,7 @@
 .rectangle_container {
     font-family: var(--font-family);
     width: 100%;
-    height: calc(20%);
+    /* height: calc(20%); */
     /* height: 250px; */
 
     background: var(--portfolio-banner);

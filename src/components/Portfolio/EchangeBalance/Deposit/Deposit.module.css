@@ -22,9 +22,19 @@
     align-items: center;
     justify-content: flex-end;
 
-    color: var(--text1);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.available_container {
+    display: flex;
+    flex-direction: row;
+}
+
+.available_text {
+    margin-right: 6px;
+    color: var(--text1);
 }
 
 .svg_container {
@@ -52,7 +62,7 @@
     outline: none;
     border: none;
     background: var(--dark1);
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
 
     width: 25px;
     margin-left: 6px;

@@ -32,6 +32,7 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
         chainData,
+        blockiesToDisplay,
     } = props;
 
     const {
@@ -115,7 +116,7 @@ export default function PortfolioBannerAccount(
                         <img src={imageData[0]} alt='avatar' />
                     </motion.div>
                 ) : (
-                    ambientLogoDisplay
+                    blockiesToDisplay ?? ambientLogoDisplay
                 )}
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
