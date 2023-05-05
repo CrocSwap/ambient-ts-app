@@ -2614,13 +2614,16 @@ export default function Chart(props: propsIF) {
     const setLimitTickNearNoGoZone = (low: number, high: number) => {
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(low.toString()))
-            : pool?.fromDisplayPrice(1 / parseFloat(high.toString()));
+            : pool?.fromDisplayPrice(1 / parseFloat(low.toString()));
 
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
 
-            const pinnedTick: number = pinTickLower(limit, chainData.gridSize);
-            const tickPrice = tickToPrice(pinnedTick);
+            const pinnedTick: number = !isTokenABase
+                ? pinTickLower(limit, chainData.gridSize)
+                : pinTickUpper(limit, chainData.gridSize);
+
+            const tickPrice = tickToPrice(pinnedTick - chainData.gridSize * 2);
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
 
@@ -2641,7 +2644,7 @@ export default function Chart(props: propsIF) {
             limit = limit !== 0 ? limit : 1;
             const pinnedTick: number = pinTickUpper(limit, chainData.gridSize);
 
-            const tickPrice = tickToPrice(pinnedTick);
+            const tickPrice = tickToPrice(pinnedTick + chainData.gridSize * 2);
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
 
@@ -3228,11 +3231,14 @@ export default function Chart(props: propsIF) {
                                 const max = scaleData?.yScale.domain()[1];
 
                                 if (min > low || max < high) {
-                                    const buffer = Math.abs((low - high) / 6);
+                                    const bufferForLimit = Math.abs(
+                                        (low - high) / 6,
+                                    );
 
                                     const domain = [
-                                        Math.min(low, high) - buffer,
-                                        Math.max(high, low) + buffer / 2,
+                                        Math.min(low, high) - bufferForLimit,
+                                        Math.max(high, low) +
+                                            bufferForLimit / 2,
                                     ];
 
                                     scaleData?.yScale.domain(domain);
@@ -4061,29 +4067,56 @@ export default function Chart(props: propsIF) {
                     ) {
                         const value = limit[0].value;
 
-                        const low = minYBoundary < value ? minYBoundary : value;
-                        const high =
-                            maxYBoundary > value ? maxYBoundary : value;
-                        if (value > 0) {
-                            const buffer = Math.abs((low - high) / 6);
-                            const domain = [
-                                Math.min(low, high) - buffer,
-                                Math.max(low, high) + buffer / 2,
-                            ];
-
-                            scaleData?.yScale.domain(domain);
-                        } else {
-                            const buffer = Math.abs(
-                                (maxYBoundary - minYBoundary) / 6,
+                        if (rescale) {
+                            const low = Math.min(
+                                minYBoundary,
+                                value,
+                                minTickForLimit,
                             );
 
-                            const domain = [
-                                Math.min(minYBoundary, maxYBoundary) - buffer,
-                                Math.max(minYBoundary, maxYBoundary) +
-                                    buffer / 2,
-                            ];
+                            const high = Math.max(
+                                maxYBoundary,
+                                value,
+                                maxTickForLimit,
+                            );
 
-                            scaleData?.yScale.domain(domain);
+                            const bufferForLimit = Math.abs((low - high) / 6);
+                            if (value > 0) {
+                                const domain = [
+                                    Math.min(low, high) - bufferForLimit,
+                                    Math.max(low, high) + bufferForLimit / 2,
+                                ];
+
+                                scaleData?.yScale.domain(domain);
+                            }
+                        } else {
+                            const low =
+                                minYBoundary < value ? minYBoundary : value;
+                            const high =
+                                maxYBoundary > value ? maxYBoundary : value;
+
+                            if (value > 0) {
+                                const buffer = Math.abs((low - high) / 6);
+                                const domain = [
+                                    Math.min(low, high) - buffer,
+                                    Math.max(low, high) + buffer / 2,
+                                ];
+
+                                scaleData?.yScale.domain(domain);
+                            } else {
+                                const buffer = Math.abs(
+                                    (maxYBoundary - minYBoundary) / 6,
+                                );
+
+                                const domain = [
+                                    Math.min(minYBoundary, maxYBoundary) -
+                                        buffer,
+                                    Math.max(minYBoundary, maxYBoundary) +
+                                        buffer / 2,
+                                ];
+
+                                scaleData?.yScale.domain(domain);
+                            }
                         }
                     }
                 } else {
@@ -4109,7 +4142,7 @@ export default function Chart(props: propsIF) {
             setReset(false);
             setShowLatest(false);
         }
-    }, [scaleData, reset]);
+    }, [scaleData, reset, minTickForLimit, maxTickForLimit]);
 
     useEffect(() => {
         if (
@@ -4195,18 +4228,30 @@ export default function Chart(props: propsIF) {
                             ) {
                                 const value = limit[0].value;
 
-                                const low =
-                                    minYBoundary < value ? minYBoundary : value;
-                                const high =
-                                    maxYBoundary > value ? maxYBoundary : value;
+                                const low = Math.min(
+                                    minYBoundary,
+                                    value,
+                                    minTickForLimit,
+                                );
 
-                                const buffer = Math.abs((low - high) / 6);
+                                const high = Math.max(
+                                    maxYBoundary,
+                                    value,
+                                    maxTickForLimit,
+                                );
 
-                                const domain = [
-                                    Math.min(low, high) - buffer,
-                                    Math.max(low, high) + buffer / 2,
-                                ];
-                                scaleData?.yScale.domain(domain);
+                                const bufferForLimit = Math.abs(
+                                    (low - high) / 6,
+                                );
+                                if (value > 0) {
+                                    const domain = [
+                                        Math.min(low, high) - bufferForLimit,
+                                        Math.max(low, high) +
+                                            bufferForLimit / 2,
+                                    ];
+
+                                    scaleData?.yScale.domain(domain);
+                                }
                             }
                         } else {
                             if (
@@ -5642,6 +5687,7 @@ export default function Chart(props: propsIF) {
     // autoScaleF
     useEffect(() => {
         if (rescale && !isLineDrag) {
+            getNoZoneData();
             changeScale();
         }
     }, [
