@@ -10,7 +10,6 @@ import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 
 interface propsIF {
-    isServerEnabled: boolean;
     tradeData: tradeData;
     userData: userData;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -23,7 +22,6 @@ interface propsIF {
 
 export default function TopPools(props: propsIF) {
     const {
-        isServerEnabled,
         tradeData,
         userData,
         lastBlockNumber,
@@ -54,7 +52,6 @@ export default function TopPools(props: propsIF) {
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
                     <PoolCard
-                        isServerEnabled={isServerEnabled}
                         isUserIdle={isUserIdle}
                         tradeData={tradeData}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}

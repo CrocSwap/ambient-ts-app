@@ -1,45 +1,51 @@
-import React, { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
-export const useGlobalPopup = (initialMode = false) => {
+export interface globalPopupMethodsIF {
+    isOpen: boolean;
+    open: (content: ReactNode, title: string, placement: string) => void;
+    close: () => void;
+    content: ReactNode;
+    title: string;
+    placement: string;
+}
+
+export const useGlobalPopup = (initialMode = false): globalPopupMethodsIF => {
     // create a useState hook to track if the modal should be rendered
-    const [isGlobalPopupOpen, setIsGlobalPopupOpen] =
-        useState<boolean>(initialMode);
+    const [isOpen, setIsOpen] = useState<boolean>(initialMode);
 
-    const [popupContent, setPopupContent] = useState<React.ReactNode>(
-        'I am example content',
-    );
+    const [content, setContent] = useState<ReactNode>('I am example content');
 
-    const [popupTitle, setPopupTitle] = useState<string>('');
-    const [popupPlacement, setPopupPlacement] = useState('center');
+    const [title, setTitle] = useState<string>('');
+    const [placement, setPlacement] = useState('center');
 
-    const openGlobalPopup = (
-        content: React.ReactNode,
+    const open = (
+        content: ReactNode,
         popupTitle?: string,
         popupPlacement?: string,
     ) => {
-        setIsGlobalPopupOpen(true);
-        setPopupContent(content);
+        setIsOpen(true);
+        setContent(content);
 
         if (popupTitle) {
-            setPopupTitle(popupTitle);
+            setTitle(popupTitle);
         }
         if (popupPlacement) {
-            setPopupPlacement(popupPlacement);
+            setPlacement(popupPlacement);
         }
     };
-    const closeGlobalPopup = () => {
-        setPopupContent('');
-        setPopupTitle('');
-        setIsGlobalPopupOpen(false);
+    const close = () => {
+        setPlacement('');
+        setTitle('');
+        setIsOpen(false);
     };
 
     // return all data and functions needed for local use
-    return [
-        isGlobalPopupOpen,
-        openGlobalPopup,
-        closeGlobalPopup,
-        popupContent,
-        popupTitle,
-        popupPlacement,
-    ] as const;
+    return {
+        isOpen,
+        open,
+        close,
+        content,
+        title,
+        placement,
+    };
 };

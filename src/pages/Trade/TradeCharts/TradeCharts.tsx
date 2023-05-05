@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+} from 'react';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -35,6 +42,7 @@ import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -47,8 +55,6 @@ interface propsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
-    fullScreenChart: boolean;
-    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -85,9 +91,6 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: React.Dispatch<
         React.SetStateAction<boolean>
     >;
-    isSidebarOpen: boolean;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -158,8 +161,6 @@ export default function TradeCharts(props: propsIF) {
         isUserLoggedIn,
         chainData,
         poolPriceDisplay,
-        fullScreenChart,
-        setFullScreenChart,
         chainId,
         expandTradeTable,
         selectedDate,
@@ -181,8 +182,15 @@ export default function TradeCharts(props: propsIF) {
         chartSettings,
         setChartTriggeredBy,
         chartTriggeredBy,
-        isSidebarOpen,
     } = props;
+
+    const {
+        chart: {
+            isFullScreen: isChartFullScreen,
+            setIsFullScreen: setIsChartFullScreen,
+        },
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const { pathname } = useLocation();
 
@@ -245,7 +253,7 @@ export default function TradeCharts(props: propsIF) {
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
-        if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
+        if ((e.charCode || e.keyCode) === 27) setIsChartFullScreen(false);
     }
 
     useEffect(() => {
@@ -342,7 +350,7 @@ export default function TradeCharts(props: propsIF) {
                 title={
                     <div
                         className={styles.save_image_content}
-                        onClick={() => setFullScreenChart(!fullScreenChart)}
+                        onClick={() => setIsChartFullScreen(!isChartFullScreen)}
                     >
                         Toggle Full Screen Chart
                     </div>
@@ -350,7 +358,7 @@ export default function TradeCharts(props: propsIF) {
                 enterDelay={500}
             >
                 <button
-                    onClick={() => setFullScreenChart(!fullScreenChart)}
+                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
                     className={styles.fullscreen_button}
                 >
                     <AiOutlineFullscreen
@@ -495,14 +503,14 @@ export default function TradeCharts(props: propsIF) {
         <div
             className={styles.main_container_chart}
             style={{
-                padding: fullScreenChart ? '1rem' : '0',
-                background: fullScreenChart ? 'var(--dark2)' : '',
+                padding: isChartFullScreen ? '1rem' : '0',
+                background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
             ref={canvasRef}
         >
             {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -580,7 +588,6 @@ export default function TradeCharts(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider={
                             setRescaleRangeBoundariesWithSlider
                         }
-                        showSidebar={isSidebarOpen}
                         setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}

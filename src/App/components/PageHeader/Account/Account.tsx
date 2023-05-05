@@ -1,8 +1,7 @@
-import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import styles from './Account.module.css';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 import { MdAccountBalanceWallet } from 'react-icons/md';
@@ -14,6 +13,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -23,15 +23,7 @@ interface AccountPropsIF {
     clickLogout: () => void;
     ensName: string;
     chainId: string;
-    isAppOverlayActive: boolean;
     ethMainnetUsdPrice?: number;
-
-    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-
-    switchTheme: () => void;
-    theme: string;
     chainData: ChainSpec;
     lastBlockNumber: number;
 }
@@ -43,14 +35,13 @@ export default function Account(props: AccountPropsIF) {
         clickLogout,
         ensName,
         chainId,
-        isAppOverlayActive,
-        setIsAppOverlayActive,
-        switchTheme,
-        theme,
         lastBlockNumber,
         chainData,
     } = props;
 
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const { connector, isConnected } = useAccount();
 
     const ensOrAddressTruncated = useAppSelector(
@@ -59,23 +50,12 @@ export default function Account(props: AccountPropsIF) {
 
     const isUserLoggedIn = isConnected;
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
         copy(props.accountAddressFull);
-        setOpenSnackbar(true);
+        openSnackbar(`${props.accountAddressFull} copied`, 'info');
     }
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
@@ -200,16 +180,9 @@ export default function Account(props: AccountPropsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
                     chainId={chainId}
-                    isAppOverlayActive={isAppOverlayActive}
-                    setIsAppOverlayActive={setIsAppOverlayActive}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
-                    switchTheme={switchTheme}
-                    theme={theme}
-                    isTutorialMode={props.isTutorialMode}
-                    setIsTutorialMode={props.setIsTutorialMode}
                 />
             </NavItem>
-            {snackbarContent}
         </div>
     );
 }

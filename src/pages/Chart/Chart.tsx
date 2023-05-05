@@ -56,6 +56,7 @@ import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -158,7 +159,6 @@ interface propsIF {
     rescaleRangeBoundariesWithSlider: boolean;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
-    showSidebar: boolean;
     setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     rangeSimpleRangeWidth: number | undefined;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
@@ -216,7 +216,6 @@ export default function Chart(props: propsIF) {
         setMinPrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        showSidebar,
         setRangeSimpleRangeWidth,
         rangeSimpleRangeWidth,
         setRepositionRangeWidth,
@@ -227,6 +226,9 @@ export default function Chart(props: propsIF) {
     } = props;
 
     const pool = useContext(PoolContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -5584,7 +5586,7 @@ export default function Chart(props: propsIF) {
         denomInBase,
         liqTooltip,
         selectedDate,
-        showSidebar,
+        isSidebarOpen,
         liqMode,
     ]);
 

@@ -6,14 +6,7 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import {
-    Dispatch,
-    ReactNode,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
@@ -35,8 +28,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     // connectedAccount: string;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
@@ -53,8 +44,6 @@ interface propsIF {
 export default function Transfer(props: propsIF) {
     const {
         crocEnv,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         tokenDexBalance,
