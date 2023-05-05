@@ -56,35 +56,23 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    /*
-        below is the magic number (60000) determined by trial and error
-        to avoid a metamask error that the additional cost
-        of gas would exceed the user's ETH balance by decreasing
-        the amount of ETH being deposited by the estimated gas
-         cost of the transaction.
-    */
-
-    const estimatedGasAmountForDepositTransaction = 60000;
-
-    const numberOfWeiInGwei = 1e9;
+    const amountToReduceEth = BigNumber.from(1).mul('100000000000000000'); // .1 ETH
 
     const tokenWalletBalanceAdjustedNonDisplayString =
-        isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
+        isTokenEth && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
 
-                  .sub(
-                      BigNumber.from(
-                          Math.floor(
-                              gasPriceInGwei *
-                                  estimatedGasAmountForDepositTransaction *
-                                  numberOfWeiInGwei,
-                          ),
-                      ),
-                  )
+                  .sub(amountToReduceEth)
                   .toString()
             : tokenWalletBalance;
 
     const tokenWalletBalanceDisplay = useDebounce(
+        tokenWalletBalance
+            ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+            : undefined,
+        500,
+    );
+    const adjustedTokenWalletBalanceDisplay = useDebounce(
         tokenWalletBalanceAdjustedNonDisplayString
             ? toDisplayQty(
                   tokenWalletBalanceAdjustedNonDisplayString,
@@ -131,6 +119,11 @@ export default function Deposit(props: propsIF) {
                 ? BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(depositQtyNonDisplay))
+                : tokenWalletBalanceAdjustedNonDisplayString &&
+                  BigNumber.from(
+                      tokenWalletBalanceAdjustedNonDisplayString,
+                  ).gte(BigNumber.from(0))
+                ? true
                 : false,
         [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
     );
@@ -332,8 +325,8 @@ export default function Deposit(props: propsIF) {
         if (isTokenWalletBalanceGreaterThanZero) {
             setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
 
-            if (tokenWalletBalanceDisplay)
-                setInputValue(tokenWalletBalanceDisplay);
+            if (adjustedTokenWalletBalanceDisplay)
+                setInputValue(adjustedTokenWalletBalanceDisplay);
         }
     };
 
@@ -383,7 +376,7 @@ export default function Deposit(props: propsIF) {
             <div className={styles.additional_info}>
                 <div className={styles.info_text_non_clickable}>
                     Available: {tokenWalletBalanceTruncated || '0.0'}
-                    {!isTokenEth && tokenWalletBalance !== '0' ? (
+                    {isWalletBalanceSufficient ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}
                             onClick={handleBalanceClick}

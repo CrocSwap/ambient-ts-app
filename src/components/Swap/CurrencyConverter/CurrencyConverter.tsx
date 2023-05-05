@@ -27,6 +27,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
+import { useAccount } from 'wagmi';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -110,7 +111,6 @@ export default function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        gasPriceInGwei,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -320,6 +320,7 @@ export default function CurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
+            setUserClickedCombinedMax(false);
             setSwitchBoxes(!switchBoxes);
 
             isTokenAPrimaryLocal
@@ -369,7 +370,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-    }, [tokenAQtyLocal, buyQtyString]);
+    }, [tokenAQtyLocal, buyQtyString, isWithdrawFromDexChecked]);
 
     useEffect(() => {
         handleBlockUpdate();
@@ -385,10 +386,17 @@ export default function CurrencyConverter(props: propsIF) {
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
-        isWithdrawFromDexChecked,
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
+
+    const { address: account } = useAccount();
+
+    useEffect(() => {
+        if (account) {
+            setUserClickedCombinedMax(false);
+        }
+    }, [account]);
 
     useEffect(() => {
         if (!poolExists) {
@@ -791,6 +799,7 @@ export default function CurrencyConverter(props: propsIF) {
         >
             <CurrencySelector
                 provider={provider}
+                disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
@@ -828,7 +837,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
                 verifyToken={verifyToken}
@@ -863,6 +871,7 @@ export default function CurrencyConverter(props: propsIF) {
             <div id='swap_currency_converter'>
                 <CurrencySelector
                     provider={provider}
+                    disableReverseTokens={disableReverseTokens}
                     sellQtyString={sellQtyString}
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
@@ -895,7 +904,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
                     verifyToken={verifyToken}
