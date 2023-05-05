@@ -104,7 +104,6 @@ export default function RangesMenu(props: propsIF) {
     };
 
     const openDetailsModal = () => {
-        console.log('clicked');
         setShowDropdownMenu(false);
         openGlobalModal(
             <RangeDetails
