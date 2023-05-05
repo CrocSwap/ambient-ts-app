@@ -4,9 +4,9 @@ export interface sidebarMethodsIF {
     status: string;
     isOpen: boolean;
     isHiddenOnRoute: boolean;
-    open: (persist?: string) => void;
-    close: (persist?: string) => void;
-    toggle: (persist?: string) => void;
+    open: (persist?: boolean) => void;
+    close: (persist?: boolean) => void;
+    toggle: (persist?: boolean) => void;
     isMobileOpen: boolean;
     setIsMobileOpen: (val: boolean) => void;
 }
@@ -25,20 +25,21 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     // reusable logic to update state and optionally persist data in local storage
-    const changeSidebar = (newStatus: string, persist: string): void => {
+    const changeSidebar = (newStatus: string, persist: boolean): void => {
         setSidebar(newStatus);
         persist && localStorage.setItem(localStorageKey, newStatus);
     };
 
     // fn to open the sidebar
-    const openSidebar = (persist = ''): void => changeSidebar('open', persist);
+    const openSidebar = (persist = false): void =>
+        changeSidebar('open', persist);
 
     // fn to close the sidebar
-    const closeSidebar = (persist = ''): void =>
+    const closeSidebar = (persist = false): void =>
         changeSidebar('closed', persist);
 
     // fn to toggle the sidebar
-    const toggleSidebar = (persist = ''): void => {
+    const toggleSidebar = (persist = false): void => {
         // logic router as desired action is conditional on current value
         // default action is to open the sidebar
         switch (sidebar) {
