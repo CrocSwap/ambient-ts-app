@@ -6,40 +6,38 @@
     flex-direction: column;
     justify-content: space-between;
     row-gap: 12px;
-    margin-top: 0.2rem;
-   
+    background: var(--dark1);
+
     padding: 1rem;
-    
 }
 .settings_title {
     display: flex;
     justify-content: space-between;
     font-size: 24px;
     line-height: 30px;
-   padding: 10px 20px;
-   border-radius: var(--border-radius);
-   background: var(--dark1)
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    background: var(--dark1);
 }
 
-.settings_title  span{
+.settings_title span {
     cursor: pointer;
 }
 
-.settings_title svg:hover{
-    color: var(--text-grey-white)
+.settings_title svg:hover {
+    color: var(--text1);
 }
 
-.settings_title:focus-visible svg{
-    color: var(--text-grey-white)
-
+.settings_title:focus-visible svg {
+    color: var(--text1);
 }
 
-.settings_title button{
+.settings_title button {
     outline: none;
     border: none;
     background: transparent;
 }
 
-.close_button{
+.close_button {
     cursor: pointer !important;
 }

@@ -1,7 +1,7 @@
 .tab_active {
-    color: #7371fc;
+    color: var(--accent1);
     position: relative;
-    border-bottom: 1px solid #7371fc;
+    border-bottom: 1px solid var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
     font-size: 14px;
     line-height: 18px;
@@ -30,18 +30,18 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #7371fc;
+    background: var(--accent1);
 }
 
 .tab_list:hover {
-    color: #7371fc;
+    color: var(--accent1);
 }
 .tab_list::after {
     position: absolute;
     content: '';
     display: block;
     height: 1px;
-    background: #7371fc;
+    background: var(--accent1);
     bottom: -0.1px;
     left: 0;
     right: 0;

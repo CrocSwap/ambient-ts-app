@@ -1,9 +1,8 @@
 import styles from './OrderDetailsHeader.module.css';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
 interface OrderDetailsPropsIF {
@@ -25,16 +24,9 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         setShowShareComponent,
     } = props;
     // eslint-disable-next-line
-    const [openSnackbar, setOpenSnackbar] = useState(false);
     const phIcon = (
-        <FiCopy
-            size={25}
-            color='var(--text-grey-dark)'
-            style={{ opacity: '0' }}
-        />
+        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
 
     const copyIconWithTooltip = (
         <IconWithTooltip
@@ -42,7 +34,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
             placement='bottom'
         >
             <div onClick={handleCopyPositionId}>
-                <FiCopy size={25} color='var(--text-grey-dark)' />
+                <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -50,19 +42,9 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     // const downloadIconWithTooltip = (
     //     <IconWithTooltip title='Download shareable image' placement='bottom'>
     //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text-grey-dark)' />
+    //             <FiDownload size={25} color='var(--text3)' />
     //         </div>
     //     </IconWithTooltip>
-    // );
-
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value} copied
-    //     </SnackbarComponent>
     // );
 
     return (
@@ -85,7 +67,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                 {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
 
                 <div onClick={onClose}>
-                    <CgClose size={28} color='var(--text-grey-dark)' />
+                    <CgClose size={28} color='var(--text3)' />
                 </div>
             </section>
         </div>

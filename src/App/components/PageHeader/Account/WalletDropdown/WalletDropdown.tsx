@@ -87,10 +87,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const actionContent = (
         <div className={styles.actions_container}>
-            <button onClick={clickLogout}>
-                {' '}
-                <AiOutlineLogout color='var(--text-highlight)' /> Logout
-            </button>
             <NavLink
                 to={'/account'}
                 aria-label='Go to the account page '
@@ -99,6 +95,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 <CgProfile />
                 My Account
             </NavLink>
+            <button onClick={clickLogout}>
+                <AiOutlineLogout color='var(--text-highlight)' /> Logout
+            </button>
         </div>
     );
 
@@ -136,7 +135,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     amount={ethAmount}
                     usdValue={ethValue}
                     symbol={'ETH'}
-                    logo={'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'}
+                    logo={
+                        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
+                    }
                 />
             </section>
             {actionContent}

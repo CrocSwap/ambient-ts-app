@@ -66,19 +66,17 @@ import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     account: string | undefined;
     pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean | undefined;
-    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -96,8 +94,6 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
     openModalWallet: () => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
@@ -118,15 +114,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
 }
 
@@ -138,7 +125,6 @@ export default function Limit(props: propsIF) {
         provider,
         pool,
         isUserLoggedIn,
-        mintSlippage,
         isPairStable,
         baseTokenBalance,
         quoteTokenBalance,
@@ -167,9 +153,6 @@ export default function Limit(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        openGlobalPopup,
-        bypassConfirm,
-        dexBalancePrefs,
         ackTokens,
     } = props;
 
@@ -178,6 +161,12 @@ export default function Limit(props: propsIF) {
     useUrlParams(chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
+    const { dexBalLimit, bypassConfirmLimit } = useContext(
+        UserPreferenceContext,
+    );
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -188,7 +177,7 @@ export default function Limit(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(
-        dexBalancePrefs.limit.outputToDexBal.isEnabled,
+        dexBalLimit.outputToDexBal.isEnabled,
     );
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] =
@@ -876,8 +865,6 @@ export default function Limit(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setResetLimitTick: setResetLimitTick,
-        openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs,
         ackTokens: ackTokens,
         isOrderValid: isOrderValid,
     };
@@ -947,7 +934,7 @@ export default function Limit(props: propsIF) {
             }}
         >
             <section className={styles.scrollable_container}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -960,11 +947,8 @@ export default function Limit(props: propsIF) {
                 <ContentContainer isOnTradeRoute>
                     <LimitHeader
                         chainId={chainId}
-                        mintSlippage={mintSlippage}
                         isPairStable={isPairStable}
-                        openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
                     />
                     {navigationMenu}
                     <motion.div
@@ -1003,7 +987,7 @@ export default function Limit(props: propsIF) {
                                 <LimitButton
                                     onClickFn={
                                         areBothAckd
-                                            ? bypassConfirm.limit.isEnabled
+                                            ? bypassConfirmLimit.isEnabled
                                                 ? handleLimitButtonClickWithBypass
                                                 : openModal
                                             : ackAsNeeded
@@ -1017,7 +1001,7 @@ export default function Limit(props: propsIF) {
                                         limitButtonErrorMessage
                                     }
                                     isBypassConfirmEnabled={
-                                        bypassConfirm.limit.isEnabled
+                                        bypassConfirmLimit.isEnabled
                                     }
                                     areBothAckd={areBothAckd}
                                 />
@@ -1101,7 +1085,6 @@ export default function Limit(props: propsIF) {
                             startDisplayPrice={startDisplayPrice}
                             middleDisplayPrice={middleDisplayPrice}
                             endDisplayPrice={endDisplayPrice}
-                            bypassConfirm={bypassConfirm}
                         />
                     </Modal>
                 )}

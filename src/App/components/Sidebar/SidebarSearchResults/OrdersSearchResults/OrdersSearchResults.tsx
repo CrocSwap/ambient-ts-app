@@ -1,16 +1,15 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     chainId: string;
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
@@ -60,17 +59,20 @@ export default function OrdersSearchResults(props: propsIF) {
         chainId,
         searchedLimitOrders,
         isDenomBase,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
     } = props;
 
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(AppStateContext);
+
     const navigate = useNavigate();
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(1);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
         navigate(

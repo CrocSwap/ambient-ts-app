@@ -23,10 +23,6 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.Provider | undefined;
     connectedAccount: string;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -47,10 +43,6 @@ export default function ExchangeBalance(props: propsIF) {
         crocEnv,
         mainnetProvider,
         connectedAccount,
-        openGlobalModal,
-        closeGlobalModal,
-        setSelectedOutsideTab,
-        setOutsideControl,
         selectedToken,
         tokenAllowance,
         tokenWalletBalance,
@@ -144,8 +136,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Deposit
                     crocEnv={crocEnv}
                     connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
@@ -166,8 +156,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Withdraw
                     crocEnv={crocEnv}
                     connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
@@ -190,8 +178,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Transfer
                     crocEnv={crocEnv}
                     // connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenDexBalance={tokenDexBalance}
                     lastBlockNumber={lastBlockNumber}
@@ -243,10 +229,6 @@ export default function ExchangeBalance(props: propsIF) {
                         <TabComponent
                             data={accountData}
                             rightTabOptions={false}
-                            setSelectedOutsideTab={setSelectedOutsideTab}
-                            setOutsideControl={setOutsideControl}
-                            outsideControl={false}
-                            selectedOutsideTab={0}
                         />
                     )}
                     {exchangeControl}

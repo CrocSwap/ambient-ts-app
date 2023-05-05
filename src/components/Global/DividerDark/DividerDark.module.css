@@ -20,6 +20,6 @@
 }
 
 .change_color {
-    background: #242f3f;
+    background: var(--dark3);
     height: 1px;
 }

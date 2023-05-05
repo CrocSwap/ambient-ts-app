@@ -1,6 +1,7 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
@@ -19,12 +20,7 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
-    closeSidebar: () => void;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
@@ -33,11 +29,14 @@ export default function SidebarRecentTransactions(props: propsIF) {
         chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
-        setOutsideControl,
-        setSelectedOutsideTab,
         isUserLoggedIn,
-        closeSidebar,
     } = props;
+
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+        sidebar: { close: closeSidebar },
+    } = useContext(AppStateContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -53,8 +52,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
@@ -69,8 +68,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const handleViewMoreClick = (): void => {
         redirectBasedOnRoute();
-        setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

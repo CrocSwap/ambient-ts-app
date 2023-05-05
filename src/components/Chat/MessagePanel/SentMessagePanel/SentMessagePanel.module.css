@@ -16,7 +16,7 @@
 
 .avatar_blockies canvas {
     border-radius: 50%;
-    border: 1px solid var(--text-highlight-dark);
+    border: 1px solid var(--accent1);
 }
 .nft_container{
     
@@ -96,7 +96,7 @@
     flex-grow: 5px !important;
     margin-left: 10px;
     width: 85%;
-    color: var(--text-grey-white);
+    color: var(--text1);
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
@@ -117,7 +117,7 @@
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    color: var(--text-grey-white);
+    color: var(--text1);
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
@@ -125,7 +125,7 @@
 }
 
 .mention_message {
-    color: #7371FC;
+    color: var(--accent1);
     width: 80%;
     height: 80%;
 
@@ -206,7 +206,7 @@
     flex: none;
     order: 4;
     align-self: stretch;
-    background: #242f3f;
+    background: var(--dark3);
 }
 
 .name {
@@ -224,7 +224,7 @@
     align-items: center;
 
     /* accent/secondary */
-    color: var(--accent-secondary);
+    color: var(--accent2);
 
     /* Inside auto layout */
     flex: none;
@@ -249,7 +249,7 @@
     align-items: center;
 
     /* accent/secondary */
-    color: #9f55ffd5;
+    color: var(--accent1);
 
     /* Inside auto layout */
     flex: none;

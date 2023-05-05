@@ -1,5 +1,5 @@
 import styles from './ConfirmLimitModal.module.css';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
@@ -10,7 +10,7 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     onClose: () => void;
@@ -30,7 +30,6 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -47,10 +46,16 @@ export default function ConfirmLimitModal(props: propsIF) {
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
-        bypassConfirm,
         tokenAInputQty,
         tokenBInputQty,
     } = props;
+
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -293,10 +298,10 @@ export default function ConfirmLimitModal(props: propsIF) {
                         // otherwise do not not make any change to persisted preferences
                         action={() => {
                             if (currentSkipConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             initiateLimitOrderMethod();
                             setShowConfirmation(false);

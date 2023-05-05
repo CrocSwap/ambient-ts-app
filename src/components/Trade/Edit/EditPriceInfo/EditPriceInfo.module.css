@@ -11,7 +11,7 @@
     margin-top: 10px;
     padding: 8px 16px;
     border-radius: var(--border-radius);
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -33,12 +33,7 @@
     margin: 10px 0;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -50,7 +45,7 @@
 }
 
 .advanced_table_display table {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     border-collapse: collapse;
@@ -105,7 +100,7 @@ and also iPads specifically.
     .advanced_table_display td {
         /* Behave  like a "row" */
         border: none;
-        border-bottom: 1px solid var(--text-grey-light);
+        border-bottom: 1px solid var(--text2);
         position: relative;
         padding-left: 50%;
     }

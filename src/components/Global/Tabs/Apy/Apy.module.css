@@ -21,12 +21,7 @@
 .apr_green p {
     /* apr/green */
 
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -36,14 +31,7 @@
 }
 
 .apr_red p {
-    /* apr/green */
-
-    background: linear-gradient(
-        90deg,
-        #be4515 32.38%,
-        #de5a2e 51.39%,
-        #be5315 68.17%
-    );
+    background: var(--red-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

@@ -27,7 +27,7 @@
     line-height: var(--body-lh);
 }
 .total_display .row span {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .total_display .row .p {
     display: flex;
@@ -38,7 +38,7 @@
 .total_display .row button {
     outline: none;
     border: none;
-    color: var(--text-highlight);
+    color: var(--accent5);
     background: transparent;
     cursor: pointer;
 }
@@ -93,11 +93,11 @@
     background: transparent;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .balance {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }

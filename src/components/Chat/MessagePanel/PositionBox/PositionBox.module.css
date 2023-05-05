@@ -7,21 +7,7 @@
     grid-gap: 10px;
     gap: 1px;
     height: auto;
-    background-image: linear-gradient(
-        to right top,
-        #7371fc,
-        #887ffd,
-        #9a8efe,
-        #ab9dfe,
-        #baacff,
-        #baacff,
-        #baacff,
-        #baacff,
-        #ab9dfe,
-        #9a8efe,
-        #887ffd,
-        #7371fc
-    );
+    background-image: var(--primary-gradient);
     border-radius: 4px;
     flex: none;
     order: 0;
@@ -60,7 +46,7 @@
 }
 
 .position_box {
-    background: #242f3f;
+    background: var(--dark3);
     width: 99%;
     border-radius: 4px;
     display: flex;
@@ -82,7 +68,7 @@
     line-height: 15px;
     flex-grow: 5px !important;
     width: 85%;
-    color: #ebebff;
+    color: var(--text1);
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
@@ -120,12 +106,7 @@ line-height: 12px;
 .tokens_apy {
     flex-grow: 4;
     font-weight: lighter;
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -140,7 +121,7 @@ line-height: 12px;
 .tokens_min_price {
     flex-grow: 4;
     font-weight: lighter;
-    color: #cdc1ff;
+    color: var(--accent5);
     font-size: 13px;
     align-items: center;
     text-align: right;
@@ -149,7 +130,7 @@ line-height: 12px;
 .tokens_max_price {
     flex-grow: 4;
     font-weight: lighter;
-    color: #7371fc;
+    color: var(--accent1);
     font-size: 13px;
     align-items: center;
     text-align: right;
@@ -182,7 +163,7 @@ line-height: 12px;
     flex-grow: 4;
     font-weight: lighter;
     text-align: -webkit-right;
-    color: #7371FC;
+    color: var(--accent1);
     font-size: 14px;
 
 }
@@ -191,7 +172,7 @@ line-height: 12px;
     flex-grow: 4;
     font-weight: lighter;
     text-align: -webkit-right;
-    color:#E480FF;
+    color:var(--accent2);
     font-size: 14px;
 }
 
@@ -217,7 +198,7 @@ line-height: 12px;
     letter-spacing: -0.02em;
 
     /* accent/primary */
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 .change_positive {

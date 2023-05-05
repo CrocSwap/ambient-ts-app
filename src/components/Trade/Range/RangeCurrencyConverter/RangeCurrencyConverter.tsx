@@ -31,7 +31,6 @@ import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
@@ -92,13 +91,7 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     poolExists: boolean | undefined;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
 }
 
@@ -150,7 +143,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         ackTokens,
     } = props;
 
@@ -760,7 +752,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         ackTokens: ackTokens,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,

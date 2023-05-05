@@ -28,15 +28,14 @@ import {
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import { isStablePair } from '../../utils/data/stablePairs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 
 interface propsIF {
     chainData: ChainSpec;
@@ -61,9 +60,7 @@ interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     closeGlobalModal: () => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     handleModalClose: () => void;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
@@ -74,9 +71,7 @@ export default function HarvestPosition(props: propsIF) {
         baseTokenLogoURI,
         quoteTokenLogoURI,
         position,
-        dexBalancePrefs,
         handleModalClose,
-        slippage,
         ethMainnetUsdPrice,
         gasPriceInGwei,
     } = props;
@@ -85,6 +80,7 @@ export default function HarvestPosition(props: propsIF) {
     const [showSettings, setShowSettings] = useState(false);
 
     const crocEnv = useContext(CrocEnvContext);
+    const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,
@@ -93,8 +89,8 @@ export default function HarvestPosition(props: propsIF) {
     );
 
     const persistedSlippage: number = isPairStable
-        ? slippage.mintSlippage.stable
-        : slippage.mintSlippage.volatile;
+        ? mintSlippage.stable
+        : mintSlippage.volatile;
 
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
@@ -102,8 +98,8 @@ export default function HarvestPosition(props: propsIF) {
     const updateSettings = (): void => {
         setShowSettings(false);
         isPairStable
-            ? slippage.mintSlippage.updateStable(currentSlippage)
-            : slippage.mintSlippage.updateVolatile(currentSlippage);
+            ? mintSlippage.updateStable(currentSlippage)
+            : mintSlippage.updateVolatile(currentSlippage);
     };
 
     const lastBlockNumber = useAppSelector(
@@ -314,7 +310,7 @@ export default function HarvestPosition(props: propsIF) {
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
+                    { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -513,8 +509,8 @@ export default function HarvestPosition(props: propsIF) {
             setCurrentSlippage={setCurrentSlippage}
             presets={
                 isPairStable
-                    ? slippage.mintSlippage.presets.stable
-                    : slippage.mintSlippage.presets.volatile
+                    ? mintSlippage.presets.stable
+                    : mintSlippage.presets.volatile
             }
         />
     ) : (
@@ -554,7 +550,7 @@ export default function HarvestPosition(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                     removalPercentage={removalPercentage}
                 />
-                <HarvestExtraControls dexBalancePrefs={dexBalancePrefs} />
+                <HarvestExtraControls />
             </div>
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />

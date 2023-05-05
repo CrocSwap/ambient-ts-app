@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
@@ -7,8 +13,8 @@ import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
-import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 const pageVariant3D = {
     initial: {
@@ -38,14 +44,16 @@ interface ProfileSettingsPropsIF {
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     ensName: string;
     imageData: string[];
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [name, setName] = useState('');
     const [id, setId] = useState('');
-    const { setShowProfileSettings, imageData, openGlobalModal } = props;
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const { setShowProfileSettings, imageData } = props;
+    const {
+        globalModal: { open: openGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const host = 'https://ambichat.link:5000';
     const nameDisplay = (
         <div className={styles.row}>
@@ -128,16 +136,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </div>
     );
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {name} has been set as a name.
-        </SnackbarComponent>
-    );
-
     const { getID } = useChatApi();
 
     useEffect(() => {
@@ -159,7 +157,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         const data = await response.json();
         if (data.status === 'OK') {
             IS_LOCAL_ENV && console.debug('aaaa', data);
-            setOpenSnackbar(true);
+            openSnackbar(`${name} has been set as a name.`, 'info');
         } else {
             IS_LOCAL_ENV && console.debug('bbb', data.status);
         }
@@ -196,7 +194,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     >
                         Save
                     </button>
-                    {snackbarContent}
                 </div>
             </div>
         </motion.div>

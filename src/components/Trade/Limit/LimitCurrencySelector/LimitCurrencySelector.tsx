@@ -1,5 +1,11 @@
 // START: Import React and Dongles
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useState,
+} from 'react';
 import { ethers } from 'ethers';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -18,11 +24,12 @@ import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.sv
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
@@ -74,12 +81,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
@@ -116,11 +117,14 @@ export default function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
-        dexBalancePrefs,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
+
+    const { dexBalLimit } = useContext(UserPreferenceContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const thisToken =
         fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -291,7 +295,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                                 }
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
-                                dexBalancePrefs.limit.outputToDexBal.disable();
+                                dexBalLimit.outputToDexBal.disable();
                             }
                         }}
                     >
@@ -334,7 +338,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                                     );
                                 }
                             } else {
-                                dexBalancePrefs.limit.outputToDexBal.enable();
+                                dexBalLimit.outputToDexBal.enable();
                                 setIsSaveAsDexSurplusChecked(true);
                             }
                         }}

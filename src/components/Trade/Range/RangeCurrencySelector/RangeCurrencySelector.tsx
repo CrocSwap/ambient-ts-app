@@ -1,4 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useState,
+} from 'react';
 import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
@@ -18,6 +24,7 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -76,11 +83,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
@@ -124,10 +126,12 @@ export default function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
 
     const isTokenASelector = fieldId === 'A';
 

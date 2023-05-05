@@ -5,7 +5,6 @@ import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
-// import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 interface TransactionDetailsHeaderPropsIF {
     onClose: () => void;
     downloadAsImage: () => void;
@@ -30,11 +29,7 @@ export default function TransactionDetailsHeader(
     // eslint-disable-next-line
 
     const phIcon = (
-        <FiCopy
-            size={25}
-            color='var(--text-grey-dark)'
-            style={{ opacity: '0' }}
-        />
+        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
 
     const copyIconWithTooltip = (
@@ -43,7 +38,7 @@ export default function TransactionDetailsHeader(
             placement='bottom'
         >
             <div onClick={handleCopyAddress}>
-                <FiCopy size={25} color='var(--text-grey-dark)' />
+                <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -51,7 +46,7 @@ export default function TransactionDetailsHeader(
     // const downloadIconWithTooltip = (
     //     <IconWithTooltip title='Download shareable image' placement='bottom'>
     //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text-grey-dark)' />
+    //             <FiDownload size={25} color='var(--text3)' />
     //         </div>
     //     </IconWithTooltip>
     // );
@@ -76,7 +71,7 @@ export default function TransactionDetailsHeader(
                 {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
 
                 <div onClick={onClose}>
-                    <CgClose size={28} color='var(--text-grey-dark)' />
+                    <CgClose size={28} color='var(--text3)' />
                 </div>
             </section>
         </div>

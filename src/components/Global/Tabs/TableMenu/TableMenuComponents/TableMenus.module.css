@@ -15,56 +15,57 @@
 }
 
 .option_button {
-    background: var(--dark2);
     width: 100%;
-    border: none;
     outline: none;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid #242f3f; */
-    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
-    border-radius: 6.25rem;
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text2);
+
+    background: var(--dark1);
+    border: 1px solid var(--dark3);
+    border-radius: 50px;
+}
+
+.option_button:hover {
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
 }
 
 .reposition_button {
     cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-white);
     height: 23px;
+    width: 100%;
+
+    line-height: var(--body-lh);
+    font-size: 10px;
+    white-space: nowrap;
     padding: 5px 8px;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(
-        90deg,
-        rgba(115, 113, 252, 0) 0%,
-        rgba(115, 113, 252, 0) 71.21%,
-        #7371fc 100%
-    );
-    border: 1px solid #7371fc;
+    
+    color: var(--accent1);
+    background: linear-gradient(90deg, rgba(115, 113, 252, 0) 0%, rgba(115, 113, 252, 0) 71.21%, var(--accent1) 100%);
+    border: 1px solid var(--accent1);
     border-radius: 50px;
 
-    transition: background var(--animation-speed) ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
     z-index: 2;
 }
 
 .reposition_button:hover {
-    box-shadow: none;
-
-    border: 1px solid rgba(223, 190, 106, 0);
-    color: rgb(0, 0, 0);
-    background: var(--title-gradient);
+    color: var(--dark1);
+    background: var(--accent1);
 }
 .dropdown_menu {
     width: 100%;
@@ -80,14 +81,14 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     background: transparent;
     outline: none;
     border: none;
 }
 
 .dropdown_menu button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .actions_menu {
@@ -112,8 +113,8 @@
     border: none;
 
 }
-.dropdown_button:focus-visible, .option_button:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.dropdown_button:focus-visible {
+    border: 1px solid var(--text1)
 }
 .dropdown_wrapper,
 .dropdown_wrapper_active {

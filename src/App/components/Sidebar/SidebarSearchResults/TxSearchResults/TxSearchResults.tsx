@@ -1,14 +1,13 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     chainId: string;
     searchedTxs: TransactionIF[];
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
@@ -17,17 +16,20 @@ export default function TxSearchResults(props: propsIF) {
     const {
         chainId,
         searchedTxs,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
     } = props;
 
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(AppStateContext);
+
     const navigate = useNavigate();
 
     const handleClick = (tx: TransactionIF): void => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(0);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(0);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
