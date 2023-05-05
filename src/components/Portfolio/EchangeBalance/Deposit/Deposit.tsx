@@ -56,11 +56,13 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
+    const amountToReduceEth = BigNumber.from(5).mul('10000000000000000');
+
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
             ? BigNumber.from(tokenWalletBalance)
 
-                  .sub(BigNumber.from(5).mul('10000000000000000'))
+                  .sub(amountToReduceEth)
                   .toString()
             : tokenWalletBalance;
 
@@ -117,6 +119,10 @@ export default function Deposit(props: propsIF) {
                 ? BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(depositQtyNonDisplay))
+                : BigNumber.from(
+                      tokenWalletBalanceAdjustedNonDisplayString,
+                  ).gte(BigNumber.from(0))
+                ? true
                 : false,
         [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
     );
@@ -369,7 +375,7 @@ export default function Deposit(props: propsIF) {
             <div className={styles.additional_info}>
                 <div className={styles.info_text_non_clickable}>
                     Available: {tokenWalletBalanceTruncated || '0.0'}
-                    {tokenWalletBalance !== '0' ? (
+                    {isWalletBalanceSufficient ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}
                             onClick={handleBalanceClick}
