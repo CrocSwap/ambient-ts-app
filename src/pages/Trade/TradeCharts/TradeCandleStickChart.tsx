@@ -104,7 +104,6 @@ interface propsIF {
     setRescaleRangeBoundariesWithSlider: React.Dispatch<
         React.SetStateAction<boolean>
     >;
-    showSidebar: boolean;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -149,7 +148,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         setMinPrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        showSidebar,
         setCandleDomains,
         setSimpleRangeWidth,
         setRepositionRangeWidth,
@@ -911,7 +909,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider={
                             setRescaleRangeBoundariesWithSlider
                         }
-                        showSidebar={showSidebar}
                         setCandleDomains={setCandleDomains}
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={setRepositionRangeWidth}

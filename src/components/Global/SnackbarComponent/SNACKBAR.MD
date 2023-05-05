@@ -18,23 +18,4 @@ Alert: https://mui.com/material-ui/react-alert/
 
 # Developer Notes
 
-To call a Snackbar anywhere in the app, you should:
-1. Import the React functional component from `SnackbarComponent.tsx`
-2. Import the `.ts` file housing the data for the snackbar you want to create
-3. Import the `useState` hook from react
-4. Create a local state in the file you want to call the snackbar in with a default boolean of `false`.
-Ex: `const [openSnackbar, setOpenSnackbar] = useState<boolean>(false)`
-5. Call the Snackbar component in your return statement and assign it a prop of `setOpenSnackbar` and `openSnackbar`. 
-6. Give the SnackbarComponent a prop for severity. You have the option between `error`, `warning`, `info`, `success`. The default is success. 
-7. The snackbar component takes content to render as a child component.
-Full example of usablity:
-` <SnackbarComponent severity='success' setOpenSnackbar={setOpenSnackbar} openSnackbar={openSnackbar}>
-    I am snackbar
-</SnackbarComponent>` 
-
-To open the snackbar component, create a function that toggles the `SetOpenSnackbar` to `true`. To test the snackbar out, I suggest you create a button with an onclick that handles this functionality.
-
-
-
-
-
+The snackbar has been updated to be a global component (like globalModal and globalPopup). It can be accessed via the `appStateContext` and passing in `content` and `severity` into the `open` function. 

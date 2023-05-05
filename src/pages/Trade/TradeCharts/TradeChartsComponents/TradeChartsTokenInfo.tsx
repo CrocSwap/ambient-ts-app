@@ -8,16 +8,16 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
@@ -41,6 +41,9 @@ export default function TradeChartsTokenInfo(props: propsIF) {
 
     const { tradeData } = useAppSelector((state) => state);
     const { favePools } = useContext(UserPreferenceContext);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const denomInBase = tradeData.isDenomBase;
 
@@ -202,27 +205,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             }
         </button>
     );
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleBaseCopy() {
         copy(tradeData.baseToken.address);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${tradeData.baseToken.address} copied`);
     }
     function handleQuoteCopy() {
         copy(tradeData.quoteToken.address);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${tradeData.quoteToken.address} copied`);
     }
     const handleLinkOut = (address: string) => {
         const addressLink = `${chainData.blockExplorer}token/${address}`;
@@ -322,7 +313,6 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             {denomToggleButton}
             {currentAmountDisplay}
             {poolPriceChange}
-            {snackbarContent}
         </div>
     );
 }

@@ -5,7 +5,6 @@ import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
-// import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 interface TransactionDetailsHeaderPropsIF {
     onClose: () => void;
     downloadAsImage: () => void;

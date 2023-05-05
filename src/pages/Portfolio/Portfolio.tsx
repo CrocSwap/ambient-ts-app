@@ -72,20 +72,13 @@ interface propsIF {
     userImageData: string[];
     chainId: string;
     tokensOnActiveLists: Map<string, TokenIF>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     userAccount?: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     openModalWallet: () => void;
     searchableTokens: TokenIF[];
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -125,20 +118,13 @@ export default function Portfolio(props: propsIF) {
         lastBlockNumber,
         userImageData,
         tokensOnActiveLists,
-        openGlobalModal,
-        closeGlobalModal,
         userAccount,
-        outsideControl,
-        setOutsideControl,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        isSidebarOpen,
         handlePulseAnimation,
         openModalWallet,
         outputTokens,
@@ -357,10 +343,6 @@ export default function Portfolio(props: propsIF) {
                 mainnetProvider={mainnetProvider}
                 ethMainnetUsdPrice={ethMainnetUsdPrice}
                 connectedAccount={connectedAccount || ''}
-                setSelectedOutsideTab={setSelectedOutsideTab}
-                setOutsideControl={setOutsideControl}
-                openGlobalModal={openGlobalModal}
-                closeGlobalModal={closeGlobalModal}
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
@@ -574,14 +556,7 @@ export default function Portfolio(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         chainId: chainData.chainId,
         tokenMap: tokensOnActiveLists,
-        selectedOutsideTab: selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        setOutsideControl: setOutsideControl,
-        outsideControl: outsideControl,
         openTokenModal: openTokenModal,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
-        isSidebarOpen: isSidebarOpen,
         account: props.account,
         chainData: chainData,
         currentPositionActive: props.currentPositionActive,
@@ -620,7 +595,6 @@ export default function Portfolio(props: propsIF) {
         setShowProfileSettings: setShowProfileSettings,
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
         imageData: connectedAccountActive ? userImageData : secondaryImageData,
-        openGlobalModal: openGlobalModal,
     };
 
     const mobilePortfolio = (

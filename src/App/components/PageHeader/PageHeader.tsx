@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -28,19 +28,9 @@ interface HeaderPropsIF {
     isChainSupported: boolean;
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-    isMobileSidebarOpen: boolean;
-    setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
-    isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
-    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
     recentPools: recentPoolsMethodsIF;
-    switchTheme: () => void;
-    theme: string;
     chainData: ChainSpec;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
@@ -52,15 +42,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         isChainSupported,
         openWagmiModalWallet,
         lastBlockNumber,
-        isAppOverlayActive,
-        setIsAppOverlayActive,
-        switchTheme,
         recentPools,
-        theme,
         poolPriceDisplay,
         chainData,
-        isTutorialMode,
-        setIsTutorialMode,
         clickLogout,
     } = props;
 
@@ -87,16 +71,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         chainId: chainId,
-        isAppOverlayActive: isAppOverlayActive,
-        setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        switchTheme: switchTheme,
-        theme: theme,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
-
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
     };
 
     const connectWagmiButton = (

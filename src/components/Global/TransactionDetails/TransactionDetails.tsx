@@ -1,5 +1,5 @@
 import styles from './TransactionDetails.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
@@ -7,8 +7,8 @@ import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetail
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     account: string;
@@ -27,6 +27,9 @@ export default function TransactionDetails(props: propsIF) {
         isOnPortfolioPage,
         chainData,
     } = props;
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
@@ -44,24 +47,13 @@ export default function TransactionDetails(props: propsIF) {
         { slug: 'value', name: 'Show value', checked: true },
     ]);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
         const txHash = tx.tx;
         copy(txHash);
-        setOpenSnackbar(true);
+        openSnackbar(`${txHash} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     // const handleChange = (slug: string) => {
     //     const copyControlItems = [...controlItems];
@@ -133,7 +125,6 @@ export default function TransactionDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }
