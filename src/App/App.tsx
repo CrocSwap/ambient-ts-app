@@ -2618,17 +2618,14 @@ export default function App() {
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (!showSidebarByDefault) {
-            return;
-        } else {
-            appState.sidebar.open();
-            if (
-                currentLocation === '/' ||
-                currentLocation === '/swap' ||
-                currentLocation.includes('/account')
-            ) {
-                appState.sidebar.close();
-            }
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            appState.sidebar.close();
+        } else if (appState.sidebar.status === 'open') {
+            if (showSidebarByDefault) appState.sidebar.open();
         }
     }
 
@@ -3196,7 +3193,7 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            appState.sidebar.toggle('persist');
+            appState.sidebar.toggle(true);
         },
     );
     useKeyboardShortcuts(

@@ -111,6 +111,16 @@ export default function Sidebar(props: propsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
+
+    useEffect(() => {
+        overflowSidebarMQ
+            ? sidebar.close()
+            : sidebar.isOpen
+            ? sidebar.open()
+            : null;
+    }, [overflowSidebarMQ, sidebar.isOpen]);
+
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
 
@@ -388,7 +398,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='close sidebar'
-                            onClick={() => sidebar.close('persist')}
+                            onClick={() => sidebar.close(true)}
                         />
                     </div>
                 </DefaultTooltip>
@@ -405,7 +415,7 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='open sidebar'
-                            onClick={() => sidebar.open('persist')}
+                            onClick={() => sidebar.open(true)}
                         />
                     </div>
                 </DefaultTooltip>
@@ -413,12 +423,6 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
-
-    const overflowSidebarMQ = useMediaQuery('(max-width: 4000px)');
-
-    useEffect(() => {
-        overflowSidebarMQ ? sidebar.close() : sidebar.open();
-    }, [overflowSidebarMQ]);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
@@ -518,7 +522,7 @@ export default function Sidebar(props: propsIF) {
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
-                    sidebar.isOpen || sidebar.open('persist');
+                    sidebar.isOpen || sidebar.open(true);
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
