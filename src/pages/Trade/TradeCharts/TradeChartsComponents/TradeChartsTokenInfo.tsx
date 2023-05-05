@@ -96,7 +96,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             style={{ marginTop: '2.5px', cursor: 'pointer' }}
             aria-label={poolPrice}
         >
-            ${poolPrice}
+            {poolPrice}
         </span>
     );
 
