@@ -60,6 +60,8 @@ interface propsIF {
     tokenBSurplusPlusTokenBQtyNum: number;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    setIsSellLoading: Dispatch<SetStateAction<boolean>>;
+    setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -87,6 +89,7 @@ interface propsIF {
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
+    isLoading: boolean;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -129,6 +132,9 @@ export default function CurrencySelector(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
+        setIsSellLoading,
+        setIsBuyLoading,
+        isLoading,
     } = props;
 
     const { dexBalSwap } = useContext(UserPreferenceContext);
@@ -511,6 +517,9 @@ export default function CurrencySelector(props: propsIF) {
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                         setDisableReverseTokens={setDisableReverseTokens}
+                        setIsSellLoading={setIsSellLoading}
+                        setIsBuyLoading={setIsBuyLoading}
+                        isLoading={isLoading}
                     />
                 </div>
                 <button
