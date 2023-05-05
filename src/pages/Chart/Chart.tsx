@@ -232,6 +232,9 @@ export default function Chart(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const [minTickForLimit, setMinTickForLimit] = useState<any>();
+    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
+
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
     const side =
@@ -1150,43 +1153,72 @@ export default function Chart(props: propsIF) {
                                     poolPriceDisplay
                                 ) {
                                     const value = limit[0].value;
+                                    if (rescale) {
+                                        const low = Math.min(
+                                            minYBoundary,
+                                            value,
+                                            minTickForLimit,
+                                        );
 
-                                    if (value > 0) {
-                                        const low =
-                                            minYBoundary < value
-                                                ? minYBoundary
-                                                : value;
-
-                                        const high =
-                                            maxYBoundary > value
-                                                ? maxYBoundary
-                                                : value;
-
-                                        const buffer = Math.abs(
+                                        const high = Math.max(
+                                            maxYBoundary,
+                                            value,
+                                            maxTickForLimit,
+                                        );
+                                        const bufferForLimit = Math.abs(
                                             (low - high) / 6,
                                         );
-                                        const domain = [
-                                            Math.min(low, high) - buffer,
-                                            Math.max(low, high) + buffer / 2,
-                                        ];
-                                        scaleData?.yScale.domain(domain);
-                                    } else {
-                                        const buffer = Math.abs(
-                                            (minYBoundary - maxYBoundary) / 6,
-                                        );
+                                        if (value > 0) {
+                                            const domain = [
+                                                Math.min(low, high) -
+                                                    bufferForLimit,
+                                                Math.max(low, high) +
+                                                    bufferForLimit / 2,
+                                            ];
 
-                                        const domain = [
-                                            Math.min(
-                                                minYBoundary,
-                                                maxYBoundary,
-                                            ) - buffer,
-                                            Math.max(
-                                                minYBoundary,
-                                                maxYBoundary,
-                                            ) +
-                                                buffer / 2,
-                                        ];
-                                        scaleData?.yScale.domain(domain);
+                                            scaleData?.yScale.domain(domain);
+                                        }
+                                    } else {
+                                        if (value > 0) {
+                                            const low =
+                                                minYBoundary < value
+                                                    ? minYBoundary
+                                                    : value;
+
+                                            const high =
+                                                maxYBoundary > value
+                                                    ? maxYBoundary
+                                                    : value;
+
+                                            const buffer = Math.abs(
+                                                (low - high) / 6,
+                                            );
+
+                                            const domain = [
+                                                Math.min(low, high) - buffer,
+                                                Math.max(low, high) +
+                                                    buffer / 2,
+                                            ];
+                                            scaleData?.yScale.domain(domain);
+                                        } else {
+                                            const buffer = Math.abs(
+                                                (minYBoundary - maxYBoundary) /
+                                                    6,
+                                            );
+
+                                            const domain = [
+                                                Math.min(
+                                                    minYBoundary,
+                                                    maxYBoundary,
+                                                ) - buffer,
+                                                Math.max(
+                                                    minYBoundary,
+                                                    maxYBoundary,
+                                                ) +
+                                                    buffer / 2,
+                                            ];
+                                            scaleData?.yScale.domain(domain);
+                                        }
                                     }
                                 }
                             } else {
@@ -2020,6 +2052,8 @@ export default function Chart(props: propsIF) {
         dragEvent,
         isLineDrag,
         diffHashSig(yAxisLabels),
+        minTickForLimit,
+        maxTickForLimit,
     ]);
 
     useEffect(() => {
@@ -2096,13 +2130,18 @@ export default function Chart(props: propsIF) {
                             poolPriceDisplay
                         ) {
                             const value = limit[0].value;
-                            const low =
-                                minYBoundary < value ? minYBoundary : value;
+                            const low = Math.min(
+                                minYBoundary,
+                                value,
+                                minTickForLimit,
+                            );
 
-                            const high =
-                                maxYBoundary > value ? maxYBoundary : value;
+                            const high = Math.max(
+                                maxYBoundary,
+                                value,
+                                maxTickForLimit,
+                            );
                             const bufferForLimit = Math.abs((low - high) / 6);
-
                             if (value > 0) {
                                 const domain = [
                                     Math.min(low, high) - bufferForLimit,
@@ -2135,7 +2174,12 @@ export default function Chart(props: propsIF) {
                 }
             }
         }
-    }, [parsedChartData?.chartData?.length, rescale]);
+    }, [
+        parsedChartData?.chartData?.length,
+        rescale,
+        minTickForLimit,
+        maxTickForLimit,
+    ]);
 
     useEffect(() => {
         setMarketLineValue();
@@ -2565,8 +2609,51 @@ export default function Chart(props: propsIF) {
     const getNoZoneData = () => {
         const noGoZoneMin = noGoZoneBoudnaries[0][0];
         const noGoZoneMax = noGoZoneBoudnaries[0][1];
-
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
+    };
+
+    const setLimitTickNearNoGoZone = (low: number, high: number) => {
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(parseFloat(low.toString()))
+            : pool?.fromDisplayPrice(1 / parseFloat(high.toString()));
+
+        limitNonDisplay?.then((limit) => {
+            limit = limit !== 0 ? limit : 1;
+
+            const pinnedTick: number = pinTickLower(limit, chainData.gridSize);
+            const tickPrice = tickToPrice(pinnedTick);
+
+            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+            if (tickDispPrice) {
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+
+                    setMinTickForLimit(displayPriceWithDenom);
+                });
+            }
+        });
+
+        const limitNonDisplayMax = denomInBase
+            ? pool?.fromDisplayPrice(parseFloat(high.toString()))
+            : pool?.fromDisplayPrice(1 / parseFloat(high.toString()));
+
+        limitNonDisplayMax?.then((limit) => {
+            limit = limit !== 0 ? limit : 1;
+            const pinnedTick: number = pinTickUpper(limit, chainData.gridSize);
+
+            const tickPrice = tickToPrice(pinnedTick);
+
+            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+            if (tickDispPrice) {
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+
+                    setMaxTickForLimit(displayPriceWithDenom);
+                });
+            }
+        });
     };
 
     function setLimitForNoGoZone(newLimitValue: number) {
@@ -3126,11 +3213,17 @@ export default function Chart(props: propsIF) {
                             if (minYBoundary && maxYBoundary) {
                                 const value = newLimitValue;
 
-                                const low =
-                                    minYBoundary < value ? minYBoundary : value;
+                                const low = Math.min(
+                                    minYBoundary,
+                                    value,
+                                    minTickForLimit,
+                                );
 
-                                const high =
-                                    maxYBoundary > value ? maxYBoundary : value;
+                                const high = Math.max(
+                                    maxYBoundary,
+                                    value,
+                                    maxTickForLimit,
+                                );
 
                                 const min = scaleData?.yScale.domain()[0];
                                 const max = scaleData?.yScale.domain()[1];
@@ -3180,6 +3273,8 @@ export default function Chart(props: propsIF) {
         limit,
         minPrice,
         maxPrice,
+        minTickForLimit,
+        maxTickForLimit,
     ]);
 
     useEffect(() => {
@@ -5468,6 +5563,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     function noGoZone(poolPrice: any) {
+        setLimitTickNearNoGoZone(poolPrice * 0.99, poolPrice * 1.01);
         return [[poolPrice * 0.99, poolPrice * 1.01]];
     }
 
@@ -5526,10 +5622,18 @@ export default function Chart(props: propsIF) {
                         scaleData?.yScale.domain(domain);
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
-                        const low = Math.min(minYBoundary, value);
+                        const low = Math.min(
+                            minYBoundary,
+                            value,
+                            minTickForLimit,
+                        );
 
-                        const high =
-                            maxYBoundary > value ? maxYBoundary : value;
+                        const high = Math.max(
+                            maxYBoundary,
+                            value,
+                            maxTickForLimit,
+                        );
+
                         const bufferForLimit = Math.abs((low - high) / 6);
                         if (value > 0 && Math.abs(value) !== Infinity) {
                             const domain = [
@@ -5563,6 +5667,9 @@ export default function Chart(props: propsIF) {
         location.pathname,
         parsedChartData?.period,
         diffHashSig(parsedChartData?.chartData[0]),
+        noGoZoneBoudnaries,
+        maxTickForLimit,
+        minTickForLimit,
     ]);
 
     // Call drawChart()
