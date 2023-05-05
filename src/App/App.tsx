@@ -1526,11 +1526,12 @@ export default function App() {
     ]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
         candleTimeLocal,
+        isUserIdle,
     ]);
 
     const fetchCandles = () => {
