@@ -984,12 +984,12 @@ export default function Chart(props: propsIF) {
                 const finalData =
                     maxBoundary < newLastCandle ? maxBoundary : newLastCandle;
 
-                const lastCandleDate = d3.min(filtered, (d) => d.time);
+                const lastCandleDate = d3.min(filtered, (d) => d.time * 1000);
 
                 const candleDomain = {
                     lastCandleDate:
                         lastCandleDate !== undefined
-                            ? lastCandleDate * 1000
+                            ? lastCandleDate
                             : filtered[0].time * 1000,
                     domainBoundry: finalData,
                 };
@@ -1014,11 +1014,9 @@ export default function Chart(props: propsIF) {
                 (data: CandleData) => data.time,
             );
 
-            const minCandleTime = d3.min(filteredTime, (d) => d.time);
+            const lastCandleDate = d3.min(filteredTime, (d) => d.time * 1000);
 
-            if (minCandleTime) {
-                const lastCandleDate = minCandleTime * 1000;
-
+            if (lastCandleDate) {
                 const changeCandleSize = (
                     domainX: any,
                     deltaX: number,
@@ -1593,7 +1591,7 @@ export default function Chart(props: propsIF) {
 
                         const latestCandleTime = d3.max(
                             unparsedCandleData,
-                            (d) => d.time,
+                            (d) => d.time * 1000,
                         );
 
                         if (latestCandleTime !== undefined) {
@@ -1919,7 +1917,7 @@ export default function Chart(props: propsIF) {
                     .on('end', () => {
                         const latestCandleTime = d3.max(
                             unparsedCandleData,
-                            (d) => d.time,
+                            (d) => d.time * 1000,
                         );
 
                         if (latestCandleTime) {
