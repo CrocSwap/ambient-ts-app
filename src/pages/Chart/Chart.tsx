@@ -300,35 +300,35 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    const [limitTriangleData, setLimitTriangleData] = useState([
-        {
-            value: 0,
-            time: 0,
-        },
-        {
-            value: 0,
-            time: 0,
-        },
-    ]);
+    // const [limitTriangleData, setLimitTriangleData] = useState([
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    // ]);
 
-    const [rangeTriangleData, setRangeTriangleData] = useState([
-        {
-            value: 0,
-            time: 0,
-        },
-        {
-            value: 0,
-            time: 0,
-        },
-        {
-            value: 0,
-            time: 0,
-        },
-        {
-            value: 0,
-            time: 0,
-        },
-    ]);
+    // const [rangeTriangleData, setRangeTriangleData] = useState([
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    //     {
+    //         value: 0,
+    //         time: 0,
+    //     },
+    // ]);
 
     const [market, setMarket] = useState([
         {
@@ -483,33 +483,33 @@ export default function Chart(props: propsIF) {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
 
-    const setTriangleRangeValues = (max: number, min: number) => {
-        setRangeTriangleData((prevState) => {
-            const newData = [...prevState];
+    // const setTriangleRangeValues = (max: number, min: number) => {
+    //     setRangeTriangleData((prevState) => {
+    //         const newData = [...prevState];
 
-            const maxPrice = max !== undefined ? max : 0;
-            const minPrice = min !== undefined ? min : 0;
+    //         const maxPrice = max !== undefined ? max : 0;
+    //         const minPrice = min !== undefined ? min : 0;
 
-            newData[0].value = maxPrice;
-            newData[1].value = maxPrice;
-            newData[2].value = minPrice;
-            newData[3].value = minPrice;
+    //         newData[0].value = maxPrice;
+    //         newData[1].value = maxPrice;
+    //         newData[2].value = minPrice;
+    //         newData[3].value = minPrice;
 
-            return newData;
-        });
-    };
+    //         return newData;
+    //     });
+    // };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const setTriangleLimitValues = (limit: any) => {
-        setLimitTriangleData((prevState) => {
-            const newData = [...prevState];
+    // const setTriangleLimitValues = (limit: any) => {
+    //     setLimitTriangleData((prevState) => {
+    //         const newData = [...prevState];
 
-            newData[0].value = limit;
-            newData[1].value = limit;
+    //         newData[0].value = limit;
+    //         newData[1].value = limit;
 
-            return newData;
-        });
-    };
+    //         return newData;
+    //     });
+    // };
 
     useEffect(() => {
         if (
@@ -536,7 +536,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            setTriangleRangeValues(maxPrice, minPrice);
+            // setTriangleRangeValues(maxPrice, minPrice);
         }
     }, [minPrice, maxPrice, isAdvancedModeActive]);
 
@@ -659,7 +659,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            setTriangleRangeValues(maxPrice, 0);
+            // setTriangleRangeValues(maxPrice, 0);
 
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
@@ -2245,7 +2245,7 @@ export default function Chart(props: propsIF) {
                     value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
-            setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
+            // setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
         });
     };
 
@@ -2264,7 +2264,7 @@ export default function Chart(props: propsIF) {
             return newTargets;
         });
 
-        setTriangleRangeValues(maxPrice, minPrice);
+        // setTriangleRangeValues(maxPrice, minPrice);
     }, [denomInBase]);
 
     useEffect(() => {
@@ -2315,10 +2315,10 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                setTriangleRangeValues(
-                    parseFloat(pinnedMaxPriceDisplayTruncated),
-                    parseFloat(pinnedMinPriceDisplayTruncated),
-                );
+                // setTriangleRangeValues(
+                //     parseFloat(pinnedMaxPriceDisplayTruncated),
+                //     parseFloat(pinnedMinPriceDisplayTruncated),
+                // );
             } else if (
                 simpleRangeWidth === 100 ||
                 rescaleRangeBoundariesWithSlider
@@ -2339,7 +2339,7 @@ export default function Chart(props: propsIF) {
 
                         setLiqHighlightedLinesAndArea(newTargets);
 
-                        setTriangleRangeValues(maxPrice, minPrice);
+                        // setTriangleRangeValues(maxPrice, minPrice);
 
                         if (
                             poolPriceDisplay !== undefined &&
@@ -2434,14 +2434,14 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                setTriangleRangeValues(
-                    parseFloat(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                    ),
-                    parseFloat(
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    ),
-                );
+                // setTriangleRangeValues(
+                //     parseFloat(
+                //         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                //     ),
+                //     parseFloat(
+                //         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                //     ),
+                // );
             }
         }
     };
@@ -2465,7 +2465,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            setTriangleRangeValues(maxPrice, minPrice);
+            // setTriangleRangeValues(maxPrice, minPrice);
 
             setChartTriggeredBy('none');
         }
@@ -2712,10 +2712,10 @@ export default function Chart(props: propsIF) {
 
                                 return newTargets;
                             });
-                            setTriangleRangeValues(
-                                liquidityData?.topBoundary,
-                                minValue,
-                            );
+                            // setTriangleRangeValues(
+                            //     liquidityData?.topBoundary,
+                            //     minValue,
+                            // );
                         } else {
                             if (lineToBeSet === 'Max') {
                                 const pinnedTick =
@@ -2826,10 +2826,10 @@ export default function Chart(props: propsIF) {
                                     return newTargets;
                                 });
 
-                                setTriangleRangeValues(
-                                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                );
+                                // setTriangleRangeValues(
+                                //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                // );
                             }
                         }
                     } else {
@@ -2930,14 +2930,14 @@ export default function Chart(props: propsIF) {
 
                             setLiqHighlightedLinesAndArea(newTargets);
 
-                            const minPrice = newTargets.filter(
-                                (target: any) => target.name === 'Min',
-                            )[0].value;
-                            const maxPrice = newTargets.filter(
-                                (target: any) => target.name === 'Max',
-                            )[0].value;
+                            // const minPrice = newTargets.filter(
+                            //     (target: any) => target.name === 'Min',
+                            // )[0].value;
+                            // const maxPrice = newTargets.filter(
+                            //     (target: any) => target.name === 'Max',
+                            // )[0].value;
 
-                            setTriangleRangeValues(maxPrice, minPrice);
+                            // setTriangleRangeValues(maxPrice, minPrice);
                             return newTargets;
                         });
                     }
@@ -3074,7 +3074,7 @@ export default function Chart(props: propsIF) {
                                             },
                                         ];
                                     });
-                                    setTriangleLimitValues(limitValue);
+                                    // setTriangleLimitValues(limitValue);
                                 }
                             });
                         }
@@ -4246,7 +4246,7 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                setTriangleRangeValues(liquidityData?.topBoundary, 0);
+                // setTriangleRangeValues(liquidityData?.topBoundary, 0);
             } else {
                 if (lineToBeSet === 'Max') {
                     tickValue = getPinnedTickFromDisplayPrice(
@@ -4328,10 +4328,10 @@ export default function Chart(props: propsIF) {
                         return newTargets;
                     });
 
-                    setTriangleRangeValues(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    );
+                    // setTriangleRangeValues(
+                    //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    // );
                 }
             }
 
@@ -4400,10 +4400,10 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                setTriangleRangeValues(
-                    pinnedMaxPriceDisplayTruncated,
-                    pinnedMinPriceDisplayTruncated,
-                );
+                // setTriangleRangeValues(
+                //     pinnedMaxPriceDisplayTruncated,
+                //     pinnedMinPriceDisplayTruncated,
+                // );
             })().then(() => {
                 onBlurRange(
                     newRangeValue,
@@ -6551,7 +6551,7 @@ export default function Chart(props: propsIF) {
                         },
                     ];
                 });
-                setTriangleLimitValues(newLimitValue);
+                // setTriangleLimitValues(newLimitValue);
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
@@ -6579,7 +6579,7 @@ export default function Chart(props: propsIF) {
                             },
                         ];
                     });
-                    setTriangleLimitValues(limitValue);
+                    // setTriangleLimitValues(limitValue);
                 });
             }
         });
