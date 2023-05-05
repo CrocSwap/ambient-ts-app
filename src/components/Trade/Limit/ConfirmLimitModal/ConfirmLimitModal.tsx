@@ -292,7 +292,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             <footer className={styles.modal_footer}>
                 {showConfirmation && (
                     <Button
-                        title='Send Limit'
+                        title='Submit Limit Order'
                         // if this modal is launched we can infer user wants confirmation
                         // if user enables bypass, update all settings in parallel
                         // otherwise do not not make any change to persisted preferences

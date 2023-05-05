@@ -349,7 +349,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <footer className={styles.modal_footer}>
                 {showConfirmation && !isWaitingForPriceChangeAckt && (
                     <Button
-                        title='Send Swap'
+                        title='Submit Swap'
                         action={() => {
                             // if this modal is launched we can infer user wants confirmation
                             // if user enables bypass, update all settings in parallel
