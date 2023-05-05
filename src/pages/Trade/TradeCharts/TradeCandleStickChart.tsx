@@ -76,8 +76,8 @@ interface propsIF {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    selectedDate: Date | undefined;
-    setSelectedDate: React.Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: React.Dispatch<number | undefined>;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -589,30 +589,24 @@ export default function TradeCandleStickChart(props: propsIF) {
                 .pad([0.05, 0.05]);
 
             const xExtent = d3fc
-                .extentDate()
-                .accessors([(d: any) => new Date(d.time * 1000)])
+                .extentLinear()
+                .accessors([(d: any) => d.time * 1000])
                 .padUnit('domain')
-                // ensure that the scale is padded by one day in either direction
-                .pad([period * 1000, (period / 2) * 80000]);
+                .pad([period * 1000, (period / 2) * 80 * 1000]);
 
-            const subChartxExtent = d3fc
-                .extentDate()
-                .accessors([(d: any) => new Date(d.time * 1000)])
-                .padUnit('domain')
-                // ensure that the scale is padded by one day in either direction
-                .pad([period * 3000, (period / 2) * 100000]);
-
-            const xScale = d3.scaleTime();
-            const subChartxScale = d3.scaleTime();
+            const xScale = d3.scaleLinear();
+            const xScaleTime = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
             xScale.domain(xExtent(boundaryCandles));
-            subChartxScale.domain(subChartxExtent(unparsedCandleData));
             yScale.domain(priceRange(boundaryCandles));
 
             const xScaleCopy = xScale.copy();
 
-            // const ghostScale = d3.scaleLinear();
+            console.log(
+                new Date(xScaleCopy.domain()[0]),
+                new Date(xScaleCopy.domain()[1]),
+            );
 
             const volumeScale = d3.scaleLinear();
 
@@ -627,10 +621,10 @@ export default function TradeCandleStickChart(props: propsIF) {
             setScaleData(() => {
                 return {
                     xScale: xScale,
+                    xScaleTime: xScaleTime,
                     yScale: yScale,
                     xScaleCopy: xScaleCopy,
                     // ghostScale: ghostScale,
-                    subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastDragedY: 0,
                     xExtent: xExtent,

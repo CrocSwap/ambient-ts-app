@@ -67,13 +67,11 @@ export default function TvlSubChart(props: TvlData) {
     useEffect(() => {
         const yScale = d3.scaleLinear();
 
-        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
-        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
+        const xmin = scaleData?.xScale.domain()[0];
+        const xmax = scaleData?.xScale.domain()[1];
 
         const filtered = tvlData?.filter(
-            (data: any) =>
-                new Date(data.time * 1000) >= xmin &&
-                new Date(data.time * 1000) <= xmax,
+            (data: any) => data.time * 1000 >= xmin && data.time * 1000 <= xmax,
         );
 
         if (filtered !== undefined) {
@@ -108,9 +106,7 @@ export default function TvlSubChart(props: TvlData) {
                 .zoom()
                 .on('start', () => {
                     if (date === undefined) {
-                        date = new Date(
-                            tvlData[tvlData.length - 1].time * 1000,
-                        );
+                        date = tvlData[tvlData.length - 1].time * 1000;
                     }
                 })
                 .on('zoom', (event: any) => {
@@ -122,14 +118,11 @@ export default function TvlSubChart(props: TvlData) {
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
 
-                    getNewCandleData(
-                        new Date(domainX[0].getTime() + deltaX),
-                        date,
-                    );
+                    getNewCandleData(domainX[0] + deltaX, date);
 
                     scaleData?.xScale.domain([
-                        new Date(domainX[0].getTime() + deltaX),
-                        new Date(domainX[1].getTime() + deltaX),
+                        domainX[0] + deltaX,
+                        domainX[1] + deltaX,
                     ]);
 
                     setZoomAndYdragControl(event);
@@ -148,13 +141,12 @@ export default function TvlSubChart(props: TvlData) {
 
     useEffect(() => {
         if (tvlyScale !== undefined) {
-            const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
-            const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
+            const xmin = scaleData?.xScale.domain()[0];
+            const xmax = scaleData?.xScale.domain()[1];
 
             const filtered = tvlData?.filter(
                 (data: any) =>
-                    new Date(data.time * 1000) >= xmin &&
-                    new Date(data.time * 1000) <= xmax,
+                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
             const yAxis = d3fc.axisRight().scale(tvlyScale);
@@ -286,7 +278,7 @@ export default function TvlSubChart(props: TvlData) {
                 .yScale(tvlyScale)
                 // .curve(d3.curveBasis)
                 .mainValue((d: any) => d.tvlData.tvl)
-                .crossValue((d: any) => new Date(d.time * 1000))
+                .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
                     selection.fillStyle = tvlGradient;
                 });
@@ -300,7 +292,7 @@ export default function TvlSubChart(props: TvlData) {
                 .xScale(scaleData?.xScale)
                 .yScale(tvlyScale)
                 .mainValue((d: any) => d.tvlData.tvl)
-                .crossValue((d: any) => new Date(d.time * 1000))
+                .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
                     selection.strokeStyle = 'rgba(115, 113, 252, 0.7)';
                     selection.strokeWidth = 2;

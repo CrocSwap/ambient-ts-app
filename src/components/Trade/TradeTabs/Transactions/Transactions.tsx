@@ -53,7 +53,7 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
-    setSelectedDate?: Dispatch<Date | undefined>;
+    setSelectedDate?: Dispatch<number | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }

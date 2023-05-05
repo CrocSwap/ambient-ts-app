@@ -112,9 +112,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .scaleExtent([1, 10])
                 .on('start', () => {
                     if (date === undefined) {
-                        date = new Date(
-                            feeData[feeData.length - 1].time * 1000,
-                        );
+                        date = feeData[feeData.length - 1].time * 1000;
                     }
                 })
                 .on('zoom', (event: any) => {
@@ -125,14 +123,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
-                    getNewCandleData(
-                        new Date(domainX[0].getTime() + deltaX),
-                        date,
-                    );
-                    xScale.domain([
-                        new Date(domainX[0].getTime() + deltaX),
-                        new Date(domainX[1].getTime() + deltaX),
-                    ]);
+                    getNewCandleData(domainX[0] + deltaX, date);
+                    xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
 
                     setZoomAndYdragControl(event);
                 }) as any;
@@ -150,7 +142,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .xScale(xScale)
                 .yScale(feeRateyScale)
                 .mainValue((d: any) => d.averageLiquidityFee)
-                .crossValue((d: any) => new Date(d.time * 1000))
+                .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
                     selection.strokeStyle = '#7371FC';
                     selection.strokeWidth = 1;
