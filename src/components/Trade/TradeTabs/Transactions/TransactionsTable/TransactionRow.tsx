@@ -126,7 +126,7 @@ export default function TransactionRow(props: propsIF) {
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
@@ -268,7 +268,6 @@ export default function TransactionRow(props: propsIF) {
         lowAndHighPriceDisplay,
         priceDisplay,
     } = txRowConstants(txRowConstantsProps);
-
     // end of portfolio page li element ---------------
     return (
         <ul

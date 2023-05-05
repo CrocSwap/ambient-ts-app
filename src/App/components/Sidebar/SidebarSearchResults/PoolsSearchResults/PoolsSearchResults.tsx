@@ -40,7 +40,7 @@ export default function PoolsSearchResults(props: propsIF) {
 
     return (
         <div>
-            <h4 className={styles.card_title}>Initialized Pools</h4>
+            <h4 className={styles.card_title}>Pools</h4>
             {searchedPools.length ? (
                 <>
                     <header className={styles.header}>

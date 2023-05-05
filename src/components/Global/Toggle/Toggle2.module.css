@@ -55,14 +55,12 @@
 .switch {
     width: 36px;
     height: 20px;
-    background-color: transparent;
+    background: var(--dark3);
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    border-radius: 50px;
+    border-radius: 18px;
     border: 1px solid var(--accent1);
-    /* padding: 10px; */
-    /* padding:  2px; */
     cursor: pointer;
 }
 
@@ -79,14 +77,14 @@
     background-color: var(--accent1);
 }
 .switch[data-isOn='true'] .handle {
-    background: var(--text2);
+    background: var(--text1);
 }
 
 .handle {
     /* width: 36px; */
     width: 18px;
     height: 18px;
-    background: var(--text2);
+    background: var(--text1);
     border-radius: 40px;
 }
 

@@ -96,7 +96,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             style={{ marginTop: '2.5px', cursor: 'pointer' }}
             aria-label={poolPrice}
         >
-            {poolPrice}
+            ${poolPrice}
         </span>
     );
 
@@ -116,11 +116,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 style={
                     isPoolPriceChangePositive
                         ? {
-                              color: 'green',
+                              color: '#41D18E',
                               marginTop: '4.5px',
                               fontSize: '15px',
                           }
-                        : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
+                        : {
+                              color: '#E75670',
+                              marginTop: '4.5px',
+                              fontSize: '15px',
+                          }
                 }
                 aria-label={`Pool price change is ${poolPriceNumber}`}
             >
