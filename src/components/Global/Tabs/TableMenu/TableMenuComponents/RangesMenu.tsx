@@ -1,12 +1,18 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import {
+    useState,
+    useRef,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
@@ -27,6 +33,7 @@ import {
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -39,7 +46,6 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    posHash: string;
     isOnPortfolioPage: boolean;
     isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
@@ -64,7 +70,6 @@ export default function RangesMenu(props: propsIF) {
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
-        posHash,
         position,
         handlePulseAnimation,
         setSimpleRangeWidth,
@@ -74,10 +79,11 @@ export default function RangesMenu(props: propsIF) {
         chainData,
     } = props;
 
-    const { openGlobalModal } = rangeDetailsProps;
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+    } = useContext(AppStateContext);
 
     const { isAmbient } = rangeDetailsProps;
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
 
@@ -102,6 +108,7 @@ export default function RangesMenu(props: propsIF) {
         openGlobalModal(
             <RangeDetails
                 position={position}
+                closeGlobalModal={closeGlobalModal}
                 chainData={chainData}
                 {...rangeDetailsProps}
             />,
@@ -129,19 +136,6 @@ export default function RangesMenu(props: propsIF) {
         }
         setShowDropdownMenu(false);
     };
-
-    // -----------------SNACKBAR----------------
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {posHash} copied
-        </SnackbarComponent>
-    );
-    // -----------------END OF SNACKBAR----------------
 
     const repositionButton = (
         <Link
@@ -310,7 +304,6 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.main_container}>
             {rangesMenu}
             {dropdownRangesMenu}
-            {snackbarContent}
             {isHarvestModalOpen && (
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
                     <HarvestPosition

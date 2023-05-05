@@ -1,4 +1,11 @@
-import { useEffect, Dispatch, SetStateAction, useRef, useState } from 'react';
+import {
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useRef,
+    useState,
+    useContext,
+} from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
@@ -15,8 +22,8 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import rangeRowConstants from '../rangeRowConstants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -37,8 +44,6 @@ interface propsIF {
     rank?: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     isOnPortfolioPage: boolean;
     isLeaderboard?: boolean;
     idx: number;
@@ -61,7 +66,6 @@ export default function RangesRow(props: propsIF) {
         position,
         currentPositionActive,
         setCurrentPositionActive,
-        openGlobalModal,
         isOnPortfolioPage,
         isLeaderboard,
         handlePulseAnimation,
@@ -69,6 +73,10 @@ export default function RangesRow(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
+    const {
+        globalModal: { open: openGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const {
         posHash,
@@ -127,15 +135,12 @@ export default function RangesRow(props: propsIF) {
         quoteTokenAddress: props.position.quote,
         lastBlockNumber: props.lastBlockNumber,
         positionApy: position.apy,
-        closeGlobalModal: props.closeGlobalModal,
-        openGlobalModal: props.openGlobalModal,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
     };
 
     const rangeMenuProps = {
         chainData: props.chainData,
-        posHash: posHash as string,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
         isPositionEmpty: isPositionEmpty,
@@ -199,32 +204,16 @@ export default function RangesRow(props: propsIF) {
             inline: 'nearest',
         });
     }
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [valueToCopy, setValueToCopy] = useState('');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {valueToCopy} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
-        setValueToCopy(ownerId);
         copy(ownerId);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${ownerId} copied`, 'info');
     }
 
     function handleCopyPosHash() {
-        setValueToCopy(posHash.toString());
         copy(posHash.toString());
-
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     useEffect(() => {
@@ -391,7 +380,6 @@ export default function RangesRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            {snackbarContent}
         </>
     );
 }

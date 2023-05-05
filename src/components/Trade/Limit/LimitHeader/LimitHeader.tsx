@@ -19,21 +19,24 @@ import {
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
     chainId: string;
     isPairStable: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function LimitHeader(props: propsIF) {
-    const { isPairStable, openGlobalModal } = props;
+    const { isPairStable } = props;
     const { mintSlippage, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
+    const {
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 

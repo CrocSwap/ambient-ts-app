@@ -14,8 +14,6 @@ interface propsIF {
     isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
     isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -30,8 +28,6 @@ export default function SidebarSearchResults(props: propsIF) {
         isConnected,
         cachedPoolStatsFetch,
         isDenomBase,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
@@ -51,8 +47,6 @@ export default function SidebarSearchResults(props: propsIF) {
                     <TxSearchResults
                         chainId={chainId}
                         searchedTxs={searchData.txs}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
                         setCurrentTxActiveInTransactions={
                             setCurrentTxActiveInTransactions
                         }
@@ -62,8 +56,6 @@ export default function SidebarSearchResults(props: propsIF) {
                         chainId={chainId}
                         searchedLimitOrders={searchData.limits}
                         isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
@@ -71,8 +63,6 @@ export default function SidebarSearchResults(props: propsIF) {
                         chainId={chainId}
                         searchedPositions={searchData.positions}
                         isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
