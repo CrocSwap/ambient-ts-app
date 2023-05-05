@@ -16,21 +16,24 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for props
 interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // main react functional component
 export default function SwapHeader(props: propsIF) {
-    const { isPairStable, isOnTradeRoute, openGlobalModal } = props;
+    const { isPairStable, isOnTradeRoute } = props;
     const { swapSlippage, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+    const {
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();

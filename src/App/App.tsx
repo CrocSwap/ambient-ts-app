@@ -145,7 +145,7 @@ import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
-import { sidebarMethodsIF, useSidebar } from './hooks/useSidebar';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -186,6 +186,9 @@ import { useNewTokens } from './hooks/useNewTokens/useNewTokens';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
+import { useTermsOfService } from './hooks/useTermsOfService';
+import { AppStateContext } from '../contexts/AppStateContext';
+import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -204,12 +207,6 @@ const shouldNonCandleSubscriptionsReconnect = true;
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
-const isChartEnabled =
-    !!process.env.REACT_APP_CHART_IS_ENABLED &&
-    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
-        ? false
-        : true;
-
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
@@ -217,19 +214,11 @@ export default function App() {
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
-    const [isTutorialMode, setIsTutorialMode] = useState(false);
 
     useNewTokens();
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
-
-    // hook to manage app skin
-    const skin = useSkin('purple_dark');
-    false && skin;
-
-    // hook to track user's sidebar preference open or closed
-    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
 
     const { address: account, isConnected } = useAccount();
 
@@ -245,6 +234,83 @@ export default function App() {
         bypassConfirmLimit: useSkipConfirm('limit'),
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
+    };
+
+    // TODO: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isTutorialMode, setIsTutorialMode] = useState(false);
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isChatEnabled, setIsChatEnabled] = useState(
+        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+            : true,
+    );
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+    const isChartEnabled =
+        !!process.env.REACT_APP_CHART_IS_ENABLED &&
+        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+            ? false
+            : true;
+
+    const appState = {
+        appOverlay: {
+            isActive: isAppOverlayActive,
+            setIsActive: setIsAppOverlayActive,
+        },
+        globalModal: useGlobalModal(),
+        globalPopup: useGlobalPopup(),
+        sidebar: useSidebar(location.pathname),
+        snackbar: useSnackbar(),
+        tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
+        skin: useSkin('purple_dark'),
+        // TODO: walletToS, chatToS unused
+        walletToS: useTermsOfService(
+            'wallet',
+            process.env.REACT_APP_WALLET_TOS_CID as string,
+        ),
+        chatToS: useTermsOfService(
+            'chat',
+            process.env.REACT_APP_CHAT_TOS_CID as string,
+        ),
+        theme: { selected: theme, setSelected: setTheme },
+        outsideTab: {
+            selected: selectedOutsideTab,
+            setSelected: setSelectedOutsideTab,
+        },
+        outsideControl: {
+            isActive: outsideControl,
+            setIsActive: setOutsideControl,
+        },
+        chat: {
+            isOpen: isChatOpen,
+            setIsOpen: setIsChatOpen,
+            isEnabled: isChatEnabled,
+            setIsEnabled: setIsChatEnabled,
+        },
+        chart: {
+            isFullScreen: fullScreenChart,
+            setIsFullScreen: setFullScreenChart,
+            isEnabled: isChartEnabled,
+        },
+        server: { isEnabled: isServerEnabled },
+        subscriptions: { isEnabled: areSubscriptionsEnabled },
     };
 
     useEffect(() => {
@@ -304,8 +370,6 @@ export default function App() {
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
         dispatch(setIsUserIdle(true));
-        // reload to avoid stale wallet connections and excessive state accumulation
-        window.location.reload();
     };
 
     const onActive = () => {
@@ -360,26 +424,6 @@ export default function App() {
 
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
-    const areSubscriptionsEnabled =
-        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
-            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
-    );
 
     useEffect(() => {
         if (isConnected) {
@@ -524,7 +568,12 @@ export default function App() {
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
+    }, [
+        // signerStatus === 'success',
+        crocEnv === undefined,
+        chainData.chainId,
+        signer,
+    ]);
 
     useEffect(() => {
         if (provider) {
@@ -704,8 +753,6 @@ export default function App() {
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-
     const sessionReceipts = receiptData?.sessionReceipts;
 
     const lastReceipt =
@@ -715,22 +762,6 @@ export default function App() {
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    const snackMessage = lastReceipt
-        ? isLastReceiptSuccess
-            ? `Transaction ${lastReceipt.transactionHash} successfully completed`
-            : `Transaction ${lastReceipt.transactionHash} failed`
-        : '';
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity={isLastReceiptSuccess ? 'info' : 'warning'}
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {snackMessage}
-        </SnackbarComponent>
-    );
-
     const lastReceiptHash = useMemo(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
@@ -738,7 +769,14 @@ export default function App() {
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
-            setOpenSnackbar(true);
+            appState.snackbar.open(
+                lastReceipt
+                    ? isLastReceiptSuccess
+                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+                        : `Transaction ${lastReceipt.transactionHash} failed`
+                    : '',
+                isLastReceiptSuccess ? 'info' : 'warning',
+            );
         }
     }, [lastReceiptHash]);
 
@@ -2583,44 +2621,50 @@ export default function App() {
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (!showSidebarByDefault) {
-            return;
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            appState.sidebar.close();
+        } else if (showSidebarByDefault) {
+            appState.sidebar.open();
         } else {
-            sidebar.open();
-            if (
-                currentLocation === '/' ||
-                currentLocation === '/swap' ||
-                currentLocation.includes('/account')
-            ) {
-                sidebar.close();
-            }
+            appState.sidebar.close();
         }
     }
 
     function toggleTradeTabBasedOnRoute() {
-        setOutsideControl(true);
-        if (currentLocation.includes('/market')) {
-            setSelectedOutsideTab(0);
-        } else if (currentLocation.includes('/limit')) {
-            setSelectedOutsideTab(1);
-        } else if (
-            currentLocation.includes('/range') ||
-            currentLocation.includes('reposition') ||
-            currentLocation.includes('add')
-        ) {
-            setSelectedOutsideTab(2);
+        if (!isCandleSelected) {
+            appState.outsideControl.setIsActive(true);
+            if (currentLocation.includes('/market')) {
+                appState.outsideTab.setSelected(0);
+            } else if (currentLocation.includes('/limit')) {
+                appState.outsideTab.setSelected(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                appState.outsideTab.setSelected(2);
+            }
         }
     }
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
+
+    useEffect(() => {
         if (
-            !isCandleSelected &&
             !currentTxActiveInTransactions &&
-            !currentPositionActive
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location, isCandleSelected]);
+    }, [location]);
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
@@ -2665,26 +2709,6 @@ export default function App() {
         closeWagmiModalWallet,
     ] = useModal();
 
-    const [
-        isGlobalModalOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        currentContent,
-        title,
-    ] = useGlobalModal();
-    const [
-        isGlobalPopupOpen,
-        openGlobalPopup,
-        closeGlobalPopup,
-        popupContent,
-        popupTitle,
-        popupPlacement,
-    ] = useGlobalPopup();
-
-    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
-
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
     const [isSwapCopied, setIsSwapCopied] = useState(false);
@@ -2718,17 +2742,6 @@ export default function App() {
     };
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
-
-    // --------------THEME--------------------------
-    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const [theme, setTheme] = useState('dark');
-
-    const switchTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-    };
-
-    // --------------END OF THEME--------------------------
 
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
@@ -2809,21 +2822,11 @@ export default function App() {
         openWagmiModalWallet: openWagmiModalWallet,
         openMoralisModalWallet: openWagmiModalWallet,
         lastBlockNumber: lastBlockNumber,
-        isMobileSidebarOpen: isMobileSidebarOpen,
-        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
         poolPriceDisplay: poolPriceDisplay,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
-        isAppOverlayActive: isAppOverlayActive,
-        setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         recentPools: recentPools,
-        switchTheme: switchTheme,
-        theme: theme,
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2861,7 +2864,6 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
-        openGlobalModal: openGlobalModal,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -2872,9 +2874,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
         ackTokens: ackTokens,
         chainData: chainData,
     };
@@ -2903,7 +2902,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
-        openGlobalModal: openGlobalModal,
         isSwapCopied: isSwapCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
@@ -2915,9 +2913,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
         ackTokens: ackTokens,
         chainData: chainData,
@@ -2946,8 +2941,6 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
         verifyToken: verifyToken,
@@ -2961,9 +2954,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
         ackTokens: ackTokens,
     };
 
@@ -2995,7 +2985,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
         dailyVol: dailyVol,
-        openGlobalModal: openGlobalModal,
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
@@ -3012,9 +3001,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
@@ -3031,17 +3017,10 @@ export default function App() {
         chainData: chainData,
     };
 
-    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
-    const [outsideControl, setOutsideControl] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
-
-    const [fullScreenChart, setFullScreenChart] = useState(false);
-
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
     const sidebarProps = {
-        sidebar: sidebar,
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
@@ -3054,10 +3033,6 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
-        selectedOutsideTab: selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: outsideControl,
-        setOutsideControl: setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         analyticsSearchInput: analyticsSearchInput,
@@ -3139,7 +3114,7 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
+        !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
@@ -3152,20 +3127,20 @@ export default function App() {
         ) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    setIsChatEnabled(isChatUp);
+                    appState.chat.setIsEnabled(isChatUp);
                 });
             }, 10000);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
-            setFullScreenChart(false);
+            appState.chart.setIsFullScreen(false);
         }
     }, [currentLocation]);
 
-    const sidebarDislayStyle = sidebar.isOpen
+    const sidebarDislayStyle = appState.sidebar.isOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -3230,13 +3205,13 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            sidebar.toggle('persist');
+            appState.sidebar.toggle(true);
         },
     );
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: 'C' },
         () => {
-            setIsChatOpen(!isChatOpen);
+            appState.chat.setIsOpen(!appState.chat.isOpen);
         },
     );
 
@@ -3286,14 +3261,8 @@ export default function App() {
         expandTradeTable,
         setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         currentPositionActive,
         setCurrentPositionActive,
-        openGlobalModal,
-        closeGlobalModal,
         isInitialized,
         poolPriceNonDisplay,
         setLimitRate: function (): void {
@@ -3306,8 +3275,6 @@ export default function App() {
         handlePulseAnimation,
         isCandleSelected,
         setIsCandleSelected,
-        fullScreenChart,
-        setFullScreenChart,
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
@@ -3318,8 +3285,6 @@ export default function App() {
         setMinPrice: setMinRangePrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        isTutorialMode,
-        setIsTutorialMode,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -3327,7 +3292,6 @@ export default function App() {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const accountProps = {
@@ -3353,12 +3317,6 @@ export default function App() {
         userImageData: imageData,
         chainId: chainData.chainId,
         tokensOnActiveLists,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
-        openGlobalModal,
-        closeGlobalModal,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
@@ -3380,7 +3338,6 @@ export default function App() {
         setSimpleRangeWidth,
         ackTokens,
         setExpandTradeTable,
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const repositionProps = {
@@ -3402,263 +3359,264 @@ export default function App() {
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
-        openGlobalPopup,
     };
 
     const chatProps = {
-        isChatEnabled: isChatEnabled,
-        areSubscriptionsEnabled: areSubscriptionsEnabled,
-        isChatOpen: true,
         onClose: () => {
             console.error('Function not implemented.');
         },
         currentPool: currentPoolInfo,
-        setIsChatOpen: setIsChatOpen,
         isFullScreen: true,
         userImageData: imageData,
         username: ensName,
         appPage: true,
         topPools: topPools,
-        setIsChatEnabled: setIsChatEnabled,
     };
 
     return (
-        <UserPreferenceContext.Provider value={userPreferences}>
-            <div className={containerStyle} data-theme={theme}>
-                {isMobileSidebarOpen && <div className='blur_app' />}
-                <AppOverlay
-                    isAppOverlayActive={isAppOverlayActive}
-                    setIsAppOverlayActive={setIsAppOverlayActive}
-                />
-                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                <CrocEnvContext.Provider value={crocEnv}>
-                    <section
-                        className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
-                    >
-                        {!currentLocation.startsWith('/swap') && sidebarRender}
-                        <Routes>
-                            <Route
-                                index
-                                element={
-                                    <Home
-                                        cachedQuerySpotPrice={
-                                            cachedQuerySpotPrice
-                                        }
-                                        tokenMap={tokensOnActiveLists}
-                                        lastBlockNumber={lastBlockNumber}
-                                        chainId={chainData.chainId}
-                                        isServerEnabled={isServerEnabled}
-                                        topPools={topPools}
-                                        cachedPoolStatsFetch={
-                                            cachedPoolStatsFetch
+        <AppStateContext.Provider value={appState}>
+            <UserPreferenceContext.Provider value={userPreferences}>
+                <div
+                    className={containerStyle}
+                    data-theme={appState.theme.selected}
+                >
+                    {appState.sidebar.isMobileOpen && (
+                        <div className='blur_app' />
+                    )}
+                    <AppOverlay />
+                    {currentLocation !== '/404' && (
+                        <PageHeader {...headerProps} />
+                    )}
+                    <CrocEnvContext.Provider value={crocEnv}>
+                        <section
+                            className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                        >
+                            {!currentLocation.startsWith('/swap') &&
+                                sidebarRender}
+                            <Routes>
+                                <Route
+                                    index
+                                    element={
+                                        <Home
+                                            cachedQuerySpotPrice={
+                                                cachedQuerySpotPrice
+                                            }
+                                            tokenMap={tokensOnActiveLists}
+                                            lastBlockNumber={lastBlockNumber}
+                                            chainId={chainData.chainId}
+                                            topPools={topPools}
+                                            cachedPoolStatsFetch={
+                                                cachedPoolStatsFetch
+                                            }
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='accessibility'
+                                    element={<Accessibility />}
+                                />
+                                <Route
+                                    path='trade'
+                                    element={
+                                        <PoolContext.Provider value={pool}>
+                                            <Trade {...tradeProps} />
+                                        </PoolContext.Provider>
+                                    }
+                                >
+                                    <Route
+                                        path=''
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
                                         }
                                     />
-                                }
-                            />
-                            <Route
-                                path='accessibility'
-                                element={<Accessibility />}
-                            />
-                            <Route
-                                path='trade'
-                                element={
-                                    <PoolContext.Provider value={pool}>
-                                        <Trade {...tradeProps} />
-                                    </PoolContext.Provider>
-                                }
-                            >
+                                    <Route
+                                        path='market'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.market}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='market/:params'
+                                        element={<Swap {...swapPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='limit'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.limit}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='limit/:params'
+                                        element={<Limit {...limitPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='range'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='range/:params'
+                                        element={<Range {...rangeProps} />}
+                                    />
+                                    <Route
+                                        path='reposition'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='reposition/:params'
+                                        element={
+                                            <Reposition {...repositionProps} />
+                                        }
+                                    />
+                                    <Route path='add' element={<RangeAdd />} />
+                                    <Route
+                                        path='edit/'
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
+                                        }
+                                    />
+                                </Route>
                                 <Route
-                                    path=''
-                                    element={
-                                        <Navigate to='/trade/market' replace />
-                                    }
-                                />
-                                <Route
-                                    path='market'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.market}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='market/:params'
-                                    element={<Swap {...swapPropsTrade} />}
+                                    path='chat'
+                                    element={<ChatPanel {...chatProps} />}
                                 />
 
                                 <Route
-                                    path='limit'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.limit}
-                                            replace
-                                        />
-                                    }
+                                    path='chat/:params'
+                                    element={<ChatPanel {...chatProps} />}
                                 />
                                 <Route
-                                    path='limit/:params'
-                                    element={<Limit {...limitPropsTrade} />}
-                                />
-
-                                <Route
-                                    path='range'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.range}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='range/:params'
+                                    path='range2'
                                     element={<Range {...rangeProps} />}
                                 />
                                 <Route
-                                    path='reposition'
+                                    path='initpool/:params'
                                     element={
-                                        <Navigate
-                                            to={defaultUrlParams.range}
-                                            replace
+                                        <InitPool
+                                            isUserLoggedIn={isUserLoggedIn}
+                                            crocEnv={crocEnv}
+                                            gasPriceInGwei={gasPriceInGwei}
+                                            ethMainnetUsdPrice={
+                                                ethMainnetUsdPrice
+                                            }
+                                            openModalWallet={
+                                                openWagmiModalWallet
+                                            }
+                                            tokenAAllowance={tokenAAllowance}
+                                            tokenBAllowance={tokenBAllowance}
+                                            setRecheckTokenAApproval={
+                                                setRecheckTokenAApproval
+                                            }
+                                            setRecheckTokenBApproval={
+                                                setRecheckTokenBApproval
+                                            }
                                         />
                                     }
                                 />
                                 <Route
-                                    path='reposition/:params'
+                                    path='account'
                                     element={
-                                        <Reposition {...repositionProps} />
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={true}
+                                        />
                                     }
                                 />
-                                <Route path='add' element={<RangeAdd />} />
                                 <Route
-                                    path='edit/'
+                                    path='account/:address'
                                     element={
-                                        <Navigate to='/trade/market' replace />
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
                                     }
                                 />
-                            </Route>
-                            <Route
-                                path='chat'
-                                element={<ChatPanel {...chatProps} />}
-                            />
 
-                            <Route
-                                path='chat/:params'
-                                element={<ChatPanel {...chatProps} />}
-                            />
-                            <Route
-                                path='range2'
-                                element={<Range {...rangeProps} />}
-                            />
-                            <Route
-                                path='initpool/:params'
-                                element={
-                                    <InitPool
-                                        isUserLoggedIn={isUserLoggedIn}
-                                        crocEnv={crocEnv}
-                                        gasPriceInGwei={gasPriceInGwei}
-                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                        openModalWallet={openWagmiModalWallet}
-                                        tokenAAllowance={tokenAAllowance}
-                                        tokenBAllowance={tokenBAllowance}
-                                        setRecheckTokenAApproval={
-                                            setRecheckTokenAApproval
-                                        }
-                                        setRecheckTokenBApproval={
-                                            setRecheckTokenBApproval
-                                        }
+                                <Route
+                                    path='swap'
+                                    element={
+                                        <Navigate
+                                            replace
+                                            to={defaultUrlParams.swap}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='swap/:params'
+                                    element={<Swap {...swapProps} />}
+                                />
+                                <Route
+                                    path='tos'
+                                    element={<TermsOfService />}
+                                />
+                                {IS_LOCAL_ENV && (
+                                    <Route
+                                        path='testpage'
+                                        element={<TestPage />}
                                     />
-                                }
+                                )}
+                                <Route
+                                    path='/:address'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
+                                    }
+                                />
+                                <Route path='/404' element={<NotFound />} />
+                            </Routes>
+                        </section>
+                    </CrocEnvContext.Provider>
+                </div>
+                <div className='footer_container'>
+                    {currentLocation !== '/' &&
+                        !currentLocation.includes('/chat') &&
+                        appState.chat.isEnabled && (
+                            <ChatPanel
+                                onClose={() => {
+                                    console.error('Function not implemented.');
+                                }}
+                                currentPool={currentPoolInfo}
+                                isFullScreen={false}
+                                userImageData={imageData}
+                                topPools={topPools}
                             />
-                            <Route
-                                path='account'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={true}
-                                    />
-                                }
-                            />
-                            <Route
-                                path='account/:address'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={false}
-                                    />
-                                }
-                            />
-
-                            <Route
-                                path='swap'
-                                element={
-                                    <Navigate
-                                        replace
-                                        to={defaultUrlParams.swap}
-                                    />
-                                }
-                            />
-                            <Route
-                                path='swap/:params'
-                                element={<Swap {...swapProps} />}
-                            />
-                            <Route path='tos' element={<TermsOfService />} />
-                            {IS_LOCAL_ENV && (
-                                <Route path='testpage' element={<TestPage />} />
-                            )}
-                            <Route
-                                path='/:address'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={false}
-                                    />
-                                }
-                            />
-                            <Route path='/404' element={<NotFound />} />
-                        </Routes>
-                    </section>
-                </CrocEnvContext.Provider>
-                {snackbarContent}
-            </div>
-            <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && (
-                        <ChatPanel
-                            isChatOpen={isChatOpen}
-                            onClose={() => {
-                                console.error('Function not implemented.');
-                            }}
-                            currentPool={currentPoolInfo}
-                            setIsChatOpen={setIsChatOpen}
-                            isFullScreen={false}
-                            userImageData={imageData}
-                            topPools={topPools}
-                            isChatEnabled={isChatEnabled}
-                            areSubscriptionsEnabled={areSubscriptionsEnabled}
-                        />
-                    )}
-            </div>
-            <SidebarFooter />
-            <GlobalModal
-                isGlobalModalOpen={isGlobalModalOpen}
-                closeGlobalModal={closeGlobalModal}
-                openGlobalModal={openGlobalModal}
-                currentContent={currentContent}
-                title={title}
-            />
-            <GlobalPopup
-                isGlobalPopupOpen={isGlobalPopupOpen}
-                openGlobalPopup={openGlobalPopup}
-                closeGlobalPopup={closeGlobalPopup}
-                popupContent={popupContent}
-                popupTitle={popupTitle}
-                placement={popupPlacement}
-            />
-            {isWagmiModalOpenWallet && (
-                <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
-            )}
-        </UserPreferenceContext.Provider>
+                        )}
+                </div>
+                <SidebarFooter />
+                <GlobalModal />
+                <GlobalPopup />
+                <SnackbarComponent />
+                {isWagmiModalOpenWallet && (
+                    <WalletModalWagmi
+                        closeModalWallet={closeWagmiModalWallet}
+                    />
+                )}
+            </UserPreferenceContext.Provider>
+        </AppStateContext.Provider>
     );
 }

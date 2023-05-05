@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useContext } from 'react';
+import { useContext } from 'react';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
@@ -18,6 +18,7 @@ import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
@@ -27,22 +28,18 @@ interface propsIF {
     isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function RangeHeader(props: propsIF) {
-    const {
-        tokenPair,
-        mintSlippage,
-        isPairStable,
-        isDenomBase,
-        isTokenABase,
-        openGlobalModal,
-    } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } =
+        props;
 
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
+    const {
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 

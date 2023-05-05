@@ -19,6 +19,7 @@ import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { defaultTokens } from '../../../utils/data/defaultTokens';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface FullChatPropsIF {
@@ -36,6 +37,7 @@ interface FullChatPropsIF {
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
     topPools: topPoolIF[];
+    setIsChatOpen: (val: boolean) => void;
 }
 
 interface ChannelDisplayPropsIF {
@@ -45,7 +47,7 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { topPools } = props;
+    const { topPools, setIsChatOpen } = props;
     const rooms = topPools;
     const { params } = useParams();
     const { favePools } = useContext(UserPreferenceContext);
@@ -55,6 +57,10 @@ export default function FullChat(props: FullChatPropsIF) {
             : params && params.includes('global')
             ? 'Global'
             : 'Global';
+
+    useEffect(() => {
+        setIsChatOpen(true);
+    }, []);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;
@@ -101,29 +107,73 @@ export default function FullChat(props: FullChatPropsIF) {
     const [readableRoom, setReadableRoom] = useState<PoolIF | undefined>(
         undefined,
     );
+
+    const [currentPoolInfo, setCurrentPoolInfo] = useState<PoolIF | undefined>(
+        undefined,
+    );
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (rooms.some(({ name }) => name === reconstructedReadableRoom)) {
-            setReadableName(reconstructedReadableRoom);
+        if (roomArray.some(({ name }) => name === reconstructedReadableRoom)) {
+            const found = roomArray.find(
+                (name) => name.name === reconstructedReadableRoom,
+            );
+            setReadableRoom(found);
             props.setRoom(reconstructedReadableRoom);
             setReadableName(reconstructedReadableRoom);
         } else {
             if (
-                rooms.some(
+                roomArray.some(
                     ({ name }) => name === reSwappedReconstructedReadableRoom,
                 )
             ) {
+                const found = roomArray.find(
+                    (name) => name.name === reSwappedReconstructedReadableRoom,
+                );
+                setReadableRoom(found);
                 setReadableName(reSwappedReconstructedReadableRoom);
                 props.setRoom(reSwappedReconstructedReadableRoom);
                 setReadableName(reSwappedReconstructedReadableRoom);
             } else {
-                setReadableName('Global');
-                props.setRoom('Global');
-                setReadableName('Global');
+                if (
+                    currencies &&
+                    currencies[0] !== currencies[1] &&
+                    defaultTokens.some(
+                        ({ symbol }) =>
+                            symbol === currencies[0].toUpperCase() &&
+                            defaultTokens.some(
+                                ({ symbol }) =>
+                                    symbol === currencies[1].toUpperCase(),
+                            ),
+                    )
+                ) {
+                    setReadableName(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                    props.setRoom(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                    setReadableName(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                } else {
+                    setReadableName('Global');
+                    props.setRoom('Global');
+                    setReadableName('Global');
+                }
             }
         }
-    }, [reconstructedReadableRoom, rooms.length === 0]);
+    }, [
+        reconstructedReadableRoom,
+        reSwappedReconstructedReadableRoom,
+        rooms.length === 0,
+    ]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -269,6 +319,12 @@ export default function FullChat(props: FullChatPropsIF) {
     function handleCurrentPoolClick() {
         props.setRoom(userCurrentPool);
         setReadableName(userCurrentPool);
+        setReadableRoom(currentPoolInfo);
+    }
+
+    function setCurrentPoolInfo_(pool: PoolIF) {
+        setCurrentPoolInfo(pool);
+        return '';
     }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
@@ -333,16 +389,19 @@ export default function FullChat(props: FullChatPropsIF) {
                 </div>
                 <span>{pool?.name}</span>
                 {poolIsCurrentPool && (
-                    <p
-                        className={styles.current_pool}
-                        style={{
-                            color: activePoolIsCurrentPool
-                                ? 'var(--text1)'
-                                : 'var(--text3)',
-                        }}
-                    >
-                        Current Pool
-                    </p>
+                    <div>
+                        <p
+                            className={styles.current_pool}
+                            style={{
+                                color: activePoolIsCurrentPool
+                                    ? 'var(--text1)'
+                                    : 'var(--text3)',
+                            }}
+                        >
+                            Current Pool
+                        </p>
+                        <div>{setCurrentPoolInfo_(pool)}</div>
+                    </div>
                 )}
             </div>
         );
@@ -411,7 +470,9 @@ export default function FullChat(props: FullChatPropsIF) {
 
             <div
                 className={styles.option_item}
-                onClick={handleCurrentPoolClick}
+                onClick={() => {
+                    handleCurrentPoolClick();
+                }}
             >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>

@@ -11,9 +11,9 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    isServerEnabled: boolean;
     isUserIdle: boolean;
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -25,7 +25,6 @@ interface propsIF {
 
 export default function PoolCard(props: propsIF) {
     const {
-        isServerEnabled,
         isUserIdle,
         lastBlockNumber,
         chainId,
@@ -35,6 +34,9 @@ export default function PoolCard(props: propsIF) {
     } = props;
 
     const crocEnv = useContext(CrocEnvContext);
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined

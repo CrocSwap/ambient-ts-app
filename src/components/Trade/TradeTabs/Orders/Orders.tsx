@@ -1,6 +1,13 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -20,6 +27,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -33,8 +41,6 @@ interface propsIF {
     account: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
@@ -43,7 +49,6 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     lastBlockNumber: number;
-    isSidebarOpen: boolean;
     handlePulseAnimation?: (type: string) => void;
     isAccountView: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -60,7 +65,6 @@ export default function Orders(props: propsIF) {
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
-        isSidebarOpen,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -69,6 +73,9 @@ export default function Orders(props: propsIF) {
         isAccountView,
         setExpandTradeTable,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -391,14 +398,11 @@ export default function Orders(props: propsIF) {
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
             key={idx}
             limitOrder={order}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
@@ -415,14 +419,11 @@ export default function Orders(props: propsIF) {
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
             key={idx}
             limitOrder={order}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}

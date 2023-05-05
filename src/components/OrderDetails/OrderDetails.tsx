@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 
 import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
@@ -12,9 +12,9 @@ import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     account: string;
@@ -28,6 +28,9 @@ interface propsIF {
 
 export default function OrderDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const {
         limitOrder,
@@ -56,23 +59,12 @@ export default function OrderDetails(props: propsIF) {
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionId() {
         copy(posHash);
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     const [usdValue, setUsdValue] = useState<string>('...');
     // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
@@ -394,7 +386,6 @@ export default function OrderDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

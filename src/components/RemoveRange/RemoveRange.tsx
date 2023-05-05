@@ -34,13 +34,12 @@ import {
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -66,8 +65,6 @@ interface propsIF {
     position: PositionIF;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
@@ -77,8 +74,6 @@ export default function RemoveRange(props: propsIF) {
     const {
         chainData,
         position,
-        dexBalancePrefs,
-        slippage,
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
@@ -93,6 +88,7 @@ export default function RemoveRange(props: propsIF) {
     ).lastBlock;
 
     const crocEnv = useContext(CrocEnvContext);
+    const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
@@ -277,8 +273,8 @@ export default function RemoveRange(props: propsIF) {
     );
 
     const persistedSlippage: number = isPairStable
-        ? slippage.mintSlippage.stable
-        : slippage.mintSlippage.volatile;
+        ? mintSlippage.stable
+        : mintSlippage.volatile;
 
     const removeFn = async () => {
         if (!crocEnv || !liquidityToBurn) return;
@@ -300,7 +296,7 @@ export default function RemoveRange(props: propsIF) {
                     console.debug(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
-                        surplus: dexBalancePrefs.range.outputToDexBal.isEnabled,
+                        surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
@@ -349,7 +345,7 @@ export default function RemoveRange(props: propsIF) {
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
+                    { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -573,8 +569,8 @@ export default function RemoveRange(props: propsIF) {
     const updateSettings = (): void => {
         setShowSettings(false);
         isPairStable
-            ? slippage.mintSlippage.updateStable(currentSlippage)
-            : slippage.mintSlippage.updateVolatile(currentSlippage);
+            ? mintSlippage.updateStable(currentSlippage)
+            : mintSlippage.updateVolatile(currentSlippage);
     };
 
     const buttonToDisplay = (
@@ -618,8 +614,8 @@ export default function RemoveRange(props: propsIF) {
             setCurrentSlippage={setCurrentSlippage}
             presets={
                 isPairStable
-                    ? slippage.mintSlippage.presets.stable
-                    : slippage.mintSlippage.presets.volatile
+                    ? mintSlippage.presets.stable
+                    : mintSlippage.presets.volatile
             }
         />
     ) : (
@@ -659,7 +655,7 @@ export default function RemoveRange(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                     isAmbient={props.isAmbient}
                 />
-                <ExtraControls dexBalancePrefs={dexBalancePrefs} />
+                <ExtraControls />
             </div>
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />{' '}

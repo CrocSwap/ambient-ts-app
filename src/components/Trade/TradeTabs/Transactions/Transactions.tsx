@@ -10,7 +10,14 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+} from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -22,6 +29,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -45,10 +53,7 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -68,9 +73,6 @@ export default function Transactions(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -80,6 +82,9 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
@@ -431,15 +436,12 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
@@ -455,15 +457,12 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
