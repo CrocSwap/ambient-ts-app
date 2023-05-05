@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import {
+    useState,
+    useRef,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
@@ -26,6 +33,7 @@ import {
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -71,7 +79,9 @@ export default function RangesMenu(props: propsIF) {
         chainData,
     } = props;
 
-    const { openGlobalModal } = rangeDetailsProps;
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+    } = useContext(AppStateContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -98,6 +108,7 @@ export default function RangesMenu(props: propsIF) {
         openGlobalModal(
             <RangeDetails
                 position={position}
+                closeGlobalModal={closeGlobalModal}
                 chainData={chainData}
                 {...rangeDetailsProps}
             />,

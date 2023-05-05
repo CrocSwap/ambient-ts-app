@@ -158,13 +158,7 @@ export default function Pagination(props: PaginationPropsIF) {
                             </li>
                         ))}
                     </div>
-                    {/* {expandPaginationContainer && (
-                        <div className={styles.dot}>
-                            <BiDotsHorizontal />
-                        </div>
-                    )} */}
 
-                    {/* {expandPaginationContainer && currentPage !== totalPages && lastPageClick} */}
                     {currentPage !== totalPages && rightButton}
                 </motion.div>
             </nav>

@@ -60,6 +60,8 @@ interface propsIF {
     tokenBSurplusPlusTokenBQtyNum: number;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    setIsSellLoading: Dispatch<SetStateAction<boolean>>;
+    setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -87,6 +89,7 @@ interface propsIF {
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
+    isLoading: boolean;
 }
 
 export default function CurrencySelector(props: propsIF) {
@@ -129,6 +132,9 @@ export default function CurrencySelector(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
+        setIsSellLoading,
+        setIsBuyLoading,
+        isLoading,
     } = props;
 
     const { dexBalSwap } = useContext(UserPreferenceContext);
@@ -141,10 +147,12 @@ export default function CurrencySelector(props: propsIF) {
         ? tokenPair.dataTokenA
         : tokenPair.dataTokenB;
 
+    const displayAmountToReduceEth = 0.2;
+
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance
             ? isSellTokenEth
-                ? (parseFloat(tokenABalance) - 0.02).toFixed(18)
+                ? parseFloat(tokenABalance).toFixed(18)
                 : tokenABalance
             : ''
         : tokenBBalance
@@ -169,9 +177,7 @@ export default function CurrencySelector(props: propsIF) {
         ? tokenADexBalance
             ? isSellTokenEth
                 ? (
-                      parseFloat(tokenADexBalance) +
-                      parseFloat(tokenABalance) -
-                      0.02
+                      parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                   ).toFixed(18)
                 : (
                       parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
@@ -214,8 +220,10 @@ export default function CurrencySelector(props: propsIF) {
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
 
-    const isCombinedBalanceNonZero =
-        !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
+    const isCombinedBalanceNonZero = isSellTokenEth
+        ? !!balanceNonLocaleString &&
+          parseFloat(balanceNonLocaleString) - displayAmountToReduceEth > 0
+        : !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
 
     // Wallet balance function and styles-----------------------------
 
@@ -231,9 +239,16 @@ export default function CurrencySelector(props: propsIF) {
         }
     }
 
+    const adjustedBalanceNonLocaleString =
+        isSellTokenEth && !!balanceNonLocaleString
+            ? (
+                  parseFloat(balanceNonLocaleString) - displayAmountToReduceEth
+              ).toFixed(18)
+            : balanceNonLocaleString;
+
     function handleMaxButtonClick() {
         if (handleChangeClick && isUserLoggedIn) {
-            handleChangeClick(balanceNonLocaleString);
+            handleChangeClick(adjustedBalanceNonLocaleString);
             setUserClickedCombinedMax(true);
         }
     }
@@ -241,10 +256,10 @@ export default function CurrencySelector(props: propsIF) {
     const handleAutoMax = () => {
         if (
             handleChangeClick &&
-            balanceNonLocaleString &&
+            adjustedBalanceNonLocaleString &&
             userClickedCombinedMax
         ) {
-            handleChangeClick(balanceNonLocaleString);
+            handleChangeClick(adjustedBalanceNonLocaleString);
             setDisableReverseTokens(true);
         }
     };
@@ -511,6 +526,9 @@ export default function CurrencySelector(props: propsIF) {
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                         setDisableReverseTokens={setDisableReverseTokens}
+                        setIsSellLoading={setIsSellLoading}
+                        setIsBuyLoading={setIsBuyLoading}
+                        isLoading={isLoading}
                     />
                 </div>
                 <button
