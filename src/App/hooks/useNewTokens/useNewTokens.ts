@@ -38,6 +38,31 @@ export const useNewTokens = (): void => {
         getTokenListsFromLS() ?? []
     );
 
+    class Token implements TokenIF {
+        name: string;
+        address: string;
+        symbol: string;
+        decimals: number;
+        chainId: number;
+        logoURI: string;
+        fromList: string;
+        fromListArr: string[];
+        constructor(rawToken: TokenIF, newListURI='') {
+            this.name = rawToken.name;
+            this.address = rawToken.address;
+            this.symbol = rawToken.symbol;
+            this.decimals = rawToken.decimals;
+            this.chainId = rawToken.chainId;
+            this.logoURI = rawToken.logoURI;
+            this.fromList = rawToken.fromList ?? '';
+            if (rawToken.fromListArr) {
+                this.fromListArr = [...rawToken.fromListArr, newListURI]
+            } else {
+                this.fromListArr = [rawToken.fromList ?? ''];
+            }
+        }
+    };
+
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>();
     false && tokenMap;
     
@@ -136,30 +161,7 @@ export const useNewTokens = (): void => {
                 tkn.chainId.toString(16).toLowerCase();
             // check if token is already in the map
             const tokenFromMap: TokenIF|undefined = newTokenMap.get(tokenKey);
-            // if token is not in the map, seed `fromListArr` and add it
-            if (tokenFromMap) {
-                console.log('updating existing token!');
-                // copy of token data object iterated, this looks stupid but it needs
-                // ... to be a deep copy to not update the same object in memory
-                // ... which is referenced by token lists in local storage
-                const tokenToWrite: TokenIF = JSON.parse(JSON.stringify(tokenFromMap));
-                // copy of fromListArr on the token data object
-                const currentArray: string[] = tokenToWrite.fromListArr ?? [];
-                // add `fromList` string
-                if (tkn.fromList) {
-                    tokenToWrite.fromListArr = [...currentArray, tkn.fromList];
-                }
-                newTokenMap.set(tokenKey, tokenToWrite);
-            } else {
-                // copy of token data object iterated, this looks stupid but it needs
-                // ... to be a deep copy to not update the same object in memory
-                // ... which is referenced by token lists in local storage
-                const tokenToWrite: TokenIF = JSON.parse(JSON.stringify(tkn));
-                tokenToWrite.fromListArr = tokenToWrite.fromList
-                    ? [tokenToWrite.fromList]
-                    : [];
-                newTokenMap.set(tokenKey, tokenToWrite);
-            }
+            newTokenMap.set(tokenKey, new Token(tokenFromMap ?? tkn, tkn.fromList));
         });
         console.timeEnd('making token map');
         return newTokenMap;
