@@ -258,8 +258,7 @@ export default function Chart(props: propsIF) {
     const d3CanvasLiqAskDepthLine = useRef<HTMLInputElement | null>(null);
 
     const d3CanvasBand = useRef<HTMLInputElement | null>(null);
-    const d3CanvasCrHorizontal = useRef<HTMLInputElement | null>(null);
-    const d3CanvasCrVertical = useRef<HTMLInputElement | null>(null);
+    const d3CanvasCrosshair = useRef<HTMLInputElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasRangeLine = useRef<HTMLInputElement | null>(null);
@@ -404,11 +403,11 @@ export default function Chart(props: propsIF) {
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [crosshairActive, setCrosshairActive] = useState<string>('chart');
 
-    const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
+    const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [crosshairVertical, setCrosshairVertical] = useState<any>();
+    const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3260,8 +3259,7 @@ export default function Chart(props: propsIF) {
         sellOrderStyle,
         checkLimitOrder,
         location,
-        d3CanvasCrHorizontal,
-        d3CanvasCrVertical,
+        d3CanvasCrosshair,
     ]);
 
     function createRectLabel(
@@ -3660,7 +3658,8 @@ export default function Chart(props: propsIF) {
             limitLine.decorate((context: any) => {
                 context.strokeStyle = 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 3;
+                context.lineWidth = 1.5;
+                context.fillStyle = 'transparent';
             });
 
             const marketLine = d3fc
@@ -3674,6 +3673,7 @@ export default function Chart(props: propsIF) {
                 context.strokeStyle = 'rgba(235, 235, 255, 0.4)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 0.5;
+                context.fillStyle = 'transparent';
             });
 
             const horizontalLine = d3fc
@@ -3689,8 +3689,9 @@ export default function Chart(props: propsIF) {
                         ? 'visible'
                         : 'hidden';
                 context.strokeStyle = 'var(--accent2)';
+                context.fillStyle = 'transparent';
                 context.pointerEvents = 'none';
-                context.lineWidth = 3;
+                context.lineWidth = 1.5;
             });
 
             if (
@@ -3872,7 +3873,8 @@ export default function Chart(props: propsIF) {
                         : '#7371FC'
                     : 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 3;
+                context.lineWidth = 1.5;
+                context.fillStyle = 'transparent';
             });
 
             renderCanvas();
@@ -3890,7 +3892,8 @@ export default function Chart(props: propsIF) {
                 context.strokeStyle =
                     datum.value > passValue ? '#7371fc' : 'rgba(205, 193, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 3;
+                context.lineWidth = 1.5;
+                context.fillStyle = 'transparent';
             });
         }
     }, [
@@ -4414,7 +4417,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            const crosshairHorizontalCanvas = d3fc
+            const crosshairVerticalCanvas = d3fc
                 .annotationCanvasLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
@@ -4422,32 +4425,33 @@ export default function Chart(props: propsIF) {
                 .yScale(scaleData?.yScale)
                 .label('');
 
-            crosshairHorizontalCanvas.decorate((context: any) => {
-                context.visibility = 'hidden';
-                context.strokeStyle = 'rgb(255, 255, 255)';
+            crosshairVerticalCanvas.decorate((context: any) => {
+                context.strokeStyle = 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
-            setCrosshairHorizontalCanvas(() => {
-                return crosshairHorizontalCanvas;
+            setCrosshairVerticalCanvas(() => {
+                return crosshairVerticalCanvas;
             });
 
-            const crosshairVertical = d3fc
+            const crosshairHorizontal = d3fc
                 .annotationCanvasLine()
                 .value((d: crosshair) => d.y)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
-            crosshairVertical.decorate((context: any) => {
+            crosshairHorizontal.decorate((context: any) => {
                 context.visibility = 'hidden';
-                context.strokeStyle = 'rgb(255, 255, 255)';
+                context.strokeStyle = 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.4;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
-            setCrosshairVertical(() => {
-                return crosshairVertical;
+            setCrosshairHorizontal(() => {
+                return crosshairHorizontal;
             });
         }
     }, [scaleData]);
@@ -4539,49 +4543,35 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const canvas = d3
-            .select(d3CanvasCrHorizontal.current)
+            .select(d3CanvasCrosshair.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        if (crosshairHorizontalCanvas) {
-            d3.select(d3CanvasCrHorizontal.current)
+        if (crosshairHorizontal && crosshairVerticalCanvas) {
+            d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
-                    crosshairHorizontalCanvas(crosshairData);
-                })
-                .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
-                    crosshairHorizontalCanvas.context(ctx);
-                });
-        }
-    }, [crosshairData, crosshairHorizontalCanvas]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasCrVertical.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        if (crosshairVertical) {
-            d3.select(d3CanvasCrVertical.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     if (crosshairActive === 'chart') {
-                        crosshairVertical(crosshairData);
+                        crosshairHorizontal(crosshairData);
+                        crosshairVerticalCanvas(crosshairData);
                     }
                 })
                 .on('measure', () => {
                     if (crosshairActive === 'chart') {
-                        ctx.setLineDash([0.6, 0.6]);
-                        crosshairVertical.context(ctx);
+                        ctx.setLineDash([4, 2]);
+                        crosshairHorizontal.context(ctx);
+                        crosshairVerticalCanvas.context(ctx);
                     }
                 });
         }
-    }, [crosshairData, crosshairVertical, crosshairActive]);
+    }, [
+        crosshairData,
+        crosshairHorizontal,
+        crosshairActive,
+        crosshairVerticalCanvas,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -4594,11 +4584,11 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMarketLine.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([4, 2]);
+                    ctx.setLineDash([5, 3]);
                     marketLine(market);
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([4, 2]);
+                    ctx.setLineDash([5, 3]);
                     marketLine.context(ctx);
                 });
         }
@@ -4612,24 +4602,24 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-            if (limitLine && triangle) {
+            if (limitLine) {
                 d3.select(d3CanvasLimitLine.current)
                     .on('draw', () => {
                         if (location.pathname.includes('/limit')) {
                             setCanvasResolution(canvas);
-                            ctx.setLineDash([16, 16]);
+                            ctx.setLineDash([20, 18]);
                             limitLine(limit);
-                            triangle(limitTriangleData);
+                            // triangle(limitTriangleData);
                         }
                     })
                     .on('measure', () => {
-                        ctx.setLineDash([16, 16]);
+                        ctx.setLineDash([20, 18]);
                         limitLine.context(ctx);
-                        triangle.context(ctx);
+                        // triangle.context(ctx);
                     });
             }
         }
-    }, [limit, limitLine, dragEvent, triangle, location.pathname]);
+    }, [limit, limitLine, dragEvent, location.pathname]);
 
     useEffect(() => {
         if (
@@ -4642,7 +4632,7 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-            if (horizontalLine && triangle) {
+            if (horizontalLine) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
@@ -4650,19 +4640,19 @@ export default function Chart(props: propsIF) {
                             location.pathname.includes('reposition')
                         ) {
                             setCanvasResolution(canvas);
-                            ctx.setLineDash([16, 16]);
+                            ctx.setLineDash([20, 18]);
                             horizontalLine(ranges);
-                            triangle(rangeTriangleData);
+                            // triangle(rangeTriangleData);
                         }
                     })
                     .on('measure', () => {
-                        ctx.setLineDash([16, 16]);
+                        ctx.setLineDash([20, 18]);
                         horizontalLine.context(ctx);
-                        triangle.context(ctx);
+                        // triangle.context(ctx);
                     });
             }
         }
-    }, [ranges, horizontalLine, dragEvent, triangle, location.pathname]);
+    }, [ranges, horizontalLine, dragEvent, location.pathname]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -4910,16 +4900,9 @@ export default function Chart(props: propsIF) {
             if (container) container.requestRedraw();
         }
 
-        if (d3CanvasCrHorizontal) {
+        if (d3CanvasCrosshair) {
             const container = d3
-                .select(d3CanvasCrHorizontal.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasCrVertical) {
-            const container = d3
-                .select(d3CanvasCrVertical.current)
+                .select(d3CanvasCrosshair.current)
                 .node() as any;
             if (container) container.requestRedraw();
         }
@@ -6115,12 +6098,7 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        d3.select(d3CanvasCrHorizontal.current).style(
-            'visibility',
-            crosshairActive !== 'none' ? 'visible' : 'hidden',
-        );
-
-        d3.select(d3CanvasCrVertical.current).style(
+        d3.select(d3CanvasCrosshair.current).style(
             'visibility',
             crosshairActive !== 'none' ? 'visible' : 'hidden',
         );
@@ -6714,14 +6692,9 @@ export default function Chart(props: propsIF) {
                             className='band-canvas'
                         ></d3fc-canvas>
                         <d3fc-canvas
-                            ref={d3CanvasCrHorizontal}
-                            className='cr_horizontal-canvas'
+                            ref={d3CanvasCrosshair}
+                            className='cr-canvas'
                         ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasCrVertical}
-                            className='cr-vertical-canvas'
-                        ></d3fc-canvas>
-
                         <d3fc-canvas
                             ref={d3CanvasMarketLine}
                             className='market-line-canvas'
