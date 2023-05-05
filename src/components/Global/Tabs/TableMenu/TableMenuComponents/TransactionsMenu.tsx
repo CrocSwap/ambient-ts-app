@@ -1,16 +1,21 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import {
+    useState,
+    useRef,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 // import Modal from '../../../../Global/Modal/Modal';
-// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
-// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
@@ -30,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -39,9 +45,6 @@ interface propsIF {
     isTokenABase: boolean;
     tx: TransactionIF;
     blockExplorer?: string;
-    isSidebarOpen: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
@@ -59,14 +62,15 @@ export default function TransactionsMenu(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         tx,
         blockExplorer,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
         handlePulseAnimation,
         isOnPortfolioPage,
         setSimpleRangeWidth,
         chainData,
     } = props;
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 

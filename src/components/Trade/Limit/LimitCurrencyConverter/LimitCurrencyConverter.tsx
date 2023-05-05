@@ -92,11 +92,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
 }
@@ -147,7 +142,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        openGlobalPopup,
         ackTokens,
         isOrderValid,
     } = props;
@@ -553,7 +547,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
@@ -626,7 +619,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault

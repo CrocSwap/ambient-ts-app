@@ -24,8 +24,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;

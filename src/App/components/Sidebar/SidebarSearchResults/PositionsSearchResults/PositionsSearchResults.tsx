@@ -1,15 +1,14 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     chainId: string;
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
@@ -49,17 +48,20 @@ export default function PositionsSearchResults(props: propsIF) {
         chainId,
         searchedPositions,
         isDenomBase,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
     } = props;
 
     const navigate = useNavigate();
 
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(AppStateContext);
+
     const handleClick = (position: PositionIF): void => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(2);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
         navigate(
