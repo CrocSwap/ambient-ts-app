@@ -3874,11 +3874,6 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            console.log(
-                new Date(scaleData.xScaleCopy.domain()[0]),
-                new Date(scaleData.xScaleCopy.domain()[1]),
-            );
-
             scaleData?.xScale.domain(scaleData?.xScaleCopy.domain());
 
             const xmin = scaleData?.xScale.domain()[0];

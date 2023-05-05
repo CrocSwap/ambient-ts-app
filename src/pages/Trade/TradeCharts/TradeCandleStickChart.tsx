@@ -603,11 +603,6 @@ export default function TradeCandleStickChart(props: propsIF) {
 
             const xScaleCopy = xScale.copy();
 
-            console.log(
-                new Date(xScaleCopy.domain()[0]),
-                new Date(xScaleCopy.domain()[1]),
-            );
-
             const volumeScale = d3.scaleLinear();
 
             const yExtentVolume = d3fc
