@@ -1,14 +1,11 @@
 import styles from './ExtraControls.module.css';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { useContext } from 'react';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
-interface propsIF {
-    dexBalancePrefs: allDexBalanceMethodsIF;
-}
-
-export default function ExtraControls(props: propsIF) {
-    const { dexBalancePrefs } = props;
+export default function ExtraControls() {
+    const { dexBalRange } = useContext(UserPreferenceContext);
 
     return (
         <div className={styles.main_container}>
@@ -17,20 +14,17 @@ export default function ExtraControls(props: propsIF) {
                     <div
                         className={styles.wallet_section}
                         style={{
-                            color: !dexBalancePrefs.range.outputToDexBal
-                                .isEnabled
+                            color: !dexBalRange.outputToDexBal.isEnabled
                                 ? '#ebebff'
                                 : '#555555',
                             cursor: 'pointer',
                         }}
-                        onClick={() =>
-                            dexBalancePrefs.range.outputToDexBal.disable()
-                        }
+                        onClick={() => dexBalRange.outputToDexBal.disable()}
                     >
                         <MdAccountBalanceWallet
                             size={25}
                             color={
-                                dexBalancePrefs.range.outputToDexBal.isEnabled
+                                dexBalRange.outputToDexBal.isEnabled
                                     ? '#555555'
                                     : '#EBEBFF'
                             }
@@ -41,19 +35,16 @@ export default function ExtraControls(props: propsIF) {
                     </div>
                     <div
                         className={`${styles.exchange_text} ${
-                            !dexBalancePrefs.range.outputToDexBal.isEnabled &&
+                            !dexBalRange.outputToDexBal.isEnabled &&
                             styles.grey_logo
                         }`}
                         style={{
-                            color: dexBalancePrefs.range.outputToDexBal
-                                .isEnabled
+                            color: dexBalRange.outputToDexBal.isEnabled
                                 ? '#ebebff'
                                 : '#555555',
                             cursor: 'pointer',
                         }}
-                        onClick={() =>
-                            dexBalancePrefs.range.outputToDexBal.enable()
-                        }
+                        onClick={() => dexBalRange.outputToDexBal.enable()}
                     >
                         <div className={styles.wallet_amounts}>
                             Send to DEX Balance
