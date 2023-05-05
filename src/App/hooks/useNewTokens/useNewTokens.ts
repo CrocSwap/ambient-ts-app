@@ -6,6 +6,7 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 export interface tokenMethodsIF {
     verify: (addr: string, chainId: string) => boolean;
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
+    getByChain: (chn: string) => TokenIF[];
 }
 
 export const useNewTokens = (chainId: string): tokenMethodsIF => {
@@ -191,6 +192,11 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return addr.toLowerCase() + '_' + chainIdAsString.toLowerCase();
     }
 
+    // fn to convert the token map to an array
+    function convertTokenMapToArray(): TokenIF[] {
+        return [...tokenMap.values()];
+    }
+
     // fn to verify a token is on a known list or user-acknowledged
     function verifyToken(addr: string, chn: string): boolean {
         // key to look up token in the map
@@ -209,8 +215,17 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return tokenMap.get(tokenKey);
     }
 
+    // fn to look up all listed & ack'd tokens by chain
+    function getTokensByChain(chn: string) {
+        // array of all tokens currently in `tokenMap`
+        const tokensAsArray: TokenIF[] = convertTokenMapToArray();
+        // return tokens filtered for a given chainId
+        return tokensAsArray.filter((tkn: TokenIF) => tkn.chainId === parseInt(chn));
+    }
+
     return {
         verify: verifyToken,
         getByAddress: getTokenByAddress,
+        getByChain: getTokensByChain,
     };
 };

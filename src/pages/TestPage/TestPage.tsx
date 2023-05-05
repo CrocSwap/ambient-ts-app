@@ -10,9 +10,7 @@ interface propsIF {
 export default function TestPage(props: propsIF) {
     const { tokens, chainId } = props;
 
-    console.log(tokens.verify(
-        '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05', chainId
-    ));
+    console.log(tokens.getByChain(chainId));
 
     return (
         <section className={styles.main}>
