@@ -68,6 +68,10 @@ export const useNewTokens = (): tokenMethodsIF => {
     };
 
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
+
+    function makeTokenMapKey(addr: string, chainId: string): string {
+        return addr.toLowerCase() + '_' + chainId.toLowerCase();
+    }
     
     // this hook fetches external token lists and sends them to local state and local
     // ... storage, it runs asynchronously after initial render of the app only; it is
@@ -173,12 +177,8 @@ export const useNewTokens = (): tokenMethodsIF => {
     function getTokenByAddress(
         addr: string, chainId: string
     ): TokenIF|undefined {
-        const tokenKey: string = addr.toLowerCase() + '_' + chainId.toLowerCase();
-        console.log({tokenKey});
-        console.log('looking for token!');
-        const token: TokenIF|undefined = tokenMap.get(tokenKey);
-        console.log({token});
-        return token;
+        const tokenKey: string = makeTokenMapKey(addr, chainId);
+        return tokenMap.get(tokenKey);
     }
 
     return {
