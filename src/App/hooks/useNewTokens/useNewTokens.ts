@@ -3,7 +3,11 @@ import { tokenListURIs } from '../../../utils/data/tokenListURIs';
 import fetchTokenList from '../../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
-export const useNewTokens = (): void => {
+export interface tokenMethodsIF {
+    getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
+}
+
+export const useNewTokens = (): tokenMethodsIF => {
     const tokenListsLocalStorageKey = 'tokenLists';
 
     // fn to retrieve and parse token lists from local storage
@@ -63,8 +67,7 @@ export const useNewTokens = (): void => {
         }
     };
 
-    const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>();
-    false && tokenMap;
+    const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
     
     // this hook fetches external token lists and sends them to local state and local
     // ... storage, it runs asynchronously after initial render of the app only; it is
@@ -166,4 +169,19 @@ export const useNewTokens = (): void => {
         console.timeEnd('making token map');
         return newTokenMap;
     }
+
+    function getTokenByAddress(
+        addr: string, chainId: string
+    ): TokenIF|undefined {
+        const tokenKey: string = addr.toLowerCase() + '_' + chainId.toLowerCase();
+        console.log({tokenKey});
+        console.log('looking for token!');
+        const token: TokenIF|undefined = tokenMap.get(tokenKey);
+        console.log({token});
+        return token;
+    }
+
+    return {
+        getByAddress: getTokenByAddress
+    };
 };

@@ -80,6 +80,8 @@ function scrapeTokenMap() {
         ),
     );
 
+    console.log({newTokensMap});
+
     return newTokensMap;
 }
 

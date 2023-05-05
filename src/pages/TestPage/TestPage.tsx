@@ -1,24 +1,24 @@
 import styles from './TestPage.module.css';
 import 'intro.js/introjs.css';
-import { useContext } from 'react';
-import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
 
-// eslint-disable-next-line
-export default function TestPage() {
-    const { bypassConfirmSwap } = useContext(UserPreferenceContext);
+interface propsIF {
+    tokens: tokenMethodsIF,
+    chainId: string,
+}
+
+export default function TestPage(props: propsIF) {
+    const { tokens, chainId } = props;
 
     return (
         <section className={styles.main}>
-            <p>
-                Confirmation for swap is:{' '}
-                {JSON.stringify(bypassConfirmSwap.isEnabled)}
-            </p>
-            <button onClick={() => bypassConfirmSwap.enable()}>
-                Turn it on!
-            </button>
-            <button onClick={() => bypassConfirmSwap.disable()}>
-                Turn it off!
-            </button>
+            {
+                JSON.stringify(
+                    tokens.getByAddress(
+                        '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05', chainId
+                    )
+                )
+            }
         </section>
     );
 }

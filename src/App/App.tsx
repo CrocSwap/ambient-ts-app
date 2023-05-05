@@ -182,7 +182,7 @@ import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import { useNewTokens } from './hooks/useNewTokens/useNewTokens';
+import { useNewTokens, tokenMethodsIF } from './hooks/useNewTokens/useNewTokens';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
@@ -215,7 +215,7 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
 
-    useNewTokens();
+    const tokens: tokenMethodsIF = useNewTokens();
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
@@ -3575,7 +3575,12 @@ export default function App() {
                                 {IS_LOCAL_ENV && (
                                     <Route
                                         path='testpage'
-                                        element={<TestPage />}
+                                        element={
+                                            <TestPage
+                                                tokens={tokens}
+                                                chainId={chainData.chainId}
+                                            />
+                                        }
                                     />
                                 )}
                                 <Route
