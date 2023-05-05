@@ -56,7 +56,7 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEth = BigNumber.from(5).mul('10000000000000000');
+    const amountToReduceEth = BigNumber.from(1).mul('100000000000000000');
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
