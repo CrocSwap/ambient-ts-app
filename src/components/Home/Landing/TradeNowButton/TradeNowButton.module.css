@@ -18,14 +18,8 @@
     cursor: pointer;
     text-align: center;
 
-    transition: all var(--animation-speed) ease-in-out;
-    background: var(--highlight-gradient);
-    background-position: 1% 50%;
-    background-size: 300% 300%;
     text-decoration: none;
     border: 1px solid var(--dark3);
-    /* animation: shine 8s linear infinite; */
-    /* color: var(--accent5); */
 }
 
 .nav_action_button{
@@ -55,20 +49,11 @@
 }
 
 .action_button:hover, .action_button:focus-visible {
-    border: 1px solid rgba(223, 190, 106, 0);
-    background-position: 99% 50%;
-    /* color: black; */
-    animation-play-state: paused;
+    background: var(--dark2);
+    border-radius: 4px;
+    box-shadow: var(--glow-box-shadow);
 }
 
-.action_button:hover .button_text, .action_button:focus-visible .button_text {
-    /* color: var(--dark2) !important; */
-    background: var(--dark2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-}
 /* .action_button p {
     color: var(--accent5);
     font-weight: 100 !important;
