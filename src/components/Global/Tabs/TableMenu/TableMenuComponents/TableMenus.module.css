@@ -75,6 +75,7 @@
     justify-content: flex-end;
     position: relative;
     cursor: pointer;
+
 }
 
 .dropdown_menu button {
@@ -125,9 +126,9 @@
 
     border-radius: 4px;
     box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); */
     right: 30px;
-    z-index: 2;
+    z-index: 5;
 }
 .dropdown_wrapper_active:after {
     content: '';
@@ -149,6 +150,6 @@
 
 .dropdown_wrapper_active {
     opacity: 1;
-    top: 10px;
+    top: 0;
     pointer-events: auto;
 }
