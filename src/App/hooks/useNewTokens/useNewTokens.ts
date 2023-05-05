@@ -69,19 +69,25 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
 
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
 
+    // fn to construct a token map key to lookup or record a given token
     function makeTokenMapKey(addr: string, chn: string|number): string {
+        // logic router to convert `chn` to a 0x hex string if necessary
         let chainIdAsString: string;
         switch (typeof chn) {
+            // no conversion necessary if already a string
             case 'string':
                 chainIdAsString = chn;
                 break;
+            // convert to a 0x hex string if provided a number
             case 'number':
                 chainIdAsString = '0x' + chn.toString(16);
                 break;
+            // handling for edge cases and to satisfy the linter
             default:
                 console.warn(`Unexpected value in function makeTokenMapKey() in useNewTokens.ts file. Expected param <<chn>> to be of type 'string' or type 'number' but received type ${typeof chn}. Fn will use current chain <<${chainId}>> as a default value instead of param <<${chn}>>.`);
                 chainIdAsString = chainId;
         }
+        // marry output values with an underscore and make lowercase
         return addr.toLowerCase() + '_' + chainIdAsString.toLowerCase();
     }
     
