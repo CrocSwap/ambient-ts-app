@@ -191,6 +191,14 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return newTokenMap;
     }
 
+    // fn to verify a token is on a known list or user-acknowledged
+    function verifyToken(addr: string, chn: string): boolean {
+        // key to look up token in the map
+        const tokenKey: string = makeTokenMapKey(addr, chn);
+        // return boolean representation of token being found in map
+        return !!tokenMap.get(tokenKey);
+    }
+
     // fn to look up a token by contract address
     function getTokenByAddress(
         addr: string, chn: string
@@ -199,14 +207,6 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         const tokenKey: string = makeTokenMapKey(addr, chn);
         // return token if found, otherwise `undefined`
         return tokenMap.get(tokenKey);
-    }
-
-    // fn to verify a token is on a known list or user-acknowledged
-    function verifyToken(addr: string, chn: string): boolean {
-        // key to look up token in the map
-        const tokenKey: string = makeTokenMapKey(addr, chn);
-        // return boolean representation of token being found in map
-        return !!tokenMap.get(tokenKey);
     }
 
     return {
