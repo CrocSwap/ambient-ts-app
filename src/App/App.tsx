@@ -215,8 +215,6 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
 
-    const tokens: tokenMethodsIF = useNewTokens();
-
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
@@ -418,6 +416,9 @@ export default function App() {
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
+
+    // hook to manage token data
+    const tokens: tokenMethodsIF = useNewTokens(chainData.chainId);
 
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);

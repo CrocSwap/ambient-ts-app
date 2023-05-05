@@ -7,7 +7,7 @@ export interface tokenMethodsIF {
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
 }
 
-export const useNewTokens = (): tokenMethodsIF => {
+export const useNewTokens = (chainId: string): tokenMethodsIF => {
     const tokenListsLocalStorageKey = 'tokenLists';
 
     // fn to retrieve and parse token lists from local storage
@@ -69,8 +69,20 @@ export const useNewTokens = (): tokenMethodsIF => {
 
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
 
-    function makeTokenMapKey(addr: string, chainId: string): string {
-        return addr.toLowerCase() + '_' + chainId.toLowerCase();
+    function makeTokenMapKey(addr: string, chn: string|number): string {
+        let chainIdAsString: string;
+        switch (typeof chn) {
+            case 'string':
+                chainIdAsString = chn;
+                break;
+            case 'number':
+                chainIdAsString = '0x' + chn.toString(16);
+                break;
+            default:
+                console.warn(`Unexpected value in function makeTokenMapKey() in useNewTokens.ts file. Expected param <<chn>> to be of type 'string' or type 'number' but received type ${typeof chn}. Fn will use current chain <<${chainId}>> as a default value instead of param <<${chn}>>.`);
+                chainIdAsString = chainId;
+        }
+        return addr.toLowerCase() + '_' + chainIdAsString.toLowerCase();
     }
     
     // this hook fetches external token lists and sends them to local state and local
@@ -163,9 +175,7 @@ export const useNewTokens = (): tokenMethodsIF => {
         );
         allListedTokens.forEach((tkn: TokenIF) => {
             // make a key to label token in the map
-            const tokenKey: string = tkn.address.toLowerCase() +
-                '_0x' +
-                tkn.chainId.toString(16).toLowerCase();
+            const tokenKey: string = makeTokenMapKey(tkn.address, tkn.chainId);
             // check if token is already in the map
             const tokenFromMap: TokenIF|undefined = newTokenMap.get(tokenKey);
             newTokenMap.set(tokenKey, new Token(tokenFromMap ?? tkn, tkn.fromList));
