@@ -1,6 +1,7 @@
 import {
     DetailedHTMLProps,
     HTMLAttributes,
+    useContext,
     useEffect,
     useMemo,
     useState,
@@ -32,6 +33,7 @@ import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -96,20 +98,10 @@ interface propsIF {
     handlePulseAnimation: (type: string) => void;
     fetchingCandle: boolean;
     setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
-    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: React.Dispatch<
-        React.SetStateAction<boolean>
-    >;
     setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
     chartSettings: chartSettingsMethodsIF;
     isMarketOrLimitModule: boolean;
 }
@@ -142,22 +134,16 @@ export default function TradeCandleStickChart(props: propsIF) {
         setSelectedDate,
         handlePulseAnimation,
         setFetchingCandle,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
         setCandleDomains,
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
         poolPriceDisplay,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         chartSettings,
         isMarketOrLimitModule,
     } = props;
+
+    const rangeState = useContext(RangeStateContext);
 
     const [scaleData, setScaleData] = useState<any>();
     const [liquidityScale, setLiquidityScale] = useState<any>();
@@ -899,22 +885,22 @@ export default function TradeCandleStickChart(props: propsIF) {
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
                         handlePulseAnimation={handlePulseAnimation}
-                        minPrice={minPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
+                        minPrice={rangeState.minRangePrice}
+                        maxPrice={rangeState.maxRangePrice}
+                        setMaxPrice={rangeState.setMaxRangePrice}
+                        setMinPrice={rangeState.setMinRangePrice}
                         rescaleRangeBoundariesWithSlider={
-                            rescaleRangeBoundariesWithSlider
+                            rangeState.rescaleRangeBoundariesWithSlider
                         }
                         setRescaleRangeBoundariesWithSlider={
-                            setRescaleRangeBoundariesWithSlider
+                            rangeState.setRescaleRangeBoundariesWithSlider
                         }
                         setCandleDomains={setCandleDomains}
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={setRepositionRangeWidth}
                         repositionRangeWidth={repositionRangeWidth}
-                        setChartTriggeredBy={setChartTriggeredBy}
-                        chartTriggeredBy={chartTriggeredBy}
+                        setChartTriggeredBy={rangeState.setChartTriggeredBy}
+                        chartTriggeredBy={rangeState.chartTriggeredBy}
                         candleTime={
                             isMarketOrLimitModule
                                 ? chartSettings.candleTime.market

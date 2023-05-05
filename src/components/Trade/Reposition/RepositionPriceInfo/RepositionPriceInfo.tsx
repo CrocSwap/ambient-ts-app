@@ -42,8 +42,6 @@ interface IRepositionPriceInfoProps {
     currentPoolPriceDisplay: string;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
     isConfirmModal?: boolean;
 
     minPriceDisplay: string;
