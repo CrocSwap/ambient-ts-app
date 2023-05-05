@@ -125,7 +125,9 @@ export default function Account(props: AccountPropsIF) {
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                <p className={styles.wallet_name}>{ensOrAddressTruncated}</p>
+                <p className={styles.wallet_name}>
+                    {ensOrAddressTruncated || '...'}
+                </p>
             </button>
             {showWalletDropdown ? (
                 <WalletDropdown

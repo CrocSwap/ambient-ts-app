@@ -334,7 +334,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         </div>
                     )}
                     {!showAvatar && (
-                        <div style={{ display: 'none' }}>
+                        <div style={{ display: 'none', marginLeft: '10px' }}>
                             <div className={styles.nft_container}>
                                 {myBlockies}
                             </div>
@@ -387,6 +387,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                             setIsPosition={setIsPosition}
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
+                            showAvatar={showAvatar}
                         />
                         {!isPosition && mentionedMessage()}
                     </div>
