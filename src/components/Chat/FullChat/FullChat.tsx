@@ -37,6 +37,7 @@ interface FullChatPropsIF {
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
     topPools: topPoolIF[];
+    setIsChatOpen: (val: boolean) => void;
 }
 
 interface ChannelDisplayPropsIF {
@@ -46,7 +47,7 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { topPools } = props;
+    const { topPools, setIsChatOpen } = props;
     const rooms = topPools;
     const { params } = useParams();
     const { favePools } = useContext(UserPreferenceContext);
@@ -56,6 +57,10 @@ export default function FullChat(props: FullChatPropsIF) {
             : params && params.includes('global')
             ? 'Global'
             : 'Global';
+
+    useEffect(() => {
+        setIsChatOpen(true);
+    }, []);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;

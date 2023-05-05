@@ -474,6 +474,7 @@ export default function ChatPanel(props: propsIF) {
         return (
             <FullChat
                 messageList={messageList}
+                setIsChatOpen={setIsChatOpen}
                 chatNotification={chatNotification}
                 messageInput={messageInput}
                 room={room}
