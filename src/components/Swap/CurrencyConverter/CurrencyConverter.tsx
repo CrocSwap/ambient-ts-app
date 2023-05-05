@@ -194,6 +194,10 @@ export default function CurrencyConverter(props: propsIF) {
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
+    useEffect(() => {
+        console.log({ tokenAQtyLocal });
+    }, []);
+
     const navigate = useNavigate();
 
     const { pathname } = useLocation();
@@ -317,8 +321,12 @@ export default function CurrencyConverter(props: propsIF) {
             setSwitchBoxes(!switchBoxes);
 
             isTokenAPrimaryLocal
-                ? setIsSellLoading(true)
-                : setIsBuyLoading(true);
+                ? tokenAQtyLocal !== ''
+                    ? setIsSellLoading(true)
+                    : null
+                : tokenBQtyLocal !== ''
+                ? setIsBuyLoading(true)
+                : null;
 
             setTokenALocal(tokenBLocal);
             setTokenBLocal(tokenALocal);
