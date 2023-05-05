@@ -184,14 +184,17 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return newTokenMap;
     }
 
+    // fn to look up a token by contract address
     function getTokenByAddress(
-        addr: string, chainId: string
+        addr: string, chn: string
     ): TokenIF|undefined {
-        const tokenKey: string = makeTokenMapKey(addr, chainId);
+        // key to look up token in the map
+        const tokenKey: string = makeTokenMapKey(addr, chn);
+        // return token if found, otherwise `undefined`
         return tokenMap.get(tokenKey);
     }
 
     return {
-        getByAddress: getTokenByAddress
+        getByAddress: getTokenByAddress,
     };
 };
