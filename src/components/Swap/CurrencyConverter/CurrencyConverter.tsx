@@ -160,6 +160,9 @@ export default function CurrencyConverter(props: propsIF) {
         tradeData.tokenB.symbol,
     );
 
+    const [isSellLoading, setIsSellLoading] = useState(false);
+    const [isBuyLoading, setIsBuyLoading] = useState(false);
+
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
@@ -195,7 +198,15 @@ export default function CurrencyConverter(props: propsIF) {
     );
 
     useEffect(() => {
-        console.log({ tokenAQtyLocal });
+        if (isTokenAPrimaryLocal) {
+            if (tokenAQtyLocal !== '') {
+                setIsBuyLoading(true);
+            }
+        } else {
+            if (tokenBQtyLocal !== '') {
+                setIsSellLoading(true);
+            }
+        }
     }, []);
 
     const navigate = useNavigate();
@@ -780,9 +791,6 @@ export default function CurrencyConverter(props: propsIF) {
         if (truncatedTokenAQty !== sellQtyString)
             setSellQtyString(truncatedTokenAQty);
     };
-
-    const [isSellLoading, setIsSellLoading] = useState(false);
-    const [isBuyLoading, setIsBuyLoading] = useState(false);
 
     return (
         <section
