@@ -22,6 +22,7 @@ interface propsIF {
     setIsPosition: Dispatch<SetStateAction<boolean>>;
     walletExplorer: any;
     isCurrentUser?: boolean;
+    showAvatar?: boolean;
 }
 
 export default function PositionBox(props: propsIF) {
@@ -239,7 +240,13 @@ export default function PositionBox(props: propsIF) {
     return props.isPosition ? (
         position !== undefined && !isInput ? (
             <motion.div className={styles.animate_position_box}>
-                <div className={styles.position_main_box}>
+                <div
+                    className={
+                        props.showAvatar
+                            ? styles.position_main_box
+                            : styles.position_main_box_without_avatar
+                    }
+                >
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
