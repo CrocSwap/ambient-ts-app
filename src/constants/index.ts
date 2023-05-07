@@ -33,6 +33,9 @@ export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
     GRAPHCACHE_URL.replace('https', 'wss');
 
+export const CHAT_BACKEND_URL =
+    process.env.CHAT_BACKEND_URL || `${GRAPHCACHE_URL}/chat`;
+
 export const MORALIS_KEY =
     process.env.REACT_APP_MORALIS_KEY ||
     'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5';
