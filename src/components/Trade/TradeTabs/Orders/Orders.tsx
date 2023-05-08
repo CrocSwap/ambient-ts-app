@@ -367,7 +367,11 @@ export default function Orders(props: propsIF) {
                 (!isAccountView && tradePageCheck)) && (
                 <Pagination
                     itemsPerPage={limitsPerPage}
-                    totalItems={limitOrderData.length}
+                    totalItems={
+                        limitOrderData.filter(
+                            (limitOrder) => limitOrder.totalValueUSD !== 0,
+                        ).length
+                    }
                     paginate={paginate}
                     currentPage={currentPage}
                 />

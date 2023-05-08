@@ -1,7 +1,7 @@
 import styles from './Home1.module.css';
 // import { Link } from 'react-router-dom';
 // import { useTranslation } from 'react-i18next';
-// import logoText from '../../../assets/images/logos/logo_text.svg';
+// import logoText from '../../../assets/images/logos/logo_text.png';
 import row2Image from '../../../assets/images/newHome/row2.png';
 import row3Image from '../../../assets/images/newHome/row3.png';
 import Investors from './Investors';

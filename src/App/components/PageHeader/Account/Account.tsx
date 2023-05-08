@@ -26,6 +26,15 @@ interface AccountPropsIF {
     ethMainnetUsdPrice?: number;
     chainData: ChainSpec;
     lastBlockNumber: number;
+
+    walletDropdownTokenData:
+        | {
+              logo: string;
+              symbol: string;
+              value: string | undefined;
+              amount: string | undefined;
+          }[]
+        | null;
 }
 
 export default function Account(props: AccountPropsIF) {
@@ -37,6 +46,7 @@ export default function Account(props: AccountPropsIF) {
         chainId,
         lastBlockNumber,
         chainData,
+        walletDropdownTokenData,
     } = props;
 
     const {
@@ -125,7 +135,9 @@ export default function Account(props: AccountPropsIF) {
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                <p className={styles.wallet_name}>{ensOrAddressTruncated}</p>
+                <p className={styles.wallet_name}>
+                    {ensOrAddressTruncated || '...'}
+                </p>
             </button>
             {showWalletDropdown ? (
                 <WalletDropdown
@@ -147,6 +159,7 @@ export default function Account(props: AccountPropsIF) {
                     accountAddressFull={props.accountAddressFull}
                     showWalletDropdown={showWalletDropdown}
                     setShowWalletDropdown={setShowWalletDropdown}
+                    walletDropdownTokenData={walletDropdownTokenData}
                 />
             ) : null}
         </section>
