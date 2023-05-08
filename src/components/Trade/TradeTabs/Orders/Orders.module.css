@@ -314,16 +314,17 @@
     color: var(--text1);
     padding: 12px;
     border-radius: 4px;
-    cursor: default
+    cursor: default;
+
 }
 
 .wallet_tooltip_p{
-
  font-family: monospace;
  display: flex;
  flex-direction: row;
  align-items: center;
  white-space: nowrap;
+ gap: 4px;
 }
 
 .token_qty_tooltip{

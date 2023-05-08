@@ -130,7 +130,10 @@ export default function rangeRowConstants(props: Props) {
         <TextOnlyTooltip
             interactive
             title={
-                <p className={styles.id_tooltip_style}>
+                <p
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     {posHash.toString()}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -143,7 +146,6 @@ export default function rangeRowConstants(props: Props) {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
@@ -168,7 +170,10 @@ export default function rangeRowConstants(props: Props) {
             interactive
             title={
                 <div className={styles.wallet_tooltip_div}>
-                    <p className={styles.wallet_tooltip_p}>
+                    <p
+                        className={styles.wallet_tooltip_p}
+                        onClick={(event) => event.stopPropagation()}
+                    >
                         {ownerId}
                         <FiCopy
                             style={{ cursor: 'pointer' }}
@@ -189,7 +194,6 @@ export default function rangeRowConstants(props: Props) {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
                 style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
@@ -202,7 +206,7 @@ export default function rangeRowConstants(props: Props) {
     const walletWithoutTooltip = (
         <p
             // onClick={handleWalletClick}
-            onClick={openDetailsModal}
+
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
