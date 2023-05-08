@@ -210,6 +210,16 @@ export default function Range(props: propsIF) {
         closeConfirmationModal,
     ] = useModal();
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
+    const [
+        tokenBQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const [isAmbient, setIsAmbient] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -1378,6 +1388,8 @@ export default function Range(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         ackTokens: ackTokens,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };
 
     // props for <RangeWidth/> React element
@@ -1483,9 +1495,10 @@ export default function Range(props: propsIF) {
     );
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
+        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     const loginButton = (
         <button

@@ -32,12 +32,12 @@ export default function RangeButton(props: propsIF) {
                         ? rangeAllowed
                             ? bypassConfirmRange.isEnabled
                                 ? isAdd
-                                    ? `Add to ${
-                                          isAmbient ? 'Ambient' : 'Range'
-                                      } Position`
-                                    : `Create ${
-                                          isAmbient ? 'Ambient' : 'Range'
-                                      } Position`
+                                    ? `Add ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
+                                    : `Submit ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
                                 : 'Open Confirmation'
                             : rangeButtonErrorMessage
                         : 'Acknowledge'

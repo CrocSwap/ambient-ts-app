@@ -176,7 +176,7 @@ export default function Trade(props: propsIF) {
         },
         {
             path: '/range',
-            name: 'Pool',
+            name: 'Liquidity',
         },
     ];
 

@@ -126,7 +126,7 @@ export default function TransactionRow(props: propsIF) {
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
