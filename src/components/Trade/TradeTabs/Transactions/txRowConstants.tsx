@@ -177,6 +177,7 @@ export const txRowConstants = (props: Props) => {
                 >
                     <p
                         className={`${styles.mono_font}`}
+                        onClick={(event) => event.stopPropagation()}
                         style={{
                             display: 'flex',
                             flexDirection: 'row',
