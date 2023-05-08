@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { defaultTokenLists } from '../data/defaultTokenLists';
 import { tokenListURIs } from '../data/tokenListURIs';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
@@ -18,9 +17,8 @@ export const useTokenMap = () => {
 };
 
 function scrapeTokenMap() {
-    const tokenListsNeeded = defaultTokenLists.map(
-        (listName) => tokenListURIs[listName],
-    );
+    // array of URI endpoints for token lists
+    const tokenListsNeeded: string[] = Object.values(tokenListURIs);
 
     function parseAllTokens(): TokenListIF[] {
         const entry = localStorage.getItem('allTokenLists');

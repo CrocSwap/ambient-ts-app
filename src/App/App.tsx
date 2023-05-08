@@ -72,7 +72,6 @@ import {
     defaultTokens,
     getDefaultPairForChain,
 } from '../utils/data/defaultTokens';
-import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
 import {
     LimitOrderIF,
     TokenIF,
@@ -646,11 +645,6 @@ export default function App() {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
-
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('initializing local storage');
-        initializeUserLocalStorage();
-    }, [tokenListsReceived]);
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
