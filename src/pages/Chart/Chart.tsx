@@ -5604,7 +5604,14 @@ export default function Chart(props: propsIF) {
 
         if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
 
-        const longestValue = d3.max(volumeData, (d: any) => d.value) / 2;
+        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
+
+        const filtered = volumeData?.filter(
+            (data: any) => data.time >= xmin && data.time <= xmax,
+        );
+
+        const longestValue = d3.max(filtered, (d: any) => d.value) / 2;
 
         const nearest = snapForCandle(event);
         const dateControl =
@@ -5612,28 +5619,12 @@ export default function Chart(props: propsIF) {
             nearest?.date.getTime() < lastDate.getTime();
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
-        const maxCanvas = d3
-            .select(d3CanvasMarketLine.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
+        const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
 
-        const volumeCanvas = d3
-            .select(d3CanvasBar.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-
-        const volumeY =
-            (event.offsetY / maxCanvas.height) * volumeCanvas.height +
-            (maxCanvas.height - volumeCanvas.height);
-        console.log({ volumeY }, event.offsetY / 2);
-
-        const yValueVolume = scaleData?.volumeScale.invert(volumeY);
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
-
-        console.log({ yValueVolume });
 
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
@@ -5686,10 +5677,10 @@ export default function Chart(props: propsIF) {
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
-                (((limitTop > limitBot
+                dateControl &&
+                ((limitTop > limitBot
                     ? limitTop > yValue && limitBot < yValue
-                    : limitTop < yValue && limitBot > yValue) &&
-                    dateControl) ||
+                    : limitTop < yValue && limitBot > yValue) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
             nearest: nearest,
