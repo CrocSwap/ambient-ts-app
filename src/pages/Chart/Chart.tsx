@@ -3198,28 +3198,27 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('end', (event: any) => {
-                    if (!cancelDrag) {
-                        draggingLine = undefined;
+                    setIsLineDrag(false);
 
+                    draggingLine = undefined;
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y: Number(
+                                formatAmountChartData(
+                                    scaleData?.yScale.invert(
+                                        event.sourceEvent.layerY,
+                                    ),
+                                ),
+                            ),
+                        },
+                    ]);
+
+                    if (!cancelDrag) {
                         d3.select(d3Container.current).style(
                             'cursor',
                             'row-resize',
                         );
-                        setCrosshairData([
-                            {
-                                x: crosshairData[0].x,
-                                y: Number(
-                                    formatAmountChartData(
-                                        scaleData?.yScale.invert(
-                                            event.sourceEvent.layerY,
-                                        ),
-                                    ),
-                                ),
-                            },
-                        ]);
-
-                        setIsLineDrag(false);
-
                         if (rescale) {
                             const xmin = new Date(
                                 Math.floor(scaleData?.xScale.domain()[0]),
@@ -3281,16 +3280,6 @@ export default function Chart(props: propsIF) {
 
                         if (oldLimitValue)
                             onBlurLimitRate(oldLimitValue, newLimitValue);
-
-                        d3.select(d3CanvasLimitLine.current).style(
-                            'cursor',
-                            'default',
-                        );
-
-                        d3.select(d3Yaxis.current).style('cursor', 'default');
-
-                        setIsMouseMoveCrosshair(false);
-                        setCrosshairActive('none');
                     } else {
                         if (oldLimitValue !== undefined) {
                             setLimit(() => {
@@ -3303,6 +3292,16 @@ export default function Chart(props: propsIF) {
                             });
                         }
                     }
+
+                    d3.select(d3CanvasLimitLine.current).style(
+                        'cursor',
+                        'default',
+                    );
+
+                    d3.select(d3Yaxis.current).style('cursor', 'default');
+
+                    setIsMouseMoveCrosshair(false);
+                    setCrosshairActive('none');
                 });
 
             setDragRange(() => {
