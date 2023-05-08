@@ -285,6 +285,14 @@ export default function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
+    function handleRowClick() {
+        if (limitOrder.limitOrderIdentifier === currentPositionActive) {
+            return;
+        }
+        setCurrentPositionActive('');
+        openDetailsModal();
+    }
+
     return (
         <>
             <ul
@@ -293,11 +301,7 @@ export default function OrderRow(props: propsIF) {
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
                 id={orderDomId}
                 style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-                onClick={() =>
-                    limitOrder.limitOrderIdentifier === currentPositionActive
-                        ? null
-                        : setCurrentPositionActive('')
-                }
+                onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
             >
                 {!showColumns && OrderTimeWithTooltip}
