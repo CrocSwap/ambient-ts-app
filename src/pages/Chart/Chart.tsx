@@ -4648,16 +4648,16 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([4, 2]);
+                    crosshairVerticalCanvas(crosshairData);
                     if (crosshairActive === 'chart') {
                         crosshairHorizontal(crosshairData);
-                        crosshairVerticalCanvas(crosshairData);
                     }
                 })
                 .on('measure', () => {
+                    ctx.setLineDash([4, 2]);
+                    crosshairVerticalCanvas.context(ctx);
                     if (crosshairActive === 'chart') {
-                        ctx.setLineDash([4, 2]);
                         crosshairHorizontal.context(ctx);
-                        crosshairVerticalCanvas.context(ctx);
                     }
                 });
         }
