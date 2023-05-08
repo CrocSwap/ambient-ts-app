@@ -6,7 +6,7 @@
 
 .main_content {
     transition: all var(--animation-speed) ease-in-out;
-    background: url(../../../assets/images/backgrounds/background.png) no-repeat;
+    /* background image dynamically set in TransactionDetails.tsx */
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;

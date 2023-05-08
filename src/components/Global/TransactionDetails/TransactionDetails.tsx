@@ -9,6 +9,8 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import marketBackground from '../../../assets/images/backgrounds/background-modal.png';
+import background from '../../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     account: string;
@@ -104,7 +106,16 @@ export default function TransactionDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.tx_details_container}>
+        <div
+            className={styles.tx_details_container}
+            style={{
+                backgroundImage: showShareComponent
+                    ? tx.entityType === 'swap'
+                        ? `url(${marketBackground})`
+                        : `url(${background})`
+                    : '',
+            }}
+        >
             <TransactionDetailsHeader
                 tx={tx}
                 onClose={props.closeGlobalModal}

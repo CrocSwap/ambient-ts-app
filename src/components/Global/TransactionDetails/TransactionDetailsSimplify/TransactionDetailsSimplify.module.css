@@ -1,34 +1,20 @@
-.tx_details_container {
-    max-width: 1000px;
-    background: url(../../../../assets/images/backgrounds/background.png)
-        no-repeat;
-}
-
 .main_container {
     transition: all var(--animation-speed) ease-in-out;
     background: var(--dark1);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: calc(100% - 5rem);
     cursor: default;
-    padding: 1rem 2rem;
+    padding: 1rem;
+    margin: 2rem;
     border: 1px solid var(--dark2);
     backdrop-filter: blur(10px);
     border-radius: var(--border-radius);
-    /* margin: 0 1rem; */
 
     animation: fadeIn ease 1s;
     -webkit-animation: fadeIn ease 1s;
     -moz-animation: fadeIn ease 1s;
     -o-animation: fadeIn ease 1s;
     -ms-animation: fadeIn ease 1s;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.info_content {
-    margin-top: 20px;
 }
 
 /* .main_container section{

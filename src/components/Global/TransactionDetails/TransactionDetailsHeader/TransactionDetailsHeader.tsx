@@ -1,7 +1,7 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
@@ -26,11 +26,6 @@ export default function TransactionDetailsHeader(
         showShareComponent,
         setShowShareComponent,
     } = props;
-    // eslint-disable-next-line
-
-    const phIcon = (
-        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
-    );
 
     const copyIconWithTooltip = (
         <IconWithTooltip
@@ -43,6 +38,7 @@ export default function TransactionDetailsHeader(
         </IconWithTooltip>
     );
 
+    // TODO: fix download
     // const downloadIconWithTooltip = (
     //     <IconWithTooltip title='Download shareable image' placement='bottom'>
     //         <div onClick={downloadAsImage}>
@@ -59,17 +55,14 @@ export default function TransactionDetailsHeader(
             </section>
 
             <section className={styles.settings_control}>
+                {showShareComponent && copyIconWithTooltip}
+                {/* {showShareComponent && downloadIconWithTooltip} */}
                 <button
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
-
-                {showShareComponent ? copyIconWithTooltip : phIcon}
-
-                {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
-
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />
                 </div>
