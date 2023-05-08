@@ -2617,12 +2617,11 @@ export default function Chart(props: propsIF) {
 
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
+            const pinnedTick: number = pinTickLower(limit, chainData.gridSize);
 
-            const pinnedTick: number = !isTokenABase
-                ? pinTickLower(limit, chainData.gridSize)
-                : pinTickUpper(limit, chainData.gridSize);
-
-            const tickPrice = tickToPrice(pinnedTick - chainData.gridSize * 2);
+            const tickPrice = tickToPrice(
+                pinnedTick + (denomInBase ? 1 : -1) * chainData.gridSize * 2,
+            );
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
 
@@ -2643,14 +2642,15 @@ export default function Chart(props: propsIF) {
             limit = limit !== 0 ? limit : 1;
             const pinnedTick: number = pinTickUpper(limit, chainData.gridSize);
 
-            const tickPrice = tickToPrice(pinnedTick + chainData.gridSize * 2);
+            const tickPrice = tickToPrice(
+                pinnedTick + (denomInBase ? -1 : 1) * chainData.gridSize * 2,
+            );
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
 
             if (tickDispPrice) {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-
                     setMaxTickForLimit(displayPriceWithDenom);
                 });
             }
@@ -5834,7 +5834,6 @@ export default function Chart(props: propsIF) {
     // autoScaleF
     useEffect(() => {
         if (rescale && !isLineDrag) {
-            getNoZoneData();
             changeScale();
         }
     }, [
