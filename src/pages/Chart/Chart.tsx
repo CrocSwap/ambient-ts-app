@@ -5742,7 +5742,14 @@ export default function Chart(props: propsIF) {
 
         if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
 
-        const longestValue = d3.max(volumeData, (d: any) => d.value) / 2;
+        const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
+        const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
+
+        const filtered = volumeData?.filter(
+            (data: any) => data.time >= xmin && data.time <= xmax,
+        );
+
+        const longestValue = d3.max(filtered, (d: any) => d.value) / 2;
 
         const nearest = snapForCandle(event);
         const dateControl =
@@ -5751,6 +5758,7 @@ export default function Chart(props: propsIF) {
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
+
         const selectedVolumeData = volumeData.find(
             (item: any) => item.time.getTime() === nearest?.date.getTime(),
         );
@@ -5807,10 +5815,10 @@ export default function Chart(props: propsIF) {
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
-                (((limitTop > limitBot
+                dateControl &&
+                ((limitTop > limitBot
                     ? limitTop > yValue && limitBot < yValue
-                    : limitTop < yValue && limitBot > yValue) &&
-                    dateControl) ||
+                    : limitTop < yValue && limitBot > yValue) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
             nearest: nearest,
