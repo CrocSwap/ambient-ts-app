@@ -68,10 +68,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // Filter data to only contain USDC and DAI tokens
         const filteredData = data.filter((token) => {
             const address = token.address;
-            return (
-                address === '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60' ||
-                address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c'
-            );
+            return address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c';
         });
 
         // We want usdc first and dai second
