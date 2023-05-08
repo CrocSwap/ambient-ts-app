@@ -7,7 +7,8 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import headerLogo from '../../../assets/images/logos/header_logo.svg';
+import logo from '../../../assets/images/logos/ambient_logo.png';
+import logoText from '../../../assets/images/logos/logo_text.png';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
@@ -308,8 +309,12 @@ export default function PageHeader(props: HeaderPropsIF) {
             }`}
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={headerLogo} alt='ambient' />
-                <img src='./ambient_logo_1.png' alt='' width='25' />
+                <img src={logo} alt='ambient' className={styles.logo} />
+                <img
+                    src={logoText}
+                    alt='ambient'
+                    className={styles.logo_text}
+                />
             </Link>
             {routeDisplay}
             {show ? (
