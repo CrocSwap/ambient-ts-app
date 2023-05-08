@@ -1,7 +1,7 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy, FiDownload } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
