@@ -1,13 +1,17 @@
 .main_container{
-    width: 407px;
+    width: 510px;
  
-    height: 280px;
+    height: 223px;
 
     display: flex;
     flex-direction: column;
     gap: 1rem;
     justify-content: space-between;
-    padding: 8px;
+    padding: 8px 16px;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
+    text-align: center;
+    padding-bottom: 1rem;
     
 }
 
@@ -19,9 +23,8 @@
 .first_section{
     display: flex;
     justify-content: center;
-    /* align-items: center;
-    text-align: center; */
-    margin-top: 3rem;
+
+    margin-top: 1rem;
 }
 
 
@@ -29,7 +32,8 @@
 .main_container p{
     color: var(--text1);
     font-size: 12;
-    line-height: var(--body-lh);
+
+    line-height: 22px;
 }
 
 .checkbox{
@@ -40,5 +44,6 @@
 }
 
 .main_container a{
-    color: var(--accent1)
+    color: var(--accent1);
+    text-decoration: underline;
 }
