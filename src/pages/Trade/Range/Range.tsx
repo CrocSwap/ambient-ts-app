@@ -85,6 +85,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
     account: string | undefined;
@@ -134,14 +135,6 @@ interface propsIF {
     searchType: string;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    minPrice: number;
-    maxPrice: number;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
     ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
     chainData: ChainSpec;
@@ -189,17 +182,20 @@ export default function Range(props: propsIF) {
         searchType,
         setSimpleRangeWidth,
         simpleRangeWidth,
-        setMaxPrice,
-        setMinPrice,
-        setRescaleRangeBoundariesWithSlider,
-        minPrice,
-        maxPrice,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         cachedFetchTokenPrice,
         ackTokens,
         chainData,
     } = props;
+
+    const {
+        minRangePrice: minPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
+        setChartTriggeredBy,
+        chartTriggeredBy,
+        setRescaleRangeBoundariesWithSlider,
+    } = useContext(RangeStateContext);
 
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
