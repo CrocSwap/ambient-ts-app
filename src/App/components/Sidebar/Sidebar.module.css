@@ -48,7 +48,7 @@
 .bottom_elements {
     margin-top: auto;
     width: 100%;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--dark3);
 }
 
 .sidebar_link {
@@ -56,7 +56,7 @@
 
     align-items: center;
     height: 28px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--dark3);
     /* padding: 4px 0; */
 
     cursor: pointer;
@@ -119,7 +119,7 @@
     line-height: 15px;
 
     display: none;
-    margin-left: 1rem;
+    margin-left: 10px;
 }
 
 .sidebar_link:hover > .link_text {
