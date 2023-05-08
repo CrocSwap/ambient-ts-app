@@ -1,6 +1,5 @@
 .container {
     width: 100%;
-    width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     font-weight: 300;
@@ -9,6 +8,9 @@
     color: var(--text2);
     cursor: pointer;
     padding: 5px;
+    max-height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .container div {

@@ -75,6 +75,8 @@ export default function SidebarAccordion(props: propsIF) {
     const sidebarIconStyle = isOpen ? styles.open_link : null;
 
     function handleAccordionClick() {
+        console.log('handleClick');
+
         if (sidebar.isOpen) {
             setIsOpen(!isOpen);
         } else {
