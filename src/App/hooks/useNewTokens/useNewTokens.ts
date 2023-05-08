@@ -5,6 +5,7 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export interface tokenMethodsIF {
     verify: (addr: string, chainId: string) => boolean;
+    acknowledge: (tkn: TokenIF) => void;
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
     getByChain: (chn: string) => TokenIF[];
     getBySource: (uri: string) => TokenIF[];
@@ -43,6 +44,33 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return output;
     }
 
+    // fn to retrieve and parse token lists from local storage
+    function getAckTokensFromLS(): TokenIF[]|null {
+        // get entry from local storage
+        const entry: string|null = localStorage.getItem(localStorageKeys.ackTokens);
+        // declare an output variable
+        let output: TokenIF[] | null;
+        // process data retrieved from local storage
+        if (entry) {
+            try {
+                // parse data from local storage and assign to output variable
+                const data: TokenIF[] = JSON.parse(entry);
+                output = data;
+            } catch {
+                // clear data from local storage and warn user if unable to parse
+                // assign `null` value to output variable
+                console.warn('localStorage acknowledged token lists corrupt, clearing data and re-fetching');
+                localStorage.removeItem(localStorageKeys.ackTokens);
+                output = null;
+            }
+        } else {
+            // assign `null` to output variable if no persisted data was found
+            output = null;
+        }
+        // return output value
+        return output;
+    }
+
     // hook to memoize token lists in local state
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
         getTokenListsFromLS() ?? []
@@ -64,7 +92,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
             this.decimals = rawToken.decimals;
             this.chainId = rawToken.chainId;
             this.logoURI = rawToken.logoURI;
-            this.fromList = rawToken.fromList ?? '';
+            this.fromList = rawToken.fromList ?? newListURI;
             if (rawToken.fromListArr) {
                 this.fromListArr = [...rawToken.fromListArr, newListURI]
             } else {
@@ -225,6 +253,26 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return !!tokenMap.get(tokenKey);
     }
 
+    // fn to acknowledge a custom token
+    function acknowledgeToken(tkn: TokenIF): void {
+        // put the token into the Token class constructor for consistency
+        const tokenObj: TokenIF = new Token(tkn, 'custom_token');
+        // array of ack'd tokens from local storage (empty array if none yet)
+        const tkns: TokenIF[] = getAckTokensFromLS() ?? [];
+        // array from local storage with the new token added
+        // we're assuming the app only calls this in cases it is not yet ack'd
+        const updatedTokens: TokenIF[] = [...tkns, tokenObj];
+        // update the persisted array in local storage
+        localStorage.setItem(localStorageKeys.ackTokens, JSON.stringify(updatedTokens));
+        // create a local-scope copy of the token Map
+        const localMap: Map<string, TokenIF> = tokenMap;
+        // add the new custom token to the local map
+        const tokenKey: string = makeTokenMapKey(tkn.address, tkn.chainId);
+        localMap.set(tokenKey, tokenObj);
+        // send the updated map to local state
+        setTokenMap(localMap);
+    }
+
     // fn to look up a token by contract address
     function getTokenByAddress(
         addr: string, chn: string
@@ -252,6 +300,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
 
     return {
         verify: verifyToken,
+        acknowledge: acknowledgeToken,
         getByAddress: getTokenByAddress,
         getByChain: getTokensByChain,
         getBySource: getTokensFromList,
