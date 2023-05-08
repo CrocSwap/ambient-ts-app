@@ -182,8 +182,8 @@ export const orderRowConstants = (props: Props) => {
             <p
                 onClick={openDetailsModal}
                 data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                className={`${usernameStyle} ${styles.mono_font}`}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </p>

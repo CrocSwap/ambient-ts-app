@@ -90,12 +90,6 @@ interface propsIF {
     setFetchingCandle: Dispatch<SetStateAction<boolean>>;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -103,8 +97,6 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
     ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -152,19 +144,11 @@ export default function Trade(props: propsIF) {
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
@@ -192,7 +176,7 @@ export default function Trade(props: propsIF) {
         },
         {
             path: '/range',
-            name: 'Pool',
+            name: 'Liquidity',
         },
     ];
 
@@ -509,20 +493,11 @@ export default function Trade(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
         setFetchingCandle: setFetchingCandle,
-        minPrice: minPrice,
-        maxPrice: maxPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
-        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
         setCandleDomains: setCandleDomains,
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
         repositionRangeWidth: repositionRangeWidth,
-        setChartTriggeredBy: setChartTriggeredBy,
-        chartTriggeredBy: chartTriggeredBy,
     };
 
     const tradeTabsProps = {

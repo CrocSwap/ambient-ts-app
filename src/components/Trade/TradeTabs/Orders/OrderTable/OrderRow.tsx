@@ -133,7 +133,7 @@ export default function OrderRow(props: propsIF) {
             : styles.base_color;
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const openDetailsModal = () => {

@@ -1,13 +1,15 @@
 .wallet_content {
-    background: var(--dark2);
+    background: var(--dark3);
     padding: 8px 1rem;
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    gap: 4px;
-
+    /* gap: 4px; */
     height: 100px;
-    overflow-y: scroll;
+    overflow-y: hidden;
+}
+.wallet_content::-webkit-scrollbar {
+    display: none;
 }
 .name_display_container {
     margin: 0 auto;
@@ -80,7 +82,7 @@
     background: var(--dark3);
     border: none;
     outline: none;
-    padding: 8px;
+    padding: 6px 8px;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -97,12 +99,13 @@
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid var(--accent1);
+    /* border: 1px solid var(--accent1); */
+
+    background: var(--accent1);
 }
 .actions_container button:first-of-type:hover,
 .actions_container button:first-of-type:focus-visible {
-    color: var(--text1);
-    border: 1px solid var(--accent1);
+    color: var(--text-grey-white);
 
     /* border: 1px solid rgba(223, 190, 106, 0); */
     background-position: 99% 50%;
@@ -122,12 +125,12 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--dark1);
-    padding: 4px 10px;
-    background: var(--dark3);
-    border-radius: 4px;
-}
 
+    padding: 4px 10px;
+}
+.token_container:not(:last-of-type) {
+    border-bottom: 1px solid var(--dark1);
+}
 .logo_name {
     display: flex;
     flex-direction: row;
