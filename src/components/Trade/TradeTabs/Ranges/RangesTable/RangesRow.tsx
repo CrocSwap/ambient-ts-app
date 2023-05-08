@@ -336,17 +336,21 @@ export default function RangesRow(props: propsIF) {
         rangeDisplay,
     } = rangeRowConstants(rangeRowConstantsProps);
 
+    function handleRowClick() {
+        if (position.positionStorageSlot === currentPositionActive) {
+            return;
+        }
+        setCurrentPositionActive('');
+        openDetailsModal();
+    }
+
     return (
         <>
             <ul
                 onMouseEnter={() => setShowHighlightedButton(true)}
                 onMouseLeave={() => setShowHighlightedButton(false)}
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
-                onClick={() =>
-                    position.positionStorageSlot === currentPositionActive
-                        ? null
-                        : setCurrentPositionActive('')
-                }
+                onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
                 style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
