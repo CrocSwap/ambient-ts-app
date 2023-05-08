@@ -11,12 +11,15 @@ export interface tokenMethodsIF {
 }
 
 export const useNewTokens = (chainId: string): tokenMethodsIF => {
-    const tokenListsLocalStorageKey = 'tokenLists';
+    const localStorageKeys = {
+        tokenLists: 'tokenLists',
+        ackTokens: 'ackTokens',
+    };
 
     // fn to retrieve and parse token lists from local storage
     function getTokenListsFromLS(): TokenListIF[]|null {
         // get entry from local storage
-        const entry: string|null = localStorage.getItem(tokenListsLocalStorageKey);
+        const entry: string|null = localStorage.getItem(localStorageKeys.tokenLists);
         // declare an output variable
         let output: TokenListIF[] | null;
         // process data retrieved from local storage
@@ -29,7 +32,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
                 // clear data from local storage and warn user if unable to parse
                 // assign `null` value to output variable
                 console.warn('localStorage token lists corrupt, clearing data and re-fetching');
-                localStorage.removeItem(tokenListsLocalStorageKey);
+                localStorage.removeItem(localStorageKeys.tokenLists);
                 output = null;
             }
         } else {
@@ -40,7 +43,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return output;
     }
 
-    // hook to memoize token lists in local storage
+    // hook to memoize token lists in local state
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
         getTokenListsFromLS() ?? []
     );
@@ -120,7 +123,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
                     setTokenLists(sequencedLists);
                     // send array of token lists to local storage
                     localStorage.setItem(
-                        tokenListsLocalStorageKey, JSON.stringify(sequencedLists)
+                        localStorageKeys.tokenLists, JSON.stringify(sequencedLists)
                     );
                     setTokenMap(makeTokenMap(sequencedLists));
                 });
@@ -166,6 +169,18 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
             // check if token is already in the map
             const tokenFromMap: TokenIF|undefined = newTokenMap.get(tokenKey);
             newTokenMap.set(tokenKey, new Token(tokenFromMap ?? tkn, tkn.fromList));
+        });
+        // array of acknowledged from local storage (gets an empty array if none)
+        const ackTokens: TokenIF[] = JSON.parse(
+            localStorage.getItem(localStorageKeys.ackTokens) as string
+        ) ?? [];
+        // iterate through acknowledged tokens and add to Map if not already listed
+        ackTokens.forEach((tkn: TokenIF) => {
+            verifyToken(tkn.address, `0x_${tkn.chainId.toString(16)}`) ||
+                newTokenMap.set(
+                    makeTokenMapKey(tkn.address, tkn.chainId),
+                    new Token(tkn, 'custom_token')
+                );
         });
         console.timeEnd('making token map');
         return newTokenMap;
