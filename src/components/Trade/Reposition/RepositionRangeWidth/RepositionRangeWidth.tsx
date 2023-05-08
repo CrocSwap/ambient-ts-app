@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
+import { RangeStateContext } from '../../../../contexts/RangeStateContext';
 import styles from './RepositionRangeWidth.module.css';
 import {
     updateRangeWithButton,
@@ -11,15 +12,13 @@ import {
 interface IRepositionRangeWidth {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
-    const {
-        rangeWidthPercentage,
-        setRangeWidthPercentage,
-        setRescaleRangeBoundariesWithSlider,
-    } = props;
+    const { rangeWidthPercentage, setRangeWidthPercentage } = props;
+
+    const { setRescaleRangeBoundariesWithSlider } =
+        useContext(RangeStateContext);
 
     // todo
     // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance, especially rangeWidthFunctions.ts.

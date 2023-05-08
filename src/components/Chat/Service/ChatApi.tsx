@@ -1,5 +1,8 @@
 import { useAccount } from 'wagmi';
-export const host = 'https://ambichat.link:5000';
+import { CHAT_BACKEND_URL } from '../../../constants';
+
+export const host = CHAT_BACKEND_URL;
+
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
@@ -12,7 +15,7 @@ const useChatApi = () => {
     async function getStatus() {
         // Hit the chat /status endpoint to see if it's online
         try {
-            const response = await fetch(host + '/status', {
+            const response = await fetch(host + '/api/status', {
                 method: 'GET',
             });
             return response.status === 200;
