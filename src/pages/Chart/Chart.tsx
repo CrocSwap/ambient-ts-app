@@ -862,7 +862,6 @@ export default function Chart(props: propsIF) {
             d3CanvasMarketLine !== null &&
             d3CanvasLimitLine !== null &&
             d3CanvasRangeLine !== null &&
-            dragLimit !== undefined &&
             zoomUtils.zoom !== undefined &&
             dragLimit !== undefined &&
             dragRange !== undefined
@@ -2687,6 +2686,16 @@ export default function Chart(props: propsIF) {
             let dragSwitched = false;
             let draggingLine: any = undefined;
 
+            let cancelDrag = false;
+            const cancelDragEvent = (event: any) => {
+                if (event.key === 'Escape') {
+                    cancelDrag = true;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    document.removeEventListener('keydown', cancelDragEvent);
+                }
+            };
+
             const canvasLimit = d3
                 .select(d3CanvasLimitLine.current)
                 .select('canvas')
@@ -3091,174 +3100,209 @@ export default function Chart(props: propsIF) {
                         'none',
                     );
 
+                    document.addEventListener('keydown', cancelDragEvent);
+
                     d3.select(d3Yaxis.current).style('cursor', 'none');
 
                     oldLimitValue = limit[0].value;
                 })
                 .on('drag', function (event) {
-                    setIsMouseMoveCrosshair(false);
-                    setCrosshairActive('none');
-                    setIsLineDrag(true);
+                    if (!cancelDrag) {
+                        setIsMouseMoveCrosshair(false);
+                        setCrosshairActive('none');
+                        setIsLineDrag(true);
 
-                    newLimitValue = scaleData?.yScale.invert(
-                        event.sourceEvent.clientY - rectLimit.top,
-                    );
-
-                    if (newLimitValue < 0) newLimitValue = 0;
-
-                    newLimitValue = setLimitForNoGoZone(newLimitValue);
-                    const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-
-                    const limitNonDisplay = denomInBase
-                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
-
-                    limitNonDisplay?.then((limit) => {
-                        limit = limit !== 0 ? limit : 1;
-                        const pinnedTick: number = isTokenABase
-                            ? pinTickLower(limit, chainData.gridSize)
-                            : pinTickUpper(limit, chainData.gridSize);
-
-                        const tickPrice = tickToPrice(pinnedTick);
-
-                        const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-
-                        if (tickDispPrice) {
-                            tickDispPrice.then((tp) => {
-                                const displayPriceWithDenom = denomInBase
-                                    ? tp
-                                    : 1 / tp;
-                                const limitRateTruncated =
-                                    displayPriceWithDenom < 2
-                                        ? displayPriceWithDenom.toLocaleString(
-                                              undefined,
-                                              {
-                                                  minimumFractionDigits: 2,
-                                                  maximumFractionDigits: 6,
-                                              },
-                                          )
-                                        : displayPriceWithDenom.toLocaleString(
-                                              undefined,
-                                              {
-                                                  minimumFractionDigits: 2,
-                                                  maximumFractionDigits: 2,
-                                              },
-                                          );
-
-                                const limitValue = parseFloat(
-                                    limitRateTruncated.replace(',', ''),
-                                );
-
-                                newLimitValue = limitValue;
-                                if (
-                                    !(
-                                        newLimitValue >= noGoZoneMin &&
-                                        newLimitValue <= noGoZoneMax
-                                    )
-                                ) {
-                                    setLimit(() => {
-                                        return [
-                                            {
-                                                name: 'Limit',
-                                                value: limitValue,
-                                            },
-                                        ];
-                                    });
-                                    // setTriangleLimitValues(limitValue);
-                                }
-                            });
-                        }
-                    });
-                })
-                .on('end', (event: any) => {
-                    draggingLine = undefined;
-
-                    d3.select(d3Container.current).style(
-                        'cursor',
-                        'row-resize',
-                    );
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y: Number(
-                                formatAmountChartData(
-                                    scaleData?.yScale.invert(
-                                        event.sourceEvent.layerY,
-                                    ),
-                                ),
-                            ),
-                        },
-                    ]);
-
-                    setIsLineDrag(false);
-
-                    if (rescale) {
-                        const xmin = new Date(
-                            Math.floor(scaleData?.xScale.domain()[0]),
-                        );
-                        const xmax = new Date(
-                            Math.floor(scaleData?.xScale.domain()[1]),
+                        newLimitValue = scaleData?.yScale.invert(
+                            event.sourceEvent.clientY - rectLimit.top,
                         );
 
-                        const filtered = parsedChartData?.chartData.filter(
-                            (data: any) =>
-                                data.date >= xmin && data.date <= xmax,
-                        );
+                        if (newLimitValue < 0) newLimitValue = 0;
 
-                        if (filtered !== undefined) {
-                            const minYBoundary = d3.min(filtered, (d) => d.low);
-                            const maxYBoundary = d3.max(
-                                filtered,
-                                (d) => d.high,
-                            );
+                        newLimitValue = setLimitForNoGoZone(newLimitValue);
+                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
-                            if (minYBoundary && maxYBoundary) {
-                                const value = newLimitValue;
+                        const limitNonDisplay = denomInBase
+                            ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+                            : pool?.fromDisplayPrice(
+                                  1 / parseFloat(newLimitValue),
+                              );
 
-                                const low = Math.min(
-                                    minYBoundary,
-                                    value,
-                                    minTickForLimit,
-                                );
+                        limitNonDisplay?.then((limit) => {
+                            limit = limit !== 0 ? limit : 1;
+                            const pinnedTick: number = isTokenABase
+                                ? pinTickLower(limit, chainData.gridSize)
+                                : pinTickUpper(limit, chainData.gridSize);
 
-                                const high = Math.max(
-                                    maxYBoundary,
-                                    value,
-                                    maxTickForLimit,
-                                );
+                            const tickPrice = tickToPrice(pinnedTick);
 
-                                const min = scaleData?.yScale.domain()[0];
-                                const max = scaleData?.yScale.domain()[1];
+                            const tickDispPrice =
+                                pool?.toDisplayPrice(tickPrice);
 
-                                if (min > low || max < high) {
-                                    const bufferForLimit = Math.abs(
-                                        (low - high) / 6,
+                            if (tickDispPrice) {
+                                tickDispPrice.then((tp) => {
+                                    const displayPriceWithDenom = denomInBase
+                                        ? tp
+                                        : 1 / tp;
+                                    const limitRateTruncated =
+                                        displayPriceWithDenom < 2
+                                            ? displayPriceWithDenom.toLocaleString(
+                                                  undefined,
+                                                  {
+                                                      minimumFractionDigits: 2,
+                                                      maximumFractionDigits: 6,
+                                                  },
+                                              )
+                                            : displayPriceWithDenom.toLocaleString(
+                                                  undefined,
+                                                  {
+                                                      minimumFractionDigits: 2,
+                                                      maximumFractionDigits: 2,
+                                                  },
+                                              );
+
+                                    const limitValue = parseFloat(
+                                        limitRateTruncated.replace(',', ''),
                                     );
 
-                                    const domain = [
-                                        Math.min(low, high) - bufferForLimit,
-                                        Math.max(high, low) +
-                                            bufferForLimit / 2,
-                                    ];
+                                    newLimitValue = limitValue;
+                                    if (
+                                        !(
+                                            newLimitValue >= noGoZoneMin &&
+                                            newLimitValue <= noGoZoneMax
+                                        )
+                                    ) {
+                                        setLimit(() => {
+                                            return [
+                                                {
+                                                    name: 'Limit',
+                                                    value: limitValue,
+                                                },
+                                            ];
+                                        });
+                                        // setTriangleLimitValues(limitValue);
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        if (oldLimitValue !== undefined) {
+                            setLimit(() => {
+                                return [
+                                    {
+                                        name: 'Limit',
+                                        value: oldLimitValue as number,
+                                    },
+                                ];
+                            });
+                        }
+                    }
+                })
+                .on('end', (event: any) => {
+                    if (!cancelDrag) {
+                        draggingLine = undefined;
 
-                                    scaleData?.yScale.domain(domain);
+                        d3.select(d3Container.current).style(
+                            'cursor',
+                            'row-resize',
+                        );
+                        setCrosshairData([
+                            {
+                                x: crosshairData[0].x,
+                                y: Number(
+                                    formatAmountChartData(
+                                        scaleData?.yScale.invert(
+                                            event.sourceEvent.layerY,
+                                        ),
+                                    ),
+                                ),
+                            },
+                        ]);
+
+                        setIsLineDrag(false);
+
+                        if (rescale) {
+                            const xmin = new Date(
+                                Math.floor(scaleData?.xScale.domain()[0]),
+                            );
+                            const xmax = new Date(
+                                Math.floor(scaleData?.xScale.domain()[1]),
+                            );
+
+                            const filtered = parsedChartData?.chartData.filter(
+                                (data: any) =>
+                                    data.date >= xmin && data.date <= xmax,
+                            );
+
+                            if (filtered !== undefined) {
+                                const minYBoundary = d3.min(
+                                    filtered,
+                                    (d) => d.low,
+                                );
+                                const maxYBoundary = d3.max(
+                                    filtered,
+                                    (d) => d.high,
+                                );
+
+                                if (minYBoundary && maxYBoundary) {
+                                    const value = newLimitValue;
+
+                                    const low = Math.min(
+                                        minYBoundary,
+                                        value,
+                                        minTickForLimit,
+                                    );
+
+                                    const high = Math.max(
+                                        maxYBoundary,
+                                        value,
+                                        maxTickForLimit,
+                                    );
+
+                                    const min = scaleData?.yScale.domain()[0];
+                                    const max = scaleData?.yScale.domain()[1];
+
+                                    if (min > low || max < high) {
+                                        const bufferForLimit = Math.abs(
+                                            (low - high) / 6,
+                                        );
+
+                                        const domain = [
+                                            Math.min(low, high) -
+                                                bufferForLimit,
+                                            Math.max(high, low) +
+                                                bufferForLimit / 2,
+                                        ];
+
+                                        scaleData?.yScale.domain(domain);
+                                    }
                                 }
                             }
                         }
+
+                        if (oldLimitValue)
+                            onBlurLimitRate(oldLimitValue, newLimitValue);
+
+                        d3.select(d3CanvasLimitLine.current).style(
+                            'cursor',
+                            'default',
+                        );
+
+                        d3.select(d3Yaxis.current).style('cursor', 'default');
+
+                        setIsMouseMoveCrosshair(false);
+                        setCrosshairActive('none');
+                    } else {
+                        if (oldLimitValue !== undefined) {
+                            setLimit(() => {
+                                return [
+                                    {
+                                        name: 'Limit',
+                                        value: oldLimitValue as number,
+                                    },
+                                ];
+                            });
+                        }
                     }
-
-                    if (oldLimitValue)
-                        onBlurLimitRate(oldLimitValue, newLimitValue);
-
-                    d3.select(d3CanvasLimitLine.current).style(
-                        'cursor',
-                        'default',
-                    );
-
-                    d3.select(d3Yaxis.current).style('cursor', 'default');
-
-                    setIsMouseMoveCrosshair(false);
-                    setCrosshairActive('none');
                 });
 
             setDragRange(() => {
