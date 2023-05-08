@@ -1,7 +1,5 @@
 .main_container{
-    width: 510px;
- 
-    height: 223px;
+
 
     display: flex;
     flex-direction: column;
@@ -12,6 +10,7 @@
     border-radius: var(--border-radius);
     text-align: center;
     padding-bottom: 1rem;
+    
     
 }
 
@@ -46,4 +45,16 @@
 .main_container a{
     color: var(--accent1);
     text-decoration: underline;
+}
+
+@media only screen and (min-width: 768px) {
+
+    .main_container{
+        width: 510px;
+     
+        height: 223px;
+    
+      
+        
+    }
 }
