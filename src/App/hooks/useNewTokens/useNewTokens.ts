@@ -157,12 +157,16 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         };
     }, []);
 
+    // fn to make a map of all tokens from lists and tokens acknowledged by user
     function makeTokenMap(listsToMap: TokenListIF[]): Map<string, TokenIF> {
         console.time('making token map');
+        // initialize an empty Map
         const newTokenMap = new Map<string, TokenIF>();
+        // unified array of all tokens from all lists (not de-duped!)
         const allListedTokens: TokenIF[] = listsToMap.flatMap(
             (tokenList: TokenListIF) => tokenList.tokens
         );
+        // iterate through tokens array and add to Map, including de-dupe logic
         allListedTokens.forEach((tkn: TokenIF) => {
             // make a key to label token in the map
             const tokenKey: string = makeTokenMapKey(tkn.address, tkn.chainId);
