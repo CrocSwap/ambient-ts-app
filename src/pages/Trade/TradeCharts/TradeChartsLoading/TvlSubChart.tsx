@@ -310,7 +310,7 @@ export default function TvlSubChart(props: TvlData) {
             crosshairVerticalCanvas.decorate((context: any) => {
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
@@ -326,7 +326,7 @@ export default function TvlSubChart(props: TvlData) {
                 context.visibility = 'hidden';
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
@@ -372,7 +372,7 @@ export default function TvlSubChart(props: TvlData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     if (isMouseMoveCrosshair && crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (crosshairActive === 'tvl') {
@@ -386,7 +386,7 @@ export default function TvlSubChart(props: TvlData) {
                     }
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
                     if (crosshairActive === 'tvl') {
                         crosshairHorizontalCanvas.context(ctx);
