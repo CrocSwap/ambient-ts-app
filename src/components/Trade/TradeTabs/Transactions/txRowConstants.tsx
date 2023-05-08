@@ -175,8 +175,8 @@ export const txRowConstants = (props: Props) => {
                     }}
                 >
                     <p
+                        className={`${styles.mono_font}`}
                         style={{
-                            fontFamily: 'monospace',
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -207,8 +207,8 @@ export const txRowConstants = (props: Props) => {
             <p
                 onClick={openDetailsModal}
                 data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                className={`${usernameStyle} ${styles.mono_font}`}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </p>

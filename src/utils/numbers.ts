@@ -120,7 +120,7 @@ export const formatAmountWithoutDigit = (
     return a;
 };
 
-export const formatAmountOld = (num: number | undefined, digits = 2) => {
+export const formatAmountOld = (num: number | undefined, digits = 1) => {
     if (num === 0) return '0';
     if (!num) return '-';
     if (num < 0.001) {

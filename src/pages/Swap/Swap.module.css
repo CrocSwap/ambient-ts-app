@@ -44,15 +44,20 @@
 }
 
 .price_impact {
-    /* background-color: var(--dark2); */
     border: 1px solid var(--border);
     margin: 5px 5px;
 
     border-radius: var(--border-radius);
 
-    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    font-weight: 300;
+
+    color: #E75670 !important;
+}
+
+.price_impact svg {
+    color: #E75670 !important;
 }
 
 .scrollable_container::-webkit-scrollbar {
