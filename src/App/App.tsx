@@ -3183,9 +3183,9 @@ export default function App() {
         const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
         return {
             swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
-            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
-            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
         };
     }
 
