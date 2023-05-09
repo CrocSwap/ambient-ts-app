@@ -301,6 +301,8 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return tokensAsArray.filter((tkn: TokenIF) => tkn.fromListArr?.includes(uri));
     }
 
+    // fn to return all tokens where name or symbol matches search input
+    // can return just exact matches or exact + partial matches
     function getTokensByNameOrSymbol(
         input: string, chn: string, exact=false
     ): TokenIF[] {
