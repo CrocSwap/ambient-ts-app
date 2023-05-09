@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     Routes,
     Route,
@@ -188,6 +188,9 @@ import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
 import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
+import WebSocketSubs, {
+    WebSockerPropsIF,
+} from './components/WebSocketSubs/WebSocketSubs';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -362,7 +365,7 @@ export default function App() {
         // return output variable (boolean)
         return matching;
         // run hook when URL or token addresses in RTK change
-    }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
+    }, [location.pathname, tradeData.tokenA.address, tradeData.tokenB.address]);
 
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
@@ -682,6 +685,15 @@ export default function App() {
             return () => clearInterval(interval);
         })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
+
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -1115,7 +1127,7 @@ export default function App() {
         }
     };
     // useEffect that runs when token pair changes
-    useEffect(() => {
+    useMemo(() => {
         if (rtkMatchesParams && crocEnv) {
             // reset rtk values for user specified range in ticks
             IS_LOCAL_ENV && console.debug('resetting advanced ticks');
@@ -1656,195 +1668,6 @@ export default function App() {
         lastBlockNumber,
     ]);
 
-    const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_liqchanges?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                addValue: 'true',
-            }),
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolLiqChangeMessage,
-        //  readyState
-    } = useWebSocket(
-        poolLiqChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            // onOpen: () => console.debug('pool liqChange subscription opened'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // onClose: (event: any) => console.debug({ event }),
-            // onClose: () => console.debug('allPositions websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            baseTokenAddress !== '' &&
-            quoteTokenAddress !== '',
-    );
-
-    useEffect(() => {
-        if (lastPoolLiqChangeMessage !== null) {
-            IS_LOCAL_ENV &&
-                console.debug('new pool liq change message received');
-            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastPoolLiqChangeMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByPool(updatedPositions));
-                });
-            }
-        }
-    }, [lastPoolLiqChangeMessage]);
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addValue: 'true',
-            }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-        ],
-    );
-
-    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
-        poolRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('pool recent changes subscription opened');
-            },
-            onClose: (event: CloseEvent) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            baseTokenAddress !== '' &&
-            quoteTokenAddress !== '',
-    );
-
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByPool(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                IS_LOCAL_ENV && console.debug({ lastMessageData });
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByPool(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    const candleSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_candles?' +
-            new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                period: candleTimeLocal.toString(),
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-            }),
-        [
-            mainnetBaseTokenAddress,
-            mainnetQuoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-            candleTimeLocal,
-        ],
-    );
-
-    const { lastMessage: candlesMessage } = useWebSocket(
-        candleSubscriptionEndpoint,
-        {
-            onClose: (event) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            shouldReconnect: () => shouldCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            mainnetBaseTokenAddress !== '' &&
-            mainnetQuoteTokenAddress !== '',
-    );
-
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -1949,261 +1772,19 @@ export default function App() {
         }
     }, [numDurationsNeeded]);
 
-    useEffect(() => {
-        if (candlesMessage) {
-            if (!isJsonString(candlesMessage.data)) return;
-            const lastMessageData = JSON.parse(candlesMessage.data).data;
-            if (lastMessageData && candleData) {
-                const newCandles: CandleData[] = [];
-                const updatedCandles: CandleData[] = candleData.candles;
-
-                for (let index = 0; index < lastMessageData.length; index++) {
-                    const messageCandle = lastMessageData[index];
-                    const indexOfExistingCandle = candleData.candles.findIndex(
-                        (savedCandle) =>
-                            savedCandle.time === messageCandle.time,
-                    );
-
-                    if (indexOfExistingCandle === -1) {
-                        IS_LOCAL_ENV &&
-                            console.debug('pushing new candle from message');
-                        newCandles.push(messageCandle);
-                    } else if (
-                        diffHashSig(
-                            candleData.candles[indexOfExistingCandle],
-                        ) !== diffHashSig(messageCandle)
-                    ) {
-                        updatedCandles[indexOfExistingCandle] = messageCandle;
-                    }
-                }
-                const newCandleData: CandlesByPoolAndDuration = {
-                    pool: candleData.pool,
-                    duration: candleData.duration,
-                    candles: newCandles.concat(updatedCandles),
-                };
-                setCandleData(newCandleData);
-            }
-        }
-    }, [candlesMessage]);
-
-    const userLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_liqchanges?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                ensResolution: 'true',
-                addValue: 'true',
-                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastUserPositionsMessage,
-        //  readyState
-    } = useWebSocket(
-        userLiqChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('user liqChange subscription opened');
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    function isJsonString(str: string) {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
-    useEffect(() => {
-        try {
-            if (lastUserPositionsMessage !== null) {
-                if (!isJsonString(lastUserPositionsMessage.data)) return;
-
-                const lastMessageData = JSON.parse(
-                    lastUserPositionsMessage.data,
-                ).data;
-
-                if (lastMessageData && crocEnv) {
-                    Promise.all(
-                        lastMessageData.map((position: PositionIF) => {
-                            return getPositionData(
-                                position,
-                                searchableTokens,
-                                crocEnv,
-                                chainData.chainId,
-                                lastBlockNumber,
-                            );
-                        }),
-                    ).then((updatedPositions) => {
-                        dispatch(addPositionsByUser(updatedPositions));
-                    });
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }, [lastUserPositionsMessage]);
-
-    const userRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_recent_changes?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                addValue: 'true',
-                annotate: 'true',
-                ensResolution: 'true',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
-        userRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('user recent changes subscription opened');
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    useEffect(() => {
-        if (lastUserRecentChangesMessage !== null) {
-            IS_LOCAL_ENV && console.debug('received new user recent change');
-            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserRecentChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByUser(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastUserRecentChangesMessage]);
-
-    const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_limit_order_changes?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                addValue: 'true',
-                ensResolution: 'true',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
-        userLimitOrderChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'user limit order changes subscription opened',
-                    );
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    useEffect(() => {
-        if (lastUserLimitOrderChangesMessage !== null) {
-            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserLimitOrderChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                IS_LOCAL_ENV &&
-                    console.debug('received new user limit order change');
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByUser(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastUserLimitOrderChangesMessage]);
-
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
 
-    // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
-    // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         number | undefined
     >();
 
     useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug('resetting pool price because base/quote changed');
         setPoolPriceDisplay(0);
-        // setPoolPriceTick(undefined);
-    }, [baseTokenAddress + quoteTokenAddress]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     const getDisplayPrice = (spotPrice: number) => {
         return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
@@ -2239,27 +1820,14 @@ export default function App() {
                     baseTokenAddress,
                     quoteTokenAddress,
                 );
-                // const spotPrice = await cachedQuerySpotPrice(
-                //     crocEnv,
-                //     baseTokenAddress,
-                //     quoteTokenAddress,
-                //     chainData.chainId,
-                //     lastBlockNumber,
-                // );
                 if (spotPrice) {
                     const newDisplayPrice = getDisplayPrice(spotPrice);
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        IS_LOCAL_ENV &&
-                            console.debug(
-                                'setting new display pool price to: ' +
-                                    newDisplayPrice,
-                            );
+                        console.log('Set pool price display');
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
                 if (spotPrice && spotPrice !== poolPriceNonDisplay) {
-                    IS_LOCAL_ENV &&
-                        console.debug('dispatching new non-display spot price');
                     dispatch(setPoolPriceNonDisplay(spotPrice));
                 }
             })();
@@ -2267,7 +1835,8 @@ export default function App() {
     }, [
         isUserIdle,
         lastBlockNumber,
-        baseTokenAddress + quoteTokenAddress,
+        baseTokenAddress,
+        quoteTokenAddress,
         crocEnv,
         poolPriceNonDisplay === 0,
         isUserLoggedIn,
@@ -2662,7 +2231,7 @@ export default function App() {
             location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location]);
+    }, [location.pathname]);
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
@@ -2713,7 +2282,7 @@ export default function App() {
     const [isOrderCopied, setIsOrderCopied] = useState(false);
     const [isRangeCopied, setIsRangeCopied] = useState(false);
 
-    const handlePulseAnimation = (type: string) => {
+    const handlePulseAnimation = useCallback((type: string) => {
         switch (type) {
             case 'swap':
                 setIsSwapCopied(true);
@@ -2737,7 +2306,7 @@ export default function App() {
             default:
                 break;
         }
-    };
+    }, []);
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
@@ -3085,7 +2654,13 @@ export default function App() {
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
-    }, [tradeData.didUserFlipDenom, tokenPair]);
+    }, [
+        tradeData.didUserFlipDenom,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenA.chainId,
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenB.chainId,
+    ]);
 
     const [imageData, setImageData] = useState<string[]>([]);
 
@@ -3115,7 +2690,7 @@ export default function App() {
         !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
-    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
+    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
         if (
@@ -3127,7 +2702,7 @@ export default function App() {
                 getStatus().then((isChatUp) => {
                     appState.chat.setIsEnabled(isChatUp);
                 });
-            }, 10000);
+            }, 60000);
             return () => clearInterval(interval);
         }
     }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
@@ -3263,9 +2838,6 @@ export default function App() {
         setCurrentPositionActive,
         isInitialized,
         poolPriceNonDisplay,
-        setLimitRate: function (): void {
-            throw new Error('Function not implemented.');
-        },
         limitRate: '',
         searchableTokens: searchableTokens,
         poolExists,
@@ -3369,6 +2941,26 @@ export default function App() {
         username: ensName,
         appPage: true,
         topPools: topPools,
+    };
+
+    const webSocketProps: WebSockerPropsIF = {
+        crocEnv,
+        wssGraphCacheServerDomain,
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        isServerEnabled,
+        shouldNonCandleSubscriptionsReconnect,
+        areSubscriptionsEnabled,
+        searchableTokens,
+        chainData,
+        lastBlockNumber,
+        candleData,
+        setCandleData,
+        candleTimeLocal,
+        account,
+        shouldCandleSubscriptionsReconnect,
     };
 
     return (
