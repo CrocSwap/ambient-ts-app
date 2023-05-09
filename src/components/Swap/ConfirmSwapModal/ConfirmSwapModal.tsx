@@ -354,7 +354,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             </section>
             <footer className={styles.modal_footer}>
                 {showConfirmation &&
-                    (isWaitingForPriceChangeAckt ? (
+                    (!isWaitingForPriceChangeAckt ? (
                         <Button
                             title='Submit Swap'
                             action={() => {
