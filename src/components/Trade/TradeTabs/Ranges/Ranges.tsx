@@ -314,15 +314,16 @@ export default function Ranges(props: propsIF) {
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {((isOnPortfolioPage && rangeData.length > 7) ||
-                (!isOnPortfolioPage && tradePageCheck)) && (
-                <Pagination
-                    itemsPerPage={rangesPerPage}
-                    totalItems={rangeData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {rangesPerPage > 0 &&
+                ((isOnPortfolioPage && rangeData.length > 7) ||
+                    (!isOnPortfolioPage && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={rangesPerPage}
+                        totalItems={rangeData.length}
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
