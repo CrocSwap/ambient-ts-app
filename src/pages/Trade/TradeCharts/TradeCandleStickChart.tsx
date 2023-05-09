@@ -31,7 +31,10 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigCandles,
+} from '../../../utils/functions/diffHashSig';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -290,7 +293,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         parseData();
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
-    }, [diffHashSig(props.candleData), denominationsInBase]);
+    }, [diffHashSigCandles(props.candleData), denominationsInBase]);
 
     // const standardDeviation = (arr: any, usePopulation = false) => {
     //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
@@ -666,7 +669,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        diffHashSig(props.liquidityData),
+        diffHashSigCandles(props.liquidityData),
         poolPriceDisplay,
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,

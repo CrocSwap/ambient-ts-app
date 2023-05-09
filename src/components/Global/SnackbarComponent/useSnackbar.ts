@@ -28,10 +28,8 @@ export const useSnackbar = (initialMode = false) => {
         setIsOpen(true);
     };
     const close = () => {
-        console.log('closing');
         setIsOpen(false);
         setContent('');
-        setSeverity('success');
     };
 
     return {

@@ -55,7 +55,10 @@ import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigChart,
+} from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 declare global {
@@ -715,8 +718,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        parsedChartData?.chartData.length,
-        parsedChartData?.chartData[0]?.time,
+        diffHashSigChart(parsedChartData),
         firstCandle,
     ]);
 
@@ -2043,7 +2045,7 @@ export default function Chart(props: propsIF) {
         candlestick,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
-        diffHashSig(showLatest),
+        showLatest,
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
@@ -5694,8 +5696,7 @@ export default function Chart(props: propsIF) {
         ranges,
         limit,
         location.pathname,
-        parsedChartData?.period,
-        diffHashSig(parsedChartData?.chartData[0]),
+        diffHashSigChart(parsedChartData),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,

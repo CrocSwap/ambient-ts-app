@@ -28,7 +28,10 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigTxs,
+} from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
@@ -82,6 +85,7 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
@@ -183,7 +187,7 @@ export default function Transactions(props: propsIF) {
         if (isOnPortfolioPage && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
         }
-    }, [isOnPortfolioPage, diffHashSig(activeAccountTransactionData)]);
+    }, [isOnPortfolioPage, diffHashSigTxs(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
@@ -207,12 +211,12 @@ export default function Transactions(props: propsIF) {
         }
     }, [
         isOnPortfolioPage,
-
-        isCandleSelected
-            ? diffHashSig(changesInSelectedCandle)
-            : isShowAllEnabled
-            ? diffHashSig(changesByPoolWithoutFills)
-            : diffHashSig(changesByUserMatchingSelectedTokens),
+        isCandleSelected,
+        isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
+        changesByPoolWithoutFills.length,
+        changesByPoolWithoutFills.at(0)?.poolHash,
+        changesByUserMatchingSelectedTokens.length,
+        changesByUserMatchingSelectedTokens.at(0)?.user,
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
