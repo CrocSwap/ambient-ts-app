@@ -499,6 +499,7 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
     ] = useToken(chainData.chainId);
+    false && verifyToken;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -2872,7 +2873,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
@@ -2911,7 +2912,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
@@ -2951,7 +2952,7 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
@@ -2999,7 +3000,7 @@ export default function App() {
         tokenBQtyLocal: rangetokenBQtyLocal,
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
@@ -3047,7 +3048,7 @@ export default function App() {
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
@@ -3308,7 +3309,7 @@ export default function App() {
         getRecentTokens,
         getAmbientTokens,
         getTokensByName,
-        verifyToken: verifyToken,
+        verifyToken: tokens.verify,
         getTokenByAddress,
         isTokenABase,
         provider,
