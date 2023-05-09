@@ -23,7 +23,6 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiOutlineWarning } from 'react-icons/ai';
-import DividerDark from '../../Global/DividerDark/DividerDark';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
@@ -210,23 +209,32 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const priceIncreaseComponentOrNull = isWaitingForPriceChangeAckt ? (
+    const priceIncreaseComponent = (
         <div className={` ${styles.warning_box}`}>
-            <AiOutlineWarning color='var(--negative)' />
-            <p>
-                WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
-                {buyTokenPriceChangeString + '%'}
-            </p>
+            <ul>
+                <div>
+                    <AiOutlineWarning
+                        color='var(--other-red)'
+                        size={20}
+                        style={{ marginRight: '4px' }}
+                    />
+                    Price Updated
+                </div>
+                <p>
+                    The price of {buyTokenData.symbol} has increased by{' '}
+                    {buyTokenPriceChangeString + '%'}
+                </p>
+            </ul>
             <button
                 onClick={() => {
                     setBaselineBlockNumber(lastBlockNumber);
                     setIsWaitingForPriceChangeAckt(false);
                 }}
             >
-                Acknowledge
+                Accept
             </button>
         </div>
-    ) : null;
+    );
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -286,8 +294,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
-                {!!priceIncreaseComponentOrNull && <DividerDark />}
-                {priceIncreaseComponentOrNull}
             </div>
             {!isWaitingForPriceChangeAckt && (
                 <ConfirmationModalControl
@@ -347,26 +353,29 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation && !isWaitingForPriceChangeAckt && (
-                    <Button
-                        title='Submit Swap'
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (tempBypassConfirm) {
-                                bypassConfirmSwap.enable();
-                                bypassConfirmLimit.enable();
-                                bypassConfirmRange.enable();
-                                bypassConfirmRepo.enable();
-                            }
-                            initiateSwapMethod();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                        disabled={isWaitingForPriceChangeAckt}
-                    />
-                )}
+                {showConfirmation &&
+                    (!isWaitingForPriceChangeAckt ? (
+                        <Button
+                            title='Submit Swap'
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (tempBypassConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                initiateSwapMethod();
+                                setShowConfirmation(false);
+                            }}
+                            flat
+                            disabled={isWaitingForPriceChangeAckt}
+                        />
+                    ) : (
+                        priceIncreaseComponent
+                    ))}
             </footer>
         </div>
     );
