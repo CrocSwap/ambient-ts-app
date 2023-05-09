@@ -3730,7 +3730,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isMouseMoveCrosshair && crosshairActive !== 'none') {
+                if (isMouseMoveCrosshair && crosshairActive === 'chart') {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
