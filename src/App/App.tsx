@@ -189,6 +189,7 @@ import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
 import { RangeStateContext } from '../contexts/RangeStateContext';
+import { CandleContext } from '../contexts/CandleContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -462,6 +463,8 @@ export default function App() {
         boolean | undefined
     >();
 
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+
     // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -515,8 +518,6 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
-
-    const [fetchingCandle, setFetchingCandle] = useState(false);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -3380,6 +3381,29 @@ export default function App() {
         topPools: topPools,
     };
 
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
+    };
+
     return (
         <AppStateContext.Provider value={appState}>
             <UserPreferenceContext.Provider value={userPreferences}>
@@ -3429,7 +3453,11 @@ export default function App() {
                                             <RangeStateContext.Provider
                                                 value={rangeState}
                                             >
-                                                <Trade {...tradeProps} />
+                                                <CandleContext.Provider
+                                                    value={candleState}
+                                                >
+                                                    <Trade {...tradeProps} />
+                                                </CandleContext.Provider>
                                             </RangeStateContext.Provider>
                                         </PoolContext.Provider>
                                     }
