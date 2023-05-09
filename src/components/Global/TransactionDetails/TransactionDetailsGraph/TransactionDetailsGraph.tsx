@@ -626,7 +626,7 @@ export default function TransactionDetailsGraph(
                             scaleData.xScale.domain()[0].getTime(),
                     ) / 30;
 
-                const tickTempValues = scaleData.xScale.ticks(5);
+                const tickTempValues = scaleData.xScale.ticks(7);
                 const tickValues: any[] = [];
 
                 tickTempValues.map((tick: any) => {
