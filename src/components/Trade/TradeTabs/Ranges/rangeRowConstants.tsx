@@ -174,7 +174,12 @@ export default function rangeRowConstants(props: Props) {
                         className={styles.wallet_tooltip_p}
                         onClick={(event) => event.stopPropagation()}
                     >
-                        {ownerId}
+                        <span
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {ownerId}
+                        </span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}

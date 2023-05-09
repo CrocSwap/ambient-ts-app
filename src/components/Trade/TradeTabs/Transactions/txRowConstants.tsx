@@ -172,7 +172,7 @@ export const txRowConstants = (props: Props) => {
                         color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'default',
+                        cursor: 'pointer',
                     }}
                 >
                     <p
@@ -187,7 +187,7 @@ export const txRowConstants = (props: Props) => {
                             gap: '4px',
                         }}
                     >
-                        {ownerId}
+                        <span onClick={handleWalletClick}>{ownerId}</span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
