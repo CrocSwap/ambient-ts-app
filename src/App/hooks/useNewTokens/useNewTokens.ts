@@ -4,7 +4,7 @@ import fetchTokenList from '../../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export interface tokenMethodsIF {
-    verify: (addr: string, chainId: string) => boolean;
+    verify: (addr: string, chainId: string|number) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     getAll: () => TokenIF[];
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
@@ -249,7 +249,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
     }
 
     // fn to verify a token is on a known list or user-acknowledged
-    function verifyToken(addr: string, chn: string): boolean {
+    function verifyToken(addr: string, chn: string|number): boolean {
         // key to look up token in the map
         const tokenKey: string = makeTokenMapKey(addr, chn);
         // return boolean representation of token being found in map
