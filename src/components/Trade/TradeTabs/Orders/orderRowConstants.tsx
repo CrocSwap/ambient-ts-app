@@ -121,7 +121,10 @@ export const orderRowConstants = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <p className={styles.id_tooltip_style}>
+                <p
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     {posHash}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -134,7 +137,6 @@ export const orderRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
@@ -158,9 +160,17 @@ export const orderRowConstants = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <div className={styles.wallet_tooltip_div}>
+                <div
+                    className={styles.wallet_tooltip_div}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     <p className={styles.wallet_tooltip_p}>
-                        {limitOrder.user}
+                        <span
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {limitOrder.user}
+                        </span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -180,7 +190,6 @@ export const orderRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
                 style={{ textTransform: 'lowercase' }}
@@ -193,7 +202,7 @@ export const orderRowConstants = (props: Props) => {
     const walletWithoutTooltip = (
         <p
             // onClick={handleWalletClick}
-            onClick={openDetailsModal}
+
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}

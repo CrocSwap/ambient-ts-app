@@ -116,12 +116,12 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 style={
                     isPoolPriceChangePositive
                         ? {
-                              color: '#41D18E',
+                              color: 'var(--other-green)',
                               marginTop: '4.5px',
                               fontSize: '15px',
                           }
                         : {
-                              color: '#E75670',
+                              color: 'var(--other-red)',
                               marginTop: '4.5px',
                               fontSize: '15px',
                           }
