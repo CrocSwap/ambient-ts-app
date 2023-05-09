@@ -10,9 +10,11 @@ export interface tokenMethodsIF {
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
     getByChain: (chn: string) => TokenIF[];
     getBySource: (uri: string) => TokenIF[];
+    getByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
 }
 
 export const useNewTokens = (chainId: string): tokenMethodsIF => {
+    // keys for data persisted in local storage
     const localStorageKeys = {
         tokenLists: 'tokenLists',
         ackTokens: 'ackTokens',
@@ -82,8 +84,6 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         // return output value
         return output;
     }
-
-
 
     class Token implements TokenIF {
         name: string;
@@ -293,11 +293,56 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return tokensAsArray.filter((tkn: TokenIF) => tkn.chainId === parseInt(chn));
     }
 
+    // fn to return all tokens from a given list
     function getTokensFromList(uri: string) {
         // array of all tokens currently in `tokenMap`
         const tokensAsArray: TokenIF[] = convertTokenMapToArray();
         // return tokens filtered for a given list URI
         return tokensAsArray.filter((tkn: TokenIF) => tkn.fromListArr?.includes(uri));
+    }
+
+    function getTokensByNameOrSymbol(
+        input: string, chn: string, exact=false
+    ): TokenIF[] {
+        // search input fixed for casing and with whitespace trimmed
+        const cleanedInput: string = input.trim().toLowerCase();
+        // array of all on-chain tokens from the Map
+        const tokensOnChain: TokenIF[] = getTokensByChain(chn);
+        // fn to search for exact matches
+        const searchExact = (): TokenIF[] => {
+            // return tokens where name OR symbol exactly matches search string
+            return tokensOnChain.filter((tkn: TokenIF) => 
+                tkn.name.toLowerCase() === cleanedInput ||
+                tkn.symbol.toLowerCase() === cleanedInput
+            );
+        };
+        // fn to search for partial matches (includes exact matches too)
+        const searchPartial = (): TokenIF[] => {
+            // return tokens where name OR symbol partially matches search string
+            return tokensOnChain.filter((tkn: TokenIF) => 
+                tkn.name.toLowerCase().includes(cleanedInput) ||
+                tkn.symbol.toLowerCase().includes(cleanedInput)
+            );
+        };
+        // array of tokens matching search input string
+        const matches: TokenIF[] = exact ? searchExact() : searchPartial();
+        // arrays to hold exact and partial matches, this prioritizes exact matches
+        // ... over partials when search results include both
+        const exactMatches: TokenIF[] = [];
+        const partialMatches: TokenIF[] = [];
+        // separate matches into partial and exact arrays
+        matches.forEach((match: TokenIF) => {
+            if (
+                match.name.toLowerCase() === cleanedInput ||
+                match.symbol.toLowerCase() === cleanedInput
+            ) {
+                exactMatches.push(match);
+            } else {
+                partialMatches.push(match);
+            }
+        });
+        // return unified array with exact matches first
+        return [...exactMatches, ...partialMatches];
     }
 
     return {
@@ -307,5 +352,6 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         getByAddress: getTokenByAddress,
         getByChain: getTokensByChain,
         getBySource: getTokensFromList,
+        getByNameOrSymbol: getTokensByNameOrSymbol,
     };
 };
