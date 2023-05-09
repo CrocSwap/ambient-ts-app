@@ -24,6 +24,10 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
     );
     // hook to memoize token Map in local state
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
+    // hook to memoize acknowledged tokens in local state
+    const [ackTokens, setAckTokens] = useState<TokenIF[]>(
+        getAckTokensFromLS() ?? []
+    );
 
     // fn to retrieve and parse token lists from local storage
     function getTokenListsFromLS(): TokenListIF[]|null {
@@ -205,10 +209,6 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
             const tokenFromMap: TokenIF|undefined = newTokenMap.get(tokenKey);
             newTokenMap.set(tokenKey, new Token(tokenFromMap ?? tkn, tkn.fromList));
         });
-        // array of acknowledged from local storage (gets an empty array if none)
-        const ackTokens: TokenIF[] = JSON.parse(
-            localStorage.getItem(localStorageKeys.ackTokens) as string
-        ) ?? [];
         // iterate through acknowledged tokens and add to Map if not already listed
         ackTokens.forEach((tkn: TokenIF) => {
             verifyToken(tkn.address, `0x_${tkn.chainId.toString(16)}`) ||
@@ -260,13 +260,12 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
     function acknowledgeToken(tkn: TokenIF): void {
         // put the token into the Token class constructor for consistency
         const tokenObj: TokenIF = new Token(tkn, 'custom_token');
-        // array of ack'd tokens from local storage (empty array if none yet)
-        const tkns: TokenIF[] = getAckTokensFromLS() ?? [];
         // array from local storage with the new token added
         // we're assuming the app only calls this in cases it is not yet ack'd
-        const updatedTokens: TokenIF[] = [...tkns, tokenObj];
-        // update the persisted array in local storage
+        const updatedTokens: TokenIF[] = [...ackTokens, tokenObj];
+        // update the persisted array in local storage and local state
         localStorage.setItem(localStorageKeys.ackTokens, JSON.stringify(updatedTokens));
+        setAckTokens(updatedTokens);
         // create a local-scope copy of the token Map
         const localMap: Map<string, TokenIF> = tokenMap;
         // add the new custom token to the local map
