@@ -318,31 +318,29 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         };
         // fn to search for partial matches (includes exact matches too)
         const searchPartial = (): TokenIF[] => {
-            // return tokens where name OR symbol partially matches search string
-            return tokensOnChain.filter((tkn: TokenIF) => 
-                tkn.name.toLowerCase().includes(cleanedInput) ||
-                tkn.symbol.toLowerCase().includes(cleanedInput)
-            );
+            // arrays to hold exact and partial matches separately
+            const exactMatches: TokenIF[] = [];
+            const partialMatches: TokenIF[] = [];
+            // iterate over tokens to look for matches
+            tokensOnChain.forEach((tkn: TokenIF) => {
+                if (
+                    tkn.name.toLowerCase() === cleanedInput ||
+                    tkn.symbol.toLowerCase() === cleanedInput
+                ) {
+                    // push exact matches to the appropriate array
+                    exactMatches.push(tkn)
+                } else if (
+                    tkn.name.toLowerCase().includes(cleanedInput) ||
+                    tkn.symbol.toLowerCase().includes(cleanedInput)
+                ) {
+                    // push partial matches to the appropriate array
+                    partialMatches.push(tkn);
+                }
+            });
+            return exactMatches.concat(partialMatches);
         };
-        // array of tokens matching search input string
-        const matches: TokenIF[] = exact ? searchExact() : searchPartial();
-        // arrays to hold exact and partial matches, this prioritizes exact matches
-        // ... over partials when search results include both
-        const exactMatches: TokenIF[] = [];
-        const partialMatches: TokenIF[] = [];
-        // separate matches into partial and exact arrays
-        matches.forEach((match: TokenIF) => {
-            if (
-                match.name.toLowerCase() === cleanedInput ||
-                match.symbol.toLowerCase() === cleanedInput
-            ) {
-                exactMatches.push(match);
-            } else {
-                partialMatches.push(match);
-            }
-        });
-        // return unified array with exact matches first
-        return [...exactMatches, ...partialMatches];
+        // return requested results
+        return exact ? searchExact() : searchPartial();
     }
 
     return {
