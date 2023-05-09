@@ -1,20 +1,13 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-} from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { mktDataChainId } from '../../../utils/data/chains';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { TransactionIF } from '../../../utils/interfaces/TransactionIF';
+import { mktDataChainId } from '../../utils/data/chains';
+import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
+import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TransactionIF } from '../../utils/interfaces/TransactionIF';
 import {
     addChangesByPool,
     addChangesByUser,
@@ -24,10 +17,10 @@ import {
     addPositionsByUser,
     CandleData,
     CandlesByPoolAndDuration,
-} from '../../../utils/state/graphDataSlice';
-import { getLimitOrderData } from '../../functions/getLimitOrderData';
-import { getPositionData } from '../../functions/getPositionData';
-import { getTransactionData } from '../../functions/getTransactionData';
+} from '../../utils/state/graphDataSlice';
+import { getLimitOrderData } from '../functions/getLimitOrderData';
+import { getPositionData } from '../functions/getPositionData';
+import { getTransactionData } from '../functions/getTransactionData';
 
 export interface WebSockerPropsIF {
     crocEnv?: CrocEnv;
@@ -51,7 +44,7 @@ export interface WebSockerPropsIF {
     >;
 }
 
-export default function WebSocketSubs(props: WebSockerPropsIF) {
+export default function useWebSocketSubs(props: WebSockerPropsIF) {
     const crocEnv = props.crocEnv;
 
     const dispatch = useAppDispatch();
@@ -442,6 +435,4 @@ export default function WebSocketSubs(props: WebSockerPropsIF) {
             }
         }
     }, [candlesMessage]);
-
-    return <></>;
 }

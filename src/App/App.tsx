@@ -89,8 +89,6 @@ import {
     setLiquidityFee,
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
-    setMainnetBaseTokenReduxAddress,
-    setMainnetQuoteTokenReduxAddress,
     candleDomain,
     setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
@@ -157,10 +155,7 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
-import {
-    memoizePoolLiquidity,
-    poolLiquidityCacheEndpoint,
-} from './functions/getPoolLiquidity';
+import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
@@ -188,26 +183,25 @@ import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
 import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
-import WebSocketSubs, {
-    WebSockerPropsIF,
-} from './components/WebSocketSubs/WebSocketSubs';
+import useWebSocketSubs, { WebSockerPropsIF } from './hooks/useWebSocketSubs';
+import { usePoolMetadata } from './hooks/usePoolMetadata';
+import { usePoolPricing } from './hooks/usePoolPricing';
+import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
 const cachedPoolStatsFetch = memoizePoolStats();
+const cachedPoolLiquidity = memoizePoolLiquidity();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
-
-const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
 /** ***** React Function *******/
 export default function App() {
@@ -324,48 +318,10 @@ export default function App() {
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-
-    const ticksInParams =
-        location.pathname.includes('lowTick') &&
-        location.pathname.includes('highTick');
-
-    // hook to check if token addresses in URL match token addresses in RTK
-    const rtkMatchesParams = useMemo(() => {
-        // output value, false is default return
-        let matching = false;
-        // address of token A as held by RTK
-        const rtkTokenA = tradeData.tokenA.address;
-        // address of token B as held by RTK
-        const rtkTokenB = tradeData.tokenB.address;
-        // current URL pathway
-        const { pathname } = location;
-        // make sure app is on a pathway with two URLs in params
-        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
-            // function to extract token addresses from URL string (absolute)
-            const getAddrFromParams = (token: string) => {
-                const idx = pathname.indexOf(token);
-                const address = pathname.substring(idx + 7, idx + 49);
-                return address;
-            };
-            // address of token A from URL params
-            const addrTokenA = getAddrFromParams('tokenA');
-            // address of token B from URL params
-            const addrTokenB = getAddrFromParams('tokenB');
-            // check if URL param addresses match RTK token addresses
-            if (
-                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
-                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
-            ) {
-                // if match set return value as true
-                matching = true;
-            }
-        }
-        // return output variable (boolean)
-        return matching;
-        // run hook when URL or token addresses in RTK change
-    }, [location.pathname, tradeData.tokenA.address, tradeData.tokenB.address]);
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
 
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
@@ -762,11 +718,10 @@ export default function App() {
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
-    const sessionReceipts = receiptData?.sessionReceipts;
-
     const lastReceipt =
-        sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
-            ? JSON.parse(sessionReceipts[0])
+        receiptData.sessionReceipts.length > 0 &&
+        isJsonString(receiptData.sessionReceipts[0])
+            ? JSON.parse(receiptData.sessionReceipts[0])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
@@ -896,27 +851,6 @@ export default function App() {
         })();
     }, [crocEnv, isUserLoggedIn, account, chainData.chainId, everyEigthBlock]);
 
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
-    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] =
-        useState<string>('');
-    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] =
-        useState<string>('');
-
-    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
-    const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
-    const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
-
-    const [ambientApy, setAmbientApy] = useState<number | undefined>();
-    const [dailyVol, setDailyVol] = useState<number | undefined>();
-
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
-
     const pool = useMemo(
         () =>
             crocEnv?.pool(
@@ -926,595 +860,70 @@ export default function App() {
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
 
-    // Fetch liquidity every minute
-    const fetchLiquidity = async () => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-
-        cachedLiquidityQuery(
-            chainData.chainId,
-            baseTokenAddress.toLowerCase(),
-            quoteTokenAddress.toLowerCase(),
-            chainData.poolIndex,
-            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-        )
-            .then((jsonData) => {
-                dispatch(setLiquidity(jsonData));
-            })
-            .catch(console.error);
-    };
-
-    // Runs nyquist of our 1 minute caching function.
-    useEffect(() => {
-        if (
-            !isChartEnabled ||
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        const id = setInterval(() => {
-            fetchLiquidity();
-        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
-        return () => clearInterval(id);
-    }, [
-        baseTokenAddress + quoteTokenAddress,
-        chainData === undefined,
-        lastBlockNumber === 0,
-        isChartEnabled,
-    ]);
-
-    useEffect(() => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        const timer1 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
-                })
-                .catch(console.error);
-        }, 2000);
-        const timer2 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
-                })
-                .catch(console.error);
-        }, 15000);
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
-    }, [sessionReceipts.length]);
-
-    // value for whether a pool exists on current chain and token pair
-    // ... true => pool exists
-    // ... false => pool does not exist
-    // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | undefined>();
-
-    // hook to update `poolExists` when crocEnv changes
-    useEffect(() => {
-        if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            IS_LOCAL_ENV && console.debug('checking if pool exists');
-            if (
-                baseTokenAddress.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            )
-                return;
-            // token pair has an initialized pool on-chain
-            // returns a promise object
-            const doesPoolExist = crocEnv
-                // TODO: make this function pill addresses directly from URL params
-                .pool(baseTokenAddress, quoteTokenAddress)
-                .isInit();
-            // resolve the promise object to see if pool exists
-            Promise.resolve(doesPoolExist)
-                // track whether pool exists on state (can be undefined)
-                .then((res) => setPoolExists(res));
-        }
-        // run every time crocEnv updates
-        // this indirectly tracks a new chain being used
-    }, [
-        crocEnv,
+    const {
         baseTokenAddress,
         quoteTokenAddress,
-        chainData.chainId,
-        sessionReceipts.length,
-    ]);
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        ambientApy,
+        dailyVol,
+        isTokenABase,
+    } = usePoolMetadata({
+        crocEnv,
+        httpGraphCacheServerDomain,
+        pathname: location.pathname,
+        chainData,
+        searchableTokens,
+        receiptCount: receiptData.sessionReceipts.length,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedPoolLiquidity,
+        setSimpleRangeWidth,
+        isChartEnabled,
+    });
+
+    const {
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolExists,
+        poolPriceChangePercent,
+    } = usePoolPricing({
+        crocEnv,
+        pathname: location.pathname,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        searchableTokens,
+        chainData,
+        receiptCount: receiptData.sessionReceipts.length,
+        isUserLoggedIn,
+        isUserIdle,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedQuerySpotPrice,
+    });
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
         if (resetLimitTick) {
-            IS_LOCAL_ENV && console.debug('resetting limit tick');
             dispatch(setPoolPriceNonDisplay(0));
-
             dispatch(setLimitTick(undefined));
         }
     }, [resetLimitTick]);
 
-    useEffect(() => {
-        if (!location.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
-        }
-        dispatch(setPrimaryQuantityRange(''));
-        setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        setPoolPriceChangePercent(undefined);
-    }, [baseTokenAddress + quoteTokenAddress]);
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
-                const poolAmbientApyCacheEndpoint =
-                    GRAPHCACHE_URL + '/pool_ambient_apy_cached?';
-
-                fetch(
-                    poolAmbientApyCacheEndpoint +
-                        new URLSearchParams({
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: chainData.poolIndex.toString(),
-                            chainId: chainData.chainId,
-                            concise: 'true',
-                            lookback: '604800',
-                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const ambientApy = json?.data?.apy;
-                        setAmbientApy(ambientApy);
-
-                        const tickVol = json?.data?.tickStdev;
-                        const dailyVol = tickVol ? tickVol / 10000 : undefined;
-                        setDailyVol(dailyVol);
-                    });
-            }
-        })();
-    }, [isServerEnabled, baseTokenAddress + quoteTokenAddress]);
-
-    const resetAdvancedTicksIfNotCopy = () => {
-        if (!ticksInParams) {
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
-            dispatch(setAdvancedMode(false));
-            setSimpleRangeWidth(10);
-            const sliderInput = document.getElementById(
-                'input-slider-range',
-            ) as HTMLInputElement;
-            if (sliderInput) sliderInput.value = '10';
-        }
-    };
-    // useEffect that runs when token pair changes
-    useMemo(() => {
-        if (rtkMatchesParams && crocEnv) {
-            // reset rtk values for user specified range in ticks
-            IS_LOCAL_ENV && console.debug('resetting advanced ticks');
-
-            // reset advanced ticks if token pair change not the result of a 'copy trade'
-            resetAdvancedTicksIfNotCopy();
-
-            const tokenAAddress = tokenPair?.dataTokenA?.address;
-            const tokenBAddress = tokenPair?.dataTokenB?.address;
-
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-                const tokenAMainnetEquivalent =
-                    tokenAAddress === ZERO_ADDRESS
-                        ? tokenAAddress
-                        : testTokenMap
-                              .get(
-                                  tokenAAddress.toLowerCase() +
-                                      '_' +
-                                      chainData.chainId,
-                              )
-                              ?.split('_')[0];
-                const tokenBMainnetEquivalent =
-                    tokenBAddress === ZERO_ADDRESS
-                        ? tokenBAddress
-                        : testTokenMap
-                              .get(
-                                  tokenBAddress.toLowerCase() +
-                                      '_' +
-                                      chainData.chainId,
-                              )
-                              ?.split('_')[0];
-
-                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                    const sortedMainnetTokens = sortBaseQuoteTokens(
-                        tokenAMainnetEquivalent,
-                        tokenBMainnetEquivalent,
-                    );
-
-                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-
-                    dispatch(
-                        setMainnetBaseTokenReduxAddress(sortedMainnetTokens[0]),
-                    );
-                    dispatch(
-                        setMainnetQuoteTokenReduxAddress(
-                            sortedMainnetTokens[1],
-                        ),
-                    );
-                } else {
-                    setMainnetBaseTokenAddress('');
-                    setMainnetQuoteTokenAddress('');
-                }
-
-                setBaseTokenAddress(sortedTokens[0]);
-                setQuoteTokenAddress(sortedTokens[1]);
-                if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                    setIsTokenABase(true);
-                    setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
-                    setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
-                } else {
-                    setIsTokenABase(false);
-                    setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
-                    setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
-                }
-
-                // retrieve pool liquidity provider fee
-
-                if (isServerEnabled && httpGraphCacheServerDomain) {
-                    getLiquidityFee(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                    )
-                        .then((liquidityFeeNum) => {
-                            if (liquidityFeeNum)
-                                dispatch(setLiquidityFee(liquidityFeeNum));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool TVL series
-                    getTvlSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((tvlSeries) => {
-                            if (
-                                tvlSeries &&
-                                tvlSeries.base &&
-                                tvlSeries.quote &&
-                                tvlSeries.poolIdx &&
-                                tvlSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolTvlSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: tvlSeries.base,
-                                                    quote: tvlSeries.quote,
-                                                    poolIdx: tvlSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool volume series
-                    getVolumeSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((volumeSeries) => {
-                            if (
-                                volumeSeries &&
-                                volumeSeries.base &&
-                                volumeSeries.quote &&
-                                volumeSeries.poolIdx &&
-                                volumeSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolVolumeSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: volumeSeries.base,
-                                                    quote: volumeSeries.quote,
-                                                    poolIdx:
-                                                        volumeSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                volumeData: volumeSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool liquidity
-
-                    cachedLiquidityQuery(
-                        chainData.chainId,
-                        sortedTokens[0].toLowerCase(),
-                        sortedTokens[1].toLowerCase(),
-                        chainData.poolIndex,
-                        Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-                    )
-                        .then((jsonData) => {
-                            dispatch(setLiquidity(jsonData));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool_positions
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                annotate: 'true', // token quantities
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                n: '50',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolRangeData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolPositions && crocEnv) {
-                                Promise.all(
-                                    poolPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        dispatch(
-                                            setPositionsByPool({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/annotated_pool_positions?';
-                    fetch(
-                        poolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                sortByAPY: 'true',
-                                n: '50',
-                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const leaderboardPositions = json.data;
-
-                            if (leaderboardPositions && crocEnv) {
-                                Promise.all(
-                                    leaderboardPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        const top10Positions = updatedPositions
-                                            .filter(
-                                                (
-                                                    updatedPosition: PositionIF,
-                                                ) => {
-                                                    return (
-                                                        updatedPosition.isPositionInRange &&
-                                                        updatedPosition.apy !==
-                                                            0
-                                                    );
-                                                },
-                                            )
-                                            .slice(0, 10);
-
-                                        dispatch(
-                                            setLeaderboardByPool({
-                                                dataReceived: true,
-                                                positions: top10Positions,
-                                            }),
-                                        );
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool recent changes
-                    fetchPoolRecentChanges({
-                        tokenList: searchableTokens,
-                        base: sortedTokens[0],
-                        quote: sortedTokens[1],
-                        poolIdx: chainData.poolIndex,
-                        chainId: chainData.chainId,
-                        annotate: true,
-                        addValue: true,
-                        simpleCalc: true,
-                        annotateMEV: false,
-                        ensResolution: true,
-                        n: 80,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolTxData',
-                                        loadingStatus: false,
-                                    }),
-                                );
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool limit order states
-
-                    const poolLimitOrderStatesCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/pool_limit_order_states?';
-
-                    fetch(
-                        poolLimitOrderStatesCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                n: '200',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLimitOrderStates = json?.data;
-
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolOrderData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolLimitOrderStates) {
-                                Promise.all(
-                                    poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                searchableTokens,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
-                                        }),
-                                    );
-                                });
-                            }
-                        })
-                        .catch(console.error);
-                }
-            }
-        }
-    }, [
-        searchableTokens.length,
-        rtkMatchesParams,
-        baseTokenAddress + quoteTokenAddress,
-        chainData.chainId,
+    const {
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useTokenPairAllowance({
         crocEnv,
-    ]);
+        account,
+        lastBlockNumber,
+    });
 
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
@@ -1537,7 +946,8 @@ export default function App() {
         isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
         candleTimeLocal,
         isUserIdle,
     ]);
@@ -1613,60 +1023,6 @@ export default function App() {
             setExpandTradeTable(true);
         }
     };
-
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
-        string | undefined
-    >();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
-        useState<boolean>(true);
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
-                try {
-                    const priceChangeResult = await get24hChange(
-                        chainData.chainId,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        chainData.poolIndex,
-                        tradeData.isDenomBase,
-                    );
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
-                        setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
-                        priceChangeResult > 0
-                            ? setIsPoolPriceChangePositive(true)
-                            : setIsPoolPriceChangePositive(false);
-
-                        const priceChangeString =
-                            priceChangeResult > 0
-                                ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) +
-                                  '%'
-                                : priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) + '%';
-                        setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
-                    }
-                } catch (error) {
-                    setPoolPriceChangePercent(undefined);
-                }
-            }
-        })();
-    }, [
-        isServerEnabled,
-        tradeData.isDenomBase,
-        baseTokenAddress + quoteTokenAddress,
-        lastBlockNumber,
-    ]);
 
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -1778,70 +1134,6 @@ export default function App() {
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        setPoolPriceDisplay(0);
-    }, [baseTokenAddress, quoteTokenAddress]);
-
-    const getDisplayPrice = (spotPrice: number) => {
-        return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
-    };
-
-    const getSpotPrice = async (
-        baseTokenAddress: string,
-        quoteTokenAddress: string,
-    ) => {
-        if (!crocEnv) {
-            return;
-        }
-        return await cachedQuerySpotPrice(
-            crocEnv,
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            lastBlockNumber,
-        );
-    };
-
-    // useEffect to get spot price when tokens change and block updates
-    useEffect(() => {
-        if (
-            !isUserIdle &&
-            crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            lastBlockNumber !== 0
-        ) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                );
-                if (spotPrice) {
-                    const newDisplayPrice = getDisplayPrice(spotPrice);
-                    if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log('Set pool price display');
-                        setPoolPriceDisplay(newDisplayPrice);
-                    }
-                }
-                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
-                    dispatch(setPoolPriceNonDisplay(spotPrice));
-                }
-            })();
-        }
-    }, [
-        isUserIdle,
-        lastBlockNumber,
-        baseTokenAddress,
-        quoteTokenAddress,
-        crocEnv,
-        poolPriceNonDisplay === 0,
-        isUserLoggedIn,
-    ]);
-
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
@@ -1909,80 +1201,6 @@ export default function App() {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
-    ]);
-
-    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
-    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
-
-    const [recheckTokenAApproval, setRecheckTokenAApproval] =
-        useState<boolean>(false);
-    const [recheckTokenBApproval, setRecheckTokenBApproval] =
-        useState<boolean>(false);
-
-    const tokenAAddress = tokenPair?.dataTokenA?.address;
-    const tokenADecimals = tokenPair?.dataTokenA?.decimals;
-    const tokenBAddress = tokenPair?.dataTokenB?.address;
-    const tokenBDecimals = tokenPair?.dataTokenB?.decimals;
-    // useEffect to check if user has approved CrocSwap to sell the token A
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && account && tokenAAddress) {
-                try {
-                    const allowance = await crocEnv
-                        .token(tokenAAddress)
-                        .allowance(account);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenADecimals,
-                    );
-                    if (tokenAAllowance !== newTokenAllowance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('setting new token a allowance');
-                        setTokenAAllowance(newTokenAllowance);
-                    }
-                } catch (err) {
-                    console.warn(err);
-                }
-                if (recheckTokenAApproval) setRecheckTokenAApproval(false);
-            }
-        })();
-    }, [
-        crocEnv,
-        tokenAAddress,
-        lastBlockNumber,
-        account,
-        recheckTokenAApproval,
-    ]);
-
-    // useEffect to check if user has approved CrocSwap to sell the token B
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && tokenBAddress && tokenBDecimals && account) {
-                try {
-                    const allowance = await crocEnv
-                        .token(tokenBAddress)
-                        .allowance(account);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenBDecimals,
-                    );
-                    if (tokenBAllowance !== newTokenAllowance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('new token b allowance set');
-                        setTokenBAllowance(newTokenAllowance);
-                    }
-                } catch (err) {
-                    console.warn(err);
-                }
-                if (recheckTokenBApproval) setRecheckTokenBApproval(false);
-            }
-        })();
-    }, [
-        crocEnv,
-        tokenBAddress,
-        lastBlockNumber,
-        account,
-        recheckTokenBApproval,
     ]);
 
     const userLimitOrderStatesCacheEndpoint =
@@ -2380,20 +1598,20 @@ export default function App() {
 
     // props for <PageHeader/> React element
     const headerProps = {
-        isUserLoggedIn: isUserLoggedIn,
-        clickLogout: clickLogout,
-        ensName: ensName,
-        shouldDisplayAccountTab: shouldDisplayAccountTab,
+        isUserLoggedIn,
+        clickLogout,
+        ensName,
+        shouldDisplayAccountTab,
         chainId: chainData.chainId,
-        isChainSupported: isChainSupported,
-        openWagmiModalWallet: openWagmiModalWallet,
+        isChainSupported,
+        openWagmiModalWallet,
         openMoralisModalWallet: openWagmiModalWallet,
-        lastBlockNumber: lastBlockNumber,
-        poolPriceDisplay: poolPriceDisplay,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        recentPools: recentPools,
-        chainData: chainData,
-        getTokenByAddress: getTokenByAddress,
+        lastBlockNumber,
+        poolPriceDisplay,
+        ethMainnetUsdPrice,
+        recentPools,
+        chainData,
+        getTokenByAddress,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2408,41 +1626,41 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
-        pool: pool,
-        tokenPairLocal: tokenPairLocal,
-        isUserLoggedIn: isUserLoggedIn,
-        account: account,
-        provider: provider,
-        isPairStable: isPairStable,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        lastBlockNumber: lastBlockNumber,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
+        pool,
+        tokenPairLocal,
+        isUserLoggedIn,
+        account,
+        provider,
+        isPairStable,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        lastBlockNumber,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
-        tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay,
-        tokenAAllowance: tokenAAllowance,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenPair,
+        poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        isInitialized: isInitialized,
-        poolExists: poolExists,
-        setTokenPairLocal: setTokenPairLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        isInitialized,
+        poolExists,
+        setTokenPairLocal,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        ackTokens: ackTokens,
-        chainData: chainData,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        ackTokens,
+        chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -2464,64 +1682,64 @@ export default function App() {
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenAAllowance: tokenAAllowance,
+        tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        isInitialized: isInitialized,
-        poolExists: poolExists,
-        isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        isInitialized,
+        poolExists,
+        isSwapCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        tokenPairLocal: tokenPairLocal,
-        ackTokens: ackTokens,
-        chainData: chainData,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        tokenPairLocal,
+        ackTokens,
+        chainData,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        account: account,
-        pool: pool,
-        chainData: chainData,
-        isUserLoggedIn: isUserLoggedIn,
-        provider: provider,
-        isPairStable: isPairStable,
+        account,
+        pool,
+        chainData,
+        isUserLoggedIn,
+        provider,
+        isPairStable,
         isOnTradeRoute: true,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        lastBlockNumber: lastBlockNumber,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        lastBlockNumber,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenAAllowance: tokenAAllowance,
+        setResetLimitTick,
+        setRecheckTokenAApproval,
+        tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
         poolExists: poolExists,
-        isOrderCopied: isOrderCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        setResetLimitTick: setResetLimitTick,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        ackTokens: ackTokens,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        ackTokens,
     };
 
     // props for <Range/> React element
@@ -2529,59 +1747,58 @@ export default function App() {
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
-        account: account,
-        isUserLoggedIn: isUserLoggedIn,
-        provider: provider,
-        isPairStable: isPairStable,
-        lastBlockNumber: lastBlockNumber,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        baseTokenAddress: baseTokenAddress,
-        quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay,
+        account,
+        isUserLoggedIn,
+        provider,
+        isPairStable,
+        lastBlockNumber,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        baseTokenAddress,
+        quoteTokenAddress,
+        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
-        tokenAAllowance: tokenAAllowance,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        tokenBAllowance: tokenBAllowance,
-        setRecheckTokenBApproval: setRecheckTokenBApproval,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        tokenBAllowance,
+        setRecheckTokenBApproval,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        ambientApy: ambientApy,
-        dailyVol: dailyVol,
-        poolExists: poolExists,
-        isRangeCopied: isRangeCopied,
+        ambientApy,
+        dailyVol,
+        poolExists,
+        isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
         tokenBQtyLocal: rangetokenBQtyLocal,
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        simpleRangeWidth: simpleRangeWidth,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
         setMinPrice: setMinRangePrice,
-        setChartTriggeredBy: setChartTriggeredBy,
-        chartTriggeredBy: chartTriggeredBy,
+        setChartTriggeredBy,
+        chartTriggeredBy,
         minPrice: minRangePrice,
         maxPrice: maxRangePrice,
-        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
-        ackTokens: ackTokens,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
-        chainData: chainData,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        ackTokens,
+        cachedFetchTokenPrice,
+        chainData,
     };
 
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
@@ -2592,26 +1809,26 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
-        isShowAllEnabled: isShowAllEnabled,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        expandTradeTable,
+        setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        lastBlockNumber: lastBlockNumber,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        analyticsSearchInput: analyticsSearchInput,
-        setAnalyticsSearchInput: setAnalyticsSearchInput,
+        lastBlockNumber,
+        currentPositionActive,
+        setCurrentPositionActive,
+        analyticsSearchInput,
+        setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
-        poolList: poolList,
+        poolList,
         verifyToken: verifyToken,
         tokenPair: tokenPair,
-        recentPools: recentPools,
-        isConnected: isConnected,
-        ackTokens: ackTokens,
-        topPools: topPools,
+        recentPools,
+        isConnected,
+        ackTokens,
+        topPools,
     };
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
@@ -2837,7 +2054,7 @@ export default function App() {
         currentPositionActive,
         setCurrentPositionActive,
         isInitialized,
-        poolPriceNonDisplay,
+        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         limitRate: '',
         searchableTokens: searchableTokens,
         poolExists,
@@ -2943,7 +2160,7 @@ export default function App() {
         topPools: topPools,
     };
 
-    const webSocketProps: WebSockerPropsIF = {
+    useWebSocketSubs({
         crocEnv,
         wssGraphCacheServerDomain,
         baseTokenAddress,
@@ -2961,7 +2178,7 @@ export default function App() {
         candleTimeLocal,
         account,
         shouldCandleSubscriptionsReconnect,
-    };
+    });
 
     return (
         <AppStateContext.Provider value={appState}>
