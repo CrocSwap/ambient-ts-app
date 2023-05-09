@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
@@ -238,24 +238,28 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         }
     }
 
-    return {
-        volumeSubchart: new Subchart(
-            isVolumeSubchartEnabled,
-            setIsVolumeSubchartEnabled,
-        ),
-        tvlSubchart: new Subchart(
-            isTvlSubchartEnabled,
-            setIsTvlSubchartEnabled,
-        ),
-        feeRateSubchart: new Subchart(
-            isFeeRateSubchartEnabled,
-            setIsFeeRateSubchartEnabled,
-        ),
-        marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
-        rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
-        candleTime: {
-            market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
-            range: new CandleTime(candleTimeRange, setCandleTimeRange),
-        },
-    };
+    const chartSettings = useMemo(() => {
+        return {
+            volumeSubchart: new Subchart(
+                isVolumeSubchartEnabled,
+                setIsVolumeSubchartEnabled,
+            ),
+            tvlSubchart: new Subchart(
+                isTvlSubchartEnabled,
+                setIsTvlSubchartEnabled,
+            ),
+            feeRateSubchart: new Subchart(
+                isFeeRateSubchartEnabled,
+                setIsFeeRateSubchartEnabled,
+            ),
+            marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
+            rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
+            candleTime: {
+                market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
+                range: new CandleTime(candleTimeRange, setCandleTimeRange),
+            },
+        };
+    }, [candleTimeMarket, candleTimeRange]);
+
+    return chartSettings;
 };
