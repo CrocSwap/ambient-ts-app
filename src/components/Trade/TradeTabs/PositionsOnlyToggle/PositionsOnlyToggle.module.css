@@ -18,7 +18,7 @@
 
 .options_toggle p {
     color: var(--text2);
-    font-weight: 500;
+    font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     list-style: none;
@@ -29,7 +29,7 @@
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;
-    /* align-items: center; */
+    align-items: center;
 }
 
 .icon {

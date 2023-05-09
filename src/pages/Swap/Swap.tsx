@@ -787,14 +787,7 @@ export default function Swap(props: propsIF) {
                             placement='bottom'
                         />
                     </div>
-                    <div
-                        className={styles.data}
-                        style={{
-                            color: '#f6385b',
-                        }}
-                    >
-                        {priceImpactString}%
-                    </div>
+                    <div className={styles.data}>{priceImpactString}%</div>
                 </div>
             </div>
         ) : null;

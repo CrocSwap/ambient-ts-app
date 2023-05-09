@@ -126,7 +126,7 @@ export default function TransactionRow(props: propsIF) {
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
@@ -269,16 +269,19 @@ export default function TransactionRow(props: propsIF) {
         priceDisplay,
     } = txRowConstants(txRowConstantsProps);
 
+    function handleRowClick() {
+        if (tx.id === currentTxActiveInTransactions) {
+            return;
+        }
+        setCurrentTxActiveInTransactions('');
+        openDetailsModal();
+    }
     // end of portfolio page li element ---------------
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
             style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-            onClick={() =>
-                tx.id === currentTxActiveInTransactions
-                    ? null
-                    : setCurrentTxActiveInTransactions('')
-            }
+            onClick={handleRowClick}
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
             tabIndex={0}

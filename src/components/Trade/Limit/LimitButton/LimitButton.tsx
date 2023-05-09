@@ -28,7 +28,7 @@ export default function LimitButton(props: propsIF) {
                     areBothAckd
                         ? limitAllowed
                             ? isBypassConfirmEnabled
-                                ? 'Send Limit'
+                                ? 'Submit Limit Order'
                                 : 'Open Confirmation'
                             : limitButtonErrorMessage
                         : 'Acknowledge'
