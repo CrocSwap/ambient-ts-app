@@ -6,6 +6,7 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 export interface tokenMethodsIF {
     verify: (addr: string, chainId: string) => boolean;
     acknowledge: (tkn: TokenIF) => void;
+    getAll: () => TokenIF[];
     getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
     getByChain: (chn: string) => TokenIF[];
     getBySource: (uri: string) => TokenIF[];
@@ -301,6 +302,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
     return {
         verify: verifyToken,
         acknowledge: acknowledgeToken,
+        getAll: convertTokenMapToArray,
         getByAddress: getTokenByAddress,
         getByChain: getTokensByChain,
         getBySource: getTokensFromList,
