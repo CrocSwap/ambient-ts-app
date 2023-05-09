@@ -148,7 +148,6 @@ export const useTokenSearch = (
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
         setOutputTokens(foundTokens);
-
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
