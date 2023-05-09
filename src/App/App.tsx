@@ -2842,10 +2842,7 @@ export default function App() {
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-        getAmbientTokens,
+        tokens,
         connectedUserErc20Tokens ?? [],
         getRecentTokens,
     );

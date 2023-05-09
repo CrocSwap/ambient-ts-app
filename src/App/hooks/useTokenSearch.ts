@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
+import { tokenMethodsIF } from './useNewTokens/useNewTokens';
 
 export const useTokenSearch = (
     chainId: string,
-    verifyToken: (addr: string, chn: string) => boolean,
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[],
-    getDefaultTokens: () => TokenIF[],
+    tokens: tokenMethodsIF,
     walletTokens: TokenIF[],
     getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
@@ -77,7 +71,7 @@ export const useTokenSearch = (
         function searchAsAddress(): TokenIF[] {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
-            const tokenLookup = getTokenByAddress(validatedInput, chainId);
+            const tokenLookup: TokenIF|undefined = tokens.getByAddress(validatedInput, chainId);
             return tokenLookup ? [tokenLookup] : [];
         }
 
@@ -87,13 +81,13 @@ export const useTokenSearch = (
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            return getTokensByName(validatedInput, chainId, exactOnly);
+            return tokens.getByNameOrSymbol(validatedInput, chainId, exactOnly);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = getDefaultTokens();
+            const outputTokens = tokens.getBySource('ambient');
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -113,9 +107,9 @@ export const useTokenSearch = (
                     );
                     // check if token is recognized from a list (if necessary)
                     const isTokenKnown = verificationNeeded
-                        ? verifyToken(
+                        ? tokens.verify(
                               newTokens[i].address,
-                              '0x' + newTokens[i].chainId.toString(16),
+                              newTokens[i].chainId
                           )
                         : true;
                     // add token to output if not already there and limiter is below max
@@ -139,27 +133,27 @@ export const useTokenSearch = (
         }
 
         // declare an output variable
-        let tokens: TokenIF[];
+        let foundTokens: TokenIF[];
         // logic router to assign search results to output based on input type
         switch (searchAs) {
             case 'address':
-                tokens = searchAsAddress();
+                foundTokens = searchAsAddress();
                 break;
             case 'nameOrSymbol':
-                tokens = searchAsNameOrSymbol();
+                foundTokens = searchAsNameOrSymbol();
                 break;
             default:
-                tokens = noSearch();
+                foundTokens = noSearch();
         }
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
-        setOutputTokens(tokens);
+        setOutputTokens(foundTokens);
 
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        getDefaultTokens().length,
+        tokens.getBySource('ambient').length,
         walletTokens.length,
         getRecentTokens().length,
         validatedInput,
