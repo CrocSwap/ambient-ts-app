@@ -16,6 +16,7 @@ export default function Pagination(props: PaginationPropsIF) {
     for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
         pageNumbers.push(i);
     }
+
     // eslint-disable-next-line
     const containerRef = useRef<any>();
 
@@ -94,8 +95,6 @@ export default function Pagination(props: PaginationPropsIF) {
             paginate(currentPage + 1);
         } else return;
     };
-
-    console.log({ totalPages });
 
     const handleNumberClick = (page: number) => {
         // const rightScrollNumber = 60 * page

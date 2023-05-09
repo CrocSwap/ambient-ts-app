@@ -363,19 +363,20 @@ export default function Orders(props: propsIF) {
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {((isAccountView && limitOrderData.length > 7) ||
-                (!isAccountView && tradePageCheck)) && (
-                <Pagination
-                    itemsPerPage={limitsPerPage}
-                    totalItems={
-                        limitOrderData.filter(
-                            (limitOrder) => limitOrder.totalValueUSD !== 0,
-                        ).length
-                    }
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {limitsPerPage > 0 &&
+                ((isAccountView && limitOrderData.length > 7) ||
+                    (!isAccountView && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={limitsPerPage}
+                        totalItems={
+                            limitOrderData.filter(
+                                (limitOrder) => limitOrder.totalValueUSD !== 0,
+                            ).length
+                        }
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
