@@ -13,7 +13,7 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text1);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
@@ -184,7 +184,7 @@
 }
 
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 
 .tooltip_style {
@@ -278,7 +278,7 @@
     padding: 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 460px;
 }

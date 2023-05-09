@@ -35,16 +35,20 @@
 /* transactions */
 .add_style {
     color: var(--accent3);
+    border-color: var(--accent3) !important;
 }
 .claim_style,
 .remove_style {
     color: var(--accent4);
+    border-color: var(--accent4) !important;
 }
 .buy_style {
     color: var(--accent1);
+    border-color: var(--accent1) !important;
 }
 .sell_style {
     color: var(--accent2);
+    border-color: var(--accent2) !important;
 }
 
 /* apy */

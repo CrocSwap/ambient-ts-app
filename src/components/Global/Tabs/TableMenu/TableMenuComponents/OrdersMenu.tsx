@@ -360,7 +360,10 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}
