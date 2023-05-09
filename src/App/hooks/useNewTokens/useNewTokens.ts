@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { defaultTokens } from '../../../utils/data/defaultTokens';
 import { tokenListURIs } from '../../../utils/data/tokenListURIs';
 import fetchTokenList from '../../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export interface tokenMethodsIF {
+    default: TokenIF[];
     verify: (addr: string, chainId: string|number) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     getAll: () => TokenIF[];
@@ -368,6 +370,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
     }
 
     return {
+        default: defaultTokens,
         verify: verifyToken,
         acknowledge: acknowledgeToken,
         getAll: convertTokenMapToArray,

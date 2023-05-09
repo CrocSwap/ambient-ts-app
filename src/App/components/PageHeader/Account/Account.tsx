@@ -15,7 +15,7 @@ import useKeyPress from '../../../hooks/useKeyPress';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
-interface AccountPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     nativeBalance: string | undefined;
     accountAddress: string;
@@ -37,7 +37,7 @@ interface AccountPropsIF {
         | null;
 }
 
-export default function Account(props: AccountPropsIF) {
+export default function Account(props: propsIF) {
     const {
         nativeBalance,
         ethMainnetUsdPrice,

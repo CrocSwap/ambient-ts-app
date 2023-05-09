@@ -500,6 +500,8 @@ export default function App() {
         getTokensByName,
     ] = useToken(chainData.chainId);
     false && verifyToken;
+    false && getAmbientTokens;
+    false && getTokensOnChain;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -630,9 +632,10 @@ export default function App() {
     const [searchableTokens, setSearchableTokens] =
         useState<TokenIF[]>(defaultTokens);
 
+    // TODO: remove this and use `tokens` methods and data directly
     useEffect(() => {
-        setSearchableTokens(getTokensOnChain(chainData.chainId));
-    }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
+        setSearchableTokens(tokens.getByChain(chainData.chainId));
+    }, [chainData.chainId, tokens.getByChain(chainData.chainId).length]);
 
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -2562,10 +2565,9 @@ export default function App() {
                         }
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
-                        const ambientTokens = getAmbientTokens();
                         for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
-                                const isFoundInAmbientList = ambientTokens.some(
+                                const isFoundInAmbientList = tokens.default.some(
                                     (ambientToken) => {
                                         if (
                                             ambientToken.address.toLowerCase() ===
@@ -2588,7 +2590,7 @@ export default function App() {
                                 }
                             }
                             if (!tokenMap.has(item.quote)) {
-                                const isFoundInAmbientList = ambientTokens.some(
+                                const isFoundInAmbientList = tokens.default.some(
                                     (ambientToken) => {
                                         if (
                                             ambientToken.address.toLowerCase() ===
@@ -2761,7 +2763,7 @@ export default function App() {
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
-        const ambientTokens = getAmbientTokens();
+        const ambientTokens = tokens.default;
         // array of addresses on Ambient list
         const ambientAddresses = ambientTokens.map((tkn) =>
             tkn.address.toLowerCase(),
@@ -3307,10 +3309,10 @@ export default function App() {
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getAmbientTokens,
-        getTokensByName,
+        getAmbientTokens: () => tokens.default,
+        getTokensByName: tokens.getByNameOrSymbol,
         verifyToken: tokens.verify,
-        getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
         isTokenABase,
         provider,
         cachedFetchErc20TokenBalances,
