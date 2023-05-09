@@ -287,10 +287,10 @@ export default function Ranges(props: propsIF) {
     // 30 => Height of each paginated row item
 
     const regularRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 250)) / 36,
+        (height - (isOnPortfolioPage ? 450 : 350)) / 36,
     );
     const showColumnRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 250)) / 60,
+        (height - (isOnPortfolioPage ? 400 : 300)) / 60,
     );
     const rangesPerPage = showColumns
         ? showColumnRangesItems

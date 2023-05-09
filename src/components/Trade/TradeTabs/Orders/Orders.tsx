@@ -335,10 +335,10 @@ export default function Orders(props: propsIF) {
     // 30 => Height of each paginated row item
 
     const regularOrdersItems = Math.round(
-        (height - (isAccountView ? 400 : 250)) / 30,
+        (height - (isAccountView ? 500 : 350)) / 30,
     );
     const showColumnOrdersItems = Math.round(
-        (height - (isAccountView ? 400 : 250)) / 50,
+        (height - (isAccountView ? 500 : 300)) / 50,
     );
     const limitsPerPage = showColumns
         ? showColumnOrdersItems

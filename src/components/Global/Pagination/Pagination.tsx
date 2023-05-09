@@ -47,15 +47,24 @@ export default function Pagination(props: PaginationPropsIF) {
     function handleUpdatePageShow() {
         if (itemsPerPage < totalItems) {
             if (totalItems > currentPage * itemsPerPage) {
+                // If there are more items to show after the current page,
+                // set the end index to the last item on the current page.
                 setEnd(itemsPerPage * currentPage);
             } else if (totalItems % itemsPerPage === 0) {
+                // If the total number of items is a multiple of the items per page,
+                // set the end index to the last item on the last page.
                 setEnd(totalItems);
             } else {
+                // If the total number of items is not a multiple of the items per page,
+                // set the end index to the last item on the last page, which will have fewer items.
                 setEnd(
                     itemsPerPage * (currentPage - 1) +
                         (totalItems % itemsPerPage),
                 );
             }
+        } else {
+            // If there are no items to paginate, set the end index to 0.
+            setEnd(0);
         }
     }
 
@@ -85,6 +94,8 @@ export default function Pagination(props: PaginationPropsIF) {
             paginate(currentPage + 1);
         } else return;
     };
+
+    console.log({ totalPages });
 
     const handleNumberClick = (page: number) => {
         // const rightScrollNumber = 60 * page
