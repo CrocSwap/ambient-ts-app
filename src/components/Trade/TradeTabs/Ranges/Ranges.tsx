@@ -310,7 +310,7 @@ export default function Ranges(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const tradePageCheck = expandTradeTable && rangeData.length > 30;
+    const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
     const footerDisplay = (
         <div className={styles.footer}>

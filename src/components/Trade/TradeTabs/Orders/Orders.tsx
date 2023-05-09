@@ -359,7 +359,7 @@ export default function Orders(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const tradePageCheck = expandTradeTable && limitOrderData.length > 30;
+    const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
     const footerDisplay = (
         <div className={styles.footer}>
