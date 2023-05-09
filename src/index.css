@@ -52,6 +52,9 @@
     --positive: #15be6f;
     --negative: #f6385b;
 
+    --other-green: #41D18E;
+    --other-red: #E75670;
+
     /* border */
     --border: var(--dark2);
     --border-radius: 4px;

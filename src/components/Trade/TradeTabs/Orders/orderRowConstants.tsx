@@ -165,7 +165,12 @@ export const orderRowConstants = (props: Props) => {
                     onClick={(event) => event.stopPropagation()}
                 >
                     <p className={styles.wallet_tooltip_p}>
-                        {limitOrder.user}
+                        <span
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {limitOrder.user}
+                        </span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}

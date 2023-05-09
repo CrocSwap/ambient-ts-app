@@ -53,11 +53,11 @@
     line-height: var(--body-lh);
     font-weight: 300;
 
-    color: #E75670 !important;
+    color: var(--other-red) !important;
 }
 
 .price_impact svg {
-    color: #E75670 !important;
+    color: var(--other-red) !important;
 }
 
 .scrollable_container::-webkit-scrollbar {
