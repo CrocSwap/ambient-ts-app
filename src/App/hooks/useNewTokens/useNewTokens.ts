@@ -18,6 +18,13 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         ackTokens: 'ackTokens',
     };
 
+    // hook to memoize token lists in local state
+    const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
+        getTokenListsFromLS() ?? []
+    );
+    // hook to memoize token Map in local state
+    const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
+
     // fn to retrieve and parse token lists from local storage
     function getTokenListsFromLS(): TokenListIF[]|null {
         // get entry from local storage
@@ -72,10 +79,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return output;
     }
 
-    // hook to memoize token lists in local state
-    const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
-        getTokenListsFromLS() ?? []
-    );
+
 
     class Token implements TokenIF {
         name: string;
@@ -101,8 +105,6 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
             }
         }
     };
-
-    const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
     
     // this hook fetches external token lists and sends them to local state and local
     // ... storage, it runs asynchronously after initial render of the app only; it is
