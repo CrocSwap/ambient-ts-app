@@ -695,24 +695,24 @@ export default function Chart(props: propsIF) {
             if (
                 !showLatest &&
                 firstCandle &&
-                unparsedCandleData[0].time * 1000 !== firstCandle
+                unparsedCandleData[0].time !== firstCandle
             ) {
                 setIsCandleAdded(false);
-                const diff = Math.abs(
-                    firstCandle - unparsedCandleData[0].time * 1000,
-                );
+                const diff = Math.abs(firstCandle - unparsedCandleData[0].time);
                 setFirstCandle(() => {
-                    return unparsedCandleData[0].time * 1000;
+                    return unparsedCandleData[0].time;
                 });
+
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
+
                 scaleData?.xScale.domain([
                     domainLeft + diff,
                     domainRight + diff,
                 ]);
             } else if (firstCandle === undefined) {
                 setFirstCandle(() => {
-                    return unparsedCandleData[0].time * 1000;
+                    return unparsedCandleData[0].time;
                 });
             }
         }
@@ -1275,7 +1275,6 @@ export default function Chart(props: propsIF) {
                                 firstTime + deltaX,
                                 lastCandleDate,
                             );
-
                             scaleData?.xScale.domain([
                                 firstTime + deltaX,
                                 lastTime + deltaX,
@@ -1322,7 +1321,6 @@ export default function Chart(props: propsIF) {
                                             leftBoudnary,
                                             lastCandleDate,
                                         );
-
                                         scaleData?.xScale.domain([
                                             leftBoudnary,
                                             lastTime + deltaX,
@@ -1378,7 +1376,6 @@ export default function Chart(props: propsIF) {
                                     firstTime - deltaX,
                                     lastCandleDate,
                                 );
-
                                 scaleData?.xScale.domain([
                                     firstTime - deltaX,
                                     lastTime - deltaX,
@@ -1973,7 +1970,9 @@ export default function Chart(props: propsIF) {
                                 if (
                                     (deltaX > 0 ||
                                         Math.abs(domainX[1] - domainX[0]) <=
-                                            period * 1000 * 300) &&
+                                            period *
+                                                1000 *
+                                                maxNumCandlesForZoom) &&
                                     (deltaX < 0 ||
                                         !(
                                             filterCandle.length <= 2 &&
@@ -4446,7 +4445,6 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 }
-
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
@@ -4472,7 +4470,6 @@ export default function Chart(props: propsIF) {
                 const domain = [centerY - diffY / 2, centerY + diffY / 2];
 
                 scaleData?.yScale.domain(domain);
-
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
