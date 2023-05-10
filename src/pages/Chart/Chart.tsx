@@ -3235,12 +3235,25 @@ export default function Chart(props: propsIF) {
                             : pool?.fromDisplayPrice(
                                   1 / parseFloat(newLimitValue),
                               );
+                        const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
+                        const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
 
                         limitNonDisplay?.then((limit) => {
                             limit = limit !== 0 ? limit : 1;
-                            const pinnedTick: number = isTokenABase
+                            let pinnedTick: number = isTokenABase
                                 ? pinTickLower(limit, chainData.gridSize)
                                 : pinTickUpper(limit, chainData.gridSize);
+
+                            if (isNoGoneZoneMin) {
+                                pinnedTick = isDenomBase
+                                    ? pinTickUpper(limit, chainData.gridSize)
+                                    : pinTickLower(limit, chainData.gridSize);
+                            }
+                            if (isNoGoneZoneMax) {
+                                pinnedTick = isDenomBase
+                                    ? pinTickLower(limit, chainData.gridSize)
+                                    : pinTickUpper(limit, chainData.gridSize);
+                            }
 
                             const tickPrice = tickToPrice(pinnedTick);
 
@@ -6900,11 +6913,6 @@ export default function Chart(props: propsIF) {
         if (newLimitValue === undefined) {
             return;
         }
-
-        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-        const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
-        const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
-
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
             : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
@@ -6912,20 +6920,10 @@ export default function Chart(props: propsIF) {
         limitNonDisplay?.then((limit) => {
             limit = limit !== 0 ? limit : 1;
 
-            let pinnedTick: number = isTokenABase
+            const pinnedTick: number = isTokenABase
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
-            if (isNoGoneZoneMin) {
-                pinnedTick = denomInBase
-                    ? pinTickUpper(limit, chainData.gridSize)
-                    : pinTickLower(limit, chainData.gridSize);
-            }
-            if (isNoGoneZoneMax) {
-                pinnedTick = denomInBase
-                    ? pinTickLower(limit, chainData.gridSize)
-                    : pinTickUpper(limit, chainData.gridSize);
-            }
             dispatch(setLimitTick(pinnedTick));
 
             const tickPrice = tickToPrice(pinnedTick);
