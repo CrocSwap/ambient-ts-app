@@ -73,15 +73,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.pathname.includes('lowTick') &&
         props.pathname.includes('highTick');
 
-    const resetAdvancedTicksIfNotCopy = () => {
-        if (!ticksInParams) {
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
-            dispatch(setAdvancedMode(false));
-            props.setSimpleRangeWidth(10);
-        }
-    };
-
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
         let matching = false;
@@ -115,8 +106,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     // Runs when token pair changes
     useMemo(() => {
         if (rtkMatchesParams && props.crocEnv) {
-            // reset advanced ticks if token pair change not the result of a 'copy trade'
-            resetAdvancedTicksIfNotCopy();
+            if (!ticksInParams) {
+                dispatch(setAdvancedLowTick(0));
+                dispatch(setAdvancedHighTick(0));
+                dispatch(setAdvancedMode(false));
+                props.setSimpleRangeWidth(10);
+            }
 
             const tokenAAddress = tradeData.tokenA.address;
             const tokenBAddress = tradeData.tokenB.address;

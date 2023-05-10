@@ -1,4 +1,3 @@
-import { is } from 'immer/dist/internal';
 import { useMemo, useState } from 'react';
 
 export interface sidebarMethodsIF {

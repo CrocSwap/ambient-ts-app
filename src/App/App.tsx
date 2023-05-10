@@ -147,7 +147,6 @@ import Accessibility from '../pages/Accessibility/Accessibility';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
-import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
 import useWebSocketSubs from './hooks/useWebSocketSubs';
@@ -2201,9 +2200,6 @@ export default function App() {
                     className={containerStyle}
                     data-theme={appState.theme.selected}
                 >
-                    {appState.sidebar.isMobileOpen && (
-                        <div className='blur_app' />
-                    )}
                     <AppOverlay />
                     {currentLocation !== '/404' && (
                         <PageHeader {...headerProps} />
