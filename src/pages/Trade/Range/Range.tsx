@@ -79,13 +79,13 @@ import {
 import { formatAmountOld } from '../../../utils/numbers';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -117,13 +117,6 @@ interface propsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -135,9 +128,9 @@ interface propsIF {
     searchType: string;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
     chainData: ChainSpec;
+    tokens: tokenMethodsIF;
 }
 
 export default function Range(props: propsIF) {
@@ -170,9 +163,6 @@ export default function Range(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -183,8 +173,8 @@ export default function Range(props: propsIF) {
         setSimpleRangeWidth,
         simpleRangeWidth,
         cachedFetchTokenPrice,
-        ackTokens,
         chainData,
+        tokens,
     } = props;
 
     const {
@@ -1377,9 +1367,6 @@ export default function Range(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -1387,9 +1374,9 @@ export default function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
 
     // props for <RangeWidth/> React element
@@ -1449,8 +1436,6 @@ export default function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode
             />
-            {/* <DividerDark addMarginTop /> */}
-
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1647,16 +1632,15 @@ export default function Range(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA = !tokens.verify(
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenA.chainId
+    );
+    const needConfirmTokenB = !tokens.verify(
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenB.chainId
+    );
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -1693,8 +1677,8 @@ export default function Range(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && tokens.acknowledge(tokenPair.dataTokenB);
     };
 
     return (

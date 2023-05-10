@@ -44,10 +44,10 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../hooks/useNewTokens/useNewTokens';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -75,8 +75,8 @@ interface propsIF {
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
+    tokens: tokenMethodsIF;
 }
 
 export default function Sidebar(props: propsIF) {
@@ -97,12 +97,11 @@ export default function Sidebar(props: propsIF) {
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
-        verifyToken,
         tokenPair,
         recentPools,
         isConnected,
-        ackTokens,
         topPools,
+        tokens,
     } = props;
 
     const { sidebar } = useContext(AppStateContext);
@@ -253,8 +252,7 @@ export default function Sidebar(props: propsIF) {
         positionsByUser,
         txsByUser,
         limitsByUser,
-        verifyToken,
-        ackTokens,
+        tokens,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');

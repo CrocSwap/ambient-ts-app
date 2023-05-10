@@ -23,8 +23,8 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -55,7 +55,6 @@ interface propsIF {
     reverseTokens: () => void;
     tokenAInputQty: string;
     tokenBInputQty: string;
-
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -66,13 +65,6 @@ interface propsIF {
     disable?: boolean;
     isRangeCopied: boolean;
     handleChangeClick: (input: string) => void;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -83,8 +75,8 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 export default function RangeCurrencySelector(props: propsIF) {
@@ -115,9 +107,6 @@ export default function RangeCurrencySelector(props: propsIF) {
         isAdvancedMode,
         handleChangeClick,
         isRangeCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -126,9 +115,10 @@ export default function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
+        tokens,
     } = props;
+
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
@@ -457,9 +447,6 @@ export default function RangeCurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -474,7 +461,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

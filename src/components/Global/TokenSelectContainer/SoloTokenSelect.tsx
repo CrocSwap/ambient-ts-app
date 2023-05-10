@@ -9,9 +9,7 @@ import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
-// import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
-// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -19,13 +17,6 @@ interface propsIF {
     importedTokensPlus: TokenIF[];
     chainId: string;
     closeModal: () => void;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     outputTokens: TokenIF[];
@@ -41,7 +32,7 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    ackTokens: ackTokensMethodsIF;
+    tokens: tokenMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -50,7 +41,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         provider,
         chainId,
         closeModal,
-        verifyToken,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
         outputTokens,
@@ -63,7 +53,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         tokenPair,
-        ackTokens,
+        tokens,
     } = props;
 
     // add an event listener for custom functionalities on modal close
@@ -87,7 +77,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
-            ackTokens.acknowledge(tkn);
+            tokens.acknowledge(tkn);
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -177,7 +167,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (
             provider &&
             searchType === 'address' &&
-            !verifyToken(validatedInput, chainId)
+            !tokens.verify(validatedInput, chainId)
         ) {
             // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
@@ -222,7 +212,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (verifyToken(validatedInput, chainId)) {
+                if (tokens.verify(validatedInput, chainId)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {

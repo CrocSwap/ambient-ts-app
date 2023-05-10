@@ -51,10 +51,10 @@ import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -80,13 +80,6 @@ interface propsIF {
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -97,9 +90,9 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     tokenPairLocal: string[] | null;
-    ackTokens: ackTokensMethodsIF;
     chainData: ChainSpec;
     pool: CrocPoolView | undefined;
+    tokens: tokenMethodsIF;
 }
 
 export default function Swap(props: propsIF) {
@@ -125,9 +118,6 @@ export default function Swap(props: propsIF) {
         openModalWallet,
         poolExists,
         isSwapCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
@@ -137,8 +127,8 @@ export default function Swap(props: propsIF) {
         searchType,
         lastBlockNumber,
         tokenPairLocal,
-        ackTokens,
         chainData,
+        tokens,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -711,9 +701,6 @@ export default function Swap(props: propsIF) {
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
         gasPriceInGwei: gasPriceInGwei,
         isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         addRecentToken: addRecentToken,
         getRecentTokens: getRecentTokens,
@@ -723,7 +710,7 @@ export default function Swap(props: propsIF) {
         searchType: searchType,
         lastBlockNumber: lastBlockNumber,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        ackTokens: ackTokens,
+        tokens: tokens,
     };
 
     const {
@@ -792,16 +779,15 @@ export default function Swap(props: propsIF) {
             </div>
         ) : null;
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA = !tokens.verify(
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenA.chainId
+    );
+    const needConfirmTokenB = !tokens.verify(
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenB.chainId
+    );
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -838,8 +824,8 @@ export default function Swap(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.acknowledge(tokenPair.dataTokenA);
+        needConfirmTokenB && tokens.acknowledge(tokenPair.dataTokenB);
     };
 
     const liquidityProviderFeeString = (

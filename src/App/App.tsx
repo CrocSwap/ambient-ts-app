@@ -143,7 +143,6 @@ import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
 import trimString from '../utils/functions/trimString';
-import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
@@ -175,7 +174,6 @@ import { useSkipConfirm } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
-import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
@@ -423,9 +421,6 @@ export default function App() {
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
-    // hook to manage acknowledged tokens
-    const ackTokens: ackTokensMethodsIF = useAckTokens();
-
     useEffect(() => {
         if (isConnected) {
             if (userData.isLoggedIn === false && account) {
@@ -491,19 +486,6 @@ export default function App() {
         chartTriggeredBy,
         setChartTriggeredBy,
     };
-
-    const [
-        verifyToken,
-        getAmbientTokens,
-        getTokensOnChain,
-        getTokenByAddress,
-        getTokensByName,
-    ] = useToken(chainData.chainId);
-    false && verifyToken;
-    false && getAmbientTokens;
-    false && getTokensOnChain;
-    false && getTokenByAddress;
-    false && getTokensByName;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -2877,9 +2859,6 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
-        verifyToken: tokens.verify,
-        getTokensByName: tokens.getByNameOrSymbol,
-        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2887,8 +2866,8 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         chainData: chainData,
+        tokens: tokens,
     };
 
     // props for <Swap/> React element on trade route
@@ -2916,9 +2895,6 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         isSwapCopied: isSwapCopied,
-        verifyToken: tokens.verify,
-        getTokensByName: tokens.getByNameOrSymbol,
-        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2927,8 +2903,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         tokenPairLocal: tokenPairLocal,
-        ackTokens: ackTokens,
         chainData: chainData,
+        tokens: tokens,
     };
 
     // props for <Limit/> React element on trade route
@@ -2956,9 +2932,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
-        verifyToken: tokens.verify,
-        getTokensByName: tokens.getByNameOrSymbol,
-        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2967,7 +2940,7 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
+        tokens: tokens,
     };
 
     // props for <Range/> React element
@@ -3004,9 +2977,6 @@ export default function App() {
         tokenBQtyLocal: rangetokenBQtyLocal,
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
-        verifyToken: tokens.verify,
-        getTokensByName: tokens.getByNameOrSymbol,
-        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -3025,9 +2995,9 @@ export default function App() {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        ackTokens: ackTokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainData: chainData,
+        tokens: tokens,
     };
 
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
@@ -3056,8 +3026,8 @@ export default function App() {
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
-        ackTokens: ackTokens,
         topPools: topPools,
+        tokens,
     };
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
@@ -3311,10 +3281,6 @@ export default function App() {
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getAmbientTokens: () => tokens.default,
-        getTokensByName: tokens.getByNameOrSymbol,
-        verifyToken: tokens.verify,
-        getTokenByAddress: tokens.getByAddress,
         isTokenABase,
         provider,
         cachedFetchErc20TokenBalances,
@@ -3345,8 +3311,8 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         mainnetProvider,
         setSimpleRangeWidth,
-        ackTokens,
         setExpandTradeTable,
+        tokens,
     };
 
     const repositionProps = {

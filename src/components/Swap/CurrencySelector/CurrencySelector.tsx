@@ -22,12 +22,12 @@ import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -68,13 +68,6 @@ interface propsIF {
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -85,7 +78,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    ackTokens: ackTokensMethodsIF;
+    tokens: tokenMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
@@ -118,9 +111,6 @@ export default function CurrencySelector(props: propsIF) {
         isSwapCopied,
         isSellTokenEth,
         reverseTokens,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
@@ -128,7 +118,7 @@ export default function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
+        tokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -574,9 +564,6 @@ export default function CurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -591,7 +578,7 @@ export default function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

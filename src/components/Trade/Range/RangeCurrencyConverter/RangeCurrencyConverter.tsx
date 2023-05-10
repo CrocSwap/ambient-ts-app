@@ -31,8 +31,8 @@ import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
 
 // interface for component props
 interface propsIF {
@@ -48,7 +48,6 @@ interface propsIF {
     isAdvancedMode: boolean;
     tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
-    // setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -75,13 +74,6 @@ interface propsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -92,9 +84,9 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     poolExists: boolean | undefined;
-    ackTokens: ackTokensMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central React functional component
@@ -135,9 +127,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -145,9 +134,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -754,9 +743,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         isRangeCopied: isRangeCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -764,9 +750,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
+        tokens: tokens,
     };
 
     return (

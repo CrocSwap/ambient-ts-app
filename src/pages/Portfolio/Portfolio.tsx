@@ -41,10 +41,10 @@ import {
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     addRecentToken: (tkn: TokenIF) => void;
@@ -52,14 +52,6 @@ interface propsIF {
         onCurrentChain?: boolean;
         count?: number | null;
     }) => TokenIF[];
-    getAmbientTokens: () => TokenIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
@@ -96,8 +88,8 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
-    ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 export default function Portfolio(props: propsIF) {
@@ -107,9 +99,6 @@ export default function Portfolio(props: propsIF) {
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getTokensByName,
-        getTokenByAddress,
-        verifyToken,
         isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
@@ -136,8 +125,8 @@ export default function Portfolio(props: propsIF) {
         setSimpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
-        ackTokens,
         setExpandTradeTable,
+        tokens,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -664,9 +653,6 @@ export default function Portfolio(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainData.chainId}
                         importedTokensPlus={outputTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -679,7 +665,7 @@ export default function Portfolio(props: propsIF) {
                         getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
-                        ackTokens={ackTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

@@ -25,9 +25,9 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -42,7 +42,6 @@ interface propsIF {
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
-    // nativeBalance: string;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -59,13 +58,6 @@ interface propsIF {
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -78,7 +70,7 @@ interface propsIF {
     priceImpact: CrocImpact | undefined;
     lastBlockNumber: number;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
-    ackTokens: ackTokensMethodsIF;
+    tokens: tokenMethodsIF;
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
 }
@@ -112,9 +104,6 @@ export default function CurrencyConverter(props: propsIF) {
         setSellQtyString,
         setBuyQtyString,
         isSwapCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -123,7 +112,7 @@ export default function CurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setTokenAQtyCoveredByWalletBalance,
-        ackTokens,
+        tokens,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -839,9 +828,6 @@ export default function CurrencyConverter(props: propsIF) {
                 reverseTokens={reverseTokens}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
                 outputTokens={outputTokens}
@@ -849,7 +835,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setInput={setInput}
                 searchType={searchType}
                 setDisableReverseTokens={setDisableReverseTokens}
-                ackTokens={ackTokens}
+                tokens={tokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
@@ -906,9 +892,6 @@ export default function CurrencyConverter(props: propsIF) {
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
                     getRecentTokens={getRecentTokens}
                     addRecentToken={addRecentToken}
                     outputTokens={outputTokens}
@@ -916,7 +899,7 @@ export default function CurrencyConverter(props: propsIF) {
                     setInput={setInput}
                     searchType={searchType}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    ackTokens={ackTokens}
+                    tokens={tokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
