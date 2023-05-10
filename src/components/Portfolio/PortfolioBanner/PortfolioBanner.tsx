@@ -1,6 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import Blockies from 'react-blockies';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+
 import { ChainSpec } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -31,19 +32,23 @@ export default function PortfolioBanner(props: propsIF) {
     } = props;
     const ensNameAvailable = ensName !== '';
 
-    const blockiesSeed = resolvedAddress
+    const jazziconsSeed = resolvedAddress
         ? resolvedAddress.toLowerCase()
         : activeAccount.toLowerCase();
 
-    const myBlockies = <Blockies seed={blockiesSeed} scale={7.4} />;
+    console.log({ jazziconsSeed });
+
+    const myJazzicon = (
+        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
+    );
 
     const truncatedAccountAddress = connectedAccountActive
         ? trimString(activeAccount, 6, 6, '…')
         : trimString(resolvedAddress, 6, 6, '…');
 
-    const blockiesToDisplay =
-        (resolvedAddress || connectedAccountActive) && myBlockies
-            ? myBlockies
+    const jazziconsToDisplay =
+        (resolvedAddress || connectedAccountActive) && myJazzicon
+            ? myJazzicon
             : null;
 
     return (
@@ -56,18 +61,18 @@ export default function PortfolioBanner(props: propsIF) {
                 activeAccount={activeAccount}
                 truncatedAccountAddress={truncatedAccountAddress}
                 connectedAccountActive={connectedAccountActive}
-                blockiesToDisplay={blockiesToDisplay}
+                jazziconsToDisplay={jazziconsToDisplay}
                 chainData={chainData}
             />
             <div className={styles.nft_container}>
-                {imageData.slice(1, 3).map((image: string) => (
+                {/* {imageData.slice(1, 3).map((image: string) => (
                     <img
                         src={image}
                         alt='nft'
                         key={`nft-image-${JSON.stringify(image)}`}
                     />
-                ))}
-                {blockiesToDisplay}
+                ))} */}
+                {/* {jazziconsToDisplay} */}
             </div>
         </div>
     );
