@@ -260,8 +260,8 @@ export default function RangesRow(props: propsIF) {
         );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(

@@ -217,8 +217,8 @@ export default function OrderRow(props: propsIF) {
         );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
