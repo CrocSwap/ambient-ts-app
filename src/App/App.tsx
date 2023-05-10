@@ -241,14 +241,6 @@ export default function App() {
     const globalModal = useGlobalModal();
     const globalPopup = useGlobalPopup();
     const skin = useSkin('purple_dark');
-    const walletToS = useTermsOfService(
-        'wallet',
-        process.env.REACT_APP_WALLET_TOS_CID as string,
-    );
-    const chatToS = useTermsOfService(
-        'chat',
-        process.env.REACT_APP_CHAT_TOS_CID as string,
-    );
 
     const appState = useMemo(
         () => ({
@@ -265,9 +257,6 @@ export default function App() {
                 setIsActive: setIsTutorialMode,
             },
             skin: skin,
-            // TODO: walletToS, chatToS unused
-            walletToS: walletToS,
-            chatToS: chatToS,
             theme: { selected: theme, setSelected: setTheme },
             outsideTab: {
                 selected: selectedOutsideTab,
@@ -292,19 +281,22 @@ export default function App() {
             subscriptions: { isEnabled: areSubscriptionsEnabled },
         }),
         [
-            location.pathname,
+            sidebar,
+            snackbar,
+            globalModal,
+            globalPopup,
+            skin,
             isChatOpen,
             isChatEnabled,
-            fullScreenChart,
-            isAppOverlayActive,
-            isTutorialMode,
-            theme,
-            selectedOutsideTab,
-            selectedOutsideTab,
-            outsideControl,
             isChartEnabled,
             isServerEnabled,
             areSubscriptionsEnabled,
+            isAppOverlayActive,
+            isTutorialMode,
+            fullScreenChart,
+            theme,
+            selectedOutsideTab,
+            outsideControl,
         ],
     );
 

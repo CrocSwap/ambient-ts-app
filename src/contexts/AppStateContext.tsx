@@ -14,8 +14,6 @@ interface AppStateIF {
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     skin: skinMethodsIF;
-    walletToS: tosMethodsIF;
-    chatToS: tosMethodsIF;
     theme: {
         selected: 'dark' | 'light';
         setSelected: (val: 'dark' | 'light') => void;

@@ -1,3 +1,4 @@
+import { is } from 'immer/dist/internal';
 import { useMemo, useState } from 'react';
 
 export interface sidebarMethodsIF {
@@ -7,8 +8,6 @@ export interface sidebarMethodsIF {
     open: (persist?: boolean) => void;
     close: (persist?: boolean) => void;
     toggle: (persist?: boolean) => void;
-    isMobileOpen: boolean;
-    setIsMobileOpen: (val: boolean) => void;
 }
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
@@ -21,8 +20,6 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     const [sidebar, setSidebar] = useState<string>(
         localStorage.getItem(localStorageKey) || 'open',
     );
-
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     // reusable logic to update state and optionally persist data in local storage
     const changeSidebar = (newStatus: string, persist: boolean): void => {
@@ -64,14 +61,15 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
         return isPathHidden;
     }, [pathname]);
 
-    return {
-        status: sidebar,
-        isOpen: sidebar === 'open',
-        isHiddenOnRoute: hidden,
-        open: openSidebar,
-        close: closeSidebar,
-        toggle: toggleSidebar,
-        isMobileOpen,
-        setIsMobileOpen,
-    };
+    return useMemo(
+        () => ({
+            status: sidebar,
+            isOpen: sidebar === 'open',
+            isHiddenOnRoute: hidden,
+            open: openSidebar,
+            close: closeSidebar,
+            toggle: toggleSidebar,
+        }),
+        [sidebar, hidden, pathname],
+    );
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface snackbarMethodsIF {
     isOpen: boolean;
@@ -32,11 +32,14 @@ export const useSnackbar = (initialMode = false) => {
         setContent('');
     };
 
-    return {
-        isOpen,
-        open,
-        close,
-        content,
-        severity,
-    };
+    return useMemo(
+        () => ({
+            isOpen,
+            open,
+            close,
+            content,
+            severity,
+        }),
+        [isOpen, content, severity, initialMode],
+    );
 };
