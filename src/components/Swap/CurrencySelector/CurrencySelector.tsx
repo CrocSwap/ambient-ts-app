@@ -27,7 +27,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;

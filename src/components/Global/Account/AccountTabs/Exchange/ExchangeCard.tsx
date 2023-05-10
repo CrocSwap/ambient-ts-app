@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;

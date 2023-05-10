@@ -14,7 +14,7 @@ import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
-import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated

@@ -54,7 +54,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { tokenMethodsIF } from './useNewTokens/useNewTokens';
+import { tokenMethodsIF } from './useTokens';
 
 export const useTokenSearch = (
     chainId: string,

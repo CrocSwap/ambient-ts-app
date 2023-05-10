@@ -32,7 +32,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
-import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {

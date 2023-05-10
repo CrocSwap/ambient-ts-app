@@ -170,7 +170,7 @@ import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import { useNewTokens, tokenMethodsIF } from './hooks/useNewTokens/useNewTokens';
+import { useTokens, tokenMethodsIF } from './hooks/useTokens';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
@@ -408,7 +408,7 @@ export default function App() {
     const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
     // hook to manage token data
-    const tokens: tokenMethodsIF = useNewTokens(chainData.chainId);
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId);
 
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);

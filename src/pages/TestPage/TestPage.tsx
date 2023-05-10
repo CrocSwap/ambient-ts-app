@@ -1,6 +1,6 @@
 import styles from './TestPage.module.css';
 import 'intro.js/introjs.css';
-import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 
 interface propsIF {

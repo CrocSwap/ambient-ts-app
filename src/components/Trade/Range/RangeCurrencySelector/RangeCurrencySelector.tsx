@@ -24,7 +24,7 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 interface propsIF {
     provider?: ethers.providers.Provider;

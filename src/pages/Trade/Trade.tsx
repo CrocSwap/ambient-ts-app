@@ -41,7 +41,7 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
-import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {

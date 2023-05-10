@@ -46,7 +46,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../hooks/useTokens';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 

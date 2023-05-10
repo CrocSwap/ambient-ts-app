@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { defaultTokens } from '../../../utils/data/defaultTokens';
-import { tokenListURIs } from '../../../utils/data/tokenListURIs';
-import fetchTokenList from '../../../utils/functions/fetchTokenList';
-import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
+import { defaultTokens } from '../../utils/data/defaultTokens';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import fetchTokenList from '../../utils/functions/fetchTokenList';
+import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export interface tokenMethodsIF {
     default: TokenIF[];
@@ -15,7 +15,7 @@ export interface tokenMethodsIF {
     getByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
 }
 
-export const useNewTokens = (chainId: string): tokenMethodsIF => {
+export const useTokens = (chainId: string): tokenMethodsIF => {
     // keys for data persisted in local storage
     const localStorageKeys = {
         tokenLists: 'tokenLists',
@@ -113,7 +113,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
             }
         }
     };
-    
+
     // this hook fetches external token lists and sends them to local state and local
     // ... storage, it runs asynchronously after initial render of the app only; it is
     // ... intelligent and will only fetch lists that are missing or stale-dated

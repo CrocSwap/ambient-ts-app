@@ -85,7 +85,7 @@ import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
-import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     account: string | undefined;

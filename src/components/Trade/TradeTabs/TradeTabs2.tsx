@@ -40,7 +40,7 @@ import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;

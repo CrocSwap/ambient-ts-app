@@ -4,7 +4,7 @@ import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 interface propsIF {
     chainId: string;

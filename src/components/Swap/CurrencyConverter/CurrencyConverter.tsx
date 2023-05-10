@@ -27,7 +27,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
-import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;

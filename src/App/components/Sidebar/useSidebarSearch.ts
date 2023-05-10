@@ -5,7 +5,7 @@ import {
     TempPoolIF,
     TransactionIF,
 } from '../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../hooks/useTokens';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;

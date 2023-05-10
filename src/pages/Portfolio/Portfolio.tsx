@@ -44,7 +44,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
-import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 interface propsIF {
     addRecentToken: (tkn: TokenIF) => void;

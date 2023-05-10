@@ -49,7 +49,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {

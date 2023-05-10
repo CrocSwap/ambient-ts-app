@@ -36,7 +36,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
-import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {

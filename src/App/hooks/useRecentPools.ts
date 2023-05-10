@@ -2,7 +2,7 @@ import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { tokenMethodsIF } from './useNewTokens/useNewTokens';
+import { tokenMethodsIF } from './useTokens';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;

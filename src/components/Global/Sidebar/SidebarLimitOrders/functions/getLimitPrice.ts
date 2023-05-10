@@ -1,6 +1,6 @@
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
+import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,
