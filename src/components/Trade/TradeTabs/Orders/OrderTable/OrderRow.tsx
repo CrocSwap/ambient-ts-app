@@ -296,9 +296,7 @@ export default function OrderRow(props: propsIF) {
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
                 style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
