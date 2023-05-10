@@ -77,7 +77,6 @@
 
 .token_amount {
     width: 100%;
-    border: 1px solid var(--accent1);
     background: var(--dark2);
     /* background-image: linear-gradient(rgba(23, 29, 39, 1), rgba(23, 29, 39, 1)),
         linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));

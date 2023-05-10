@@ -7,7 +7,8 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import headerLogo from '../../../assets/images/logos/header_logo.svg';
+import logo from '../../../assets/images/logos/ambient_logo.png';
+import logoText from '../../../assets/images/logos/logo_text.png';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
@@ -18,6 +19,7 @@ import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -62,6 +64,50 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
 
+    const formatTokenData = (data: TokenIF[] | undefined) => {
+        if (!data) return null;
+
+        // Filter data to only contain USDC and DAI tokens
+        const filteredData = data.filter((token) => {
+            const address = token.address;
+            return address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c';
+        });
+
+        // We want usdc first and dai second
+        const sortedData = filteredData.sort((a, b) => {
+            if (a.address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c') {
+                return -1;
+            } else if (
+                b.address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c'
+            ) {
+                return 1;
+            } else if (
+                a.address === '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60'
+            ) {
+                return -1;
+            } else if (
+                b.address === '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60'
+            ) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        const result = sortedData.map((obj) => ({
+            logo: obj.logoURI,
+            symbol: obj.symbol,
+            value: obj.walletBalanceDisplayTruncated,
+            amount: obj.combinedBalanceDisplayTruncated,
+        }));
+
+        return result;
+    };
+
+    const walletDropdownTokenData = formatTokenData(
+        userData.tokens.erc20Tokens,
+    );
+
     const accountProps = {
         nativeBalance:
             connectedUserNativeToken?.combinedBalanceDisplayTruncated,
@@ -74,14 +120,16 @@ export default function PageHeader(props: HeaderPropsIF) {
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
+        walletDropdownTokenData,
     };
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
             onClick={() => openWagmiModalWallet()}
         >
-            Connect Wallet
+            {desktopScreen ? 'Connect Wallet' : 'Connect'}
         </button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
@@ -308,8 +356,14 @@ export default function PageHeader(props: HeaderPropsIF) {
             }`}
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={headerLogo} alt='ambient' />
-                <img src='./ambient_logo_1.png' alt='' width='25' />
+                <img src={logo} alt='ambient' className={styles.logo} />
+                {desktopScreen && (
+                    <img
+                        src={logoText}
+                        alt='ambient'
+                        className={styles.logo_text}
+                    />
+                )}
             </Link>
             {routeDisplay}
             {show ? (

@@ -94,6 +94,7 @@ interface propsIF {
     searchType: string;
     ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central react functional component
@@ -144,6 +145,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setResetLimitTick,
         ackTokens,
         isOrderValid,
+        setTokenAQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -496,6 +498,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(tokenAQtyLocal || '0');
+
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
 
     return (
         <section className={styles.currency_converter}>

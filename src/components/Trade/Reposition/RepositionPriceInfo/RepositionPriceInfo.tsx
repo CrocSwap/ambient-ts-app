@@ -1,7 +1,7 @@
 // START: Import Local Files
 import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -42,8 +42,6 @@ interface IRepositionPriceInfoProps {
     currentPoolPriceDisplay: string;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
     isConfirmModal?: boolean;
 
     minPriceDisplay: string;

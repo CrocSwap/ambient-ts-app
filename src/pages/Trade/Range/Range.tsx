@@ -85,6 +85,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
     account: string | undefined;
@@ -134,14 +135,6 @@ interface propsIF {
     searchType: string;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    minPrice: number;
-    maxPrice: number;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
     ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
     chainData: ChainSpec;
@@ -189,17 +182,20 @@ export default function Range(props: propsIF) {
         searchType,
         setSimpleRangeWidth,
         simpleRangeWidth,
-        setMaxPrice,
-        setMinPrice,
-        setRescaleRangeBoundariesWithSlider,
-        minPrice,
-        maxPrice,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         cachedFetchTokenPrice,
         ackTokens,
         chainData,
     } = props;
+
+    const {
+        minRangePrice: minPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
+        setChartTriggeredBy,
+        chartTriggeredBy,
+        setRescaleRangeBoundariesWithSlider,
+    } = useContext(RangeStateContext);
 
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -213,6 +209,16 @@ export default function Range(props: propsIF) {
         openConfirmationModal,
         closeConfirmationModal,
     ] = useModal();
+
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
+    const [
+        tokenBQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
 
     const [isAmbient, setIsAmbient] = useState(false);
 
@@ -1382,6 +1388,8 @@ export default function Range(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         ackTokens: ackTokens,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };
 
     // props for <RangeWidth/> React element
@@ -1487,9 +1495,10 @@ export default function Range(props: propsIF) {
     );
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
+        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     const loginButton = (
         <button
@@ -1825,11 +1834,7 @@ export default function Range(props: propsIF) {
                 {isConfirmationModalOpen && (
                     <Modal
                         onClose={handleModalClose}
-                        title={
-                            isAmbient
-                                ? 'Ambient Confirmation'
-                                : 'Range Confirmation'
-                        }
+                        title={'Pool Confirmation'}
                         centeredTitle
                     >
                         <ConfirmRangeModal

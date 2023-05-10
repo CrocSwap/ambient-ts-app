@@ -677,8 +677,14 @@ export default function Limit(props: propsIF) {
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
     };
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const loginButton = (
         <button
             onClick={openModalWallet}
@@ -867,6 +873,7 @@ export default function Limit(props: propsIF) {
         setResetLimitTick: setResetLimitTick,
         ackTokens: ackTokens,
         isOrderValid: isOrderValid,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

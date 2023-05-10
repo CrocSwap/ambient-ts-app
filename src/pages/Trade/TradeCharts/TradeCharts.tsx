@@ -21,12 +21,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-    LiquidityData,
-} from '../../../utils/state/graphDataSlice';
+import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -59,7 +54,6 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    candleData: CandlesByPoolAndDuration | undefined;
     limitTick: number | undefined;
     liquidityData: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
@@ -81,23 +75,10 @@ interface propsIF {
     isPoolPriceChangePositive: boolean;
 
     handlePulseAnimation: (type: string) => void;
-    fetchingCandle: boolean;
-    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: React.Dispatch<
-        React.SetStateAction<boolean>
-    >;
-    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
 }
 
 export interface CandleChartData {
@@ -169,19 +150,8 @@ export default function TradeCharts(props: propsIF) {
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         handlePulseAnimation,
-        fetchingCandle,
-        setFetchingCandle,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setCandleDomains,
         setSimpleRangeWidth,
         chartSettings,
-        setChartTriggeredBy,
-        chartTriggeredBy,
     } = props;
 
     const {
@@ -544,7 +514,6 @@ export default function TradeCharts(props: propsIF) {
                         isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
                         expandTradeTable={expandTradeTable}
-                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitTick={props.limitTick}
@@ -576,24 +545,9 @@ export default function TradeCharts(props: propsIF) {
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
                         handlePulseAnimation={handlePulseAnimation}
-                        fetchingCandle={fetchingCandle}
-                        setFetchingCandle={setFetchingCandle}
-                        minPrice={minPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                        rescaleRangeBoundariesWithSlider={
-                            rescaleRangeBoundariesWithSlider
-                        }
-                        setRescaleRangeBoundariesWithSlider={
-                            setRescaleRangeBoundariesWithSlider
-                        }
-                        setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}
                         repositionRangeWidth={props.repositionRangeWidth}
-                        setChartTriggeredBy={setChartTriggeredBy}
-                        chartTriggeredBy={chartTriggeredBy}
                         chartSettings={chartSettings}
                         isMarketOrLimitModule={isMarketOrLimitModule}
                     />

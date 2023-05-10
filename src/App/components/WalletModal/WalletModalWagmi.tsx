@@ -278,7 +278,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={!hasAgreedTerms ? 'Welcome!' : activeTitle}
+                title={!hasAgreedTerms ? 'Welcome' : activeTitle}
                 centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
             >
                 {!hasAgreedTerms ? (

@@ -101,7 +101,6 @@ import {
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
-import { getNFTs } from './functions/getNFTs';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
@@ -188,6 +187,8 @@ import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
 import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
+import { RangeStateContext } from '../contexts/RangeStateContext';
+import { CandleContext } from '../contexts/CandleContext';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -461,6 +462,8 @@ export default function App() {
         boolean | undefined
     >();
 
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+
     // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -472,6 +475,21 @@ export default function App() {
         setRescaleRangeBoundariesWithSlider,
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
+
+    const rangeState = {
+        maxRangePrice,
+        setMaxRangePrice,
+        minRangePrice,
+        setMinRangePrice,
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+    };
 
     const [
         verifyToken,
@@ -499,8 +517,6 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
-
-    const [fetchingCandle, setFetchingCandle] = useState(false);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -3087,19 +3103,8 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const [imageData, setImageData] = useState<string[]>([]);
-
     useEffect(() => {
         dispatch(resetUserGraphData());
-    }, [account]);
-
-    useEffect(() => {
-        (async () => {
-            if (account) {
-                const imageLocalURLs = await getNFTs(account);
-                if (imageLocalURLs) setImageData(imageLocalURLs);
-            }
-        })();
     }, [account]);
 
     // Take away margin from left if we are on homepage or swap
@@ -3167,9 +3172,9 @@ export default function App() {
         const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
         return {
             swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
-            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
-            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
         };
     }
 
@@ -3277,10 +3282,6 @@ export default function App() {
         setFetchingCandle,
         isCandleDataNull,
         setIsCandleDataNull,
-        minPrice: minRangePrice,
-        maxPrice: maxRangePrice,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
         setCandleDomains,
@@ -3312,7 +3313,6 @@ export default function App() {
         ensName,
         lastBlockNumber,
         connectedAccount: account ? account : '',
-        userImageData: imageData,
         chainId: chainData.chainId,
         tokensOnActiveLists,
         chainData: chainData,
@@ -3351,9 +3351,6 @@ export default function App() {
         dailyVol,
         isDenomBase: tradeData.isDenomBase,
         isPairStable,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
-        setRescaleRangeBoundariesWithSlider,
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
@@ -3365,10 +3362,32 @@ export default function App() {
         },
         currentPool: currentPoolInfo,
         isFullScreen: true,
-        userImageData: imageData,
         username: ensName,
         appPage: true,
         topPools: topPools,
+    };
+
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
     };
 
     return (
@@ -3417,7 +3436,15 @@ export default function App() {
                                     path='trade'
                                     element={
                                         <PoolContext.Provider value={pool}>
-                                            <Trade {...tradeProps} />
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <CandleContext.Provider
+                                                    value={candleState}
+                                                >
+                                                    <Trade {...tradeProps} />
+                                                </CandleContext.Provider>
+                                            </RangeStateContext.Provider>
                                         </PoolContext.Provider>
                                     }
                                 >
@@ -3469,7 +3496,13 @@ export default function App() {
                                     />
                                     <Route
                                         path='range/:params'
-                                        element={<Range {...rangeProps} />}
+                                        element={
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Range {...rangeProps} />
+                                            </RangeStateContext.Provider>
+                                        }
                                     />
                                     <Route
                                         path='reposition'
@@ -3483,7 +3516,13 @@ export default function App() {
                                     <Route
                                         path='reposition/:params'
                                         element={
-                                            <Reposition {...repositionProps} />
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Reposition
+                                                    {...repositionProps}
+                                                />
+                                            </RangeStateContext.Provider>
                                         }
                                     />
                                     <Route path='add' element={<RangeAdd />} />
@@ -3508,7 +3547,13 @@ export default function App() {
                                 />
                                 <Route
                                     path='range2'
-                                    element={<Range {...rangeProps} />}
+                                    element={
+                                        <RangeStateContext.Provider
+                                            value={rangeState}
+                                        >
+                                            <Range {...rangeProps} />
+                                        </RangeStateContext.Provider>
+                                    }
                                 />
                                 <Route
                                     path='initpool/:params'
@@ -3600,7 +3645,6 @@ export default function App() {
                                 }}
                                 currentPool={currentPoolInfo}
                                 isFullScreen={false}
-                                userImageData={imageData}
                                 topPools={topPools}
                             />
                         )}

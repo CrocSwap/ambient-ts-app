@@ -2,16 +2,15 @@
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
+// import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
 interface IPortfolioBannerAccountPropsIF {
-    imageData: string[];
     ensName: string;
     resolvedAddress: string;
     activeAccount: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
-    blockiesToDisplay: JSX.Element | null;
+    jazziconsToDisplay: JSX.Element | null;
     chainData: ChainSpec;
 }
 import styles from './PortfolioBannerAccount.module.css';
@@ -25,14 +24,12 @@ export default function PortfolioBannerAccount(
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
-        imageData,
         ensName,
         resolvedAddress,
         activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
         chainData,
-        blockiesToDisplay,
     } = props;
 
     const {
@@ -76,21 +73,6 @@ export default function PortfolioBannerAccount(
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    const iconVariants = {
-        open: {
-            width: '56px',
-            height: '56px',
-        },
-        closed: {
-            width: '56px',
-            height: '56px',
-        },
-    };
-
-    const ambientLogoDisplay = (
-        <img src={ambientLogo} alt='' className={styles.ambi_logo} />
-    );
-
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
@@ -107,17 +89,8 @@ export default function PortfolioBannerAccount(
                 className={styles.account_container}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {imageData[0] ? (
-                    <motion.div
-                        className={styles.avatar_image}
-                        animate={showAccountDetails ? 'open' : 'closed'}
-                        variants={iconVariants}
-                    >
-                        <img src={imageData[0]} alt='avatar' />
-                    </motion.div>
-                ) : (
-                    blockiesToDisplay ?? ambientLogoDisplay
-                )}
+                {props.jazziconsToDisplay}
+
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}

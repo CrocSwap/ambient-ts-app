@@ -28,14 +28,8 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    tradeData as TradeDataIF,
-    candleDomain,
-} from '../../utils/state/tradeDataSlice';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../utils/state/graphDataSlice';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { CandleData } from '../../utils/state/graphDataSlice';
 import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
@@ -46,13 +40,13 @@ import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { CandleContext } from '../../contexts/CandleContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
-    candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     baseTokenBalance: string;
@@ -83,28 +77,13 @@ interface propsIF {
     poolExists: boolean | undefined;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
-    isCandleSelected: boolean | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     cachedQuerySpotPrice: SpotPriceFn;
-    fetchingCandle: boolean;
-    setFetchingCandle: Dispatch<SetStateAction<boolean>>;
-    isCandleDataNull: boolean;
-    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
     ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -122,7 +101,6 @@ export default function Trade(props: propsIF) {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
-        candleData,
         chainId,
         chainData,
         tokenMap,
@@ -147,24 +125,10 @@ export default function Trade(props: propsIF) {
         setCurrentTxActiveInTransactions,
         poolExists,
         handlePulseAnimation,
-        isCandleSelected,
-        setIsCandleSelected,
-        fetchingCandle,
-        setFetchingCandle,
-        isCandleDataNull,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
@@ -175,6 +139,15 @@ export default function Trade(props: propsIF) {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+
+    const {
+        candleData: { value: candleData },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        isCandleDataNull: { value: isCandleDataNull },
+    } = useContext(CandleContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -204,13 +177,13 @@ export default function Trade(props: propsIF) {
     useEffect(() => {
         if (
             isCandleDataNull &&
-            props.candleData !== undefined &&
-            props.candleData.candles?.length > 0
+            candleData !== undefined &&
+            candleData.candles?.length > 0
         ) {
             IS_LOCAL_ENV && console.debug('Data arrived');
             setIsCandleDataArrived(false);
         }
-    }, [props.candleData]);
+    }, [candleData]);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -479,7 +452,6 @@ export default function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
-        fetchingCandle: fetchingCandle,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
         isUserLoggedIn: isUserLoggedIn,
@@ -489,7 +461,6 @@ export default function Trade(props: propsIF) {
         setExpandTradeTable: setExpandTradeTable,
         isTokenABase: isTokenABase,
         changeState: changeState,
-        candleData: candleData,
         liquidityData: liquidityData,
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
@@ -508,21 +479,10 @@ export default function Trade(props: propsIF) {
         setSelectedDate: setSelectedDate,
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
-        setFetchingCandle: setFetchingCandle,
-        minPrice: minPrice,
-        maxPrice: maxPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
-        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
-        setCandleDomains: setCandleDomains,
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
         repositionRangeWidth: repositionRangeWidth,
-        setChartTriggeredBy: setChartTriggeredBy,
-        chartTriggeredBy: chartTriggeredBy,
     };
 
     const tradeTabsProps = {
