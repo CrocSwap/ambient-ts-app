@@ -347,8 +347,6 @@ export default function RangesRow(props: propsIF) {
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
                 onClick={handleRowClick}
                 id={positionDomId}

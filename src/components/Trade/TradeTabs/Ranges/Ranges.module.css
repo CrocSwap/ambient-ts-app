@@ -84,9 +84,7 @@
     background: var(--dark2);
 } */
 
-.row_container:hover {
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
@@ -103,6 +101,7 @@
     display: table-row;
     table-layout: fixed;
     display: table;
+ 
 }
 
 .main_list_container ul > li {
@@ -112,6 +111,7 @@
     width: 100%;
 
     padding: 0.5em 0.4em;
+  
     vertical-align: middle;
 }
 

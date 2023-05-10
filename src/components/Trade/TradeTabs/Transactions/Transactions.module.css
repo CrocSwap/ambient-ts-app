@@ -82,7 +82,9 @@
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
+
 }
+
 
 .row_container li {
     font-weight: 300;

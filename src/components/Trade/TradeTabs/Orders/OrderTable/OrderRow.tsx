@@ -292,6 +292,15 @@ export default function OrderRow(props: propsIF) {
         setCurrentPositionActive('');
         openDetailsModal();
     }
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+        }
+    };
 
     return (
         <>
@@ -301,6 +310,8 @@ export default function OrderRow(props: propsIF) {
                 style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
+                tabIndex={0}
+                onKeyDown={handleKeyPress}
             >
                 {!showColumns && OrderTimeWithTooltip}
                 {isOnPortfolioPage && showPair && tokenPair}
@@ -320,7 +331,7 @@ export default function OrderRow(props: propsIF) {
                 {showColumns && tokensColumn}
                 {!ipadView && statusDisplay}
 
-                <li data-label='menu'>
+                <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
                         account={account}
                         chainData={chainData}

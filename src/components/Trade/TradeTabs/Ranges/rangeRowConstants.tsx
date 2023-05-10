@@ -99,6 +99,9 @@ export default function rangeRowConstants(props: Props) {
         apyClassname,
         apyString,
         isPositionInRange,
+
+        handleRowMouseDown,
+        handleRowMouseOut,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -120,6 +123,8 @@ export default function rangeRowConstants(props: Props) {
                 onClick={noClick ? undefined : openDetailsModal}
                 className={className}
                 style={style}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {children}
             </li>
@@ -148,6 +153,8 @@ export default function rangeRowConstants(props: Props) {
             <p
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {posHashTruncated}
             </p>
@@ -202,6 +209,8 @@ export default function rangeRowConstants(props: Props) {
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
                 style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {userNameToDisplay}
             </p>
@@ -216,6 +225,8 @@ export default function rangeRowConstants(props: Props) {
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             {userNameToDisplay}
         </p>
@@ -316,7 +327,7 @@ export default function rangeRowConstants(props: Props) {
     );
 
     const txIdColumnComponent = (
-        <li>
+        <li onMouseEnter={handleRowMouseDown} onMouseLeave={handleRowMouseOut}>
             {IDWithTooltip}
             {walletWithTooltip}
         </li>
