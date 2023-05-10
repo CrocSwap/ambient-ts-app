@@ -263,49 +263,77 @@ export default function App() {
             ? false
             : true;
 
-    const appState = {
-        appOverlay: {
-            isActive: isAppOverlayActive,
-            setIsActive: setIsAppOverlayActive,
-        },
-        globalModal: useGlobalModal(),
-        globalPopup: useGlobalPopup(),
-        sidebar: useSidebar(location.pathname),
-        snackbar: useSnackbar(),
-        tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
-        skin: useSkin('purple_dark'),
-        // TODO: walletToS, chatToS unused
-        walletToS: useTermsOfService(
-            'wallet',
-            process.env.REACT_APP_WALLET_TOS_CID as string,
-        ),
-        chatToS: useTermsOfService(
-            'chat',
-            process.env.REACT_APP_CHAT_TOS_CID as string,
-        ),
-        theme: { selected: theme, setSelected: setTheme },
-        outsideTab: {
-            selected: selectedOutsideTab,
-            setSelected: setSelectedOutsideTab,
-        },
-        outsideControl: {
-            isActive: outsideControl,
-            setIsActive: setOutsideControl,
-        },
-        chat: {
-            isOpen: isChatOpen,
-            setIsOpen: setIsChatOpen,
-            isEnabled: isChatEnabled,
-            setIsEnabled: setIsChatEnabled,
-        },
-        chart: {
-            isFullScreen: fullScreenChart,
-            setIsFullScreen: setFullScreenChart,
-            isEnabled: isChartEnabled,
-        },
-        server: { isEnabled: isServerEnabled },
-        subscriptions: { isEnabled: areSubscriptionsEnabled },
-    };
+    const sidebar = useSidebar(location.pathname);
+    const snackbar = useSnackbar();
+    const globalModal = useGlobalModal();
+    const globalPopup = useGlobalPopup();
+    const skin = useSkin('purple_dark');
+    const walletToS = useTermsOfService(
+        'wallet',
+        process.env.REACT_APP_WALLET_TOS_CID as string,
+    );
+    const chatToS = useTermsOfService(
+        'chat',
+        process.env.REACT_APP_CHAT_TOS_CID as string,
+    );
+
+    const appState = useMemo(
+        () => ({
+            appOverlay: {
+                isActive: isAppOverlayActive,
+                setIsActive: setIsAppOverlayActive,
+            },
+            globalModal: globalModal,
+            globalPopup: globalPopup,
+            sidebar: sidebar,
+            snackbar: snackbar,
+            tutorial: {
+                isActive: isTutorialMode,
+                setIsActive: setIsTutorialMode,
+            },
+            skin: skin,
+            // TODO: walletToS, chatToS unused
+            walletToS: walletToS,
+            chatToS: chatToS,
+            theme: { selected: theme, setSelected: setTheme },
+            outsideTab: {
+                selected: selectedOutsideTab,
+                setSelected: setSelectedOutsideTab,
+            },
+            outsideControl: {
+                isActive: outsideControl,
+                setIsActive: setOutsideControl,
+            },
+            chat: {
+                isOpen: isChatOpen,
+                setIsOpen: setIsChatOpen,
+                isEnabled: isChatEnabled,
+                setIsEnabled: setIsChatEnabled,
+            },
+            chart: {
+                isFullScreen: fullScreenChart,
+                setIsFullScreen: setFullScreenChart,
+                isEnabled: isChartEnabled,
+            },
+            server: { isEnabled: isServerEnabled },
+            subscriptions: { isEnabled: areSubscriptionsEnabled },
+        }),
+        [
+            location.pathname,
+            isChatOpen,
+            isChatEnabled,
+            fullScreenChart,
+            isAppOverlayActive,
+            isTutorialMode,
+            theme,
+            selectedOutsideTab,
+            selectedOutsideTab,
+            outsideControl,
+            isChartEnabled,
+            isServerEnabled,
+            areSubscriptionsEnabled,
+        ],
+    );
 
     useEffect(() => {
         if (account && checkBlacklist(account)) {
