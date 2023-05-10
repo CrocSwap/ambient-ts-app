@@ -29,10 +29,7 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import {
-    diffHashSig,
-    diffHashSigTxs,
-} from '../../../../utils/functions/diffHashSig';
+import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {

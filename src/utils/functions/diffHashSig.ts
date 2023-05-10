@@ -1,6 +1,5 @@
 // import sum from 'hash-sum';
 
-import { Transaction } from 'ethers';
 import { ChartUtils } from '../../pages/Trade/TradeCharts/TradeCandleStickChart';
 import { TransactionIF } from '../interfaces/TransactionIF';
 import { CandlesByPoolAndDuration } from '../state/graphDataSlice';

@@ -63,16 +63,10 @@ import {
 } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
     setDenomInBase,
-    setDidUserFlipDenom,
     setLimitTick,
-    setLiquidityFee,
     setPoolPriceNonDisplay,
-    setPrimaryQuantityRange,
     candleDomain,
-    setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
@@ -157,7 +151,7 @@ import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
 import { useTermsOfService } from './hooks/useTermsOfService';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
-import useWebSocketSubs, { WebSockerPropsIF } from './hooks/useWebSocketSubs';
+import useWebSocketSubs from './hooks/useWebSocketSubs';
 import { usePoolMetadata } from './hooks/usePoolMetadata';
 import { usePoolPricing } from './hooks/usePoolPricing';
 import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';

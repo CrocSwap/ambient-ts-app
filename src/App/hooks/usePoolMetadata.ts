@@ -1,9 +1,4 @@
-import {
-    ChainSpec,
-    CrocEnv,
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { GRAPHCACHE_URL, ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
@@ -31,7 +26,6 @@ import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
 import { getLiquidityFee } from '../functions/getLiquidityFee';
 import {
-    memoizePoolLiquidity,
     poolLiquidityCacheEndpoint,
     PoolLiquidityFn,
 } from '../functions/getPoolLiquidity';

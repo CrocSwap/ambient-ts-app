@@ -1,8 +1,7 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { receiptData } from '../../utils/state/receiptDataSlice';
 import {
     setDidUserFlipDenom,
     setLimitTick,
@@ -10,10 +9,7 @@ import {
     setPrimaryQuantityRange,
 } from '../../utils/state/tradeDataSlice';
 import { get24hChange } from '../functions/getPoolStats';
-import {
-    memoizeQuerySpotPrice,
-    SpotPriceFn,
-} from '../functions/querySpotPrice';
+import { SpotPriceFn } from '../functions/querySpotPrice';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;

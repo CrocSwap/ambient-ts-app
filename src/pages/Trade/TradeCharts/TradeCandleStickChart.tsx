@@ -31,10 +31,7 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
-import {
-    diffHashSig,
-    diffHashSigCandles,
-} from '../../../utils/functions/diffHashSig';
+import { diffHashSigCandles } from '../../../utils/functions/diffHashSig';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
