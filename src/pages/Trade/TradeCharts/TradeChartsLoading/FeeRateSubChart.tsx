@@ -169,7 +169,8 @@ function FeeRateSubChart(props: FreeRateData) {
             crosshairVerticalCanvas.decorate((context: any) => {
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
@@ -185,7 +186,8 @@ function FeeRateSubChart(props: FreeRateData) {
                 context.visibility = 'hidden';
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
@@ -225,7 +227,7 @@ function FeeRateSubChart(props: FreeRateData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     if (isMouseMoveCrosshair && crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (crosshairActive === 'feeRate') {
@@ -239,7 +241,7 @@ function FeeRateSubChart(props: FreeRateData) {
                     }
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
                     if (crosshairActive === 'feeRate') {
                         crosshairHorizontalCanvas.context(ctx);

@@ -122,7 +122,10 @@ export const txRowConstants = (props: Props) => {
         <TextOnlyTooltip
             interactive
             title={
-                <div className={styles.id_tooltip_style}>
+                <div
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     <span onClick={handleOpenExplorer}> {tx.tx + 'ㅤ'}</span>
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
@@ -136,7 +139,6 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
                 tabIndex={0}
@@ -150,7 +152,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='value'
             className={sideTypeStyle}
             style={{ textAlign: 'right' }}
@@ -171,12 +172,13 @@ export const txRowConstants = (props: Props) => {
                         color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'default',
+                        cursor: 'pointer',
                     }}
                 >
                     <p
+                        className={`${styles.mono_font}`}
+                        onClick={(event) => event.stopPropagation()}
                         style={{
-                            fontFamily: 'monospace',
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -185,7 +187,7 @@ export const txRowConstants = (props: Props) => {
                             gap: '4px',
                         }}
                     >
-                        {ownerId}
+                        <span onClick={handleWalletClick}>{ownerId}</span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -205,10 +207,10 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                onClick={(event) => event.stopPropagation()}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </p>
@@ -217,7 +219,6 @@ export const txRowConstants = (props: Props) => {
 
     const walletWithoutTooltip = (
         <p
-            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -338,7 +339,6 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <li
-                onClick={openDetailsModal}
                 style={{ textTransform: 'lowercase' }}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
@@ -351,7 +351,6 @@ export const txRowConstants = (props: Props) => {
 
     const baseQtyDisplayWithTooltip = (
         <li
-            onClick={openDetailsModal}
             data-label={tx.baseSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -374,7 +373,6 @@ export const txRowConstants = (props: Props) => {
     );
     const quoteQtyDisplayWithTooltip = (
         <li
-            onClick={openDetailsModal}
             data-label={tx.quoteSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -407,7 +405,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='side'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
@@ -483,7 +480,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='type'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
@@ -500,7 +496,6 @@ export const txRowConstants = (props: Props) => {
             data-label='side-type'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
-            onClick={openDetailsModal}
         >
             <p>{type}</p>
             <p>
@@ -515,7 +510,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='price'
             className={'gradient_text'}
             style={{
@@ -532,7 +526,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='price'
             className={`${sideTypeStyle}`}
             tabIndex={0}

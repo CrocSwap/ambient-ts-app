@@ -29,8 +29,8 @@ function LimitButton(props: propsIF) {
                     areBothAckd
                         ? limitAllowed
                             ? isBypassConfirmEnabled
-                                ? 'Send Limit'
-                                : 'Open Confirmation'
+                                ? 'Submit Limit Order'
+                                : 'Confirm'
                             : limitButtonErrorMessage
                         : 'Acknowledge'
                 }

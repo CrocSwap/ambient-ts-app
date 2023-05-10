@@ -141,7 +141,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getCandleTime('market') ?? 900,
     );
     const [candleTimeRange, setCandleTimeRange] = useState<number>(
-        getCandleTime('range') ?? 86400,
+        getCandleTime('range') ?? 900, // switched from 86400 (1 day)
     );
 
     // hook to update local storage any time one of the preference primitives changes

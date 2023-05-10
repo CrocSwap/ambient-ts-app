@@ -417,15 +417,16 @@ function Transactions(props: propsIF) {
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
     const footerDisplay = (
         <div className={styles.footer}>
-            {((isAccountView && transactionData.length > 10) ||
-                (!isAccountView && tradePageCheck)) && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {transactionsPerPage > 0 &&
+                ((isAccountView && transactionData.length > 10) ||
+                    (!isAccountView && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={transactionsPerPage}
+                        totalItems={transactionData.length}
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 

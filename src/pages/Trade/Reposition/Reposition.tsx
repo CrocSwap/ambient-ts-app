@@ -60,6 +60,7 @@ import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -68,9 +69,6 @@ interface propsIF {
     provider: ethers.providers.Provider;
     chainId: string;
     isPairStable: boolean;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
@@ -89,9 +87,6 @@ function Reposition(props: propsIF) {
         provider,
         chainId,
         isPairStable,
-        setMinPrice,
-        setMaxPrice,
-        setRescaleRangeBoundariesWithSlider,
         tokenPair,
         poolPriceDisplay,
         lastBlockNumber,
@@ -107,6 +102,8 @@ function Reposition(props: propsIF) {
 
     const crocEnv = useContext(CrocEnvContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
+    const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
+        useContext(RangeStateContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -784,9 +781,6 @@ function Reposition(props: propsIF) {
                 <RepositionRangeWidth
                     rangeWidthPercentage={rangeWidthPercentage}
                     setRangeWidthPercentage={setRangeWidthPercentage}
-                    setRescaleRangeBoundariesWithSlider={
-                        setRescaleRangeBoundariesWithSlider
-                    }
                 />
                 <RepositionPriceInfo
                     position={position}
@@ -795,8 +789,6 @@ function Reposition(props: propsIF) {
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
-                    setMaxPrice={setMaxPrice}
-                    setMinPrice={setMinPrice}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={
@@ -824,7 +816,7 @@ function Reposition(props: propsIF) {
                                     ? 'Position Currently In Range'
                                     : bypassConfirmRepo.isEnabled
                                     ? 'Reposition'
-                                    : 'Open Confirmation'
+                                    : 'Confirm'
                             }
                             action={
                                 bypassConfirmRepo.isEnabled

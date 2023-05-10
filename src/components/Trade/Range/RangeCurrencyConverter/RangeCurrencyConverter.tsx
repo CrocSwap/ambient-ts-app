@@ -94,6 +94,8 @@ interface propsIF {
     searchType: string;
     poolExists: boolean | undefined;
     ackTokens: ackTokensMethodsIF;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central React functional component
@@ -145,6 +147,8 @@ function RangeCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         ackTokens,
+        setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -692,6 +696,14 @@ function RangeCurrencyConverter(props: propsIF) {
             ? tokenBSurplusMinusTokenBRemainderNum * -1
             : 0
         : tokenBQtyLocal;
+
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
+
+    useEffect(() => {
+        setTokenBQtyCoveredByWalletBalance(tokenBQtyCoveredByWalletBalance);
+    }, [tokenBQtyCoveredByWalletBalance]);
 
     const tokenAQtyCoveredBySurplusBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum >= 0

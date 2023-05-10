@@ -80,7 +80,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     font-weight: 400;
-    color: var(--text2);
+    color: var(--text1);
     cursor: pointer;
 
 
@@ -132,7 +132,7 @@
         font-weight: 300;
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
-        color: var(--text2);
+        color: var(--text1);
     }
     .tokens_images img {
         width: 25px;

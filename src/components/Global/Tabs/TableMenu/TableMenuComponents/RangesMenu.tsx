@@ -301,7 +301,10 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {rangesMenu}
             {dropdownRangesMenu}
             {isHarvestModalOpen && (

@@ -269,12 +269,10 @@ function ConfirmRangeModal(props: propsIF) {
                     <Button
                         title={
                             isAdd
-                                ? `Add to ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
-                                : `Create ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
+                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                                : `Submit ${
+                                      isAmbient ? 'Ambient' : ''
+                                  } Liquidity`
                         }
                         action={() => {
                             // if this modal is launched we can infer user wants confirmation

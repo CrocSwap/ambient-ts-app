@@ -91,7 +91,7 @@ function RangeHeader(props: propsIF) {
                     centeredTitle
                 >
                     <TransactionSettings
-                        module='Range Order'
+                        module='Pool'
                         slippage={mintSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}

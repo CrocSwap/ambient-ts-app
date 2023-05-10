@@ -72,8 +72,6 @@
     width: 100%;
     height: 100%;
     color: var(--text1);
-    text-decoration: underline;
-    text-underline-offset: 3px;
 }
 
 .non_active_selected_button {

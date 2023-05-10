@@ -134,7 +134,7 @@ function OrderRow(props: propsIF) {
             : styles.base_color;
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const openDetailsModal = () => {
@@ -286,6 +286,14 @@ function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
+    function handleRowClick() {
+        if (limitOrder.limitOrderIdentifier === currentPositionActive) {
+            return;
+        }
+        setCurrentPositionActive('');
+        openDetailsModal();
+    }
+
     return (
         <>
             <ul
@@ -294,11 +302,7 @@ function OrderRow(props: propsIF) {
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
                 id={orderDomId}
                 style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-                onClick={() =>
-                    limitOrder.limitOrderIdentifier === currentPositionActive
-                        ? null
-                        : setCurrentPositionActive('')
-                }
+                onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
             >
                 {!showColumns && OrderTimeWithTooltip}
