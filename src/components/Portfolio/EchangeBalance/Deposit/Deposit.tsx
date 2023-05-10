@@ -374,8 +374,11 @@ export default function Deposit(props: propsIF) {
                 setInputValue={setInputValue}
             />
             <div className={styles.additional_info}>
-                <div className={styles.info_text_non_clickable}>
-                    Available: {tokenWalletBalanceTruncated || '0.0'}
+                <div
+                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
+                >
+                    <div className={styles.available_text}>Available:</div>
+                    {tokenWalletBalanceTruncated || '0.0'}
                     {isWalletBalanceSufficient ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}

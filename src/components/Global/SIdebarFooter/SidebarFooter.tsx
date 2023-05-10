@@ -62,7 +62,7 @@ export default function SidebarFooter() {
                         size={18}
                         color={
                             currentLocation === link.destination
-                                ? 'var(--text-highlight-dark)'
+                                ? 'var(--accent1)'
                                 : 'var(--text-highlight)'
                         }
                     />

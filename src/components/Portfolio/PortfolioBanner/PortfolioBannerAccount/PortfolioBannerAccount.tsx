@@ -90,6 +90,7 @@ export default function PortfolioBannerAccount(
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
                 {props.jazziconsToDisplay}
+
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
