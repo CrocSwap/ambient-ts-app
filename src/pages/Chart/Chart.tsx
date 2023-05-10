@@ -947,17 +947,11 @@ export default function Chart(props: propsIF) {
     }, [poolAdressComb]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snapForCandle = (point: any) => {
+    const snapForCandle = (point: any, filtered: Array<CandleData>) => {
         if (point == undefined) return [];
         const series = candlestick;
-        const data = unparsedCandleData as Array<CandleData>;
         const xScale = series.xScale(),
             xValue = series.crossValue();
-
-        const filtered =
-            data.length > 1
-                ? data.filter((d: CandleData) => xValue(d) != null)
-                : data;
 
         if (filtered.length > 1) {
             const nearest = minimum(filtered, (d: CandleData) =>
@@ -5967,7 +5961,7 @@ export default function Chart(props: propsIF) {
         liqMode,
     ]);
 
-    const candleOrVolumeDataHoverStatus = (event: any) => {
+    const candleOrVolumeDataHoverStatus = (event: any, showHr = true) => {
         const lastDate = scaleData?.xScale.invert(
             event.offsetX + bandwidth / 2,
         );
@@ -5975,31 +5969,39 @@ export default function Chart(props: propsIF) {
             event.offsetX - bandwidth / 2,
         );
 
-        const arr = unparsedCandleData.map((d: CandleData) =>
-            Math.abs(
-                (denomInBase
-                    ? d.invPriceCloseExclMEVDecimalCorrected
-                    : d.priceCloseExclMEVDecimalCorrected) -
-                    (denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected),
-            ),
-        );
-
-        let minHeight = 0;
-
-        if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
+        let avaregeHeight = 1;
+        const filtered: Array<CandleData> = [];
+        let longestValue = 0;
 
         const xmin = scaleData?.xScale.domain()[0];
         const xmax = scaleData?.xScale.domain()[1];
 
-        const filtered = unparsedCandleData?.filter(
-            (data: any) => data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-        );
+        unparsedCandleData.map((d: CandleData) => {
+            avaregeHeight =
+                avaregeHeight +
+                Math.abs(
+                    (denomInBase
+                        ? d.invPriceCloseExclMEVDecimalCorrected
+                        : d.priceCloseExclMEVDecimalCorrected) -
+                        (denomInBase
+                            ? d.invPriceOpenExclMEVDecimalCorrected
+                            : d.priceOpenExclMEVDecimalCorrected),
+                );
 
-        const longestValue = d3.max(filtered, (d: any) => d.volumeUSD) / 2;
+            if (d.time * 1000 >= xmin && d.time * 1000 <= xmax) {
+                if (d.volumeUSD > longestValue) {
+                    longestValue = d.volumeUSD;
+                }
 
-        const nearest = snapForCandle(event);
+                filtered.push(d);
+            }
+        });
+
+        const minHeight = avaregeHeight / unparsedCandleData.length;
+
+        longestValue = longestValue / 2;
+
+        const nearest = snapForCandle(event, filtered);
         const dateControl =
             nearest?.time * 1000 > startDate && nearest?.time * 1000 < lastDate;
         const yValue = scaleData?.yScale.invert(event.offsetY);
@@ -6060,6 +6062,53 @@ export default function Chart(props: propsIF) {
                 limitTop = open > topBoundary ? open : topBoundary;
                 limitBot = close < botBoundary ? close : botBoundary;
             }
+        }
+
+        const returnXdata =
+            unparsedCandleData[0].time * 1000 <=
+            scaleData?.xScale.invert(event.offsetX)
+                ? scaleData?.xScale.invert(event.offsetX)
+                : nearest?.time * 1000;
+
+        if (!isLineDrag) {
+            setIsMouseMoveCrosshair(true);
+
+            setCrosshairData([
+                {
+                    x: returnXdata,
+                    y: !showHr
+                        ? 0
+                        : Number(
+                              formatAmountChartData(
+                                  scaleData?.yScale.invert(event.layerY),
+                              ),
+                          ),
+                },
+            ]);
+        }
+
+        setsubChartValues((prevState: any) => {
+            const newData = [...prevState];
+
+            newData.filter((target: any) => target.name === 'tvl')[0].value =
+                nearest.tvlData.tvl;
+
+            newData.filter(
+                (target: any) => target.name === 'feeRate',
+            )[0].value = nearest?.averageLiquidityFee;
+
+            return newData;
+        });
+
+        if (selectedDate === undefined) {
+            props.setCurrentData(nearest);
+            props.setCurrentVolumeData(nearest?.volumeUSD);
+        } else if (selectedDate) {
+            props.setCurrentVolumeData(
+                unparsedCandleData.find(
+                    (item: any) => item.time * 1000 === selectedDate,
+                )?.volumeUSD,
+            );
         }
 
         return {
@@ -6380,30 +6429,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const findTvlNearest = (point: any) => {
-        if (point == undefined) return 0;
-        if (unparsedCandleData) {
-            const xScale = scaleData?.xScale;
-
-            const filtered =
-                unparsedCandleData.length > 1
-                    ? unparsedCandleData.filter(
-                          (d: CandleData) => d.time != null,
-                      )
-                    : unparsedCandleData;
-
-            const nearest = minimum(filtered, (d: CandleData) =>
-                Math.abs(point.layerX - xScale(d.time * 1000)),
-            )[1];
-
-            if (nearest) {
-                return nearest.tvlData.tvl;
-            } else {
-                return 0;
-            }
-        }
-    };
-
     const minimum = (data: any, accessor: any) => {
         return data
             .map(function (dataPoint: any, index: any) {
@@ -6417,92 +6442,6 @@ export default function Chart(props: propsIF) {
                 },
                 [Number.MAX_VALUE, null, -1],
             );
-    };
-
-    const snap = (data: Array<CandleData>, point: any) => {
-        if (
-            point == undefined ||
-            unparsedCandleData === undefined ||
-            scaleData === undefined
-        )
-            return [];
-        const xScale = scaleData?.xScale;
-
-        const filtered =
-            data.length > 1
-                ? data.filter((d: CandleData) => d.time != null)
-                : data;
-        const nearest = minimum(filtered, (d: CandleData) =>
-            Math.abs(point.layerX - xScale(d.time * 1000)),
-        )[1];
-
-        if (selectedDate === undefined) {
-            props.setCurrentData(nearest);
-
-            props.setCurrentVolumeData(
-                unparsedCandleData.find(
-                    (item: CandleData) => item.time === nearest?.time,
-                )?.volumeUSD,
-            );
-        } else if (selectedDate) {
-            props.setCurrentVolumeData(
-                unparsedCandleData.find(
-                    (item: any) => item.time * 1000 === selectedDate,
-                )?.volumeUSD,
-            );
-        }
-
-        setsubChartValues((prevState: any) => {
-            const newData = [...prevState];
-
-            newData.filter((target: any) => target.name === 'tvl')[0].value =
-                findTvlNearest(point);
-
-            newData.filter(
-                (target: any) => target.name === 'feeRate',
-            )[0].value = unparsedCandleData.find(
-                (item: CandleData) => item.time === nearest?.time,
-            )?.averageLiquidityFee;
-
-            return newData;
-        });
-
-        const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
-            scaleData?.xScale.invert(point.offsetX)
-                ? scaleData?.xScale.invert(point.offsetX)
-                : nearest?.time * 1000;
-
-        return [
-            {
-                x: returnXdata,
-                y: scaleData?.yScale.invert(point.offsetY),
-            },
-        ];
-    };
-
-    const setCrossHairLocation = (event: any, showHr = true) => {
-        if (snap(unparsedCandleData, event)[0] !== undefined) {
-            crosshairData[0] = snap(unparsedCandleData, event)[0];
-            if (!isLineDrag) {
-                setIsMouseMoveCrosshair(true);
-
-                setCrosshairData([
-                    {
-                        x: crosshairData[0].x,
-                        y: !showHr
-                            ? 0
-                            : Number(
-                                  formatAmountChartData(
-                                      scaleData?.yScale.invert(event.layerY),
-                                  ),
-                              ),
-                    },
-                ]);
-            }
-
-            render();
-        }
     };
 
     useEffect(() => {
@@ -6591,7 +6530,6 @@ export default function Chart(props: propsIF) {
                 );
 
                 const mousemove = (event: any) => {
-                    setCrossHairLocation(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
 
@@ -7127,7 +7065,9 @@ export default function Chart(props: propsIF) {
                                 zoomAndYdragControl={zoomAndYdragControl}
                                 render={render}
                                 yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={setCrossHairLocation}
+                                setCrossHairLocation={
+                                    candleOrVolumeDataHoverStatus
+                                }
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
@@ -7155,7 +7095,9 @@ export default function Chart(props: propsIF) {
                                 subChartValues={subChartValues}
                                 render={render}
                                 yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={setCrossHairLocation}
+                                setCrossHairLocation={
+                                    candleOrVolumeDataHoverStatus
+                                }
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
