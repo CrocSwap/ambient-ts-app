@@ -315,7 +315,6 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -378,7 +377,9 @@ export default function Sidebar(props: propsIF) {
 
     const searchContainerDisplay = (
         <div
-            className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}
+            className={` ${styles.sidebar_link_search} ${
+                styles.main_search_container
+            } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
             {location.pathname.includes('analytics')
                 ? AnalyticsSearchContainer
@@ -409,13 +410,11 @@ export default function Sidebar(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div style={{ cursor: 'pointer', rotate: '180deg' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='open sidebar'
-                            onClick={() => sidebar.open(true)}
-                        />
-                    </div>
+                    <BiSearch
+                        size={18}
+                        color='#CDC1FF'
+                        onClick={() => sidebar.open(true)}
+                    />
                 </DefaultTooltip>
             )}
         </div>
@@ -524,7 +523,7 @@ export default function Sidebar(props: propsIF) {
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
-                <ul className={styles.sidebar_nav}>
+                <div className={styles.sidebar_nav}>
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
@@ -543,7 +542,7 @@ export default function Sidebar(props: propsIF) {
                     ) : (
                         regularSidebarDisplay
                     )}
-                </ul>
+                </div>
             </nav>
         </div>
     );
