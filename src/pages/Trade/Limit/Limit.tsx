@@ -148,7 +148,7 @@ export default function Limit(props: propsIF) {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(

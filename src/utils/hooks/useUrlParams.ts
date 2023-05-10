@@ -10,25 +10,27 @@ import {
     setChainId,
 } from '../state/tradeDataSlice';
 import { TokenIF } from '../interfaces/exports';
-import { useTokenMap } from './useTokenMap';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
+import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
  * by passing parameters through to the tradeDataSlice in redux. */
 export const useUrlParams = (
+    tokens: tokenMethodsIF,
     dfltChainId: string,
     provider?: ethers.providers.Provider,
 ) => {
-    const tokenMetaMap = useTokenMap();
     const { params } = useParams();
 
     const dispatch = useAppDispatch();
 
     const { switchNetwork } = useSwitchNetwork();
+
+
 
     const urlParamMap = useMemo<Map<string, string>>(() => {
         // get URL parameters or empty string if undefined
@@ -52,6 +54,10 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
+    const tokensOnChain: TokenIF[] = tokens.getByChain(
+        urlParamMap.get('chain') ?? dfltChainId
+    );
+
     /* Given an address and chain ID retrieves full token context data from the useTokenMap
      * hook. */
     async function getTokenByAddress(
@@ -60,12 +66,10 @@ export const useUrlParams = (
     ): Promise<TokenIF | undefined> {
         // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
         // on-chain that has mapped data
-        if (tokenMetaMap.size == 0) {
+        if (tokensOnChain.length === 0) {
             return;
         }
-
-        const key = addr.toLowerCase() + '_' + chainId.toLowerCase();
-        const lookup = tokenMetaMap.get(key);
+        const lookup = tokens.getByAddress(addr, chainId);
         if (lookup) {
             return lookup;
         } else {
@@ -185,5 +189,5 @@ export const useUrlParams = (
         processOptParam('limitTick', async (tick: string) => {
             dispatch(setLimitTick(parseInt(tick)));
         });
-    }, [tokenMetaMap.size, ...dependencies.map((x) => urlParamMap.get(x))]);
+    }, [tokensOnChain.length, ...dependencies.map((x) => urlParamMap.get(x))]);
 };

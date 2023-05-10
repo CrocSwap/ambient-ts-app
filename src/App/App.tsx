@@ -3289,6 +3289,7 @@ export default function App() {
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
+        tokens,
     };
 
     const chatProps = {

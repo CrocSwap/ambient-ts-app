@@ -134,7 +134,7 @@ export default function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(

@@ -60,6 +60,7 @@ import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -76,6 +77,7 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     chainData: ChainSpec;
+    tokens: tokenMethodsIF;
 }
 
 export default function Reposition(props: propsIF) {
@@ -94,6 +96,7 @@ export default function Reposition(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
+        tokens,
     } = props;
 
     // current URL parameter string
@@ -125,7 +128,7 @@ export default function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
