@@ -87,6 +87,8 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
         return output;
     }
 
+    // this is here because it is the most time-efficient way to deep-copy a
+    //  ... token, if anyone has a better method please talk to me   -Emily
     class Token implements TokenIF {
         name: string;
         address: string;
