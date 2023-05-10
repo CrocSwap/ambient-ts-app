@@ -5,6 +5,7 @@ import {
     useRef,
     useState,
     useContext,
+    memo,
 } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -54,7 +55,7 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
 }
 
-export default function RangesRow(props: propsIF) {
+function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
@@ -383,3 +384,5 @@ export default function RangesRow(props: propsIF) {
         </>
     );
 }
+
+export default memo(RangesRow);
