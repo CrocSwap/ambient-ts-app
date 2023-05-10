@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useMemo,
@@ -84,7 +85,7 @@ interface propsIF {
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function CurrencyConverter(props: propsIF) {
+function CurrencyConverter(props: propsIF) {
     const {
         crocEnv,
         isLiquidityInsufficient,
@@ -991,3 +992,5 @@ export default function CurrencyConverter(props: propsIF) {
         </section>
     );
 }
+
+export default memo(CurrencyConverter);

@@ -1,5 +1,5 @@
 import styles from './CurveDepth.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { overlayIF } from '../../../../App/hooks/useChartSettings';
@@ -8,7 +8,7 @@ interface propsIF {
     overlayMethods: overlayIF;
 }
 
-export default function CurveDepth(props: propsIF) {
+function CurveDepth(props: propsIF) {
     const { overlayMethods } = props;
 
     const [showCurveDepthDropdown, setShowCurveDepthDropdown] = useState(false);
@@ -111,3 +111,5 @@ export default function CurveDepth(props: propsIF) {
         </div>
     );
 }
+
+export default memo(CurveDepth);

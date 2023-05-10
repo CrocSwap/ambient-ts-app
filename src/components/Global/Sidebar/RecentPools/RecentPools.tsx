@@ -6,6 +6,7 @@ import {
     recentPoolsMethodsIF,
     SmallerPoolIF,
 } from '../../../../App/hooks/useRecentPools';
+import { memo } from 'react';
 
 interface propsIF {
     tradeData: tradeData;
@@ -15,7 +16,7 @@ interface propsIF {
     recentPools: recentPoolsMethodsIF;
 }
 
-export default function RecentPools(props: propsIF) {
+function RecentPools(props: propsIF) {
     const {
         tradeData,
         chainId,
@@ -46,3 +47,5 @@ export default function RecentPools(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RecentPools);

@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import {
     AiOutlineCamera,
@@ -156,7 +157,7 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: propsIF) {
+function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
         chainData,
@@ -608,3 +609,5 @@ export default function TradeCharts(props: propsIF) {
         // </FocusTrap>
     );
 }
+
+export default memo(TradeCharts);

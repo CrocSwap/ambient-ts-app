@@ -7,6 +7,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
@@ -147,7 +148,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 
-export default function Range(props: propsIF) {
+function Range(props: propsIF) {
     const {
         account,
         isUserLoggedIn,
@@ -1884,3 +1885,5 @@ export default function Range(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Range);

@@ -1,6 +1,7 @@
 import {
     DetailedHTMLProps,
     HTMLAttributes,
+    memo,
     useEffect,
     useMemo,
     useState,
@@ -131,7 +132,7 @@ type chartItemStates = {
     liqMode: string;
 };
 
-export default function TradeCandleStickChart(props: propsIF) {
+function TradeCandleStickChart(props: propsIF) {
     const {
         isUserLoggedIn,
         chainData,
@@ -928,3 +929,5 @@ export default function TradeCandleStickChart(props: propsIF) {
         </>
     );
 }
+
+export default memo(TradeCandleStickChart);

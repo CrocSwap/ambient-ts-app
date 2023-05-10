@@ -1,5 +1,6 @@
 import styles from './AdvancedPriceInfo.module.css';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { memo } from 'react';
 
 interface propsIF {
     tokenPair: TokenPairIF;
@@ -12,7 +13,7 @@ interface propsIF {
     daysInRange: number | undefined;
 }
 
-export default function AdvancedPriceInfo(props: propsIF) {
+function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
     const {
         tokenPair,
@@ -75,3 +76,5 @@ export default function AdvancedPriceInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(AdvancedPriceInfo);

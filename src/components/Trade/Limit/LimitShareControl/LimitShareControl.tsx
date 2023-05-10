@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import styles from './LimitShareControl.module.css';
 type OptionIF = {
     slug: string;
@@ -8,7 +9,7 @@ interface LimitShareControlPropsIF {
     option: OptionIF;
     handleShareOptionChange: (option: string) => void;
 }
-export default function LimitShareControl(props: LimitShareControlPropsIF) {
+function LimitShareControl(props: LimitShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
     return (
@@ -24,3 +25,5 @@ export default function LimitShareControl(props: LimitShareControlPropsIF) {
         </li>
     );
 }
+
+export default memo(LimitShareControl);

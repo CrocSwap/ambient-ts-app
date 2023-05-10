@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
@@ -14,7 +14,7 @@ interface IRepositionRangeWidth {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
+function RepositionRangeWidth(props: IRepositionRangeWidth) {
     const {
         rangeWidthPercentage,
         setRangeWidthPercentage,
@@ -129,3 +129,5 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
         </div>
     );
 }
+
+export default memo(RepositionRangeWidth);

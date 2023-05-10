@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import styles from './RangeShareControl.module.css';
 type OptionIF = {
     slug: string;
@@ -8,7 +9,7 @@ interface RangeShareControlPropsIF {
     option: OptionIF;
     handleShareOptionChange: (option: string) => void;
 }
-export default function RangeShareControl(props: RangeShareControlPropsIF) {
+function RangeShareControl(props: RangeShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
     return (
@@ -24,3 +25,5 @@ export default function RangeShareControl(props: RangeShareControlPropsIF) {
         </li>
     );
 }
+
+export default memo(RangeShareControl);

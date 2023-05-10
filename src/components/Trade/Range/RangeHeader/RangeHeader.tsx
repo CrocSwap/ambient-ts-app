@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
@@ -32,7 +32,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function RangeHeader(props: propsIF) {
+function RangeHeader(props: propsIF) {
     const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } =
         props;
 
@@ -102,3 +102,5 @@ export default function RangeHeader(props: propsIF) {
         </ContentHeader>
     );
 }
+
+export default memo(RangeHeader);
