@@ -1,6 +1,6 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 
 export interface CandleChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,7 +26,7 @@ interface CurrentDataInfoPropsIF {
     rescale: boolean;
     reset: boolean;
 }
-export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
+function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     const {
         showTooltip,
         currentData,
@@ -129,3 +129,5 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         </div>
     );
 }
+
+export default memo(CurrentDataInfo);

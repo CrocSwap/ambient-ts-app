@@ -863,7 +863,6 @@ function Swap(props: propsIF) {
         }),
         [],
     );
-
     return (
         <FocusTrap focusTrapOptions={focusTrapOptions}>
             <section data-testid={'swap'} className={swapPageStyle}>
@@ -897,10 +896,7 @@ function Swap(props: propsIF) {
                         </motion.div>
                         <ExtraInfo
                             account={account}
-                            tokenPair={{
-                                dataTokenA: tokenA,
-                                dataTokenB: tokenB,
-                            }}
+                            tokenPair={tokenPair}
                             priceImpact={priceImpact}
                             isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
