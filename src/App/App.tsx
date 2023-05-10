@@ -503,6 +503,7 @@ export default function App() {
     false && getAmbientTokens;
     false && getTokensOnChain;
     false && getTokenByAddress;
+    false && getTokensByName;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -2877,7 +2878,7 @@ export default function App() {
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
         verifyToken: tokens.verify,
-        getTokensByName: getTokensByName,
+        getTokensByName: tokens.getByNameOrSymbol,
         getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
@@ -2916,7 +2917,7 @@ export default function App() {
         poolExists: poolExists,
         isSwapCopied: isSwapCopied,
         verifyToken: tokens.verify,
-        getTokensByName: getTokensByName,
+        getTokensByName: tokens.getByNameOrSymbol,
         getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
@@ -2956,7 +2957,7 @@ export default function App() {
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
         verifyToken: tokens.verify,
-        getTokensByName: getTokensByName,
+        getTokensByName: tokens.getByNameOrSymbol,
         getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
@@ -3004,7 +3005,7 @@ export default function App() {
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
         verifyToken: tokens.verify,
-        getTokensByName: getTokensByName,
+        getTokensByName: tokens.getByNameOrSymbol,
         getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
