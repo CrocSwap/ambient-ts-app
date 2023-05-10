@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
@@ -102,7 +103,7 @@ interface propsIF {
     pool: CrocPoolView | undefined;
 }
 
-export default function Swap(props: propsIF) {
+function Swap(props: propsIF) {
     const {
         pool,
         isUserLoggedIn,
@@ -856,12 +857,15 @@ export default function Swap(props: propsIF) {
         maximumFractionDigits: 2,
     });
 
+    const focusTrapOptions = useMemo(
+        () => ({
+            clickOutsideDeactivates: true,
+        }),
+        [],
+    );
+
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
+        <FocusTrap focusTrapOptions={focusTrapOptions}>
             <section data-testid={'swap'} className={swapPageStyle}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
@@ -1028,3 +1032,5 @@ export default function Swap(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Swap);

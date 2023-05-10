@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 // return interface for each instance of this hook
 export interface skipConfirmIF {
@@ -61,12 +61,15 @@ export const useSkipConfirm = (module: string): skipConfirmIF => {
     // enable ➔ fn pre-loaded to persist `true` boolean value
     // disable ➔ fn pre-loaded to persist `false` boolean value
     // toggle ➔ fn pre-loaded to reverse the current persisted value
-    return {
-        moduleFor: module,
-        isEnabled: pref,
-        setValue: (newVal: boolean) => updatePref(newVal),
-        enable: () => updatePref(true),
-        disable: () => updatePref(false),
-        toggle: () => updatePref(!pref),
-    };
+    return useMemo(
+        () => ({
+            moduleFor: module,
+            isEnabled: pref,
+            setValue: updatePref,
+            enable: () => updatePref(true),
+            disable: () => updatePref(false),
+            toggle: () => updatePref(!pref),
+        }),
+        [module, pref],
+    );
 };

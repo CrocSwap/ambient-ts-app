@@ -12,38 +12,20 @@ import { useIdleTimer } from 'react-idle-timer';
 
 import {
     resetUserGraphData,
-    setPositionsByPool,
     setPositionsByUser,
     setChangesByUser,
-    setChangesByPool,
-    setLiquidity,
-    setPoolVolumeSeries,
-    setPoolTvlSeries,
-    addPositionsByUser,
-    addPositionsByPool,
     setLimitOrdersByUser,
-    setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    addChangesByUser,
     setLastBlock,
-    addLimitOrderChangesByUser,
-    setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    addChangesByPool,
-    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
 
 import useWebSocket from 'react-use-websocket';
-import {
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-    CrocEnv,
-    toDisplayQty,
-} from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
@@ -216,7 +198,7 @@ export default function App() {
 
     const { address: account, isConnected } = useAccount();
 
-    const userPreferences = {
+    const userPreferencesProps = {
         favePools: useFavePools(),
         swapSlippage: useSlippage('swap', slippage.swap),
         mintSlippage: useSlippage('mint', slippage.mint),
@@ -229,6 +211,10 @@ export default function App() {
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
     };
+    const userPreferences = useMemo(
+        () => userPreferencesProps,
+        [...Object.values(userPreferencesProps)],
+    );
 
     // TODO: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -409,7 +395,11 @@ export default function App() {
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
     // hook to manage acknowledged tokens
-    const ackTokens: ackTokensMethodsIF = useAckTokens();
+    const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
+    const ackTokens = useMemo(
+        () => ackTokensHooks,
+        [diffHashSig(ackTokensHooks.tokens)],
+    );
 
     useEffect(() => {
         if (isConnected) {
@@ -462,13 +452,13 @@ export default function App() {
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
-    const [
+    const {
         verifyToken,
-        getAmbientTokens,
-        getTokensOnChain,
+        ambientTokens,
+        onChainTokens,
         getTokenByAddress,
         getTokensByName,
-    ] = useToken(chainData.chainId);
+    } = useToken(chainData.chainId);
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -601,8 +591,8 @@ export default function App() {
         useState<TokenIF[]>(defaultTokens);
 
     useEffect(() => {
-        setSearchableTokens(getTokensOnChain(chainData.chainId));
-    }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
+        setSearchableTokens(onChainTokens);
+    }, [chainData.chainId, onChainTokens]);
 
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -1365,7 +1355,6 @@ export default function App() {
                         }
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
-                        const ambientTokens = getAmbientTokens();
                         for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
                                 const isFoundInAmbientList = ambientTokens.some(
@@ -1482,7 +1471,7 @@ export default function App() {
     }, [location.pathname]);
 
     // function to sever connection between user wallet and the app
-    const clickLogout = async () => {
+    const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
@@ -1494,7 +1483,7 @@ export default function App() {
         dispatch(resetUserAddresses());
         setIsShowAllEnabled(true);
         disconnect();
-    };
+    }, []);
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
@@ -1561,19 +1550,18 @@ export default function App() {
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
     );
-    // TODO: move this function up to App.tsx
-    const getImportedTokensPlus = () => {
-        // array of all tokens on Ambient list
-        const ambientTokens = getAmbientTokens();
-        // array of addresses on Ambient list
+
+    const { addRecentToken, getRecentTokens } = useRecentTokens(
+        chainData.chainId,
+    );
+
+    const importedTokensPlus = useMemo(() => {
         const ambientAddresses = ambientTokens.map((tkn) =>
             tkn.address.toLowerCase(),
         );
-        // use Ambient token list as scaffold to build larger token array
+
         const output = ambientTokens;
-        // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
-        // iterate over tokens in connected wallet
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
             // ... that the token can be verified against a known list,
@@ -1589,15 +1577,13 @@ export default function App() {
             ) {
                 tokensAdded++;
                 output.push({ ...tkn, fromList: 'wallet' });
-                // increment the limiter by one
                 tokensAdded++;
-                // add the token to the output array
                 output.push({ ...tkn, fromList: 'wallet' });
             }
         });
+
         // limiter for tokens to add from in-session recent tokens list
         let recentTokensAdded = 0;
-        // iterate over tokens in recent tokens list
         getRecentTokens().forEach((tkn) => {
             // gatekeep to make sure the token isn't already in the list,
             // ... is on the current chain, and that the limiter has not
@@ -1612,19 +1598,17 @@ export default function App() {
                 tkn.chainId === parseInt(chainData.chainId) &&
                 recentTokensAdded < 2
             ) {
-                // increment the limiter by one
                 recentTokensAdded++;
-                // add the token to the output array
                 output.push(tkn);
             }
         });
-        // return compiled array of tokens
         return output;
-    };
-
-    const { addRecentToken, getRecentTokens } = useRecentTokens(
+    }, [
+        ambientTokens,
         chainData.chainId,
-    );
+        getRecentTokens,
+        connectedUserErc20Tokens,
+    ]);
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -1649,7 +1633,7 @@ export default function App() {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
-        getAmbientTokens,
+        ambientTokens,
         connectedUserErc20Tokens ?? [],
         getRecentTokens,
     );
@@ -1682,7 +1666,7 @@ export default function App() {
         verifyToken,
         getTokensByName,
         getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
+        importedTokensPlus,
         getRecentTokens,
         addRecentToken,
         outputTokens,
@@ -1721,7 +1705,7 @@ export default function App() {
         verifyToken,
         getTokensByName,
         getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
+        importedTokensPlus,
         getRecentTokens,
         addRecentToken,
         outputTokens,
@@ -1762,7 +1746,7 @@ export default function App() {
         verifyToken,
         getTokensByName,
         getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
+        importedTokensPlus,
         getRecentTokens,
         addRecentToken,
         outputTokens,
@@ -1809,7 +1793,7 @@ export default function App() {
         verifyToken,
         getTokensByName,
         getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
+        importedTokensPlus,
         getRecentTokens,
         addRecentToken,
         outputTokens,
@@ -2120,7 +2104,7 @@ export default function App() {
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getAmbientTokens,
+        ambientTokens,
         getTokensByName,
         verifyToken: verifyToken,
         getTokenByAddress,
@@ -2179,10 +2163,12 @@ export default function App() {
         simpleRangeWidth: repositionRangeWidth,
     };
 
+    const chatOnClose = useCallback(() => {
+        console.error('Function not implemented.');
+    }, []);
+
     const chatProps = {
-        onClose: () => {
-            console.error('Function not implemented.');
-        },
+        onClose: chatOnClose,
         currentPool: currentPoolInfo,
         isFullScreen: true,
         userImageData: imageData,
@@ -2435,9 +2421,7 @@ export default function App() {
                         !currentLocation.includes('/chat') &&
                         appState.chat.isEnabled && (
                             <ChatPanel
-                                onClose={() => {
-                                    console.error('Function not implemented.');
-                                }}
+                                onClose={chatOnClose}
                                 currentPool={currentPoolInfo}
                                 isFullScreen={false}
                                 userImageData={imageData}

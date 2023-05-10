@@ -17,6 +17,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
@@ -62,7 +63,7 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
-export default function Transactions(props: propsIF) {
+function Transactions(props: propsIF) {
     const {
         isTokenABase,
         activeAccountTransactionData,
@@ -560,3 +561,5 @@ export default function Transactions(props: propsIF) {
         </section>
     );
 }
+
+export default memo(Transactions);

@@ -7,6 +7,7 @@ import {
     useState,
     useContext,
     useCallback,
+    memo,
 } from 'react';
 import {
     useParams,
@@ -113,7 +114,7 @@ interface propsIF {
 }
 
 // React functional component
-export default function Trade(props: propsIF) {
+function Trade(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
@@ -674,3 +675,5 @@ type ContextType = {
 export function useTradeData() {
     return useOutletContext<ContextType>();
 }
+
+export default memo(Trade);

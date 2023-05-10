@@ -52,7 +52,7 @@ interface propsIF {
         onCurrentChain?: boolean;
         count?: number | null;
     }) => TokenIF[];
-    getAmbientTokens: () => TokenIF[];
+    ambientTokens: TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
