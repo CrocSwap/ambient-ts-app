@@ -68,10 +68,7 @@ import { PoolContext } from '../contexts/PoolContext';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import {
-    defaultTokens,
-    getDefaultPairForChain,
-} from '../utils/data/defaultTokens';
+import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import {
     LimitOrderIF,
     TokenIF,

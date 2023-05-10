@@ -5,7 +5,7 @@ import {
     CandleData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
@@ -199,7 +199,6 @@ export default function Transactions(props: propsIF) {
                         }),
                     );
                 }
-                // setIsDataLoading(false);
             } else if (isShowAllEnabled) {
                 handlePoolSelected();
             } else {
