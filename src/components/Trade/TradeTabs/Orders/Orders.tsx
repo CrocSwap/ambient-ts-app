@@ -21,7 +21,7 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -34,7 +34,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
-    searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     expandTradeTable: boolean;
     chainData: ChainSpec;
@@ -73,6 +72,7 @@ export default function Orders(props: propsIF) {
         isAccountView,
         setExpandTradeTable,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);

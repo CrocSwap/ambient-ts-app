@@ -37,7 +37,6 @@ interface propsIF {
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -59,6 +58,7 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
+
 export default function Transactions(props: propsIF) {
     const {
         isTokenABase,
@@ -82,6 +82,7 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);

@@ -66,7 +66,6 @@ interface propsIF {
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
     openModalWallet: () => void;
-    searchableTokens: TokenIF[];
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -94,7 +93,6 @@ interface propsIF {
 
 export default function Portfolio(props: propsIF) {
     const {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         addRecentToken,
@@ -529,8 +527,6 @@ export default function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        tokenList: searchableTokens,
-        searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: crocEnv,
@@ -563,6 +559,7 @@ export default function Portfolio(props: propsIF) {
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
+        tokens: tokens,
     };
 
     const portfolioBannerProps = {

@@ -40,13 +40,13 @@ import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     account: string;
-    tokenList: TokenIF[];
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
@@ -67,7 +67,6 @@ interface propsIF {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    searchableTokens: TokenIF[];
     handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
@@ -90,6 +89,7 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    tokens: tokenMethodsIF;
 }
 
 export default function TradeTabs2(props: propsIF) {
@@ -120,7 +120,6 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentPositionActive,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        searchableTokens,
         handlePulseAnimation,
         changeState,
         selectedDate,
@@ -128,7 +127,6 @@ export default function TradeTabs2(props: propsIF) {
         hasInitialized,
         setHasInitialized,
         unselectCandle,
-        tokenList,
         poolPriceDisplay,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
@@ -139,7 +137,9 @@ export default function TradeTabs2(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         candleTime,
+        tokens,
     } = props;
+
     const {
         outsideTab: { selected: outsideTabSelected },
         outsideControl: {
@@ -300,7 +300,7 @@ export default function TradeTabs2(props: propsIF) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    tokenList: tokenList,
+                    tokenList: tokens.getByChain(chainData.chainId),
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -334,7 +334,7 @@ export default function TradeTabs2(props: propsIF) {
     useEffect(() => {
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                tokenList: tokenList,
+                tokenList: tokens.getByChain(chainData.chainId),
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -385,7 +385,6 @@ export default function TradeTabs2(props: propsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        searchableTokens: searchableTokens,
         provider: provider,
         account: account,
         chainId: chainId,
@@ -409,11 +408,9 @@ export default function TradeTabs2(props: propsIF) {
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
-        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
-        tokenList: tokenList,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -435,7 +432,6 @@ export default function TradeTabs2(props: propsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        searchableTokens: searchableTokens,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,

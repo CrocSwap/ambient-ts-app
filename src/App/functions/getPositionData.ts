@@ -9,7 +9,7 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export const getPositionData = async (
     position: PositionIF,
-    searchableTokens: TokenIF[],
+    tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
@@ -118,11 +118,11 @@ export const getPositionData = async (
                   maximumFractionDigits: 0,
               });
 
-    const baseTokenLogoURI = searchableTokens.find(
+    const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
-    const quoteTokenLogoURI = searchableTokens.find(
+    const quoteTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;

@@ -41,7 +41,7 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
-// import { useCandleTime } from './useCandleTime';
+import { tokenMethodsIF } from '../../App/hooks/useNewTokens/useNewTokens';
 
 // interface for React functional component props
 interface propsIF {
@@ -73,12 +73,10 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
-    searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
@@ -89,6 +87,7 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     poolPriceChangePercent: string | undefined;
     isPoolPriceChangePositive: boolean;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
@@ -97,7 +96,6 @@ export default function Trade(props: propsIF) {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
         chartSettings,
-        tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
@@ -113,7 +111,6 @@ export default function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
         isShowAllEnabled,
@@ -131,6 +128,7 @@ export default function Trade(props: propsIF) {
         repositionRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        tokens,
     } = props;
 
     const { params } = useParams();
@@ -486,7 +484,6 @@ export default function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
-        tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
@@ -513,7 +510,6 @@ export default function Trade(props: propsIF) {
         setTransactionFilter: setTransactionFilter,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        searchableTokens: searchableTokens,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
@@ -533,6 +529,7 @@ export default function Trade(props: propsIF) {
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
+        tokens,
     };
 
     const mobileTrade = (

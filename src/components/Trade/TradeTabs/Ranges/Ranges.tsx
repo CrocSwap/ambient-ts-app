@@ -105,6 +105,7 @@ export default function Ranges(props: propsIF) {
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);

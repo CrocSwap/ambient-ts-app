@@ -613,15 +613,6 @@ export default function App() {
     // current configurations of trade as specified by the user
     const currentPoolInfo = tradeData;
 
-    // all tokens from active token lists
-    const [searchableTokens, setSearchableTokens] =
-        useState<TokenIF[]>(defaultTokens);
-
-    // TODO: remove this and use `tokens` methods and data directly
-    useEffect(() => {
-        setSearchableTokens(tokens.getByChain(chainData.chainId));
-    }, [chainData.chainId, tokens.getByChain(chainData.chainId).length]);
-
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
     // trigger a useEffect() which needs to run when new token lists are received
@@ -1324,7 +1315,7 @@ export default function App() {
                                         (position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                searchableTokens,
+                                                tokens.getByChain(chainData.chainId),
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1375,7 +1366,7 @@ export default function App() {
                                         (position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                searchableTokens,
+                                                tokens.getByChain(chainData.chainId),
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1412,7 +1403,7 @@ export default function App() {
 
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
-                        tokenList: searchableTokens,
+                        tokenList: tokens.getByChain(chainData.chainId),
                         base: sortedTokens[0],
                         quote: sortedTokens[1],
                         poolIdx: chainData.poolIndex,
@@ -1479,7 +1470,7 @@ export default function App() {
                                         (limitOrder: LimitOrderIF) => {
                                             return getLimitOrderData(
                                                 limitOrder,
-                                                searchableTokens,
+                                                tokens.getByChain(chainData.chainId),
                                             );
                                         },
                                     ),
@@ -1499,7 +1490,6 @@ export default function App() {
             }
         }
     }, [
-        searchableTokens.length,
         rtkMatchesParams,
         baseTokenAddress + quoteTokenAddress,
         chainData.chainId,
@@ -1713,7 +1703,7 @@ export default function App() {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            searchableTokens,
+                            tokens.getByChain(chainData.chainId),
                             crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
@@ -1775,7 +1765,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
+                        return getTransactionData(tx, tokens.getByChain(chainData.chainId));
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -1794,7 +1784,7 @@ export default function App() {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
+                        return getLimitOrderData(limitOrder, tokens.getByChain(chainData.chainId));
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -2054,7 +2044,7 @@ export default function App() {
                         lastMessageData.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                searchableTokens,
+                                tokens.getByChain(chainData.chainId),
                                 crocEnv,
                                 chainData.chainId,
                                 lastBlockNumber,
@@ -2117,7 +2107,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
+                        return getTransactionData(tx, tokens.getByChain(chainData.chainId));
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -2177,7 +2167,7 @@ export default function App() {
                     console.debug('received new user limit order change');
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
+                        return getLimitOrderData(limitOrder, tokens.getByChain(chainData.chainId));
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -2458,7 +2448,7 @@ export default function App() {
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
-                                        searchableTokens,
+                                        tokens.getByChain(chainData.chainId),
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
@@ -2505,7 +2495,7 @@ export default function App() {
                                 (limitOrder: LimitOrderIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
-                                        searchableTokens,
+                                        tokens.getByChain(chainData.chainId),
                                     );
                                 },
                             ),
@@ -2523,7 +2513,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    tokenList: searchableTokens,
+                    tokenList: tokens.getByChain(chainData.chainId),
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -2606,7 +2596,6 @@ export default function App() {
             }
         }
     }, [
-        searchableTokens.length,
         isServerEnabled,
         tokensOnActiveLists,
         isUserLoggedIn,
@@ -3219,7 +3208,6 @@ export default function App() {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chartSettings,
-        tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
@@ -3253,7 +3241,6 @@ export default function App() {
             throw new Error('Function not implemented.');
         },
         limitRate: '',
-        searchableTokens: searchableTokens,
         poolExists,
         setTokenPairLocal,
         handlePulseAnimation,
@@ -3272,12 +3259,12 @@ export default function App() {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
+        tokens,
     };
 
     const accountProps = {
         gasPriceInGwei,
         ethMainnetUsdPrice,
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         addRecentToken,
