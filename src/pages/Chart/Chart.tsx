@@ -949,13 +949,11 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snapForCandle = (point: any, filtered: Array<CandleData>) => {
         if (point == undefined) return [];
-        const series = candlestick;
-        const xScale = series.xScale(),
-            xValue = series.crossValue();
+        const xScale = scaleData?.xScale;
 
         if (filtered.length > 1) {
             const nearest = minimum(filtered, (d: CandleData) =>
-                Math.abs(point.offsetX - xScale(xValue(d))),
+                Math.abs(point.offsetX - xScale(d.time * 1000)),
             )[1];
             return nearest;
         }
