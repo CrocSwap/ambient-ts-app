@@ -17,6 +17,7 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
+    presets: { stable: number[]; volatile: number[] };
 }
 
 export interface allSlippageMethodsIF {
@@ -82,6 +83,7 @@ export const useSlippage = (
             volatile,
             updateStable: setStable,
             updateVolatile: setVolatile,
+            presets: defaults.presets,
         }),
         [stable, volatile],
     );
