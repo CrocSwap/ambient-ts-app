@@ -91,7 +91,7 @@
 }
 
 .sidebar_item {
-    /* transition: all var(--animation-speed) ease-in-out; */
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .sidebar_item:hover {
