@@ -30,7 +30,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
@@ -57,7 +57,6 @@ interface propsIF {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-    tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
     chainData: ChainSpec;
@@ -101,7 +100,6 @@ export default function Trade(props: propsIF) {
         isUserLoggedIn,
         chainId,
         chainData,
-        tokenMap,
         poolPriceDisplay,
         provider,
         lastBlockNumber,
@@ -503,7 +501,6 @@ export default function Trade(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,

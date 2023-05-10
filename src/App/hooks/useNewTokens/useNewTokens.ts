@@ -9,7 +9,7 @@ export interface tokenMethodsIF {
     verify: (addr: string, chainId: string|number) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     getAll: () => TokenIF[];
-    getByAddress: (addr: string, chainId: string) => TokenIF|undefined;
+    getByAddress: (addr: string, chainId: string|number) => TokenIF|undefined;
     getByChain: (chn: string) => TokenIF[];
     getBySource: (uri: string) => TokenIF[];
     getByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
@@ -279,7 +279,7 @@ export const useNewTokens = (chainId: string): tokenMethodsIF => {
 
     // fn to look up a token by contract address
     function getTokenByAddress(
-        addr: string, chn: string
+        addr: string, chn: string|number
     ): TokenIF|undefined {
         // key to look up token in the map
         const tokenKey: string = makeTokenMapKey(addr, chn);

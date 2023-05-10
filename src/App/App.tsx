@@ -113,7 +113,6 @@ import {
     setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
-import { useTokenMap } from '../utils/hooks/useTokenMap';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import {
     APP_ENVIRONMENT,
@@ -442,12 +441,6 @@ export default function App() {
             }
         }
     }, [isConnected, userData.isLoggedIn, account]);
-
-    // Used in Portfolio/Account related pages for defining token universe.
-    // Ideally this is inefficient, because we're also using useToken() hook
-    // in parrallel which internally uses this hook. So there's some duplicated
-    // effort
-    const tokensOnActiveLists = useTokenMap();
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
@@ -794,8 +787,6 @@ export default function App() {
                         }
                     } else {
                         dispatch(setEnsNameCurrent(undefined));
-                        // setEnsName('');
-
                         dispatch(
                             setEnsOrAddressTruncated(
                                 trimString(account, 5, 3, '…'),
@@ -804,7 +795,6 @@ export default function App() {
                     }
                 } catch (error) {
                     dispatch(setEnsNameCurrent(undefined));
-                    // setEnsName('');
                     dispatch(
                         setEnsOrAddressTruncated(
                             trimString(account, 5, 3, '…'),
@@ -817,22 +807,16 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
     );
-    // check for token balances every eight blocks
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
+        const oldToken: TokenIF|undefined = tokens.getByAddress(token.address, token.chainId);
         const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
 
@@ -2594,7 +2578,7 @@ export default function App() {
         }
     }, [
         isServerEnabled,
-        tokensOnActiveLists,
+        tokens.getByChain(chainData.chainId),
         isUserLoggedIn,
         account,
         chainData.chainId,
@@ -2734,13 +2718,13 @@ export default function App() {
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
-        const ambientTokens = tokens.default;
+        const ambientTokens: TokenIF[] = tokens.default;
         // array of addresses on Ambient list
-        const ambientAddresses = ambientTokens.map((tkn) =>
+        const ambientAddresses: string[] = ambientTokens.map((tkn: TokenIF) =>
             tkn.address.toLowerCase(),
         );
         // use Ambient token list as scaffold to build larger token array
-        const output = ambientTokens;
+        const output: TokenIF[] = ambientTokens;
         // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
         // iterate over tokens in connected wallet
@@ -2751,9 +2735,7 @@ export default function App() {
             // ... that the limiter has not been reached
             if (
                 !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-                tokensOnActiveLists.get(
-                    tkn.address + '_' + chainData.chainId,
-                ) &&
+                tokens.verify(tkn.address, chainData.chainId) &&
                 parseInt(tkn.combinedBalance as string) > 0 &&
                 tokensAdded < 4
             ) {
@@ -2768,7 +2750,7 @@ export default function App() {
         // limiter for tokens to add from in-session recent tokens list
         let recentTokensAdded = 0;
         // iterate over tokens in recent tokens list
-        getRecentTokens().forEach((tkn) => {
+        getRecentTokens().forEach((tkn: TokenIF) => {
             // gatekeep to make sure the token isn't already in the list,
             // ... is on the current chain, and that the limiter has not
             // ... yet been reached
@@ -2995,13 +2977,11 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
@@ -3014,7 +2994,7 @@ export default function App() {
         recentPools: recentPools,
         isConnected: isConnected,
         topPools: topPools,
-        tokens,
+        tokens: tokens,
     };
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
@@ -3229,7 +3209,6 @@ export default function App() {
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap: tokensOnActiveLists,
         currentPositionActive,
         setCurrentPositionActive,
         isInitialized,
@@ -3276,7 +3255,6 @@ export default function App() {
         connectedAccount: account ? account : '',
         userImageData: imageData,
         chainId: chainData.chainId,
-        tokensOnActiveLists,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
@@ -3381,7 +3359,6 @@ export default function App() {
                                             cachedQuerySpotPrice={
                                                 cachedQuerySpotPrice
                                             }
-                                            tokenMap={tokensOnActiveLists}
                                             lastBlockNumber={lastBlockNumber}
                                             chainId={chainData.chainId}
                                             topPools={topPools}

@@ -29,7 +29,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import {
-    TokenIF,
     TokenPairIF,
     TempPoolIF,
 } from '../../../utils/interfaces/exports';
@@ -57,7 +56,6 @@ interface propsIF {
     isDenomBase: boolean;
     chainId: string;
     poolId: number;
-    currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -67,7 +65,6 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     openModalWallet: () => void;
     poolList: TempPoolIF[];
@@ -85,14 +82,12 @@ export default function Sidebar(props: propsIF) {
         isDenomBase,
         chainId,
         poolId,
-        currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
         isShowAllEnabled,
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap,
         lastBlockNumber,
         setAnalyticsSearchInput,
         openModalWallet,
@@ -191,7 +186,7 @@ export default function Sidebar(props: propsIF) {
             data: (
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
-                    tokenMap={tokenMap}
+                    tokens={tokens}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     isShowAllEnabled={isShowAllEnabled}
@@ -225,22 +220,14 @@ export default function Sidebar(props: propsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
-
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
-                    coinGeckoTokenMap={tokenMap}
-                    currentTxActiveInTransactions={
-                        currentTxActiveInTransactions
-                    }
                     setCurrentTxActiveInTransactions={
                         setCurrentTxActiveInTransactions
                     }
                     chainId={chainId}
-                    isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
                     isUserLoggedIn={isConnected}
                 />
             ),

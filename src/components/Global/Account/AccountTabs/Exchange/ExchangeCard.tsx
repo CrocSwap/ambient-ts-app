@@ -1,27 +1,27 @@
 import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
-// import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-// import { formatAmountOld } from '../../../../../utils/numbers';
+import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    tokens: tokenMethodsIF;
 }
 
 export default function ExchangeCard(props: propsIF) {
-    const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
+    const { token, chainId, tokens, cachedFetchTokenPrice } = props;
 
-    const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
+    const tokenMapKey: string = token?.address + '_' + token?.chainId;
 
-    const tokenFromMap =
-        tokenMap && tokenAddress ? tokenMap.get(tokenAddress) : null;
+    const tokenFromMap = token?.address
+        ? tokens.getByAddress(token.address, chainId)
+        : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
         nativePrice?:
@@ -41,7 +41,7 @@ export default function ExchangeCard(props: propsIF) {
         (async () => {
             try {
                 const mainnetAddress = testTokenMap
-                    .get(tokenAddress)
+                    .get(tokenMapKey)
                     ?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
@@ -54,33 +54,16 @@ export default function ExchangeCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenAddress]);
+    }, [tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
     const exchangeBalanceNum = token?.dexBalanceDisplay
         ? parseFloat(token?.dexBalanceDisplay)
         : 0;
+
     const exchangeBalanceTruncated =
         exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
-
-    // const tokenBalanceNum =
-    //     token && token.combinedBalanceDisplay ? parseFloat(token.combinedBalanceDisplay) : 0;
-
-    // const truncatedTokenBalance =
-    //     tokenBalanceNum === 0
-    //         ? '0'
-    //         : tokenBalanceNum < 0.0001
-    //         ? tokenBalanceNum.toExponential(2)
-    //         : tokenBalanceNum < 2
-    //         ? tokenBalanceNum.toPrecision(3)
-    //         : tokenBalanceNum >= 1000000
-    //         ? formatAmountOld(tokenBalanceNum)
-    //         : // ? quoteLiqDisplayNum.toExponential(2)
-    //           tokenBalanceNum.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip

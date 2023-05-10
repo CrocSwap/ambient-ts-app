@@ -2,11 +2,11 @@ import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
-    tokenMap: Map<string, TokenIF>;
     chainId: string;
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
@@ -16,16 +16,17 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
-        tokenMap,
         chainId,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
+        tokens,
     } = props;
 
     const {
@@ -86,7 +87,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokenMap={tokenMap}
+                            tokens={tokens}
                         />
                     ))}
             </div>

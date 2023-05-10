@@ -5,21 +5,23 @@ import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    tokens: tokenMethodsIF;
 }
 
 export default function WalletCard(props: propsIF) {
-    const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
+    const { token, chainId, tokens, cachedFetchTokenPrice } = props;
 
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 
-    const tokenFromMap =
-        tokenMap && tokenAddress ? tokenMap.get(tokenAddress) : null;
+    const tokenFromMap = token?.address
+        ? tokens.getByAddress(token.address, chainId)
+        : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
         nativePrice?:

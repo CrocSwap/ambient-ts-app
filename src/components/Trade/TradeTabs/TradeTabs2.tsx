@@ -17,7 +17,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../utils/interfaces/exports';
 import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -54,7 +54,6 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -103,7 +102,6 @@ export default function TradeTabs2(props: propsIF) {
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        tokenMap,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -410,7 +408,6 @@ export default function TradeTabs2(props: propsIF) {
         isShowAllEnabled: isShowAllEnabled,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
-        tokenMap: tokenMap,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,

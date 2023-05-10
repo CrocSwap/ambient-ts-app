@@ -1,15 +1,14 @@
-import { LimitOrderIF, TokenIF } from '../../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,
-    tokenMap: Map<string, TokenIF>,
+    tokens: tokenMethodsIF,
     isDenomBase: boolean,
 ): string => {
-    const baseId = limitOrder.base + '_' + limitOrder.chainId;
-    const quoteId = limitOrder.quote + '_' + limitOrder.chainId;
-    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
-    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
+    const baseToken = tokens.getByAddress(limitOrder.base, limitOrder.chainId);
+    const quoteToken = tokens.getByAddress(limitOrder.quote, limitOrder.chainId);;
 
     const baseTokenCharacter = baseToken?.symbol
         ? getUnicodeCharacter(baseToken?.symbol)

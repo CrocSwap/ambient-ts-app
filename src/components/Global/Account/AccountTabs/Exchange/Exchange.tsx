@@ -3,6 +3,7 @@ import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { tokenMethodsIF } from '../../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
@@ -13,7 +14,7 @@ interface propsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    tokens: tokenMethodsIF;
 }
 
 export default function Exchange(props: propsIF) {
@@ -23,10 +24,8 @@ export default function Exchange(props: propsIF) {
         connectedUserTokens,
         resolvedAddressTokens,
         chainId,
-        tokenMap,
+        tokens,
     } = props;
-
-    // const items = [1, 2, 3, 4, 5, 6];
 
     const ItemContent = connectedAccountActive
         ? connectedUserTokens.map((item, idx) => (
@@ -34,7 +33,7 @@ export default function Exchange(props: propsIF) {
                   key={idx}
                   token={item}
                   chainId={chainId}
-                  tokenMap={tokenMap}
+                  tokens={tokens}
                   cachedFetchTokenPrice={cachedFetchTokenPrice}
               />
           ))
@@ -43,7 +42,7 @@ export default function Exchange(props: propsIF) {
                   key={idx}
                   token={item}
                   chainId={chainId}
-                  tokenMap={tokenMap}
+                  tokens={tokens}
                   cachedFetchTokenPrice={cachedFetchTokenPrice}
               />
           ));

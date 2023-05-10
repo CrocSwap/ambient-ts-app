@@ -1,18 +1,19 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { getLimitPrice, getLimitValue } from './functions/exports';
+import { tokenMethodsIF } from '../../../../App/hooks/useNewTokens/useNewTokens';
 
 interface propsIF {
     isDenomBase: boolean;
-    tokenMap: Map<string, TokenIF>;
+    tokens: tokenMethodsIF;
     order: LimitOrderIF;
     handleClick: (limitOrder: LimitOrderIF) => void;
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
-    const { tokenMap, order, isDenomBase, handleClick } = props;
+    const { tokens, order, isDenomBase, handleClick } = props;
 
     // human-readable limit price to display in the DOM
-    const price = getLimitPrice(order, tokenMap, isDenomBase);
+    const price = getLimitPrice(order, tokens, isDenomBase);
 
     // human-readable limit order value to display in the DOM
     const value = getLimitValue(order);

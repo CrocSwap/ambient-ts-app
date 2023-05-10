@@ -63,7 +63,6 @@ interface propsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
     openModalWallet: () => void;
     chainData: ChainSpec;
@@ -104,7 +103,6 @@ export default function Portfolio(props: propsIF) {
         cachedFetchTokenPrice,
         lastBlockNumber,
         userImageData,
-        tokensOnActiveLists,
         userAccount,
         baseTokenBalance,
         quoteTokenBalance,
@@ -155,14 +153,10 @@ export default function Portfolio(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
+        const oldToken: TokenIF|undefined = tokens.getByAddress(token.address, token.chainId);
         const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
 
@@ -540,7 +534,6 @@ export default function Portfolio(props: propsIF) {
         activeAccount: address ?? connectedAccount ?? '',
         connectedAccountActive: connectedAccountActive,
         chainId: chainData.chainId,
-        tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
         account: props.account,
         chainData: chainData,

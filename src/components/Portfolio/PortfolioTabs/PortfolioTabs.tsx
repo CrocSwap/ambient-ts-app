@@ -64,7 +64,6 @@ interface propsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
     openTokenModal: () => void;
     chainData: ChainSpec;
     currentPositionActive: string;
@@ -94,7 +93,6 @@ export default function PortfolioTabs(props: propsIF) {
         cachedPositionUpdateQuery,
         isTokenABase,
         cachedFetchTokenPrice,
-        tokenMap,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
@@ -339,7 +337,7 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,
-        tokenMap: tokenMap,
+        tokens: tokens,
     };
 
     // props for <Exchange/> React Element
@@ -352,8 +350,8 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,
-        tokenMap: tokenMap,
         openTokenModal: openTokenModal,
+        tokens: tokens,
     };
 
     // props for <Range/> React Element
@@ -401,7 +399,6 @@ export default function PortfolioTabs(props: propsIF) {
         isCandleSelected: false,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
-        tokenMap: tokenMap,
         setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
