@@ -4,7 +4,6 @@ import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 // import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
 interface IPortfolioBannerAccountPropsIF {
-    imageData: string[];
     ensName: string;
     resolvedAddress: string;
     activeAccount: string;

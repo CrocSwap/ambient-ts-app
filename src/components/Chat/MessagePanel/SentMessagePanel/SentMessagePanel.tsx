@@ -14,7 +14,6 @@ interface SentMessageProps {
     ensName: string;
     isCurrentUser: boolean;
     currentUser: string | undefined;
-    userImageData: string[];
     resolvedAddress: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;

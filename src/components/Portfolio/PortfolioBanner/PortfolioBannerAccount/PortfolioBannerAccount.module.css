@@ -12,7 +12,6 @@
     flex-direction: row;
     gap: 1.375em;
     z-index: 2;
-    cursor: pointer;
 }
 
 .avatar_image {
@@ -56,6 +55,7 @@
     font-weight: 300;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
+    cursor: pointer;
 
     letter-spacing: -0.02em;
     color: var(--text1);
@@ -83,7 +83,6 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
     /* text/grey light */
 
     color: var(--text2);

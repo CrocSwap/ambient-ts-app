@@ -14,7 +14,6 @@ import trimString from '../../../utils/functions/trimString';
 interface propsIF {
     ensName: string;
     activeAccount: string;
-    imageData: string[];
     resolvedAddress: string;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     connectedAccountActive: boolean;
@@ -25,7 +24,6 @@ export default function PortfolioBanner(props: propsIF) {
     const {
         ensName,
         activeAccount,
-        imageData,
         resolvedAddress,
         connectedAccountActive,
         chainData,
@@ -52,7 +50,6 @@ export default function PortfolioBanner(props: propsIF) {
     return (
         <div className={styles.rectangle_container}>
             <PortfolioBannerAccount
-                imageData={imageData}
                 ensName={ensName}
                 ensNameAvailable={ensNameAvailable}
                 resolvedAddress={resolvedAddress}
