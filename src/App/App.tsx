@@ -479,7 +479,7 @@ export default function App() {
         chainData.chainId,
         tradeData.tokenA,
         tradeData.tokenB,
-        tokens
+        tokens,
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -807,7 +807,10 @@ export default function App() {
     );
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
-        const oldToken: TokenIF|undefined = tokens.getByAddress(token.address, token.chainId);
+        const oldToken: TokenIF | undefined = tokens.getByAddress(
+            token.address,
+            token.chainId,
+        );
         const newToken = { ...token };
         newToken.name = oldToken ? oldToken.name : '';
         newToken.logoURI = oldToken ? oldToken.logoURI : '';
@@ -1290,7 +1293,9 @@ export default function App() {
                                         (position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                tokens.getByChain(chainData.chainId),
+                                                tokens.getByChain(
+                                                    chainData.chainId,
+                                                ),
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1341,7 +1346,9 @@ export default function App() {
                                         (position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                tokens.getByChain(chainData.chainId),
+                                                tokens.getByChain(
+                                                    chainData.chainId,
+                                                ),
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1445,7 +1452,9 @@ export default function App() {
                                         (limitOrder: LimitOrderIF) => {
                                             return getLimitOrderData(
                                                 limitOrder,
-                                                tokens.getByChain(chainData.chainId),
+                                                tokens.getByChain(
+                                                    chainData.chainId,
+                                                ),
                                             );
                                         },
                                     ),
@@ -1740,7 +1749,10 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokens.getByChain(chainData.chainId));
+                        return getTransactionData(
+                            tx,
+                            tokens.getByChain(chainData.chainId),
+                        );
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -1759,7 +1771,10 @@ export default function App() {
                 IS_LOCAL_ENV && console.debug({ lastMessageData });
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, tokens.getByChain(chainData.chainId));
+                        return getLimitOrderData(
+                            limitOrder,
+                            tokens.getByChain(chainData.chainId),
+                        );
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -2082,7 +2097,10 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokens.getByChain(chainData.chainId));
+                        return getTransactionData(
+                            tx,
+                            tokens.getByChain(chainData.chainId),
+                        );
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -2142,7 +2160,10 @@ export default function App() {
                     console.debug('received new user limit order change');
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, tokens.getByChain(chainData.chainId));
+                        return getLimitOrderData(
+                            limitOrder,
+                            tokens.getByChain(chainData.chainId),
+                        );
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -2517,16 +2538,15 @@ export default function App() {
                         const tokenMap = new Map();
                         for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
-                                const isFoundInAmbientList = tokens.default.some(
-                                    (ambientToken) => {
+                                const isFoundInAmbientList =
+                                    tokens.default.some((ambientToken) => {
                                         if (
                                             ambientToken.address.toLowerCase() ===
                                             item.base.toLowerCase()
                                         )
                                             return true;
                                         return false;
-                                    },
-                                );
+                                    });
                                 if (!isFoundInAmbientList) {
                                     tokenMap.set(item.base, true); // set any value to Map
                                     result.push({
@@ -2540,16 +2560,15 @@ export default function App() {
                                 }
                             }
                             if (!tokenMap.has(item.quote)) {
-                                const isFoundInAmbientList = tokens.default.some(
-                                    (ambientToken) => {
+                                const isFoundInAmbientList =
+                                    tokens.default.some((ambientToken) => {
                                         if (
                                             ambientToken.address.toLowerCase() ===
                                             item.quote.toLowerCase()
                                         )
                                             return true;
                                         return false;
-                                    },
-                                );
+                                    });
                                 if (!isFoundInAmbientList) {
                                     tokenMap.set(item.quote, true); // set any value to Map
                                     result.push({
