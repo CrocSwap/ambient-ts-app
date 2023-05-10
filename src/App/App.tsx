@@ -502,6 +502,7 @@ export default function App() {
     false && verifyToken;
     false && getAmbientTokens;
     false && getTokensOnChain;
+    false && getTokenByAddress;
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -2840,7 +2841,7 @@ export default function App() {
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         recentPools: recentPools,
         chainData: chainData,
-        getTokenByAddress: getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2877,7 +2878,7 @@ export default function App() {
         setTokenPairLocal: setTokenPairLocal,
         verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2916,7 +2917,7 @@ export default function App() {
         isSwapCopied: isSwapCopied,
         verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -2956,7 +2957,7 @@ export default function App() {
         isOrderCopied: isOrderCopied,
         verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -3004,7 +3005,7 @@ export default function App() {
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
         verifyToken: tokens.verify,
         getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
+        getTokenByAddress: tokens.getByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
