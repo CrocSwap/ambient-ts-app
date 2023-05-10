@@ -7,9 +7,7 @@ import {
     Navigate,
     useNavigate,
 } from 'react-router-dom';
-
 import { useIdleTimer } from 'react-idle-timer';
-
 import {
     resetUserGraphData,
     setPositionsByPool,
@@ -34,9 +32,7 @@ import {
     addChangesByPool,
     addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
-
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
-
 import useWebSocket from 'react-use-websocket';
 import {
     sortBaseQuoteTokens,
@@ -45,7 +41,6 @@ import {
     toDisplayQty,
 } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
-
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -206,7 +201,6 @@ const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquid
 export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
-    // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
 
@@ -256,6 +250,7 @@ export default function App() {
             ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
             : true;
+
     const isChartEnabled =
         !!process.env.REACT_APP_CHART_IS_ENABLED &&
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
