@@ -335,10 +335,10 @@ export default function Orders(props: propsIF) {
     // 30 => Height of each paginated row item
 
     const regularOrdersItems = Math.round(
-        (height - (isAccountView ? 400 : 250)) / 30,
+        (height - (isAccountView ? 500 : 350)) / 30,
     );
     const showColumnOrdersItems = Math.round(
-        (height - (isAccountView ? 400 : 250)) / 50,
+        (height - (isAccountView ? 500 : 300)) / 50,
     );
     const limitsPerPage = showColumns
         ? showColumnOrdersItems
@@ -359,23 +359,24 @@ export default function Orders(props: propsIF) {
         setCurrentPage(pageNumber);
     };
 
-    const tradePageCheck = expandTradeTable && limitOrderData.length > 30;
+    const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {((isAccountView && limitOrderData.length > 7) ||
-                (!isAccountView && tradePageCheck)) && (
-                <Pagination
-                    itemsPerPage={limitsPerPage}
-                    totalItems={
-                        limitOrderData.filter(
-                            (limitOrder) => limitOrder.totalValueUSD !== 0,
-                        ).length
-                    }
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {limitsPerPage > 0 &&
+                ((isAccountView && limitOrderData.length > 7) ||
+                    (!isAccountView && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={limitsPerPage}
+                        totalItems={
+                            limitOrderData.filter(
+                                (limitOrder) => limitOrder.totalValueUSD !== 0,
+                            ).length
+                        }
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
