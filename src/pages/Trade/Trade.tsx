@@ -196,7 +196,7 @@ export default function Trade(props: propsIF) {
         }
     }, [props.candleData]);
 
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick, advancedMode } = tradeData;

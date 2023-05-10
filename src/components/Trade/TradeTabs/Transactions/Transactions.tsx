@@ -55,7 +55,7 @@ interface propsIF {
     ) => void;
     handlePulseAnimation?: (type: string) => void;
     isOnPortfolioPage: boolean;
-    setSelectedDate?: Dispatch<Date | undefined>;
+    setSelectedDate?: Dispatch<number | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
