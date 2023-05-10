@@ -98,18 +98,14 @@ import {
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import { testTokenMap } from '../utils/data/testTokenMap';
 import {
     APP_ENVIRONMENT,
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
-    ZERO_ADDRESS,
 } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
-import { getVolumeSeries } from './functions/getVolumeSeries';
-import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
@@ -118,11 +114,8 @@ import {
     memoizePositionUpdate,
 } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
-import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import { getLiquidityFee } from './functions/getLiquidityFee';
 import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
@@ -135,7 +128,6 @@ import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
-import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 import { checkBlacklist } from '../utils/data/blacklist';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
@@ -2312,7 +2304,6 @@ export default function App() {
                                             <Reposition {...repositionProps} />
                                         }
                                     />
-                                    <Route path='add' element={<RangeAdd />} />
                                     <Route
                                         path='edit/'
                                         element={
