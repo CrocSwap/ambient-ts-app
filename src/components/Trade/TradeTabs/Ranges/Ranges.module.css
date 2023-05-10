@@ -92,8 +92,11 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
 .main_list_container ul {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/

@@ -300,7 +300,7 @@ export default function OrderRow(props: propsIF) {
                 onMouseLeave={() => setShowHighlightedButton(false)}
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
                 id={orderDomId}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+                style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
             >

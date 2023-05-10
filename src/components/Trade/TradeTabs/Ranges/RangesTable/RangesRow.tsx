@@ -353,7 +353,7 @@ export default function RangesRow(props: propsIF) {
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+                style={{ backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
                 {showPair && rangeTimeWithTooltip}
