@@ -130,7 +130,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                 if (spotPrice) {
                     const newDisplayPrice = getDisplayPrice(spotPrice);
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log('Set pool price display');
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
@@ -144,6 +143,8 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.lastBlockNumber,
         props.baseTokenAddress,
         props.quoteTokenAddress,
+        props.baseTokenDecimals,
+        props.quoteTokenDecimals,
         !!props.crocEnv,
         tradeData.poolPriceNonDisplay === 0,
         props.isUserLoggedIn,

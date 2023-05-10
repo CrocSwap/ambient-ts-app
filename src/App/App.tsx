@@ -98,7 +98,7 @@ import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
-import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { getNFTs } from './functions/getNFTs';
 import { useAppChain } from './hooks/useAppChain';
 import {
@@ -318,10 +318,12 @@ export default function App() {
     }, [account]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
+    const tokenPair = useMemo(() => {
+        return {
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        };
+    }, [tradeData.tokenA, tradeData.tokenB]);
 
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
@@ -1877,6 +1879,7 @@ export default function App() {
         tokenPair.dataTokenA.chainId,
         tokenPair.dataTokenB.address,
         tokenPair.dataTokenB.chainId,
+        isBaseTokenMoneynessGreaterOrEqual,
     ]);
 
     const [imageData, setImageData] = useState<string[]>([]);

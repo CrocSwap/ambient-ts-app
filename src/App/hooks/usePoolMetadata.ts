@@ -168,7 +168,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                 setBaseTokenAddress(sortedTokens[0]);
                 setQuoteTokenAddress(sortedTokens[1]);
-                if (tradeData.baseToken.address === sortedTokens[0]) {
+                if (tradeData.tokenA.address === sortedTokens[0]) {
                     setIsTokenABase(true);
                     setBaseTokenDecimals(tradeData.tokenA.decimals);
                     setQuoteTokenDecimals(tradeData.tokenB.decimals);
@@ -481,7 +481,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     }, [
         props.receiptCount,
         rtkMatchesParams,
-        baseTokenAddress,
+        tradeData.tokenA.address,
+        tradeData.tokenB.address,
         quoteTokenAddress,
         props.chainData.chainId,
         !!props.crocEnv,
