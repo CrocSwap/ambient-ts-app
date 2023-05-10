@@ -25,7 +25,6 @@ export default function PortfolioBannerAccount(
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
-        // imageData,
         ensName,
         resolvedAddress,
         activeAccount,
@@ -75,21 +74,6 @@ export default function PortfolioBannerAccount(
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    // const iconVariants = {
-    //     open: {
-    //         width: '56px',
-    //         height: '56px',
-    //     },
-    //     closed: {
-    //         width: '56px',
-    //         height: '56px',
-    //     },
-    // };
-
-    // const ambientLogoDisplay = (
-    //     <img src={ambientLogo} alt='' className={styles.ambi_logo} />
-    // );
-
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
@@ -106,17 +90,6 @@ export default function PortfolioBannerAccount(
                 className={styles.account_container}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {/* {imageData[0] ? (
-                    <motion.div
-                        className={styles.avatar_image}
-                        animate={showAccountDetails ? 'open' : 'closed'}
-                        variants={iconVariants}
-                    >
-                        <img src={imageData[0]} alt='avatar' />
-                    </motion.div>
-                ) : (
-                    ambientLogoDisplay
-                )} */}
                 {props.jazziconsToDisplay}
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>

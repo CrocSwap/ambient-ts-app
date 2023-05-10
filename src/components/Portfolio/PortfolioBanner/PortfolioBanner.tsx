@@ -62,16 +62,6 @@ export default function PortfolioBanner(props: propsIF) {
                 jazziconsToDisplay={jazziconsToDisplay}
                 chainData={chainData}
             />
-            <div className={styles.nft_container}>
-                {/* {imageData.slice(1, 3).map((image: string) => (
-                    <img
-                        src={image}
-                        alt='nft'
-                        key={`nft-image-${JSON.stringify(image)}`}
-                    />
-                ))} */}
-                {/* {jazziconsToDisplay} */}
-            </div>
         </div>
     );
 }
