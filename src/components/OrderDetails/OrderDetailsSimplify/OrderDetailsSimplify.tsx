@@ -6,9 +6,9 @@ import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
-import { useState } from 'react';
+import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -107,25 +107,17 @@ export default function OrderDetailsSimplify(
         // positionLiquidity,
     } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
-    const [value, copy] = useCopyToClipboard();
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
         // setCopiedData(posHash.toString());
 
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     function handleOpenWallet() {
@@ -358,7 +350,6 @@ export default function OrderDetailsSimplify(
                         ))}
                 </section>
             </div>
-            {snackbarContent}
         </div>
     );
 }

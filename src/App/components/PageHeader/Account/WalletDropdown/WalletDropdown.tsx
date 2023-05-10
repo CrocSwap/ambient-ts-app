@@ -21,13 +21,22 @@ interface WalletDropdownPropsIF {
 
     setShowWalletDropdown: React.Dispatch<React.SetStateAction<boolean>>;
     showWalletDropdown: boolean;
+
+    walletDropdownTokenData:
+        | {
+              logo: string;
+              symbol: string;
+              value: string | undefined;
+              amount: string | undefined;
+          }[]
+        | null;
 }
 
 interface TokenAmountDisplayPropsIF {
     logo: string;
     symbol: string;
     amount: string;
-    usdValue: string;
+    value: string;
 }
 
 export default function WalletDropdown(props: WalletDropdownPropsIF) {
@@ -42,6 +51,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainId,
         ethAmount,
         ethValue,
+        walletDropdownTokenData,
         // showWalletDropdown, setShowWalletDropdown
     } = props;
 
@@ -87,10 +97,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const actionContent = (
         <div className={styles.actions_container}>
-            <button onClick={clickLogout}>
-                {' '}
-                <AiOutlineLogout color='var(--text-highlight)' /> Logout
-            </button>
             <NavLink
                 to={'/account'}
                 aria-label='Go to the account page '
@@ -99,12 +105,15 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 <CgProfile />
                 My Account
             </NavLink>
+            <button onClick={clickLogout}>
+                <AiOutlineLogout color='var(--text-highlight)' /> Logout
+            </button>
         </div>
     );
 
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF) {
-        const { logo, symbol, amount, usdValue } = props;
-        const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${usdValue} dollars`;
+        const { logo, symbol, amount, value } = props;
+        const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
             // column
             <section
@@ -120,7 +129,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
                 <div className={styles.token_amount}>
                     <h3>{amount}</h3>
-                    <h6>{usdValue}</h6>
+                    <h6>{value}</h6>
                 </div>
             </section>
         );
@@ -128,16 +137,37 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const ariaLabel = `Wallet menu for ${ensName ? ensName : accountAddress}`;
 
+    const tokensData = [
+        {
+            symbol: 'ETH',
+            amount: ethAmount,
+            value: ethValue,
+            logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+        },
+    ];
+
     return (
         <div className={walletWrapperStyle} tabIndex={0} aria-label={ariaLabel}>
             {nameContent}
             <section className={styles.wallet_content}>
-                <TokenAmountDisplay
-                    amount={ethAmount}
-                    usdValue={ethValue}
-                    symbol={'ETH'}
-                    logo={'https://cdn.cdnlogo.com/logos/e/81/ethereum-eth.svg'}
-                />
+                {tokensData.map((token, idx) => (
+                    <TokenAmountDisplay
+                        amount={token.amount}
+                        value={token.value}
+                        symbol={token.symbol}
+                        logo={token.logo}
+                        key={idx}
+                    />
+                ))}
+                {walletDropdownTokenData?.map((token, idx) => (
+                    <TokenAmountDisplay
+                        amount={token.amount ?? ''}
+                        value={'$' + token.value ?? ''}
+                        symbol={token.symbol ?? ''}
+                        logo={token.logo ?? ''}
+                        key={idx}
+                    />
+                ))}
             </section>
             {actionContent}
         </div>

@@ -5,7 +5,7 @@
     /* height: 400px; */
     /* position: absolute; */
     position: fixed;
-    background: #171d27;
+    background: var(--dark2);
     width: 200px;
     max-height: 120px;
     display: flex;
@@ -26,7 +26,7 @@
     left: 98%;
     top: 0;
     border: 10px solid transparent;
-    border-left: 10px solid #171d27;
+    border-left: 10px solid var(--dark2);
 }
 
 .overlay_wrapper {
@@ -45,11 +45,11 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .overlay_wrapper_active p {
     font-weight: 300;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

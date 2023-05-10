@@ -48,19 +48,17 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
-import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
-    swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -81,14 +79,6 @@ interface propsIF {
     isInitialized: boolean;
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
-
-    openGlobalModal: (content: React.ReactNode) => void;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -106,11 +96,7 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    bypassConfirm: allSkipConfirmMethodsIF;
     ackTokens: ackTokensMethodsIF;
     chainData: ChainSpec;
     pool: CrocPoolView | undefined;
@@ -121,7 +107,6 @@ export default function Swap(props: propsIF) {
         pool,
         isUserLoggedIn,
         account,
-        swapSlippage,
         isPairStable,
         provider,
         isOnTradeRoute,
@@ -150,11 +135,8 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
-        dexBalancePrefs,
-        bypassConfirm,
         ackTokens,
         chainData,
     } = props;
@@ -165,6 +147,9 @@ export default function Swap(props: propsIF) {
     useUrlParams(chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -224,7 +209,7 @@ export default function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(dexBalancePrefs.swap.outputToDexBal.isEnabled);
+        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
 
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
@@ -245,7 +230,7 @@ export default function Swap(props: propsIF) {
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
             txErrorCode === '' &&
-            bypassConfirm.swap.isEnabled
+            bypassConfirmSwap.isEnabled
         ) {
             setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
@@ -254,7 +239,7 @@ export default function Swap(props: propsIF) {
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
-        bypassConfirm.swap.isEnabled,
+        bypassConfirmSwap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -555,7 +540,6 @@ export default function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
-        bypassConfirm: bypassConfirm,
         lastBlockNumber: lastBlockNumber,
     };
 
@@ -737,12 +721,14 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
-        dexBalancePrefs: dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         ackTokens: ackTokens,
     };
+
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
         IS_LOCAL_ENV && console.debug('setting to true');
@@ -801,14 +787,7 @@ export default function Swap(props: propsIF) {
                             placement='bottom'
                         />
                     </div>
-                    <div
-                        className={styles.data}
-                        style={{
-                            color: '#f6385b',
-                        }}
-                    >
-                        {priceImpactString}%
-                    </div>
+                    <div className={styles.data}>{priceImpactString}%</div>
                 </div>
             </div>
         ) : null;
@@ -877,7 +856,7 @@ export default function Swap(props: propsIF) {
             }}
         >
             <section data-testid={'swap'} className={swapPageStyle}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -893,12 +872,9 @@ export default function Swap(props: propsIF) {
                         padding={isOnTradeRoute ? '0 1rem' : '1rem'}
                     >
                         <SwapHeader
-                            swapSlippage={swapSlippage}
                             isPairStable={isPairStable}
                             isOnTradeRoute={isOnTradeRoute}
-                            openGlobalModal={props.openGlobalModal}
                             shareOptionsDisplay={shareOptionsDisplay}
-                            bypassConfirm={bypassConfirm}
                         />
                         {navigationMenu}
                         <motion.div
@@ -944,8 +920,7 @@ export default function Swap(props: propsIF) {
                                         <SwapButton
                                             onClickFn={
                                                 areBothAckd
-                                                    ? bypassConfirm.swap
-                                                          .isEnabled
+                                                    ? bypassConfirmSwap.isEnabled
                                                         ? handleSwapButtonClickWithBypass
                                                         : openModal
                                                     : ackAsNeeded
@@ -959,7 +934,7 @@ export default function Swap(props: propsIF) {
                                                 swapButtonErrorMessage
                                             }
                                             bypassConfirmSwap={
-                                                bypassConfirm.swap
+                                                bypassConfirmSwap
                                             }
                                             areBothAckd={areBothAckd}
                                         />

@@ -39,14 +39,14 @@
 
     border: double 2px transparent;
     border-radius: 50%;
-    background-image: linear-gradient(var(--text-grey-light), var(--text-grey-light)),
+    background-image: linear-gradient(var(--text2), var(--text2)),
         var(--title-gradient);
     background-origin: border-box;
     background-clip: content-box, border-box;
 }
 .toggle_switch input[type='checkbox']:checked + .switch::before {
     transform: translateX(18px);
-    background-color: var(--text-grey-light);
+    background-color: var(--text2);
 }
 .toggle_switch input[type='checkbox']:checked + .switch {
     background: var(--title-gradient);
@@ -55,14 +55,12 @@
 .switch {
     width: 36px;
     height: 20px;
-    background-color: transparent;
+    background: var(--dark3);
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    border-radius: 50px;
-    border: 1px solid #7371fc;
-    /* padding: 10px; */
-    /* padding:  2px; */
+    border-radius: 18px;
+    border: 1px solid var(--accent1);
     cursor: pointer;
 }
 
@@ -70,23 +68,23 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
     0px 0px 21px rgba(205, 193, 255, 0.2),
     0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
     0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .switch[data-isOn='true'] {
     justify-content: flex-end;
-    background-color: #7371fc;
+    background-color: var(--accent1);
 }
 .switch[data-isOn='true'] .handle {
-    background: var(--text-grey-light);
+    background: var(--text1);
 }
 
 .handle {
     /* width: 36px; */
     width: 18px;
     height: 18px;
-    background: var(--text-grey-light);
+    background: var(--text1);
     border-radius: 40px;
 }
 

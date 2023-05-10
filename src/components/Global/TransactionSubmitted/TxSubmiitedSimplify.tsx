@@ -26,7 +26,7 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
             aria-label='view on etherscan'
         >
             View on Etherscan
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            <FiExternalLink size={20} color='var(--text1)' />
         </a>
     );
     return (

@@ -1,7 +1,6 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
 interface IPortfolioBannerAccountPropsIF {
@@ -18,6 +17,7 @@ interface IPortfolioBannerAccountPropsIF {
 import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -34,6 +34,10 @@ export default function PortfolioBannerAccount(
         chainData,
     } = props;
 
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
     const blockExplorer = chainData.blockExplorer;
 
     const ensNameToDisplay = ensNameAvailable
@@ -46,10 +50,7 @@ export default function PortfolioBannerAccount(
         ? truncatedAccountAddress
         : activeAccount;
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [copiedData, setCopiedData] = useState('');
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyEnsName() {
         copy(
@@ -59,32 +60,20 @@ export default function PortfolioBannerAccount(
                 ? resolvedAddress
                 : activeAccount,
         );
-        setCopiedData(
-            ensNameAvailable
-                ? ensName
-                : resolvedAddress
-                ? resolvedAddress
-                : activeAccount,
-        );
+        const copiedData = ensNameAvailable
+            ? ensName
+            : resolvedAddress
+            ? resolvedAddress
+            : activeAccount;
 
-        setOpenSnackbar(true);
+        openSnackbar(`${copiedData} copied`, 'info');
     }
     function handleCopyAddress() {
         copy(resolvedAddress ? resolvedAddress : activeAccount);
-        setCopiedData(resolvedAddress ? resolvedAddress : activeAccount);
+        const copiedData = resolvedAddress ? resolvedAddress : activeAccount;
 
-        setOpenSnackbar(true);
+        openSnackbar(`${copiedData} copied`, 'info');
     }
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {copiedData} copied
-        </SnackbarComponent>
-    );
 
     const iconVariants = {
         open: {
@@ -149,7 +138,6 @@ export default function PortfolioBannerAccount(
                     </span>
                 </div>
             </div>
-            {snackbarContent}
         </motion.main>
     );
 }

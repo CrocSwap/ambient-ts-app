@@ -20,7 +20,7 @@
     height: 26px;
 
     /* Dark/Tertiary */
-    background: #242f3f;
+    background: var(--dark3);
     border-radius: 4px;
 
     /* Inside auto layout */
@@ -45,7 +45,7 @@
     letter-spacing: -0.02em;
 
     /* text/grey light */
-    color: #7371fc;
+    color: var(--accent1);
 
     /* Inside auto layout */
     flex: none;
@@ -92,7 +92,7 @@
     padding: 2px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
-    color: #ebebff;
+    color: var(--text1);
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -104,7 +104,7 @@
     position: absolute;
     top: 110%;
     padding: 15px;
-    background: #fff;
+    background: white;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
     color: rgba(235, 235, 255, 0.4);
@@ -151,7 +151,7 @@
 }
 
 .dropdown_item:hover {
-    background: #242f3f;
+    background: var(--dark3);
 }
 
 .dropdown_item_no_fav_pools {

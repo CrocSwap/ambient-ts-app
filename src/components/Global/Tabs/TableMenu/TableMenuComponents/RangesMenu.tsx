@@ -1,12 +1,18 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
+import {
+    useState,
+    useRef,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
@@ -24,11 +30,10 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
 } from '../../../../../utils/state/tradeDataSlice';
-import { allDexBalanceMethodsIF } from '../../../../../App/hooks/useExchangePrefs';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
-import { allSlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -41,15 +46,12 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    posHash: string;
     isOnPortfolioPage: boolean;
     isPositionEmpty: boolean;
     handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
@@ -68,22 +70,20 @@ export default function RangesMenu(props: propsIF) {
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
-        posHash,
         position,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         isPositionInRange,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
     } = props;
 
-    const { openGlobalModal } = rangeDetailsProps;
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+    } = useContext(AppStateContext);
 
     const { isAmbient } = rangeDetailsProps;
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
     const dispatch = useAppDispatch();
 
@@ -108,6 +108,7 @@ export default function RangesMenu(props: propsIF) {
         openGlobalModal(
             <RangeDetails
                 position={position}
+                closeGlobalModal={closeGlobalModal}
                 chainData={chainData}
                 {...rangeDetailsProps}
             />,
@@ -135,19 +136,6 @@ export default function RangesMenu(props: propsIF) {
         }
         setShowDropdownMenu(false);
     };
-
-    // -----------------SNACKBAR----------------
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {posHash} copied
-        </SnackbarComponent>
-    );
-    // -----------------END OF SNACKBAR----------------
 
     const repositionButton = (
         <Link
@@ -313,17 +301,17 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {rangesMenu}
             {dropdownRangesMenu}
-            {snackbarContent}
             {isHarvestModalOpen && (
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
                     <HarvestPosition
                         handleModalClose={handleModalClose}
                         position={position}
-                        dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
@@ -339,8 +327,6 @@ export default function RangesMenu(props: propsIF) {
                     <RemoveRange
                         position={position}
                         handleModalClose={handleModalClose}
-                        dexBalancePrefs={dexBalancePrefs}
-                        slippage={slippage}
                         gasPriceInGwei={gasPriceInGwei}
                         ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}

@@ -25,9 +25,9 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
+import { useAccount } from 'wagmi';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -76,13 +76,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     priceImpact: CrocImpact | undefined;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     lastBlockNumber: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
@@ -117,7 +111,6 @@ export default function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        gasPriceInGwei,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -129,8 +122,6 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
-        dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
     } = props;
@@ -159,6 +150,9 @@ export default function CurrencyConverter(props: propsIF) {
     const [tokenBSymbolLocal, setTokenBSymbolLocal] = useState<string>(
         tradeData.tokenB.symbol,
     );
+
+    const [isSellLoading, setIsSellLoading] = useState(false);
+    const [isBuyLoading, setIsBuyLoading] = useState(false);
 
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
@@ -193,6 +187,18 @@ export default function CurrencyConverter(props: propsIF) {
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
+
+    useEffect(() => {
+        if (isTokenAPrimaryLocal) {
+            if (tokenAQtyLocal !== '') {
+                setIsBuyLoading(true);
+            }
+        } else {
+            if (tokenBQtyLocal !== '') {
+                setIsSellLoading(true);
+            }
+        }
+    }, []);
 
     const navigate = useNavigate();
 
@@ -314,7 +320,16 @@ export default function CurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
+            setUserClickedCombinedMax(false);
             setSwitchBoxes(!switchBoxes);
+
+            isTokenAPrimaryLocal
+                ? tokenAQtyLocal !== ''
+                    ? setIsSellLoading(true)
+                    : null
+                : tokenBQtyLocal !== ''
+                ? setIsBuyLoading(true)
+                : null;
 
             setTokenALocal(tokenBLocal);
             setTokenBLocal(tokenALocal);
@@ -355,7 +370,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-    }, [tokenAQtyLocal, buyQtyString]);
+    }, [tokenAQtyLocal, buyQtyString, isWithdrawFromDexChecked]);
 
     useEffect(() => {
         handleBlockUpdate();
@@ -371,10 +386,17 @@ export default function CurrencyConverter(props: propsIF) {
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
-        isWithdrawFromDexChecked,
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
+
+    const { address: account } = useAccount();
+
+    useEffect(() => {
+        if (account) {
+            setUserClickedCombinedMax(false);
+        }
+    }, [account]);
 
     useEffect(() => {
         if (!poolExists) {
@@ -480,6 +502,10 @@ export default function CurrencyConverter(props: propsIF) {
 
                 setPriceImpact(impact);
 
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
+
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
             } catch (error) {
@@ -526,6 +552,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -579,6 +608,9 @@ export default function CurrencyConverter(props: propsIF) {
                           )
                         : undefined;
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -609,6 +641,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -676,6 +711,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -724,6 +762,9 @@ export default function CurrencyConverter(props: propsIF) {
                         : undefined;
 
                 setPriceImpact(impact);
+                isTokenAPrimaryLocal
+                    ? setIsBuyLoading(false)
+                    : setIsSellLoading(false);
 
                 rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
                 setIsLiquidityInsufficient(false);
@@ -758,6 +799,7 @@ export default function CurrencyConverter(props: propsIF) {
         >
             <CurrencySelector
                 provider={provider}
+                disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
@@ -767,6 +809,7 @@ export default function CurrencyConverter(props: propsIF) {
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
+                isLoading={isSellLoading}
                 tokenAorB={'A'}
                 sellToken
                 handleChangeEvent={handleTokenAChangeEvent}
@@ -794,7 +837,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
                 verifyToken={verifyToken}
@@ -806,15 +848,15 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
-                dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
                 setUserClickedCombinedMax={setUserClickedCombinedMax}
                 userClickedCombinedMax={userClickedCombinedMax}
+                setIsSellLoading={setIsSellLoading}
+                setIsBuyLoading={setIsBuyLoading}
             />
             <div
                 className={
@@ -829,6 +871,7 @@ export default function CurrencyConverter(props: propsIF) {
             <div id='swap_currency_converter'>
                 <CurrencySelector
                     provider={provider}
+                    disableReverseTokens={disableReverseTokens}
                     sellQtyString={sellQtyString}
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
@@ -839,6 +882,7 @@ export default function CurrencyConverter(props: propsIF) {
                     chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
+                    isLoading={isBuyLoading}
                     tokenAorB={'B'}
                     handleChangeEvent={handleTokenBChangeEvent}
                     tokenABalance={tokenABalance}
@@ -860,7 +904,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
                     verifyToken={verifyToken}
@@ -872,15 +915,15 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
                     setUserClickedCombinedMax={setUserClickedCombinedMax}
                     userClickedCombinedMax={userClickedCombinedMax}
+                    setIsSellLoading={setIsSellLoading}
+                    setIsBuyLoading={setIsBuyLoading}
                 />
             </div>
         </section>

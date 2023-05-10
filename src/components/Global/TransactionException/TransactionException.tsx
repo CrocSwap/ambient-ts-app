@@ -56,8 +56,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                     </p>
                     <DividerDark />
                     <p>
-                        Please check your wallet for notifications, or click
-                        &quot;Try Again&quot;.
+                        Please check your wallet for notifications or try again.
                     </p>
                 </>
             )}

@@ -20,11 +20,11 @@
     justify-content: space-between;
 }
 .sidebar::-webkit-scrollbar-track {
-    background: #1e1e24;
+    background: var(--dark2);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: #6649b8;
+    background: var(--accent1);
 }
 
 .sidebar_nav {
@@ -48,7 +48,7 @@
 .bottom_elements {
     margin-top: auto;
     width: 100%;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--dark3);
 }
 
 .sidebar_link {
@@ -56,7 +56,7 @@
 
     align-items: center;
     height: 28px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--dark3);
     /* padding: 4px 0; */
 
     cursor: pointer;
@@ -73,7 +73,7 @@
 }
 
 .open_link {
-    color: #bdbdbd;
+    color: var(--text2);
     width: 20px;
 
     transform: rotate(90deg);
@@ -92,7 +92,7 @@
 
 .sidebar_item:hover {
     background: var(--dark1);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .toggle_sidebar_icon {
@@ -112,18 +112,18 @@
 }
 
 .link_text {
-    color: var(--text-highlight);
+    color: var(--accent5);
     transition: all var(--animation-speed) ease-in-out;
     font-weight: 500;
     font-size: 12px;
     line-height: 15px;
 
     display: none;
-    margin-left: 1rem;
+    margin-left: 10px;
 }
 
 .sidebar_link:hover > .link_text {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .sidebar_link svg {
@@ -137,10 +137,10 @@
 
 .open_all_button {
     cursor: pointer;
-    background: var(--dark1);
+    background: var(--dark3);
     border: none;
     outline: none;
-    color: var(--text-grey-white);
+    color: var(--text1);
 
     display: flex;
     align-items: center;
@@ -161,7 +161,7 @@
 .connect_button p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .connect_button button {
     cursor: pointer;
@@ -183,7 +183,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -207,12 +207,12 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px var(--dark2) inset !important;
-    -webkit-text-fill-color: var(--text-grey-white) !important;
+    -webkit-text-fill-color: var(--text1) !important;
 }
 .search__box {
     width: 0;
     background: transparent;
-    color: #f7f7f7;
+    color: white;
     outline: none;
     border: none;
     opacity: 1;

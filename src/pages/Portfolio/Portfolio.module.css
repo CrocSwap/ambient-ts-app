@@ -87,7 +87,7 @@
     flex-direction: row;
     background: var(--dark2);
     border-radius: 4px;
-    outline: 1px solid var(--text-grey-light);
+    outline: 1px solid var(--text2);
     /* max-width: 200px; */
     margin: 10px auto;
 }
@@ -102,15 +102,15 @@
     outline: none;
 }
 .mobile_toggle_container button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .active_button_mobile_toggle {
     color: rgb(0, 0, 0);
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 }
 
 .non_active_button_mobile_toggle {
-    color: var(--text-grey-white);
+    color: var(--text1);
     background-color: transparent;
 }
 

@@ -2,7 +2,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-align: start;
     width: 80%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -19,10 +19,49 @@
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
+
+
+
 }
+
+/* shimmer animation effects */
+
+
 .currency_quantity::placeholder {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
 }
+
+.shimmer_wrapper {
+    color: grey;
+    -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/300%
+      100%;
+    background-repeat: no-repeat;
+    background: var(--title-gradient);
+    background: var(--shimmer);
+    background:  linear-gradient(to right, #141e30, #7371FC,  var(--dark2));
+
+    z-index: 2;
+    animation: shimmer 1.5s infinite;
+}
+
+
+@keyframes loading {
+    0% {
+        transform: translateX(-150%);
+    }
+    50% {
+        transform: translateX(-60%);
+    }
+    100% {
+        transform: translateX(30%);
+    }
+}
+
+@keyframes shimmer {
+    100% {
+      -webkit-mask-position: left;
+    }
+  }

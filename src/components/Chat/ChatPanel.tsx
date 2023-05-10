@@ -4,7 +4,7 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
@@ -15,10 +15,10 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
-import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import NotFound from '../../pages/NotFound/NotFound';
 import { topPoolIF } from '../../App/hooks/useTopPools';
 import ExpandChatIcon from '../../assets/images/icons/expand.svg';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -39,10 +39,7 @@ interface currentPoolInfo {
 }
 
 interface propsIF {
-    isChatOpen: boolean;
-    setIsChatOpen: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
-    favePools: favePoolsMethodsIF;
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     fullScreen?: boolean;
@@ -50,20 +47,18 @@ interface propsIF {
     appPage?: boolean;
     username?: string | null;
     topPools: topPoolIF[];
-    isChatEnabled: boolean;
-    areSubscriptionsEnabled: boolean;
 }
 
 export default function ChatPanel(props: propsIF) {
+    const { isFullScreen, currentPool, topPools } = props;
     const {
-        isChatEnabled,
-        areSubscriptionsEnabled,
-        isFullScreen,
-        favePools,
-        currentPool,
-        setIsChatOpen,
-        topPools,
-    } = props;
+        chat: {
+            isEnabled: isChatEnabled,
+            isOpen: isChatOpen,
+            setIsOpen: setIsChatOpen,
+        },
+        subscriptions: { isEnabled: isSubscriptionsEnabled },
+    } = useContext(AppStateContext);
 
     if (!isChatEnabled) return <NotFound />;
 
@@ -89,8 +84,8 @@ export default function ChatPanel(props: propsIF) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(
         room,
-        areSubscriptionsEnabled,
-        props.isChatOpen,
+        isSubscriptionsEnabled,
+        isChatOpen,
     );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
@@ -115,7 +110,7 @@ export default function ChatPanel(props: propsIF) {
     // eslint-disable-next-line
     function openChatPanel(e: any) {
         if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
-            setIsChatOpen(!props.isChatOpen);
+            setIsChatOpen(!isChatOpen);
         }
     }
 
@@ -206,14 +201,14 @@ export default function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, props.isChatOpen, isFullScreen, setUserCurrentPool]);
+    }, [ens, address, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
         getMsg();
-    }, [room, props.isChatOpen === false]);
+    }, [room, isChatOpen === false]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -226,10 +221,10 @@ export default function ChatPanel(props: propsIF) {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
-    }, [props.isChatOpen]);
+    }, [isChatOpen]);
 
     function handleCloseChatPanel() {
-        props.setIsChatOpen(false);
+        setIsChatOpen(false);
     }
 
     const scrollToBottomButton = async () => {
@@ -290,11 +285,11 @@ export default function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
-            onClick={() => setIsChatOpen(!props.isChatOpen)}
+            onClick={() => setIsChatOpen(!isChatOpen)}
         >
             <h2 className={styles.chat_title}>Chat</h2>
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !props.isChatOpen ? (
+                {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     <div
@@ -310,7 +305,7 @@ export default function ChatPanel(props: propsIF) {
                         />
                     </div>
                 )}
-                {isFullScreen || !props.isChatOpen ? (
+                {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -322,7 +317,7 @@ export default function ChatPanel(props: propsIF) {
                         aria-label='hide chat button'
                     />
                 )}
-                {!props.isChatOpen && (
+                {!isChatOpen && (
                     <IoIosArrowUp
                         size={22}
                         role='button'
@@ -471,16 +466,15 @@ export default function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
-            areSubscriptionsEnabled={areSubscriptionsEnabled}
-            isChatOpen={props.isChatOpen}
         />
     );
 
-    const contentHeight = props.isChatOpen ? '479px' : '30px';
+    const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
             <FullChat
                 messageList={messageList}
+                setIsChatOpen={setIsChatOpen}
                 chatNotification={chatNotification}
                 messageInput={messageInput}
                 room={room}
@@ -493,7 +487,6 @@ export default function ChatPanel(props: propsIF) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                favePools={favePools}
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
@@ -515,7 +508,6 @@ export default function ChatPanel(props: propsIF) {
                     {header}
 
                     <Room
-                        favePools={favePools}
                         selectedRoom={room}
                         setRoom={setRoom}
                         currentPool={currentPool}

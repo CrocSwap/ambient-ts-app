@@ -17,8 +17,8 @@
 }
 
 .options_toggle p {
-    color: var(--text-grey-light);
-    font-weight: 500;
+    color: var(--text2);
+    font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     list-style: none;
@@ -29,7 +29,7 @@
     justify-content: flex-end;
     margin-right: 0.5rem;
     flex-direction: row;
-    /* align-items: center; */
+    align-items: center;
 }
 
 .icon {
@@ -65,7 +65,7 @@
     font-size: 14px;
     line-height: 12px;
 
-    color: #cdc1ff;
+    color: var(--accent5);
 }
 
 .option_button {
@@ -76,7 +76,7 @@
     display: flex;
     /* justify-content: center; */
     align-items: center;
-    /* border: 1px solid #242f3f; */
+    /* border: 1px solid var(--dark3); */
     box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 
@@ -87,20 +87,20 @@
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .graph_indicaor {
-    color: #fff;
+    color: white;
 
     height: 1px;
     width: 1px;
-    background-color: #bbb;
+    background-color: var(--text2);
     border-radius: 50%;
     display: inline-block;
 
-    background-color: #fff;
-    box-shadow: 0 0 1px 0.5px #fff, 0 0 1.5px 1px #3ca6e4, 0 0 2px 1.5px #3ca6e4;
+    background-color: white;
+    box-shadow: 0 0 1px 0.5px white, 0 0 1.5px 1px #3ca6e4, 0 0 2px 1.5px #3ca6e4;
 
     margin: 2px 2px 0 3px;
 }

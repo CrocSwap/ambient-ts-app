@@ -26,17 +26,15 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
     tradeData: tradeData;
     limitOrder: LimitOrderIF;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     isShowAllEnabled: boolean;
-    isSidebarOpen: boolean;
     isOrderFilled: boolean;
     handlePulseAnimation?: (type: string) => void;
     account: string;
@@ -56,17 +54,19 @@ export default function OrdersMenu(props: propsIF) {
         chainData,
         tradeData,
         limitOrder,
-        openGlobalModal,
         isOrderFilled,
         isOwnerActiveAccount,
-        closeGlobalModal,
-        isSidebarOpen,
         handlePulseAnimation,
         lastBlockNumber,
         account,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
     } = props;
+
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const [
         isModalOpen,
@@ -360,7 +360,10 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}

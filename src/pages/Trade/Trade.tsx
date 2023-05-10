@@ -3,9 +3,9 @@
 import {
     Dispatch,
     SetStateAction,
-    ReactNode,
     useEffect,
     useState,
+    useContext,
 } from 'react';
 import {
     useParams,
@@ -41,13 +41,11 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
 import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
+import { AppStateContext } from '../../contexts/AppStateContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -77,39 +75,21 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
-    favePools: favePoolsMethodsIF;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    openGlobalModal: (content: ReactNode) => void;
-    closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
-    isSidebarOpen: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
-    fullScreenChart: boolean;
-    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
     fetchingCandle: boolean;
     setFetchingCandle: Dispatch<SetStateAction<boolean>>;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -117,10 +97,6 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
-    slippage: allSlippageMethodsIF;
     ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -151,7 +127,6 @@ export default function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        favePools,
         searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
@@ -163,37 +138,27 @@ export default function Trade(props: propsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
-        isSidebarOpen,
         handlePulseAnimation,
-        setOutsideControl,
-        setSelectedOutsideTab,
         isCandleSelected,
         setIsCandleSelected,
-        fullScreenChart,
-        setFullScreenChart,
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        dexBalancePrefs,
-        setChartTriggeredBy,
-        chartTriggeredBy,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
 
     const { params } = useParams();
+    const {
+        chart: { isFullScreen: isChartFullScreen },
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(AppStateContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -211,7 +176,7 @@ export default function Trade(props: propsIF) {
         },
         {
             path: '/range',
-            name: 'Pool',
+            name: 'Liquidity',
         },
     ];
 
@@ -289,7 +254,7 @@ export default function Trade(props: propsIF) {
         </div>
     );
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
-    const fullScreenStyle = fullScreenChart
+    const fullScreenStyle = isChartFullScreen
         ? styles.chart_full_screen
         : styles.main__chart;
 
@@ -303,8 +268,8 @@ export default function Trade(props: propsIF) {
         setHasInitialized(false);
         setTransactionFilter(candleData);
         if (isOpen) {
-            setOutsideControl(true);
-            setSelectedOutsideTab(0);
+            setOutsideControlActive(true);
+            setOutsideTabSelected(0);
         }
     };
     const [chartBg, setChartBg] = useState('transparent');
@@ -507,15 +472,12 @@ export default function Trade(props: propsIF) {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         isTokenABase: isTokenABase,
-        fullScreenChart: fullScreenChart,
-        setFullScreenChart: setFullScreenChart,
         changeState: changeState,
         candleData: candleData,
         liquidityData: liquidityData,
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
         limitTick: limitTick,
-        favePools: favePools,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
         upBodyColor: upBodyColor,
@@ -531,23 +493,11 @@ export default function Trade(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         poolPriceChangePercent: poolPriceChangePercent,
         setFetchingCandle: setFetchingCandle,
-        minPrice: minPrice,
-        maxPrice: maxPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
-        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
-        isSidebarOpen: isSidebarOpen,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
-        isTutorialMode: props.isTutorialMode,
-        setIsTutorialMode: props.setIsTutorialMode,
         setCandleDomains: setCandleDomains,
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
         repositionRangeWidth: repositionRangeWidth,
-        setChartTriggeredBy: setChartTriggeredBy,
-        chartTriggeredBy: chartTriggeredBy,
     };
 
     const tradeTabsProps = {
@@ -576,16 +526,9 @@ export default function Trade(props: propsIF) {
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        openGlobalModal: props.openGlobalModal,
-        closeGlobalModal: props.closeGlobalModal,
         searchableTokens: searchableTokens,
-        isSidebarOpen: isSidebarOpen,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
@@ -593,7 +536,6 @@ export default function Trade(props: propsIF) {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        favePools: favePools,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         poolPriceChangePercent: poolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
@@ -601,8 +543,6 @@ export default function Trade(props: propsIF) {
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         candleTime: isMarketOrLimitModule

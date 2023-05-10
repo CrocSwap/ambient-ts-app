@@ -1,13 +1,16 @@
 .main_container{
-    width: 407px;
- 
-    height: 280px;
+
 
     display: flex;
     flex-direction: column;
     gap: 1rem;
     justify-content: space-between;
-    padding: 8px;
+    padding: 8px 16px;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
+    text-align: center;
+    padding-bottom: 1rem;
+    
     
 }
 
@@ -19,17 +22,17 @@
 .first_section{
     display: flex;
     justify-content: center;
-    /* align-items: center;
-    text-align: center; */
-    margin-top: 3rem;
+
+    margin-top: 1rem;
 }
 
 
 
 .main_container p{
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: 12;
-    line-height: var(--body-lh);
+
+    line-height: 22px;
 }
 
 .checkbox{
@@ -40,5 +43,18 @@
 }
 
 .main_container a{
-    color: var(--text-highlight-dark)
+    color: var(--accent1);
+    text-decoration: underline;
+}
+
+@media only screen and (min-width: 768px) {
+
+    .main_container{
+        width: 510px;
+     
+        height: 223px;
+    
+      
+        
+    }
 }

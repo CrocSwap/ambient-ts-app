@@ -56,7 +56,7 @@ export default function SoloTokenImport(props: propsIF) {
                     target='_blank'
                     rel='noopener noreferrer'
                     style={{
-                        color: 'var(--accent-secondary)',
+                        color: 'var(--accent2)',
                     }}
                     aria-label={customToken.symbol}
                 >

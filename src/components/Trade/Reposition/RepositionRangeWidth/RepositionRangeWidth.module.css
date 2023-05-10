@@ -31,7 +31,7 @@
 .range_width_title {
     display: flex;
     justify-content: flex-start;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     margin-top: 10px;
@@ -50,7 +50,7 @@
 .percentage_amount {
     display: flex;
     justify-content: center;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
 }
@@ -85,7 +85,7 @@
 
     cursor: pointer;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     border: none;
     border-radius: 0.5rem;
     background-color: transparent;
@@ -101,17 +101,12 @@
 }
 input[type='range'] {
     width: 100%; /* Specific width is required for Firefox. */
-    height: 10px;
+    height: 100%;
     border-radius: 10px;
     outline: none;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
 
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    );
+    background: var(--title-gradient);
 
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }
@@ -142,7 +137,7 @@ input[type='range']::-webkit-slider-thumb {
     margin-top: -14px;
     cursor: pointer;
 
-    border: 1px solid #cdc1ff;
+    border: 1px solid var(--accent5);
     box-sizing: border-box;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
@@ -157,10 +152,10 @@ input[type='range']::-moz-range-thumb {
 
     cursor: pointer;
 
-    border: 1px solid #000;
+    border: 1px solid black;
     border-radius: 3px;
-    background: #fff;
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    background: white;
+    box-shadow: var(--dark-box-shadow);
 }
 
 /* All the same stuff for IE */
@@ -170,10 +165,10 @@ input[type='range']::-ms-thumb {
 
     cursor: pointer;
 
-    border: 1px solid #000;
+    border: 1px solid black;
     border-radius: 3px;
-    background: #fff;
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    background: white;
+    box-shadow: var(--dark-box-shadow);
 }
 
 input[type='range']::-webkit-slider-runnable-track {
@@ -183,29 +178,17 @@ input[type='range']::-webkit-slider-runnable-track {
 
     cursor: pointer;
 
-    border: 0.2px solid #010101;
+    border: var(--dark-border);
     border-radius: 10px;
 
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    box-shadow: var(--dark-box-shadow);
 }
 
 input[type='range']:focus::-webkit-slider-runnable-track {
     outline: none;
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
     border-radius: 10px;
 }
 
@@ -216,16 +199,10 @@ input[type='range']::-moz-range-track {
 
     cursor: pointer;
 
-    border: 0.2px solid #010101;
+    border: var(--dark-border);
     border-radius: 1.3px;
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    background: var(--accent1);
+    box-shadow: var(--dark-box-shadow);
 }
 
 input[type='range']::-ms-track {
@@ -242,43 +219,25 @@ input[type='range']::-ms-track {
 }
 input[type='range']::-ms-fill-lower {
     outline: none;
-    border: 0.2px solid #010101;
+    border: var(--dark-border);
     border-radius: 10px;
 
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    box-shadow: var(--dark-box-shadow);
 }
 input[type='range']:focus::-ms-fill-lower {
     background: var(--dark2);
 }
 input[type='range']::-ms-fill-upper {
-    /* border: 0.2px solid #010101; */
+    /* border: var(--dark-border); */
     border-radius: 10px;
 
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 
-    box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
+    box-shadow: var(--dark-box-shadow);
 }
 input[type='range']:focus::-ms-fill-upper {
     outline: none;
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    ); /* Otherwise white in Chrome */
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 }
