@@ -112,7 +112,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tradeData.tokenB.chainId,
     ]);
 
-    // useEffect that runs when token pair changes
+    // Runs when token pair changes
     useMemo(() => {
         if (rtkMatchesParams && props.crocEnv) {
             // reset advanced ticks if token pair change not the result of a 'copy trade'

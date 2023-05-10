@@ -430,7 +430,6 @@ function CurrencyConverter(props: propsIF) {
         () => (tokenAAmount: number) => {
             if (!poolExists) {
                 setSwapAllowed(false);
-
                 if (poolExists === undefined) {
                     setSwapButtonErrorMessage('...');
                 } else if (poolExists === false) {
@@ -478,6 +477,8 @@ function CurrencyConverter(props: propsIF) {
             tokenBLocal,
             slippageTolerancePercentage,
             isTokenAPrimaryLocal,
+            buyQtyString,
+            sellQtyString,
         ],
     );
 
