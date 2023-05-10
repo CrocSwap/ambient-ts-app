@@ -6007,10 +6007,7 @@ export default function Chart(props: propsIF) {
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
-        const selectedVolumeData = unparsedCandleData.find(
-            (item: any) => item.time === nearest?.time,
-        );
-        const selectedVolumeDataValue = selectedVolumeData?.volumeUSD;
+        const selectedVolumeDataValue = nearest?.volumeUSD;
 
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
