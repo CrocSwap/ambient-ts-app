@@ -156,10 +156,10 @@
     text-align: right;
 }
 
-.blockie_container {
+.jazzicon_container {
     border-radius: 50%;
 }
-.blockie_container canvas {
+.jazzicon_container canvas {
     max-width: 100%;
     max-height: 100%;
     margin: 0 auto;

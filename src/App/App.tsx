@@ -92,7 +92,6 @@ import {
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
-import { getNFTs } from './functions/getNFTs';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
@@ -3034,19 +3033,8 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const [imageData, setImageData] = useState<string[]>([]);
-
     useEffect(() => {
         dispatch(resetUserGraphData());
-    }, [account]);
-
-    useEffect(() => {
-        (async () => {
-            if (account) {
-                const imageLocalURLs = await getNFTs(account);
-                if (imageLocalURLs) setImageData(imageLocalURLs);
-            }
-        })();
     }, [account]);
 
     // Take away margin from left if we are on homepage or swap
@@ -3248,7 +3236,6 @@ export default function App() {
         ensName,
         lastBlockNumber,
         connectedAccount: account ? account : '',
-        userImageData: imageData,
         chainId: chainData.chainId,
         chainData: chainData,
         currentPositionActive,
@@ -3298,7 +3285,6 @@ export default function App() {
         },
         currentPool: currentPoolInfo,
         isFullScreen: true,
-        userImageData: imageData,
         username: ensName,
         appPage: true,
         topPools: topPools,
@@ -3586,7 +3572,6 @@ export default function App() {
                                 }}
                                 currentPool={currentPoolInfo}
                                 isFullScreen={false}
-                                userImageData={imageData}
                                 topPools={topPools}
                             />
                         )}
