@@ -1818,11 +1818,7 @@ export default function Range(props: propsIF) {
                 {isConfirmationModalOpen && (
                     <Modal
                         onClose={handleModalClose}
-                        title={
-                            isAmbient
-                                ? 'Ambient Confirmation'
-                                : 'Range Confirmation'
-                        }
+                        title={'Pool Confirmation'}
                         centeredTitle
                     >
                         <ConfirmRangeModal

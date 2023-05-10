@@ -31,7 +31,7 @@ export default function SwapButton(props: propsIF) {
                             : swapAllowed
                             ? bypassConfirmSwap.isEnabled
                                 ? 'Submit Swap'
-                                : 'Open Confirmation'
+                                : 'Confirm'
                             : swapButtonErrorMessage
                         : 'Acknowledge'
                 }
