@@ -3,7 +3,6 @@ import styles from './ExchangeBalance.module.css';
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
-import vaultImage from '../../../assets/images/sidebarImages/vault.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
 import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
@@ -202,7 +201,8 @@ export default function ExchangeBalance(props: propsIF) {
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
                 <img
-                    src={!fullLayoutActive ? closeSidebarImage : vaultImage}
+                    src={closeSidebarImage}
+                    style={{ rotate: fullLayoutActive ? '180deg' : undefined }}
                     alt='toggleSidebar'
                     width='20px'
                 />
@@ -238,10 +238,8 @@ export default function ExchangeBalance(props: propsIF) {
                 <section>
                     <div className={styles.info_text}>
                         Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs.
-                    </div>
-                    <div className={styles.info_text}>
-                        Collateral can be withdrawn at any time.
+                        can be traded at lower gas costs. Collateral can be
+                        withdrawn at any time.
                     </div>
                 </section>
             )}

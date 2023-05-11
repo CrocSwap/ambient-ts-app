@@ -815,7 +815,7 @@ export default function Reposition(props: propsIF) {
                                     ? 'Position Currently In Range'
                                     : bypassConfirmRepo.isEnabled
                                     ? 'Reposition'
-                                    : 'Open Confirmation'
+                                    : 'Confirm'
                             }
                             action={
                                 bypassConfirmRepo.isEnabled
