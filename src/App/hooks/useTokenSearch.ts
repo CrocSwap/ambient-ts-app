@@ -71,7 +71,10 @@ export const useTokenSearch = (
         function searchAsAddress(): TokenIF[] {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
-            const tokenLookup: TokenIF|undefined = tokens.getByAddress(validatedInput, chainId);
+            const tokenLookup: TokenIF | undefined = tokens.getByAddress(
+                validatedInput,
+                chainId,
+            );
             return tokenLookup ? [tokenLookup] : [];
         }
 
@@ -87,7 +90,7 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = tokens.getBySource('ambient');
+            const outputTokens = tokens.default;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -109,7 +112,7 @@ export const useTokenSearch = (
                     const isTokenKnown = verificationNeeded
                         ? tokens.verify(
                               newTokens[i].address,
-                              newTokens[i].chainId
+                              newTokens[i].chainId,
                           )
                         : true;
                     // add token to output if not already there and limiter is below max
