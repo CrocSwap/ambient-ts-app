@@ -57,7 +57,6 @@ interface propsIF {
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
     chainId: string;
@@ -150,7 +149,10 @@ export default function Portfolio(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
-        const oldToken: TokenIF|undefined = tokens.getByAddress(token.address, token.chainId);
+        const oldToken: TokenIF | undefined = tokens.getByAddress(
+            token.address,
+            token.chainId,
+        );
         const newToken = { ...token };
         newToken.name = oldToken ? oldToken.name : '';
         newToken.logoURI = oldToken ? oldToken.logoURI : '';

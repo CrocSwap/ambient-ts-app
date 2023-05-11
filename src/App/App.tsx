@@ -86,7 +86,6 @@ import {
     setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
-import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
@@ -98,8 +97,6 @@ import {
     resetUserAddresses,
     setAddressAtLogin,
     setAddressCurrent,
-    setEnsNameCurrent,
-    setEnsOrAddressTruncated,
     setErc20Tokens,
     setIsLoggedIn,
     setIsUserIdle,
@@ -132,7 +129,6 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import trimString from '../utils/functions/trimString';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
@@ -179,7 +175,6 @@ import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar'
 import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
 
-const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
@@ -754,53 +749,7 @@ export default function App() {
         }
     }, [lastReceiptHash]);
 
-    const ensName = userData.ensNameCurrent || '';
-
-    // check for ENS name account changes
-    useEffect(() => {
-        (async () => {
-            if (isUserLoggedIn && account && provider) {
-                IS_LOCAL_ENV && console.debug('checking for ens name');
-                try {
-                    const ensName = await cachedFetchAddress(
-                        provider,
-                        account,
-                        chainData.chainId,
-                    );
-                    if (ensName) {
-                        // setEnsName(ensName);
-                        dispatch(setEnsNameCurrent(ensName));
-                        if (ensName.length > 15) {
-                            dispatch(
-                                setEnsOrAddressTruncated(
-                                    trimString(ensName, 10, 3, '…'),
-                                ),
-                            );
-                        } else {
-                            dispatch(setEnsOrAddressTruncated(ensName));
-                        }
-                    } else {
-                        dispatch(setEnsNameCurrent(undefined));
-                        dispatch(
-                            setEnsOrAddressTruncated(
-                                trimString(account, 5, 3, '…'),
-                            ),
-                        );
-                    }
-                } catch (error) {
-                    dispatch(setEnsNameCurrent(undefined));
-                    dispatch(
-                        setEnsOrAddressTruncated(
-                            trimString(account, 5, 3, '…'),
-                        ),
-                    );
-                }
-            } else if (!isUserLoggedIn || !account) {
-                dispatch(setEnsOrAddressTruncated(undefined));
-            }
-        })();
-    }, [isUserLoggedIn, account, chainData.chainId]);
-
+    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
@@ -2795,7 +2744,6 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
@@ -3252,7 +3200,6 @@ export default function App() {
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
-        ensName,
         lastBlockNumber,
         connectedAccount: account ? account : '',
         chainId: chainData.chainId,
@@ -3304,7 +3251,6 @@ export default function App() {
         },
         currentPool: currentPoolInfo,
         isFullScreen: true,
-        username: ensName,
         appPage: true,
         topPools: topPools,
     };
