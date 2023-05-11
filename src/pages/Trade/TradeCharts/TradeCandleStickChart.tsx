@@ -173,6 +173,10 @@ function TradeCandleStickChart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
+    const liquidityPullData = useAppSelector(
+        (state) => state.graphData.liquidityData,
+    );
+
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -642,8 +646,7 @@ function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        diffHashSigLiquidity(props.liquidityData),
-        poolPriceDisplay,
+        diffHashSigLiquidity(liquidityPullData),
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
@@ -764,7 +767,6 @@ function TradeCandleStickChart(props: propsIF) {
             volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
-
             setScaleData(() => {
                 return {
                     xScale: xScale,

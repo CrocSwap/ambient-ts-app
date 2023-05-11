@@ -111,6 +111,12 @@ export interface LiquidityData {
     time: number;
     currentTick: number;
     ranges: Array<Range>;
+    curveState: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        network: string;
+    };
 }
 
 export interface Range {
@@ -250,7 +256,12 @@ const initialState: graphData = {
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
-    liquidityData: { time: 0, currentTick: 0, ranges: [] },
+    liquidityData: {
+        time: 0,
+        currentTick: 0,
+        ranges: [],
+        curveState: { base: '', quote: '', poolIdx: -1, network: '' },
+    },
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
