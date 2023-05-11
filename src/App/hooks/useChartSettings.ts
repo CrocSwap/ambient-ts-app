@@ -259,7 +259,15 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 range: new CandleTime(candleTimeRange, setCandleTimeRange),
             },
         };
-    }, [candleTimeMarket, candleTimeRange]);
+    }, [
+        isVolumeSubchartEnabled,
+        isTvlSubchartEnabled,
+        isFeeRateSubchartEnabled,
+        candleTimeMarket,
+        candleTimeRange,
+        marketOverlay,
+        rangeOverlay,
+    ]);
 
     return chartSettings;
 };

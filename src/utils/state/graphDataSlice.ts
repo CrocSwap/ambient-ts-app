@@ -107,20 +107,11 @@ export interface VolumeByTimeData {
     method: string;
 }
 
-// export interface LiquidityForAllPools {
-//     pools: Array<LiquidityByPool>;
-// }
-
 export interface LiquidityData {
     time: number;
     currentTick: number;
     ranges: Array<Range>;
 }
-
-// export interface LiquidityByPool {
-//     pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
-//     liquidityData: liquidityData;
-// }
 
 export interface Range {
     lowerBound: number | string;
@@ -504,8 +495,6 @@ export const graphDataSlice = createSlice({
             }
         },
         setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
-            // console.log('pool found in RTK for new liquidity data');
-
             state.liquidityData = action.payload;
         },
         setCandles: (
@@ -519,8 +508,6 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (indexOfPool === -1) {
-                // console.log('pool not found in RTK for new candle data');
-
                 state.candlesForAllPools.pools =
                     state.candlesForAllPools.pools.concat({
                         pool: action.payload.pool,
@@ -598,7 +585,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, replace candles for pool if different
             } else {
-                // console.log('pool found in RTK for new candle subscription data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -607,7 +593,6 @@ export const graphDataSlice = createSlice({
                     .findIndex((duration) => duration === durationToFind);
 
                 if (indexOfDuration === -1) {
-                    // console.log('duration not found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration = state.candlesForAllPools.pools[

@@ -2,7 +2,10 @@
 
 import { ChartUtils } from '../../pages/Trade/TradeCharts/TradeCandleStickChart';
 import { TransactionIF } from '../interfaces/TransactionIF';
-import { CandlesByPoolAndDuration } from '../state/graphDataSlice';
+import {
+    CandlesByPoolAndDuration,
+    LiquidityData,
+} from '../state/graphDataSlice';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {
@@ -48,6 +51,21 @@ export function diffHashSigChart(chart?: ChartUtils) {
         volume: chart.volumeChartData[0],
         fee: chart.feeChartData[0],
         pool: chart.poolAdressComb,
+    });
+}
+
+export function diffHashSigLiquidity(liquidity?: LiquidityData) {
+    if (!liquidity) {
+        return 'null';
+    }
+    if (liquidity.ranges.length == 0) {
+        return 'empty';
+    }
+
+    return diffHashSig({
+        time: liquidity.time,
+        ranges: liquidity.ranges.map((r) => r.activeLiq),
+        tick: liquidity.currentTick,
     });
 }
 

@@ -309,36 +309,6 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // const [limitTriangleData, setLimitTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
-    // const [rangeTriangleData, setRangeTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
     const [market, setMarket] = useState([
         {
             name: 'Market Value',
@@ -347,14 +317,14 @@ export default function Chart(props: propsIF) {
     ]);
 
     const lastTvlData = parsedChartData?.tvlChartData.find(
-        (item: any) =>
+        (item) =>
             item.time ===
-            d3.max(parsedChartData?.tvlChartData, (data: any) => data.time),
+            d3.max(parsedChartData?.tvlChartData, (data) => data.time),
     );
     const lastFeeRateData = parsedChartData?.feeChartData.find(
-        (item: any) =>
+        (item) =>
             item.time ===
-            d3.max(parsedChartData?.feeChartData, (data: any) => data.time),
+            d3.max(parsedChartData?.feeChartData, (data) => data.time),
     );
 
     const [subChartValues, setsubChartValues] = useState([
@@ -2825,10 +2795,6 @@ export default function Chart(props: propsIF) {
 
                                     return newTargets;
                                 });
-                                // setTriangleRangeValues(
-                                //     liquidityData?.topBoundary,
-                                //     minValue,
-                                // );
                             } else {
                                 if (lineToBeSet === 'Max') {
                                     const pinnedTick =

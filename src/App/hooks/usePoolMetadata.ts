@@ -474,6 +474,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tradeData.tokenB.address,
         quoteTokenAddress,
         props.chainData.chainId,
+        props.chainData.poolIndex,
+        props.searchableTokens,
+        props.httpGraphCacheServerDomain,
+        props.lastBlockNumber == 0,
         !!props.crocEnv,
     ]);
 
@@ -519,6 +523,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         baseTokenAddress,
         quoteTokenAddress,
         props.chainData.chainId,
+        props.chainData.poolIndex,
         props.lastBlockNumber === 0,
         props.isChartEnabled,
     ]);
@@ -545,10 +550,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((response) => response.json())
                 .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
+                    dispatch(setLiquidity(json.data));
                 })
                 .catch(console.error);
         }, 2000);
@@ -566,10 +568,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((response) => response.json())
                 .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
+                    dispatch(setLiquidity(json.data));
                 })
                 .catch(console.error);
         }, 15000);
@@ -577,7 +576,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             clearTimeout(timer1);
             clearTimeout(timer2);
         };
-    }, [props.receiptCount]);
+    }, [
+        baseTokenAddress,
+        quoteTokenAddress,
+        props.chainData.chainId,
+        props.chainData.poolIndex,
+        props.receiptCount,
+        props.lastBlockNumber == 0,
+    ]);
 
     useEffect(() => {
         (async () => {
@@ -613,7 +619,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     });
             }
         })();
-    }, [props.isServerEnabled, baseTokenAddress, quoteTokenAddress]);
+    }, [
+        props.isServerEnabled,
+        props.lastBlockNumber == 0,
+        baseTokenAddress,
+        quoteTokenAddress,
+        props.chainData.chainId,
+        props.chainData.poolIndex,
+    ]);
 
     return {
         baseTokenAddress,
