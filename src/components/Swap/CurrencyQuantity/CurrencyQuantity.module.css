@@ -19,13 +19,9 @@
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
-
-
-
 }
 
 /* shimmer animation effects */
-
 
 .currency_quantity::placeholder {
     color: var(--text3);
@@ -37,16 +33,20 @@
 .shimmer_wrapper {
     color: grey;
     -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/300%
-      100%;
+        100%;
     background-repeat: no-repeat;
     background: var(--title-gradient);
     background: var(--shimmer);
-    background:  linear-gradient(to right, var(--dark4), var(--dark1),  var(--dark2));
+    background: linear-gradient(
+        to right top,
+        var(--dark4),
+        var(--dark1),
+        var(--dark2)
+    );
 
     z-index: 2;
     animation: shimmer 1.5s infinite;
 }
-
 
 @keyframes loading {
     0% {
@@ -62,6 +62,6 @@
 
 @keyframes shimmer {
     100% {
-      -webkit-mask-position: left;
+        -webkit-mask-position: left;
     }
-  }
+}
