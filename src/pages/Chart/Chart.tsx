@@ -164,6 +164,8 @@ interface propsIF {
     chartTriggeredBy: string;
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDuration;
+    prevPeriod: number;
+    candleTimeInSeconds: number;
 }
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
@@ -221,6 +223,8 @@ export default function Chart(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         unparsedData,
+        prevPeriod,
+        candleTimeInSeconds,
         // candleTime,
     } = props;
 
@@ -943,7 +947,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setRescale(true);
-    }, [location.pathname, period]);
+    }, [location.pathname]);
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
@@ -5936,7 +5940,12 @@ export default function Chart(props: propsIF) {
 
     // autoScaleF
     useEffect(() => {
-        if (rescale && !isLineDrag) {
+        if (
+            rescale &&
+            !isLineDrag &&
+            prevPeriod === period &&
+            candleTimeInSeconds === period
+        ) {
             changeScale();
         }
     }, [
@@ -5948,6 +5957,8 @@ export default function Chart(props: propsIF) {
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
+        prevPeriod === period,
+        candleTimeInSeconds === period,
     ]);
 
     // Call drawChart()
