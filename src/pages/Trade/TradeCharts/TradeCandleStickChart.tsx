@@ -131,6 +131,8 @@ export default function TradeCandleStickChart(props: propsIF) {
     const [scaleData, setScaleData] = useState<any>();
     const [liquidityScale, setLiquidityScale] = useState<any>();
     const [liquidityDepthScale, setLiquidityDepthScale] = useState<any>();
+    const [prevPeriod, setPrevPeriod] = useState<any>();
+    const [prevFirsCandle, setPrevFirsCandle] = useState<any>();
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -497,11 +499,6 @@ export default function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug(
-                'resetting scale for chart because timeframe changed',
-                period,
-            );
         if (!(unparsedCandleData?.length && unparsedCandleData.length > 0)) {
             setScaleData(() => {
                 return undefined;
@@ -509,7 +506,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         } else {
             setScaleForChart(unparsedCandleData);
         }
-    }, [period, unparsedCandleData?.length && unparsedCandleData.length > 0]);
+    }, [unparsedCandleData?.length && unparsedCandleData.length > 0]);
 
     // Liq Scale
     useEffect(() => {
@@ -608,6 +605,37 @@ export default function TradeCandleStickChart(props: propsIF) {
         }
     };
 
+    useEffect(() => {
+        if (unparsedCandleData) {
+            if (scaleData && prevPeriod && prevFirsCandle && period) {
+                const domain = scaleData.xScale.domain();
+
+                const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
+
+                const diffDomain = Math.abs(domain[1] - domain[0]);
+                const factorDomain = diffDomain / (prevPeriod * 1000);
+
+                const diffCandle = Math.abs(
+                    Math.max(domain[1], prevFirsCandle * 1000) -
+                        Math.min(domain[1], prevFirsCandle * 1000),
+                );
+                const factorCanle = diffCandle / (prevPeriod * 1000);
+
+                const newDiffDomain = period * 1000 * factorDomain;
+                const newDiffCandle = direction * period * 1000 * factorCanle;
+
+                const firsShownDomain =
+                    unparsedCandleData[0].time * 1000 - newDiffCandle;
+                const lastShownCandle = firsShownDomain - newDiffDomain;
+
+                scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
+            }
+
+            setPrevPeriod(() => period);
+            setPrevFirsCandle(() => unparsedCandleData[0].time);
+        }
+    }, [period]);
+
     const loading = (
         <div
             style={{ height: '100%', width: '100%' }}
@@ -652,7 +680,10 @@ export default function TradeCandleStickChart(props: propsIF) {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!isLoading && candleData !== undefined ? (
+                {!isLoading &&
+                candleData !== undefined &&
+                prevPeriod === period &&
+                candleTimeInSeconds === period ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
@@ -679,6 +710,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
                         chainId={chainId}
+                        prevPeriod={prevPeriod}
+                        candleTimeInSeconds={candleTimeInSeconds}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
