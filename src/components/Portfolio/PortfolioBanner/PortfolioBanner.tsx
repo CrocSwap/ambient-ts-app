@@ -31,7 +31,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     const jazziconsSeed = resolvedAddress
         ? resolvedAddress.toLowerCase()
-        : userAddress?.toLowerCase();
+        : userAddress?.toLowerCase() ?? '';
 
     const myJazzicon = (
         <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
