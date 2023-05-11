@@ -215,10 +215,9 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
 
+    // CONTEXT: chart context?
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
-
-    const { address: account, isConnected } = useAccount();
 
     const userPreferences = {
         favePools: useFavePools(),
@@ -234,7 +233,7 @@ export default function App() {
         bypassConfirmRepo: useSkipConfirm('repo'),
     };
 
-    // TODO: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
+    // CONTEXT: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -274,6 +273,7 @@ export default function App() {
         },
         globalModal: useGlobalModal(),
         globalPopup: useGlobalPopup(),
+        // CONTEXT: move into sidebar context
         sidebar: useSidebar(location.pathname),
         snackbar: useSnackbar(),
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
@@ -311,24 +311,27 @@ export default function App() {
         subscriptions: { isEnabled: areSubscriptionsEnabled },
     };
 
-    useEffect(() => {
-        if (account && checkBlacklist(account)) {
-            disconnect();
-        }
-        if (!account) {
-            setCrocEnv(undefined);
-            setIsShowAllEnabled(true);
-        }
-    }, [account]);
-
+    // CONTEXT: to be removed, have components that require it reference it directly
+    const { address: account, isConnected } = useAccount();
+    const userData = useAppSelector((state) => state.userData);
     const tradeData = useAppSelector((state) => state.tradeData);
-
+    const isUserIdle = userData.isUserIdle;
+    // current configurations of trade as specified by the user
+    const currentPoolInfo = tradeData;
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+    const isUserLoggedIn = isConnected;
+    const ensName = userData.ensNameCurrent || '';
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
 
+    // CONTEXT: to be removed, reference useLocation directly when needed
     const ticksInParams =
         location.pathname.includes('lowTick') &&
         location.pathname.includes('highTick');
 
+    // CONTEXT: helper function
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
         // output value, false is default return
@@ -365,106 +368,79 @@ export default function App() {
         // run hook when URL or token addresses in RTK change
     }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
 
-    const onIdle = () => {
-        IS_LOCAL_ENV && console.debug('user is idle');
-        dispatch(setIsUserIdle(true));
-    };
+    // CONTEXT: move to inside crocenv context
+    useEffect(() => {
+        if (account && checkBlacklist(account)) {
+            disconnect();
+        }
+        if (!account) {
+            setCrocEnv(undefined);
+            setIsShowAllEnabled(true);
+        }
+    }, [account]);
 
-    const onActive = () => {
-        IS_LOCAL_ENV && console.debug('user is active');
-        dispatch(setIsUserIdle(false));
-    };
-
-    useIdleTimer({
-        onIdle,
-        onActive,
-        timeout: 1000 * 60 * 60, // set user to idle after 60 minutes
-        promptTimeout: 0,
-        events: [
-            'mousemove',
-            'keydown',
-            'wheel',
-            'DOMMouseScroll',
-            'mousewheel',
-            'mousedown',
-            'touchstart',
-            'touchmove',
-            'MSPointerDown',
-            'MSPointerMove',
-            'visibilitychange',
-        ],
-        immediateEvents: [],
-        debounce: 0,
-        throttle: 0,
-        eventsThrottle: 200,
-        element: document,
-        startOnMount: true,
-        startManually: false,
-        stopOnIdle: false,
-        crossTab: false,
-        name: 'idle-timer',
-        syncTimers: 0,
-        leaderElection: false,
-    });
-
-    const userData = useAppSelector((state) => state.userData);
-
-    const isUserLoggedIn = isConnected;
-    const isUserIdle = userData.isUserIdle;
-
+    //  CONTEXT: chain context - modify so that the appChain hook updates when userLoggedIn state changes
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
 
+    // CONTEXT: croc env context - modify so that updates when chain id changes
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
+    // CONTEXT: user preferences context
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();
 
-    useEffect(() => {
-        if (isConnected) {
-            if (userData.isLoggedIn === false && account) {
-                IS_LOCAL_ENV && console.debug('settting to logged in');
-                dispatch(setIsLoggedIn(true));
-                dispatch(setAddressAtLogin(account));
-            } else if (userData.isLoggedIn === false) {
-                IS_LOCAL_ENV &&
-                    console.debug('settting to logged in - no address');
-                dispatch(setIsLoggedIn(true));
-            } else if (userData.isLoggedIn === undefined) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        } else {
-            if (userData.isLoggedIn === true) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        }
-    }, [isConnected, userData.isLoggedIn, account]);
-
+    // CONTEXT: croc env context
     // Used in Portfolio/Account related pages for defining token universe.
     // Ideally this is inefficient, because we're also using useToken() hook
     // in parrallel which internally uses this hook. So there's some duplicated
     // effort
     const tokensOnActiveLists = useTokenMap();
 
+    // CONTEXT: to be moved into candle context
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
     >();
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
-
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
-
     const [fetchingCandle, setFetchingCandle] = useState(false);
+    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    });
+    const domainBoundaryInSeconds = Math.floor(
+        (candleDomains?.domainBoundry || 0) / 1000,
+    );
 
-    // Range States
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
+    };
+
+    // CONTEXT: to be moved into range context
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
@@ -491,6 +467,10 @@ export default function App() {
         setChartTriggeredBy,
     };
 
+    // CONTEXT: to be moved into croc env context
+    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+
+    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
     const [
         verifyToken,
         getAmbientTokens,
@@ -499,6 +479,7 @@ export default function App() {
         getTokensByName,
     ] = useToken(chainData.chainId);
 
+    // CONTEXT: sidebar context - move sidebar behaviour from app state -> sidebar context?
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
         chainData.chainId,
@@ -508,25 +489,26 @@ export default function App() {
         ackTokens,
     );
 
+    // CONTEXT: can be removed
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
+    // CONTEXT: move into app state, rename - toggle (your transactions vs all transactions)
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+
+    // CONTEXT: sidebar context - rename?
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [expandTradeTable, setExpandTradeTable] = useState(true);
-    // eslint-disable-next-line
-    const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
+    // CONTEXT: trade/trade table/tab state
+    const [expandTradeTable, setExpandTradeTable] = useState(true);
+
+    // CONTEXT: croc env context
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
 
-    window.ononline = () => setUserIsOnline(true);
-    window.onoffline = () => setUserIsOnline(false);
-
-    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-
+    // CONTEXT: remove and reference as necessary
     const provider = useProvider();
     const isInitialized = !!provider;
     const {
@@ -537,6 +519,7 @@ export default function App() {
         //  isLoading
     } = useSigner();
 
+    // CONTEXT: helper function that will live in croc env context
     const setNewCrocEnv = async () => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
@@ -579,6 +562,7 @@ export default function App() {
         }
     };
 
+    // CONTEXT: move into croc env context
     useEffect(() => {
         setNewCrocEnv();
     }, [
@@ -588,6 +572,7 @@ export default function App() {
         signer,
     ]);
 
+    // CONTEXT: move into croc env - setEthMainnetUsdPrice when croc env changes
     useEffect(() => {
         if (provider) {
             (async () => {
@@ -603,8 +588,33 @@ export default function App() {
         }
     }, [provider]);
 
+    // CONTEXT: move into sidebar component
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
+    // CONTEXT: leave in app.tsx for now, investigate if its being used, and move to another file if necessary - potentially combine
+    useEffect(() => {
+        if (isConnected) {
+            if (userData.isLoggedIn === false && account) {
+                IS_LOCAL_ENV && console.debug('settting to logged in');
+                dispatch(setIsLoggedIn(true));
+                dispatch(setAddressAtLogin(account));
+            } else if (userData.isLoggedIn === false) {
+                IS_LOCAL_ENV &&
+                    console.debug('settting to logged in - no address');
+                dispatch(setIsLoggedIn(true));
+            } else if (userData.isLoggedIn === undefined) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
+                dispatch(setIsLoggedIn(false));
+                dispatch(resetUserAddresses());
+            }
+        } else {
+            if (userData.isLoggedIn === true) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
+                dispatch(setIsLoggedIn(false));
+                dispatch(resetUserAddresses());
+            }
+        }
+    }, [isConnected, userData.isLoggedIn, account]);
     useEffect(() => {
         IS_LOCAL_ENV &&
             console.debug(
@@ -618,36 +628,32 @@ export default function App() {
         }
     }, [isUserLoggedIn, account]);
 
+    // CONTEXT: remove and reference as necessary
     const dispatch = useAppDispatch();
 
-    // current configurations of trade as specified by the user
-    const currentPoolInfo = tradeData;
-
+    // CONTEXT: token context?
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] =
         useState<TokenIF[]>(defaultTokens);
-
     useEffect(() => {
         setSearchableTokens(getTokensOnChain(chainData.chainId));
     }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
-
     const [needTokenLists, setNeedTokenLists] = useState(true);
-
     // trigger a useEffect() which needs to run when new token lists are received
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-
     if (needTokenLists) {
         IS_LOCAL_ENV && console.debug('fetching token lists');
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
-
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('initializing local storage');
         initializeUserLocalStorage();
     }, [tokenListsReceived]);
 
+    // CONTEXT: chain state context?
+    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
@@ -681,7 +687,6 @@ export default function App() {
             })
             .catch(console.error);
     }
-
     const BLOCK_NUM_POLL_MS = 2000;
     useEffect(() => {
         (async () => {
@@ -690,7 +695,7 @@ export default function App() {
             if (chainData.wsUrl) {
                 return;
             }
-            // Grab block right away, then poll on periotic basis
+            // Grab block right away, then poll on periodic basis
 
             const interval = setInterval(async () => {
                 await pollBlockNum();
@@ -698,7 +703,6 @@ export default function App() {
             return () => clearInterval(interval);
         })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
-
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
@@ -717,7 +721,6 @@ export default function App() {
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         });
-
     useEffect(() => {
         if (lastNewHeadMessage && lastNewHeadMessage.data) {
             if (!isJsonString(lastNewHeadMessage.data)) return;
@@ -736,10 +739,10 @@ export default function App() {
         }
     }, [lastNewHeadMessage]);
 
+    // CONTEXT: move inside Portolio
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
     >();
-
     useEffect(() => {
         const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
             ? process.env.REACT_APP_INFURA_KEY_2
@@ -752,6 +755,7 @@ export default function App() {
         setMainnetProvider(mainnetProvider);
     }, []);
 
+    // CONTEXT: helper function
     const isPairStable = useMemo(
         () =>
             isStablePair(
@@ -762,23 +766,19 @@ export default function App() {
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
-    const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
-
+    // CONTEXT: remove and reference as necessary
     const receiptData = useAppSelector((state) => state.receiptData);
-
     const sessionReceipts = receiptData?.sessionReceipts;
-
     const lastReceipt =
         sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
             ? JSON.parse(sessionReceipts[0])
             : null;
-
     const isLastReceiptSuccess = lastReceipt?.status === 1;
-
     const lastReceiptHash = useMemo(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
     );
+    // CONTEXT: move into app state context to open sidebar
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
@@ -793,8 +793,7 @@ export default function App() {
         }
     }, [lastReceiptHash]);
 
-    const ensName = userData.ensNameCurrent || '';
-
+    // CONTEXT: investigate - remove or move into specfic component/chain context
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -843,13 +842,13 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
+    // CONTEXT: chain state context
     // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
     );
     // check for token balances every eight blocks
-
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const newToken = { ...token };
         const tokenAddress = token.address;
@@ -861,7 +860,6 @@ export default function App() {
         newToken.logoURI = tokenLogoURI ?? '';
         return newToken;
     };
-
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
@@ -900,27 +898,22 @@ export default function App() {
         })();
     }, [crocEnv, isUserLoggedIn, account, chainData.chainId, everyEigthBlock]);
 
+    // CONTEXT: trade token context - base token: address, decimal; quoteToken: address, decimal...
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
     const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] =
         useState<string>('');
     const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] =
         useState<string>('');
-
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
+    // CONTEXT: pool context
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol, setDailyVol] = useState<number | undefined>();
 
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
-
+    // CONTEXT: move into pool context
     const pool = useMemo(
         () =>
             crocEnv?.pool(
@@ -1614,7 +1607,7 @@ export default function App() {
             }
         } else {
             setIsCandleDataNull(true);
-            setExpandTradeTable(true);
+            // setExpandTradeTable(true);
         }
     };
 
@@ -1859,15 +1852,6 @@ export default function App() {
             areSubscriptionsEnabled &&
             mainnetBaseTokenAddress !== '' &&
             mainnetQuoteTokenAddress !== '',
-    );
-
-    const [candleDomains, setCandleDomains] = useState<candleDomain>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    });
-
-    const domainBoundaryInSeconds = Math.floor(
-        (candleDomains?.domainBoundry || 0) / 1000,
     );
 
     const domainBoundaryInSecondsDebounced = useDebounce(
@@ -3365,29 +3349,6 @@ export default function App() {
         username: ensName,
         appPage: true,
         topPools: topPools,
-    };
-
-    const candleState = {
-        candleData: {
-            value: candleData,
-            setValue: setCandleData,
-        },
-        isCandleDataNull: {
-            value: isCandleDataNull,
-            setValue: setIsCandleDataNull,
-        },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        fetchingCandle: {
-            value: fetchingCandle,
-            setValue: setFetchingCandle,
-        },
-        candleDomains: {
-            value: candleDomains,
-            setValue: setCandleDomains,
-        },
     };
 
     return (
