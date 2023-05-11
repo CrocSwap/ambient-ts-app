@@ -65,7 +65,6 @@ interface propsIF {
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
     chainId: string;

@@ -24,7 +24,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
-    ensName: string;
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
