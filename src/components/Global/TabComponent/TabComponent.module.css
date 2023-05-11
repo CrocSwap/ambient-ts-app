@@ -92,6 +92,7 @@
 }
 
 .selected button, .non_selected button{
+    font-family: var(--font-family);
     font-weight: 500;
     line-height: 19px;
 }
