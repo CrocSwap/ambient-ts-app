@@ -1553,7 +1553,7 @@ export default function App() {
             tkn.address.toLowerCase(),
         );
 
-        const output = ambientTokens;
+        const output = new Array(ambientTokens);
         let tokensAdded = 0;
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,

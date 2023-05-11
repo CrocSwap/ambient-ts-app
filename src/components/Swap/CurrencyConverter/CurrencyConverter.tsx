@@ -299,8 +299,8 @@ function CurrencyConverter(props: propsIF) {
             locationSlug +
             formSlugForPairParams(
                 tokenPair.dataTokenA.chainId,
-                tokenPair.dataTokenB,
-                tokenPair.dataTokenA,
+                tokenPair.dataTokenB.address,
+                tokenPair.dataTokenA.address,
             )
         );
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
@@ -344,7 +344,6 @@ function CurrencyConverter(props: propsIF) {
                 navigate(linkPathReversed);
                 if (!isTokenAPrimaryLocal) {
                     setTokenAQtyLocal(tokenBQtyLocal);
-
                     setBuyQtyString('');
 
                     setSellQtyString(
@@ -354,7 +353,6 @@ function CurrencyConverter(props: propsIF) {
                 } else {
                     setTokenBQtyLocal(tokenAQtyLocal);
                     setSellQtyString('');
-
                     setBuyQtyString(
                         tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal,
                     );
@@ -371,6 +369,8 @@ function CurrencyConverter(props: propsIF) {
             tokenBLocal,
             slippageTolerancePercentage,
             isTokenAPrimaryLocal,
+            linkPathReversed,
+            disableReverseTokens,
         ],
     );
 
