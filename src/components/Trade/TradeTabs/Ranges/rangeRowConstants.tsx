@@ -296,20 +296,6 @@ export default function rangeRowConstants(props: Props) {
     );
 
     const rangeTimeWithTooltip = (
-        // <TextOnlyTooltip
-        //     interactive
-        //     title={
-        //         ''
-        //         // <p className={styles.range_time_p}>
-        //         //     {moment(position.latestUpdateTime * 1000).format(
-        //         //         'MM/DD/YYYY HH:mm',
-        //         //     )}
-        //         // </p>
-        //     }
-        //     placement={'right'}
-        //     enterDelay={750}
-        //     leaveDelay={0}
-        // >
         <CustomLI style={{ textTransform: 'lowercase' }}>
             <p className='base_color'>{elapsedTimeString}</p>
         </CustomLI>
