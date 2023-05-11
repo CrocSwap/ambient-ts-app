@@ -7,9 +7,6 @@ import {
     Navigate,
     useNavigate,
 } from 'react-router-dom';
-
-import { useIdleTimer } from 'react-idle-timer';
-
 import {
     resetUserGraphData,
     setPositionsByPool,
@@ -190,6 +187,7 @@ import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar'
 import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
 
+// CONTEXT: cached data context - investigate if this is necessary after context changes
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
@@ -216,7 +214,7 @@ export default function App() {
 
     const { disconnect } = useDisconnect();
 
-    // CONTEXT: chart context?
+    // CONTEXT: chart context
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
@@ -279,6 +277,7 @@ export default function App() {
         snackbar: useSnackbar(),
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
         skin: useSkin('purple_dark'),
+        // CONTEXT: termsOfService: wallet, chat
         // TODO: walletToS, chatToS unused
         walletToS: useTermsOfService(
             'wallet',
@@ -289,20 +288,24 @@ export default function App() {
             process.env.REACT_APP_CHAT_TOS_CID as string,
         ),
         theme: { selected: theme, setSelected: setTheme },
+        // CONTEXT: rename to tab
         outsideTab: {
             selected: selectedOutsideTab,
             setSelected: setSelectedOutsideTab,
         },
+        // CONTEXT: move into tab
         outsideControl: {
             isActive: outsideControl,
             setIsActive: setOutsideControl,
         },
+        // CONTEXT: move into chat context
         chat: {
             isOpen: isChatOpen,
             setIsOpen: setIsChatOpen,
             isEnabled: isChatEnabled,
             setIsEnabled: setIsChatEnabled,
         },
+        // CONTEXT: move into chart context
         chart: {
             isFullScreen: fullScreenChart,
             setIsFullScreen: setFullScreenChart,
@@ -312,8 +315,9 @@ export default function App() {
         subscriptions: { isEnabled: areSubscriptionsEnabled },
     };
 
-    // CONTEXT: to be removed, have components that require it reference it directly
+    // CONTEXT: app state context
     const { address: account, isConnected } = useAccount();
+    // CONTEXT: to be removed, have components that require it reference it directly
     const userData = useAppSelector((state) => state.userData);
     const tradeData = useAppSelector((state) => state.tradeData);
     const isUserIdle = userData.isUserIdle;
@@ -484,7 +488,7 @@ export default function App() {
         getTokensByName,
     ] = useToken(chainData.chainId);
 
-    // CONTEXT: sidebar context - move sidebar behaviour from app state -> sidebar context?
+    // CONTEXT: sidebar context
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
         chainData.chainId,
@@ -497,10 +501,10 @@ export default function App() {
     // CONTEXT: can be removed
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
-    // CONTEXT: move into app state, rename - toggle (your transactions vs all transactions)
+    // CONTEXT: trade table context, rename - toggle (your transactions vs all transactions)
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
 
-    // CONTEXT: sidebar context - rename?
+    // CONTEXT: trade table context
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
@@ -783,7 +787,7 @@ export default function App() {
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
     );
-    // CONTEXT: move into app state context to open sidebar
+    // CONTEXT: move into sidebar context to open sidebar
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
@@ -928,7 +932,7 @@ export default function App() {
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
 
-    // CONTEXT: trade table context?
+    // CONTEXT: chart context
     // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
@@ -2592,7 +2596,7 @@ export default function App() {
         crocEnv,
     ]);
 
-    // CONTEXT: sidebar context / app state context
+    // CONTEXT: sidebar context and app state
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
     function toggleSidebarBasedOnRoute() {
         if (
@@ -2655,8 +2659,8 @@ export default function App() {
         disconnect();
     };
 
+    // CONTEXT: chain context
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-
     useEffect(() => {
         fetch(
             'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
@@ -2675,8 +2679,10 @@ export default function App() {
             .catch(console.error);
     }, [lastBlockNumber]);
 
+    // CONTEXT: move this into the header component
     const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
 
+    // CONTEXT: app state context
     const [
         isWagmiModalOpenWallet,
         openWagmiModalWallet,
@@ -2684,11 +2690,10 @@ export default function App() {
     ] = useModal();
 
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
-
+    // CONTEXT: move into trade table component - put in context if necessary - investigate
     const [isSwapCopied, setIsSwapCopied] = useState(false);
     const [isOrderCopied, setIsOrderCopied] = useState(false);
     const [isRangeCopied, setIsRangeCopied] = useState(false);
-
     const handlePulseAnimation = (type: string) => {
         switch (type) {
             case 'swap':
@@ -2717,10 +2722,11 @@ export default function App() {
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
+    // CONTEXT: remove and reference as necessary
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
     );
-    // TODO: move this function up to App.tsx
+    // CONTEXT: move this into a helper function file
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
         const ambientTokens = getAmbientTokens();
@@ -2781,6 +2787,7 @@ export default function App() {
         return output;
     };
 
+    // CONTEXT: user data context
     const { addRecentToken, getRecentTokens } = useRecentTokens(
         chainData.chainId,
     );
@@ -2803,6 +2810,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
     };
 
+    // CONTEXT: tbd
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
         verifyToken,
@@ -2931,6 +2939,7 @@ export default function App() {
         ackTokens: ackTokens,
     };
 
+    // CONTEXT: put inside range component, context if necessary
     // props for <Range/> React element
     const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
@@ -2991,6 +3000,7 @@ export default function App() {
         chainData: chainData,
     };
 
+    // CONTEXT: move into sidebar
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
@@ -3021,6 +3031,7 @@ export default function App() {
         topPools: topPools,
     };
 
+    // CONTEXT: user preference context
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
         () =>
             getMoneynessRank(
@@ -3032,7 +3043,6 @@ export default function App() {
             0,
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
-
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
@@ -3044,15 +3054,10 @@ export default function App() {
 
         const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
             ? tradeData.didUserFlipDenom
-                ? true
-                : false
-            : tradeData.didUserFlipDenom
-            ? false
-            : true;
+            : !tradeData.didUserFlipDenom;
 
         return isDenomInBase;
     }
-
     useEffect(() => {
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
@@ -3063,6 +3068,7 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
+    // CONTEXT: user data context
     useEffect(() => {
         dispatch(resetUserGraphData());
     }, [account]);
@@ -3080,6 +3086,7 @@ export default function App() {
         !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
+    // CONTEXT: app state context
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
@@ -3090,13 +3097,16 @@ export default function App() {
         ) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    appState.chat.setIsEnabled(isChatUp);
+                    if (isChatUp !== appState.chat.isEnabled) {
+                        appState.chat.setIsEnabled(isChatUp);
+                    }
                 });
             }, 10000);
             return () => clearInterval(interval);
         }
     }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
+    // CONTEXT: app state context - investigate?
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
             appState.chart.setIsFullScreen(false);
@@ -3127,6 +3137,7 @@ export default function App() {
         range: string;
     }
 
+    // CONTEXT: helper function that accepts chainId and returns route
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [tokenA, tokenB] = getDefaultPairForChain(chainId);
         const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
@@ -3137,15 +3148,14 @@ export default function App() {
             limit: `/trade/limit/${pairSlug}`,
         };
     }
-
     const initUrl = createDefaultUrlParams(chainData.chainId);
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
-
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);
 
+    // CONTEXT: investigate
     // KEYBOARD SHORTCUTS ROUTES
     const routeShortcuts = {
         S: '/swap',
@@ -3156,13 +3166,11 @@ export default function App() {
         P: '/account',
         C: '/chat',
     };
-
     Object.entries(routeShortcuts).forEach(([key, route]) => {
         useKeyboardShortcuts({ modifierKeys: ['Shift'], key }, () => {
             navigate(route);
         });
     });
-
     // KEYBOARD SHORTCUTS STATES
     // keyboard shortcuts for states will require multiple modifier keys.
     useKeyboardShortcuts(
@@ -3177,9 +3185,7 @@ export default function App() {
             appState.chat.setIsOpen(!appState.chat.isOpen);
         },
     );
-
-    // Since input field are autofocused on each route, we need. away for the user to exit that focus on their keyboard. This achieves that.
-
+    // Since input field are autofocused on each route, we need a way for the user to exit that focus on their keyboard. This achieves that.
     const isEscapePressed = useKeyPress('Escape');
     useEffect(() => {
         if (isEscapePressed) {
@@ -3323,6 +3329,7 @@ export default function App() {
         currentPool: currentPoolInfo,
         isFullScreen: true,
         username: ensName,
+        // CONTEXT: remove and use location to determine
         appPage: true,
         topPools: topPools,
     };
@@ -3481,16 +3488,6 @@ export default function App() {
                                 <Route
                                     path='chat/:params'
                                     element={<ChatPanel {...chatProps} />}
-                                />
-                                <Route
-                                    path='range2'
-                                    element={
-                                        <RangeStateContext.Provider
-                                            value={rangeState}
-                                        >
-                                            <Range {...rangeProps} />
-                                        </RangeStateContext.Provider>
-                                    }
                                 />
                                 <Route
                                     path='initpool/:params'
