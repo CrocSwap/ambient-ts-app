@@ -222,6 +222,7 @@ function CurrencyConverter(props: propsIF) {
         : baseTokenDexBalance;
 
     const combinedTokenABalance = tokenABalance + tokenADexBalance;
+    const combinedTokenBBalance = tokenBBalance + tokenBDexBalance;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
@@ -402,6 +403,7 @@ function CurrencyConverter(props: propsIF) {
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
+        combinedTokenBBalance,
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
@@ -424,7 +426,7 @@ function CurrencyConverter(props: propsIF) {
                 setSwapButtonErrorMessage('Pool Not Initialized');
             }
         }
-    }, [poolExists === undefined, poolExists === false]);
+    }, [poolExists === undefined, poolExists]);
 
     const handleSwapButtonMessage = useMemo(
         () => (tokenAAmount: number) => {
@@ -472,6 +474,7 @@ function CurrencyConverter(props: propsIF) {
         },
         [
             crocEnv,
+            poolExists,
             poolPriceDisplay,
             tokenALocal,
             tokenBLocal,
@@ -602,6 +605,7 @@ function CurrencyConverter(props: propsIF) {
         },
         [
             crocEnv,
+            poolExists,
             poolPriceDisplay,
             tokenALocal,
             tokenBLocal,
@@ -708,6 +712,7 @@ function CurrencyConverter(props: propsIF) {
         [
             crocEnv,
             poolPriceDisplay,
+            poolExists,
             tokenALocal,
             tokenBLocal,
             slippageTolerancePercentage,
@@ -848,6 +853,7 @@ function CurrencyConverter(props: propsIF) {
         [
             crocEnv,
             poolPriceDisplay,
+            poolExists,
             tokenALocal,
             tokenBLocal,
             slippageTolerancePercentage,
