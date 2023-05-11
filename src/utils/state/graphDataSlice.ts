@@ -536,7 +536,12 @@ export const graphDataSlice = createSlice({
                 state.liquidityData.curveState.quote = quote;
                 state.liquidityData.curveState.chainId = chainId;
             } else {
-                console.log('Discarding mismatched liquidity curve request');
+                console.warn(
+                    'Discarding mismatched liquidity curve request',
+                    base,
+                    quote,
+                    chainId,
+                );
             }
         },
 
