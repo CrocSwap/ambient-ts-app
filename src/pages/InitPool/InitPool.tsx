@@ -496,7 +496,7 @@ export default function InitPool(props: propsIF) {
                                         />
                                     ) : (
                                         <Button
-                                            title='Open Confirmation'
+                                            title='Confirm'
                                             action={sendInit}
                                             flat={true}
                                         />

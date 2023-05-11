@@ -9,7 +9,7 @@ import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
-import noAvatarImage from '../../../assets/images/icons/avatar.svg';
+// import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
@@ -43,13 +43,12 @@ interface ProfileSettingsPropsIF {
     showProfileSettings: boolean;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     ensName: string;
-    imageData: string[];
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [name, setName] = useState('');
     const [id, setId] = useState('');
-    const { setShowProfileSettings, imageData } = props;
+    const { setShowProfileSettings } = props;
     const {
         globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
@@ -69,39 +68,39 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
 
     const nftModalContent = (
         <div className={styles.nft_modal_container}>
-            {imageData.length ? (
+            {/* {imageData.length ? (
                 imageData.map((img) => <img key={img} src={img} alt='' />)
             ) : (
                 <h1>No nfts to display</h1>
-            )}
+            )} */}
         </div>
     );
 
     const profilePicDisplay = (
         <div className={styles.row}>
             <h4>Profile Pic</h4>
-            {imageData[0] ? (
+            {/* {imageData[0] ? (
                 <img src={imageData[0]} alt='avatar' />
             ) : (
                 <div className={styles.no_image}>
                     <img src={noAvatarImage} alt='' />
                 </div>
-            )}
+            )} */}
         </div>
     );
 
-    const nfts = (
-        <>
-            {imageData.map((img) => (
+    // const nfts = (
+    <>
+        {/* {imageData.map((img) => (
                 <img
                     onClick={() => openGlobalModal(nftModalContent, 'NFTs')}
                     key={img}
                     src={img}
                     alt=''
                 />
-            ))}
-        </>
-    );
+            ))} */}
+    </>;
+    // );
     const nftsPlaceholder = (
         <>
             {Array(3)
@@ -115,11 +114,13 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                 ))}
         </>
     );
+
+    false && nftsPlaceholder;
     const nftsDisplay = (
         <div className={styles.row}>
             <h4>NFTs</h4>
             <div className={styles.nft_container}>
-                {imageData.length ? nfts : nftsPlaceholder}
+                {/* {imageData.length ? nfts : nftsPlaceholder} */}
             </div>
         </div>
     );

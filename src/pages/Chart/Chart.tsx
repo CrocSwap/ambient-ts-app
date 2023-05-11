@@ -27,7 +27,6 @@ import {
 } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
-    candleDomain,
     setIsLinesSwitched,
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
@@ -55,6 +54,7 @@ import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { CandleContext } from '../../contexts/CandleContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -156,7 +156,6 @@ interface propsIF {
     setMinPrice: React.Dispatch<React.SetStateAction<number>>;
     rescaleRangeBoundariesWithSlider: boolean;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     rangeSimpleRangeWidth: number | undefined;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
@@ -237,6 +236,10 @@ export default function Chart(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+
+    const {
+        candleDomains: { setValue: setCandleDomains },
+    } = useContext(CandleContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -997,7 +1000,7 @@ export default function Chart(props: propsIF) {
                     domainBoundry: finalData,
                 };
 
-                props.setCandleDomains(candleDomain);
+                setCandleDomains(candleDomain);
             }
         }
     };

@@ -90,6 +90,11 @@ ul.tab_navs {
     text-align: center;
     padding: 8px;
     margin: 0 0 0 -5px;
+    
+    /* prevents the exchange balance sidebar from expanding downward on open */
+    max-height: 80px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .info_text-grey-light {
     font-size: var(--body-size);
