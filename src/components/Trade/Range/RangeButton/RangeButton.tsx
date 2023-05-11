@@ -38,7 +38,7 @@ export default function RangeButton(props: propsIF) {
                                     : `Submit ${
                                           isAmbient ? 'Ambient' : ''
                                       } Liquidity`
-                                : 'Open Confirmation'
+                                : 'Confirm'
                             : rangeButtonErrorMessage
                         : 'Acknowledge'
                 }

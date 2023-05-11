@@ -93,7 +93,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 {limit
                     ? 'Limit Transaction Successfully Submitted'
                     : range
-                    ? 'Range Transaction Successfully Submitted'
+                    ? 'Pool Transaction Successfully Submitted'
                     : reposition
                     ? 'Reposition Successfully Submitted'
                     : 'Swap Transaction Successfully Submitted'}

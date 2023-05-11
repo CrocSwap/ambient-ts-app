@@ -25,7 +25,6 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
-import { getNFTs } from '../../App/functions/getNFTs';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
 import {
@@ -66,10 +65,8 @@ interface propsIF {
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
-    userImageData: string[];
     chainId: string;
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
@@ -116,7 +113,6 @@ export default function Portfolio(props: propsIF) {
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         lastBlockNumber,
-        userImageData,
         tokensOnActiveLists,
         userAccount,
         baseTokenBalance,
@@ -292,19 +288,6 @@ export default function Portfolio(props: propsIF) {
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
-
-    const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
-
-    useEffect(() => {
-        (async () => {
-            if (resolvedAddress && !connectedAccountActive) {
-                const imageLocalURLs = await getNFTs(resolvedAddress);
-                if (imageLocalURLs) {
-                    setSecondaryImageData(imageLocalURLs);
-                }
-            }
-        })();
-    }, [resolvedAddress, connectedAccountActive]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
@@ -584,7 +567,6 @@ export default function Portfolio(props: propsIF) {
             : '',
         resolvedAddress: resolvedAddress,
         activeAccount: address ?? connectedAccount ?? '',
-        imageData: connectedAccountActive ? userImageData : secondaryImageData,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         chainData: chainData,
@@ -594,7 +576,6 @@ export default function Portfolio(props: propsIF) {
         showProfileSettings: showProfileSettings,
         setShowProfileSettings: setShowProfileSettings,
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
-        imageData: connectedAccountActive ? userImageData : secondaryImageData,
     };
 
     const mobilePortfolio = (

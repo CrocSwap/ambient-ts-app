@@ -355,8 +355,11 @@ export default function Transfer(props: propsIF) {
                 disable={isCurrencyFieldDisabled}
             />
             <div className={styles.additional_info}>
-                <div className={styles.info_text_non_clickable}>
-                    Available: {tokenDexBalanceTruncated || '0.0'}
+                <div
+                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
+                >
+                    <div className={styles.available_text}>Available:</div>
+                    {tokenDexBalanceTruncated || '0.0'}
                     {tokenDexBalance !== '0' ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}
