@@ -64,7 +64,7 @@ interface propsIF {
     ) => void;
     chartItemStates: chartItemStates;
     limitTick: number | undefined;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     truncatedPoolPrice: number | undefined;
@@ -82,6 +82,7 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
@@ -282,34 +283,12 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCandleAdded(true);
     }, [diffHashSigCandles(candleData), denominationsInBase]);
 
-    // const standardDeviation = (arr: any, usePopulation = false) => {
-    //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-    //     return Math.sqrt(
-    //         arr
-    //             .reduce((acc: any, val: any) => acc.concat((val - mean) ** 2), [])
-    //             .reduce((acc: any, val: any) => acc + val, 0) /
-    //             (arr.length - (usePopulation ? 0 : 1)),
-    //     );
-    // };
-
     // volume data
 
     const volumeData = useMemo(() => {
         const volumeData = parsedChartData?.volumeChartData;
         const volumeTempData: any = [];
         if (volumeData) {
-            // const volumeLogScale = d3
-            //     .scaleLog()
-            //     .domain([
-            //         d3.min(volumeData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //         d3.max(parsedChartData?.volumeChartData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //     ])
-            //     .range([30, 1000]);
-
             volumeData.map((data: any) => {
                 volumeTempData.push({
                     time: data.time,
@@ -328,7 +307,14 @@ function TradeCandleStickChart(props: propsIF) {
         if (
             props.liquidityData &&
             poolPriceDisplay !== undefined &&
-            poolPriceDisplay > 0
+            poolPriceDisplay > 0 &&
+            props.liquidityData.curveState.base ===
+                props.baseTokenAddress.toLowerCase() &&
+            props.liquidityData.curveState.quote ===
+                props.quoteTokenAddress.toLowerCase() &&
+            props.liquidityData.curveState.poolIdx ===
+                props.chainData.poolIndex &&
+            props.liquidityData.curveState.chainId === props.chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('parsing liquidity data');
 

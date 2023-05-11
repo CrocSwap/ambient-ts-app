@@ -476,6 +476,7 @@ function Trade(props: propsIF) {
         upVolumeColor: upVolumeColor,
         downVolumeColor: downVolumeColor,
         baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,

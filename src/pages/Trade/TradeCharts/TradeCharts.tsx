@@ -66,6 +66,7 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
@@ -532,6 +533,7 @@ function TradeCharts(props: propsIF) {
                         upVolumeColor={props.upVolumeColor}
                         downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
+                        quoteTokenAddress={props.quoteTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}

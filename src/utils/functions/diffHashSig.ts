@@ -64,8 +64,9 @@ export function diffHashSigLiquidity(liquidity?: LiquidityData) {
 
     return diffHashSig({
         time: liquidity.time,
-        ranges: liquidity.ranges.map((r) => r.activeLiq),
         tick: liquidity.currentTick,
+        curveState: liquidity.curveState,
+        ranges: liquidity.ranges.map((r) => r.activeLiq),
     });
 }
 

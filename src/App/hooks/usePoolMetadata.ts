@@ -12,6 +12,7 @@ import {
     setLeaderboardByPool,
     setLimitOrdersByPool,
     setLiquidity,
+    setLiquidityPending,
     setPoolTvlSeries,
     setPoolVolumeSeries,
     setPositionsByPool,
@@ -536,6 +537,16 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             !props.lastBlockNumber
         )
             return;
+
+        // Reset existing liquidity data until the fetch completes, because it's a new pool
+        const request = {
+            baseAddress: baseTokenAddress,
+            quoteAddress: quoteTokenAddress,
+            chainId: props.chainData.chainId,
+            poolIndex: props.chainData.poolIndex,
+        };
+        dispatch(setLiquidityPending(request));
+
         const timer1 = setTimeout(() => {
             fetch(
                 poolLiquidityCacheEndpoint +
@@ -581,9 +592,40 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         quoteTokenAddress,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        props.receiptCount,
         props.lastBlockNumber == 0,
     ]);
+
+    useEffect(() => {
+        if (
+            !baseTokenAddress ||
+            !quoteTokenAddress ||
+            !props.chainData ||
+            !props.lastBlockNumber
+        )
+            return;
+
+        const timer1 = setTimeout(() => {
+            fetch(
+                poolLiquidityCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: props.chainData.chainId,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: props.chainData.poolIndex.toString(),
+                        concise: 'true',
+                        latestTick: 'true',
+                    }),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    dispatch(setLiquidity(json.data));
+                })
+                .catch(console.error);
+        }, 2000);
+        return () => {
+            clearTimeout(timer1);
+        };
+    }, [props.receiptCount]);
 
     useEffect(() => {
         (async () => {

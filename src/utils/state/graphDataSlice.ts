@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IS_LOCAL_ENV } from '../../constants';
+import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
@@ -11,12 +12,20 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
+    liquidityRequest?: PoolRequestParams;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
+}
+
+export interface PoolRequestParams {
+    baseAddress: string;
+    quoteAddress: string;
+    poolIndex: number;
+    chainId: string;
 }
 
 export interface DataLoadingStatus {
@@ -115,7 +124,8 @@ export interface LiquidityData {
         base: string;
         quote: string;
         poolIdx: number;
-        network: string;
+        chainId: string;
+        network: string; // Backend network label - NOT same as chainId
     };
 }
 
@@ -256,12 +266,8 @@ const initialState: graphData = {
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
-    liquidityData: {
-        time: 0,
-        currentTick: 0,
-        ranges: [],
-        curveState: { base: '', quote: '', poolIdx: -1, network: '' },
-    },
+    liquidityData: undefined,
+    liquidityRequest: undefined,
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
@@ -277,6 +283,11 @@ const initialState: graphData = {
         isCandleDataLoading: true,
     },
 };
+
+function normalizeAddr(addr: string): string {
+    const caseAddr = addr.toLowerCase();
+    return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
+}
 
 export const graphDataSlice = createSlice({
     name: 'graphData',
@@ -505,9 +516,38 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
+
         setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
-            state.liquidityData = action.payload;
+            // Sanitize the raw result from the backend
+            const curve = action.payload.curveState;
+            const base = normalizeAddr(curve.base);
+            const quote = normalizeAddr(curve.quote);
+            const chainId = backendNetworkToChainId(curve.network);
+
+            // Verify that the result matches the current request in case multiple are in-flight
+            if (
+                state.liquidityRequest?.baseAddress.toLowerCase() === base &&
+                state.liquidityRequest?.quoteAddress.toLowerCase() === quote &&
+                state.liquidityRequest?.poolIndex === curve.poolIdx &&
+                state.liquidityRequest?.chainId === chainId
+            ) {
+                state.liquidityData = action.payload;
+                state.liquidityData.curveState.base = base;
+                state.liquidityData.curveState.quote = quote;
+                state.liquidityData.curveState.chainId = chainId;
+            } else {
+                console.log('Discarding mismatched liquidity curve request');
+            }
         },
+
+        setLiquidityPending: (
+            state,
+            action: PayloadAction<PoolRequestParams>,
+        ) => {
+            state.liquidityData = undefined;
+            state.liquidityRequest = action.payload;
+        },
+
         setCandles: (
             state,
             action: PayloadAction<CandlesByPoolAndDuration>,
@@ -734,6 +774,7 @@ export const {
     setPoolVolumeSeries,
     setPoolTvlSeries,
     setLiquidity,
+    setLiquidityPending,
     setCandles,
     addCandles,
     setLimitOrdersByUser,
