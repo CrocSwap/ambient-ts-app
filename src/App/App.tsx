@@ -211,6 +211,7 @@ const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquid
 export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
+    const currentLocation = location.pathname;
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
@@ -325,6 +326,10 @@ export default function App() {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+    const tokenAAddress = tokenPair?.dataTokenA?.address;
+    const tokenADecimals = tokenPair?.dataTokenA?.decimals;
+    const tokenBAddress = tokenPair?.dataTokenB?.address;
+    const tokenBDecimals = tokenPair?.dataTokenB?.decimals;
 
     // CONTEXT: to be removed, reference useLocation directly when needed
     const ticksInParams =
@@ -400,7 +405,7 @@ export default function App() {
     // effort
     const tokensOnActiveLists = useTokenMap();
 
-    // CONTEXT: to be moved into candle context
+    // CONTEXT: to be moved into candle context / chart context?
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
     >();
@@ -923,6 +928,7 @@ export default function App() {
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
 
+    // CONTEXT: trade table context?
     // Fetch liquidity every minute
     const fetchLiquidity = async () => {
         if (
@@ -945,7 +951,6 @@ export default function App() {
             })
             .catch(console.error);
     };
-
     // Runs nyquist of our 1 minute caching function.
     useEffect(() => {
         if (
@@ -966,7 +971,6 @@ export default function App() {
         lastBlockNumber === 0,
         isChartEnabled,
     ]);
-
     useEffect(() => {
         if (
             !baseTokenAddress ||
@@ -1023,12 +1027,12 @@ export default function App() {
         };
     }, [sessionReceipts.length]);
 
+    // CONTEXT: remove - can just check pool context/crocEnv.pool(.isInit()) if you must
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
     const [poolExists, setPoolExists] = useState<boolean | undefined>();
-
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
         if (crocEnv && baseTokenAddress && quoteTokenAddress) {
@@ -1059,6 +1063,7 @@ export default function App() {
         sessionReceipts.length,
     ]);
 
+    // CONTEXT: remove and setPoolPriceNonDisplay and setLimitTick where it needs to be set
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
         if (resetLimitTick) {
@@ -1069,6 +1074,7 @@ export default function App() {
         }
     }, [resetLimitTick]);
 
+    // CONTEXT: pool context?
     useEffect(() => {
         if (!location.pathname.includes('limitTick')) {
             dispatch(setLimitTick(undefined));
@@ -1078,7 +1084,6 @@ export default function App() {
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
-
     useEffect(() => {
         (async () => {
             if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
@@ -1111,6 +1116,7 @@ export default function App() {
         })();
     }, [isServerEnabled, baseTokenAddress + quoteTokenAddress]);
 
+    // CONTEXT: split this useEffect up to multiple useEffects that update the appropriate contexts
     const resetAdvancedTicksIfNotCopy = () => {
         if (!ticksInParams) {
             dispatch(setAdvancedLowTick(0));
@@ -1513,6 +1519,7 @@ export default function App() {
         crocEnv,
     ]);
 
+    // CONTEXT: move to a chart/candle component - does not need to be a context
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
@@ -1529,7 +1536,6 @@ export default function App() {
         chartSettings.candleTime.market.time,
         location.pathname,
     ]);
-
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
     }, [
@@ -1538,7 +1544,6 @@ export default function App() {
         candleTimeLocal,
         isUserIdle,
     ]);
-
     const fetchCandles = () => {
         if (
             isServerEnabled &&
@@ -1611,12 +1616,12 @@ export default function App() {
         }
     };
 
+    // CONTEXT: pool context
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
     >();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
         useState<boolean>(true);
-
     useEffect(() => {
         (async () => {
             if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
@@ -1665,6 +1670,7 @@ export default function App() {
         lastBlockNumber,
     ]);
 
+    // CONTEXT: move into trade table/pool transactions/liquidity? this updates frequently, not used anywhere else
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1684,7 +1690,6 @@ export default function App() {
             }),
         [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
-
     const {
         //  sendMessage,
         lastMessage: lastPoolLiqChangeMessage,
@@ -1706,7 +1711,6 @@ export default function App() {
             baseTokenAddress !== '' &&
             quoteTokenAddress !== '',
     );
-
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
             IS_LOCAL_ENV &&
@@ -1732,7 +1736,6 @@ export default function App() {
             }
         }
     }, [lastPoolLiqChangeMessage]);
-
     const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1753,7 +1756,6 @@ export default function App() {
             chainData.poolIndex,
         ],
     );
-
     const { lastMessage: lastPoolChangeMessage } = useWebSocket(
         poolRecentChangesCacheSubscriptionEndpoint,
         {
@@ -1774,7 +1776,6 @@ export default function App() {
             baseTokenAddress !== '' &&
             quoteTokenAddress !== '',
     );
-
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
             if (!isJsonString(lastPoolChangeMessage.data)) return;
@@ -1792,7 +1793,6 @@ export default function App() {
             }
         }
     }, [lastPoolChangeMessage]);
-
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
             if (!isJsonString(lastPoolChangeMessage.data)) return;
@@ -1812,6 +1812,7 @@ export default function App() {
         }
     }, [lastPoolChangeMessage]);
 
+    // CONTEXT: candle context
     const candleSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1838,7 +1839,6 @@ export default function App() {
             candleTimeLocal,
         ],
     );
-
     const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
@@ -1853,12 +1853,10 @@ export default function App() {
             mainnetBaseTokenAddress !== '' &&
             mainnetQuoteTokenAddress !== '',
     );
-
     const domainBoundaryInSecondsDebounced = useDebounce(
         domainBoundaryInSeconds,
         500,
     );
-
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
@@ -1867,17 +1865,14 @@ export default function App() {
             prev.time < curr.time ? prev : curr,
         )?.time;
     }, [candleData?.candles?.length]);
-
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
             (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
-
     const candleSeriesCacheEndpoint =
         httpGraphCacheServerDomain + '/candle_series?';
-
     const fetchCandlesByNumDurations = (numDurations: number) =>
         fetch(
             candleSeriesCacheEndpoint +
@@ -1939,7 +1934,6 @@ export default function App() {
                 }
             })
             .catch(console.error);
-
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
@@ -1948,7 +1942,6 @@ export default function App() {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
-
     useEffect(() => {
         if (candlesMessage) {
             if (!isJsonString(candlesMessage.data)) return;
@@ -1986,6 +1979,7 @@ export default function App() {
         }
     }, [candlesMessage]);
 
+    // CONTEXT: user data context
     const userLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -2002,7 +1996,6 @@ export default function App() {
             }),
         [account, chainData.chainId],
     );
-
     const {
         //  sendMessage,
         lastMessage: lastUserPositionsMessage,
@@ -2028,7 +2021,6 @@ export default function App() {
             account !== null &&
             account !== undefined,
     );
-
     function isJsonString(str: string) {
         try {
             JSON.parse(str);
@@ -2037,7 +2029,6 @@ export default function App() {
         }
         return true;
     }
-
     useEffect(() => {
         try {
             if (lastUserPositionsMessage !== null) {
@@ -2067,7 +2058,6 @@ export default function App() {
             console.error(error);
         }
     }, [lastUserPositionsMessage]);
-
     const userRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -2081,7 +2071,6 @@ export default function App() {
             }),
         [account, chainData.chainId],
     );
-
     const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
         userRecentChangesCacheSubscriptionEndpoint,
         {
@@ -2103,7 +2092,6 @@ export default function App() {
             account !== null &&
             account !== undefined,
     );
-
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             IS_LOCAL_ENV && console.debug('received new user recent change');
@@ -2125,7 +2113,6 @@ export default function App() {
             }
         }
     }, [lastUserRecentChangesMessage]);
-
     const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -2138,7 +2125,6 @@ export default function App() {
             }),
         [account, chainData.chainId],
     );
-
     const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
         userLimitOrderChangesCacheSubscriptionEndpoint,
         {
@@ -2162,7 +2148,6 @@ export default function App() {
             account !== null &&
             account !== undefined,
     );
-
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
             if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
@@ -2186,29 +2171,28 @@ export default function App() {
         }
     }, [lastUserLimitOrderChangesMessage]);
 
+    // CONTEXT: trade token context - to be refactored for better usage
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
 
+    // CONTEXT: pool context
     // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
     // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         number | undefined
     >();
-
     useEffect(() => {
         IS_LOCAL_ENV &&
             console.debug('resetting pool price because base/quote changed');
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
-
     const getDisplayPrice = (spotPrice: number) => {
         return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
     };
-
     const getSpotPrice = async (
         baseTokenAddress: string,
         quoteTokenAddress: string,
@@ -2224,7 +2208,6 @@ export default function App() {
             lastBlockNumber,
         );
     };
-
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -2273,6 +2256,7 @@ export default function App() {
         isUserLoggedIn,
     ]);
 
+    // CONTEXT: trade token context
     // useEffect to update selected token balances
     useEffect(() => {
         (async () => {
@@ -2342,18 +2326,13 @@ export default function App() {
         lastBlockNumber,
     ]);
 
+    // CONTEXT: trade token context - refactor
     const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
     const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
-
     const [recheckTokenAApproval, setRecheckTokenAApproval] =
         useState<boolean>(false);
     const [recheckTokenBApproval, setRecheckTokenBApproval] =
         useState<boolean>(false);
-
-    const tokenAAddress = tokenPair?.dataTokenA?.address;
-    const tokenADecimals = tokenPair?.dataTokenA?.decimals;
-    const tokenBAddress = tokenPair?.dataTokenB?.address;
-    const tokenBDecimals = tokenPair?.dataTokenB?.decimals;
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
@@ -2384,7 +2363,6 @@ export default function App() {
         account,
         recheckTokenAApproval,
     ]);
-
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
@@ -2416,9 +2394,9 @@ export default function App() {
         recheckTokenBApproval,
     ]);
 
+    // CONTEXT: user data context
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
-
     useEffect(() => {
         if (isServerEnabled && isUserLoggedIn && account && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
@@ -2614,10 +2592,8 @@ export default function App() {
         crocEnv,
     ]);
 
-    const currentLocation = location.pathname;
-
+    // CONTEXT: sidebar context / app state context
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
-
     function toggleSidebarBasedOnRoute() {
         if (
             currentLocation === '/' ||
@@ -2631,7 +2607,13 @@ export default function App() {
             appState.sidebar.close();
         }
     }
+    useEffect(() => {
+        toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
 
+    // CONTEXT: app state context
     function toggleTradeTabBasedOnRoute() {
         if (!isCandleSelected) {
             appState.outsideControl.setIsActive(true);
@@ -2648,13 +2630,6 @@ export default function App() {
             }
         }
     }
-
-    useEffect(() => {
-        toggleSidebarBasedOnRoute();
-        if (!currentTxActiveInTransactions && !currentPositionActive)
-            toggleTradeTabBasedOnRoute();
-    }, [location.pathname.includes('/trade')]);
-
     useEffect(() => {
         if (
             !currentTxActiveInTransactions &&
@@ -2664,6 +2639,7 @@ export default function App() {
             toggleTradeTabBasedOnRoute();
     }, [location]);
 
+    // CONTEXT: move into header component - have contexts listen to logged out and reset
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
         setCrocEnv(undefined);
