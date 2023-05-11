@@ -13,7 +13,10 @@ import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuCompone
 
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
@@ -23,7 +26,6 @@ import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
     tradeData: tradeData;
     isTokenABase: boolean;
@@ -42,7 +44,6 @@ interface propsIF {
 }
 export default function TransactionRow(props: propsIF) {
     const {
-        account,
         showColumns,
         tradeData,
         ipadView,
@@ -58,6 +59,10 @@ export default function TransactionRow(props: propsIF) {
         setSimpleRangeWidth,
         chainData,
     } = props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         txHash,
@@ -92,7 +97,7 @@ export default function TransactionRow(props: propsIF) {
         sideTypeStyle,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, account, isOnPortfolioPage);
+    } = useProcessTransaction(tx, userAddress, isOnPortfolioPage);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
@@ -107,7 +112,6 @@ export default function TransactionRow(props: propsIF) {
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
@@ -308,7 +312,6 @@ export default function TransactionRow(props: propsIF) {
 
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
-                    account={account}
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     tradeData={tradeData}

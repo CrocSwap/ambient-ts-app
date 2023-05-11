@@ -31,7 +31,6 @@ interface propsIF {
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
-    account: string | undefined;
 }
 
 // central react functional component

@@ -37,7 +37,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     isOrderFilled: boolean;
     handlePulseAnimation?: (type: string) => void;
-    account: string;
     lastBlockNumber: number;
     showHighlightedButton: boolean;
     isOnPortfolioPage: boolean;
@@ -58,7 +57,6 @@ export default function OrdersMenu(props: propsIF) {
         isOwnerActiveAccount,
         handlePulseAnimation,
         lastBlockNumber,
-        account,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
     } = props;
@@ -176,7 +174,6 @@ export default function OrdersMenu(props: propsIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
-                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}
@@ -186,7 +183,6 @@ export default function OrdersMenu(props: propsIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
-                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}
@@ -197,7 +193,6 @@ export default function OrdersMenu(props: propsIF) {
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}

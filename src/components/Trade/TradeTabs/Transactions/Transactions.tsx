@@ -44,7 +44,6 @@ interface propsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    account: string;
     expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
@@ -65,7 +64,6 @@ export default function Transactions(props: propsIF) {
         activeAccountTransactionData,
         connectedAccountActive,
         isShowAllEnabled,
-        account,
         changesInSelectedCandle,
         chainData,
         blockExplorer,
@@ -91,6 +89,9 @@ export default function Transactions(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -238,7 +239,7 @@ export default function Transactions(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -430,7 +431,6 @@ export default function Transactions(props: propsIF) {
 
     const currentRowItemContent = currentTransactions.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}
@@ -451,7 +451,6 @@ export default function Transactions(props: propsIF) {
     ));
     const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}

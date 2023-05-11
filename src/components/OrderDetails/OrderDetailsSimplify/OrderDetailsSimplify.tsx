@@ -9,6 +9,7 @@ import { FiCopy } from 'react-icons/fi';
 import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface ItemRowPropsIF {
     title: string;
@@ -19,7 +20,6 @@ interface ItemRowPropsIF {
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
-    account: string;
 
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
@@ -45,7 +45,6 @@ export default function OrderDetailsSimplify(
 ) {
     const {
         isBid,
-        account,
         approximateSellQtyTruncated,
         approximateBuyQtyTruncated,
         baseDisplayFrontend,
@@ -62,6 +61,10 @@ export default function OrderDetailsSimplify(
         limitOrder,
         isOnPortfolioPage,
     } = props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         userNameToDisplay,
@@ -105,7 +108,7 @@ export default function OrderDetailsSimplify(
         // truncatedDisplayPriceDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
+    } = useProcessOrder(limitOrder, userAddress, isOnPortfolioPage);
 
     const {
         snackbar: { open: openSnackbar },

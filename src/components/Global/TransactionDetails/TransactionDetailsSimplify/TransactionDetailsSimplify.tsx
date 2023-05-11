@@ -6,6 +6,7 @@ import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface ItemRowPropsIF {
     title: string;
@@ -16,13 +17,16 @@ interface ItemRowPropsIF {
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
-    account: string;
     isOnPortfolioPage: boolean;
 }
 export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
-    const { account, tx, isOnPortfolioPage } = props;
+    const { tx, isOnPortfolioPage } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const {
         userNameToDisplay,
         txHashTruncated,
@@ -63,7 +67,7 @@ export default function TransactionDetailsSimplify(
         quoteTokenCharacter,
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, userAddress);
 
     const isAmbient = tx.positionType === 'ambient';
 

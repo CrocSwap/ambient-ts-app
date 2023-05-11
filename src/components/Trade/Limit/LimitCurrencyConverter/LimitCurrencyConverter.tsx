@@ -48,7 +48,6 @@ interface propsIF {
     pool: CrocPoolView | undefined;
     gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
@@ -108,7 +107,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         pool,
         gridSize,
         setPriceInputFieldBlurred,
-        isUserLoggedIn,
         tokenPair,
         chainId,
         poolPriceNonDisplay,
@@ -150,6 +148,9 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -283,7 +284,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         tokenABalance,
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
-        isUserLoggedIn,
+        isUserConnected,
         isOrderValid,
     ]);
 
@@ -507,7 +508,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
                 provider={provider}
-                isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 chainId={chainId}
                 tokenAInputQty={tokenAInputQty}
@@ -578,7 +578,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
             </div>
             <div id='limit_currency_converter'>
                 <LimitCurrencySelector
-                    isUserLoggedIn={isUserLoggedIn}
                     tokenPair={tokenPair}
                     chainId={chainId}
                     tokenAInputQty={tokenAInputQty}

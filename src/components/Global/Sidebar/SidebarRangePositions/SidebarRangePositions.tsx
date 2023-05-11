@@ -4,6 +4,7 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     chainId: string;
@@ -11,7 +12,6 @@ interface propsIF {
     userPositions?: PositionIF[];
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
@@ -20,7 +20,6 @@ export default function SidebarRangePositions(props: propsIF) {
         isDenomBase,
         userPositions,
         setCurrentPositionActive,
-        isUserLoggedIn,
         setIsShowAllEnabled,
     } = props;
 
@@ -29,6 +28,9 @@ export default function SidebarRangePositions(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
         sidebar: { close: closeSidebar },
     } = useContext(AppStateContext);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -83,7 +85,7 @@ export default function SidebarRangePositions(props: propsIF) {
                         />
                     ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

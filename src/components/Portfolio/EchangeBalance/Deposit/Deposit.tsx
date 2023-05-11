@@ -2,7 +2,10 @@ import styles from './Deposit.module.css';
 import DepositButton from './DepositButton/DepositButton';
 import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
@@ -23,7 +26,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -40,7 +42,6 @@ export default function Deposit(props: propsIF) {
     const {
         crocEnv,
         tokenAllowance,
-        connectedAccount,
         selectedToken,
         tokenWalletBalance,
         // tokenDexBalance,
@@ -51,6 +52,9 @@ export default function Deposit(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -178,7 +182,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && depositQtyNonDisplay) {
+        if (crocEnv && depositQtyNonDisplay && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
@@ -189,7 +193,7 @@ export default function Deposit(props: propsIF) {
 
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .deposit(depositQtyDisplay, connectedAccount);
+                    .deposit(depositQtyDisplay, userAddress);
 
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

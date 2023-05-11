@@ -37,7 +37,6 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
-    isUserLoggedIn: boolean | undefined;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
@@ -101,7 +100,6 @@ interface propsIF {
 export default function RangeCurrencyConverter(props: propsIF) {
     const {
         poolExists,
-        isUserLoggedIn,
         gasPriceInGwei,
         chainId,
         isLiq,
@@ -151,6 +149,10 @@ export default function RangeCurrencyConverter(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const [tokenAAllowed, setTokenAAllowed] = useState(false);
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
@@ -681,7 +683,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenADexBalance,
         tokenBDexBalance,
         isAdvancedMode,
-        isUserLoggedIn,
+        isUserConnected,
     ]);
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
@@ -720,7 +722,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
         gasPriceInGwei: gasPriceInGwei,
-        isUserLoggedIn: isUserLoggedIn,
         resetTokenQuantities: resetTokenQuantities,
         chainId: chainId,
         tokenPair: tokenPair,

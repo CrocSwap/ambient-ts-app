@@ -51,7 +51,6 @@ declare global {
 }
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
     changeState: (
@@ -118,7 +117,6 @@ type chartItemStates = {
 
 export default function TradeCandleStickChart(props: propsIF) {
     const {
-        isUserLoggedIn,
         chainData,
         baseTokenAddress,
         chainId,
@@ -841,7 +839,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
-                        isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}

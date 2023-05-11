@@ -7,11 +7,11 @@ import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
 import { sidebarSearchIF } from '../useSidebarSearch';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     tokenPair: TokenPairIF;
     chainId: string;
-    isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -25,13 +25,15 @@ export default function SidebarSearchResults(props: propsIF) {
         searchData,
         tokenPair,
         chainId,
-        isConnected,
         cachedPoolStatsFetch,
         isDenomBase,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
     } = props;
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     return (
         <div className={styles.container}>
@@ -42,7 +44,7 @@ export default function SidebarSearchResults(props: propsIF) {
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
             />
-            {isConnected && (
+            {isUserConnected && (
                 <>
                     <TxSearchResults
                         chainId={chainId}

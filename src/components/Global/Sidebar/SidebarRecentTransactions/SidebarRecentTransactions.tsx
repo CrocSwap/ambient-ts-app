@@ -2,6 +2,7 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
@@ -20,7 +21,6 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
@@ -29,8 +29,11 @@ export default function SidebarRecentTransactions(props: propsIF) {
         chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
-        isUserLoggedIn,
     } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -92,7 +95,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
                     />
                 ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

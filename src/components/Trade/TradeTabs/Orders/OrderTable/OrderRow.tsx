@@ -15,7 +15,10 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -39,12 +42,10 @@ interface propsIF {
 
     isShowAllEnabled: boolean;
     isOnPortfolioPage: boolean;
-    account: string;
     handlePulseAnimation?: (type: string) => void;
 }
 export default function OrderRow(props: propsIF) {
     const {
-        account,
         chainData,
         tradeData,
         showColumns,
@@ -62,6 +63,10 @@ export default function OrderRow(props: propsIF) {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         posHash,
@@ -88,7 +93,7 @@ export default function OrderRow(props: propsIF) {
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
-    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
+    } = useProcessOrder(limitOrder, userAddress, isOnPortfolioPage);
 
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
@@ -141,7 +146,6 @@ export default function OrderRow(props: propsIF) {
 
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}
@@ -324,7 +328,6 @@ export default function OrderRow(props: propsIF) {
 
                 <li data-label='menu'>
                     <OrdersMenu
-                        account={account}
                         chainData={chainData}
                         isShowAllEnabled={isShowAllEnabled}
                         tradeData={tradeData}

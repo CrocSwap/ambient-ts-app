@@ -41,7 +41,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     // poolPriceTick: number | undefined;
     chainData: ChainSpec;
     chainId: string;
@@ -139,7 +138,6 @@ export interface LiqSnap {
 // React functional component
 export default function TradeCharts(props: propsIF) {
     const {
-        isUserLoggedIn,
         chainData,
         poolPriceDisplay,
         chainId,
@@ -511,7 +509,6 @@ export default function TradeCharts(props: propsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
-                        isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
                         expandTradeTable={expandTradeTable}
                         changeState={props.changeState}

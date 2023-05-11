@@ -102,7 +102,6 @@ type lineValue = {
 };
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     isTokenABase: boolean;
     expandTradeTable: boolean;
@@ -184,7 +183,6 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 
 export default function Chart(props: propsIF) {
     const {
-        isUserLoggedIn,
         chainData,
         isTokenABase,
         denomInBase,
@@ -233,6 +231,9 @@ export default function Chart(props: propsIF) {
         candleDomains: { setValue: setCandleDomains },
     } = useContext(CandleContext);
 
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const [minTickForLimit, setMinTickForLimit] = useState<any>();
@@ -4081,7 +4082,7 @@ export default function Chart(props: propsIF) {
         market,
         checkLimitOrder,
         limit,
-        isUserLoggedIn,
+        isUserConnected,
         liqMode,
     ]);
 
@@ -4468,14 +4469,14 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
-                isUserLoggedIn
+                isUserConnected
                     ? sellOrderStyle === 'order_sell'
                         ? limit[0].value > poolPriceDisplay
                         : limit[0].value < poolPriceDisplay
                     : false,
             );
         }
-    }, [limit, sellOrderStyle, isUserLoggedIn, poolPriceDisplay]);
+    }, [limit, sellOrderStyle, isUserConnected, poolPriceDisplay]);
 
     const onClickRange = async (event: any) => {
         let newRangeValue: any;

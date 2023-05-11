@@ -17,7 +17,6 @@ import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string;
     limitOrder: LimitOrderIF;
     lastBlockNumber: number;
     closeGlobalModal: () => void;
@@ -34,12 +33,14 @@ export default function OrderDetails(props: propsIF) {
 
     const {
         limitOrder,
-        account,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
         chainData,
     } = props;
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
     const {
         // usdValue,
@@ -55,7 +56,7 @@ export default function OrderDetails(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         // posHashTruncated,
         posHash,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
@@ -306,7 +307,6 @@ export default function OrderDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        account={account}
                         limitOrder={limitOrder}
                         controlItems={controlItems}
                         usdValue={usdValue}
@@ -365,7 +365,6 @@ export default function OrderDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <OrderDetailsSimplify
-                    account={account}
                     limitOrder={limitOrder}
                     usdValue={usdValue}
                     isBid={isBid}

@@ -47,10 +47,8 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    account: string;
     chainId: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
@@ -81,7 +79,6 @@ export default function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
-        isUserLoggedIn,
         chainData,
         provider,
         chainId,
@@ -95,7 +92,6 @@ export default function Ranges(props: propsIF) {
         setExpandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
-        account,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -109,6 +105,9 @@ export default function Ranges(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -244,7 +243,7 @@ export default function Ranges(props: propsIF) {
                                 updatedPositions.filter(
                                     (position) =>
                                         position.user.toLowerCase() ===
-                                        account.toLowerCase(),
+                                        userAddress?.toLowerCase(),
                                 );
                             if (updatedPositionsMatchingUser.length)
                                 dispatch(
@@ -298,7 +297,7 @@ export default function Ranges(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -490,7 +489,6 @@ export default function Ranges(props: propsIF) {
     const sortedRowItemContent = sortedPositions.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
-            account={account}
             key={idx}
             position={position}
             currentPositionActive={currentPositionActive}
@@ -498,7 +496,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}
             chainId={chainId}
@@ -520,7 +517,6 @@ export default function Ranges(props: propsIF) {
     const currentRowItemContent = currentRanges.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
-            account={account}
             key={idx}
             position={position}
             currentPositionActive={currentPositionActive}
@@ -528,7 +524,6 @@ export default function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

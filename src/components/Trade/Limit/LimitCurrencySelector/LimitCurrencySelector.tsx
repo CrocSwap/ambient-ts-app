@@ -30,11 +30,11 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
-    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     tokenAInputQty: string;
@@ -89,7 +89,6 @@ interface propsIF {
 export default function LimitCurrencySelector(props: propsIF) {
     const {
         provider,
-        isUserLoggedIn,
         tokenPair,
         chainId,
         tokenAInputQty,
@@ -121,6 +120,9 @@ export default function LimitCurrencySelector(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const { dexBalLimit } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
@@ -230,7 +232,7 @@ export default function LimitCurrencySelector(props: propsIF) {
             : walletAndSurplusBalanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+        if (handleChangeClick && isUserConnected && !isSellTokenEth) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
@@ -367,7 +369,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         style={{ cursor: 'default' }}
                         // onClick={() => handleMaxButtonClick()}
                     >
-                        {isUserLoggedIn ? balanceLocaleString : ''}
+                        {isUserConnected ? balanceLocaleString : ''}
                     </div>
                 </DefaultTooltip>
                 {maxButton}
@@ -376,7 +378,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     );
 
     const balanceDisplayOrNull = isSellTokenSelector ? (
-        !isUserLoggedIn ? (
+        !isUserConnected ? (
             <div className={styles.swapbox_bottom} />
         ) : (
             <div className={styles.swapbox_bottom}>{walletContent}</div>

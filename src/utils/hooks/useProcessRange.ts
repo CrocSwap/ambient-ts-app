@@ -12,7 +12,7 @@ import moment from 'moment';
 
 export const useProcessRange = (
     position: PositionIF,
-    account: string,
+    account = '',
     isOnPortfolioPage?: boolean,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);

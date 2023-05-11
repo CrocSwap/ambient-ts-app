@@ -25,10 +25,10 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
-    isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
@@ -90,7 +90,6 @@ interface propsIF {
 export default function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
-        isUserLoggedIn,
         gasPriceInGwei,
         tokenPair,
         chainId,
@@ -132,6 +131,10 @@ export default function RangeCurrencySelector(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const isTokenASelector = fieldId === 'A';
 
@@ -249,7 +252,7 @@ export default function RangeCurrencySelector(props: propsIF) {
         balanceLocaleString !== '0.00';
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn && shouldDisplayMaxButton) {
+        if (handleChangeClick && isUserConnected && shouldDisplayMaxButton) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
@@ -382,14 +385,14 @@ export default function RangeCurrencySelector(props: propsIF) {
                     className={styles.balance_column}
                     style={{ cursor: 'default' }}
                 >
-                    <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
+                    <div>{isUserConnected ? balanceLocaleString : ''}</div>
                 </div>
             </DefaultTooltip>
             {maxButton}
         </div>
     );
 
-    const swapboxBottomOrNull = !isUserLoggedIn ? (
+    const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>{walletContent}</div>

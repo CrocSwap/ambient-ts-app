@@ -11,7 +11,7 @@ import ClaimOrderTokenHeader from './ClaimOrderTokenHeader/ClaimOrderTokenHeader
 import ClaimOrderInfo from './ClaimOrderInfo/ClaimOrderInfo';
 import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
     addReceipt,
@@ -31,7 +31,6 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
-    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -39,7 +38,10 @@ interface propsIF {
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -53,7 +55,7 @@ export default function ClaimOrder(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');

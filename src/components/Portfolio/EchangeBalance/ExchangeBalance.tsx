@@ -21,7 +21,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.Provider | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -41,7 +40,6 @@ export default function ExchangeBalance(props: propsIF) {
     const {
         crocEnv,
         mainnetProvider,
-        connectedAccount,
         selectedToken,
         tokenAllowance,
         tokenWalletBalance,
@@ -134,7 +132,6 @@ export default function ExchangeBalance(props: propsIF) {
             content: (
                 <Deposit
                     crocEnv={crocEnv}
-                    connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
@@ -154,7 +151,6 @@ export default function ExchangeBalance(props: propsIF) {
             content: (
                 <Withdraw
                     crocEnv={crocEnv}
-                    connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}

@@ -11,7 +11,6 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
@@ -21,7 +20,6 @@ interface propsIF {
 
 export default function TransactionDetails(props: propsIF) {
     const {
-        account,
         tx,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
@@ -81,7 +79,6 @@ export default function TransactionDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <TransactionDetailsPriceInfo
-                        account={account}
                         tx={tx}
                         controlItems={controlItems}
                     />
@@ -120,7 +117,6 @@ export default function TransactionDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <TransactionDetailsSimplify
-                    account={account}
                     tx={tx}
                     isOnPortfolioPage={isOnPortfolioPage}
                 />

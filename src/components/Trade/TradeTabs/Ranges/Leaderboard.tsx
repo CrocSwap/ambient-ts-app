@@ -33,10 +33,8 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for props
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    account: string;
     chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
@@ -62,7 +60,6 @@ interface propsIF {
 // react functional component
 export default function Leaderboard(props: propsIF) {
     const {
-        isUserLoggedIn,
         chainData,
         provider,
         chainId,
@@ -75,7 +72,6 @@ export default function Leaderboard(props: propsIF) {
         expandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
-        account,
         handlePulseAnimation,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -87,6 +83,9 @@ export default function Leaderboard(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state?.userData,
+    );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -143,7 +142,7 @@ export default function Leaderboard(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -339,7 +338,6 @@ export default function Leaderboard(props: propsIF) {
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
-            account={account}
             key={idx}
             position={position}
             rank={
@@ -352,7 +350,6 @@ export default function Leaderboard(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            isUserLoggedIn={isUserLoggedIn}
             chainData={chainData}
             provider={provider}
             chainId={chainId}

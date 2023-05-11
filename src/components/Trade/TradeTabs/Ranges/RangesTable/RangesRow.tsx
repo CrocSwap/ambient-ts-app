@@ -15,7 +15,10 @@ import styles from '../Ranges.module.css';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -26,7 +29,6 @@ import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     chainId: string;
@@ -34,7 +36,6 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    account: string;
     lastBlockNumber: number;
     showPair: boolean;
     ipadView: boolean;
@@ -58,7 +59,6 @@ export default function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
-        account,
         ipadView,
         showColumns,
         showPair,
@@ -77,6 +77,9 @@ export default function RangesRow(props: propsIF) {
         globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         posHash,
@@ -105,7 +108,7 @@ export default function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
-    } = useProcessRange(position, account, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isOnPortfolioPage);
 
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -162,7 +165,6 @@ export default function RangesRow(props: propsIF) {
         openGlobalModal(
             <RangeDetails
                 position={position}
-                account={account}
                 {...rangeDetailsProps}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual

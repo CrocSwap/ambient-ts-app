@@ -6,7 +6,7 @@ import {
     SetStateAction,
     useContext,
 } from 'react';
-import { useAccount, useEnsName } from 'wagmi';
+import { useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -67,7 +67,6 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     ensName: string;
     lastBlockNumber: number;
-    connectedAccount: string;
     chainId: string;
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
@@ -76,7 +75,6 @@ interface propsIF {
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    account: string;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -137,16 +135,13 @@ export default function Portfolio(props: propsIF) {
         setExpandTradeTable,
     } = props;
 
-    const { isConnected, address } = useAccount();
-    const { data: ensName } = useEnsName({ address });
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
+    const { data: ensName } = useEnsName({ address: userAddress });
 
     const crocEnv = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
-
-    const connectedAccount = address;
-
-    const isUserLoggedIn = isConnected;
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -177,15 +172,15 @@ export default function Portfolio(props: propsIF) {
     };
 
     useEffect(() => {
-        if (crocEnv && selectedToken.address && connectedAccount) {
+        if (crocEnv && selectedToken.address && userAddress) {
             crocEnv
                 .token(selectedToken.address)
-                .wallet(connectedAccount)
+                .wallet(userAddress)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
                 .catch(console.error);
             crocEnv
                 .token(selectedToken.address)
-                .balance(connectedAccount)
+                .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
                 })
@@ -194,10 +189,10 @@ export default function Portfolio(props: propsIF) {
 
         if (recheckTokenBalances) {
             (async () => {
-                if (connectedAccount) {
+                if (userAddress) {
                     const newNativeToken: TokenIF =
                         await cachedFetchNativeTokenBalance(
-                            connectedAccount,
+                            userAddress,
                             chainData.chainId,
                             lastBlockNumber,
                             crocEnv,
@@ -207,7 +202,7 @@ export default function Portfolio(props: propsIF) {
 
                     const erc20Results: TokenIF[] =
                         await cachedFetchErc20TokenBalances(
-                            connectedAccount,
+                            userAddress,
                             chainData.chainId,
                             lastBlockNumber,
                             crocEnv,
@@ -225,18 +220,18 @@ export default function Portfolio(props: propsIF) {
     }, [
         crocEnv,
         selectedToken.address,
-        connectedAccount,
+        userAddress,
         lastBlockNumber,
         recheckTokenBalances,
     ]);
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && connectedAccount && selectedTokenAddress) {
+            if (crocEnv && userAddress && selectedTokenAddress) {
                 try {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
-                        .allowance(connectedAccount);
+                        .allowance(userAddress);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
                     console.warn(err);
@@ -248,7 +243,7 @@ export default function Portfolio(props: propsIF) {
         crocEnv,
         selectedTokenAddress,
         lastBlockNumber,
-        connectedAccount,
+        userAddress,
         recheckTokenAllowance,
     ]);
 
@@ -265,7 +260,7 @@ export default function Portfolio(props: propsIF) {
 
     const connectedAccountActive =
         !addressFromParams ||
-        resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
+        resolvedAddress.toLowerCase() === userAddress?.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -326,7 +321,6 @@ export default function Portfolio(props: propsIF) {
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
                 ethMainnetUsdPrice={ethMainnetUsdPrice}
-                connectedAccount={connectedAccount || ''}
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
@@ -479,7 +473,7 @@ export default function Portfolio(props: propsIF) {
         soloTokenSelectInput.value = '';
     };
 
-    const showLoggedInButton = userAccount && !isUserLoggedIn;
+    const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -536,16 +530,13 @@ export default function Portfolio(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         lastBlockNumber: lastBlockNumber,
-        activeAccount: address ?? connectedAccount ?? '',
         connectedAccountActive: connectedAccountActive,
         chainId: chainData.chainId,
         tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
-        account: props.account,
         chainData: chainData,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        isUserLoggedIn: isUserLoggedIn,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
@@ -567,7 +558,6 @@ export default function Portfolio(props: propsIF) {
             ? secondaryEnsName
             : '',
         resolvedAddress: resolvedAddress,
-        activeAccount: address ?? connectedAccount ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         chainData: chainData,

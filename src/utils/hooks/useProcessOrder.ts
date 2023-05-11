@@ -21,7 +21,7 @@ import { diffHashSig } from '../functions/diffHashSig';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
-    account: string,
+    account = '',
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);

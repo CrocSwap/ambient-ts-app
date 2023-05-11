@@ -39,7 +39,6 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
-    account: string;
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
@@ -57,7 +56,6 @@ interface propsIF {
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
     const {
-        account,
         tradeData,
         isBaseTokenMoneynessGreaterOrEqual,
         tx,
@@ -189,7 +187,6 @@ export default function TransactionsMenu(props: propsIF) {
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={

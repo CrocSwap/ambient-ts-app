@@ -10,6 +10,7 @@ import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface ItemRowPropsIF {
     title: string;
@@ -20,7 +21,6 @@ interface ItemRowPropsIF {
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
-    account: string;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     isOnPortfolioPage: boolean;
@@ -28,13 +28,11 @@ interface RangeDetailsSimplifyPropsIF {
 export default function RangeDetailsSimplify(
     props: RangeDetailsSimplifyPropsIF,
 ) {
-    const {
-        account,
-        position,
-        baseFeesDisplay,
-        quoteFeesDisplay,
-        isOnPortfolioPage,
-    } = props;
+    const { position, baseFeesDisplay, quoteFeesDisplay, isOnPortfolioPage } =
+        props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         userNameToDisplay,
@@ -59,7 +57,7 @@ export default function RangeDetailsSimplify(
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-    } = useProcessRange(position, account, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isOnPortfolioPage);
 
     const {
         snackbar: { open: openSnackbar },

@@ -10,7 +10,6 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     lastBlockNumber: number;
     resolvedAddress: string;
-    activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
     tokenMap: Map<string, TokenIF>;

@@ -60,7 +60,6 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     lastBlockNumber: number;
-    activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
     tokenList: TokenIF[];
@@ -70,8 +69,6 @@ interface propsIF {
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    account: string;
-    isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -100,7 +97,6 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddressTokens,
         resolvedAddress,
         lastBlockNumber,
-        activeAccount,
         connectedAccountActive,
         chainId,
         tokenList,
@@ -110,7 +106,6 @@ export default function PortfolioTabs(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         handlePulseAnimation,
-        account,
         setExpandTradeTable,
         setSimpleRangeWidth,
         gasPriceInGwei,
@@ -337,7 +332,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
         chainId: chainId,
         tokenMap: tokenMap,
     };
@@ -350,7 +344,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
         chainId: chainId,
         tokenMap: tokenMap,
         openTokenModal: openTokenModal,
@@ -363,7 +356,6 @@ export default function PortfolioTabs(props: propsIF) {
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
-        account: account,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
         activeAccountPositionData: activeAccountPositionData,
@@ -372,7 +364,6 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
         provider: props.provider,
-        isUserLoggedIn: props.isUserLoggedIn,
         searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -397,7 +388,6 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: props.chainData,
         blockExplorer: props.chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
-        account: account,
         setCurrentTxActiveInTransactions:
             props.setCurrentTxActiveInTransactions,
         expandTradeTable: false,
@@ -418,7 +408,6 @@ export default function PortfolioTabs(props: propsIF) {
         expandTradeTable: false,
         chainData: props.chainData,
         isShowAllEnabled: false,
-        account: account,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
         isOnPortfolioPage: true,

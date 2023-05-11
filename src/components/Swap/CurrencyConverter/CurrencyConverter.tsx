@@ -32,7 +32,6 @@ import { useAccount } from 'wagmi';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     poolExists: boolean | undefined;
-    isUserLoggedIn: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
@@ -89,7 +88,6 @@ export default function CurrencyConverter(props: propsIF) {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         poolExists,
-        isUserLoggedIn,
         provider,
         slippageTolerancePercentage,
         setPriceImpact,
@@ -804,7 +802,6 @@ export default function CurrencyConverter(props: propsIF) {
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
                 setBuyQtyString={setBuyQtyString}
-                isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
@@ -876,7 +873,6 @@ export default function CurrencyConverter(props: propsIF) {
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
                     buyQtyString={buyQtyString}
-                    isUserLoggedIn={isUserLoggedIn}
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}
                     chainId={chainId}

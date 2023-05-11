@@ -42,10 +42,8 @@ import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
-    account: string;
     tokenList: TokenIF[];
     lastBlockNumber: number;
     chainId: string;
@@ -96,11 +94,9 @@ export default function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isUserLoggedIn,
         isTokenABase,
         chainId,
         chainData,
-        account,
         isShowAllEnabled,
         setIsShowAllEnabled,
         tokenMap,
@@ -150,6 +146,8 @@ export default function TradeTabs2(props: propsIF) {
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
+    const { isLoggedIn: isUserConnected, addressCurrent: userAddress } =
+        useAppSelector((state) => state.userData);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -212,7 +210,7 @@ export default function TradeTabs2(props: propsIF) {
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
-    }, [account, isUserLoggedIn, selectedBase, selectedQuote]);
+    }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
 
     useEffect(() => {
         if (
@@ -227,7 +225,7 @@ export default function TradeTabs2(props: propsIF) {
                 if (isCandleSelected) {
                     setIsShowAllEnabled(false);
                 } else if (
-                    (!isUserLoggedIn && !isCandleSelected) ||
+                    (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !isShowAllEnabled &&
                         matchingUserChangesLength < 1)
@@ -243,7 +241,7 @@ export default function TradeTabs2(props: propsIF) {
                 (!outsideControlActive && selectedInsideTab === 1)
             ) {
                 if (
-                    !isUserLoggedIn ||
+                    !isUserConnected ||
                     (!isCandleSelected &&
                         !isShowAllEnabled &&
                         matchingUserLimitOrdersLength < 1)
@@ -262,7 +260,7 @@ export default function TradeTabs2(props: propsIF) {
                 (!outsideControlActive && selectedInsideTab === 2)
             ) {
                 if (
-                    !isUserLoggedIn ||
+                    !isUserConnected ||
                     (!isCandleSelected &&
                         !isShowAllEnabled &&
                         matchingUserPositionsLength < 1)
@@ -282,7 +280,7 @@ export default function TradeTabs2(props: propsIF) {
     }, [
         userPositionsDataReceived,
         hasUserSelectedViewAll,
-        isUserLoggedIn,
+        isUserConnected,
         hasInitialized,
         isCandleSelected,
         outsideControlActive,
@@ -297,11 +295,11 @@ export default function TradeTabs2(props: propsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (account && isServerEnabled && !isShowAllEnabled) {
+        if (userAddress && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokenList,
-                    user: account,
+                    user: userAddress,
                     chainId: chainData.chainId,
                     annotate: true,
                     addValue: true,
@@ -325,7 +323,7 @@ export default function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, account, isShowAllEnabled]);
+    }, [isServerEnabled, userAddress, isShowAllEnabled]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
@@ -379,7 +377,6 @@ export default function TradeTabs2(props: propsIF) {
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        isUserLoggedIn: isUserLoggedIn,
         chainData: chainData,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -387,7 +384,6 @@ export default function TradeTabs2(props: propsIF) {
         quoteTokenDexBalance: quoteTokenDexBalance,
         searchableTokens: searchableTokens,
         provider: provider,
-        account: account,
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
@@ -417,7 +413,6 @@ export default function TradeTabs2(props: propsIF) {
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
-        account: account,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
         setIsShowAllEnabled: setIsShowAllEnabled,
@@ -439,7 +434,6 @@ export default function TradeTabs2(props: propsIF) {
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
-        account: account,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         isOnPortfolioPage: false,
@@ -459,7 +453,6 @@ export default function TradeTabs2(props: propsIF) {
         setHasUserSelectedViewAll: setHasUserSelectedViewAll,
         changeState: changeState,
         isShowAllEnabled: isShowAllEnabled,
-        isUserLoggedIn: isUserLoggedIn,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,

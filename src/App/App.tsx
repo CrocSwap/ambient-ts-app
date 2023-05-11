@@ -108,7 +108,6 @@ import {
     setEnsOrAddressTruncated,
     setErc20Tokens,
     setIsLoggedIn,
-    setIsUserIdle,
     setNativeToken,
     setRecentTokens,
 } from '../utils/state/userDataSlice';
@@ -245,6 +244,7 @@ export default function App() {
             : true,
     );
     const [fullScreenChart, setFullScreenChart] = useState(false);
+    const { address: userAddress, isConnected } = useAccount();
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -315,8 +315,6 @@ export default function App() {
         subscriptions: { isEnabled: areSubscriptionsEnabled },
     };
 
-    // CONTEXT: app state context
-    const { address: account, isConnected } = useAccount();
     // CONTEXT: to be removed, have components that require it reference it directly
     const userData = useAppSelector((state) => state.userData);
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -379,14 +377,14 @@ export default function App() {
 
     // CONTEXT: move to inside crocenv context
     useEffect(() => {
-        if (account && checkBlacklist(account)) {
+        if (userAddress && checkBlacklist(userAddress)) {
             disconnect();
         }
-        if (!account) {
+        if (!userAddress) {
             setCrocEnv(undefined);
             setIsShowAllEnabled(true);
         }
-    }, [account]);
+    }, [userAddress]);
 
     //  CONTEXT: chain context - modify so that the appChain hook updates when userLoggedIn state changes
     // custom hook to manage chain the app is using
@@ -603,10 +601,11 @@ export default function App() {
     // CONTEXT: leave in app.tsx for now, investigate if its being used, and move to another file if necessary - potentially combine
     useEffect(() => {
         if (isConnected) {
-            if (userData.isLoggedIn === false && account) {
+            if (userData.isLoggedIn === false && userAddress) {
                 IS_LOCAL_ENV && console.debug('settting to logged in');
                 dispatch(setIsLoggedIn(true));
-                dispatch(setAddressAtLogin(account));
+                dispatch(setAddressAtLogin(userAddress));
+                dispatch(setAddressCurrent(userAddress));
             } else if (userData.isLoggedIn === false) {
                 IS_LOCAL_ENV &&
                     console.debug('settting to logged in - no address');
@@ -623,19 +622,19 @@ export default function App() {
                 dispatch(resetUserAddresses());
             }
         }
-    }, [isConnected, userData.isLoggedIn, account]);
+    }, [isConnected, userData.isLoggedIn, userAddress]);
     useEffect(() => {
         IS_LOCAL_ENV &&
             console.debug(
-                'resetting user token data and address because connected account changed',
+                'resetting user token data and address because connected userAddress changed',
             );
         dispatch(resetTokenData());
-        if (account) {
-            dispatch(setAddressCurrent(account));
+        if (userAddress) {
+            dispatch(setAddressCurrent(userAddress));
         } else {
             dispatch(setAddressCurrent(undefined));
         }
-    }, [isUserLoggedIn, account]);
+    }, [isUserLoggedIn, userAddress]);
 
     // CONTEXT: remove and reference as necessary
     const dispatch = useAppDispatch();
@@ -806,12 +805,12 @@ export default function App() {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (isUserLoggedIn && account && provider) {
+            if (isUserLoggedIn && userAddress && provider) {
                 IS_LOCAL_ENV && console.debug('checking for ens name');
                 try {
                     const ensName = await cachedFetchAddress(
                         provider,
-                        account,
+                        userAddress,
                         chainData.chainId,
                     );
                     if (ensName) {
@@ -832,7 +831,7 @@ export default function App() {
 
                         dispatch(
                             setEnsOrAddressTruncated(
-                                trimString(account, 5, 3, '…'),
+                                trimString(userAddress, 5, 3, '…'),
                             ),
                         );
                     }
@@ -841,15 +840,15 @@ export default function App() {
                     // setEnsName('');
                     dispatch(
                         setEnsOrAddressTruncated(
-                            trimString(account, 5, 3, '…'),
+                            trimString(userAddress, 5, 3, '…'),
                         ),
                     );
                 }
-            } else if (!isUserLoggedIn || !account) {
+            } else if (!isUserLoggedIn || !userAddress) {
                 dispatch(setEnsOrAddressTruncated(undefined));
             }
         })();
-    }, [isUserLoggedIn, account, chainData.chainId]);
+    }, [isUserLoggedIn, userAddress, chainData.chainId]);
 
     // CONTEXT: chain state context
     // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
@@ -873,11 +872,11 @@ export default function App() {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
+            if (crocEnv && isUserLoggedIn && userAddress && chainData.chainId) {
                 try {
                     const newNativeToken: TokenIF =
                         await cachedFetchNativeTokenBalance(
-                            account,
+                            userAddress,
                             chainData.chainId,
                             everyEigthBlock,
                             crocEnv,
@@ -890,7 +889,7 @@ export default function App() {
                 try {
                     const erc20Results: TokenIF[] =
                         await cachedFetchErc20TokenBalances(
-                            account,
+                            userAddress,
                             chainData.chainId,
                             everyEigthBlock,
                             crocEnv,
@@ -905,7 +904,13 @@ export default function App() {
                 }
             }
         })();
-    }, [crocEnv, isUserLoggedIn, account, chainData.chainId, everyEigthBlock]);
+    }, [
+        crocEnv,
+        isUserLoggedIn,
+        userAddress,
+        chainData.chainId,
+        everyEigthBlock,
+    ]);
 
     // CONTEXT: trade token context - base token: address, decimal; quoteToken: address, decimal...
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
@@ -1989,16 +1994,16 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_user_liqchanges?' +
             new URLSearchParams({
-                user: account || '',
+                user: userAddress || '',
                 chainId: chainData.chainId,
                 annotate: 'true',
                 addCachedAPY: 'true',
                 omitKnockout: 'true',
                 ensResolution: 'true',
                 addValue: 'true',
-                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
+                // user: userAddress || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [account, chainData.chainId],
+        [userAddress, chainData.chainId],
     );
     const {
         //  sendMessage,
@@ -2019,11 +2024,11 @@ export default function App() {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
-        // only connect is account is available
+        // only connect is userAddress is available
         isServerEnabled &&
             areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
+            userAddress !== null &&
+            userAddress !== undefined,
     );
     function isJsonString(str: string) {
         try {
@@ -2067,13 +2072,13 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_user_recent_changes?' +
             new URLSearchParams({
-                user: account || '',
+                user: userAddress || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
                 annotate: 'true',
                 ensResolution: 'true',
             }),
-        [account, chainData.chainId],
+        [userAddress, chainData.chainId],
     );
     const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
         userRecentChangesCacheSubscriptionEndpoint,
@@ -2090,11 +2095,11 @@ export default function App() {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
-        // only connect is account is available
+        // only connect is userAddress is available
         isServerEnabled &&
             areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
+            userAddress !== null &&
+            userAddress !== undefined,
     );
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
@@ -2122,12 +2127,12 @@ export default function App() {
             wssGraphCacheServerDomain +
             '/subscribe_user_limit_order_changes?' +
             new URLSearchParams({
-                user: account || '',
+                user: userAddress || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
                 ensResolution: 'true',
             }),
-        [account, chainData.chainId],
+        [userAddress, chainData.chainId],
     );
     const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
         userLimitOrderChangesCacheSubscriptionEndpoint,
@@ -2146,11 +2151,11 @@ export default function App() {
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
-        // only connect is account is available
+        // only connect is userAddress is available
         isServerEnabled &&
             areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
+            userAddress !== null &&
+            userAddress !== undefined,
     );
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
@@ -2266,14 +2271,14 @@ export default function App() {
         (async () => {
             if (
                 crocEnv &&
-                account &&
+                userAddress &&
                 isUserLoggedIn &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address
             ) {
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .walletDisplay(account)
+                    .walletDisplay(userAddress)
                     .then((bal: string) => {
                         if (bal !== baseTokenBalance) {
                             IS_LOCAL_ENV &&
@@ -2286,7 +2291,7 @@ export default function App() {
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .balanceDisplay(account)
+                    .balanceDisplay(userAddress)
                     .then((bal: string) => {
                         if (bal !== baseTokenDexBalance) {
                             IS_LOCAL_ENV &&
@@ -2297,7 +2302,7 @@ export default function App() {
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .walletDisplay(account)
+                    .walletDisplay(userAddress)
                     .then((bal: string) => {
                         if (bal !== quoteTokenBalance) {
                             IS_LOCAL_ENV &&
@@ -2308,7 +2313,7 @@ export default function App() {
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .balanceDisplay(account)
+                    .balanceDisplay(userAddress)
                     .then((bal: string) => {
                         if (bal !== quoteTokenDexBalance) {
                             IS_LOCAL_ENV &&
@@ -2324,7 +2329,7 @@ export default function App() {
     }, [
         crocEnv,
         isUserLoggedIn,
-        account,
+        userAddress,
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
@@ -2340,11 +2345,11 @@ export default function App() {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            if (crocEnv && account && tokenAAddress) {
+            if (crocEnv && userAddress && tokenAAddress) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenAAddress)
-                        .allowance(account);
+                        .allowance(userAddress);
                     const newTokenAllowance = toDisplayQty(
                         allowance,
                         tokenADecimals,
@@ -2364,17 +2369,17 @@ export default function App() {
         crocEnv,
         tokenAAddress,
         lastBlockNumber,
-        account,
+        userAddress,
         recheckTokenAApproval,
     ]);
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            if (crocEnv && tokenBAddress && tokenBDecimals && account) {
+            if (crocEnv && tokenBAddress && tokenBDecimals && userAddress) {
                 try {
                     const allowance = await crocEnv
                         .token(tokenBAddress)
-                        .allowance(account);
+                        .allowance(userAddress);
                     const newTokenAllowance = toDisplayQty(
                         allowance,
                         tokenBDecimals,
@@ -2394,7 +2399,7 @@ export default function App() {
         crocEnv,
         tokenBAddress,
         lastBlockNumber,
-        account,
+        userAddress,
         recheckTokenBApproval,
     ]);
 
@@ -2402,7 +2407,7 @@ export default function App() {
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
     useEffect(() => {
-        if (isServerEnabled && isUserLoggedIn && account && crocEnv) {
+        if (isServerEnabled && isUserLoggedIn && userAddress && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
@@ -2414,7 +2419,7 @@ export default function App() {
                 fetch(
                     userPositionsCacheEndpoint +
                         new URLSearchParams({
-                            user: account,
+                            user: userAddress,
                             chainId: chainData.chainId,
                             ensResolution: 'true',
                             annotate: 'true',
@@ -2464,7 +2469,7 @@ export default function App() {
             fetch(
                 userLimitOrderStatesCacheEndpoint +
                     new URLSearchParams({
-                        user: account,
+                        user: userAddress,
                         chainId: chainData.chainId,
                         ensResolution: 'true',
                         omitEmpty: 'true',
@@ -2504,7 +2509,7 @@ export default function App() {
             try {
                 fetchUserRecentChanges({
                     tokenList: searchableTokens,
-                    user: account,
+                    user: userAddress,
                     chainId: chainData.chainId,
                     annotate: true,
                     addValue: true,
@@ -2591,7 +2596,7 @@ export default function App() {
         isServerEnabled,
         tokensOnActiveLists,
         isUserLoggedIn,
-        account,
+        userAddress,
         chainData.chainId,
         crocEnv,
     ]);
@@ -2680,7 +2685,7 @@ export default function App() {
     }, [lastBlockNumber]);
 
     // CONTEXT: move this into the header component
-    const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
+    const shouldDisplayAccountTab = isUserLoggedIn && userAddress !== undefined;
 
     // CONTEXT: app state context
     const [
@@ -2826,7 +2831,7 @@ export default function App() {
         pool: pool,
         tokenPairLocal: tokenPairLocal,
         isUserLoggedIn: isUserLoggedIn,
-        account: account,
+        account: userAddress,
         provider: provider,
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
@@ -2863,8 +2868,6 @@ export default function App() {
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         pool: pool,
-        isUserLoggedIn: isConnected,
-        account: account,
         provider: provider,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
@@ -2902,7 +2905,6 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        account: account,
         pool: pool,
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
@@ -2945,7 +2947,6 @@ export default function App() {
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
-        account: account,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
         isPairStable: isPairStable,
@@ -3026,7 +3027,6 @@ export default function App() {
         verifyToken: verifyToken,
         tokenPair: tokenPair,
         recentPools: recentPools,
-        isConnected: isConnected,
         ackTokens: ackTokens,
         topPools: topPools,
     };
@@ -3071,7 +3071,7 @@ export default function App() {
     // CONTEXT: user data context
     useEffect(() => {
         dispatch(resetUserGraphData());
-    }, [account]);
+    }, [userAddress]);
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
@@ -3217,7 +3217,6 @@ export default function App() {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         tokenPair,
-        account: account ?? '',
         lastBlockNumber,
         isTokenABase,
         poolPriceDisplay,
@@ -3278,13 +3277,11 @@ export default function App() {
         cachedFetchTokenPrice,
         ensName,
         lastBlockNumber,
-        connectedAccount: account ? account : '',
         chainId: chainData.chainId,
         tokensOnActiveLists,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
-        account: account ?? '',
         isUserLoggedIn,
         baseTokenBalance,
         quoteTokenBalance,

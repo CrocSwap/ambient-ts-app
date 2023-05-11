@@ -88,8 +88,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
-    account: string | undefined;
-    isUserLoggedIn: boolean | undefined;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
@@ -142,8 +140,6 @@ interface propsIF {
 
 export default function Range(props: propsIF) {
     const {
-        account,
-        isUserLoggedIn,
         isPairStable,
         provider,
         baseTokenAddress,
@@ -245,6 +241,8 @@ export default function Range(props: propsIF) {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
 
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
     const { tradeData, receiptData } = useAppSelector((state) => state);
 
     const { navigationMenu } = useTradeData();
@@ -1119,7 +1117,7 @@ export default function Range(props: propsIF) {
                         new URLSearchParams({
                             chainId: chainId,
                             tx: tx.hash,
-                            user: account ?? '',
+                            user: userAddress ?? '',
                             base: baseTokenAddress,
                             quote: quoteTokenAddress,
                             poolIdx: lookupChain(chainId).poolIndex.toString(),
@@ -1137,7 +1135,7 @@ export default function Range(props: propsIF) {
                         new URLSearchParams({
                             chainId: chainId,
                             tx: tx.hash,
-                            user: account ?? '',
+                            user: userAddress ?? '',
                             base: baseTokenAddress,
                             quote: quoteTokenAddress,
                             poolIdx: lookupChain(chainId).poolIndex.toString(),
@@ -1175,7 +1173,7 @@ export default function Range(props: propsIF) {
                             new URLSearchParams({
                                 chainId: chainId,
                                 tx: newTransactionHash,
-                                user: account ?? '',
+                                user: userAddress ?? '',
                                 base: baseTokenAddress,
                                 quote: quoteTokenAddress,
                                 poolIdx:
@@ -1344,7 +1342,6 @@ export default function Range(props: propsIF) {
     const rangeCurrencyConverterProps = {
         poolExists: poolExists,
         provider: provider,
-        isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId,
         tokenPair: tokenPair,
@@ -1738,7 +1735,7 @@ export default function Range(props: propsIF) {
                             ? advancedModeContent
                             : baseModeContent}
                     </motion.div>
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                    {isUserConnected === undefined ? null : isUserConnected ===
                       true ? (
                         poolPriceNonDisplay !== 0 &&
                         parseFloat(tokenAInputQty) > 0 &&

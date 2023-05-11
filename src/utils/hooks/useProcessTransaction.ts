@@ -10,7 +10,7 @@ import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.m
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 export const useProcessTransaction = (
     tx: TransactionIF,
-    account: string,
+    account = '',
     isOnPortfolioPage = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);

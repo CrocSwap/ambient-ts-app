@@ -45,7 +45,6 @@ import { CandleContext } from '../../contexts/CandleContext';
 
 // interface for React functional component props
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -53,7 +52,6 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    account: string;
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
@@ -100,7 +98,6 @@ export default function Trade(props: propsIF) {
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isUserLoggedIn,
         chainId,
         chainData,
         tokenMap,
@@ -120,7 +117,6 @@ export default function Trade(props: propsIF) {
         setIsShowAllEnabled,
         isTokenABase,
         poolPriceNonDisplay,
-        account,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
@@ -454,7 +450,6 @@ export default function Trade(props: propsIF) {
     const tradeChartsProps = {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
-        isUserLoggedIn: isUserLoggedIn,
         chainData: chainData,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,
@@ -489,10 +484,8 @@ export default function Trade(props: propsIF) {
         tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        isUserLoggedIn: isUserLoggedIn,
         isTokenABase: isTokenABase,
         provider: provider,
-        account: account,
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
         chainData: chainData,

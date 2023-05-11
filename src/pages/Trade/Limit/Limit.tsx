@@ -74,9 +74,7 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string | undefined;
     pool: CrocPoolView | undefined;
-    isUserLoggedIn: boolean | undefined;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -121,10 +119,8 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: propsIF) {
     const {
-        account,
         provider,
         pool,
-        isUserLoggedIn,
         isPairStable,
         baseTokenBalance,
         quoteTokenBalance,
@@ -157,6 +153,9 @@ export default function Limit(props: propsIF) {
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
+
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
 
@@ -597,7 +596,7 @@ export default function Limit(props: propsIF) {
                     new URLSearchParams({
                         chainId: chainId,
                         tx: tx.hash,
-                        user: account ?? '',
+                        user: userAddress ?? '',
                         base: tradeData.baseToken.address,
                         quote: tradeData.quoteToken.address,
                         poolIdx: lookupChain(chainId).poolIndex.toString(),
@@ -633,7 +632,7 @@ export default function Limit(props: propsIF) {
                             new URLSearchParams({
                                 chainId: chainId,
                                 tx: newTransactionHash,
-                                user: account ?? '',
+                                user: userAddress ?? '',
                                 base: tradeData.baseToken.address,
                                 quote: tradeData.quoteToken.address,
                                 poolIdx:
@@ -836,7 +835,6 @@ export default function Limit(props: propsIF) {
         setPriceInputFieldBlurred: setPriceInputFieldBlurred,
         pool: pool,
         gridSize: chainData.gridSize,
-        isUserLoggedIn: isUserLoggedIn,
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
@@ -982,7 +980,7 @@ export default function Limit(props: propsIF) {
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
+                    {isUserConnected === undefined ? null : isUserConnected ===
                       true ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 ? (

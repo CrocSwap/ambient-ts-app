@@ -5,9 +5,9 @@ import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { GiLaurelsTrophy } from 'react-icons/gi';
 import { NavLink } from 'react-router-dom';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
-    isUserLoggedIn: boolean | undefined;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -39,7 +39,6 @@ const LeaderboardTabName = 'Leaderboard';
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         isShowAllEnabled,
-        isUserLoggedIn,
         setIsShowAllEnabled,
         isCandleSelected,
         setIsCandleSelected,
@@ -59,6 +58,9 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setHasUserSelectedViewAll,
         // setShowPositionsOnlyToggle
     } = props;
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const expandIcon = (
         <div
@@ -84,7 +86,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
     const toggleOrNull =
-        !isUserLoggedIn ||
+        !isUserConnected ||
         isCandleSelected ||
         // hide toggle if current tab is leaderboard since React state takes time to update
         props.currentTab == LeaderboardTabName ? null : (
@@ -134,7 +136,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                             : { cursor: 'default' }
                     }
                 >
-                    {isUserLoggedIn &&
+                    {isUserConnected &&
                     !isCandleSelected &&
                     // hide toggle if current tab is leaderboard since React state takes time to update
                     props.currentTab !== LeaderboardTabName

@@ -38,7 +38,6 @@ interface propsIF {
     connectedAccountActive?: boolean;
     expandTradeTable: boolean;
     chainData: ChainSpec;
-    account: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
@@ -61,7 +60,6 @@ export default function Orders(props: propsIF) {
         connectedAccountActive,
         chainData,
         expandTradeTable,
-        account,
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
@@ -78,6 +76,9 @@ export default function Orders(props: propsIF) {
     } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
         (x) => x.chainId === chainData.chainId,
@@ -346,7 +347,7 @@ export default function Orders(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastLimits = currentPage * limitsPerPage;
@@ -414,7 +415,6 @@ export default function Orders(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             lastBlockNumber={lastBlockNumber}
-            account={account}
         />
     ));
 
@@ -435,7 +435,6 @@ export default function Orders(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             lastBlockNumber={lastBlockNumber}
-            account={account}
         />
     ));
 

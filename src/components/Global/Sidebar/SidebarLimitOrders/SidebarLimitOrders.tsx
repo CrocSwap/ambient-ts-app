@@ -4,6 +4,7 @@ import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     tokenMap: Map<string, TokenIF>;
@@ -13,7 +14,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -25,8 +25,11 @@ export default function SidebarLimitOrders(props: propsIF) {
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
-        isUserLoggedIn,
     } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -90,7 +93,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                         />
                     ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

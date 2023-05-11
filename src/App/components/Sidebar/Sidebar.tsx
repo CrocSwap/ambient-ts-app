@@ -74,7 +74,6 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
-    isConnected: boolean;
     ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
 }
@@ -100,7 +99,6 @@ export default function Sidebar(props: propsIF) {
         verifyToken,
         tokenPair,
         recentPools,
-        isConnected,
         ackTokens,
         topPools,
     } = props;
@@ -179,7 +177,6 @@ export default function Sidebar(props: propsIF) {
                     isDenomBase={isDenomBase}
                     setCurrentPositionActive={setCurrentPositionActive}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    isUserLoggedIn={isConnected}
                 />
             ),
         },
@@ -200,7 +197,6 @@ export default function Sidebar(props: propsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
-                    isUserLoggedIn={isConnected}
                 />
             ),
         },
@@ -242,7 +238,6 @@ export default function Sidebar(props: propsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
-                    isUserLoggedIn={isConnected}
                 />
             ),
         },
@@ -533,7 +528,6 @@ export default function Sidebar(props: propsIF) {
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             chainId={chainId}
-                            isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
                             setCurrentPositionActive={setCurrentPositionActive}
                             setCurrentTxActiveInTransactions={

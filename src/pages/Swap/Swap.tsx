@@ -55,10 +55,9 @@ import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import _ from 'lodash';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    account: string | undefined;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -105,8 +104,6 @@ interface propsIF {
 export default function Swap(props: propsIF) {
     const {
         pool,
-        isUserLoggedIn,
-        account,
         isPairStable,
         provider,
         isOnTradeRoute,
@@ -140,6 +137,8 @@ export default function Swap(props: propsIF) {
         ackTokens,
         chainData,
     } = props;
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -318,7 +317,7 @@ export default function Swap(props: propsIF) {
                 newSwapCacheEndpoint +
                     new URLSearchParams({
                         tx: tx.hash,
-                        user: account ?? '',
+                        user: userAddress ?? '',
                         base: isSellTokenBase
                             ? sellTokenAddress
                             : buyTokenAddress,
@@ -363,7 +362,7 @@ export default function Swap(props: propsIF) {
                         newSwapCacheEndpoint +
                             new URLSearchParams({
                                 tx: newTransactionHash,
-                                user: account ?? '',
+                                user: userAddress ?? '',
                                 base: isSellTokenBase
                                     ? sellTokenAddress
                                     : buyTokenAddress,
@@ -684,7 +683,6 @@ export default function Swap(props: propsIF) {
         tokenPairLocal: tokenPairLocal,
         crocEnv: crocEnv,
         poolExists: poolExists,
-        isUserLoggedIn: isUserLoggedIn,
         provider: provider,
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
@@ -885,7 +883,6 @@ export default function Swap(props: propsIF) {
                             <CurrencyConverter {...currencyConverterProps} />
                         </motion.div>
                         <ExtraInfo
-                            account={account}
                             tokenPair={{
                                 dataTokenA: tokenA,
                                 dataTokenB: tokenB,
@@ -906,8 +903,8 @@ export default function Swap(props: propsIF) {
                             isDenomBase={tradeData.isDenomBase}
                             isOnTradeRoute={isOnTradeRoute}
                         />
-                        {isUserLoggedIn ===
-                        undefined ? null : isUserLoggedIn === true ? (
+                        {isUserConnected ===
+                        undefined ? null : isUserConnected === true ? (
                             poolExists &&
                             !isTokenAAllowanceSufficient &&
                             parseFloat(sellQtyString) > 0 &&

@@ -42,7 +42,6 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
-    account: string;
     isOnPortfolioPage: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
@@ -71,13 +70,16 @@ export default function RangeDetails(props: propsIF) {
         // isPositionInRange,
         isAmbient,
         cachedQuerySpotPrice,
-        account,
         isOnPortfolioPage,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
         chainData,
     } = props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         globalModal: { close: closeGlobalModal },
@@ -120,7 +122,7 @@ export default function RangeDetails(props: propsIF) {
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
-    const { posHash } = useProcessRange(position, account);
+    const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -384,7 +386,6 @@ export default function RangeDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <RangeDetailsSimplify
-                    account={account}
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}

@@ -4,7 +4,10 @@ import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
@@ -28,7 +31,6 @@ import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
@@ -46,7 +48,6 @@ interface propsIF {
 export default function Withdraw(props: propsIF) {
     const {
         crocEnv,
-        connectedAccount,
         selectedToken,
         // tokenAllowance,
         // tokenWalletBalance,
@@ -62,6 +63,10 @@ export default function Withdraw(props: propsIF) {
         ethMainnetUsdPrice,
         gasPriceInGwei,
     } = props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -171,7 +176,7 @@ export default function Withdraw(props: propsIF) {
     ]);
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
-        if (crocEnv && withdrawQtyNonDisplay) {
+        if (crocEnv && withdrawQtyNonDisplay && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     withdrawQtyNonDisplay,
@@ -187,7 +192,7 @@ export default function Withdraw(props: propsIF) {
                 } else {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(depositQtyDisplay, connectedAccount);
+                        .withdraw(depositQtyDisplay, userAddress);
                 }
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

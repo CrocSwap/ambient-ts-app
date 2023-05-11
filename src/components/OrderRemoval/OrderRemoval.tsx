@@ -14,7 +14,7 @@ import { BigNumber } from 'ethers';
 // import Toggle2 from '../Global/Toggle/Toggle2';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
     addReceipt,
@@ -34,7 +34,6 @@ import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmati
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
-    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -42,7 +41,10 @@ interface propsIF {
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { account, crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -55,7 +57,7 @@ export default function OrderRemoval(props: propsIF) {
         quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
@@ -186,7 +188,7 @@ export default function OrderRemoval(props: propsIF) {
                         new URLSearchParams({
                             chainId: limitOrder.chainId.toString(),
                             tx: tx.hash,
-                            user: account ?? '',
+                            user: userAddress ?? '',
                             base: limitOrder.base,
                             quote: limitOrder.quote,
                             poolIdx: lookupChain(
@@ -224,7 +226,7 @@ export default function OrderRemoval(props: propsIF) {
                                 new URLSearchParams({
                                     chainId: limitOrder.chainId.toString(),
                                     tx: newTransactionHash,
-                                    user: account ?? '',
+                                    user: userAddress ?? '',
                                     base: limitOrder.base,
                                     quote: limitOrder.quote,
                                     poolIdx: lookupChain(

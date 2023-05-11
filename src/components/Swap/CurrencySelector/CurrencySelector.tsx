@@ -28,11 +28,11 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
     disableReverseTokens: boolean;
-    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
     fieldId: string;
@@ -100,7 +100,6 @@ export default function CurrencySelector(props: propsIF) {
         setSellQtyString,
         buyQtyString,
         setBuyQtyString,
-        isUserLoggedIn,
         tokenPair,
         chainId,
         fieldId,
@@ -141,6 +140,9 @@ export default function CurrencySelector(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector
@@ -247,7 +249,7 @@ export default function CurrencySelector(props: propsIF) {
             : balanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn) {
+        if (handleChangeClick && isUserConnected) {
             handleChangeClick(adjustedBalanceNonLocaleString);
             setUserClickedCombinedMax(true);
         }
@@ -460,7 +462,7 @@ export default function CurrencySelector(props: propsIF) {
                         onClick={() => {
                             if (
                                 handleChangeClick &&
-                                isUserLoggedIn &&
+                                isUserConnected &&
                                 isCombinedBalanceNonZero
                             ) {
                                 handleChangeClick(balanceNonLocaleString);
@@ -468,7 +470,7 @@ export default function CurrencySelector(props: propsIF) {
                             }
                         }}
                     >
-                        <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
+                        <div>{isUserConnected ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
                 {isCombinedBalanceNonZero ? maxButton : null}
@@ -477,7 +479,7 @@ export default function CurrencySelector(props: propsIF) {
     );
     // End of  Wallet balance function and styles-----------------------------
 
-    const swapboxBottomOrNull = !isUserLoggedIn ? (
+    const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>{walletContent}</div>
