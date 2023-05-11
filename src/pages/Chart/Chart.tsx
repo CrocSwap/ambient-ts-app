@@ -972,12 +972,33 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
+    useEffect(() => {
+        const filteredTime = unparsedCandleData.filter(
+            (data: CandleData) => data.time,
+        );
+
+        const lastCandleDate = d3.min(filteredTime, (d) => d.time * 1000);
+        if (lastCandleDate) {
+            console.log(
+                'hey',
+                lastCandleDate,
+                new Date(scaleData?.xScale.domain()[0]),
+                new Date(lastCandleDate),
+            );
+        }
+
+        getNewCandleData(scaleData?.xScale.domain()[0], lastCandleDate);
+    }, [pool]);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (newBoundary: any, candleDate: any) => {
+        console.log(newBoundary < candleDate);
+
         if (newBoundary < candleDate) {
             const filtered = unparsedCandleData.filter(
                 (data: CandleData) => data.time !== undefined,
             );
+            console.log('hey2');
 
             if (filtered) {
                 const maxBoundary: number | undefined =
@@ -992,6 +1013,9 @@ export default function Chart(props: propsIF) {
 
                 const lastCandleDate = d3.min(filtered, (d) => d.time * 1000);
 
+                if (lastCandleDate)
+                    console.log(new Date(finalData), new Date(lastCandleDate));
+
                 const candleDomain = {
                     lastCandleDate:
                         lastCandleDate !== undefined
@@ -999,6 +1023,12 @@ export default function Chart(props: propsIF) {
                             : filtered[0].time * 1000,
                     domainBoundry: finalData,
                 };
+
+                console.log(
+                    { candleDomain },
+                    new Date(candleDomain.domainBoundry),
+                    new Date(candleDomain.lastCandleDate),
+                );
 
                 setCandleDomains(candleDomain);
             }

@@ -507,9 +507,14 @@ export default function TradeCandleStickChart(props: propsIF) {
                 return undefined;
             });
         } else {
-            setScaleForChart(unparsedCandleData);
+            setScaleForChart(unparsedCandleData, true);
         }
     }, [period, unparsedCandleData?.length && unparsedCandleData.length > 0]);
+
+    useEffect(() => {
+        console.log({ unparsedCandleData });
+        setScaleForChart(unparsedCandleData, false);
+    }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
 
     // Liq Scale
     useEffect(() => {
@@ -558,7 +563,10 @@ export default function TradeCandleStickChart(props: propsIF) {
     };
 
     // Scale
-    const setScaleForChart = (unparsedCandleData: any) => {
+    const setScaleForChart = (
+        unparsedCandleData: any,
+        isChangeYscale: boolean,
+    ) => {
         if (unparsedCandleData !== undefined && period) {
             const temp = [...unparsedCandleData];
             const boundaryCandles = temp.splice(0, 99);
@@ -574,14 +582,21 @@ export default function TradeCandleStickChart(props: propsIF) {
                 .padUnit('domain')
                 .pad([period * 1000, (period / 2) * 80 * 1000]);
 
-            const xScale = d3.scaleLinear();
+            let xScale: any = undefined;
+            let xScaleCopy: any = undefined;
+
             const xScaleTime = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(boundaryCandles));
+            if (isChangeYscale || scaleData === undefined) {
+                xScale = d3.scaleLinear();
+                xScale.domain(xExtent(boundaryCandles));
+                xScaleCopy = xScale.copy();
+            } else {
+                xScale = scaleData?.xScale;
+                xScaleCopy = scaleData?.xScaleCopy;
+            }
             yScale.domain(priceRange(boundaryCandles));
-
-            const xScaleCopy = xScale.copy();
 
             const volumeScale = d3.scaleLinear();
 
