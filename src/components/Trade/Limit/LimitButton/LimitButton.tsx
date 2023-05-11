@@ -29,7 +29,7 @@ export default function LimitButton(props: propsIF) {
                         ? limitAllowed
                             ? isBypassConfirmEnabled
                                 ? 'Submit Limit Order'
-                                : 'Open Confirmation'
+                                : 'Confirm'
                             : limitButtonErrorMessage
                         : 'Acknowledge'
                 }

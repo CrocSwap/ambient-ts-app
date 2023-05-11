@@ -6,10 +6,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -23,11 +20,11 @@ import * as d3fc from 'd3fc';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { CandleContext } from '../../../contexts/CandleContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -51,7 +48,6 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
-    candleData: CandlesByPoolAndDuration | undefined;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -90,9 +86,6 @@ interface propsIF {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
-    fetchingCandle: boolean;
-    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
-    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
@@ -117,8 +110,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         selectedDate,
         setSelectedDate,
         handlePulseAnimation,
-        setFetchingCandle,
-        setCandleDomains,
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
@@ -127,10 +118,15 @@ export default function TradeCandleStickChart(props: propsIF) {
         isMarketOrLimitModule,
     } = props;
 
-    const unparsedCandleData = props.candleData?.candles;
-    const period = props.candleData?.duration;
-
     const rangeState = useContext(RangeStateContext);
+
+    const {
+        candleData: { value: candleData },
+        fetchingCandle: { setValue: setFetchingCandle },
+    } = useContext(CandleContext);
+
+    const period = candleData?.duration;
+    const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<any>();
     const [liquidityScale, setLiquidityScale] = useState<any>();
@@ -173,7 +169,7 @@ export default function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
-    }, [diffHashSig(props.candleData), denominationsInBase]);
+    }, [diffHashSig(candleData), denominationsInBase]);
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
@@ -590,10 +586,10 @@ export default function TradeCandleStickChart(props: propsIF) {
             const volumeScale = d3.scaleLinear();
 
             const yExtentVolume = d3fc
-                .extentLinear(props.candleData?.candles)
+                .extentLinear(candleData?.candles)
                 .accessors([(d: any) => d.volumeUSD]);
 
-            volumeScale.domain(yExtentVolume(props.candleData?.candles));
+            volumeScale.domain(yExtentVolume(candleData?.candles));
 
             // bar chart
 
@@ -656,7 +652,7 @@ export default function TradeCandleStickChart(props: propsIF) {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!isLoading && props.candleData !== undefined ? (
+                {!isLoading && candleData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
@@ -708,7 +704,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                         setRescaleRangeBoundariesWithSlider={
                             rangeState.setRescaleRangeBoundariesWithSlider
                         }
-                        setCandleDomains={setCandleDomains}
                         setRangeSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={setRepositionRangeWidth}
                         repositionRangeWidth={repositionRangeWidth}
@@ -719,7 +714,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                                 ? chartSettings.candleTime.market
                                 : chartSettings.candleTime.range
                         }
-                        unparsedData={props.candleData}
+                        unparsedData={candleData}
                     />
                 ) : (
                     <>{loading}</>

@@ -14,7 +14,7 @@ import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Limit Order' | 'Range Order' | 'Reposition';
+    module: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
     slippage: SlippageMethodsIF;
     isPairStable: boolean;
     onClose: () => void;
