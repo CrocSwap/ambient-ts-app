@@ -547,46 +547,22 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
         dispatch(setLiquidityPending(request));
 
-        const timer1 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: props.chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: props.chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    dispatch(setLiquidity(json.data));
-                })
-                .catch(console.error);
-        }, 2000);
-        const timer2 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: props.chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: props.chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    dispatch(setLiquidity(json.data));
-                })
-                .catch(console.error);
-        }, 15000);
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
+        fetch(
+            poolLiquidityCacheEndpoint +
+                new URLSearchParams({
+                    chainId: props.chainData.chainId,
+                    base: baseTokenAddress,
+                    quote: quoteTokenAddress,
+                    poolIdx: props.chainData.poolIndex.toString(),
+                    concise: 'true',
+                    latestTick: 'true',
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                dispatch(setLiquidity(json.data));
+            })
+            .catch(console.error);
     }, [
         baseTokenAddress,
         quoteTokenAddress,
