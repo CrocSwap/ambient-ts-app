@@ -3612,7 +3612,9 @@ export default function Chart(props: propsIF) {
             if (canvas !== null) {
                 const height = canvas.height;
 
-                const factor = height > 400 ? 7 : 4;
+                console.log(Math.floor(height / 60));
+
+                const factor = Math.floor(height / 60);
 
                 context.stroke();
                 context.textAlign = 'left';
