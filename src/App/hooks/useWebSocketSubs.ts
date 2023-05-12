@@ -27,23 +27,24 @@ export interface WebSockerPropsIF {
     wssGraphCacheServerDomain: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    mainnetBaseTokenAddress: string;
+    mainnetBaseTokenAddress: string; // Mainnet equivalent addresses to pull chandle data
     mainnetQuoteTokenAddress: string;
     isServerEnabled: boolean;
     shouldNonCandleSubscriptionsReconnect: boolean;
     areSubscriptionsEnabled: boolean;
-    searchableTokens: TokenIF[];
+    tokenUniv: TokenIF[];
     chainData: ChainSpec;
     lastBlockNumber: number;
     candleTimeLocal: number;
     account: `0x${string}` | undefined;
     shouldCandleSubscriptionsReconnect: boolean;
-    candleData?: CandlesByPoolAndDuration;
+    candleData?: CandlesByPoolAndDuration; // State for pool current chandle
     setCandleData: Dispatch<
         SetStateAction<CandlesByPoolAndDuration | undefined>
-    >;
+    >; // Should update the candleData state hook from above
 }
 
+/* Contains React hooks to manage ongoing websocket subscriptions from the backend. */
 export default function useWebSocketSubs(props: WebSockerPropsIF) {
     const crocEnv = props.crocEnv;
 
@@ -102,6 +103,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.quoteTokenAddress !== '',
     );
 
+    /* Consumes pool liquidity changes from the backend. */
     useEffect(() => {
         if (lastPoolLiqChangeMessage !== null) {
             if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
@@ -113,7 +115,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            props.searchableTokens,
+                            props.tokenUniv,
                             crocEnv,
                             props.chainData.chainId,
                             props.lastBlockNumber,
@@ -147,6 +149,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         ],
     );
 
+    // Consumes recent pool changes endpoint
     const { lastMessage: lastPoolChangeMessage } = useWebSocket(
         poolRecentChangesCacheSubscriptionEndpoint,
         {
@@ -160,6 +163,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.quoteTokenAddress !== '',
     );
 
+    // On pool change message, pump the change into RTK slice
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
             if (!isJsonString(lastPoolChangeMessage.data)) return;
@@ -167,7 +171,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, props.searchableTokens);
+                        return getTransactionData(tx, props.tokenUniv);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -178,6 +182,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         }
     }, [lastPoolChangeMessage]);
 
+    // On limit order change, pump the change into the RTK slice
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
             if (!isJsonString(lastPoolChangeMessage.data)) return;
@@ -185,10 +190,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(
-                            limitOrder,
-                            props.searchableTokens,
-                        );
+                        return getLimitOrderData(limitOrder, props.tokenUniv);
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -216,11 +218,8 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         [props.account, props.chainData.chainId],
     );
 
-    const {
-        //  sendMessage,
-        lastMessage: lastUserPositionsMessage,
-        //  readyState
-    } = useWebSocket(
+    // Consumes from user liquidity change endpoint (i.e. range orders)
+    const { lastMessage: lastUserPositionsMessage } = useWebSocket(
         userLiqChangesCacheSubscriptionEndpoint,
         {
             // Will attempt to reconnect on all close events, such as server shutting down
@@ -233,6 +232,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.account !== undefined,
     );
 
+    // On new message pump the position/range order message into RTK slice
     useEffect(() => {
         try {
             if (lastUserPositionsMessage !== null) {
@@ -247,7 +247,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
                         lastMessageData.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                props.searchableTokens,
+                                props.tokenUniv,
                                 crocEnv,
                                 props.chainData.chainId,
                                 props.lastBlockNumber,
@@ -277,6 +277,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         [props.account, props.chainData.chainId],
     );
 
+    // Consumes recent changes (i.e. transactions)
     const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
         userRecentChangesCacheSubscriptionEndpoint,
         {
@@ -290,6 +291,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.account !== undefined,
     );
 
+    // On new message pump into RTK slice
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
             if (!isJsonString(lastUserRecentChangesMessage.data)) return;
@@ -300,7 +302,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, props.searchableTokens);
+                        return getTransactionData(tx, props.tokenUniv);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -324,6 +326,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         [props.account, props.chainData.chainId],
     );
 
+    // Consume limit order updates for user
     const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
         userLimitOrderChangesCacheSubscriptionEndpoint,
         {
@@ -347,10 +350,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(
-                            limitOrder,
-                            props.searchableTokens,
-                        );
+                        return getLimitOrderData(limitOrder, props.tokenUniv);
                     }),
                 ).then((updatedLimitOrderStates) => {
                     dispatch(
@@ -388,6 +388,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         ],
     );
 
+    // Consume from new candle endpoint on the backend
     const { lastMessage: candlesMessage } = useWebSocket(
         candleSubscriptionEndpoint,
         {
@@ -400,6 +401,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.mainnetQuoteTokenAddress !== '',
     );
 
+    // On a new candle update, push into the caller-supplied setCandleData hook
     useEffect(() => {
         if (candlesMessage) {
             if (!isJsonString(candlesMessage.data)) return;

@@ -48,11 +48,12 @@ interface PoolParamsHookIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
+// Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const LIQUIDITY_FETCH_PERIOD_MS = 60000; // Call (and cache) fetchLiquidity every N milliseconds
+    const LIQUIDITY_FETCH_PERIOD_MS = 30000; // Call (and cache) fetchLiquidity every N milliseconds
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -74,7 +75,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.pathname.includes('lowTick') &&
         props.pathname.includes('highTick');
 
-    // hook to check if token addresses in URL match token addresses in RTK
+    // hook to sync token addresses in RTK to token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
         let matching = false;
         const rtkTokenA = tradeData.tokenA.address;
@@ -104,7 +105,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tradeData.tokenB.chainId,
     ]);
 
-    // Runs when token pair changes
+    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
+    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
@@ -169,7 +171,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 }
 
                 // retrieve pool liquidity provider fee
-
                 if (props.isServerEnabled && props.httpGraphCacheServerDomain) {
                     getLiquidityFee(
                         sortedTokens[0],
@@ -413,7 +414,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool limit order states
-
                     const poolLimitOrderStatesCacheEndpoint =
                         props.httpGraphCacheServerDomain +
                         '/pool_limit_order_states?';
@@ -482,7 +482,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         !!props.crocEnv,
     ]);
 
-    // Fetch liquidity every minute
+    // Makes a query to the backend with a client-side cache
     const fetchLiquidity = async () => {
         if (
             !baseTokenAddress ||
@@ -506,7 +506,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             .catch(console.error);
     };
 
-    // Runs nyquist of our 1 minute caching function.
+    // Updates liquidity curve on the fetch period
     useEffect(() => {
         if (
             !props.isChartEnabled ||
@@ -518,7 +518,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             return;
         const id = setInterval(() => {
             fetchLiquidity();
-        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
+        }, LIQUIDITY_FETCH_PERIOD_MS);
         return () => clearInterval(id);
     }, [
         baseTokenAddress,
@@ -529,6 +529,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.isChartEnabled,
     ]);
 
+    // Makes asychronous call to the liquidity curve
     useEffect(() => {
         if (
             !baseTokenAddress ||
@@ -545,6 +546,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             chainId: props.chainData.chainId,
             poolIndex: props.chainData.poolIndex,
         };
+
+        // Set the pending data before making the request
         dispatch(setLiquidityPending(request));
 
         fetch(
@@ -571,6 +574,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.lastBlockNumber == 0,
     ]);
 
+    // On transaction receipt (e.g. a swap is confirmed), refresh the liquidity curve
+    // with a short delay to let the backend sync to the RPC
     useEffect(() => {
         if (
             !baseTokenAddress ||
@@ -580,6 +585,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         )
             return;
 
+        const REFRESH_DELAY_MS = 2000;
         const timer1 = setTimeout(() => {
             fetch(
                 poolLiquidityCacheEndpoint +
@@ -597,12 +603,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     dispatch(setLiquidity(json.data));
                 })
                 .catch(console.error);
-        }, 2000);
+        }, REFRESH_DELAY_MS);
         return () => {
             clearTimeout(timer1);
         };
     }, [props.receiptCount]);
 
+    // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
             if (
@@ -649,12 +656,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     return {
         baseTokenAddress,
         quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        dailyVol,
-        ambientApy,
-        isTokenABase,
+        baseTokenDecimals, // Token contract decimals
+        quoteTokenDecimals, // Token contract decimals
+        mainnetBaseTokenAddress, // The mainnet equivalent base token (if testnet)
+        mainnetQuoteTokenAddress, // The mainnet euquivalent quote token
+        dailyVol, // Daily volatility estimate from the backend
+        ambientApy, // APY estimate on an ambient LP position from the backend
+        isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
     };
 }

@@ -28,6 +28,7 @@ interface PoolPricingPropsIF {
     cachedQuerySpotPrice: SpotPriceFn;
 }
 
+/* Hooks to pull the pricing data for a given pool, including spot price and 24-hour direction change */
 export function usePoolPricing(props: PoolPricingPropsIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -72,11 +73,23 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         );
     };
 
+    // Reset pricing states that require asynchronous updates when pool changes
     useEffect(() => {
         setPoolPriceDisplay(0);
-    }, [props.baseTokenAddress, props.quoteTokenAddress]);
+        dispatch(setPrimaryQuantityRange(''));
+        setPoolPriceDisplay(undefined);
+        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setPoolPriceChangePercent(undefined);
+        if (!props.pathname.includes('limitTick')) {
+            dispatch(setLimitTick(undefined));
+        }
+    }, [
+        props.baseTokenAddress,
+        props.quoteTokenAddress,
+        props.chainData.chainId,
+    ]);
 
-    // hook to update `poolExists` when crocEnv changes
+    // hook to update `poolExists` when pool or crocEnv changes, or a new transaction receipt arrives
     useEffect(() => {
         if (
             props.crocEnv &&
@@ -99,8 +112,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                 // track whether pool exists on state (can be undefined)
                 .then((res) => setPoolExists(res));
         }
-        // run every time crocEnv updates
-        // this indirectly tracks a new chain being used
     }, [
         props.crocEnv,
         props.baseTokenAddress,
@@ -109,7 +120,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.receiptCount,
     ]);
 
-    // useEffect to get spot price when tokens change and block updates
+    // useEffect to asyncronously query spot price when tokens change and block updates
     useEffect(() => {
         if (
             !props.isUserIdle &&
@@ -146,6 +157,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.isUserLoggedIn,
     ]);
 
+    // Hook to asynchronously query the previous 24 hour cache change for the pool
     useEffect(() => {
         (async () => {
             if (
@@ -199,20 +211,10 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         props.lastBlockNumber,
     ]);
 
-    useEffect(() => {
-        if (!props.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
-        }
-        dispatch(setPrimaryQuantityRange(''));
-        setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        setPoolPriceChangePercent(undefined);
-    }, [props.baseTokenAddress, props.quoteTokenAddress]);
-
     return {
-        poolPriceDisplay,
-        poolExists,
-        poolPriceChangePercent,
-        isPoolPriceChangePositive,
+        poolPriceDisplay, // Display price based on user-selected denomination
+        poolExists, // Whether the pool is initialized on-chain
+        poolPriceChangePercent, // Previous 24-hour price change
+        isPoolPriceChangePositive, // True if previous 24-hour price change is green
     };
 }

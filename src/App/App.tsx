@@ -121,7 +121,6 @@ import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
-import { checkBlacklist } from '../utils/data/blacklist';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
@@ -155,6 +154,7 @@ import { usePoolPricing } from './hooks/usePoolPricing';
 import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';
 import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
+import { useBlacklist } from './hooks/useBlacklist';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -197,6 +197,11 @@ export default function App() {
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
     };
+
+    // Memoize the object being passed to context. This assumes that all of the individual top-level values
+    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
+    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
+    // content needs to be updated
     const userPreferences = useMemo(
         () => userPreferencesProps,
         [...Object.values(userPreferencesProps)],
@@ -235,6 +240,8 @@ export default function App() {
             ? false
             : true;
 
+    // All of these objects results from use*() functions are assumed to be memoized correct,
+    // I.e. updated if and only if their conrents need to be updated.
     const sidebar = useSidebar(location.pathname);
     const snackbar = useSnackbar();
     const globalModal = useGlobalModal();
@@ -280,6 +287,8 @@ export default function App() {
             subscriptions: { isEnabled: areSubscriptionsEnabled },
         }),
         [
+            // Dependence list includes the memoized use*() values from above and any primitives
+            // directly references in above appState object
             sidebar,
             snackbar,
             globalModal,
@@ -299,15 +308,7 @@ export default function App() {
         ],
     );
 
-    useEffect(() => {
-        if (account && checkBlacklist(account)) {
-            disconnect();
-        }
-        if (!account) {
-            setCrocEnv(undefined);
-            setIsShowAllEnabled(true);
-        }
-    }, [account]);
+    useBlacklist(account);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const tokenPair = useMemo(() => {
@@ -2158,7 +2159,7 @@ export default function App() {
         isServerEnabled,
         shouldNonCandleSubscriptionsReconnect,
         areSubscriptionsEnabled,
-        searchableTokens,
+        tokenUniv: searchableTokens,
         chainData,
         lastBlockNumber,
         candleData,
