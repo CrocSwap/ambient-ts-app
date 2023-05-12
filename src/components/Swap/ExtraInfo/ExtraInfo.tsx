@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -34,7 +34,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function ExtraInfo(props: propsIF) {
+function ExtraInfo(props: propsIF) {
     const {
         priceImpact,
         displayEffectivePriceString,
@@ -287,3 +287,5 @@ export default function ExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(ExtraInfo);

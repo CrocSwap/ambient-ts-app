@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
@@ -78,7 +79,7 @@ interface propsIF {
     topPools: topPoolIF[];
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
@@ -348,7 +349,7 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (sidebar.status === 'closed') {
+                if (!sidebar.isOpen) {
                     sidebar.open();
                 }
                 setOpenAllDefault(true);
@@ -356,7 +357,7 @@ export default function Sidebar(props: propsIF) {
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            {openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -399,20 +400,11 @@ export default function Sidebar(props: propsIF) {
                     </div>
                 </DefaultTooltip>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    placement={sidebar.isOpen ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <BiSearch
-                        size={18}
-                        color='#CDC1FF'
-                        onClick={() => sidebar.open(true)}
-                    />
-                </DefaultTooltip>
+                <BiSearch
+                    size={18}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
@@ -543,3 +535,5 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Sidebar);

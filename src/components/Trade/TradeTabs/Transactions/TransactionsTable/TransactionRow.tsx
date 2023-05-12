@@ -2,6 +2,7 @@ import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
@@ -42,7 +43,7 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
 }
-export default function TransactionRow(props: propsIF) {
+function TransactionRow(props: propsIF) {
     const {
         showColumns,
         tradeData,
@@ -284,7 +285,7 @@ export default function TransactionRow(props: propsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+            style={{ backgroundColor: highlightStyle }}
             onClick={handleRowClick}
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
@@ -331,3 +332,5 @@ export default function TransactionRow(props: propsIF) {
         </ul>
     );
 }
+
+export default memo(TransactionRow);

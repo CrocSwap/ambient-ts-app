@@ -7,6 +7,7 @@ import {
     useEffect,
     useRef,
     useState,
+    memo,
 } from 'react';
 
 // START: Import JSX Elements
@@ -54,7 +55,7 @@ interface propsIF {
 }
 
 // main react functional component
-export default function Orders(props: propsIF) {
+function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
@@ -526,3 +527,5 @@ export default function Orders(props: propsIF) {
         </section>
     );
 }
+
+export default memo(Orders);

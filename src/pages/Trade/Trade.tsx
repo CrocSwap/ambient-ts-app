@@ -6,6 +6,8 @@ import {
     useEffect,
     useState,
     useContext,
+    useCallback,
+    memo,
 } from 'react';
 import {
     useParams,
@@ -65,7 +67,6 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -90,7 +91,7 @@ interface propsIF {
 }
 
 // React functional component
-export default function Trade(props: propsIF) {
+function Trade(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
@@ -245,18 +246,19 @@ export default function Trade(props: propsIF) {
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    const changeState = (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => {
-        setIsCandleSelected(isOpen);
-        setHasInitialized(false);
-        setTransactionFilter(candleData);
-        if (isOpen) {
-            setOutsideControlActive(true);
-            setOutsideTabSelected(0);
-        }
-    };
+    const changeState = useCallback(
+        (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+            setIsCandleSelected(isOpen);
+            setHasInitialized(false);
+            setTransactionFilter(candleData);
+            if (isOpen) {
+                setOutsideControlActive(true);
+                setOutsideTabSelected(0);
+            }
+        },
+        [],
+    );
+
     const [chartBg, setChartBg] = useState('transparent');
 
     const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
@@ -382,11 +384,11 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    const unselectCandle = () => {
+    const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
         changeState(false, undefined);
         setIsCandleSelected(false);
-    };
+    }, []);
 
     const activeCandleDuration = isMarketOrLimitModule
         ? chartSettings.candleTime.market.time
@@ -469,6 +471,7 @@ export default function Trade(props: propsIF) {
         upVolumeColor: upVolumeColor,
         downVolumeColor: downVolumeColor,
         baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
@@ -626,3 +629,5 @@ type ContextType = {
 export function useTradeData() {
     return useOutletContext<ContextType>();
 }
+
+export default memo(Trade);

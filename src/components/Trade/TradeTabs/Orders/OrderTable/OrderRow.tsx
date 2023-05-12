@@ -5,6 +5,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
@@ -44,7 +45,7 @@ interface propsIF {
     isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: propsIF) {
+function OrderRow(props: propsIF) {
     const {
         chainData,
         tradeData,
@@ -221,8 +222,8 @@ export default function OrderRow(props: propsIF) {
         );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -296,17 +297,26 @@ export default function OrderRow(props: propsIF) {
         setCurrentPositionActive('');
         openDetailsModal();
     }
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+        }
+    };
 
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+                style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
+                tabIndex={0}
+                onKeyDown={handleKeyPress}
             >
                 {!showColumns && OrderTimeWithTooltip}
                 {isOnPortfolioPage && showPair && tokenPair}
@@ -326,7 +336,7 @@ export default function OrderRow(props: propsIF) {
                 {showColumns && tokensColumn}
                 {!ipadView && statusDisplay}
 
-                <li data-label='menu'>
+                <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
                         chainData={chainData}
                         isShowAllEnabled={isShowAllEnabled}
@@ -347,3 +357,5 @@ export default function OrderRow(props: propsIF) {
         </>
     );
 }
+
+export default memo(OrderRow);

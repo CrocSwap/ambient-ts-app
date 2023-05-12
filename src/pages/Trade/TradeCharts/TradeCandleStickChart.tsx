@@ -1,12 +1,13 @@
 import {
     DetailedHTMLProps,
     HTMLAttributes,
+    memo,
     useContext,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import { CandleData } from '../../../utils/state/graphDataSlice';
+import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -28,7 +29,10 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import {
+    diffHashSigCandles,
+    diffHashSigLiquidity,
+} from '../../../utils/functions/diffHashSig';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 
@@ -59,7 +63,7 @@ interface propsIF {
     ) => void;
     chartItemStates: chartItemStates;
     limitTick: number | undefined;
-    liquidityData: any;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     truncatedPoolPrice: number | undefined;
@@ -77,6 +81,7 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
@@ -115,7 +120,7 @@ type chartItemStates = {
     liqMode: string;
 };
 
-export default function TradeCandleStickChart(props: propsIF) {
+function TradeCandleStickChart(props: propsIF) {
     const {
         chainData,
         baseTokenAddress,
@@ -166,6 +171,10 @@ export default function TradeCandleStickChart(props: propsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const liquidityPullData = useAppSelector(
+        (state) => state.graphData.liquidityData,
+    );
 
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -270,17 +279,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         parseData();
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
-    }, [diffHashSig(candleData), denominationsInBase]);
-
-    // const standardDeviation = (arr: any, usePopulation = false) => {
-    //     const mean = arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-    //     return Math.sqrt(
-    //         arr
-    //             .reduce((acc: any, val: any) => acc.concat((val - mean) ** 2), [])
-    //             .reduce((acc: any, val: any) => acc + val, 0) /
-    //             (arr.length - (usePopulation ? 0 : 1)),
-    //     );
-    // };
+    }, [diffHashSigCandles(candleData), denominationsInBase]);
 
     // volume data
 
@@ -288,18 +287,6 @@ export default function TradeCandleStickChart(props: propsIF) {
         const volumeData = parsedChartData?.volumeChartData;
         const volumeTempData: any = [];
         if (volumeData) {
-            // const volumeLogScale = d3
-            //     .scaleLog()
-            //     .domain([
-            //         d3.min(volumeData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //         d3.max(parsedChartData?.volumeChartData, function (d: any) {
-            //             return d.value;
-            //         }),
-            //     ])
-            //     .range([30, 1000]);
-
             volumeData.map((data: any) => {
                 volumeTempData.push({
                     time: data.time,
@@ -318,7 +305,14 @@ export default function TradeCandleStickChart(props: propsIF) {
         if (
             props.liquidityData &&
             poolPriceDisplay !== undefined &&
-            poolPriceDisplay > 0
+            poolPriceDisplay > 0 &&
+            props.liquidityData.curveState.base ===
+                props.baseTokenAddress.toLowerCase() &&
+            props.liquidityData.curveState.quote ===
+                props.quoteTokenAddress.toLowerCase() &&
+            props.liquidityData.curveState.poolIdx ===
+                props.chainData.poolIndex &&
+            props.liquidityData.curveState.chainId === props.chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('parsing liquidity data');
 
@@ -426,13 +420,18 @@ export default function TradeCandleStickChart(props: propsIF) {
                 },
             );
 
-            const liqBoundary =
+            const liqBoundaryArg =
                 liqBoundaryData !== undefined
                     ? denominationsInBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
                         : liqBoundaryData.upperBoundPriceDecimalCorrected
                     : barThreshold;
+            const liqBoundary =
+                typeof liqBoundaryArg === 'number'
+                    ? liqBoundaryArg
+                    : parseFloat(liqBoundaryArg);
             let liqBoundaryDepth = liqBoundary;
+
             props.liquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = denominationsInBase
                     ? data.upperBoundInvPriceDecimalCorrected
@@ -479,13 +478,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 }
 
                 if (!denominationsInBase) {
-                    // console.log({
-                    //     data,
-                    //     liqUpperPrices,
-                    //     liqLowerPrices,
-                    //     limitBoundary,
-                    //     liqBoundary,
-                    // });
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
@@ -521,13 +513,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                         liqBoundaryDepth = liqLowerPrices;
                     }
                 } else {
-                    // console.log({
-                    //     data,
-                    //     liqUpperPrices,
-                    //     liqLowerPrices,
-                    //     limitBoundary,
-                    //     liqBoundary,
-                    // });
                     if (
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
@@ -635,7 +620,6 @@ export default function TradeCandleStickChart(props: propsIF) {
                 liqHighligtedBidSeries: [],
                 lineBidSeries: [],
                 lineAskSeries: [],
-                totalLiq: props.liquidityData?.totals?.totalLiq,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
                 liqBoundaryCurve: liqBoundary,
@@ -646,8 +630,7 @@ export default function TradeCandleStickChart(props: propsIF) {
             return undefined;
         }
     }, [
-        diffHashSig(props.liquidityData),
-        poolPriceDisplay,
+        diffHashSigLiquidity(liquidityPullData),
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
@@ -685,13 +668,7 @@ export default function TradeCandleStickChart(props: propsIF) {
         } else {
             setScaleForChartLiquidity(liquidityData);
         }
-    }, [
-        liquidityData === undefined,
-        liquidityData?.liqAskData.length === 0,
-        liquidityData?.liqBidData.length === 0,
-        liquidityData?.depthLiqAskData.length === 0,
-        liquidityData?.depthLiqAskData.length === 0,
-    ]);
+    }, [liquidityData]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         IS_LOCAL_ENV && console.debug('parse Liq Scale');
@@ -774,7 +751,6 @@ export default function TradeCandleStickChart(props: propsIF) {
             volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
-
             setScaleData(() => {
                 return {
                     xScale: xScale,
@@ -806,11 +782,8 @@ export default function TradeCandleStickChart(props: propsIF) {
                 scaleData === undefined ||
                 liquidityScale === undefined ||
                 liquidityDepthScale === undefined ||
-                // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
                 poolPriceDisplay === 0 ||
-                // liquidityData?.liqAskData.length === 0 ||
-                // liquidityData?.liqBidData.length === 0 ||
                 poolPriceNonDisplay === 0 ||
                 liquidityData === undefined;
 
@@ -906,3 +879,5 @@ export default function TradeCandleStickChart(props: propsIF) {
         </>
     );
 }
+
+export default memo(TradeCandleStickChart);

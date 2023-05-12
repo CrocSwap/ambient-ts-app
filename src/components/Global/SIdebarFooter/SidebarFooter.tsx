@@ -9,8 +9,9 @@ import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
+import { memo } from 'react';
 
-export default function SidebarFooter() {
+function SidebarFooter() {
     const location = useLocation();
 
     const currentLocation = location.pathname;
@@ -72,3 +73,5 @@ export default function SidebarFooter() {
         </div>
     );
 }
+
+export default memo(SidebarFooter);

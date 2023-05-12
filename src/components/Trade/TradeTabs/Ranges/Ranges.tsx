@@ -9,6 +9,7 @@ import {
     useState,
     useMemo,
     useContext,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -75,7 +76,7 @@ interface propsIF {
 }
 
 // react functional component
-export default function Ranges(props: propsIF) {
+function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
@@ -598,3 +599,5 @@ export default function Ranges(props: propsIF) {
         </section>
     );
 }
+
+export default memo(Ranges);

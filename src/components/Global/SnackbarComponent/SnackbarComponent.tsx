@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { forwardRef, SyntheticEvent, useContext } from 'react';
+import { forwardRef, memo, SyntheticEvent, useContext } from 'react';
 import { Snackbar } from '@material-ui/core';
 import { Alert, AlertProps } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -22,7 +22,7 @@ const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
 );
 
 // React functional component
-export default function SnackbarComponent() {
+function SnackbarComponent() {
     const {
         snackbar: { isOpen: isSnackbarOpen, close, content, severity },
     } = useContext(AppStateContext);
@@ -56,3 +56,5 @@ export default function SnackbarComponent() {
         </motion.div>
     );
 }
+
+export default memo(SnackbarComponent);

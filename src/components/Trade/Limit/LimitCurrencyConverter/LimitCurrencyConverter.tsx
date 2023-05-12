@@ -2,6 +2,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useState,
@@ -97,7 +98,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function LimitCurrencyConverter(props: propsIF) {
+function LimitCurrencyConverter(props: propsIF) {
     const {
         displayPrice,
         previousDisplayPrice,
@@ -265,8 +266,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData.shouldLimitDirectionReverse) {
+            reverseTokens();
             setIsTokenAPrimaryLocal((state) => {
-                reverseTokens();
                 return !state;
             });
         }
@@ -650,3 +651,5 @@ export default function LimitCurrencyConverter(props: propsIF) {
         </section>
     );
 }
+
+export default memo(LimitCurrencyConverter);

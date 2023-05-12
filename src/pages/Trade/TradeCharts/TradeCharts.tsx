@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import {
     AiOutlineCamera,
@@ -54,7 +55,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     limitTick: number | undefined;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     upBodyColor: string;
@@ -64,6 +65,7 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
@@ -136,7 +138,7 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: propsIF) {
+function TradeCharts(props: propsIF) {
     const {
         chainData,
         poolPriceDisplay,
@@ -528,6 +530,7 @@ export default function TradeCharts(props: propsIF) {
                         upVolumeColor={props.upVolumeColor}
                         downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
+                        quoteTokenAddress={props.quoteTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
@@ -559,3 +562,5 @@ export default function TradeCharts(props: propsIF) {
         // </FocusTrap>
     );
 }
+
+export default memo(TradeCharts);

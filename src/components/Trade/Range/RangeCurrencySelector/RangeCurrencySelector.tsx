@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useState,
@@ -87,7 +88,7 @@ interface propsIF {
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RangeCurrencySelector(props: propsIF) {
+function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         gasPriceInGwei,
@@ -484,3 +485,5 @@ export default function RangeCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeCurrencySelector);
