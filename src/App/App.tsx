@@ -2286,16 +2286,6 @@ export default function App() {
                                     element={<ChatPanel {...chatProps} />}
                                 />
                                 <Route
-                                    path='range2'
-                                    element={
-                                        <RangeStateContext.Provider
-                                            value={rangeState}
-                                        >
-                                            <Range {...rangeProps} />
-                                        </RangeStateContext.Provider>
-                                    }
-                                />
-                                <Route
                                     path='initpool/:params'
                                     element={
                                         <InitPool
