@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import fetchTokenList from '../../utils/functions/fetchTokenList';
@@ -6,13 +6,20 @@ import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export interface tokenMethodsIF {
     default: TokenIF[];
-    verify: (addr: string, chainId: string|number) => boolean;
+    verify: (addr: string, chainId: string | number) => boolean;
     acknowledge: (tkn: TokenIF) => void;
     getAll: () => TokenIF[];
-    getByAddress: (addr: string, chainId: string|number) => TokenIF|undefined;
+    getByAddress: (
+        addr: string,
+        chainId: string | number,
+    ) => TokenIF | undefined;
     getByChain: (chn: string) => TokenIF[];
     getBySource: (uri: string) => TokenIF[];
-    getByNameOrSymbol: (input: string, chn: string, exact?: boolean) => TokenIF[];
+    getByNameOrSymbol: (
+        input: string,
+        chn: string,
+        exact?: boolean,
+    ) => TokenIF[];
 }
 
 export const useTokens = (chainId: string): tokenMethodsIF => {
@@ -24,19 +31,21 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     // hook to memoize token lists in local state
     const [tokenLists, setTokenLists] = useState<TokenListIF[]>(
-        getTokenListsFromLS() ?? []
+        getTokenListsFromLS() ?? [],
     );
     // hook to memoize token Map in local state
     const [tokenMap, setTokenMap] = useState<Map<string, TokenIF>>(new Map());
     // hook to memoize acknowledged tokens in local state
     const [ackTokens, setAckTokens] = useState<TokenIF[]>(
-        getAckTokensFromLS() ?? []
+        getAckTokensFromLS() ?? [],
     );
 
     // fn to retrieve and parse token lists from local storage
-    function getTokenListsFromLS(): TokenListIF[]|null {
+    function getTokenListsFromLS(): TokenListIF[] | null {
         // get entry from local storage
-        const entry: string|null = localStorage.getItem(localStorageKeys.tokenLists);
+        const entry: string | null = localStorage.getItem(
+            localStorageKeys.tokenLists,
+        );
         // declare an output variable
         let output: TokenListIF[] | null;
         // process data retrieved from local storage
@@ -48,7 +57,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             } catch {
                 // clear data from local storage and warn user if unable to parse
                 // assign `null` value to output variable
-                console.warn('localStorage token lists corrupt, clearing data and re-fetching');
+                console.warn(
+                    'localStorage token lists corrupt, clearing data and re-fetching',
+                );
                 localStorage.removeItem(localStorageKeys.tokenLists);
                 output = null;
             }
@@ -61,9 +72,11 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     }
 
     // fn to retrieve and parse token lists from local storage
-    function getAckTokensFromLS(): TokenIF[]|null {
+    function getAckTokensFromLS(): TokenIF[] | null {
         // get entry from local storage
-        const entry: string|null = localStorage.getItem(localStorageKeys.ackTokens);
+        const entry: string | null = localStorage.getItem(
+            localStorageKeys.ackTokens,
+        );
         // declare an output variable
         let output: TokenIF[] | null;
         // process data retrieved from local storage
@@ -75,7 +88,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             } catch {
                 // clear data from local storage and warn user if unable to parse
                 // assign `null` value to output variable
-                console.warn('localStorage acknowledged token lists corrupt, clearing data and re-fetching');
+                console.warn(
+                    'localStorage acknowledged token lists corrupt, clearing data and re-fetching',
+                );
                 localStorage.removeItem(localStorageKeys.ackTokens);
                 output = null;
             }
@@ -98,7 +113,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         logoURI: string;
         fromList: string;
         fromListArr: string[];
-        constructor(rawToken: TokenIF, newListURI='') {
+        constructor(rawToken: TokenIF, newListURI = '') {
             this.name = rawToken.name;
             this.address = rawToken.address;
             this.symbol = rawToken.symbol;
@@ -107,12 +122,12 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             this.logoURI = rawToken.logoURI;
             this.fromList = rawToken.fromList ?? newListURI;
             if (rawToken.fromListArr) {
-                this.fromListArr = [...rawToken.fromListArr, newListURI]
+                this.fromListArr = [...rawToken.fromListArr, newListURI];
             } else {
                 this.fromListArr = [rawToken.fromList ?? ''];
             }
         }
-    };
+    }
 
     // this hook fetches external token lists and sends them to local state and local
     // ... storage, it runs asynchronously after initial render of the app only; it is
@@ -122,17 +137,21 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         // will patch fetched lists intelligently with current lists which are relevant
         function fetchAndFormatTokenLists(
             listURIs: string[],
-            existingLists: TokenListIF[] = []
+            existingLists: TokenListIF[] = [],
         ): void {
             // create an array of promises to fetch all token lists in the URIs file
-            const tokenListPromises: Promise<TokenListIF>[] = listURIs.map((uri: string) => fetchTokenList(uri, false));
+            const tokenListPromises: Promise<TokenListIF>[] = listURIs.map(
+                (uri: string) => fetchTokenList(uri, false),
+            );
             Promise.allSettled(tokenListPromises)
                 // format returned data into a useful form for the app
                 // 1st val ➡ indicates if second val is a value
                 // 2nd val ➡ value returned by promise
-                .then((promises) => promises.flatMap((promise) => Object.entries(promise))
-                    .filter((promise) => promise[0] === 'value')
-                    .map((promise) => promise[1])
+                .then((promises) =>
+                    promises
+                        .flatMap((promise) => Object.entries(promise))
+                        .filter((promise) => promise[0] === 'value')
+                        .map((promise) => promise[1]),
                 )
                 // middleware to add metadata used by the Ambient platform
                 .then((lists) => {
@@ -144,25 +163,28 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                         list.refreshAfter = unixTimeInFourHours;
                         list.tokens.forEach(
                             (token: TokenIF) => (token.fromList = list.uri),
-                        )
+                        );
                     });
                     const updatedListsArr = [...existingLists, ...lists];
                     // logic to put the Ambient token list at index 0 of the array
                     const sequencedLists: TokenListIF[] = [
                         // ambient token list
-                        updatedListsArr.find((list: TokenListIF) => 
-                            list.uri === tokenListURIs.ambient
+                        updatedListsArr.find(
+                            (list: TokenListIF) =>
+                                list.uri === tokenListURIs.ambient,
                         ),
                         // all token lists other than Ambient
-                        ...updatedListsArr.filter((list: TokenListIF) => 
-                        list.uri !== tokenListURIs.ambient
-                    )
+                        ...updatedListsArr.filter(
+                            (list: TokenListIF) =>
+                                list.uri !== tokenListURIs.ambient,
+                        ),
                     ];
                     // send array of token lists to local state
                     setTokenLists(sequencedLists);
                     // send array of token lists to local storage
                     localStorage.setItem(
-                        localStorageKeys.tokenLists, JSON.stringify(sequencedLists)
+                        localStorageKeys.tokenLists,
+                        JSON.stringify(sequencedLists),
                     );
                     setTokenMap(makeTokenMap(sequencedLists));
                 });
@@ -177,23 +199,30 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             // current UNIX time when this code block runs
             const unixTimeNow: number = Date.now();
             // URIs of lists retrieved more than four hours ago
-            const staleListURIs: string[] = tokenLists.filter((list: TokenListIF) => (
-                (unixTimeNow - (list.refreshAfter ?? 0)) > 0
-            )).map((list: TokenListIF) => list.uri as string);
+            const staleListURIs: string[] = tokenLists
+                .filter(
+                    (list: TokenListIF) =>
+                        unixTimeNow - (list.refreshAfter ?? 0) > 0,
+                )
+                .map((list: TokenListIF) => list.uri as string);
             // array of lists (full list) which were not marked stale
-            const freshLists: TokenListIF[] = tokenLists.filter((list: TokenListIF) => (
-                !staleListURIs.includes(list.uri as string) &&
-                Object.values(tokenListURIs).includes(list.uri as string)
-            ));
+            const freshLists: TokenListIF[] = tokenLists.filter(
+                (list: TokenListIF) =>
+                    !staleListURIs.includes(list.uri as string) &&
+                    Object.values(tokenListURIs).includes(list.uri as string),
+            );
             // logic to determine which lists the app currently has by URI
             // this uses `freshLists` so stale lists will be excluded
-            const presentListURIs: string[] = freshLists.map((list: TokenListIF) => list.uri as string);
+            const presentListURIs: string[] = freshLists.map(
+                (list: TokenListIF) => list.uri as string,
+            );
             // logic to determine which default lists need to be retrieved
             // important if prior query failed, a new list is added to the app, etc
-            const neededListURIs: string[] = Object.values(tokenListURIs)
-                .filter((uri: string) => !presentListURIs.includes(uri));
+            const neededListURIs: string[] = Object.values(
+                tokenListURIs,
+            ).filter((uri: string) => !presentListURIs.includes(uri));
             fetchAndFormatTokenLists(neededListURIs, freshLists);
-        };
+        }
     }, []);
 
     // fn to make a map of all tokens from lists and tokens acknowledged by user
@@ -203,22 +232,25 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         const newTokenMap = new Map<string, TokenIF>();
         // unified array of all tokens from all lists (not de-duped!)
         const allListedTokens: TokenIF[] = listsToMap.flatMap(
-            (tokenList: TokenListIF) => tokenList.tokens
+            (tokenList: TokenListIF) => tokenList.tokens,
         );
         // iterate through tokens array and add to Map, including de-dupe logic
         allListedTokens.forEach((tkn: TokenIF) => {
             // make a key to label token in the map
             const tokenKey: string = makeTokenMapKey(tkn.address, tkn.chainId);
             // check if token is already in the map
-            const tokenFromMap: TokenIF|undefined = newTokenMap.get(tokenKey);
-            newTokenMap.set(tokenKey, new Token(tokenFromMap ?? tkn, tkn.fromList));
+            const tokenFromMap: TokenIF | undefined = newTokenMap.get(tokenKey);
+            newTokenMap.set(
+                tokenKey,
+                new Token(tokenFromMap ?? tkn, tkn.fromList),
+            );
         });
         // iterate through acknowledged tokens and add to Map if not already listed
         ackTokens.forEach((tkn: TokenIF) => {
             verifyToken(tkn.address, `0x_${tkn.chainId.toString(16)}`) ||
                 newTokenMap.set(
                     makeTokenMapKey(tkn.address, tkn.chainId),
-                    new Token(tkn, 'custom_token')
+                    new Token(tkn, 'custom_token'),
                 );
         });
         console.timeEnd('making token map');
@@ -226,7 +258,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     }
 
     // fn to construct a token map key to lookup or record a given token
-    function makeTokenMapKey(addr: string, chn: string|number): string {
+    function makeTokenMapKey(addr: string, chn: string | number): string {
         // logic router to convert `chn` to a 0x hex string if necessary
         let chainIdAsString: string;
         switch (typeof chn) {
@@ -240,7 +272,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                 break;
             // handling for edge cases and to satisfy the linter
             default:
-                console.warn(`Unexpected value in function makeTokenMapKey() in useNewTokens.ts file. Expected param <<chn>> to be of type 'string' or type 'number' but received type ${typeof chn}. Fn will use current chain <<${chainId}>> as a default value instead of param <<${chn}>>.`);
+                console.warn(
+                    `Unexpected value in function makeTokenMapKey() in useNewTokens.ts file. Expected param <<chn>> to be of type 'string' or type 'number' but received type ${typeof chn}. Fn will use current chain <<${chainId}>> as a default value instead of param <<${chn}>>.`,
+                );
                 chainIdAsString = chainId;
         }
         // marry output values with an underscore and make lowercase
@@ -253,7 +287,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     }
 
     // fn to verify a token is on a known list or user-acknowledged
-    function verifyToken(addr: string, chn: string|number): boolean {
+    function verifyToken(addr: string, chn: string | number): boolean {
         // key to look up token in the map
         const tokenKey: string = makeTokenMapKey(addr, chn);
         // return boolean representation of token being found in map
@@ -268,7 +302,10 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         // we're assuming the app only calls this in cases it is not yet ack'd
         const updatedTokens: TokenIF[] = [...ackTokens, tokenObj];
         // update the persisted array in local storage and local state
-        localStorage.setItem(localStorageKeys.ackTokens, JSON.stringify(updatedTokens));
+        localStorage.setItem(
+            localStorageKeys.ackTokens,
+            JSON.stringify(updatedTokens),
+        );
         setAckTokens(updatedTokens);
         // create a local-scope copy of the token Map
         const localMap: Map<string, TokenIF> = tokenMap;
@@ -281,12 +318,13 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     // fn to look up a token by contract address
     function getTokenByAddress(
-        addr: string, chn: string|number
-    ): TokenIF|undefined {
+        addr: string,
+        chn: string | number,
+    ): TokenIF | undefined {
         // key to look up token in the map
         const tokenKey: string = makeTokenMapKey(addr, chn);
         // return token if found, otherwise `undefined`
-        const tkn: TokenIF|undefined = tokenMap.get(tokenKey);
+        const tkn: TokenIF | undefined = tokenMap.get(tokenKey);
         return tkn ? serialize(tkn) : undefined;
     }
 
@@ -313,7 +351,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     // fn to return all tokens where name or symbol matches search input
     // can return just exact matches or exact + partial matches
     function getTokensByNameOrSymbol(
-        input: string, chn: string, exact=false
+        input: string,
+        chn: string,
+        exact = false,
     ): TokenIF[] {
         // search input fixed for casing and with whitespace trimmed
         const cleanedInput: string = input.trim().toLowerCase();
@@ -322,9 +362,10 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         // fn to search for exact matches
         const searchExact = (): TokenIF[] => {
             // return tokens where name OR symbol exactly matches search string
-            return tokensOnChain.filter((tkn: TokenIF) => 
-                tkn.name.toLowerCase() === cleanedInput ||
-                tkn.symbol.toLowerCase() === cleanedInput
+            return tokensOnChain.filter(
+                (tkn: TokenIF) =>
+                    tkn.name.toLowerCase() === cleanedInput ||
+                    tkn.symbol.toLowerCase() === cleanedInput,
             );
         };
         // fn to search for partial matches (includes exact matches too)
@@ -339,7 +380,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     tkn.symbol.toLowerCase() === cleanedInput
                 ) {
                     // push exact matches to the appropriate array
-                    exactMatches.push(tkn)
+                    exactMatches.push(tkn);
                 } else if (
                     tkn.name.toLowerCase().includes(cleanedInput) ||
                     tkn.symbol.toLowerCase().includes(cleanedInput)
@@ -367,18 +408,23 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             symbol: tkn.symbol,
             decimals: tkn.decimals,
             chainId: tkn.chainId,
-            logoURI: tkn.logoURI
+            logoURI: tkn.logoURI,
         };
     }
 
-    return {
-        default: defaultTokens,
-        verify: verifyToken,
-        acknowledge: acknowledgeToken,
-        getAll: convertTokenMapToArray,
-        getByAddress: getTokenByAddress,
-        getByChain: getTokensByChain,
-        getBySource: getTokensFromList,
-        getByNameOrSymbol: getTokensByNameOrSymbol,
-    };
+    const output = useMemo<tokenMethodsIF>(
+        () => ({
+            default: defaultTokens,
+            verify: verifyToken,
+            acknowledge: acknowledgeToken,
+            getAll: convertTokenMapToArray,
+            getByAddress: getTokenByAddress,
+            getByChain: getTokensByChain,
+            getBySource: getTokensFromList,
+            getByNameOrSymbol: getTokensByNameOrSymbol,
+        }),
+        [tokenMap.size],
+    );
+
+    return output;
 };
