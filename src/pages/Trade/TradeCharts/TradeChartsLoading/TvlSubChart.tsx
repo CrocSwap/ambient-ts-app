@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
@@ -27,7 +27,7 @@ interface TvlData {
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function TvlSubChart(props: TvlData) {
+function TvlSubChart(props: TvlData) {
     const {
         tvlData,
         period,
@@ -494,3 +494,5 @@ export default function TvlSubChart(props: TvlData) {
         </div>
     );
 }
+
+export default memo(TvlSubChart);

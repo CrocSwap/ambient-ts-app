@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 
 export interface globalPopupMethodsIF {
     isOpen: boolean;
@@ -40,12 +40,15 @@ export const useGlobalPopup = (initialMode = false): globalPopupMethodsIF => {
     };
 
     // return all data and functions needed for local use
-    return {
-        isOpen,
-        open,
-        close,
-        content,
-        title,
-        placement,
-    };
+    return useMemo(
+        () => ({
+            isOpen,
+            open,
+            close,
+            content,
+            title,
+            placement,
+        }),
+        [isOpen, content, title, placement, initialMode],
+    );
 };

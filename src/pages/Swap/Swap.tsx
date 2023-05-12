@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
@@ -43,8 +44,7 @@ import {
     addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
-import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
@@ -102,7 +102,7 @@ interface propsIF {
     pool: CrocPoolView | undefined;
 }
 
-export default function Swap(props: propsIF) {
+function Swap(props: propsIF) {
     const {
         pool,
         isUserLoggedIn,
@@ -587,95 +587,6 @@ export default function Swap(props: propsIF) {
         ? styles.swap_page
         : styles.scrollable_container;
 
-    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Swap 1', checked: false },
-        { slug: 'second', name: 'Include Swap 2', checked: false },
-        { slug: 'third', name: 'Include Swap 3', checked: false },
-        { slug: 'fourth', name: 'Include Swap 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const swapLink =
-        'https://ambient-finance.netlify.app/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
-
-    const shareIconsContent = (
-        <section>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://telegram.me/share/url?url=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='telegram'
-            >
-                Telegram{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://twitter.com/intent/tweet?text=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='twitter'
-            >
-                Twitter{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='facebook'
-            >
-                Facebook{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href=''
-                className={styles.share_icon}
-                aria-label='discord'
-            >
-                Discord{' '}
-            </a>
-        </section>
-    );
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <SwapShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     const currencyConverterProps = {
@@ -849,12 +760,14 @@ export default function Swap(props: propsIF) {
         maximumFractionDigits: 2,
     });
 
+    const focusTrapOptions = useMemo(
+        () => ({
+            clickOutsideDeactivates: true,
+        }),
+        [],
+    );
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
+        <FocusTrap focusTrapOptions={focusTrapOptions}>
             <section data-testid={'swap'} className={swapPageStyle}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
@@ -874,7 +787,6 @@ export default function Swap(props: propsIF) {
                         <SwapHeader
                             isPairStable={isPairStable}
                             isOnTradeRoute={isOnTradeRoute}
-                            shareOptionsDisplay={shareOptionsDisplay}
                         />
                         {navigationMenu}
                         <motion.div
@@ -886,10 +798,7 @@ export default function Swap(props: propsIF) {
                         </motion.div>
                         <ExtraInfo
                             account={account}
-                            tokenPair={{
-                                dataTokenA: tokenA,
-                                dataTokenB: tokenB,
-                            }}
+                            tokenPair={tokenPair}
                             priceImpact={priceImpact}
                             isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
@@ -1021,3 +930,5 @@ export default function Swap(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Swap);

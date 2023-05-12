@@ -46,9 +46,6 @@ export default function TransactionDetailsGraph(
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
 
-    // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
-    // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
-
     const mainnetBaseTokenAddress =
         baseTokenAddress === ZERO_ADDRESS
             ? baseTokenAddress

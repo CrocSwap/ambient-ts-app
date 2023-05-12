@@ -1,12 +1,23 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import { Dispatch, SetStateAction } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { Dispatch, memo, SetStateAction } from 'react';
+
+export interface CandleChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    date: any;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    time: number;
+    allSwaps: unknown;
+    color: string;
+    stroke: string;
+}
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleData | undefined;
+    currentData: CandleChartData | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;
@@ -15,7 +26,7 @@ interface CurrentDataInfoPropsIF {
     rescale: boolean;
     reset: boolean;
 }
-export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
+function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     const {
         showTooltip,
         currentData,
@@ -27,9 +38,6 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         rescale,
         reset,
     } = props;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const denominationsInBase = tradeData.isDenomBase;
 
     function formattedCurrentData(data: number | undefined): string {
         if (data) {
@@ -50,33 +58,16 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
                 <div className={styles.current_data_info}>
-                    {currentData &&
-                        'O: ' +
-                            formattedCurrentData(
-                                denominationsInBase
-                                    ? currentData.invPriceOpenExclMEVDecimalCorrected
-                                    : currentData.priceOpenExclMEVDecimalCorrected,
-                            ) +
-                            ' H: ' +
-                            formattedCurrentData(
-                                denominationsInBase
-                                    ? currentData.invMinPriceExclMEVDecimalCorrected
-                                    : currentData.maxPriceExclMEVDecimalCorrected,
-                            ) +
-                            ' L: ' +
-                            formattedCurrentData(
-                                denominationsInBase
-                                    ? currentData.invMaxPriceExclMEVDecimalCorrected
-                                    : currentData.minPriceExclMEVDecimalCorrected,
-                            ) +
-                            ' C: ' +
-                            formattedCurrentData(
-                                denominationsInBase
-                                    ? currentData.invPriceCloseExclMEVDecimalCorrected
-                                    : currentData.priceCloseExclMEVDecimalCorrected,
-                            ) +
-                            ' V: ' +
-                            formatDollarAmountAxis(currentVolumeData)}
+                    {'O: ' +
+                        formattedCurrentData(currentData?.open) +
+                        ' H: ' +
+                        formattedCurrentData(currentData?.high) +
+                        ' L: ' +
+                        formattedCurrentData(currentData?.low) +
+                        ' C: ' +
+                        formattedCurrentData(currentData?.close) +
+                        ' V: ' +
+                        formatDollarAmountAxis(currentVolumeData)}
                 </div>
             ) : (
                 <div className={styles.current_data_info} />
@@ -139,3 +130,5 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         </div>
     );
 }
+
+export default memo(CurrentDataInfo);

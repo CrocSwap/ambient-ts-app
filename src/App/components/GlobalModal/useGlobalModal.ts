@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 
 export interface globalModalMethodsIF {
     isOpen: boolean;
@@ -34,11 +34,14 @@ export const useGlobalModal = (initialMode = false) => {
     };
 
     // return all data and functions needed for local use
-    return {
-        isOpen,
-        open,
-        close,
-        currentContent,
-        title,
-    };
+    return useMemo(
+        () => ({
+            isOpen,
+            open,
+            close,
+            currentContent,
+            title,
+        }),
+        [isOpen, currentContent, title, initialMode],
+    );
 };

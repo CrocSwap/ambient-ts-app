@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
@@ -18,7 +18,7 @@ interface RangeHeaderPropsIF {
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function RangeHeader(props: RangeHeaderPropsIF) {
+function RangeHeader(props: RangeHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
@@ -85,3 +85,5 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
         </>
     );
 }
+
+export default memo(RangeHeader);

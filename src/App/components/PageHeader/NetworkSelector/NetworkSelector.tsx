@@ -59,6 +59,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                         marginTop={'50px'}
                         titleWidth={'80px'}
                         title={lookupChain(chainId).displayName}
+                        logo={lookupChain(chainId).logoUrl}
                     >
                         {networkMenuContent}
                     </DropdownMenu2>
