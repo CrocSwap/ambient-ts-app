@@ -12,8 +12,8 @@ import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/Styl
 import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import trimString from '../../../../utils/functions/trimString';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -54,10 +54,6 @@ export default function Account(props: AccountPropsIF) {
     } = useContext(AppStateContext);
     const { connector, isConnected } = useAccount();
 
-    const ensOrAddressTruncated = useAppSelector(
-        (state) => state.userData.ensOrAddressTruncated,
-    );
-
     const isUserLoggedIn = isConnected;
 
     const [_, copy] = useCopyToClipboard();
@@ -66,6 +62,10 @@ export default function Account(props: AccountPropsIF) {
         copy(props.accountAddressFull);
         openSnackbar(`${props.accountAddressFull} copied`, 'info');
     }
+
+    const connectedEnsOrAddressTruncated = ensName
+        ? trimString(ensName, 10, 3, '…')
+        : trimString(props.accountAddressFull, 5, 3, '…');
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
@@ -136,7 +136,7 @@ export default function Account(props: AccountPropsIF) {
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
                 <p className={styles.wallet_name}>
-                    {ensOrAddressTruncated || '...'}
+                    {connectedEnsOrAddressTruncated || '...'}
                 </p>
             </button>
             {showWalletDropdown ? (

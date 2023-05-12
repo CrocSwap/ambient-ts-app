@@ -72,6 +72,7 @@ function CurrencyQuantity(props: propsIF) {
                 setIsBuyLoading(true);
                 setSellQtyString(inputValue);
             }
+            if (!value) setIsBuyLoading(false);
 
             // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
         } else if (fieldId === 'buy') {
@@ -80,6 +81,7 @@ function CurrencyQuantity(props: propsIF) {
                 setIsSellLoading(true);
                 setBuyQtyString(inputValue);
             }
+            if (!value) setIsSellLoading(false);
 
             // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
         }
