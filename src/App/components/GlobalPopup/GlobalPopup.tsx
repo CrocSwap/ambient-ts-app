@@ -1,9 +1,9 @@
 import styles from './GlobalPopup.module.css';
 import { VscClose } from 'react-icons/vsc';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
-export default function GlobalPopup() {
+function GlobalPopup() {
     const {
         globalPopup: { isOpen, close, title, content, placement },
     } = useContext(AppStateContext);
@@ -34,3 +34,5 @@ export default function GlobalPopup() {
         </div>
     );
 }
+
+export default memo(GlobalPopup);

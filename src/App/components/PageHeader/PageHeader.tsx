@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -36,7 +36,7 @@ interface HeaderPropsIF {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
-export default function PageHeader(props: HeaderPropsIF) {
+const PageHeader = function (props: HeaderPropsIF) {
     const {
         ethMainnetUsdPrice,
         chainId,
@@ -410,4 +410,6 @@ export default function PageHeader(props: HeaderPropsIF) {
             {isChainSupported || <SwitchNetwork />}
         </header>
     );
-}
+};
+
+export default memo(PageHeader);

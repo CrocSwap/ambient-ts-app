@@ -6,7 +6,7 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
@@ -53,7 +53,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function RangePriceInfo(props: propsIF) {
+function RangePriceInfo(props: propsIF) {
     const {
         spotPriceDisplay,
         poolPriceCharacter,
@@ -442,3 +442,5 @@ export default function RangePriceInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangePriceInfo);

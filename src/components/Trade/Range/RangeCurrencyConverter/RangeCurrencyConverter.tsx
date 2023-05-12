@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useState,
     useEffect,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -98,7 +99,7 @@ interface propsIF {
 }
 
 // central React functional component
-export default function RangeCurrencyConverter(props: propsIF) {
+function RangeCurrencyConverter(props: propsIF) {
     const {
         poolExists,
         isUserLoggedIn,
@@ -800,3 +801,5 @@ export default function RangeCurrencyConverter(props: propsIF) {
         </section>
     );
 }
+
+export default memo(RangeCurrencyConverter);

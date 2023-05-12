@@ -5,6 +5,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
@@ -42,7 +43,7 @@ interface propsIF {
     account: string;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: propsIF) {
+function OrderRow(props: propsIF) {
     const {
         account,
         chainData,
@@ -353,3 +354,5 @@ export default function OrderRow(props: propsIF) {
         </>
     );
 }
+
+export default memo(OrderRow);

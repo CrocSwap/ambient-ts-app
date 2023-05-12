@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
@@ -79,7 +80,7 @@ interface propsIF {
     topPools: topPoolIF[];
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
@@ -540,3 +541,5 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Sidebar);
