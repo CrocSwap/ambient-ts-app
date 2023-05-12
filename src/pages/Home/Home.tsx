@@ -1,4 +1,3 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Stats from '../../components/Home/Stats/AmbientStats';
@@ -12,8 +11,6 @@ import { topPoolIF } from '../../App/hooks/useTopPools';
 import { PoolStatsFn } from '../../App/functions/getPoolStats';
 
 interface propsIF {
-    isServerEnabled: boolean;
-    crocEnv?: CrocEnv;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
@@ -23,10 +20,8 @@ interface propsIF {
 }
 export default function Home(props: propsIF) {
     const {
-        isServerEnabled,
         tokenMap,
         lastBlockNumber,
-        crocEnv,
         chainId,
         cachedQuerySpotPrice,
         topPools,
@@ -41,10 +36,8 @@ export default function Home(props: propsIF) {
             <HomeSlider />
             <div className={styles.pools_container}>
                 <TopPools
-                    isServerEnabled={isServerEnabled}
                     tradeData={tradeData}
                     userData={userData}
-                    crocEnv={crocEnv}
                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                     tokenMap={tokenMap}
                     lastBlockNumber={lastBlockNumber}
@@ -54,7 +47,6 @@ export default function Home(props: propsIF) {
                 />
                 <DividerDark />
                 <Stats
-                    isServerEnabled={isServerEnabled}
                     lastBlockNumber={lastBlockNumber}
                     userData={userData}
                     chainId={chainId}

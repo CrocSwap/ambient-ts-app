@@ -4,7 +4,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: #fffefd;
+    color: white;
     text-align: start;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -18,7 +18,7 @@
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .currency_quantity::placeholder {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
@@ -47,7 +47,7 @@
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text1);
 }
 
 .swapbox_top {
@@ -80,6 +80,6 @@
 .token_list_text {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 }

@@ -17,8 +17,8 @@ interface FreeRateData {
     getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
-    setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
-    isCrosshairActive: string;
+    setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
+    crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     isMouseMoveCrosshair: boolean;
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,9 +36,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
-        setIsCrosshairActive,
+        setCrosshairActive,
         isMouseMoveCrosshair,
-        isCrosshairActive,
+        crosshairActive,
         setIsMouseMoveCrosshair,
     } = props;
 
@@ -169,7 +169,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
             crosshairVerticalCanvas.decorate((context: any) => {
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
@@ -185,7 +186,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 context.visibility = 'hidden';
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
@@ -225,10 +227,10 @@ export default function FeeRateSubChart(props: FreeRateData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
-                    if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
+                    ctx.setLineDash([4, 2]);
+                    if (isMouseMoveCrosshair && crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
-                        if (isCrosshairActive === 'feeRate') {
+                        if (crosshairActive === 'feeRate') {
                             crosshairHorizontalCanvas([
                                 {
                                     x: crosshairForSubChart[0].x,
@@ -239,9 +241,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     }
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
-                    if (isCrosshairActive === 'feeRate') {
+                    if (crosshairActive === 'feeRate') {
                         crosshairHorizontalCanvas.context(ctx);
                     }
                 });
@@ -251,7 +253,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         crosshairVerticalCanvas,
         crosshairForSubChart,
         feeRateHorizontalyValue,
-        isCrosshairActive,
+        crosshairActive,
         isMouseMoveCrosshair,
     ]);
 
@@ -298,14 +300,14 @@ export default function FeeRateSubChart(props: FreeRateData) {
                             return feeRateyScale.invert(event.layerY);
                         });
                         setCrossHairLocation(event, false);
-                        setIsCrosshairActive('feeRate');
+                        setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                     renderCanvas();
                 });

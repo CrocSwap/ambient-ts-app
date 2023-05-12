@@ -3,7 +3,7 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
@@ -11,7 +11,6 @@ import {
     ambientPosSlot,
     ChainSpec,
     concPosSlot,
-    CrocEnv,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
@@ -35,15 +34,14 @@ import {
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
     chainId: string;
@@ -67,8 +65,6 @@ interface propsIF {
     position: PositionIF;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     handleModalClose: () => void;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
@@ -76,11 +72,8 @@ interface propsIF {
 
 export default function RemoveRange(props: propsIF) {
     const {
-        crocEnv,
         chainData,
         position,
-        dexBalancePrefs,
-        slippage,
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
@@ -93,6 +86,9 @@ export default function RemoveRange(props: propsIF) {
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData,
     ).lastBlock;
+
+    const crocEnv = useContext(CrocEnvContext);
+    const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
@@ -277,8 +273,8 @@ export default function RemoveRange(props: propsIF) {
     );
 
     const persistedSlippage: number = isPairStable
-        ? slippage.mintSlippage.stable
-        : slippage.mintSlippage.volatile;
+        ? mintSlippage.stable
+        : mintSlippage.volatile;
 
     const removeFn = async () => {
         if (!crocEnv || !liquidityToBurn) return;
@@ -300,7 +296,7 @@ export default function RemoveRange(props: propsIF) {
                     console.debug(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
-                        surplus: dexBalancePrefs.range.outputToDexBal.isEnabled,
+                        surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
@@ -349,7 +345,7 @@ export default function RemoveRange(props: propsIF) {
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
-                    { surplus: dexBalancePrefs.range.outputToDexBal.isEnabled },
+                    { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
@@ -573,8 +569,8 @@ export default function RemoveRange(props: propsIF) {
     const updateSettings = (): void => {
         setShowSettings(false);
         isPairStable
-            ? slippage.mintSlippage.updateStable(currentSlippage)
-            : slippage.mintSlippage.updateVolatile(currentSlippage);
+            ? mintSlippage.updateStable(currentSlippage)
+            : mintSlippage.updateVolatile(currentSlippage);
     };
 
     const buttonToDisplay = (
@@ -618,8 +614,8 @@ export default function RemoveRange(props: propsIF) {
             setCurrentSlippage={setCurrentSlippage}
             presets={
                 isPairStable
-                    ? slippage.mintSlippage.presets.stable
-                    : slippage.mintSlippage.presets.volatile
+                    ? mintSlippage.presets.stable
+                    : mintSlippage.presets.volatile
             }
         />
     ) : (
@@ -659,7 +655,7 @@ export default function RemoveRange(props: propsIF) {
                     quoteRemovalNum={quoteRemovalNum}
                     isAmbient={props.isAmbient}
                 />
-                <ExtraControls dexBalancePrefs={dexBalancePrefs} />
+                <ExtraControls />
             </div>
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} />{' '}

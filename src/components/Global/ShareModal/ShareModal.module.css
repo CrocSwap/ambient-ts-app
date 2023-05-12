@@ -20,7 +20,7 @@
 }
 
 .control_title {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .url_link {
@@ -32,7 +32,7 @@
     display: grid;
     grid-template-columns: 1fr 50px;
     gap: 8px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 .url_link div {
@@ -45,7 +45,7 @@
 .url_link input {
     outline: none;
     border: none;
-    color: var(--text-grey-light);
+    color: var(--text2);
     background: var(--dark1);
     padding: 8px 1rem;
     border-radius: var(--border-radius);
@@ -65,18 +65,18 @@
     align-items: center;
     height: 130px;
     width: 130px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .social_link_container:hover , .social_link_container:focus-visible{
-    color: var(--text-grey-white);
+    color: var(--text1);
     background: var(--dark2);
 }
 
 .social_link_container:focus-visible svg{
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .copy_button{
@@ -88,6 +88,6 @@
 }
 
 .copy_button:hover, .copy_button:focus-visible {
-border: 1px solid var(--text-grey-white)
+border: 1px solid var(--text1)
 
 }

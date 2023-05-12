@@ -63,6 +63,7 @@ import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import { PoolContext } from '../contexts/PoolContext';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -94,22 +95,17 @@ import {
     setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
-import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
-import { getNFTs } from './functions/getNFTs';
-import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
     resetUserAddresses,
     setAddressAtLogin,
     setAddressCurrent,
-    setEnsNameCurrent,
-    setEnsOrAddressTruncated,
     setErc20Tokens,
     setIsLoggedIn,
     setIsUserIdle,
@@ -143,9 +139,8 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
-import { sidebarMethodsIF, useSidebar } from './hooks/useSidebar';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -164,19 +159,15 @@ import {
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
+import { useSlippage } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import {
     useChartSettings,
     chartSettingsMethodsIF,
 } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
-import {
-    useExchangePrefs,
-    dexBalanceMethodsIF,
-} from './hooks/useExchangePrefs';
-import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
+import { useExchangePrefs } from './hooks/useExchangePrefs';
+import { useSkipConfirm } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
@@ -184,10 +175,17 @@ import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
+import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
 import { diffHashSig } from '../utils/functions/diffHashSig';
+import { useFavePools } from './hooks/useFavePools';
+import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
+import { useTermsOfService } from './hooks/useTermsOfService';
+import { AppStateContext } from '../contexts/AppStateContext';
+import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
+import { RangeStateContext } from '../contexts/RangeStateContext';
+import { CandleContext } from '../contexts/CandleContext';
 
-const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
@@ -204,12 +202,6 @@ const shouldNonCandleSubscriptionsReconnect = true;
 
 const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
 
-const isChartEnabled =
-    !!process.env.REACT_APP_CHART_IS_ENABLED &&
-    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
-        ? false
-        : true;
-
 /** ***** React Function *******/
 export default function App() {
     const navigate = useNavigate();
@@ -217,55 +209,102 @@ export default function App() {
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
-    const [isTutorialMode, setIsTutorialMode] = useState(false);
-
-    // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(
-        'wallet',
-        process.env.REACT_APP_WALLET_TOS_CID as string,
-    );
-    const chatToS: tosMethodsIF = useTermsOfService(
-        'chat',
-        process.env.REACT_APP_CHAT_TOS_CID as string,
-    );
-    // this line is just here to make the linter happy
-    // it should be removed when the chatToS line is moved
-    // please and thank you
-    false && chatToS;
-
-    // hooks to manage slippage in the app
-    const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
-    const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
-    const repoSlippage: SlippageMethodsIF = useSlippage(
-        'repo',
-        slippage.reposition,
-    );
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
-    // hook to manage favorite pools in the app
-    const favePools: favePoolsMethodsIF = useFavePools();
-
-    // hook to manage exchange balance preferences
-    const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
-    const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
-    const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
-
-    // hooks to manage user preferences to skip confirmation modals
-    const bypassConfirmSwap: skipConfirmIF = useSkipConfirm('swap');
-    const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
-    const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
-    const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
-
-    // hook to manage app skin
-    const skin = useSkin('purple_dark');
-    false && skin;
-
-    // hook to track user's sidebar preference open or closed
-    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
-
     const { address: account, isConnected } = useAccount();
+
+    const userPreferences = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap', slippage.swap),
+        mintSlippage: useSlippage('mint', slippage.mint),
+        repoSlippage: useSlippage('repo', slippage.reposition),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+    };
+
+    // TODO: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isTutorialMode, setIsTutorialMode] = useState(false);
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isChatEnabled, setIsChatEnabled] = useState(
+        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+            : true,
+    );
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+    const isChartEnabled =
+        !!process.env.REACT_APP_CHART_IS_ENABLED &&
+        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+            ? false
+            : true;
+
+    const appState = {
+        appOverlay: {
+            isActive: isAppOverlayActive,
+            setIsActive: setIsAppOverlayActive,
+        },
+        globalModal: useGlobalModal(),
+        globalPopup: useGlobalPopup(),
+        sidebar: useSidebar(location.pathname),
+        snackbar: useSnackbar(),
+        tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
+        skin: useSkin('purple_dark'),
+        // TODO: walletToS, chatToS unused
+        walletToS: useTermsOfService(
+            'wallet',
+            process.env.REACT_APP_WALLET_TOS_CID as string,
+        ),
+        chatToS: useTermsOfService(
+            'chat',
+            process.env.REACT_APP_CHAT_TOS_CID as string,
+        ),
+        theme: { selected: theme, setSelected: setTheme },
+        outsideTab: {
+            selected: selectedOutsideTab,
+            setSelected: setSelectedOutsideTab,
+        },
+        outsideControl: {
+            isActive: outsideControl,
+            setIsActive: setOutsideControl,
+        },
+        chat: {
+            isOpen: isChatOpen,
+            setIsOpen: setIsChatOpen,
+            isEnabled: isChatEnabled,
+            setIsEnabled: setIsChatEnabled,
+        },
+        chart: {
+            isFullScreen: fullScreenChart,
+            setIsFullScreen: setFullScreenChart,
+            isEnabled: isChartEnabled,
+        },
+        server: { isEnabled: isServerEnabled },
+        subscriptions: { isEnabled: areSubscriptionsEnabled },
+    };
 
     useEffect(() => {
         if (account && checkBlacklist(account)) {
@@ -324,8 +363,6 @@ export default function App() {
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
         dispatch(setIsUserIdle(true));
-        // reload to avoid stale wallet connections and excessive state accumulation
-        window.location.reload();
     };
 
     const onActive = () => {
@@ -381,26 +418,6 @@ export default function App() {
     // hook to manage acknowledged tokens
     const ackTokens: ackTokensMethodsIF = useAckTokens();
 
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
-    const areSubscriptionsEnabled =
-        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
-            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
-    );
-
     useEffect(() => {
         if (isConnected) {
             if (userData.isLoggedIn === false && account) {
@@ -440,6 +457,8 @@ export default function App() {
         boolean | undefined
     >();
 
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+
     // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -451,6 +470,21 @@ export default function App() {
         setRescaleRangeBoundariesWithSlider,
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
+
+    const rangeState = {
+        maxRangePrice,
+        setMaxRangePrice,
+        minRangePrice,
+        setMinRangePrice,
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+    };
 
     const [
         verifyToken,
@@ -478,8 +512,6 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
-
-    const [fetchingCandle, setFetchingCandle] = useState(false);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -544,7 +576,12 @@ export default function App() {
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
+    }, [
+        // signerStatus === 'success',
+        crocEnv === undefined,
+        chainData.chainId,
+        signer,
+    ]);
 
     useEffect(() => {
         if (provider) {
@@ -724,8 +761,6 @@ export default function App() {
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-
     const sessionReceipts = receiptData?.sessionReceipts;
 
     const lastReceipt =
@@ -735,22 +770,6 @@ export default function App() {
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    const snackMessage = lastReceipt
-        ? isLastReceiptSuccess
-            ? `Transaction ${lastReceipt.transactionHash} successfully completed`
-            : `Transaction ${lastReceipt.transactionHash} failed`
-        : '';
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity={isLastReceiptSuccess ? 'info' : 'warning'}
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {snackMessage}
-        </SnackbarComponent>
-    );
-
     const lastReceiptHash = useMemo(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
@@ -758,59 +777,16 @@ export default function App() {
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
-            setOpenSnackbar(true);
+            appState.snackbar.open(
+                lastReceipt
+                    ? isLastReceiptSuccess
+                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+                        : `Transaction ${lastReceipt.transactionHash} failed`
+                    : '',
+                isLastReceiptSuccess ? 'info' : 'warning',
+            );
         }
     }, [lastReceiptHash]);
-
-    const ensName = userData.ensNameCurrent || '';
-
-    // check for ENS name account changes
-    useEffect(() => {
-        (async () => {
-            if (isUserLoggedIn && account && provider) {
-                IS_LOCAL_ENV && console.debug('checking for ens name');
-                try {
-                    const ensName = await cachedFetchAddress(
-                        provider,
-                        account,
-                        chainData.chainId,
-                    );
-                    if (ensName) {
-                        // setEnsName(ensName);
-                        dispatch(setEnsNameCurrent(ensName));
-                        if (ensName.length > 15) {
-                            dispatch(
-                                setEnsOrAddressTruncated(
-                                    trimString(ensName, 10, 3, '…'),
-                                ),
-                            );
-                        } else {
-                            dispatch(setEnsOrAddressTruncated(ensName));
-                        }
-                    } else {
-                        dispatch(setEnsNameCurrent(undefined));
-                        // setEnsName('');
-
-                        dispatch(
-                            setEnsOrAddressTruncated(
-                                trimString(account, 5, 3, '…'),
-                            ),
-                        );
-                    }
-                } catch (error) {
-                    dispatch(setEnsNameCurrent(undefined));
-                    // setEnsName('');
-                    dispatch(
-                        setEnsOrAddressTruncated(
-                            trimString(account, 5, 3, '…'),
-                        ),
-                    );
-                }
-            } else if (!isUserLoggedIn || !account) {
-                dispatch(setEnsOrAddressTruncated(undefined));
-            }
-        })();
-    }, [isUserLoggedIn, account, chainData.chainId]);
 
     // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(
@@ -1440,7 +1416,7 @@ export default function App() {
                                 chainId: chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                n: '50',
+                                n: '200',
                                 // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                 // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                             }),
@@ -1507,11 +1483,12 @@ export default function App() {
     ]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
         candleTimeLocal,
+        isUserIdle,
     ]);
 
     const fetchCandles = () => {
@@ -2603,44 +2580,50 @@ export default function App() {
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (!showSidebarByDefault) {
-            return;
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            appState.sidebar.close();
+        } else if (showSidebarByDefault) {
+            appState.sidebar.open();
         } else {
-            sidebar.open();
-            if (
-                currentLocation === '/' ||
-                currentLocation === '/swap' ||
-                currentLocation.includes('/account')
-            ) {
-                sidebar.close();
-            }
+            appState.sidebar.close();
         }
     }
 
     function toggleTradeTabBasedOnRoute() {
-        setOutsideControl(true);
-        if (currentLocation.includes('/market')) {
-            setSelectedOutsideTab(0);
-        } else if (currentLocation.includes('/limit')) {
-            setSelectedOutsideTab(1);
-        } else if (
-            currentLocation.includes('/range') ||
-            currentLocation.includes('reposition') ||
-            currentLocation.includes('add')
-        ) {
-            setSelectedOutsideTab(2);
+        if (!isCandleSelected) {
+            appState.outsideControl.setIsActive(true);
+            if (currentLocation.includes('/market')) {
+                appState.outsideTab.setSelected(0);
+            } else if (currentLocation.includes('/limit')) {
+                appState.outsideTab.setSelected(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                appState.outsideTab.setSelected(2);
+            }
         }
     }
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
+
+    useEffect(() => {
         if (
-            !isCandleSelected &&
             !currentTxActiveInTransactions &&
-            !currentPositionActive
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location, isCandleSelected]);
+    }, [location]);
 
     // function to sever connection between user wallet and the app
     const clickLogout = async () => {
@@ -2685,26 +2668,6 @@ export default function App() {
         closeWagmiModalWallet,
     ] = useModal();
 
-    const [
-        isGlobalModalOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        currentContent,
-        title,
-    ] = useGlobalModal();
-    const [
-        isGlobalPopupOpen,
-        openGlobalPopup,
-        closeGlobalPopup,
-        popupContent,
-        popupTitle,
-        popupPlacement,
-    ] = useGlobalPopup();
-
-    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
-
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
     const [isSwapCopied, setIsSwapCopied] = useState(false);
@@ -2738,17 +2701,6 @@ export default function App() {
     };
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
-
-    // --------------THEME--------------------------
-    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const [theme, setTheme] = useState('dark');
-
-    const switchTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-    };
-
-    // --------------END OF THEME--------------------------
 
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
@@ -2822,28 +2774,17 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
         openWagmiModalWallet: openWagmiModalWallet,
         openMoralisModalWallet: openWagmiModalWallet,
         lastBlockNumber: lastBlockNumber,
-        isMobileSidebarOpen: isMobileSidebarOpen,
-        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
         poolPriceDisplay: poolPriceDisplay,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
-        isAppOverlayActive: isAppOverlayActive,
-        setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         recentPools: recentPools,
-        switchTheme: switchTheme,
-        theme: theme,
         chainData: chainData,
         getTokenByAddress: getTokenByAddress,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2860,11 +2801,9 @@ export default function App() {
     const swapProps = {
         pool: pool,
         tokenPairLocal: tokenPairLocal,
-        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
         provider: provider,
-        swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
@@ -2883,7 +2822,6 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
-        openGlobalModal: openGlobalModal,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -2894,20 +2832,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         chainData: chainData,
     };
@@ -2915,11 +2839,9 @@ export default function App() {
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         pool: pool,
-        crocEnv: crocEnv,
         isUserLoggedIn: isConnected,
         account: account,
         provider: provider,
-        swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
@@ -2938,7 +2860,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
-        openGlobalModal: openGlobalModal,
         isSwapCopied: isSwapCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
@@ -2950,21 +2871,7 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
         tokenPairLocal: tokenPairLocal,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         chainData: chainData,
     };
@@ -2973,11 +2880,9 @@ export default function App() {
     const limitPropsTrade = {
         account: account,
         pool: pool,
-        crocEnv: crocEnv,
         chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
-        mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
@@ -2994,8 +2899,6 @@ export default function App() {
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
         isOrderCopied: isOrderCopied,
         verifyToken: verifyToken,
@@ -3009,20 +2912,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
     };
 
@@ -3032,10 +2921,8 @@ export default function App() {
 
     const rangeProps = {
         account: account,
-        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         provider: provider,
-        mintSlippage: mintSlippage,
         isPairStable: isPairStable,
         lastBlockNumber: lastBlockNumber,
         gasPriceInGwei: gasPriceInGwei,
@@ -3056,7 +2943,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
         dailyVol: dailyVol,
-        openGlobalModal: openGlobalModal,
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal: rangetokenAQtyLocal,
@@ -3073,14 +2959,6 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
         setSimpleRangeWidth: setSimpleRangeWidth,
         simpleRangeWidth: simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
@@ -3092,28 +2970,15 @@ export default function App() {
         rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
         ackTokens: ackTokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainData: chainData,
     };
 
-    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
-    const [outsideControl, setOutsideControl] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
-
-    const [fullScreenChart, setFullScreenChart] = useState(false);
-
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
     const sidebarProps = {
-        sidebar: sidebar,
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
@@ -3126,11 +2991,6 @@ export default function App() {
         setExpandTradeTable: setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
-        favePools: favePools,
-        selectedOutsideTab: selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: outsideControl,
-        setOutsideControl: setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         analyticsSearchInput: analyticsSearchInput,
@@ -3187,19 +3047,8 @@ export default function App() {
         }
     }, [tradeData.didUserFlipDenom, tokenPair]);
 
-    const [imageData, setImageData] = useState<string[]>([]);
-
     useEffect(() => {
         dispatch(resetUserGraphData());
-    }, [account]);
-
-    useEffect(() => {
-        (async () => {
-            if (account) {
-                const imageLocalURLs = await getNFTs(account);
-                if (imageLocalURLs) setImageData(imageLocalURLs);
-            }
-        })();
     }, [account]);
 
     // Take away margin from left if we are on homepage or swap
@@ -3212,7 +3061,7 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
+        !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
@@ -3225,20 +3074,20 @@ export default function App() {
         ) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    setIsChatEnabled(isChatUp);
+                    appState.chat.setIsEnabled(isChatUp);
                 });
             }, 10000);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
-            setFullScreenChart(false);
+            appState.chart.setIsFullScreen(false);
         }
     }, [currentLocation]);
 
-    const sidebarDislayStyle = sidebar.isOpen
+    const sidebarDislayStyle = appState.sidebar.isOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -3267,9 +3116,9 @@ export default function App() {
         const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
         return {
             swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
-            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
-            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
         };
     }
 
@@ -3303,13 +3152,13 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            sidebar.toggle('persist');
+            appState.sidebar.toggle(true);
         },
     );
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: 'C' },
         () => {
-            setIsChatOpen(!isChatOpen);
+            appState.chat.setIsOpen(!appState.chat.isOpen);
         },
     );
 
@@ -3336,9 +3185,7 @@ export default function App() {
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        pool,
         isUserLoggedIn,
-        crocEnv,
         provider,
         candleData,
         baseTokenAddress,
@@ -3361,15 +3208,8 @@ export default function App() {
         expandTradeTable,
         setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        favePools,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         currentPositionActive,
         setCurrentPositionActive,
-        openGlobalModal,
-        closeGlobalModal,
         isInitialized,
         poolPriceNonDisplay,
         setLimitRate: function (): void {
@@ -3382,38 +3222,19 @@ export default function App() {
         handlePulseAnimation,
         isCandleSelected,
         setIsCandleSelected,
-        fullScreenChart,
-        setFullScreenChart,
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
         setIsCandleDataNull,
-        minPrice: minRangePrice,
-        maxPrice: maxRangePrice,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        isTutorialMode,
-        setIsTutorialMode,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
         setChartTriggeredBy,
         chartTriggeredBy,
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const accountProps = {
@@ -3422,7 +3243,6 @@ export default function App() {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        crocEnv: crocEnv,
         addRecentToken,
         getRecentTokens,
         getAmbientTokens,
@@ -3434,18 +3254,10 @@ export default function App() {
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
-        ensName,
         lastBlockNumber,
         connectedAccount: account ? account : '',
-        userImageData: imageData,
         chainId: chainData.chainId,
         tokensOnActiveLists,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
-        openGlobalModal,
-        closeGlobalModal,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
@@ -3465,19 +3277,8 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         mainnetProvider,
         setSimpleRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
         ackTokens,
         setExpandTradeTable,
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const repositionProps = {
@@ -3492,277 +3293,314 @@ export default function App() {
         ambientApy,
         dailyVol,
         isDenomBase: tradeData.isDenomBase,
-        repoSlippage,
         isPairStable,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
-        setRescaleRangeBoundariesWithSlider,
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        openGlobalPopup,
     };
 
     const chatProps = {
-        isChatEnabled: isChatEnabled,
-        areSubscriptionsEnabled: areSubscriptionsEnabled,
-        isChatOpen: true,
         onClose: () => {
             console.error('Function not implemented.');
         },
-        favePools: favePools,
         currentPool: currentPoolInfo,
-        setIsChatOpen: setIsChatOpen,
         isFullScreen: true,
-        userImageData: imageData,
-        username: ensName,
         appPage: true,
         topPools: topPools,
-        setIsChatEnabled: setIsChatEnabled,
+    };
+
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
     };
 
     return (
-        <>
-            <div className={containerStyle} data-theme={theme}>
-                {isMobileSidebarOpen && <div className='blur_app' />}
-                <AppOverlay
-                    isAppOverlayActive={isAppOverlayActive}
-                    setIsAppOverlayActive={setIsAppOverlayActive}
-                />
-                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                <section
-                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+        <AppStateContext.Provider value={appState}>
+            <UserPreferenceContext.Provider value={userPreferences}>
+                <div
+                    className={containerStyle}
+                    data-theme={appState.theme.selected}
                 >
-                    {!currentLocation.startsWith('/swap') && sidebarRender}
-                    <Routes>
-                        <Route
-                            index
-                            element={
-                                <Home
-                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    tokenMap={tokensOnActiveLists}
-                                    lastBlockNumber={lastBlockNumber}
-                                    crocEnv={crocEnv}
-                                    chainId={chainData.chainId}
-                                    isServerEnabled={isServerEnabled}
-                                    topPools={topPools}
-                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                />
-                            }
-                        />
-                        <Route
-                            path='accessibility'
-                            element={<Accessibility />}
-                        />
-                        <Route path='trade' element={<Trade {...tradeProps} />}>
-                            <Route
-                                path=''
-                                element={
-                                    <Navigate to='/trade/market' replace />
-                                }
-                            />
-                            <Route
-                                path='market'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.market}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='market/:params'
-                                element={<Swap {...swapPropsTrade} />}
-                            />
-
-                            <Route
-                                path='limit'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.limit}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='limit/:params'
-                                element={<Limit {...limitPropsTrade} />}
-                            />
-
-                            <Route
-                                path='range'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.range}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='range/:params'
-                                element={<Range {...rangeProps} />}
-                            />
-                            <Route
-                                path='reposition'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.range}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route
-                                path='reposition/:params'
-                                element={<Reposition {...repositionProps} />}
-                            />
-                            <Route path='add' element={<RangeAdd />} />
-                            <Route
-                                path='edit/'
-                                element={
-                                    <Navigate to='/trade/market' replace />
-                                }
-                            />
-                        </Route>
-                        <Route
-                            path='chat'
-                            element={<ChatPanel {...chatProps} />}
-                        />
-
-                        <Route
-                            path='chat/:params'
-                            element={<ChatPanel {...chatProps} />}
-                        />
-                        <Route
-                            path='range2'
-                            element={<Range {...rangeProps} />}
-                        />
-                        <Route
-                            path='initpool/:params'
-                            element={
-                                <InitPool
-                                    isUserLoggedIn={isUserLoggedIn}
-                                    crocEnv={crocEnv}
-                                    gasPriceInGwei={gasPriceInGwei}
-                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                    openModalWallet={openWagmiModalWallet}
-                                    tokenAAllowance={tokenAAllowance}
-                                    tokenBAllowance={tokenBAllowance}
-                                    setRecheckTokenAApproval={
-                                        setRecheckTokenAApproval
-                                    }
-                                    setRecheckTokenBApproval={
-                                        setRecheckTokenBApproval
+                    {appState.sidebar.isMobileOpen && (
+                        <div className='blur_app' />
+                    )}
+                    <AppOverlay />
+                    {currentLocation !== '/404' && (
+                        <PageHeader {...headerProps} />
+                    )}
+                    <CrocEnvContext.Provider value={crocEnv}>
+                        <section
+                            className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                        >
+                            {!currentLocation.startsWith('/swap') &&
+                                sidebarRender}
+                            <Routes>
+                                <Route
+                                    index
+                                    element={
+                                        <Home
+                                            cachedQuerySpotPrice={
+                                                cachedQuerySpotPrice
+                                            }
+                                            tokenMap={tokensOnActiveLists}
+                                            lastBlockNumber={lastBlockNumber}
+                                            chainId={chainData.chainId}
+                                            topPools={topPools}
+                                            cachedPoolStatsFetch={
+                                                cachedPoolStatsFetch
+                                            }
+                                        />
                                     }
                                 />
-                            }
-                        />
-                        <Route
-                            path='account'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={true}
+                                <Route
+                                    path='accessibility'
+                                    element={<Accessibility />}
                                 />
-                            }
-                        />
-                        <Route
-                            path='account/:address'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={false}
-                                />
-                            }
-                        />
-
-                        <Route
-                            path='swap'
-                            element={
-                                <Navigate replace to={defaultUrlParams.swap} />
-                            }
-                        />
-                        <Route
-                            path='swap/:params'
-                            element={<Swap {...swapProps} />}
-                        />
-                        <Route path='tos' element={<TermsOfService />} />
-                        {IS_LOCAL_ENV && (
-                            <Route
-                                path='testpage'
-                                element={
-                                    <TestPage
-                                        openGlobalModal={openGlobalModal}
-                                        walletToS={walletToS}
-                                        chartSettings={chartSettings}
-                                        bypassConf={{
-                                            swap: bypassConfirmSwap,
-                                            limit: bypassConfirmLimit,
-                                            range: bypassConfirmRange,
-                                            repo: bypassConfirmRepo,
-                                        }}
+                                <Route
+                                    path='trade'
+                                    element={
+                                        <PoolContext.Provider value={pool}>
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <CandleContext.Provider
+                                                    value={candleState}
+                                                >
+                                                    <Trade {...tradeProps} />
+                                                </CandleContext.Provider>
+                                            </RangeStateContext.Provider>
+                                        </PoolContext.Provider>
+                                    }
+                                >
+                                    <Route
+                                        path=''
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
+                                        }
                                     />
-                                }
+                                    <Route
+                                        path='market'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.market}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='market/:params'
+                                        element={<Swap {...swapPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='limit'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.limit}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='limit/:params'
+                                        element={<Limit {...limitPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='range'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='range/:params'
+                                        element={
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Range {...rangeProps} />
+                                            </RangeStateContext.Provider>
+                                        }
+                                    />
+                                    <Route
+                                        path='reposition'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='reposition/:params'
+                                        element={
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Reposition
+                                                    {...repositionProps}
+                                                />
+                                            </RangeStateContext.Provider>
+                                        }
+                                    />
+                                    <Route path='add' element={<RangeAdd />} />
+                                    <Route
+                                        path='edit/'
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
+                                        }
+                                    />
+                                </Route>
+                                <Route
+                                    path='chat'
+                                    element={<ChatPanel {...chatProps} />}
+                                />
+
+                                <Route
+                                    path='chat/:params'
+                                    element={<ChatPanel {...chatProps} />}
+                                />
+                                <Route
+                                    path='range2'
+                                    element={
+                                        <RangeStateContext.Provider
+                                            value={rangeState}
+                                        >
+                                            <Range {...rangeProps} />
+                                        </RangeStateContext.Provider>
+                                    }
+                                />
+                                <Route
+                                    path='initpool/:params'
+                                    element={
+                                        <InitPool
+                                            isUserLoggedIn={isUserLoggedIn}
+                                            crocEnv={crocEnv}
+                                            gasPriceInGwei={gasPriceInGwei}
+                                            ethMainnetUsdPrice={
+                                                ethMainnetUsdPrice
+                                            }
+                                            openModalWallet={
+                                                openWagmiModalWallet
+                                            }
+                                            tokenAAllowance={tokenAAllowance}
+                                            tokenBAllowance={tokenBAllowance}
+                                            setRecheckTokenAApproval={
+                                                setRecheckTokenAApproval
+                                            }
+                                            setRecheckTokenBApproval={
+                                                setRecheckTokenBApproval
+                                            }
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='account'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={true}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='account/:address'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
+                                    }
+                                />
+
+                                <Route
+                                    path='swap'
+                                    element={
+                                        <Navigate
+                                            replace
+                                            to={defaultUrlParams.swap}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='swap/:params'
+                                    element={<Swap {...swapProps} />}
+                                />
+                                <Route
+                                    path='tos'
+                                    element={<TermsOfService />}
+                                />
+                                {IS_LOCAL_ENV && (
+                                    <Route
+                                        path='testpage'
+                                        element={<TestPage />}
+                                    />
+                                )}
+                                <Route
+                                    path='/:address'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
+                                    }
+                                />
+                                <Route path='/404' element={<NotFound />} />
+                            </Routes>
+                        </section>
+                    </CrocEnvContext.Provider>
+                </div>
+                <div className='footer_container'>
+                    {currentLocation !== '/' &&
+                        !currentLocation.includes('/chat') &&
+                        appState.chat.isEnabled && (
+                            <ChatPanel
+                                onClose={() => {
+                                    console.error('Function not implemented.');
+                                }}
+                                currentPool={currentPoolInfo}
+                                isFullScreen={false}
+                                topPools={topPools}
                             />
                         )}
-                        <Route
-                            path='/:address'
-                            element={
-                                <Portfolio
-                                    {...accountProps}
-                                    userAccount={false}
-                                />
-                            }
-                        />
-                        <Route path='/404' element={<NotFound />} />
-                    </Routes>
-                </section>
-                {snackbarContent}
-            </div>
-            <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && (
-                        <ChatPanel
-                            isChatOpen={isChatOpen}
-                            onClose={() => {
-                                console.error('Function not implemented.');
-                            }}
-                            favePools={favePools}
-                            currentPool={currentPoolInfo}
-                            setIsChatOpen={setIsChatOpen}
-                            isFullScreen={false}
-                            userImageData={imageData}
-                            topPools={topPools}
-                            isChatEnabled={isChatEnabled}
-                            areSubscriptionsEnabled={areSubscriptionsEnabled}
-                        />
-                    )}
-            </div>
-            <SidebarFooter />
-            <GlobalModal
-                isGlobalModalOpen={isGlobalModalOpen}
-                closeGlobalModal={closeGlobalModal}
-                openGlobalModal={openGlobalModal}
-                currentContent={currentContent}
-                title={title}
-            />
-            <GlobalPopup
-                isGlobalPopupOpen={isGlobalPopupOpen}
-                openGlobalPopup={openGlobalPopup}
-                closeGlobalPopup={closeGlobalPopup}
-                popupContent={popupContent}
-                popupTitle={popupTitle}
-                placement={popupPlacement}
-            />
-            {isWagmiModalOpenWallet && (
-                <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
-            )}
-        </>
+                </div>
+                <SidebarFooter />
+                <GlobalModal />
+                <GlobalPopup />
+                <SnackbarComponent />
+                {isWagmiModalOpenWallet && (
+                    <WalletModalWagmi
+                        closeModalWallet={closeWagmiModalWallet}
+                    />
+                )}
+            </UserPreferenceContext.Provider>
+        </AppStateContext.Provider>
     );
 }

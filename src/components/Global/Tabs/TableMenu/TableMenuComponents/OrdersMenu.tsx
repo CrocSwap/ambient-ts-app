@@ -1,7 +1,7 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect } from 'react';
-import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
-
+import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
 import Modal from '../../../../Global/Modal/Modal';
 
@@ -11,7 +11,7 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -25,18 +25,16 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
     tradeData: tradeData;
-    crocEnv: CrocEnv | undefined;
     limitOrder: LimitOrderIF;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     isShowAllEnabled: boolean;
-    isSidebarOpen: boolean;
     isOrderFilled: boolean;
     handlePulseAnimation?: (type: string) => void;
     account: string;
@@ -53,15 +51,11 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         // isShowAllEnabled,
-        crocEnv,
         chainData,
         tradeData,
         limitOrder,
-        openGlobalModal,
         isOrderFilled,
         isOwnerActiveAccount,
-        closeGlobalModal,
-        isSidebarOpen,
         handlePulseAnimation,
         lastBlockNumber,
         account,
@@ -69,11 +63,18 @@ export default function OrdersMenu(props: propsIF) {
         isOnPortfolioPage,
     } = props;
 
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
+
     const [
         isModalOpen,
         //  openModal,
         closeModal,
     ] = useModal();
+
+    const crocEnv = useContext(CrocEnvContext);
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -314,9 +315,9 @@ export default function OrdersMenu(props: propsIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
+            {(view3 || view2WithNoSidebar) && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {(view3 || view2WithNoSidebar) && detailsButton}
             {!isOwnerActiveAccount && copyButton}
         </div>
     );
@@ -343,8 +344,11 @@ export default function OrdersMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownOrdersMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
+            <div
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                style={{ cursor: 'pointer' }}
+            >
+                <CiCircleMore size={25} color='var(--text3)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
@@ -359,7 +363,10 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}

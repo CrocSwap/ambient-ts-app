@@ -31,7 +31,6 @@ import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
@@ -92,14 +91,10 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     poolExists: boolean | undefined;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     ackTokens: ackTokensMethodsIF;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central React functional component
@@ -150,8 +145,9 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         ackTokens,
+        setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -700,6 +696,14 @@ export default function RangeCurrencyConverter(props: propsIF) {
             : 0
         : tokenBQtyLocal;
 
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
+
+    useEffect(() => {
+        setTokenBQtyCoveredByWalletBalance(tokenBQtyCoveredByWalletBalance);
+    }, [tokenBQtyCoveredByWalletBalance]);
+
     const tokenAQtyCoveredBySurplusBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenAQtyLocal
@@ -760,7 +764,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         ackTokens: ackTokens,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,

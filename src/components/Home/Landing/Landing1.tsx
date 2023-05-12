@@ -1,5 +1,5 @@
 import styles from './Landing1.module.css';
-import logoText from '../../../assets/images/logos/logo_text.svg';
+import logoText from '../../../assets/images/logos/logo_text.png';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 
 export default function Landing1() {

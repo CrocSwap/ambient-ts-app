@@ -1,7 +1,7 @@
 export const limitTutorialSteps = [
     {
         title: ' Welcome',
-        intro: 'Welcome to the tutorial mode for submitting a market order on Ambient.',
+        intro: 'Welcome to the tutorial mode for submitting a limit order on Ambient.',
     },
     {
         element: '#limit_share_button',

@@ -10,7 +10,14 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+} from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
@@ -22,9 +29,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-
-const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -48,10 +53,7 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -71,9 +73,6 @@ export default function Transactions(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -83,6 +82,12 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
+
+    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+    // NOTE: this is done to improve rendering speed for this page.
 
     const dispatch = useAppDispatch();
 
@@ -227,8 +232,8 @@ export default function Transactions(props: propsIF) {
     const { height } = useWindowDimensions();
 
     const showColumnTransactionItems = showColumns
-        ? Math.round((height - 250) / 50)
-        : Math.round((height - 250) / 38);
+        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
+        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
     const transactionsPerPage = showColumnTransactionItems;
 
     useEffect(() => {
@@ -248,8 +253,6 @@ export default function Transactions(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -409,16 +412,19 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && transactionData.length > 30 && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {transactionsPerPage > 0 &&
+                ((isAccountView && transactionData.length > 10) ||
+                    (!isAccountView && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={transactionsPerPage}
+                        totalItems={transactionData.length}
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
@@ -431,15 +437,12 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
@@ -455,15 +458,12 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
@@ -511,36 +511,22 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : isAccountView
-                    ? // NOTE: the account view of this content should not be paginated
-                      sortedRowItemContent
-                    : sortedRowItemContent.slice(
-                          0,
-                          NUM_TRANSACTIONS_WHEN_COLLAPSED,
-                      )}
-            </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
-                    !isAccountView &&
-                    sortedRowItemContent.length >
-                        NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    setExpandTradeTable(true);
-                                }}
-                            >
-                                View More
-                            </button>
-                        </div>
-                    )
-            }
+            <ul ref={listRef}>{currentRowItemContent}</ul>
+
+            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
+            {!expandTradeTable &&
+                !isAccountView &&
+                sortedRowItemContent.length >
+                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
+                    <div className={styles.view_more_container}>
+                        <button
+                            className={styles.view_more_button}
+                            onClick={() => setExpandTradeTable(true)}
+                        >
+                            View More
+                        </button>
+                    </div>
+                )}
         </div>
     );
 

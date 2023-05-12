@@ -1,10 +1,10 @@
 .dropdown_menu_container {
     min-width: 100px;
-    z-index: 999;
+    z-index: 99999;
 }
 
 .selector_select {
-    color: var(--text-grey-white);
+    color: var(--text1);
     border: 0;
     border-radius: var(--border-radius);
     background: transparent;
@@ -13,7 +13,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     letter-spacing: -0.02em;
-    color: var(--text-grey-light);
+    color: var(--text2);
     z-index: 999;
 }
 .selector_select_container {
@@ -106,5 +106,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    color: var(--text-grey-white);
+    color: var(--text1);
+    z-index: 9999;
 }

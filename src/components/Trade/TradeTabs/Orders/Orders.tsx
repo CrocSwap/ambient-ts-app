@@ -1,6 +1,13 @@
 /* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -8,7 +15,7 @@ import styles from './Orders.module.css';
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
@@ -20,6 +27,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -28,14 +36,11 @@ interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
-    crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
@@ -44,8 +49,9 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     lastBlockNumber: number;
-    isSidebarOpen: boolean;
     handlePulseAnimation?: (type: string) => void;
+    isAccountView: boolean;
+    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 // main react functional component
@@ -53,20 +59,23 @@ export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
-        crocEnv,
         chainData,
         expandTradeTable,
         account,
         isShowAllEnabled,
         setCurrentPositionActive,
         currentPositionActive,
-        isSidebarOpen,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
         lastBlockNumber,
+        isAccountView,
+        setExpandTradeTable,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
 
@@ -130,6 +139,12 @@ export default function Orders(props: propsIF) {
             ? activeAccountLimitOrderData || []
             : limitOrdersByPool,
     );
+    const shouldDisplayNoTableData = !limitOrderData.length;
+
+    const debouncedShouldDisplayNoTableData = useDebounce(
+        shouldDisplayNoTableData,
+        1000,
+    ); // debounce 1 second
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -310,6 +325,7 @@ export default function Orders(props: propsIF) {
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
     // orders per page media queries
+    const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 
     const { height } = useWindowDimensions();
 
@@ -318,9 +334,13 @@ export default function Orders(props: propsIF) {
     // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
     // 30 => Height of each paginated row item
 
-    const regularOrdersItems = Math.round((height - 250) / 30);
-    const showColumnOrdersItems = Math.round((height - 250) / 50);
-    const ordersPerPage = showColumns
+    const regularOrdersItems = Math.round(
+        (height - (isAccountView ? 500 : 350)) / 30,
+    );
+    const showColumnOrdersItems = Math.round(
+        (height - (isAccountView ? 500 : 300)) / 50,
+    );
+    const limitsPerPage = showColumns
         ? showColumnOrdersItems
         : regularOrdersItems;
 
@@ -329,30 +349,34 @@ export default function Orders(props: propsIF) {
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
-    const indexOfLastRanges = currentPage * ordersPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
-    const currentRangess = sortedLimits?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
+    const indexOfLastLimits = currentPage * limitsPerPage;
+    const indexOfFirstLimits = indexOfLastLimits - limitsPerPage;
+    const currentLimits = sortedLimits?.slice(
+        indexOfFirstLimits,
+        indexOfLastLimits,
     );
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    const usePaginateDataOrNull =
-        expandTradeTable && largeScreenView ? currentRangess : sortedLimits;
+    const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedLimits.length > 30 && (
-                <Pagination
-                    itemsPerPage={ordersPerPage}
-                    totalItems={sortedLimits.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {limitsPerPage > 0 &&
+                ((isAccountView && limitOrderData.length > 7) ||
+                    (!isAccountView && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={limitsPerPage}
+                        totalItems={
+                            limitOrderData.filter(
+                                (limitOrder) => limitOrder.totalValueUSD !== 0,
+                            ).length
+                        }
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
@@ -373,21 +397,17 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = usePaginateDataOrNull?.map((order, idx) => (
+    const currentRowItemContent = currentLimits.map((order, idx) => (
         <OrderRow
-            crocEnv={crocEnv}
             chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             showColumns={showColumns}
             ipadView={ipadView}
             view2={view2}
             key={idx}
             limitOrder={order}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
@@ -398,9 +418,57 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const orderDataOrNull = rowItemContent.length ? (
-        rowItemContent
-    ) : (
+    const sortedRowItemContent = sortedLimits.map((order, idx) => (
+        <OrderRow
+            chainData={chainData}
+            tradeData={tradeData}
+            expandTradeTable={expandTradeTable}
+            showPair={showPair}
+            showColumns={showColumns}
+            ipadView={ipadView}
+            view2={view2}
+            key={idx}
+            limitOrder={order}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            isShowAllEnabled={isShowAllEnabled}
+            isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handlePulseAnimation}
+            lastBlockNumber={lastBlockNumber}
+            account={account}
+        />
+    ));
+
+    const listRef = useRef<HTMLUListElement>(null);
+    const handleKeyDownViewOrder = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ) => {
+        // Opens a modal which displays the contents of a transaction and some other information
+        const { key } = event;
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                event.preventDefault();
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
+    const orderDataOrNull = debouncedShouldDisplayNoTableData ? (
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}
             type='orders'
@@ -408,6 +476,28 @@ export default function Orders(props: propsIF) {
             changeState={changeState}
             isOnPortfolioPage={isOnPortfolioPage}
         />
+    ) : (
+        <div onKeyDown={handleKeyDownViewOrder}>
+            <ul ref={listRef}>{currentRowItemContent}</ul>
+            {
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable &&
+                    !isAccountView &&
+                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
+            }
+        </div>
     );
 
     const mobileView = useMediaQuery('(max-width: 1200px)');

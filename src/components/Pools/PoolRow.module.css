@@ -47,14 +47,14 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
 
     z-index: 1;
-    background: #0d1117;
-    border: 1px solid #242f3f;
+    background: var(--dark1);
+    border: 1px solid var(--dark3);
     box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
     cursor: pointer;
@@ -66,7 +66,7 @@
 }
 
 .star_svg:hover {
-    fill: var(--text-grey-light);
+    fill: var(--text2);
     cursor: pointer;
 }
 

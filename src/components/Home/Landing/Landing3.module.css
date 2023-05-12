@@ -38,7 +38,7 @@
 }
 
 .header_text {
-    color: var(--text-highlight);
+    color: var(--accent5);
     font-weight: 100;
 }
 
@@ -51,17 +51,17 @@
 }
 
 .highlight_text {
-    color: var(--text-highlight);
+    color: var(--accent5);
     font-weight: 300;
 }
 .amm_pools {
     font-size: 16px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .efficiency {
     font-weight: 300;
     font-size: 16px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 /* -------------------------- */
@@ -86,14 +86,14 @@
     font-weight: 300;
     font-size: 16px;
     line-height: 20px;
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 .multi_contract_container h3,
 .single_contract_container h3 {
     font-weight: 100;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .multi_contract_circles {
     display: flex;
@@ -113,7 +113,7 @@
     flex-direction: column;
 
     border-radius: 50%;
-    border: 0.5px solid var(--text-highlight);
+    border: 0.5px solid var(--accent5);
     background: var(--dark1);
 
     display: flex;
@@ -128,14 +128,14 @@
     font-weight: 400;
     font-size: 8px;
     line-height: 10px;
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 
 .wallet_text {
     width: 104.75px;
     height: 104.75px;
     border-radius: 50%;
-    border: 0.5px solid #cdc1ff;
+    border: 0.5px solid var(--accent5);
     background: var(--dark1);
 
     display: flex;
@@ -153,7 +153,7 @@
     font-weight: 400;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 
 .single_contract_container .pool_display_container {

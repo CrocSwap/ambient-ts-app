@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode } from 'react';
+import { useContext } from 'react';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
@@ -17,7 +17,8 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
@@ -27,22 +28,18 @@ interface propsIF {
     isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
     shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function RangeHeader(props: propsIF) {
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } =
+        props;
+
+    const { bypassConfirmRange } = useContext(UserPreferenceContext);
     const {
-        tokenPair,
-        mintSlippage,
-        isPairStable,
-        isDenomBase,
-        isTokenABase,
-        openGlobalModal,
-        bypassConfirm,
-    } = props;
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -94,11 +91,11 @@ export default function RangeHeader(props: propsIF) {
                     centeredTitle
                 >
                     <TransactionSettings
-                        module='Range Order'
+                        module='Pool'
                         slippage={mintSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.range}
+                        bypassConfirm={bypassConfirmRange}
                     />
                 </Modal>
             )}

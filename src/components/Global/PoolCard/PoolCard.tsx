@@ -1,11 +1,7 @@
 import styles from './PoolCard.module.css';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    CrocEnv,
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
+import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -14,11 +10,11 @@ import { formatAmountOld } from '../../../utils/numbers';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    isServerEnabled: boolean;
     isUserIdle: boolean;
-    crocEnv?: CrocEnv;
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
     lastBlockNumber: number;
@@ -29,15 +25,18 @@ interface propsIF {
 
 export default function PoolCard(props: propsIF) {
     const {
-        isServerEnabled,
         isUserIdle,
-        crocEnv,
         lastBlockNumber,
         chainId,
         cachedQuerySpotPrice,
         pool,
         cachedPoolStatsFetch,
     } = props;
+
+    const crocEnv = useContext(CrocEnvContext);
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined

@@ -5,20 +5,25 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface MessageInputProps {
     message?: Message;
     room: string;
     currentUser: string;
     ensName: string;
     appPage?: boolean;
-    areSubscriptionsEnabled: boolean;
-    isChatOpen: boolean;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -58,11 +63,15 @@ export default function MessageInput(
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
+    const {
+        chat: { isOpen: isChatOpen },
+        subscriptions: { isEnabled: isSubscriptionsEnabled },
+    } = useContext(AppStateContext);
 
     const { sendMsg } = useSocket(
         props.room.toUpperCase(),
-        props.areSubscriptionsEnabled,
-        props.isChatOpen,
+        isSubscriptionsEnabled,
+        isChatOpen,
     );
 
     const userData = useAppSelector((state) => state.userData);

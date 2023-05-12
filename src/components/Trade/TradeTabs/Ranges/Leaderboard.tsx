@@ -2,7 +2,13 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { ethers } from 'ethers';
 
 // START: Import Local Files
@@ -15,21 +21,19 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -45,17 +49,12 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
-    isSidebarOpen: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
 }
@@ -64,7 +63,6 @@ interface propsIF {
 export default function Leaderboard(props: propsIF) {
     const {
         isUserLoggedIn,
-        crocEnv,
         chainData,
         provider,
         chainId,
@@ -81,13 +79,13 @@ export default function Leaderboard(props: propsIF) {
         handlePulseAnimation,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isSidebarOpen,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
     } = props;
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -351,13 +349,10 @@ export default function Leaderboard(props: propsIF) {
             }
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
             chainData={chainData}
             provider={provider}
             chainId={chainId}
@@ -372,8 +367,6 @@ export default function Leaderboard(props: propsIF) {
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
             gasPriceInGwei={gasPriceInGwei}
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />

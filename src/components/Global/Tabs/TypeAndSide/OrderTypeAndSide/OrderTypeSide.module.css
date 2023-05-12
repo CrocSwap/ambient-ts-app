@@ -12,11 +12,11 @@
 .limit_style,
 .market_style,
 .buy_style {
-    color: #7371fc;
+    color: var(--accent1);
 }
 .order_style,
 .sell_style {
-    color: #e480ff;
+    color: var(--accent2);
 }
 
 .limit_style,
@@ -30,7 +30,7 @@
 
 .side_sing,
 .type_sing {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 /* Desktop screen Sizes */

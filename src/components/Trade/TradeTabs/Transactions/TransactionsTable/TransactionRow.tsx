@@ -1,6 +1,13 @@
 import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
@@ -12,8 +19,8 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import { txRowConstants } from '../txRowConstants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     account: string;
@@ -23,15 +30,12 @@ interface propsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
-    isSidebarOpen: boolean;
     ipadView: boolean;
     showPair: boolean;
     view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
-    closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
@@ -50,12 +54,9 @@ export default function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         isOnPortfolioPage,
-        closeGlobalModal,
-        openGlobalModal,
         showPair,
         setSimpleRangeWidth,
         chainData,
-        isSidebarOpen,
     } = props;
 
     const {
@@ -93,6 +94,11 @@ export default function TransactionRow(props: propsIF) {
         elapsedTimeString,
     } = useProcessTransaction(tx, account, isOnPortfolioPage);
 
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
     const dispatch = useAppDispatch();
 
     const isOrderRemove =
@@ -120,7 +126,7 @@ export default function TransactionRow(props: propsIF) {
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
@@ -160,27 +166,11 @@ export default function TransactionRow(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [valueToCopy, setValueToCopy] = useState('');
-
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {valueToCopy} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyTxHash() {
-        setValueToCopy(txHash);
         copy(txHash);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${txHash} copied`, 'info');
     }
 
     const [highlightRow, setHighlightRow] = useState(false);
@@ -189,10 +179,8 @@ export default function TransactionRow(props: propsIF) {
     const handleRowMouseOut = () => setHighlightRow(false);
 
     function handleWalletCopy() {
-        setValueToCopy(ownerId);
         copy(ownerId);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${ownerId} copied`, 'info');
     }
 
     const handleWalletClick = () => {
@@ -281,16 +269,19 @@ export default function TransactionRow(props: propsIF) {
         priceDisplay,
     } = txRowConstants(txRowConstantsProps);
 
+    function handleRowClick() {
+        if (tx.id === currentTxActiveInTransactions) {
+            return;
+        }
+        setCurrentTxActiveInTransactions('');
+        openDetailsModal();
+    }
     // end of portfolio page li element ---------------
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-            onClick={() =>
-                tx.id === currentTxActiveInTransactions
-                    ? null
-                    : setCurrentTxActiveInTransactions('')
-            }
+            style={{ backgroundColor: highlightStyle }}
+            onClick={handleRowClick}
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
             tabIndex={0}
@@ -323,9 +314,6 @@ export default function TransactionRow(props: propsIF) {
                     tradeData={tradeData}
                     isTokenABase={isTokenABase}
                     blockExplorer={blockExplorer}
-                    isSidebarOpen={isSidebarOpen}
-                    openGlobalModal={props.openGlobalModal}
-                    closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
                     isBaseTokenMoneynessGreaterOrEqual={
@@ -337,7 +325,6 @@ export default function TransactionRow(props: propsIF) {
                     isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
-            {snackbarContent}
         </ul>
     );
 }

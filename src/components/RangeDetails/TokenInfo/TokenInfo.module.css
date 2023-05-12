@@ -13,7 +13,7 @@
 .price_info .price {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-weight: 200;
     letter-spacing: -0.02em;
 }
@@ -34,12 +34,7 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -54,12 +49,7 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
-    background: linear-gradient(
-        90deg,
-        #be4515 32.38%,
-        #de5a2e 51.39%,
-        #be5315 68.17%
-    );
+    background: var(--red-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

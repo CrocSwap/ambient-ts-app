@@ -3,7 +3,6 @@ import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
@@ -11,10 +10,8 @@ import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 
 interface propsIF {
-    isServerEnabled: boolean;
     tradeData: tradeData;
     userData: userData;
-    crocEnv?: CrocEnv;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
@@ -25,11 +22,9 @@ interface propsIF {
 
 export default function TopPools(props: propsIF) {
     const {
-        isServerEnabled,
         tradeData,
         userData,
         lastBlockNumber,
-        crocEnv,
         chainId,
         cachedQuerySpotPrice,
         topPools,
@@ -57,9 +52,7 @@ export default function TopPools(props: propsIF) {
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
                     <PoolCard
-                        isServerEnabled={isServerEnabled}
                         isUserIdle={isUserIdle}
-                        crocEnv={crocEnv}
                         tradeData={tradeData}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         key={idx}

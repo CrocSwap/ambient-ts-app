@@ -1,9 +1,15 @@
 // START: Import React and Dongles
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import {
+    useEffect,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -19,7 +25,6 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
-import { getNFTs } from '../../App/functions/getNFTs';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
 import {
@@ -35,14 +40,12 @@ import {
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../App/hooks/useSlippage';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: {
         onCurrentChain?: boolean;
@@ -62,26 +65,17 @@ interface propsIF {
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
-    userImageData: string[];
     chainId: string;
     tokensOnActiveLists: Map<string, TokenIF>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     userAccount?: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     openModalWallet: () => void;
     searchableTokens: TokenIF[];
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
-    isSidebarOpen: boolean;
     isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -97,8 +91,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     ackTokens: ackTokensMethodsIF;
@@ -110,7 +102,6 @@ export default function Portfolio(props: propsIF) {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        crocEnv,
         addRecentToken,
         getRecentTokens,
         getTokensByName,
@@ -122,22 +113,14 @@ export default function Portfolio(props: propsIF) {
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         lastBlockNumber,
-        userImageData,
         tokensOnActiveLists,
-        openGlobalModal,
-        closeGlobalModal,
         userAccount,
-        outsideControl,
-        setOutsideControl,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        isSidebarOpen,
         handlePulseAnimation,
         openModalWallet,
         outputTokens,
@@ -147,8 +130,6 @@ export default function Portfolio(props: propsIF) {
         chainData,
         mainnetProvider,
         setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         ackTokens,
@@ -157,6 +138,8 @@ export default function Portfolio(props: propsIF) {
 
     const { isConnected, address } = useAccount();
     const { data: ensName } = useEnsName({ address });
+
+    const crocEnv = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -306,19 +289,6 @@ export default function Portfolio(props: propsIF) {
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
-    const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
-
-    useEffect(() => {
-        (async () => {
-            if (resolvedAddress && !connectedAccountActive) {
-                const imageLocalURLs = await getNFTs(resolvedAddress);
-                if (imageLocalURLs) {
-                    setSecondaryImageData(imageLocalURLs);
-                }
-            }
-        })();
-    }, [resolvedAddress, connectedAccountActive]);
-
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
@@ -356,10 +326,6 @@ export default function Portfolio(props: propsIF) {
                 mainnetProvider={mainnetProvider}
                 ethMainnetUsdPrice={ethMainnetUsdPrice}
                 connectedAccount={connectedAccount || ''}
-                setSelectedOutsideTab={setSelectedOutsideTab}
-                setOutsideControl={setOutsideControl}
-                openGlobalModal={openGlobalModal}
-                closeGlobalModal={closeGlobalModal}
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
@@ -573,14 +539,7 @@ export default function Portfolio(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         chainId: chainData.chainId,
         tokenMap: tokensOnActiveLists,
-        selectedOutsideTab: selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        setOutsideControl: setOutsideControl,
-        outsideControl: outsideControl,
         openTokenModal: openTokenModal,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
-        isSidebarOpen: isSidebarOpen,
         account: props.account,
         chainData: chainData,
         currentPositionActive: props.currentPositionActive,
@@ -595,8 +554,6 @@ export default function Portfolio(props: propsIF) {
         fullLayoutToggle: fullLayerToggle,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
@@ -610,7 +567,6 @@ export default function Portfolio(props: propsIF) {
             : '',
         resolvedAddress: resolvedAddress,
         activeAccount: address ?? connectedAccount ?? '',
-        imageData: connectedAccountActive ? userImageData : secondaryImageData,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         chainData: chainData,
@@ -620,8 +576,6 @@ export default function Portfolio(props: propsIF) {
         showProfileSettings: showProfileSettings,
         setShowProfileSettings: setShowProfileSettings,
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
-        imageData: connectedAccountActive ? userImageData : secondaryImageData,
-        openGlobalModal: openGlobalModal,
     };
 
     const mobilePortfolio = (

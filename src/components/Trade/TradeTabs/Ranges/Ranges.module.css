@@ -5,7 +5,7 @@
     background-image: linear-gradient(
         to right,
         rgba(255, 255, 255, 0) 50%,
-        #171d27 50%
+        var(--dark2) 50%
     );
     background-position: -0% 0;
     background-size: 200% auto;
@@ -15,7 +15,7 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text-grey-white);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
@@ -32,7 +32,6 @@
 }
 
 .header {
-    /* background: #012b39; */
     /* background: var(--dark1); */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
@@ -58,7 +57,6 @@
 /* Track */
 .main_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
-    /* background: #1f2937; */
 }
 
 /* Handle */
@@ -80,28 +78,30 @@
     font-size: 10px;
     line-height: 13px;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 /* .row_container:hover {
     background: var(--dark2);
 } */
 
-.row_container:hover{
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
 .main_list_container ul {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
     table-layout: fixed;
     display: table;
+ 
 }
 
 .main_list_container ul > li {
@@ -111,20 +111,21 @@
     width: 100%;
 
     padding: 0.5em 0.4em;
+  
     vertical-align: middle;
 }
 
 .base_color {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 .hover_style:hover {
     -webkit-mask-image: linear-gradient(
         -75deg,
         rgba(0, 0, 0, 0.6) 30%,
-        #000 50%,
+        black 50%,
         rgba(0, 0, 0, 0.6) 70%
     );
     -webkit-mask-size: 200%;
@@ -239,7 +240,7 @@
     border-radius: 6.25rem;
     cursor: pointer;
     font-size: 10px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     display: flex;
     flex-direction: row;
@@ -248,19 +249,18 @@
 }
 .view_wallet_link:hover,
 .view_wallet_link:hover .view_wallet_link svg {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
-.view_wallet_link p{
+.view_wallet_link p {
     display: flex;
 }
-.view_wallet_link svg:first-of-type{
+.view_wallet_link svg:first-of-type {
     display: none;
-
 }
 
 .row_container:focus-visible,
 .row_container li:focus-visible {
-    border: 1px solid var(--text-grey-white);
+    border: 1px solid var(--text1);
 }
 
 .view_more_container {
@@ -283,47 +283,47 @@
     border-radius: 6.25rem;
     cursor: pointer;
     font-size: 11px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .view_more_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 /* tooltips */
-.id_tooltip_style{
+.id_tooltip_style {
     margin-left: -60px;
     background: var(--dark3);
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: default;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 440px;
     display: flex;
     align-items: center;
     gap: 4px;
-
 }
 
-.wallet_tooltip_div{
+.wallet_tooltip_div {
     margin-right: -80px;
     background: var(--dark3);
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: default;
 }
-.wallet_tooltip_p{
-    font-family: monospace;
+.wallet_tooltip_p {
+    font-family: var(--roboto);
     display: flex;
     flex-direction: row;
     align-items: center;
     white-space: nowrap;
+    gap: 4px;
 }
 
-.base_display_div{
+.base_display_div {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -332,20 +332,19 @@
     white-space: nowrap;
 }
 
-.range_time_p{
+.range_time_p {
     margin-left: -70px;
     background: var(--dark3);
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: pointer;
 }
 @media only screen and (max-width: 768px) {
-
-    .view_wallet_link p{
+    .view_wallet_link p {
         display: none;
     }
-    .view_wallet_link svg:first-of-type{
+    .view_wallet_link svg:first-of-type {
         display: flex;
     }
     .header li {

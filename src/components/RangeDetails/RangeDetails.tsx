@@ -1,7 +1,7 @@
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import { ethers } from 'ethers';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { formatAmountOld } from '../../utils/numbers';
@@ -10,17 +10,17 @@ import { PositionIF } from '../../utils/interfaces/exports';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { ChainSpec, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     cachedQuerySpotPrice: SpotPriceFn;
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
@@ -47,7 +47,6 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    closeGlobalModal: () => void;
     chainData: ChainSpec;
 }
 
@@ -55,7 +54,6 @@ export default function RangeDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const {
-        crocEnv,
         baseTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
@@ -70,7 +68,6 @@ export default function RangeDetails(props: propsIF) {
         askTick,
         position,
         positionApy,
-        closeGlobalModal,
         // isPositionInRange,
         isAmbient,
         cachedQuerySpotPrice,
@@ -81,6 +78,12 @@ export default function RangeDetails(props: propsIF) {
         maxRangeDenomByMoneyness,
         chainData,
     } = props;
+
+    const {
+        globalModal: { close: closeGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const crocEnv = useContext(CrocEnvContext);
 
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
@@ -119,23 +122,12 @@ export default function RangeDetails(props: propsIF) {
 
     const { posHash } = useProcessRange(position, account);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionId() {
         copy(posHash.toString());
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
@@ -399,7 +391,6 @@ export default function RangeDetails(props: propsIF) {
                     isOnPortfolioPage={isOnPortfolioPage}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

@@ -27,7 +27,7 @@
     background-attachment: local, local, scroll, scroll;
     background-size: 100% 81px, 100% 81px, 100% 27px, 100% 27px;
 
-    height: 100px;
+    max-height: 100px;
     overflow-y: scroll;
     overflow-x: hidden;
     transition: all var(--animation-speed)
@@ -39,12 +39,12 @@
     justify-content: center;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: #71b5fc;
+    color: var(--accent4);
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
 .view_more:hover {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 .content::-webkit-scrollbar {
