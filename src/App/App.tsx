@@ -1879,12 +1879,49 @@ export default function App() {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
         IS_LOCAL_ENV && console.debug({ candleDataLength });
-        return candleData.candles.reduce((prev, curr) =>
-            prev.time < curr.time ? prev : curr,
-        )?.time;
-    }, [candleData?.candles?.length]);
+
+        console.log(
+            'split',
+            ((candleDomains?.lastCandleDate as number) / 1000)
+                .toString()
+                .split('.'),
+        );
+
+        console.log(
+            'anlamsız',
+            new Date(
+                parseInt(
+                    ((candleDomains?.lastCandleDate as number) / 1000)
+                        .toString()
+                        .split('.')[0],
+                ),
+            ),
+        );
+
+        return (candleDomains?.lastCandleDate as number) / 1000;
+
+        // return candleData.candles.reduce((prev, curr) =>
+        //     prev.time < curr.time ? prev : curr,
+        // )?.time;
+    }, [candleData?.candles?.length, candleDomains?.lastCandleDate]);
 
     const numDurationsNeeded = useMemo(() => {
+        console.log('After', new Date(candleDomains?.lastCandleDate as number));
+        console.log(
+            'Before',
+            new Date(domainBoundaryInSecondsDebounced * 1000),
+        );
+
+        console.log(
+            'aabb',
+            minTimeMemo,
+            domainBoundaryInSecondsDebounced,
+            Math.floor(
+                ((minTimeMemo as number) - domainBoundaryInSecondsDebounced) /
+                    candleTimeLocal,
+            ),
+        );
+
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
             (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
@@ -1902,7 +1939,13 @@ export default function App() {
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
                     poolIdx: chainData.poolIndex.toString(),
                     period: candleTimeLocal.toString(),
-                    time: minTimeMemo ? minTimeMemo.toString() : '0',
+                    time: minTimeMemo
+                        ? parseInt(
+                              ((candleDomains?.lastCandleDate as number) / 1000)
+                                  .toString()
+                                  .split('.')[0],
+                          ).toString()
+                        : '0',
                     // time: debouncedBoundary.toString(),
                     n: numDurations.toString(), // positive integer
                     // page: '0', // nonnegative integer
@@ -1918,6 +1961,8 @@ export default function App() {
         )
             .then((response) => response?.json())
             .then((json) => {
+                console.log({ candleData });
+
                 const fetchedCandles = json?.data;
                 if (fetchedCandles && candleData) {
                     const newCandles: CandleData[] = [];
@@ -1946,23 +1991,58 @@ export default function App() {
                                 messageCandle;
                         }
                     }
+
+                    const isSamePool =
+                        baseTokenAddress.toLocaleLowerCase() +
+                            quoteTokenAddress.toLocaleLowerCase() ===
+                        candleData.pool.baseAddress.toLocaleLowerCase() +
+                            candleData.pool.quoteAddress.toLocaleLowerCase();
+
+                    console.log(
+                        { isSamePool },
+                        mainnetBaseTokenAddress.toLocaleLowerCase() +
+                            mainnetQuoteTokenAddress.toLocaleLowerCase(),
+                        candleData.pool.baseAddress.toLocaleLowerCase() +
+                            candleData.pool.quoteAddress.toLocaleLowerCase(),
+                        baseTokenAddress.toLowerCase() +
+                            quoteTokenAddress.toLowerCase(),
+                    );
+
                     const newCandleData: CandlesByPoolAndDuration = {
                         pool: candleData.pool,
+
                         duration: candleData.duration,
-                        candles: newCandles.concat(updatedCandles),
+
+                        candles: isSamePool
+                            ? newCandles.concat(updatedCandles)
+                            : newCandles,
                     };
+                    // const newCandleData: CandlesByPoolAndDuration = {
+                    //     pool: candleData.pool,
+                    //     duration: candleData.duration,
+                    //     candles: newCandles.concat(updatedCandles),
+                    // };
                     setCandleData(newCandleData);
                 }
             })
             .catch(console.error);
 
     useEffect(() => {
-        if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
-            IS_LOCAL_ENV &&
-                console.debug(`fetching ${numDurationsNeeded} new candles`);
-            fetchCandlesByNumDurations(numDurationsNeeded);
-        }
+        console.log({ numDurationsNeeded });
+
+        // if (!numDurationsNeeded) return;
+
+        if (!minTimeMemo) return;
+        // if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
+        IS_LOCAL_ENV &&
+            console.debug(`fetching ${numDurationsNeeded} new candles`);
+        fetchCandlesByNumDurations(
+            Math.floor(
+                (minTimeMemo - domainBoundaryInSecondsDebounced) /
+                    candleTimeLocal,
+            ),
+        );
+        // }
     }, [numDurationsNeeded]);
 
     useEffect(() => {
