@@ -200,6 +200,7 @@ export default function App() {
         [...Object.values(userPreferencesProps)],
     );
 
+    /* ------------------------------------------ APP STATE CONTEXT ------------------------------------------ */
     // CONTEXT: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
@@ -242,6 +243,12 @@ export default function App() {
     const globalPopup = useGlobalPopup();
     const skin = useSkin('purple_dark');
 
+    const [
+        isWagmiModalOpenWallet,
+        openWagmiModalWallet,
+        closeWagmiModalWallet,
+    ] = useModal();
+
     const appState = useMemo(
         () => ({
             appOverlay: {
@@ -282,6 +289,11 @@ export default function App() {
             },
             server: { isEnabled: isServerEnabled },
             subscriptions: { isEnabled: areSubscriptionsEnabled },
+            wagmiModal: {
+                isOpen: isWagmiModalOpenWallet,
+                open: openWagmiModalWallet,
+                close: closeWagmiModalWallet,
+            },
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -302,8 +314,62 @@ export default function App() {
             theme,
             selectedOutsideTab,
             outsideControl,
+            isWagmiModalOpenWallet,
         ],
     );
+
+    function toggleTradeTabBasedOnRoute() {
+        if (!isCandleSelected) {
+            appState.outsideControl.setIsActive(true);
+            if (currentLocation.includes('/market')) {
+                appState.outsideTab.setSelected(0);
+            } else if (currentLocation.includes('/limit')) {
+                appState.outsideTab.setSelected(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                appState.outsideTab.setSelected(2);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (
+            !currentTxActiveInTransactions &&
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
+        )
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname]);
+
+    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
+    const { getStatus } = useChatApi();
+    useEffect(() => {
+        if (
+            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+                : true
+        ) {
+            const interval = setInterval(() => {
+                getStatus().then((isChatUp) => {
+                    if (isChatUp !== appState.chat.isEnabled) {
+                        appState.chat.setIsEnabled(isChatUp);
+                    }
+                });
+            }, 60000);
+            return () => clearInterval(interval);
+        }
+    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+
+    useEffect(() => {
+        if (!currentLocation.startsWith('/trade')) {
+            appState.chart.setIsFullScreen(false);
+        }
+    }, [currentLocation]);
+
+    /* ------------------------------------------ END APP STATE CONTEXT ------------------------------------------ */
 
     // CONTEXT: move to inside crocenv context
     useBlacklist(userAddress);
@@ -1349,7 +1415,7 @@ export default function App() {
         crocEnv,
     ]);
 
-    // CONTEXT: sidebar context and app state
+    // CONTEXT: sidebar context
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
     function toggleSidebarBasedOnRoute() {
         if (
@@ -1369,32 +1435,6 @@ export default function App() {
         if (!currentTxActiveInTransactions && !currentPositionActive)
             toggleTradeTabBasedOnRoute();
     }, [location.pathname.includes('/trade')]);
-
-    // CONTEXT: app state context
-    function toggleTradeTabBasedOnRoute() {
-        if (!isCandleSelected) {
-            appState.outsideControl.setIsActive(true);
-            if (currentLocation.includes('/market')) {
-                appState.outsideTab.setSelected(0);
-            } else if (currentLocation.includes('/limit')) {
-                appState.outsideTab.setSelected(1);
-            } else if (
-                currentLocation.includes('/range') ||
-                currentLocation.includes('reposition') ||
-                currentLocation.includes('add')
-            ) {
-                appState.outsideTab.setSelected(2);
-            }
-        }
-    }
-    useEffect(() => {
-        if (
-            !currentTxActiveInTransactions &&
-            !currentPositionActive &&
-            location.pathname.includes('/trade')
-        )
-            toggleTradeTabBasedOnRoute();
-    }, [location.pathname]);
 
     // CONTEXT: move into header component - have contexts listen to logged out and reset
     // function to sever connection between user wallet and the app
@@ -1434,13 +1474,6 @@ export default function App() {
 
     // CONTEXT: move this into the header component
     const shouldDisplayAccountTab = isUserLoggedIn && userAddress !== undefined;
-
-    // CONTEXT: app state context
-    const [
-        isWagmiModalOpenWallet,
-        openWagmiModalWallet,
-        closeWagmiModalWallet,
-    ] = useModal();
 
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
     // CONTEXT: move into trade table component - put in context if necessary - investigate
@@ -1548,8 +1581,6 @@ export default function App() {
         shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported,
-        openWagmiModalWallet,
-        openMoralisModalWallet: openWagmiModalWallet,
         lastBlockNumber,
         poolPriceDisplay,
         ethMainnetUsdPrice,
@@ -1589,7 +1620,6 @@ export default function App() {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId: chainData.chainId,
-        openModalWallet: openWagmiModalWallet,
         isInitialized,
         poolExists,
         setTokenPairLocal,
@@ -1626,7 +1656,6 @@ export default function App() {
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance,
         chainId: chainData.chainId,
-        openModalWallet: openWagmiModalWallet,
         isInitialized,
         poolExists,
         isSwapCopied,
@@ -1667,7 +1696,6 @@ export default function App() {
         setRecheckTokenAApproval,
         tokenAAllowance,
         chainId: chainData.chainId,
-        openModalWallet: openWagmiModalWallet,
         poolExists: poolExists,
         isOrderCopied,
         verifyToken,
@@ -1706,7 +1734,6 @@ export default function App() {
         tokenBAllowance,
         setRecheckTokenBApproval,
         chainId: chainData.chainId,
-        openModalWallet: openWagmiModalWallet,
         ambientApy,
         dailyVol,
         poolExists,
@@ -1757,7 +1784,6 @@ export default function App() {
         setCurrentPositionActive,
         analyticsSearchInput,
         setAnalyticsSearchInput,
-        openModalWallet: openWagmiModalWallet,
         poolList,
         verifyToken: verifyToken,
         tokenPair: tokenPair,
@@ -1828,33 +1854,6 @@ export default function App() {
         !currentLocation.includes('/chat') &&
         !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
-
-    // CONTEXT: app state context
-    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
-    const { getStatus } = useChatApi();
-    useEffect(() => {
-        if (
-            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-                : true
-        ) {
-            const interval = setInterval(() => {
-                getStatus().then((isChatUp) => {
-                    if (isChatUp !== appState.chat.isEnabled) {
-                        appState.chat.setIsEnabled(isChatUp);
-                    }
-                });
-            }, 60000);
-            return () => clearInterval(interval);
-        }
-    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
-
-    // CONTEXT: app state context - investigate?
-    useEffect(() => {
-        if (!currentLocation.startsWith('/trade')) {
-            appState.chart.setIsFullScreen(false);
-        }
-    }, [currentLocation]);
 
     const sidebarDislayStyle = appState.sidebar.isOpen
         ? 'sidebar_content_layout'
@@ -2338,11 +2337,7 @@ export default function App() {
                 <GlobalModal />
                 <GlobalPopup />
                 <SnackbarComponent />
-                {isWagmiModalOpenWallet && (
-                    <WalletModalWagmi
-                        closeModalWallet={closeWagmiModalWallet}
-                    />
-                )}
+                <WalletModalWagmi />
             </UserPreferenceContext.Provider>
         </AppStateContext.Provider>
     );

@@ -70,7 +70,6 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
@@ -95,7 +94,6 @@ function Sidebar(props: propsIF) {
         tokenMap,
         lastBlockNumber,
         setAnalyticsSearchInput,
-        openModalWallet,
         poolList,
         verifyToken,
         tokenPair,
@@ -424,7 +422,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -436,7 +433,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -448,7 +444,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -465,7 +460,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
@@ -477,7 +471,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
@@ -489,7 +482,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}

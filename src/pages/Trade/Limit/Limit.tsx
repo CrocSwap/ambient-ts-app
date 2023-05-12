@@ -90,7 +90,6 @@ interface propsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    openModalWallet: () => void;
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
@@ -133,7 +132,6 @@ export default function Limit(props: propsIF) {
         setRecheckTokenAApproval,
         chainId,
         chainData,
-        openModalWallet,
         poolExists,
         lastBlockNumber,
         isOrderCopied,
@@ -164,6 +162,7 @@ export default function Limit(props: propsIF) {
     );
     const {
         tutorial: { isActive: isTutorialActive },
+        wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -684,10 +683,7 @@ export default function Limit(props: propsIF) {
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const loginButton = (
-        <button
-            onClick={openModalWallet}
-            className={styles.authenticate_button}
-        >
+        <button onClick={openWagmiModal} className={styles.authenticate_button}>
             Connect Wallet
         </button>
     );

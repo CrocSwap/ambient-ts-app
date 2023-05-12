@@ -32,6 +32,11 @@ interface AppStateIF {
     };
     server: { isEnabled: boolean };
     subscriptions: { isEnabled: boolean };
+    wagmiModal: {
+        isOpen: boolean;
+        open: () => void;
+        close: () => void;
+    };
 }
 
 export const AppStateContext = createContext<AppStateIF>({} as AppStateIF);

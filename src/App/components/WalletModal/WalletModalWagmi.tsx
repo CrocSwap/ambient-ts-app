@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useConnect, useAccount, useEnsName, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
@@ -16,14 +16,13 @@ import { checkBlacklist } from '../../../utils/data/blacklist';
 import { IS_LOCAL_ENV } from '../../../constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
-interface WalletModalPropsIF {
-    closeModalWallet: () => void;
-}
-
-export default function WalletModalWagmi(props: WalletModalPropsIF) {
-    const { closeModalWallet } = props;
+export default function WalletModalWagmi() {
     const { disconnect } = useDisconnect();
+    const {
+        wagmiModal: { isOpen: isModalOpen, close: closeModal },
+    } = useContext(AppStateContext);
 
     const { connect, connectors, error, isLoading, pendingConnector } =
         useConnect({
@@ -74,7 +73,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
-        isConnected && pendingLoginDelayElapsed && closeModalWallet();
+        isConnected && pendingLoginDelayElapsed && closeModal();
     }, [isConnected, pendingLoginDelayElapsed]);
 
     const learnAboutWalletsContent = (
@@ -97,7 +96,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             <button
                 onClick={() => {
                     disconnect();
-                    closeModalWallet();
+                    closeModal();
                 }}
             >
                 Disconnect
@@ -206,7 +205,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 title='Close'
                 flat={true}
                 action={() => {
-                    closeModalWallet();
+                    closeModal();
                 }}
             />
         </div>
@@ -261,21 +260,21 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const clickBackArrow = useMemo(() => {
         switch (page) {
             case 'wallets':
-                return closeModalWallet;
+                return closeModal;
             case 'metamaskError':
             case 'magicLogin':
                 return () => setPage('wallets');
             default:
-                closeModalWallet;
+                closeModal;
         }
     }, [page]);
 
     const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
 
-    return (
+    return isModalOpen ? (
         <div className={styles.wallet_modal} style={{ width: '500px' }}>
             <Modal
-                onClose={closeModalWallet}
+                onClose={closeModal}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
                 title={!hasAgreedTerms ? 'Welcome' : activeTitle}
@@ -291,5 +290,5 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 )}
             </Modal>
         </div>
-    );
+    ) : null;
 }

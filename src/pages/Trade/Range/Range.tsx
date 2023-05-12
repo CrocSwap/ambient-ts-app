@@ -106,7 +106,6 @@ interface propsIF {
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolExists: boolean | undefined;
@@ -153,7 +152,6 @@ function Range(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainId,
-        openModalWallet,
         ambientApy,
         dailyVol,
         poolExists,
@@ -190,6 +188,7 @@ function Range(props: propsIF) {
     );
     const {
         tutorial: { isActive: isTutorialActive },
+        wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
 
     const [
@@ -1498,10 +1497,7 @@ function Range(props: propsIF) {
         parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     const loginButton = (
-        <button
-            onClick={openModalWallet}
-            className={styles.authenticate_button}
-        >
+        <button onClick={openWagmiModal} className={styles.authenticate_button}>
             Connect Wallet
         </button>
     );

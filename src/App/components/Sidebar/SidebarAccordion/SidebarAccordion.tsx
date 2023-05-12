@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
@@ -8,12 +8,12 @@ import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { sidebarMethodsIF } from '../../../hooks/useSidebar';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
     children?: ReactNode;
     shouldDisplayContentWhenUserNotLoggedIn: boolean;
-    openModalWallet: () => void;
     isDefaultOverridden: boolean;
     item: {
         name: string;
@@ -30,11 +30,13 @@ export default function SidebarAccordion(props: propsIF) {
         shouldDisplayContentWhenUserNotLoggedIn,
         idx,
         item,
-        openModalWallet,
         isDefaultOverridden,
         sidebar,
     } = props;
 
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
     const { isConnected } = useAccount();
     const isTopPools = item.name === 'Top Pools';
 
@@ -100,7 +102,7 @@ export default function SidebarAccordion(props: propsIF) {
         sidebar.isOpen ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
-                <button onClick={openModalWallet}>Connect Wallet</button>
+                <button onClick={openWagmiModal}>Connect Wallet</button>
             </div>
         ) : (
             showOpenContentOrNull

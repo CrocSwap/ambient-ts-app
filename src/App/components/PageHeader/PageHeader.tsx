@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useContext } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -20,6 +20,7 @@ import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -27,7 +28,6 @@ interface HeaderPropsIF {
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
-    openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     poolPriceDisplay: number | undefined;
@@ -41,7 +41,6 @@ const PageHeader = function (props: HeaderPropsIF) {
         ethMainnetUsdPrice,
         chainId,
         isChainSupported,
-        openWagmiModalWallet,
         lastBlockNumber,
         recentPools,
         poolPriceDisplay,
@@ -49,6 +48,9 @@ const PageHeader = function (props: HeaderPropsIF) {
         clickLogout,
     } = props;
 
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
@@ -126,7 +128,7 @@ const PageHeader = function (props: HeaderPropsIF) {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
-            onClick={() => openWagmiModalWallet()}
+            onClick={() => openWagmiModal()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
         </button>

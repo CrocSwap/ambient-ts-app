@@ -74,7 +74,6 @@ interface propsIF {
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
-    openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
@@ -119,7 +118,6 @@ function Swap(props: propsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
-        openModalWallet,
         poolExists,
         isSwapCopied,
         verifyToken,
@@ -146,6 +144,9 @@ function Swap(props: propsIF) {
     useUrlParams(chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -401,7 +402,7 @@ function Swap(props: propsIF) {
 
     const loginButton = (
         <button
-            onClick={openModalWallet}
+            onClick={openWagmiModal}
             className={styles.authenticate_button}
             style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
