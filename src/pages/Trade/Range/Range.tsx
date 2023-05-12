@@ -1228,8 +1228,6 @@ function Range(props: propsIF) {
         </div>
     );
 
-    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
-
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
@@ -1359,7 +1357,6 @@ function Range(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
