@@ -6,6 +6,7 @@ import {
     cloneElement,
     Dispatch,
     SetStateAction,
+    memo,
 } from 'react';
 import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
@@ -17,7 +18,7 @@ interface NavItemPropsIF {
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function NavItem(props: NavItemPropsIF) {
+function NavItem(props: NavItemPropsIF) {
     const { children, icon } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
@@ -52,3 +53,5 @@ export default function NavItem(props: NavItemPropsIF) {
         </button>
     );
 }
+
+export default memo(NavItem);

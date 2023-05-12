@@ -31,7 +31,10 @@ import {
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
 } from '../../utils/state/tradeDataSlice';
-import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
+import {
+    CandleChartData,
+    LiquidityDataLocal,
+} from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -52,7 +55,10 @@ import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigChart,
+} from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 
@@ -117,7 +123,7 @@ interface propsIF {
     poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleData | undefined>
+        React.SetStateAction<CandleChartData | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
@@ -134,8 +140,8 @@ interface propsIF {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    selectedDate: number | undefined;
-    setSelectedDate: React.Dispatch<number | undefined>;
+    selectedDate: Date | undefined;
+    setSelectedDate: React.Dispatch<Date | undefined>;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -221,7 +227,6 @@ export default function Chart(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         unparsedData,
-        // candleTime,
     } = props;
 
     const unparsedCandleData = unparsedData.candles;
@@ -311,60 +316,10 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // const [limitTriangleData, setLimitTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
-    // const [rangeTriangleData, setRangeTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
     const [market, setMarket] = useState([
         {
             name: 'Market Value',
             value: 0,
-        },
-    ]);
-
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
-    const [subChartValues, setsubChartValues] = useState([
-        {
-            name: 'feeRate',
-            value: lastCandleData?.averageLiquidityFee,
-        },
-        {
-            name: 'tvl',
-            value: lastCandleData?.tvlData.tvl,
-        },
-        {
-            name: 'volume',
-            value: undefined,
         },
     ]);
 
@@ -403,6 +358,25 @@ export default function Chart(props: propsIF) {
 
     // d3
 
+    const lastCandleData = unparsedCandleData.find(
+        (item: any) =>
+            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
+    );
+
+    const [subChartValues, setsubChartValues] = useState([
+        {
+            name: 'feeRate',
+            value: lastCandleData?.averageLiquidityFee,
+        },
+        {
+            name: 'tvl',
+            value: lastCandleData?.tvlData.tvl,
+        },
+        {
+            name: 'volume',
+            value: undefined,
+        },
+    ]);
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -725,8 +699,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        unparsedCandleData.length,
-        unparsedCandleData[0]?.time,
+        diffHashSigChart(unparsedCandleData[0]),
         firstCandle,
     ]);
 
@@ -2047,7 +2020,7 @@ export default function Chart(props: propsIF) {
         candlestick,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
-        diffHashSig(showLatest),
+        showLatest,
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
@@ -2829,10 +2802,6 @@ export default function Chart(props: propsIF) {
 
                                     return newTargets;
                                 });
-                                // setTriangleRangeValues(
-                                //     liquidityData?.topBoundary,
-                                //     minValue,
-                                // );
                             } else {
                                 if (lineToBeSet === 'Max') {
                                     const pinnedTick =
@@ -4109,10 +4078,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const passValue =
-            liqMode === 'curve'
-                ? liquidityData?.liqBoundaryCurve
-                : liquidityData?.liqBoundaryDepth;
+        const passValue = poolPriceDisplay ?? 0;
 
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
@@ -4801,7 +4767,7 @@ export default function Chart(props: propsIF) {
 
                     context.fillStyle =
                         selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
+                        selectedDate.getTime() === d.date.getTime()
                             ? '#E480FF'
                             : close > open
                             ? props.upBodyColor
@@ -4809,7 +4775,7 @@ export default function Chart(props: propsIF) {
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
+                        selectedDate.getTime() === d.date.getTime()
                             ? '#E480FF'
                             : close > open
                             ? props.upBorderColor
@@ -5036,7 +5002,7 @@ export default function Chart(props: propsIF) {
                         d.volumeUSD === null
                             ? 'transparent'
                             : selectedDate !== undefined &&
-                              selectedDate === d.time * 1000
+                              selectedDate.getTime() === d.date.getTime()
                             ? '#E480FF'
                             : close > open
                             ? props.upVolumeColor
@@ -5046,7 +5012,7 @@ export default function Chart(props: propsIF) {
                         d.volumeUSD === null
                             ? 'transparent'
                             : selectedDate !== undefined &&
-                              selectedDate === d.time * 1000
+                              selectedDate.getTime() === d.date.getTime()
                             ? '#E480FF'
                             : close > open
                             ? props.upVolumeColor
@@ -5943,8 +5909,7 @@ export default function Chart(props: propsIF) {
         ranges,
         limit,
         location.pathname,
-        period,
-        diffHashSig(unparsedCandleData[0]),
+        diffHashSigChart(unparsedCandleData[0]),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
@@ -6450,7 +6415,7 @@ export default function Chart(props: propsIF) {
         } else if (selectedDate) {
             props.setCurrentVolumeData(
                 unparsedCandleData.find(
-                    (item: any) => item.time * 1000 === selectedDate,
+                    (item: any) => item.time * 1000 === selectedDate.getTime(),
                 )?.volumeUSD,
             );
         }
@@ -6877,7 +6842,8 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (selectedDate !== undefined) {
             const candle = unparsedCandleData.find(
-                (candle: CandleData) => candle.time * 1000 === selectedDate,
+                (candle: CandleData) =>
+                    candle.time * 1000 === selectedDate.getTime(),
             ) as any;
 
             if (candle !== undefined) {
