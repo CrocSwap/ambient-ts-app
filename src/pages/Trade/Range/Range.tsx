@@ -111,10 +111,6 @@ interface propsIF {
     dailyVol: number | undefined;
     poolExists: boolean | undefined;
     isRangeCopied: boolean;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
-    setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
-    setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -162,10 +158,6 @@ function Range(props: propsIF) {
         dailyVol,
         poolExists,
         isRangeCopied,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -217,6 +209,9 @@ function Range(props: propsIF) {
     ] = useState<number>(0);
 
     const [isAmbient, setIsAmbient] = useState(false);
+
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
@@ -1231,8 +1226,6 @@ function Range(props: propsIF) {
         </div>
     );
 
-    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
-
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
@@ -1361,7 +1354,6 @@ function Range(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
