@@ -412,6 +412,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         };
     }
 
+    // memoize output to only update when tokens are added to the Map
     const output = useMemo<tokenMethodsIF>(
         () => ({
             default: defaultTokens,
