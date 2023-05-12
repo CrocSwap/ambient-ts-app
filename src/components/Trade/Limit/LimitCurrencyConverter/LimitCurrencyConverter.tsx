@@ -265,8 +265,8 @@ function LimitCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData.shouldLimitDirectionReverse) {
+            reverseTokens();
             setIsTokenAPrimaryLocal((state) => {
-                reverseTokens();
                 return !state;
             });
         }
