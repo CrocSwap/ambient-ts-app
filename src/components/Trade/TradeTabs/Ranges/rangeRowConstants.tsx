@@ -257,6 +257,7 @@ export default function rangeRowConstants(props: Props) {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 <div>
