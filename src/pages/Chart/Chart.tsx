@@ -3612,8 +3612,6 @@ export default function Chart(props: propsIF) {
             if (canvas !== null) {
                 const height = canvas.height;
 
-                console.log(Math.floor(height / 60));
-
                 const factor = Math.floor(height / 60);
 
                 context.stroke();
