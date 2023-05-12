@@ -106,8 +106,6 @@ import {
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import trimString from '../utils/functions/trimString';
-import { getLiquidityFee } from './functions/getLiquidityFee';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
