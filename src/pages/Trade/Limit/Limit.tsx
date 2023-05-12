@@ -803,30 +803,6 @@ export default function Limit(props: propsIF) {
         setShareOptions(modifiedShareOptions);
     };
 
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <LimitShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     const currencyConverterProps = {
         displayPrice: displayPrice,
         previousDisplayPrice: previousDisplayPrice,
@@ -955,7 +931,6 @@ export default function Limit(props: propsIF) {
                     <LimitHeader
                         chainId={chainId}
                         isPairStable={isPairStable}
-                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}
                     <motion.div

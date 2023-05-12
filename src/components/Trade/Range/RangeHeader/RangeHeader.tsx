@@ -28,7 +28,6 @@ interface propsIF {
     isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component

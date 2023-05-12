@@ -250,10 +250,18 @@ function Range(props: propsIF) {
 
     const { navigationMenu } = useTradeData();
 
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
+    const tokenPair = useMemo(
+        () => ({
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        }),
+        [
+            tradeData.tokenB.address,
+            tradeData.tokenB.chainId,
+            tradeData.tokenA.address,
+            tradeData.tokenA.chainId,
+        ],
+    );
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
@@ -1622,30 +1630,6 @@ function Range(props: propsIF) {
         setShareOptions(modifiedShareOptions);
     };
 
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <RangeShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // logic to determine if a given token is acknowledged or on a list
@@ -1727,7 +1711,6 @@ function Range(props: propsIF) {
                         isPairStable={isPairStable}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isTokenABase}
-                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}
                     <motion.div

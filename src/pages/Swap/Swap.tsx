@@ -652,30 +652,6 @@ function Swap(props: propsIF) {
             </a>
         </section>
     );
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <SwapShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
@@ -877,7 +853,6 @@ function Swap(props: propsIF) {
                         <SwapHeader
                             isPairStable={isPairStable}
                             isOnTradeRoute={isOnTradeRoute}
-                            shareOptionsDisplay={shareOptionsDisplay}
                         />
                         {navigationMenu}
                         <motion.div

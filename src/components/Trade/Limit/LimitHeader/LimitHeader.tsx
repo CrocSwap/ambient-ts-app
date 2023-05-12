@@ -25,7 +25,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface propsIF {
     chainId: string;
     isPairStable: boolean;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component

@@ -1135,8 +1135,6 @@ export default function App() {
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
-            IS_LOCAL_ENV &&
-                console.debug(`fetching ${numDurationsNeeded} new candles`);
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
