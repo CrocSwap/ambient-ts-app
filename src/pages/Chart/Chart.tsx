@@ -699,7 +699,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        diffHashSigChart(unparsedCandleData[0]),
+        diffHashSigChart(unparsedCandleData),
         firstCandle,
     ]);
 
@@ -5909,7 +5909,7 @@ export default function Chart(props: propsIF) {
         ranges,
         limit,
         location.pathname,
-        diffHashSigChart(unparsedCandleData[0]),
+        diffHashSigChart(unparsedCandleData),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
