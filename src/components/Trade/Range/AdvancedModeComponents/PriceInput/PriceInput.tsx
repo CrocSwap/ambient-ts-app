@@ -1,6 +1,6 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, memo } from 'react';
 
 interface priceInputProps {
     disable?: boolean;
@@ -15,7 +15,7 @@ interface priceInputProps {
     isRangeCopied: boolean;
 }
 
-export default function PriceInput(props: priceInputProps) {
+function PriceInput(props: priceInputProps) {
     const {
         disable,
         fieldId,
@@ -88,3 +88,5 @@ export default function PriceInput(props: priceInputProps) {
         </div>
     );
 }
+
+export default memo(PriceInput);

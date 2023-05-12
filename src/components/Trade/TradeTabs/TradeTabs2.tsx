@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useRef,
     useContext,
+    memo,
 } from 'react';
 
 import {
@@ -92,7 +93,7 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
-export default function TradeTabs2(props: propsIF) {
+function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -612,3 +613,5 @@ export default function TradeTabs2(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeTabs2);

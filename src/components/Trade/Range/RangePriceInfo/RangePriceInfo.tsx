@@ -3,15 +3,13 @@ import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
-import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-// import { getMoneynessRank } from '../../../../utils/functions/getMoneynessRank';
 import { isStableToken } from '../../../../utils/data/stablePairs';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -27,8 +25,6 @@ interface propsIF {
     daysInRange: number | undefined;
     didUserFlipDenom: boolean;
     poolPriceCharacter: string;
-    minRangeDenomByMoneyness?: string;
-    maxRangeDenomByMoneyness?: string;
     isDenomBase: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
     chainId: string;
@@ -53,13 +49,11 @@ interface propsIF {
 }
 
 // central react functional component
-export default function RangePriceInfo(props: propsIF) {
+function RangePriceInfo(props: propsIF) {
     const {
         spotPriceDisplay,
         poolPriceCharacter,
         aprPercentage,
-        minRangeDenomByMoneyness,
-        maxRangeDenomByMoneyness,
         pinnedDisplayPrices,
         isDenomBase,
         cachedFetchTokenPrice,
@@ -73,10 +67,6 @@ export default function RangePriceInfo(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
-
-    const { pathname } = useLocation();
-
-    const isOnTradeRoute = pathname.includes('trade');
 
     const dispatch = useAppDispatch();
 
@@ -340,17 +330,13 @@ export default function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Min Price</h4>
-                    <span className={styles.min_price}>
-                        {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
-                    </span>
+                    <span className={styles.min_price}>{minPrice}</span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Min Price</h4>
-                <span className={styles.min_price}>
-                    {isOnTradeRoute ? minPrice : minRangeDenomByMoneyness}
-                </span>
+                <span className={styles.min_price}>{minPrice}</span>
             </div>
         );
 
@@ -372,17 +358,13 @@ export default function RangePriceInfo(props: propsIF) {
                     onClick={handleMinMaxPriceClick}
                 >
                     <h4 className={styles.price_title}>Max Price</h4>
-                    <span className={styles.max_price}>
-                        {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
-                    </span>
+                    <span className={styles.max_price}>{maxPrice}</span>
                 </div>
             </DefaultTooltip>
         ) : (
             <div className={styles.price_display} style={{ cursor: 'default' }}>
                 <h4 className={styles.price_title}>Max Price</h4>
-                <span className={styles.max_price}>
-                    {isOnTradeRoute ? maxPrice : maxRangeDenomByMoneyness}
-                </span>
+                <span className={styles.max_price}>{maxPrice}</span>
             </div>
         );
 
@@ -442,3 +424,5 @@ export default function RangePriceInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangePriceInfo);

@@ -1,5 +1,5 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef } from 'react';
+import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { chartSettingsMethodsIF } from '../../../../App/hooks/useChartSettings';
@@ -13,7 +13,7 @@ interface VolumeTVLFeePropsIF {
     showTvl: boolean;
     showFeeRate: boolean;
 }
-export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
+function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const {
         chartSettings,
         setShowVolume,
@@ -139,3 +139,5 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         </div>
     );
 }
+
+export default memo(VolumeTVLFee);

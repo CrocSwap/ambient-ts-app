@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiSettings5Line } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
@@ -26,7 +26,7 @@ interface propsIF {
     resetTxHash: () => void;
 }
 
-export default function RepositionHeader(props: propsIF) {
+function RepositionHeader(props: propsIF) {
     const {
         setRangeWidthPercentage,
         positionHash,
@@ -89,3 +89,5 @@ export default function RepositionHeader(props: propsIF) {
         </ContentHeader>
     );
 }
+
+export default memo(RepositionHeader);

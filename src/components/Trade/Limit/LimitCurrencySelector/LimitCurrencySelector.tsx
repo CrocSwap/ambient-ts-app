@@ -2,6 +2,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useState,
@@ -86,7 +87,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function LimitCurrencySelector(props: propsIF) {
+function LimitCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,
@@ -439,3 +440,5 @@ export default function LimitCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(LimitCurrencySelector);

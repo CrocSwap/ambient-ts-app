@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    memo,
 } from 'react';
 import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
@@ -51,7 +52,7 @@ interface propsIF {
         onCurrentChain?: boolean;
         count?: number | null;
     }) => TokenIF[];
-    getAmbientTokens: () => TokenIF[];
+    ambientTokens: TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -97,7 +98,7 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Portfolio(props: propsIF) {
+function Portfolio(props: propsIF) {
     const {
         searchableTokens,
         cachedQuerySpotPrice,
@@ -667,3 +668,5 @@ export default function Portfolio(props: propsIF) {
         </main>
     );
 }
+
+export default memo(Portfolio);

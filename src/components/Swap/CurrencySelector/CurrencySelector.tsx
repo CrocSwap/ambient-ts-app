@@ -10,6 +10,7 @@ import {
     SetStateAction,
     useEffect,
     useContext,
+    memo,
 } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -92,7 +93,7 @@ interface propsIF {
     isLoading: boolean;
 }
 
-export default function CurrencySelector(props: propsIF) {
+function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
         provider,
@@ -598,3 +599,5 @@ export default function CurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(CurrencySelector);

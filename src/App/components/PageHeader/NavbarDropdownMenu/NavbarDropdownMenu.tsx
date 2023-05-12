@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { ReactNode, useState, useRef, useEffect, useContext } from 'react';
+import {
+    ReactNode,
+    useState,
+    useRef,
+    useEffect,
+    useContext,
+    memo,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -46,7 +53,7 @@ interface NavbarDropdownMenuPropsIF {
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const { isUserLoggedIn, clickLogout, closeMenu, setIsNavbarMenuOpen } =
         props;
 
@@ -347,3 +354,5 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(NavbarDropdownMenu);
