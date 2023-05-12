@@ -121,7 +121,7 @@ const PageHeader = function (props: HeaderPropsIF) {
         chainData: chainData,
         walletDropdownTokenData,
     };
-    const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
         <button
@@ -223,7 +223,11 @@ const PageHeader = function (props: HeaderPropsIF) {
         : '/trade/market/';
 
     const linkData = [
-        { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
+        {
+            title: t('common:homeTitle'),
+            destination: '/',
+            shouldDisplay: desktopScreen,
+        },
         {
             title: t('common:swapTitle'),
             destination: '/swap/' + paramsSlug,
