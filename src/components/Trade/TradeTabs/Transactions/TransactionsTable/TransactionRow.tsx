@@ -280,7 +280,7 @@ export default function TransactionRow(props: propsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+            style={{ backgroundColor: highlightStyle }}
             onClick={handleRowClick}
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}

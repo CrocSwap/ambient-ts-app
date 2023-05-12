@@ -84,22 +84,24 @@
     background: var(--dark2);
 } */
 
-.row_container:hover {
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
 .main_list_container ul {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
     table-layout: fixed;
     display: table;
+ 
 }
 
 .main_list_container ul > li {
@@ -109,6 +111,7 @@
     width: 100%;
 
     padding: 0.5em 0.4em;
+  
     vertical-align: middle;
 }
 
