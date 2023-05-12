@@ -105,7 +105,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     ]);
 
     // Runs when token pair changes
-    useMemo(() => {
+    useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
                 dispatch(setAdvancedLowTick(0));
