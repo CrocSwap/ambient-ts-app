@@ -629,6 +629,7 @@ export default function TradeCandleStickChart(props: propsIF) {
                 const lastShownCandle = firsShownDomain - newDiffDomain;
 
                 scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
+                scaleData.xScaleCopy.domain([lastShownCandle, firsShownDomain]);
             }
 
             setPrevPeriod(() => period);

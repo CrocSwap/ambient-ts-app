@@ -1031,11 +1031,14 @@ export default function Chart(props: propsIF) {
                     domainX: any,
                     deltaX: number,
                     offsetX: number,
+                    zoomCandle: undefined | number = undefined,
                 ) => {
-                    const gapTop =
-                        domainX[1] - scaleData?.xScale.invert(offsetX);
-                    const gapBot =
-                        scaleData?.xScale.invert(offsetX) - domainX[0];
+                    const point = zoomCandle
+                        ? zoomCandle
+                        : scaleData?.xScale.invert(offsetX);
+
+                    const gapTop = domainX[1] - point;
+                    const gapBot = point - domainX[0];
 
                     const minGap = Math.min(gapTop, gapBot);
                     const maxGap = Math.max(gapTop, gapBot);
@@ -1303,71 +1306,72 @@ export default function Chart(props: propsIF) {
                                 ) {
                                     const newBoundary = domainX[0] - deltaX;
 
-                                    const lastXIndex =
-                                        unparsedCandleData.findIndex(
-                                            (d: CandleData) =>
-                                                d.time ===
-                                                d3.max(
-                                                    unparsedCandleData,
-                                                    (d: CandleData) => d.time,
-                                                ),
-                                        );
+                                    const lastXIndex = d3.maxIndex(
+                                        unparsedCandleData,
+                                        (d: CandleData) => d.time,
+                                    );
 
                                     if (
                                         newBoundary >
-                                        unparsedCandleData[lastXIndex].time *
-                                            1000 -
-                                            period * 1000 * 2
-                                    ) {
-                                        const leftBoudnary =
-                                            unparsedCandleData[lastXIndex + 1]
+                                            unparsedCandleData[lastXIndex]
                                                 .time *
                                                 1000 -
-                                            period * 1000 * 5;
-                                        getNewCandleData(
-                                            leftBoudnary,
-                                            lastCandleDate,
-                                        );
-                                        scaleData?.xScale.domain([
-                                            leftBoudnary,
-                                            lastTime + deltaX,
-                                        ]);
+                                                period * 1000 * 2 &&
+                                        deltaX < 0
+                                    ) {
+                                        return;
                                     } else {
                                         getNewCandleData(
                                             newBoundary,
                                             lastCandleDate,
                                         );
 
-                                        if (
-                                            lastCandleTime <= lastTime &&
-                                            deltaX < 0
-                                        ) {
-                                            changeCandleSize(
-                                                domainX,
-                                                deltaX,
-                                                event.sourceEvent.offsetX,
-                                            );
-                                        } else {
-                                            if (deltaX > 0) {
+                                        if (deltaX > 0) {
+                                            if (
+                                                lastTime >
+                                                lastCandleTime * 1000
+                                            ) {
+                                                changeCandleSize(
+                                                    domainX,
+                                                    deltaX,
+                                                    event.sourceEvent.offsetX,
+                                                    lastCandleTime * 1000,
+                                                );
+                                            } else {
                                                 scaleData?.xScale.domain([
                                                     newBoundary,
                                                     lastTime,
                                                 ]);
-                                            } else {
+                                            }
+                                        } else {
+                                            if (
+                                                firstCandleTime * 1000 <
+                                                lastTime
+                                            ) {
                                                 if (
-                                                    firstCandleTime < lastTime
+                                                    lastCandleTime * 1000 <=
+                                                        lastTime &&
+                                                    deltaX < 0
                                                 ) {
+                                                    changeCandleSize(
+                                                        domainX,
+                                                        deltaX,
+                                                        event.sourceEvent
+                                                            .offsetX,
+                                                        lastCandleTime * 1000,
+                                                    );
+                                                } else {
                                                     scaleData?.xScale.domain([
                                                         firstTime -
                                                             deltaX * 1.3,
                                                         lastTime,
                                                     ]);
-                                                } else {
-                                                    scaleData?.xScale.domain([
-                                                        firstTime,
-                                                        lastTime - deltaX,
-                                                    ]);
                                                 }
+                                            } else {
+                                                scaleData?.xScale.domain([
+                                                    firstTime,
+                                                    lastTime - deltaX,
+                                                ]);
                                             }
                                         }
                                     }
