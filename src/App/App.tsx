@@ -1693,8 +1693,6 @@ export default function App() {
     };
 
     // props for <Range/> React element
-    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
-    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
         account,
@@ -1722,10 +1720,6 @@ export default function App() {
         dailyVol,
         poolExists,
         isRangeCopied,
-        tokenAQtyLocal: rangetokenAQtyLocal,
-        tokenBQtyLocal: rangetokenBQtyLocal,
-        setTokenAQtyLocal: setRangeTokenAQtyLocal,
-        setTokenBQtyLocal: setRangeTokenBQtyLocal,
         verifyToken,
         getTokensByName,
         getTokenByAddress,

@@ -271,14 +271,19 @@ function RangeCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData) {
-            if (tradeData.isTokenAPrimaryRange) {
+            if (
+                tradeData.isTokenAPrimaryRange &&
+                tradeData.primaryQuantityRange
+            ) {
                 setTokenAInputQty(tradeData.primaryQuantityRange);
-            } else {
+                setTokenAQtyValue(parseFloat(tradeData.primaryQuantityRange));
+            } else if (tradeData.primaryQuantityRange) {
                 IS_LOCAL_ENV &&
                     console.debug(
                         `setting tokenbinputqty to ${tradeData.primaryQuantityRange}`,
                     );
                 setTokenBInputQty(tradeData.primaryQuantityRange);
+                setTokenBQtyValue(parseFloat(tradeData.primaryQuantityRange));
             }
         }
     }, []);
