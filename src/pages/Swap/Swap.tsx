@@ -44,8 +44,7 @@ import {
     addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
-import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
@@ -587,71 +586,6 @@ function Swap(props: propsIF) {
     const swapPageStyle = pathname.startsWith('/swap')
         ? styles.swap_page
         : styles.scrollable_container;
-
-    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Swap 1', checked: false },
-        { slug: 'second', name: 'Include Swap 2', checked: false },
-        { slug: 'third', name: 'Include Swap 3', checked: false },
-        { slug: 'fourth', name: 'Include Swap 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const swapLink =
-        'https://ambient-finance.netlify.app/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
-
-    const shareIconsContent = (
-        <section>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://telegram.me/share/url?url=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='telegram'
-            >
-                Telegram{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://twitter.com/intent/tweet?text=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='twitter'
-            >
-                Twitter{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='facebook'
-            >
-                Facebook{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href=''
-                className={styles.share_icon}
-                aria-label='discord'
-            >
-                Discord{' '}
-            </a>
-        </section>
-    );
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 

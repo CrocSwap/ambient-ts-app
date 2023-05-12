@@ -35,7 +35,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -69,7 +69,6 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
@@ -1609,26 +1608,6 @@ function Range(props: propsIF) {
             flat={true}
         />
     );
-    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Range 1', checked: false },
-        { slug: 'second', name: 'Include Range 2', checked: false },
-        { slug: 'third', name: 'Include Range 3', checked: false },
-        { slug: 'fourth', name: 'Include Range 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

@@ -58,8 +58,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
-import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
@@ -781,27 +780,6 @@ export default function Limit(props: propsIF) {
             flat={true}
         />
     );
-
-    // -------------------------Limit SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Limit 1', checked: false },
-        { slug: 'second', name: 'Include Limit 2', checked: false },
-        { slug: 'third', name: 'Include Limit 3', checked: false },
-        { slug: 'fourth', name: 'Include Limit 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
 
     const currencyConverterProps = {
         displayPrice: displayPrice,

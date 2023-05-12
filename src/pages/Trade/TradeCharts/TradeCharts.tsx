@@ -56,7 +56,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     limitTick: number | undefined;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     upBodyColor: string;
