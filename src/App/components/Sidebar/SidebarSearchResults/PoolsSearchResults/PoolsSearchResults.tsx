@@ -6,16 +6,21 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
     tokenPair: TokenPairIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const { searchedPools, tokenPair, cachedPoolStatsFetch } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const navigate = useNavigate();
     const handleClick = (baseAddr: string, quoteAddr: string): void => {

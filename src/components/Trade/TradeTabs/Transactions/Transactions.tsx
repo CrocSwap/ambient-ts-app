@@ -22,7 +22,6 @@ import {
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
@@ -40,8 +39,6 @@ interface propsIF {
     portfolio?: boolean;
     tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
-    chainData: ChainSpec;
-    blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
@@ -66,8 +63,6 @@ function Transactions(props: propsIF) {
         connectedAccountActive,
         isShowAllEnabled,
         changesInSelectedCandle,
-        chainData,
-        blockExplorer,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
@@ -444,11 +439,9 @@ function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            blockExplorer={blockExplorer}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
         />
     ));
     const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
@@ -464,11 +457,9 @@ function Transactions(props: propsIF) {
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            blockExplorer={blockExplorer}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
         />
     ));
     const listRef = useRef<HTMLUListElement>(null);

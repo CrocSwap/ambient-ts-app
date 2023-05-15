@@ -10,7 +10,6 @@ import {
 import { useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { ChainSpec } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -67,15 +66,12 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
     lastBlockNumber: number;
-    chainId: string;
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
     openModalWallet: () => void;
     searchableTokens: TokenIF[];
-    chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isUserLoggedIn: boolean | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -91,7 +87,6 @@ interface propsIF {
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
     ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -126,11 +121,9 @@ function Portfolio(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        chainData,
         mainnetProvider,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         ackTokens,
         setExpandTradeTable,
     } = props;
@@ -139,7 +132,10 @@ function Portfolio(props: propsIF) {
         useAppSelector((state) => state.userData);
     const { data: ensName } = useEnsName({ address: userAddress });
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -193,7 +189,7 @@ function Portfolio(props: propsIF) {
                     const newNativeToken: TokenIF =
                         await cachedFetchNativeTokenBalance(
                             userAddress,
-                            chainData.chainId,
+                            chainId,
                             lastBlockNumber,
                             crocEnv,
                         );
@@ -203,7 +199,7 @@ function Portfolio(props: propsIF) {
                     const erc20Results: TokenIF[] =
                         await cachedFetchErc20TokenBalances(
                             userAddress,
-                            chainData.chainId,
+                            chainId,
                             lastBlockNumber,
                             crocEnv,
                         );
@@ -294,7 +290,7 @@ function Portfolio(props: propsIF) {
                     const ensName = await fetchAddress(
                         mainnetProvider,
                         addressFromParams,
-                        chainData.chainId,
+                        chainId,
                     );
 
                     if (ensName) setSecondaryEnsName(ensName);
@@ -318,9 +314,7 @@ function Portfolio(props: propsIF) {
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
-                crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
-                ethMainnetUsdPrice={ethMainnetUsdPrice}
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
@@ -396,14 +390,14 @@ function Portfolio(props: propsIF) {
             if (
                 crocEnv &&
                 resolvedAddress &&
-                chainData.chainId &&
+                chainId &&
                 lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
                     const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
-                        chainData.chainId,
+                        chainId,
                         lastBlockNumber,
                         crocEnv,
                     );
@@ -422,7 +416,7 @@ function Portfolio(props: propsIF) {
 
                     const erc20Results = await cachedFetchErc20TokenBalances(
                         resolvedAddress,
-                        chainData.chainId,
+                        chainId,
                         lastBlockNumber,
                         crocEnv,
                     );
@@ -455,7 +449,7 @@ function Portfolio(props: propsIF) {
     }, [
         crocEnv,
         resolvedAddress,
-        chainData.chainId,
+        chainId,
         lastBlockNumber,
         connectedAccountActive,
     ]);
@@ -522,7 +516,6 @@ function Portfolio(props: propsIF) {
         searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        crocEnv: crocEnv,
         isTokenABase: isTokenABase,
         provider: provider,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -531,10 +524,8 @@ function Portfolio(props: propsIF) {
         resolvedAddress: resolvedAddress,
         lastBlockNumber: lastBlockNumber,
         connectedAccountActive: connectedAccountActive,
-        chainId: chainData.chainId,
         tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
-        chainData: chainData,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
         baseTokenBalance: baseTokenBalance,
@@ -547,7 +538,6 @@ function Portfolio(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
     };
 
@@ -560,7 +550,6 @@ function Portfolio(props: propsIF) {
         resolvedAddress: resolvedAddress,
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
-        chainData: chainData,
     };
 
     const profileSettingsProps = {
@@ -634,7 +623,6 @@ function Portfolio(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainData.chainId}
                         importedTokensPlus={outputTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}

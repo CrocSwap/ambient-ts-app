@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -73,7 +73,6 @@ interface propsIF {
     poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    chainId: string;
     isInitialized: boolean;
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
@@ -96,7 +95,6 @@ interface propsIF {
     searchType: string;
     tokenPairLocal: string[] | null;
     ackTokens: ackTokensMethodsIF;
-    chainData: ChainSpec;
     pool: CrocPoolView | undefined;
 }
 
@@ -117,7 +115,6 @@ function Swap(props: propsIF) {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        chainId,
         poolExists,
         isSwapCopied,
         verifyToken,
@@ -133,23 +130,25 @@ function Swap(props: propsIF) {
         lastBlockNumber,
         tokenPairLocal,
         ackTokens,
-        chainData,
     } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
+
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const {
+        crocEnv,
+        chainData: { chainId, blockExplorer },
+    } = useContext(CrocEnvContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
-
-    const crocEnv = useContext(CrocEnvContext);
-    const {
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
-        UserPreferenceContext,
-    );
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -593,14 +592,12 @@ function Swap(props: propsIF) {
         isLiquidityInsufficient: isLiquidityInsufficient,
         setIsLiquidityInsufficient: setIsLiquidityInsufficient,
         tokenPairLocal: tokenPairLocal,
-        crocEnv: crocEnv,
         poolExists: poolExists,
         provider: provider,
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
         tokenPair: tokenPair,
         priceImpact: priceImpact,
-        chainId: chainId,
         isLiq: false,
         poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
@@ -867,7 +864,7 @@ function Swap(props: propsIF) {
                                         {needConfirmTokenA && (
                                             <a
                                                 href={
-                                                    chainData.blockExplorer +
+                                                    blockExplorer +
                                                     'token/' +
                                                     tokenPair.dataTokenA.address
                                                 }
@@ -884,7 +881,7 @@ function Swap(props: propsIF) {
                                         {needConfirmTokenB && (
                                             <a
                                                 href={
-                                                    chainData.blockExplorer +
+                                                    blockExplorer +
                                                     'token/' +
                                                     tokenPair.dataTokenB.address
                                                 }

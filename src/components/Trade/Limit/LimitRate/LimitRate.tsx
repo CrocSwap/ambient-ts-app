@@ -6,9 +6,10 @@ import {
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -16,11 +17,9 @@ interface propsIF {
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    gridSize: number;
     pool: CrocPoolView | undefined;
     tokenPair: TokenPairIF;
     fieldId: string;
-    chainId: string;
     sellToken?: boolean;
     isSellTokenBase: boolean;
     disable?: boolean;
@@ -38,7 +37,6 @@ export default function LimitRate(props: propsIF) {
         previousDisplayPrice,
         setPreviousDisplayPrice,
         pool,
-        gridSize,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
@@ -49,6 +47,9 @@ export default function LimitRate(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        chainData: { gridSize },
+    } = useContext(CrocEnvContext);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;

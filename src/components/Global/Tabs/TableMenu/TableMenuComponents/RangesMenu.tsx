@@ -18,7 +18,6 @@ import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
@@ -36,7 +35,6 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -54,7 +52,6 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 
     handleAccountClick: () => void;
 
@@ -75,8 +72,6 @@ export default function RangesMenu(props: propsIF) {
         setSimpleRangeWidth,
         isPositionInRange,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
-        chainData,
     } = props;
 
     const {
@@ -109,7 +104,6 @@ export default function RangesMenu(props: propsIF) {
             <RangeDetails
                 position={position}
                 closeGlobalModal={closeGlobalModal}
-                chainData={chainData}
                 {...rangeDetailsProps}
             />,
         );
@@ -316,7 +310,6 @@ export default function RangesMenu(props: propsIF) {
                         handleModalClose={handleModalClose}
                         position={position}
                         gasPriceInGwei={gasPriceInGwei}
-                        ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
                 </Modal>
@@ -331,7 +324,6 @@ export default function RangesMenu(props: propsIF) {
                         position={position}
                         handleModalClose={handleModalClose}
                         gasPriceInGwei={gasPriceInGwei}
-                        ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
                 </Modal>

@@ -1,4 +1,4 @@
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Transfer.module.css';
 import TransferAddressInput from './TransferAddressInput/TransferAddressInput';
@@ -6,7 +6,14 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
@@ -24,9 +31,9 @@ import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     // connectedAccount: string;
     selectedToken: TokenIF;
     tokenDexBalance: string;
@@ -37,13 +44,11 @@ interface propsIF {
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
-    ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
 }
 
 export default function Transfer(props: propsIF) {
     const {
-        crocEnv,
         selectedToken,
         // tokenAllowance,
         tokenDexBalance,
@@ -55,9 +60,9 @@ export default function Transfer(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        ethMainnetUsdPrice,
         gasPriceInGwei,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 

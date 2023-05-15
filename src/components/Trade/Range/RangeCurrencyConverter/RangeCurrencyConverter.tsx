@@ -38,7 +38,6 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 // interface for component props
 interface propsIF {
     provider?: ethers.providers.Provider;
-    chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
@@ -100,7 +99,6 @@ function RangeCurrencyConverter(props: propsIF) {
     const {
         poolExists,
         gasPriceInGwei,
-        chainId,
         isLiq,
         poolPriceNonDisplay,
         tokenPair,
@@ -715,7 +713,6 @@ function RangeCurrencyConverter(props: propsIF) {
     const rangeCurrencySelectorCommonProps = {
         gasPriceInGwei: gasPriceInGwei,
         resetTokenQuantities: resetTokenQuantities,
-        chainId: chainId,
         tokenPair: tokenPair,
         isTokenAEth,
         isTokenBEth,

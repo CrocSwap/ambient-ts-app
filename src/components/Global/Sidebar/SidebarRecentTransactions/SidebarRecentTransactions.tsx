@@ -2,10 +2,11 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
@@ -13,8 +14,6 @@ import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
-    coinGeckoTokenMap: Map<string, TokenIF>;
-    chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -26,7 +25,6 @@ interface propsIF {
 export default function SidebarRecentTransactions(props: propsIF) {
     const {
         mostRecentTransactions,
-        chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
     } = props;
@@ -40,6 +38,9 @@ export default function SidebarRecentTransactions(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
         sidebar: { close: closeSidebar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const location = useLocation();
     const navigate = useNavigate();

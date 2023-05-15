@@ -4,18 +4,20 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
-    chainId: string;
-    poolId: number;
 }
 
 export default function FavoritePools(props: propsIF) {
-    const { lastBlockNumber, cachedPoolStatsFetch, chainId, poolId } = props;
+    const { lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const { tradeData } = useAppSelector((state) => state);
+    const {
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(
@@ -53,7 +55,6 @@ export default function FavoritePools(props: propsIF) {
                 {favePools.pools.map((pool, idx) => (
                     <FavoritePoolsCard
                         key={idx}
-                        chainId={chainId}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}

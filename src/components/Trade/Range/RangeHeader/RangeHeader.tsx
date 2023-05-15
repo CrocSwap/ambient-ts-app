@@ -22,7 +22,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
-    chainId: string;
     tokenPair: TokenPairIF;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;

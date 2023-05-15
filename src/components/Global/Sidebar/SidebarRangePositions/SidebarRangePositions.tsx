@@ -5,9 +5,9 @@ import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -16,7 +16,6 @@ interface propsIF {
 
 export default function SidebarRangePositions(props: propsIF) {
     const {
-        chainId,
         isDenomBase,
         userPositions,
         setCurrentPositionActive,
@@ -28,6 +27,9 @@ export default function SidebarRangePositions(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
         sidebar: { close: closeSidebar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );

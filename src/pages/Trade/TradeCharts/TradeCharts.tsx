@@ -25,7 +25,6 @@ import printDomToImage from '../../../utils/functions/printDomToImage';
 import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
@@ -43,8 +42,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 // interface for React functional component props
 interface propsIF {
     // poolPriceTick: number | undefined;
-    chainData: ChainSpec;
-    chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
     expandTradeTable: boolean;
@@ -140,9 +137,7 @@ export interface LiqSnap {
 // React functional component
 function TradeCharts(props: propsIF) {
     const {
-        chainData,
         poolPriceDisplay,
-        chainId,
         expandTradeTable,
         selectedDate,
         setSelectedDate,
@@ -433,8 +428,6 @@ function TradeCharts(props: propsIF) {
                 isPoolPriceChangePositive={isPoolPriceChangePositive}
                 poolPriceDisplay={poolPriceDisplay}
                 poolPriceChangePercent={poolPriceChangePercent}
-                chainId={chainId}
-                chainData={chainData}
             />
             <div
                 style={{
@@ -511,7 +504,6 @@ function TradeCharts(props: propsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
-                        chainData={chainData}
                         expandTradeTable={expandTradeTable}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
@@ -531,7 +523,6 @@ function TradeCharts(props: propsIF) {
                         downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
                         quoteTokenAddress={props.quoteTokenAddress}
-                        chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}

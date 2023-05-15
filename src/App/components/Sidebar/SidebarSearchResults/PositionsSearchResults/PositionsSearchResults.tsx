@@ -4,9 +4,9 @@ import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    chainId: string;
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -45,7 +45,6 @@ function PositionLI(props: PositionLiPropsIF) {
 
 export default function PositionsSearchResults(props: propsIF) {
     const {
-        chainId,
         searchedPositions,
         isDenomBase,
         setCurrentPositionActive,
@@ -58,6 +57,9 @@ export default function PositionsSearchResults(props: propsIF) {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);

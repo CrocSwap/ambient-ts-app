@@ -33,7 +33,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import {
     resetLookupUserDataLoadingStatus,
@@ -61,12 +60,9 @@ interface propsIF {
     resolvedAddress: string;
     lastBlockNumber: number;
     connectedAccountActive: boolean;
-    chainId: string;
     tokenList: TokenIF[];
-    tokenMap: Map<string, TokenIF>;
     searchableTokens: TokenIF[];
     openTokenModal: () => void;
-    chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     baseTokenBalance: string;
@@ -81,7 +77,6 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 // React functional component
@@ -92,13 +87,11 @@ export default function PortfolioTabs(props: propsIF) {
         cachedPositionUpdateQuery,
         isTokenABase,
         cachedFetchTokenPrice,
-        tokenMap,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
         lastBlockNumber,
         connectedAccountActive,
-        chainId,
         tokenList,
         openTokenModal,
         baseTokenBalance,
@@ -109,11 +102,13 @@ export default function PortfolioTabs(props: propsIF) {
         setExpandTradeTable,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
 
     const dispatch = useAppDispatch();
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -332,8 +327,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        chainId: chainId,
-        tokenMap: tokenMap,
     };
 
     // props for <Exchange/> React Element
@@ -344,8 +337,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        chainId: chainId,
-        tokenMap: tokenMap,
         openTokenModal: openTokenModal,
     };
 
@@ -354,7 +345,6 @@ export default function PortfolioTabs(props: propsIF) {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         expandTradeTable: false,
-        chainData: props.chainData,
         isShowAllEnabled: false,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
@@ -362,7 +352,6 @@ export default function PortfolioTabs(props: propsIF) {
         isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
         provider: props.provider,
         searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
@@ -372,7 +361,6 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
     };
 
@@ -385,8 +373,6 @@ export default function PortfolioTabs(props: propsIF) {
         isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
         tokenList: tokenList,
-        chainData: props.chainData,
-        blockExplorer: props.chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions:
             props.setCurrentTxActiveInTransactions,
@@ -394,7 +380,6 @@ export default function PortfolioTabs(props: propsIF) {
         isCandleSelected: false,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
-        tokenMap: tokenMap,
         setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
@@ -406,7 +391,6 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         expandTradeTable: false,
-        chainData: props.chainData,
         isShowAllEnabled: false,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,

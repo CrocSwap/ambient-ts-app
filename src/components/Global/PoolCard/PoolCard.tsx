@@ -18,7 +18,6 @@ interface propsIF {
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
     lastBlockNumber: number;
-    chainId: string;
     pool: topPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
 }
@@ -27,13 +26,15 @@ export default function PoolCard(props: propsIF) {
     const {
         isUserIdle,
         lastBlockNumber,
-        chainId,
         cachedQuerySpotPrice,
         pool,
         cachedPoolStatsFetch,
     } = props;
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);

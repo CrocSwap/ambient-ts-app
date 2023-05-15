@@ -21,10 +21,10 @@ import {
 
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     tx: TransactionIF;
@@ -37,11 +37,9 @@ interface propsIF {
     showPair: boolean;
     view2: boolean;
     showColumns: boolean;
-    blockExplorer: string | undefined;
     handlePulseAnimation?: (type: string) => void;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
 }
 function TransactionRow(props: propsIF) {
     const {
@@ -50,7 +48,6 @@ function TransactionRow(props: propsIF) {
         ipadView,
         isTokenABase,
         tx,
-        blockExplorer,
         handlePulseAnimation,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
@@ -58,7 +55,6 @@ function TransactionRow(props: propsIF) {
         isOnPortfolioPage,
         showPair,
         setSimpleRangeWidth,
-        chainData,
     } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -104,6 +100,9 @@ function TransactionRow(props: propsIF) {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -119,7 +118,6 @@ function TransactionRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
             />,
         );
     };
@@ -317,14 +315,12 @@ function TransactionRow(props: propsIF) {
                     tx={tx}
                     tradeData={tradeData}
                     isTokenABase={isTokenABase}
-                    blockExplorer={blockExplorer}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
-                    chainData={chainData}
                     handleWalletClick={handleWalletClick}
                     isShowAllEnabled={isShowAllEnabled}
                 />

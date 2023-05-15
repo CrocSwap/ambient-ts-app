@@ -12,7 +12,6 @@ import {
     useRef,
     useState,
 } from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
@@ -28,7 +27,6 @@ import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
-    chainData: ChainSpec;
     tradeData: tradeData;
     expandTradeTable: boolean;
     showColumns: boolean;
@@ -47,7 +45,6 @@ interface propsIF {
 }
 function OrderRow(props: propsIF) {
     const {
-        chainData,
         tradeData,
         showColumns,
         ipadView,
@@ -154,7 +151,6 @@ function OrderRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
             />,
         );
     };
@@ -338,7 +334,6 @@ function OrderRow(props: propsIF) {
 
                 <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
-                        chainData={chainData}
                         isShowAllEnabled={isShowAllEnabled}
                         tradeData={tradeData}
                         limitOrder={limitOrder}

@@ -11,8 +11,6 @@ interface propsIF {
     lastBlockNumber: number;
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    chainId: string;
-    tokenMap: Map<string, TokenIF>;
 }
 
 export default function Wallet(props: propsIF) {
@@ -21,8 +19,6 @@ export default function Wallet(props: propsIF) {
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        chainId,
-        tokenMap,
     } = props;
 
     const tokens = connectedAccountActive
@@ -45,8 +41,6 @@ export default function Wallet(props: propsIF) {
                     <WalletCard
                         key={JSON.stringify(token)}
                         token={token}
-                        chainId={chainId}
-                        tokenMap={tokenMap}
                         cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
                 ))}

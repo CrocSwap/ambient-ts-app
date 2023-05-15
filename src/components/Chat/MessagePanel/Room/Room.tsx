@@ -5,8 +5,8 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
-import { topPoolIF } from '../../../../App/hooks/useTopPools';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -42,7 +42,6 @@ interface propsIF {
     currentUser: any;
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
-    topPools: topPoolIF[];
 }
 
 export default function RoomDropdown(props: propsIF) {
@@ -55,8 +54,8 @@ export default function RoomDropdown(props: propsIF) {
         setShowCurrentPoolButton,
         favoritePoolsArray,
         setFavoritePoolsArray,
-        topPools,
     } = props;
+    const { topPools: rooms } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -80,8 +79,6 @@ export default function RoomDropdown(props: propsIF) {
             value: 'Global',
         },
     ];
-
-    const rooms = topPools;
 
     function findSpeed(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {

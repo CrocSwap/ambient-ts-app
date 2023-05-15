@@ -17,10 +17,8 @@ import {
     pinTickUpper,
     priceHalfAboveTick,
     CrocPoolView,
-    ChainSpec,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import React Functional Components
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -78,7 +76,6 @@ interface propsIF {
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -89,9 +86,7 @@ interface propsIF {
     poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    chainId: string;
     poolExists: boolean | undefined;
-    chainData: ChainSpec;
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -126,12 +121,9 @@ export default function Limit(props: propsIF) {
         quoteTokenDexBalance,
         tokenPair,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        chainId,
-        chainData,
         poolExists,
         lastBlockNumber,
         isOrderCopied,
@@ -149,21 +141,25 @@ export default function Limit(props: propsIF) {
         ackTokens,
     } = props;
 
+    const {
+        tutorial: { isActive: isTutorialActive },
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
+    const { dexBalLimit, bypassConfirmLimit } = useContext(
+        UserPreferenceContext,
+    );
+
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
 
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
-
-    const crocEnv = useContext(CrocEnvContext);
-    const { dexBalLimit, bypassConfirmLimit } = useContext(
-        UserPreferenceContext,
-    );
-    const {
-        tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -241,11 +237,9 @@ export default function Limit(props: propsIF) {
                     crocEnv,
                     pool.baseToken.tokenAddr,
                     pool.quoteToken.tokenAddr,
-                    chainData.chainId,
+                    chainId,
                     lastBlockNumber,
                 );
-
-                const gridSize = lookupChain(chainId).gridSize;
 
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
@@ -329,8 +323,6 @@ export default function Limit(props: propsIF) {
             } else if (limitTick) {
                 if (!pool) return;
                 if (poolPriceNonDisplay === 0) return;
-
-                const gridSize = lookupChain(chainId).gridSize;
 
                 const tickPrice = tickToPrice(limitTick);
 
@@ -597,7 +589,7 @@ export default function Limit(props: propsIF) {
                         user: userAddress ?? '',
                         base: tradeData.baseToken.address,
                         quote: tradeData.quoteToken.address,
-                        poolIdx: lookupChain(chainId).poolIndex.toString(),
+                        poolIdx: poolIndex.toString(),
                         positionType: 'knockout',
                         changeType: 'mint',
                         limitTick: limitTick.toString(),
@@ -633,8 +625,7 @@ export default function Limit(props: propsIF) {
                                 user: userAddress ?? '',
                                 base: tradeData.baseToken.address,
                                 quote: tradeData.quoteToken.address,
-                                poolIdx:
-                                    lookupChain(chainId).poolIndex.toString(),
+                                poolIdx: poolIndex.toString(),
                                 positionType: 'knockout',
                                 changeType: 'mint',
                                 limitTick: limitTick.toString(),
@@ -784,11 +775,9 @@ export default function Limit(props: propsIF) {
         provider: provider,
         setPriceInputFieldBlurred: setPriceInputFieldBlurred,
         pool: pool,
-        gridSize: chainData.gridSize,
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
-        chainId: chainId,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -900,10 +889,7 @@ export default function Limit(props: propsIF) {
                     </div>
                 )}{' '}
                 <ContentContainer isOnTradeRoute>
-                    <LimitHeader
-                        chainId={chainId}
-                        isPairStable={isPairStable}
-                    />
+                    <LimitHeader isPairStable={isPairStable} />
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -975,7 +961,7 @@ export default function Limit(props: propsIF) {
                                     {needConfirmTokenA && (
                                         <a
                                             href={
-                                                chainData.blockExplorer +
+                                                blockExplorer +
                                                 'token/' +
                                                 tokenPair.dataTokenA.address
                                             }
@@ -991,7 +977,7 @@ export default function Limit(props: propsIF) {
                                     {needConfirmTokenB && (
                                         <a
                                             href={
-                                                chainData.blockExplorer +
+                                                blockExplorer +
                                                 'token/' +
                                                 tokenPair.dataTokenB.address
                                             }

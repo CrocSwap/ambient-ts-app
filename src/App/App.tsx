@@ -168,40 +168,34 @@ export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const currentLocation = location.pathname;
-    // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
 
-    // CONTEXT: chart context
-    // hook to manage chart settings
-    const chartSettings: chartSettingsMethodsIF = useChartSettings();
+    // CONTEXT: to be removed, have components that require it reference it directly
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const tokenPair = useMemo(() => {
+        return {
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        };
+    }, [tradeData.tokenA, tradeData.tokenB]);
+    const userData = useAppSelector((state) => state.userData);
+    const isUserIdle = userData.isUserIdle;
+    const currentPoolInfo = tradeData;
 
-    const userPreferencesProps = {
-        favePools: useFavePools(),
-        swapSlippage: useSlippage('swap', slippage.swap),
-        mintSlippage: useSlippage('mint', slippage.mint),
-        repoSlippage: useSlippage('repo', slippage.reposition),
-        dexBalSwap: useExchangePrefs('swap'),
-        dexBalLimit: useExchangePrefs('limit'),
-        dexBalRange: useExchangePrefs('range'),
-        bypassConfirmSwap: useSkipConfirm('swap'),
-        bypassConfirmLimit: useSkipConfirm('limit'),
-        bypassConfirmRange: useSkipConfirm('range'),
-        bypassConfirmRepo: useSkipConfirm('repo'),
-    };
-
-    // CONTEXT: move into user preference context
-    // Memoize the object being passed to context. This assumes that all of the individual top-level values
-    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
-    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
-    // content needs to be updated
-    const userPreferences = useMemo(
-        () => userPreferencesProps,
-        [...Object.values(userPreferencesProps)],
-    );
+    // CONTEXT: remove and reference as necessary
+    const provider = useProvider();
+    const isInitialized = !!provider;
+    const {
+        data: signer,
+        isError,
+        error,
+        status: signerStatus,
+        //  isLoading
+    } = useSigner();
+    const dispatch = useAppDispatch();
 
     /* ------------------------------------------ APP STATE CONTEXT ------------------------------------------ */
-    // CONTEXT: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -265,7 +259,7 @@ export default function App() {
             },
             skin,
             theme: { selected: theme, setSelected: setTheme },
-            // CONTEXT: investigate what this actually does... move into trade tab context?
+            // TODO: investigate what this actually does... move into trade tab context?
             outsideTab: {
                 selected: selectedOutsideTab,
                 setSelected: setSelectedOutsideTab,
@@ -274,14 +268,14 @@ export default function App() {
                 isActive: outsideControl,
                 setIsActive: setOutsideControl,
             },
-            // CONTEXT: move into chat context
+            // TODO: move into chat context
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            // CONTEXT: move into chart context
+            // TODO: move into chart context
             chart: {
                 isFullScreen: fullScreenChart,
                 setIsFullScreen: setFullScreenChart,
@@ -371,167 +365,33 @@ export default function App() {
 
     /* ------------------------------------------ END APP STATE CONTEXT ------------------------------------------ */
 
-    // CONTEXT: move to inside crocenv context
-    useBlacklist(userAddress);
-
-    // CONTEXT: to be removed, have components that require it reference it directly
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const tokenPair = useMemo(() => {
-        return {
-            dataTokenA: tradeData.tokenA,
-            dataTokenB: tradeData.tokenB,
-        };
-    }, [tradeData.tokenA, tradeData.tokenB]);
-    const userData = useAppSelector((state) => state.userData);
-    const isUserIdle = userData.isUserIdle;
-    const currentPoolInfo = tradeData;
-    const isUserLoggedIn = isConnected;
-
-    //  CONTEXT: chain context - modify so that the appChain hook updates when userLoggedIn state changes
-    // custom hook to manage chain the app is using
-    // `chainData` is data on the current chain retrieved from our SDK
-    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
-    const [chainData, isChainSupported] = useAppChain(isUserLoggedIn);
-
-    // CONTEXT: croc env context - modify so that updates when chain id changes
+    /* ------------------------------------------ CROC ENV CONTEXT ------------------------------------------ */
+    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+    const [chainData, isChainSupported] = useAppChain(isConnected);
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
-
-    // CONTEXT: user preferences context
-    // hook to manage acknowledged tokens
-    const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
-    const ackTokens = useMemo(
-        () => ackTokensHooks,
-        [diffHashSig(ackTokensHooks.tokens)],
-    );
-
-    // CONTEXT: croc env context
     // Used in Portfolio/Account related pages for defining token universe.
     // Ideally this is inefficient, because we're also using useToken() hook
     // in parrallel which internally uses this hook. So there's some duplicated
     // effort
     const tokensOnActiveLists = useTokenMap();
-
-    // CONTEXT: to be moved into candle context / chart context?
-    const [candleData, setCandleData] = useState<
-        CandlesByPoolAndDuration | undefined
-    >();
-    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
-    const [isCandleSelected, setIsCandleSelected] = useState<
-        boolean | undefined
-    >();
-    const [fetchingCandle, setFetchingCandle] = useState(false);
-    const [candleDomains, setCandleDomains] = useState<candleDomain>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    });
-    const domainBoundaryInSeconds = Math.floor(
-        (candleDomains?.domainBoundry || 0) / 1000,
-    );
-
-    const candleState = {
-        candleData: {
-            value: candleData,
-            setValue: setCandleData,
-        },
-        isCandleDataNull: {
-            value: isCandleDataNull,
-            setValue: setIsCandleDataNull,
-        },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        fetchingCandle: {
-            value: fetchingCandle,
-            setValue: setFetchingCandle,
-        },
-        candleDomains: {
-            value: candleDomains,
-            setValue: setCandleDomains,
-        },
-    };
-
-    // CONTEXT: to be moved into range context
-    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
-    const [minRangePrice, setMinRangePrice] = useState<number>(0);
-    const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
-    const [repositionRangeWidth, setRepositionRangeWidth] =
-        useState<number>(10);
-    const [
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-    ] = useState<boolean>(false);
-    const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
-
-    const rangeState = {
-        maxRangePrice,
-        setMaxRangePrice,
-        minRangePrice,
-        setMinRangePrice,
-        simpleRangeWidth,
-        setSimpleRangeWidth,
-        repositionRangeWidth,
-        setRepositionRangeWidth,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        chartTriggeredBy,
-        setChartTriggeredBy,
-    };
-
-    // CONTEXT: to be moved into croc env context
-    const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-
-    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
-    const {
-        verifyToken,
-        ambientTokens,
-        onChainTokens,
-        getTokenByAddress,
-        getTokensByName,
-    } = useToken(chainData.chainId);
-
-    // CONTEXT: sidebar context
-    // hook to manage recent pool data in-session
-    const recentPools: recentPoolsMethodsIF = useRecentPools(
-        chainData.chainId,
-        tradeData.tokenA,
-        tradeData.tokenB,
-        verifyToken,
-        ackTokens,
-    );
-
-    // CONTEXT: can be removed
-    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-
-    // CONTEXT: trade table context, rename - toggle (your transactions vs all transactions)
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
-
-    // CONTEXT: trade table context
-    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
-        useState('');
-    const [currentPositionActive, setCurrentPositionActive] = useState('');
-
-    // CONTEXT: trade/trade table/tab state
-    const [expandTradeTable, setExpandTradeTable] = useState(true);
-
-    // CONTEXT: croc env context
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
 
-    // CONTEXT: remove and reference as necessary
-    const provider = useProvider();
-    const isInitialized = !!provider;
-    const {
-        data: signer,
-        isError,
-        error,
-        status: signerStatus,
-        //  isLoading
-    } = useSigner();
+    const crocEnvState = {
+        crocEnv,
+        setCrocEnv,
+        chainData,
+        isChainSupported,
+        topPools,
+        tokensOnActiveLists,
+        ethMainnetUsdPrice,
+        setEthMainnetUsdPrice,
+    };
 
-    // CONTEXT: helper function that will live in croc env context
+    useBlacklist(userAddress);
+
     const setNewCrocEnv = async () => {
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
@@ -573,8 +433,6 @@ export default function App() {
             }
         }
     };
-
-    // CONTEXT: move into croc env context
     useEffect(() => {
         setNewCrocEnv();
     }, [
@@ -583,8 +441,6 @@ export default function App() {
         chainData.chainId,
         signer,
     ]);
-
-    // CONTEXT: move into croc env - setEthMainnetUsdPrice when croc env changes
     useEffect(() => {
         if (provider) {
             (async () => {
@@ -600,73 +456,15 @@ export default function App() {
         }
     }, [provider]);
 
-    // CONTEXT: move into sidebar component
-    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
+    /* ------------------------------------------ END CROC ENV CONTEXT ------------------------------------------ */
 
-    // CONTEXT: leave in app.tsx for now, investigate if its being used, and move to another file if necessary - potentially combine
-    useEffect(() => {
-        if (isConnected) {
-            if (userData.isLoggedIn === false && userAddress) {
-                IS_LOCAL_ENV && console.debug('settting to logged in');
-                dispatch(setIsLoggedIn(true));
-                dispatch(setAddressAtLogin(userAddress));
-                dispatch(setAddressCurrent(userAddress));
-            } else if (userData.isLoggedIn === false) {
-                IS_LOCAL_ENV &&
-                    console.debug('settting to logged in - no address');
-                dispatch(setIsLoggedIn(true));
-            } else if (userData.isLoggedIn === undefined) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        } else {
-            if (userData.isLoggedIn === true) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        }
-    }, [isConnected, userData.isLoggedIn, userAddress]);
-    useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug(
-                'resetting user token data and address because connected userAddress changed',
-            );
-        dispatch(resetTokenData());
-        if (userAddress) {
-            dispatch(setAddressCurrent(userAddress));
-        } else {
-            dispatch(setAddressCurrent(undefined));
-        }
-    }, [isUserLoggedIn, userAddress]);
-
-    // CONTEXT: remove and reference as necessary
-    const dispatch = useAppDispatch();
-
-    // CONTEXT: token context?
-    // all tokens from active token lists
-    const [searchableTokens, setSearchableTokens] =
-        useState<TokenIF[]>(defaultTokens);
-    useEffect(() => {
-        setSearchableTokens(onChainTokens);
-    }, [chainData.chainId, onChainTokens]);
-    const [needTokenLists, setNeedTokenLists] = useState(true);
-    // trigger a useEffect() which needs to run when new token lists are received
-    // true vs false is an arbitrary distinction here
-    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-    if (needTokenLists) {
-        IS_LOCAL_ENV && console.debug('fetching token lists');
-        setNeedTokenLists(false);
-        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
-    }
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('initializing local storage');
-        initializeUserLocalStorage();
-    }, [tokenListsReceived]);
-
-    // CONTEXT: chain state context?
+    /* ------------------------------------------ CHAIN DATA CONTEXT ------------------------------------------ */
+    //  TODO: add to chain data context - modify so that the appChain hook updates when userLoggedIn state changes
+    // custom hook to manage chain the app is using
+    // `chainData` is data on the current chain retrieved from our SDK
+    // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
@@ -760,6 +558,295 @@ export default function App() {
         }
     }, [lastNewHeadMessage]);
 
+    const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
+    useEffect(() => {
+        fetch(
+            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
+        )
+            .then((response) => response.json())
+            .then((response) => {
+                if (response.result.ProposeGasPrice) {
+                    const newGasPrice = parseInt(
+                        response.result.ProposeGasPrice,
+                    );
+                    if (gasPriceInGwei !== newGasPrice) {
+                        setGasPriceinGwei(newGasPrice);
+                    }
+                }
+            })
+            .catch(console.error);
+    }, [lastBlockNumber]);
+
+    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
+    const everyEigthBlock = useMemo(
+        () => Math.floor(lastBlockNumber / 8),
+        [lastBlockNumber],
+    );
+    // check for token balances every eight blocks
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key =
+            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+        newToken.name = tokenName ?? '';
+        newToken.logoURI = tokenLogoURI ?? '';
+        return newToken;
+    };
+    useEffect(() => {
+        (async () => {
+            IS_LOCAL_ENV &&
+                console.debug('fetching native token and erc20 token balances');
+            if (crocEnv && isConnected && userAddress && chainData.chainId) {
+                try {
+                    const newNativeToken: TokenIF =
+                        await cachedFetchNativeTokenBalance(
+                            userAddress,
+                            chainData.chainId,
+                            everyEigthBlock,
+                            crocEnv,
+                        );
+
+                    dispatch(setNativeToken(newNativeToken));
+                } catch (error) {
+                    console.error({ error });
+                }
+                try {
+                    const erc20Results: TokenIF[] =
+                        await cachedFetchErc20TokenBalances(
+                            userAddress,
+                            chainData.chainId,
+                            everyEigthBlock,
+                            crocEnv,
+                        );
+                    const erc20TokensWithLogos = erc20Results.map((token) =>
+                        addTokenInfo(token),
+                    );
+
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                } catch (error) {
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+
+    /* ------------------------------------------ END CHAIN DATA CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ CHART CONTEXT ------------------------------------------ */
+    // hook to manage chart settings
+    const chartSettings: chartSettingsMethodsIF = useChartSettings();
+
+    /* ------------------------------------------ END CHART CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ CANDLE CONTEXT ------------------------------------------ */
+    const [candleData, setCandleData] = useState<
+        CandlesByPoolAndDuration | undefined
+    >();
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
+    const [isCandleSelected, setIsCandleSelected] = useState<
+        boolean | undefined
+    >();
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    });
+    const domainBoundaryInSeconds = Math.floor(
+        (candleDomains?.domainBoundry || 0) / 1000,
+    );
+
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
+    };
+
+    /* ------------------------------------------ END CANDLE CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ RANGE CONTEXT ------------------------------------------ */
+    const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
+    const [minRangePrice, setMinRangePrice] = useState<number>(0);
+    const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
+    const [repositionRangeWidth, setRepositionRangeWidth] =
+        useState<number>(10);
+    const [
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+    ] = useState<boolean>(false);
+    const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
+
+    const rangeState = {
+        maxRangePrice,
+        setMaxRangePrice,
+        minRangePrice,
+        setMinRangePrice,
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+    };
+
+    /* ------------------------------------------ END RANGE CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ USER PREFERENCES CONTEXT ------------------------------------------ */
+    // TODO: add to user preference context
+    // hook to manage acknowledged tokens
+    const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
+    const ackTokens = useMemo(
+        () => ackTokensHooks,
+        [diffHashSig(ackTokensHooks.tokens)],
+    );
+
+    const userPreferencesProps = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap', slippage.swap),
+        mintSlippage: useSlippage('mint', slippage.mint),
+        repoSlippage: useSlippage('repo', slippage.reposition),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+    };
+
+    // Memoize the object being passed to context. This assumes that all of the individual top-level values
+    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
+    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
+    // content needs to be updated
+    const userPreferences = useMemo(
+        () => userPreferencesProps,
+        [...Object.values(userPreferencesProps)],
+    );
+    /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ USER DATA CONTEXT ------------------------------------------ */
+    // TODO: add to user data context
+    const { addRecentToken, getRecentTokens } = useRecentTokens(
+        chainData.chainId,
+    );
+
+    /* ------------------------------------------ END USER DATA CONTEXT ------------------------------------------ */
+
+    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
+    const {
+        verifyToken,
+        ambientTokens,
+        onChainTokens,
+        getTokenByAddress,
+        getTokensByName,
+    } = useToken(chainData.chainId);
+
+    // CONTEXT: sidebar context
+    // hook to manage recent pool data in-session
+    const recentPools: recentPoolsMethodsIF = useRecentPools(
+        chainData.chainId,
+        tradeData.tokenA,
+        tradeData.tokenB,
+        verifyToken,
+        ackTokens,
+    );
+
+    // CONTEXT: can be removed
+    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
+
+    // CONTEXT: trade table context, rename - toggle (your transactions vs all transactions)
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+
+    // CONTEXT: trade table context
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
+        useState('');
+    const [currentPositionActive, setCurrentPositionActive] = useState('');
+
+    // CONTEXT: trade table context
+    const [expandTradeTable, setExpandTradeTable] = useState(true);
+
+    // CONTEXT: move into sidebar component
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
+
+    // CONTEXT: leave in app.tsx for now, investigate if its being used, and move to another file if necessary - potentially combine
+    useEffect(() => {
+        if (isConnected) {
+            if (userData.isLoggedIn === false && userAddress) {
+                IS_LOCAL_ENV && console.debug('settting to logged in');
+                dispatch(setIsLoggedIn(true));
+                dispatch(setAddressAtLogin(userAddress));
+                dispatch(setAddressCurrent(userAddress));
+            } else if (userData.isLoggedIn === false) {
+                IS_LOCAL_ENV &&
+                    console.debug('settting to logged in - no address');
+                dispatch(setIsLoggedIn(true));
+            } else if (userData.isLoggedIn === undefined) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
+                dispatch(setIsLoggedIn(false));
+                dispatch(resetUserAddresses());
+            }
+        } else {
+            if (userData.isLoggedIn === true) {
+                IS_LOCAL_ENV && console.debug('settting to logged out');
+                dispatch(setIsLoggedIn(false));
+                dispatch(resetUserAddresses());
+            }
+        }
+    }, [isConnected, userData.isLoggedIn, userAddress]);
+    useEffect(() => {
+        IS_LOCAL_ENV &&
+            console.debug(
+                'resetting user token data and address because connected userAddress changed',
+            );
+        dispatch(resetTokenData());
+        if (userAddress) {
+            dispatch(setAddressCurrent(userAddress));
+        } else {
+            dispatch(setAddressCurrent(undefined));
+        }
+    }, [isConnected, userAddress]);
+
+    // CONTEXT: token context?
+    // all tokens from active token lists
+    const [searchableTokens, setSearchableTokens] =
+        useState<TokenIF[]>(defaultTokens);
+    useEffect(() => {
+        setSearchableTokens(onChainTokens);
+    }, [chainData.chainId, onChainTokens]);
+    const [needTokenLists, setNeedTokenLists] = useState(true);
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
+    if (needTokenLists) {
+        IS_LOCAL_ENV && console.debug('fetching token lists');
+        setNeedTokenLists(false);
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
+    }
+    useEffect(() => {
+        IS_LOCAL_ENV && console.debug('initializing local storage');
+        initializeUserLocalStorage();
+    }, [tokenListsReceived]);
+
     // CONTEXT: move inside Portolio
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
@@ -814,68 +901,6 @@ export default function App() {
         }
     }, [lastReceiptHash]);
 
-    // CONTEXT: chain state context
-    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
-    const everyEigthBlock = useMemo(
-        () => Math.floor(lastBlockNumber / 8),
-        [lastBlockNumber],
-    );
-    // check for token balances every eight blocks
-    const addTokenInfo = (token: TokenIF): TokenIF => {
-        const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
-        return newToken;
-    };
-    useEffect(() => {
-        (async () => {
-            IS_LOCAL_ENV &&
-                console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isUserLoggedIn && userAddress && chainData.chainId) {
-                try {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainData.chainId,
-                            everyEigthBlock,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-                } catch (error) {
-                    console.error({ error });
-                }
-                try {
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyEigthBlock,
-                            crocEnv,
-                        );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
-                        addTokenInfo(token),
-                    );
-
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
-                } catch (error) {
-                    console.error({ error });
-                }
-            }
-        })();
-    }, [
-        crocEnv,
-        isUserLoggedIn,
-        userAddress,
-        chainData.chainId,
-        everyEigthBlock,
-    ]);
-
     // CONTEXT: move into pool context
     const pool = useMemo(
         () =>
@@ -928,7 +953,7 @@ export default function App() {
         searchableTokens,
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
-        isUserLoggedIn,
+        isUserLoggedIn: isConnected,
         isUserIdle,
         lastBlockNumber,
         isServerEnabled,
@@ -1155,7 +1180,7 @@ export default function App() {
             if (
                 crocEnv &&
                 userAddress &&
-                isUserLoggedIn &&
+                isConnected &&
                 tradeData.baseToken.address &&
                 tradeData.quoteToken.address
             ) {
@@ -1211,7 +1236,7 @@ export default function App() {
         })();
     }, [
         crocEnv,
-        isUserLoggedIn,
+        isConnected,
         userAddress,
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
@@ -1222,7 +1247,7 @@ export default function App() {
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
     useEffect(() => {
-        if (isServerEnabled && isUserLoggedIn && userAddress && crocEnv) {
+        if (isServerEnabled && isConnected && userAddress && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
@@ -1409,7 +1434,7 @@ export default function App() {
         searchableTokens.length,
         isServerEnabled,
         tokensOnActiveLists,
-        isUserLoggedIn,
+        isConnected,
         userAddress,
         chainData.chainId,
         crocEnv,
@@ -1452,28 +1477,8 @@ export default function App() {
         disconnect();
     }, []);
 
-    // CONTEXT: chain context
-    const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-    useEffect(() => {
-        fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        )
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.result.ProposeGasPrice) {
-                    const newGasPrice = parseInt(
-                        response.result.ProposeGasPrice,
-                    );
-                    if (gasPriceInGwei !== newGasPrice) {
-                        setGasPriceinGwei(newGasPrice);
-                    }
-                }
-            })
-            .catch(console.error);
-    }, [lastBlockNumber]);
-
     // CONTEXT: move this into the header component
-    const shouldDisplayAccountTab = isUserLoggedIn && userAddress !== undefined;
+    const shouldDisplayAccountTab = isConnected && userAddress !== undefined;
 
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
     // CONTEXT: move into trade table component - put in context if necessary - investigate
@@ -1511,11 +1516,6 @@ export default function App() {
     // CONTEXT: remove and reference as necessary
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
-    );
-
-    // CONTEXT: user data context
-    const { addRecentToken, getRecentTokens } = useRecentTokens(
-        chainData.chainId,
     );
 
     // CONTEXT: helper function
@@ -1576,16 +1576,12 @@ export default function App() {
 
     // props for <PageHeader/> React element
     const headerProps = {
-        isUserLoggedIn,
+        isConnected,
         clickLogout,
         shouldDisplayAccountTab,
-        chainId: chainData.chainId,
-        isChainSupported,
         lastBlockNumber,
         poolPriceDisplay,
-        ethMainnetUsdPrice,
         recentPools,
-        chainData,
         getTokenByAddress,
     };
 
@@ -1604,11 +1600,10 @@ export default function App() {
     const swapProps = {
         pool,
         tokenPairLocal,
-        isUserLoggedIn,
+        isConnected,
         provider,
         isPairStable,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         lastBlockNumber,
         baseTokenBalance,
         quoteTokenBalance,
@@ -1619,7 +1614,6 @@ export default function App() {
         poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        chainId: chainData.chainId,
         isInitialized,
         poolExists,
         setTokenPairLocal,
@@ -1634,7 +1628,6 @@ export default function App() {
         setInput,
         searchType,
         ackTokens,
-        chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -1644,7 +1637,6 @@ export default function App() {
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1655,7 +1647,6 @@ export default function App() {
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance,
-        chainId: chainData.chainId,
         isInitialized,
         poolExists,
         isSwapCopied,
@@ -1671,19 +1662,15 @@ export default function App() {
         searchType,
         tokenPairLocal,
         ackTokens,
-        chainData,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
         pool,
-        chainData,
-        isUserLoggedIn,
         provider,
         isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         lastBlockNumber,
         baseTokenBalance,
         quoteTokenBalance,
@@ -1695,7 +1682,6 @@ export default function App() {
         setResetLimitTick,
         setRecheckTokenAApproval,
         tokenAAllowance,
-        chainId: chainData.chainId,
         poolExists: poolExists,
         isOrderCopied,
         verifyToken,
@@ -1715,12 +1701,10 @@ export default function App() {
     // props for <Range/> React element
 
     const rangeProps = {
-        isUserLoggedIn,
         provider,
         isPairStable,
         lastBlockNumber,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
@@ -1733,7 +1717,6 @@ export default function App() {
         quoteTokenDexBalance,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        chainId: chainData.chainId,
         ambientApy,
         dailyVol,
         poolExists,
@@ -1760,7 +1743,6 @@ export default function App() {
         setRescaleRangeBoundariesWithSlider,
         ackTokens,
         cachedFetchTokenPrice,
-        chainData,
     };
 
     // CONTEXT: move into sidebar
@@ -1770,15 +1752,12 @@ export default function App() {
     const sidebarProps = {
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
-        chainId: chainData.chainId,
-        poolId: chainData.poolIndex,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap: tokensOnActiveLists,
         lastBlockNumber,
         currentPositionActive,
         setCurrentPositionActive,
@@ -1788,9 +1767,7 @@ export default function App() {
         verifyToken: verifyToken,
         tokenPair: tokenPair,
         recentPools,
-        isConnected,
         ackTokens,
-        topPools,
     };
 
     // CONTEXT: user preference context
@@ -1944,12 +1921,10 @@ export default function App() {
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         chartSettings,
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isUserLoggedIn,
         provider,
         candleData,
         baseTokenAddress,
@@ -1962,15 +1937,12 @@ export default function App() {
         lastBlockNumber,
         isTokenABase,
         poolPriceDisplay,
-        chainId: chainData.chainId,
-        chainData,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap: tokensOnActiveLists,
         currentPositionActive,
         setCurrentPositionActive,
         isInitialized,
@@ -1999,7 +1971,6 @@ export default function App() {
 
     const accountProps = {
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -2015,12 +1986,9 @@ export default function App() {
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
         lastBlockNumber,
-        chainId: chainData.chainId,
         tokensOnActiveLists,
-        chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
-        isUserLoggedIn,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -2040,13 +2008,9 @@ export default function App() {
     };
 
     const repositionProps = {
-        chainData,
-        ethMainnetUsdPrice,
         gasPriceInGwei,
         lastBlockNumber,
         tokenPair,
-        crocEnv,
-        chainId: chainData.chainId,
         provider,
         ambientApy,
         dailyVol,
@@ -2067,9 +2031,9 @@ export default function App() {
         isFullScreen: true,
         // CONTEXT: remove and use location to determine
         appPage: true,
-        topPools: topPools,
     };
 
+    // CONTEXT: likely want to split these guys up to live in their respective contexts
     useWebSocketSubs({
         crocEnv,
         wssGraphCacheServerDomain,
@@ -2092,16 +2056,16 @@ export default function App() {
 
     return (
         <AppStateContext.Provider value={appState}>
-            <UserPreferenceContext.Provider value={userPreferences}>
-                <div
-                    className={containerStyle}
-                    data-theme={appState.theme.selected}
-                >
-                    <AppOverlay />
-                    {currentLocation !== '/404' && (
-                        <PageHeader {...headerProps} />
-                    )}
-                    <CrocEnvContext.Provider value={crocEnv}>
+            <CrocEnvContext.Provider value={crocEnvState}>
+                <UserPreferenceContext.Provider value={userPreferences}>
+                    <div
+                        className={containerStyle}
+                        data-theme={appState.theme.selected}
+                    >
+                        <AppOverlay />
+                        {currentLocation !== '/404' && (
+                            <PageHeader {...headerProps} />
+                        )}
                         <section
                             className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                         >
@@ -2115,10 +2079,7 @@ export default function App() {
                                             cachedQuerySpotPrice={
                                                 cachedQuerySpotPrice
                                             }
-                                            tokenMap={tokensOnActiveLists}
                                             lastBlockNumber={lastBlockNumber}
-                                            chainId={chainData.chainId}
-                                            topPools={topPools}
                                             cachedPoolStatsFetch={
                                                 cachedPoolStatsFetch
                                             }
@@ -2245,12 +2206,8 @@ export default function App() {
                                     path='initpool/:params'
                                     element={
                                         <InitPool
-                                            isUserLoggedIn={isUserLoggedIn}
-                                            crocEnv={crocEnv}
+                                            isUserLoggedIn={isConnected}
                                             gasPriceInGwei={gasPriceInGwei}
-                                            ethMainnetUsdPrice={
-                                                ethMainnetUsdPrice
-                                            }
                                             openModalWallet={
                                                 openWagmiModalWallet
                                             }
@@ -2319,26 +2276,25 @@ export default function App() {
                                 <Route path='/404' element={<NotFound />} />
                             </Routes>
                         </section>
-                    </CrocEnvContext.Provider>
-                </div>
-                <div className='footer_container'>
-                    {currentLocation !== '/' &&
-                        !currentLocation.includes('/chat') &&
-                        appState.chat.isEnabled && (
-                            <ChatPanel
-                                onClose={chatOnClose}
-                                currentPool={currentPoolInfo}
-                                isFullScreen={false}
-                                topPools={topPools}
-                            />
-                        )}
-                </div>
-                <SidebarFooter />
-                <GlobalModal />
-                <GlobalPopup />
-                <SnackbarComponent />
-                <WalletModalWagmi />
-            </UserPreferenceContext.Provider>
+                    </div>
+                    <div className='footer_container'>
+                        {currentLocation !== '/' &&
+                            !currentLocation.includes('/chat') &&
+                            appState.chat.isEnabled && (
+                                <ChatPanel
+                                    onClose={chatOnClose}
+                                    currentPool={currentPoolInfo}
+                                    isFullScreen={false}
+                                />
+                            )}
+                    </div>
+                    <SidebarFooter />
+                    <GlobalModal />
+                    <GlobalPopup />
+                    <SnackbarComponent />
+                    <WalletModalWagmi />
+                </UserPreferenceContext.Provider>
+            </CrocEnvContext.Provider>
         </AppStateContext.Provider>
     );
 }

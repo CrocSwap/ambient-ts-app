@@ -1,4 +1,4 @@
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
@@ -9,7 +9,14 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 import {
     addPendingTx,
@@ -28,9 +35,9 @@ import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
@@ -42,12 +49,10 @@ interface propsIF {
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Withdraw(props: propsIF) {
     const {
-        crocEnv,
         selectedToken,
         // tokenAllowance,
         // tokenWalletBalance,
@@ -60,9 +65,9 @@ export default function Withdraw(props: propsIF) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        ethMainnetUsdPrice,
         gasPriceInGwei,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,

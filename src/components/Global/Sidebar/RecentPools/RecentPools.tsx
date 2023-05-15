@@ -10,20 +10,14 @@ import { memo } from 'react';
 
 interface propsIF {
     tradeData: tradeData;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
     recentPools: recentPoolsMethodsIF;
 }
 
 function RecentPools(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        recentPools,
-    } = props;
+    const { tradeData, lastBlockNumber, cachedPoolStatsFetch, recentPools } =
+        props;
 
     return (
         <div className={styles.container}>
@@ -36,7 +30,6 @@ function RecentPools(props: propsIF) {
                 {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
                         tradeData={tradeData}
-                        chainId={chainId}
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}

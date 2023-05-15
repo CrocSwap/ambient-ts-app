@@ -11,7 +11,6 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     tokenPair: TokenPairIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -24,7 +23,6 @@ export default function SidebarSearchResults(props: propsIF) {
     const {
         searchData,
         tokenPair,
-        chainId,
         cachedPoolStatsFetch,
         isDenomBase,
         setCurrentPositionActive,
@@ -41,13 +39,11 @@ export default function SidebarSearchResults(props: propsIF) {
             <PoolsSearchResults
                 searchedPools={searchData.pools}
                 tokenPair={tokenPair}
-                chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
             />
             {isUserConnected && (
                 <>
                     <TxSearchResults
-                        chainId={chainId}
                         searchedTxs={searchData.txs}
                         setCurrentTxActiveInTransactions={
                             setCurrentTxActiveInTransactions
@@ -55,14 +51,12 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <OrdersSearchResults
-                        chainId={chainId}
                         searchedLimitOrders={searchData.limits}
                         isDenomBase={isDenomBase}
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <PositionsSearchResults
-                        chainId={chainId}
                         searchedPositions={searchData.positions}
                         isDenomBase={isDenomBase}
                         setCurrentPositionActive={setCurrentPositionActive}

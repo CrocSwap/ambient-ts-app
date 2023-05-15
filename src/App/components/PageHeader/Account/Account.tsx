@@ -9,11 +9,11 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -22,9 +22,6 @@ interface AccountPropsIF {
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    chainId: string;
-    ethMainnetUsdPrice?: number;
-    chainData: ChainSpec;
     lastBlockNumber: number;
 
     walletDropdownTokenData:
@@ -40,18 +37,16 @@ interface AccountPropsIF {
 export default function Account(props: AccountPropsIF) {
     const {
         nativeBalance,
-        ethMainnetUsdPrice,
         clickLogout,
         ensName,
-        chainId,
         lastBlockNumber,
-        chainData,
         walletDropdownTokenData,
     } = props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const { chainData, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
@@ -147,7 +142,6 @@ export default function Account(props: AccountPropsIF) {
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
                     walletWrapperStyle={walletWrapperStyle}
-                    chainId={chainId}
                     ethAmount={
                         isUserLoggedIn
                             ? nativeBalance
@@ -192,7 +186,6 @@ export default function Account(props: AccountPropsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    chainId={chainId}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
                 />
             </NavItem>

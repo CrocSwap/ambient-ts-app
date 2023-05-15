@@ -11,12 +11,7 @@ import {
 } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import {
-    concDepositSkew,
-    capitalConcFactor,
-    ChainSpec,
-} from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import JSX Elements
@@ -91,7 +86,6 @@ interface propsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
@@ -105,7 +99,6 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    chainId: string;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolExists: boolean | undefined;
@@ -130,7 +123,6 @@ interface propsIF {
     simpleRangeWidth: number;
     ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
-    chainData: ChainSpec;
 }
 
 function Range(props: propsIF) {
@@ -150,8 +142,6 @@ function Range(props: propsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
-        chainId,
         ambientApy,
         dailyVol,
         poolExists,
@@ -170,9 +160,16 @@ function Range(props: propsIF) {
         simpleRangeWidth,
         cachedFetchTokenPrice,
         ackTokens,
-        chainData,
     } = props;
 
+    const {
+        tutorial: { isActive: isTutorialActive },
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
     const {
         minRangePrice: minPrice,
         maxRangePrice: maxPrice,
@@ -182,14 +179,9 @@ function Range(props: propsIF) {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeStateContext);
-
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
-    const {
-        tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
 
     const [
         isConfirmationModalOpen,
@@ -223,7 +215,7 @@ function Range(props: propsIF) {
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
 
-    const crocEnv = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -233,7 +225,7 @@ function Range(props: propsIF) {
     >();
     const userPositions = useAppSelector(
         (state) => state.graphData,
-    ).positionsByUser.positions.filter((x) => x.chainId === chainData.chainId);
+    ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -363,7 +355,7 @@ function Range(props: propsIF) {
             ? roundDownTick(
                   currentPoolPriceTick +
                       defaultMinPriceDifferencePercentage * 100,
-                  lookupChain(chainId).gridSize,
+                  gridSize,
               )
             : tradeData.advancedLowTick;
         return value;
@@ -379,7 +371,7 @@ function Range(props: propsIF) {
             ? roundUpTick(
                   currentPoolPriceTick +
                       defaultMaxPriceDifferencePercentage * 100,
-                  lookupChain(chainId).gridSize,
+                  gridSize,
               )
             : tradeData.advancedHighTick;
         return value;
@@ -455,7 +447,7 @@ function Range(props: propsIF) {
             quoteTokenDecimals,
             lowTick,
             highTick,
-            lookupChain(chainId).gridSize,
+            gridSize,
         );
 
         setPinnedDisplayPrices(pinnedDisplayPrices);
@@ -509,7 +501,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
             setPinnedDisplayPrices(pinnedDisplayPrices);
@@ -700,7 +692,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
             IS_LOCAL_ENV && console.debug({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
@@ -798,7 +790,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 targetMinValue?.toString() ?? '0',
                 targetMaxValue?.toString() ?? '0',
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
             !denominationsInBase
@@ -896,7 +888,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 targetMinValue?.toString() ?? '0',
                 targetMaxValue?.toString() ?? '0',
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
             denominationsInBase
@@ -1122,7 +1114,7 @@ function Range(props: propsIF) {
                             user: userAddress ?? '',
                             base: baseTokenAddress,
                             quote: quoteTokenAddress,
-                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            poolIdx: poolIndex.toString(),
                             positionType: 'ambient',
                             // bidTick: '0',
                             // askTick: '0',
@@ -1140,7 +1132,7 @@ function Range(props: propsIF) {
                             user: userAddress ?? '',
                             base: baseTokenAddress,
                             quote: quoteTokenAddress,
-                            poolIdx: lookupChain(chainId).poolIndex.toString(),
+                            poolIdx: poolIndex.toString(),
                             positionType: 'concentrated',
                             changeType: 'mint',
                             bidTick: defaultLowTick.toString(),
@@ -1178,8 +1170,7 @@ function Range(props: propsIF) {
                                 user: userAddress ?? '',
                                 base: baseTokenAddress,
                                 quote: quoteTokenAddress,
-                                poolIdx:
-                                    lookupChain(chainId).poolIndex.toString(),
+                                poolIdx: poolIndex.toString(),
                                 positionType: isAmbient
                                     ? 'ambient'
                                     : 'concentrated',
@@ -1241,7 +1232,6 @@ function Range(props: propsIF) {
         baseToken: tradeData.baseToken,
         quoteToken: tradeData.quoteToken,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
-        chainId: chainId,
         isAmbient: isAmbient,
     };
 
@@ -1253,7 +1243,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -1271,7 +1261,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             ).pinnedMinPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -1289,7 +1279,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -1307,7 +1297,7 @@ function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             ).pinnedMaxPriceDisplayTruncated,
         [
             baseTokenDecimals,
@@ -1343,7 +1333,6 @@ function Range(props: propsIF) {
         poolExists: poolExists,
         provider: provider,
         poolPriceNonDisplay: poolPriceNonDisplay,
-        chainId: chainId,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -1466,7 +1455,6 @@ function Range(props: propsIF) {
                     rangeLowTick={defaultLowTick}
                     rangeHighTick={defaultHighTick}
                     disable={isInvalidRange || !poolExists}
-                    chainId={chainId.toString()}
                     maxPrice={maxPrice}
                     minPrice={minPrice}
                     setMaxPrice={setMaxPrice}
@@ -1669,7 +1657,6 @@ function Range(props: propsIF) {
 
                 <ContentContainer isOnTradeRoute>
                     <RangeHeader
-                        chainId={chainId}
                         tokenPair={tokenPair}
                         mintSlippage={mintSlippage}
                         isPairStable={isPairStable}
@@ -1739,7 +1726,7 @@ function Range(props: propsIF) {
                                     {needConfirmTokenA && (
                                         <a
                                             href={
-                                                chainData.blockExplorer +
+                                                blockExplorer +
                                                 'token/' +
                                                 tokenPair.dataTokenA.address
                                             }
@@ -1757,7 +1744,7 @@ function Range(props: propsIF) {
                                     {needConfirmTokenB && (
                                         <a
                                             href={
-                                                chainData.blockExplorer +
+                                                blockExplorer +
                                                 'token/' +
                                                 tokenPair.dataTokenB.address
                                             }

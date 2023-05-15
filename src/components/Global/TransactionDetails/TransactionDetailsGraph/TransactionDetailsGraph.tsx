@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
@@ -8,7 +8,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -17,7 +17,6 @@ interface TransactionDetailsGraphIF {
     useTx?: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
-    chainData: ChainSpec;
 }
 
 export default function TransactionDetailsGraph(
@@ -28,8 +27,8 @@ export default function TransactionDetailsGraph(
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
-        chainData,
     } = props;
+    const { chainData } = useContext(CrocEnvContext);
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined

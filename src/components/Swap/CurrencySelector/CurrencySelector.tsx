@@ -35,7 +35,6 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     disableReverseTokens: boolean;
     tokenPair: TokenPairIF;
-    chainId: string;
     fieldId: string;
     tokenAorB: string | null;
     direction: string;
@@ -102,7 +101,6 @@ function CurrencySelector(props: propsIF) {
         buyQtyString,
         setBuyQtyString,
         tokenPair,
-        chainId,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -575,7 +573,6 @@ function CurrencySelector(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}

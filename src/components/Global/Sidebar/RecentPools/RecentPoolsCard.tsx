@@ -1,23 +1,25 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     tradeData: tradeData;
-    chainId: string;
     pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch } =
-        props;
+    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const { pathname } = useLocation();
 

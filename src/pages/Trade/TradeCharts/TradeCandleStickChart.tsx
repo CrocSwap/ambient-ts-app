@@ -24,7 +24,6 @@ import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
@@ -35,6 +34,7 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -55,7 +55,6 @@ declare global {
 }
 
 interface propsIF {
-    chainData: ChainSpec;
     expandTradeTable: boolean;
     changeState: (
         isOpen: boolean | undefined,
@@ -82,7 +81,6 @@ interface propsIF {
     downVolumeColor: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
@@ -122,9 +120,7 @@ type chartItemStates = {
 
 function TradeCandleStickChart(props: propsIF) {
     const {
-        chainData,
         baseTokenAddress,
-        chainId,
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
@@ -137,6 +133,7 @@ function TradeCandleStickChart(props: propsIF) {
         isMarketOrLimitModule,
     } = props;
 
+    const { chainData } = useContext(CrocEnvContext);
     const {
         candleData: { value: candleData },
         fetchingCandle: { setValue: setFetchingCandle },
@@ -310,9 +307,8 @@ function TradeCandleStickChart(props: propsIF) {
                 props.baseTokenAddress.toLowerCase() &&
             props.liquidityData.curveState.quote ===
                 props.quoteTokenAddress.toLowerCase() &&
-            props.liquidityData.curveState.poolIdx ===
-                props.chainData.poolIndex &&
-            props.liquidityData.curveState.chainId === props.chainData.chainId
+            props.liquidityData.curveState.poolIdx === chainData.poolIndex &&
+            props.liquidityData.curveState.chainId === chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('parsing liquidity data');
 
@@ -333,7 +329,7 @@ function TradeCandleStickChart(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainId).gridSize,
+                lookupChain(chainData.chainId).gridSize,
             );
 
             const limitBoundary = parseFloat(
@@ -812,7 +808,6 @@ function TradeCandleStickChart(props: propsIF) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
-                        chainData={chainData}
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}
                         expandTradeTable={expandTradeTable}
@@ -835,7 +830,6 @@ function TradeCandleStickChart(props: propsIF) {
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
-                        chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}

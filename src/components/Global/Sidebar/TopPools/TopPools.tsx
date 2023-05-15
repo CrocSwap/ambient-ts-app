@@ -3,25 +3,20 @@ import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
 import { TempPoolIF } from '../../../../utils/interfaces/exports';
-import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     tradeData: tradeData;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
     poolList: TempPoolIF[];
-    topPools: topPoolIF[];
 }
 
 export default function TopPools(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        topPools,
-    } = props;
+    const { tradeData, lastBlockNumber, cachedPoolStatsFetch } = props;
+
+    const { topPools } = useContext(CrocEnvContext);
 
     return (
         <div className={styles.container}>
@@ -36,7 +31,6 @@ export default function TopPools(props: propsIF) {
                         tradeData={tradeData}
                         pool={pool}
                         key={idx}
-                        chainId={chainId}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}
                     />

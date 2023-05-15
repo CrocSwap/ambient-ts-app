@@ -11,7 +11,6 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -25,12 +24,10 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
     tradeData: tradeData;
     limitOrder: LimitOrderIF;
     isOwnerActiveAccount?: boolean;
@@ -50,7 +47,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         // isShowAllEnabled,
-        chainData,
         tradeData,
         limitOrder,
         isOrderFilled,
@@ -71,8 +67,6 @@ export default function OrdersMenu(props: propsIF) {
         //  openModal,
         closeModal,
     ] = useModal();
-
-    const crocEnv = useContext(CrocEnvContext);
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -174,8 +168,6 @@ export default function OrdersMenu(props: propsIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -183,8 +175,6 @@ export default function OrdersMenu(props: propsIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -200,7 +190,6 @@ export default function OrdersMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
             />,
         );
 

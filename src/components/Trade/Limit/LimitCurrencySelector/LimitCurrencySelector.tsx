@@ -37,7 +37,6 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 interface propsIF {
     provider?: ethers.providers.Provider;
     tokenPair: TokenPairIF;
-    chainId: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -91,7 +90,6 @@ function LimitCurrencySelector(props: propsIF) {
     const {
         provider,
         tokenPair,
-        chainId,
         tokenAInputQty,
         tokenBInputQty,
         fieldId,
@@ -416,7 +414,6 @@ function LimitCurrencySelector(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}

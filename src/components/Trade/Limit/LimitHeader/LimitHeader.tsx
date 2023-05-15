@@ -23,7 +23,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
-    chainId: string;
     isPairStable: boolean;
 }
 

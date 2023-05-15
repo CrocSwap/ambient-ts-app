@@ -2,21 +2,18 @@ import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
-import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
     tradeData: tradeData;
     userData: userData;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    chainId: string;
-    topPools: topPoolIF[];
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
@@ -25,11 +22,10 @@ export default function TopPools(props: propsIF) {
         tradeData,
         userData,
         lastBlockNumber,
-        chainId,
         cachedQuerySpotPrice,
-        topPools,
         cachedPoolStatsFetch,
     } = props;
+    const { topPools } = useContext(CrocEnvContext);
 
     const { t } = useTranslation();
 
@@ -57,7 +53,6 @@ export default function TopPools(props: propsIF) {
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         key={idx}
                         lastBlockNumber={lastBlockNumber}
-                        chainId={chainId}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                     />

@@ -22,7 +22,6 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -34,9 +33,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for props
 interface propsIF {
-    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    chainId: string;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
     lastBlockNumber: number;
@@ -55,15 +52,12 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 // react functional component
 function Leaderboard(props: propsIF) {
     const {
-        chainData,
         provider,
-        chainId,
         isShowAllEnabled,
         baseTokenBalance,
         quoteTokenBalance,
@@ -78,7 +72,6 @@ function Leaderboard(props: propsIF) {
         cachedPositionUpdateQuery,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -351,9 +344,7 @@ function Leaderboard(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            chainData={chainData}
             provider={provider}
-            chainId={chainId}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
@@ -366,7 +357,6 @@ function Leaderboard(props: propsIF) {
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
             gasPriceInGwei={gasPriceInGwei}
-            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
 

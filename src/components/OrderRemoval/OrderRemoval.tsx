@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHeader';
@@ -9,7 +9,6 @@ import styles from './OrderRemoval.module.css';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 // import Toggle2 from '../Global/Toggle/Toggle2';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
@@ -32,16 +31,15 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    chainData: ChainSpec;
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { limitOrder, closeGlobalModal } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -58,6 +56,7 @@ export default function OrderRemoval(props: propsIF) {
         baseDisplay,
         quoteDisplay,
     } = useProcessOrder(limitOrder, userAddress);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
@@ -259,7 +258,6 @@ export default function OrderRemoval(props: propsIF) {
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted'
-            chainId={chainData.chainId}
         />
     );
 

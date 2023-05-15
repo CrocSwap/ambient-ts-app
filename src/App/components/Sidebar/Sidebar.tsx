@@ -29,11 +29,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import {
-    TokenIF,
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../utils/interfaces/exports';
+import { TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
@@ -46,9 +42,9 @@ import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
-import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -56,8 +52,6 @@ const cachedPoolStatsFetch = memoizePoolStats();
 interface propsIF {
     tradeData: tradeData;
     isDenomBase: boolean;
-    chainId: string;
-    poolId: number;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
@@ -68,22 +62,18 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     ackTokens: ackTokensMethodsIF;
-    topPools: topPoolIF[];
 }
 
 function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
-        chainId,
-        poolId,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
@@ -91,7 +81,6 @@ function Sidebar(props: propsIF) {
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap,
         lastBlockNumber,
         setAnalyticsSearchInput,
         poolList,
@@ -99,10 +88,12 @@ function Sidebar(props: propsIF) {
         tokenPair,
         recentPools,
         ackTokens,
-        topPools,
     } = props;
 
     const { sidebar } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const location = useLocation();
 
@@ -139,7 +130,6 @@ function Sidebar(props: propsIF) {
             data: (
                 <RecentPools
                     tradeData={tradeData}
-                    chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     recentPools={recentPools}
@@ -155,11 +145,9 @@ function Sidebar(props: propsIF) {
             data: (
                 <TopPools
                     tradeData={tradeData}
-                    chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     poolList={poolList}
-                    topPools={topPools}
                 />
             ),
         },
@@ -171,7 +159,6 @@ function Sidebar(props: propsIF) {
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
-                    chainId={chainId}
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
                     setCurrentPositionActive={setCurrentPositionActive}
@@ -188,8 +175,6 @@ function Sidebar(props: propsIF) {
             data: (
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
-                    tokenMap={tokenMap}
-                    chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     isShowAllEnabled={isShowAllEnabled}
                     setCurrentPositionActive={setCurrentPositionActive}
@@ -210,8 +195,6 @@ function Sidebar(props: propsIF) {
                 <FavoritePools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
-                    chainId={chainId}
-                    poolId={poolId}
                 />
             ),
         },
@@ -225,14 +208,12 @@ function Sidebar(props: propsIF) {
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
-                    coinGeckoTokenMap={tokenMap}
                     currentTxActiveInTransactions={
                         currentTxActiveInTransactions
                     }
                     setCurrentTxActiveInTransactions={
                         setCurrentTxActiveInTransactions
                     }
-                    chainId={chainId}
                     isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
@@ -511,7 +492,6 @@ function Sidebar(props: propsIF) {
                             searchData={searchData}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
-                            chainId={chainId}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
                             setCurrentPositionActive={setCurrentPositionActive}
                             setCurrentTxActiveInTransactions={

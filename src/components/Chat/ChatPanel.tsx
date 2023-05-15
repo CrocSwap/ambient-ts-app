@@ -15,7 +15,6 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
-import { topPoolIF } from '../../App/hooks/useTopPools';
 import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
@@ -44,11 +43,10 @@ interface propsIF {
     fullScreen?: boolean;
     appPage?: boolean;
     username?: string | null;
-    topPools: topPoolIF[];
 }
 
 function ChatPanel(props: propsIF) {
-    const { isFullScreen, currentPool, topPools } = props;
+    const { isFullScreen, currentPool } = props;
     const {
         chat: {
             isEnabled: isChatEnabled,
@@ -475,7 +473,6 @@ function ChatPanel(props: propsIF) {
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
-                topPools={topPools}
             />
         );
 
@@ -508,7 +505,6 @@ function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
-                        topPools={topPools}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

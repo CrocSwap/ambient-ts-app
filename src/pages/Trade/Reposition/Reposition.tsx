@@ -15,7 +15,6 @@ import {
     Navigate,
 } from 'react-router-dom';
 import {
-    ChainSpec,
     CrocPositionView,
     CrocReposition,
     toDisplayPrice,
@@ -67,7 +66,6 @@ interface propsIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     provider: ethers.providers.Provider;
-    chainId: string;
     isPairStable: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
@@ -75,8 +73,6 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
-    chainData: ChainSpec;
 }
 
 function Reposition(props: propsIF) {
@@ -85,7 +81,6 @@ function Reposition(props: propsIF) {
         ambientApy,
         dailyVol,
         provider,
-        chainId,
         isPairStable,
         tokenPair,
         poolPriceDisplay,
@@ -93,14 +88,16 @@ function Reposition(props: propsIF) {
         setSimpleRangeWidth,
         simpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
-        chainData,
     } = props;
 
     // current URL parameter string
     const { params } = useParams();
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId, blockExplorer },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
         useContext(RangeStateContext);
@@ -753,7 +750,7 @@ function Reposition(props: propsIF) {
         sendRepositionTransaction();
     };
 
-    const txUrlOnBlockExplorer = `${chainData.blockExplorer}/tx/${newRepositionTransactionHash}`;
+    const txUrlOnBlockExplorer = `${blockExplorer}/tx/${newRepositionTransactionHash}`;
 
     const etherscanButton = (
         <a

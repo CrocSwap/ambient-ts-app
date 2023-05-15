@@ -38,12 +38,7 @@ import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
-import {
-    ChainSpec,
-    pinTickLower,
-    pinTickUpper,
-    tickToPrice,
-} from '@crocswap-libs/sdk';
+import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -60,6 +55,7 @@ import {
 } from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -105,7 +101,6 @@ type lineValue = {
 };
 
 interface propsIF {
-    chainData: ChainSpec;
     isTokenABase: boolean;
     expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
@@ -135,7 +130,6 @@ interface propsIF {
     setIsCandleAdded: React.Dispatch<boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     scaleData: any;
-    chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
@@ -186,7 +180,6 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 
 export default function Chart(props: propsIF) {
     const {
-        chainData,
         isTokenABase,
         denomInBase,
         isAdvancedModeActive,
@@ -194,7 +187,6 @@ export default function Chart(props: propsIF) {
         expandTradeTable,
         setIsCandleAdded,
         scaleData,
-        chainId,
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
@@ -225,14 +217,15 @@ export default function Chart(props: propsIF) {
         // candleTime,
     } = props;
 
-    const pool = useContext(PoolContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
-
+    const { chainData } = useContext(CrocEnvContext);
+    const chainId = chainData.chainId;
     const {
         candleDomains: { setValue: setCandleDomains },
     } = useContext(CandleContext);
+    const pool = useContext(PoolContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,

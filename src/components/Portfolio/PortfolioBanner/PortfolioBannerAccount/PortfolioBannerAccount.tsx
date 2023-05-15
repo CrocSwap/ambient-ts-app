@@ -10,13 +10,12 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
     jazziconsToDisplay: JSX.Element | null;
-    chainData: ChainSpec;
 }
 import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -28,7 +27,6 @@ export default function PortfolioBannerAccount(
         resolvedAddress,
         truncatedAccountAddress,
         ensNameAvailable,
-        chainData,
     } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -37,8 +35,9 @@ export default function PortfolioBannerAccount(
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-
-    const blockExplorer = chainData.blockExplorer;
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName

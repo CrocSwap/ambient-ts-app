@@ -3,6 +3,7 @@ import {
     Dispatch,
     memo,
     SetStateAction,
+    useContext,
     useEffect,
     useMemo,
     useState,
@@ -21,7 +22,7 @@ import {
 } from '../../../utils/hooks/reduxToolkit';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
@@ -30,16 +31,15 @@ import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     poolExists: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
@@ -86,7 +86,6 @@ interface propsIF {
 
 function CurrencyConverter(props: propsIF) {
     const {
-        crocEnv,
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
         poolExists,
@@ -94,7 +93,6 @@ function CurrencyConverter(props: propsIF) {
         slippageTolerancePercentage,
         setPriceImpact,
         tokenPair,
-        chainId,
         isLiq,
         poolPriceDisplay,
         isWithdrawFromDexChecked,
@@ -129,6 +127,11 @@ function CurrencyConverter(props: propsIF) {
     // TODO: update name of functions with 'handle' verbiage
     // TODO: consolidate functions into a single function
     // TODO: refactor functions to consider which token is base
+
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -873,7 +876,6 @@ function CurrencyConverter(props: propsIF) {
                 buyQtyString={buyQtyString}
                 setBuyQtyString={setBuyQtyString}
                 tokenPair={tokenPair}
-                chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 isLoading={isSellLoading}
@@ -945,7 +947,6 @@ function CurrencyConverter(props: propsIF) {
                     buyQtyString={buyQtyString}
                     tokenBQtyLocal={tokenBQtyLocal}
                     tokenPair={tokenPair}
-                    chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
                     isLoading={isBuyLoading}

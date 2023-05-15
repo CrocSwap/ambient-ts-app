@@ -1,22 +1,24 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     tradeData: tradeData;
     pool: topPoolIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } =
-        props;
+    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const { pathname } = useLocation();
 

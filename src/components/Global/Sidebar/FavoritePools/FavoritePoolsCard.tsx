@@ -4,16 +4,17 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from './hooks/usePoolStats';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     pool: PoolIF;
-    chainId: string;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePoolsCard(props: propsIF) {
-    const { pool, chainId, cachedPoolStatsFetch, lastBlockNumber } = props;
+    const { pool, cachedPoolStatsFetch, lastBlockNumber } = props;
 
     // hook to get human-readable values for pool volume and TVL
     const [volume, tvl] = usePoolStats(
@@ -21,7 +22,9 @@ export default function FavoritePoolsCard(props: propsIF) {
         lastBlockNumber,
         cachedPoolStatsFetch,
     );
-
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
     const [addrTokenA, addrTokenB] =

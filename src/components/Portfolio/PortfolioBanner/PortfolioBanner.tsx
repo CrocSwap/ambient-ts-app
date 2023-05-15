@@ -2,8 +2,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-import { ChainSpec } from '@crocswap-libs/sdk';
-
 // START: Import JSX Components
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 
@@ -17,12 +15,10 @@ interface propsIF {
     resolvedAddress: string;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     connectedAccountActive: boolean;
-    chainData: ChainSpec;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive, chainData } =
-        props;
+    const { ensName, resolvedAddress, connectedAccountActive } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -55,7 +51,6 @@ export default function PortfolioBanner(props: propsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 connectedAccountActive={connectedAccountActive}
                 jazziconsToDisplay={jazziconsToDisplay}
-                chainData={chainData}
             />
         </div>
     );

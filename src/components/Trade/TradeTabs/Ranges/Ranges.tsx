@@ -27,7 +27,6 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -48,9 +47,7 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    chainId: string;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
@@ -71,7 +68,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
@@ -80,9 +76,7 @@ function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
-        chainData,
         provider,
-        chainId,
         isShowAllEnabled,
         baseTokenBalance,
         quoteTokenBalance,
@@ -99,7 +93,6 @@ function Ranges(props: propsIF) {
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
     } = props;
     const {
@@ -497,9 +490,7 @@ function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            chainData={chainData}
             provider={provider}
-            chainId={chainId}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
@@ -511,7 +502,6 @@ function Ranges(props: propsIF) {
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
             gasPriceInGwei={gasPriceInGwei}
-            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
 
@@ -525,9 +515,7 @@ function Ranges(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            chainData={chainData}
             provider={provider}
-            chainId={chainId}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
@@ -539,7 +527,6 @@ function Ranges(props: propsIF) {
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
             gasPriceInGwei={gasPriceInGwei}
-            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
 

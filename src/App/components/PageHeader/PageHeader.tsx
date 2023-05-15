@@ -13,7 +13,6 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName, useSwitchNetwork } from 'wagmi';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
@@ -21,36 +20,25 @@ import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     shouldDisplayAccountTab: boolean | undefined;
-    chainId: string;
-    isChainSupported: boolean;
-    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     poolPriceDisplay: number | undefined;
     recentPools: recentPoolsMethodsIF;
-    chainData: ChainSpec;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
-    const {
-        ethMainnetUsdPrice,
-        chainId,
-        isChainSupported,
-        lastBlockNumber,
-        recentPools,
-        poolPriceDisplay,
-        chainData,
-        clickLogout,
-    } = props;
+    const { lastBlockNumber, recentPools, poolPriceDisplay, clickLogout } =
+        props;
 
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { isChainSupported } = useContext(CrocEnvContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
@@ -117,10 +105,7 @@ const PageHeader = function (props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        chainId: chainId,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         lastBlockNumber: lastBlockNumber,
-        chainData: chainData,
         walletDropdownTokenData,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -394,17 +379,13 @@ const PageHeader = function (props: HeaderPropsIF) {
                                 </div>
                             ) : null}
                         </div>
-                        <NetworkSelector
-                            chainId={chainId}
-                            switchNetwork={switchNetwork}
-                        />
+                        <NetworkSelector switchNetwork={switchNetwork} />
                         {!isConnected && connectWagmiButton}
                         <Account {...accountProps} />
                         <NotificationCenter
                             showNotificationTable={showNotificationTable}
                             setShowNotificationTable={setShowNotificationTable}
                             lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
                         />
                     </div>
                 </div>

@@ -3,14 +3,13 @@ import styles from './RangeDetails.module.css';
 import { ethers } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ChainSpec, toDisplayPrice } from '@crocswap-libs/sdk';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -24,7 +23,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
-    chainId: string;
     user: string;
     bidTick: number;
     askTick: number;
@@ -46,7 +44,6 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    chainData: ChainSpec;
 }
 
 export default function RangeDetails(props: propsIF) {
@@ -61,7 +58,6 @@ export default function RangeDetails(props: propsIF) {
         quoteTokenLogoURI,
         lowRangeDisplay,
         highRangeDisplay,
-        chainId,
         user,
         bidTick,
         askTick,
@@ -74,7 +70,6 @@ export default function RangeDetails(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        chainData,
     } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -85,7 +80,10 @@ export default function RangeDetails(props: propsIF) {
         globalModal: { close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
 
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
@@ -136,7 +134,6 @@ export default function RangeDetails(props: propsIF) {
             httpGraphCacheServerDomain + '/position_stats?';
         const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
-        const poolIndex = lookupChain(chainId).poolIndex;
         if (position.positionType) {
             fetch(
                 positionStatsCacheEndpoint +
@@ -360,7 +357,6 @@ export default function RangeDetails(props: propsIF) {
                             isBaseTokenMoneynessGreaterOrEqual
                         }
                         isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>

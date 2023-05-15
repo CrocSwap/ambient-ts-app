@@ -47,10 +47,8 @@ interface propsIF {
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     provider?: ethers.providers.Provider;
     pool: CrocPoolView | undefined;
-    gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
-    chainId: string;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
@@ -106,10 +104,8 @@ function LimitCurrencyConverter(props: propsIF) {
         setPreviousDisplayPrice,
         provider,
         pool,
-        gridSize,
         setPriceInputFieldBlurred,
         tokenPair,
-        chainId,
         poolPriceNonDisplay,
         limitTickDisplayPrice,
         setLimitAllowed,
@@ -510,7 +506,6 @@ function LimitCurrencyConverter(props: propsIF) {
             <LimitCurrencySelector
                 provider={provider}
                 tokenPair={tokenPair}
-                chainId={chainId}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 setTokenAInputQty={setTokenAInputQty}
@@ -580,7 +575,6 @@ function LimitCurrencyConverter(props: propsIF) {
             <div id='limit_currency_converter'>
                 <LimitCurrencySelector
                     tokenPair={tokenPair}
-                    chainId={chainId}
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
@@ -637,11 +631,9 @@ function LimitCurrencyConverter(props: propsIF) {
                 setDisplayPrice={setDisplayPrice}
                 setPreviousDisplayPrice={setPreviousDisplayPrice}
                 pool={pool}
-                gridSize={gridSize}
                 isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                 tokenPair={tokenPair}
-                chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
                 poolPriceNonDisplay={poolPriceNonDisplay}

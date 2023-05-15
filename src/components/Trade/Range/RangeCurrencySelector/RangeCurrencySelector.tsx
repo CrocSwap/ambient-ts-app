@@ -33,7 +33,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
-    chainId: string;
     tokenPair: TokenPairIF;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
@@ -93,7 +92,6 @@ function RangeCurrencySelector(props: propsIF) {
         provider,
         gasPriceInGwei,
         tokenPair,
-        chainId,
         isTokenAEth,
         isTokenBEth,
         isWithdrawTokenAFromDexChecked,
@@ -459,7 +457,6 @@ function RangeCurrencySelector(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}

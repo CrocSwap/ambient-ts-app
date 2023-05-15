@@ -12,14 +12,12 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import { motion } from 'framer-motion';
 import { SetStateAction, Dispatch, useState, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { fetchAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.Provider | undefined;
     selectedToken: TokenIF;
     tokenAllowance: string;
@@ -33,12 +31,10 @@ interface propsIF {
     openTokenModal: () => void;
     selectedTokenDecimals: number;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
     const {
-        crocEnv,
         mainnetProvider,
         selectedToken,
         tokenAllowance,
@@ -52,7 +48,6 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         selectedTokenDecimals,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -131,7 +126,6 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Deposit',
             content: (
                 <Deposit
-                    crocEnv={crocEnv}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
@@ -141,7 +135,6 @@ export default function ExchangeBalance(props: propsIF) {
                     openTokenModal={openTokenModal}
                     selectedTokenDecimals={selectedTokenDecimals}
                     gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: depositImage,
@@ -150,7 +143,6 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Withdraw',
             content: (
                 <Withdraw
-                    crocEnv={crocEnv}
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
@@ -162,7 +154,6 @@ export default function ExchangeBalance(props: propsIF) {
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
                     gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: withdrawImage,
@@ -171,7 +162,6 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Transfer',
             content: (
                 <Transfer
-                    crocEnv={crocEnv}
                     // connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenDexBalance={tokenDexBalance}
@@ -183,7 +173,6 @@ export default function ExchangeBalance(props: propsIF) {
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
                     gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: transferImage,

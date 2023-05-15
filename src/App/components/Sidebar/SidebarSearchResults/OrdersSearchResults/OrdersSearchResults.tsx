@@ -5,9 +5,9 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    chainId: string;
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -56,7 +56,6 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 
 export default function OrdersSearchResults(props: propsIF) {
     const {
-        chainId,
         searchedLimitOrders,
         isDenomBase,
         setCurrentPositionActive,
@@ -67,6 +66,9 @@ export default function OrdersSearchResults(props: propsIF) {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const navigate = useNavigate();
 

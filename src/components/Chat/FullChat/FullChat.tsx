@@ -18,9 +18,9 @@ import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
-import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { defaultTokens } from '../../../utils/data/defaultTokens';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -36,7 +36,6 @@ interface FullChatPropsIF {
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
-    topPools: topPoolIF[];
     setIsChatOpen: (val: boolean) => void;
 }
 
@@ -47,9 +46,9 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { topPools, setIsChatOpen } = props;
-    const rooms = topPools;
+    const { setIsChatOpen } = props;
     const { params } = useParams();
+    const { topPools: rooms } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
     const reconstructedReadableRoom =
         params && !params.includes('global')

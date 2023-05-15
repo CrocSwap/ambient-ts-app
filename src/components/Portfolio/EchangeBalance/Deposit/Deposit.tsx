@@ -6,8 +6,15 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     addPendingTx,
     addReceipt,
@@ -23,9 +30,9 @@ import { BigNumber } from 'ethers';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -34,13 +41,11 @@ interface propsIF {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
-    ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
 }
 
 export default function Deposit(props: propsIF) {
     const {
-        crocEnv,
         tokenAllowance,
         selectedToken,
         tokenWalletBalance,
@@ -50,8 +55,9 @@ export default function Deposit(props: propsIF) {
         openTokenModal,
         selectedTokenDecimals,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );

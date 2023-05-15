@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
+import {
+    useEffect,
+    useMemo,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
@@ -10,6 +17,7 @@ import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -17,7 +25,6 @@ interface propsIF {
     modalCloseCustom: () => void;
     provider: ethers.providers.Provider | undefined;
     importedTokensPlus: TokenIF[];
-    chainId: string;
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -48,7 +55,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     const {
         modalCloseCustom,
         provider,
-        chainId,
         closeModal,
         verifyToken,
         setShowSoloSelectTokenButtons,
@@ -65,6 +71,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenPair,
         ackTokens,
     } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     // add an event listener for custom functionalities on modal close
     // this needs to be coordinated with data in Modal.tsx

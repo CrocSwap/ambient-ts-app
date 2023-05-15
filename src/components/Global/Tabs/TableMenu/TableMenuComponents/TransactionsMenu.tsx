@@ -33,9 +33,9 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -43,12 +43,10 @@ interface propsIF {
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
     tx: TransactionIF;
-    blockExplorer?: string;
     handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
     isShowAllEnabled: boolean;
     handleWalletClick: () => void;
 }
@@ -59,16 +57,17 @@ export default function TransactionsMenu(props: propsIF) {
         tradeData,
         isBaseTokenMoneynessGreaterOrEqual,
         tx,
-        blockExplorer,
         handlePulseAnimation,
         isOnPortfolioPage,
         setSimpleRangeWidth,
-        chainData,
     } = props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
@@ -193,7 +192,6 @@ export default function TransactionsMenu(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual
                 }
                 isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
             />,
         );
     };

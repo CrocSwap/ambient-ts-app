@@ -30,7 +30,6 @@ import {
     CandleData,
     setChangesByUser,
 } from '../../../utils/state/graphDataSlice';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
@@ -41,19 +40,17 @@ import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     tokenList: TokenIF[];
     lastBlockNumber: number;
-    chainId: string;
-    chainData: ChainSpec;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -86,7 +83,6 @@ interface propsIF {
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
@@ -96,11 +92,8 @@ function TradeTabs2(props: propsIF) {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isTokenABase,
-        chainId,
-        chainData,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        tokenMap,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -134,7 +127,6 @@ function TradeTabs2(props: propsIF) {
         setIsCandleDataArrived,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         candleTime,
     } = props;
     const {
@@ -144,6 +136,9 @@ function TradeTabs2(props: propsIF) {
             setIsActive: setOutsideControlActive,
         },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
@@ -301,7 +296,7 @@ function TradeTabs2(props: propsIF) {
                 fetchUserRecentChanges({
                     tokenList: tokenList,
                     user: userAddress,
-                    chainId: chainData.chainId,
+                    chainId: chainId,
                     annotate: true,
                     addValue: true,
                     simpleCalc: true,
@@ -336,8 +331,8 @@ function TradeTabs2(props: propsIF) {
                 tokenList: tokenList,
                 base: selectedBase,
                 quote: selectedQuote,
-                poolIdx: chainData.poolIndex,
-                chainId: chainData.chainId,
+                poolIdx: poolIndex,
+                chainId: chainId,
                 annotate: true,
                 addValue: true,
                 simpleCalc: true,
@@ -378,14 +373,12 @@ function TradeTabs2(props: propsIF) {
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        chainData: chainData,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         searchableTokens: searchableTokens,
         provider: provider,
-        chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
         lastBlockNumber: lastBlockNumber,
@@ -400,7 +393,6 @@ function TradeTabs2(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     // Props for <Transactions/> React Element
@@ -409,10 +401,7 @@ function TradeTabs2(props: propsIF) {
         searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
-        tokenMap: tokenMap,
         tokenList: tokenList,
-        chainData: chainData,
-        blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
@@ -433,7 +422,6 @@ function TradeTabs2(props: propsIF) {
     const ordersProps = {
         searchableTokens: searchableTokens,
         expandTradeTable: expandTradeTable,
-        chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
@@ -473,13 +461,10 @@ function TradeTabs2(props: propsIF) {
     };
 
     const TradeChartsTokenInfoProps = {
-        chainId: chainId,
-        poolId: chainData.poolIndex,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceChangePercent: poolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
-        chainData: chainData,
     };
 
     // data for headings of each of the three tabs

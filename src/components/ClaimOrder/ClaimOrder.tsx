@@ -1,8 +1,7 @@
 import styles from './ClaimOrder.module.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 // import Toggle2 from '../Global/Toggle/Toggle2';
 // import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
@@ -29,16 +28,15 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    chainData: ChainSpec;
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { crocEnv, limitOrder, closeGlobalModal, chainData } = props;
+    const { limitOrder, closeGlobalModal } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -56,6 +54,7 @@ export default function ClaimOrder(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
     } = useProcessOrder(limitOrder, userAddress);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
@@ -166,7 +165,6 @@ export default function ClaimOrder(props: propsIF) {
         <TxSubmittedSimplify
             hash={newClaimTransactionHash}
             content='Claim Transaction Successfully Submitted'
-            chainId={chainData.chainId}
         />
     );
 

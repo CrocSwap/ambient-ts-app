@@ -15,17 +15,15 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     isPoolPriceChangePositive: boolean;
     poolPriceDisplay: number;
     poolPriceChangePercent: string | undefined;
-    chainId: string;
     simplifyVersion?: boolean;
-    chainData: ChainSpec;
 }
 
 function TradeChartsTokenInfo(props: propsIF) {
@@ -33,17 +31,18 @@ function TradeChartsTokenInfo(props: propsIF) {
         isPoolPriceChangePositive,
         poolPriceDisplay,
         poolPriceChangePercent,
-        chainId,
         simplifyVersion,
-        chainData,
     } = props;
     const dispatch = useAppDispatch();
 
     const { tradeData } = useAppSelector((state) => state);
-    const { favePools } = useContext(UserPreferenceContext);
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId, poolIndex, blockExplorer },
+    } = useContext(CrocEnvContext);
+    const { favePools } = useContext(UserPreferenceContext);
 
     const denomInBase = tradeData.isDenomBase;
 
@@ -138,7 +137,7 @@ function TradeChartsTokenInfo(props: propsIF) {
         base: tradeData.baseToken,
         quote: tradeData.quoteToken,
         chainId: chainId,
-        poolId: chainData.poolIndex,
+        poolId: poolIndex,
     };
 
     const isButtonFavorited = favePools.check(
@@ -154,13 +153,13 @@ function TradeChartsTokenInfo(props: propsIF) {
                   tradeData.baseToken,
                   tradeData.quoteToken,
                   chainId,
-                  chainData.poolIndex,
+                  poolIndex,
               )
             : favePools.add(
                   tradeData.quoteToken,
                   tradeData.baseToken,
                   chainId,
-                  chainData.poolIndex,
+                  poolIndex,
               );
         IS_LOCAL_ENV && console.debug(tradeData);
     }
@@ -220,7 +219,7 @@ function TradeChartsTokenInfo(props: propsIF) {
         openSnackbar(`${tradeData.quoteToken.address} copied`);
     }
     const handleLinkOut = (address: string) => {
-        const addressLink = `${chainData.blockExplorer}token/${address}`;
+        const addressLink = `${blockExplorer}token/${address}`;
 
         window.open(addressLink);
     };

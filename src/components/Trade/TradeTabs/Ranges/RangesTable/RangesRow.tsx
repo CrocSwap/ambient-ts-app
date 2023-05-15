@@ -8,7 +8,6 @@ import {
     memo,
 } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
@@ -30,9 +29,7 @@ import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
-    chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    chainId: string;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -53,12 +50,10 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 function RangesRow(props: propsIF) {
     const {
-        chainId,
         cachedQuerySpotPrice,
         ipadView,
         showColumns,
@@ -72,7 +67,6 @@ function RangesRow(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
     const {
         globalModal: { open: openGlobalModal },
@@ -114,8 +108,6 @@ function RangesRow(props: propsIF) {
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         provider: props.provider,
-        chainData: props.chainData,
-        chainId: chainId,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,
@@ -144,7 +136,6 @@ function RangesRow(props: propsIF) {
     };
 
     const rangeMenuProps = {
-        chainData: props.chainData,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
         isPositionEmpty: isPositionEmpty,
@@ -158,7 +149,6 @@ function RangesRow(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         isPositionInRange: isPositionInRange,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     const openDetailsModal = () => {

@@ -16,7 +16,6 @@ import styles from './Orders.module.css';
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
@@ -29,6 +28,7 @@ import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -38,7 +38,6 @@ interface propsIF {
     searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     expandTradeTable: boolean;
-    chainData: ChainSpec;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
@@ -59,7 +58,6 @@ function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
-        chainData,
         expandTradeTable,
         isShowAllEnabled,
         setCurrentPositionActive,
@@ -75,6 +73,9 @@ function Orders(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const { addressCurrent: userAddress } = useAppSelector(
@@ -82,10 +83,10 @@ function Orders(props: propsIF) {
     );
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
-        (x) => x.chainId === chainData.chainId,
+        (x) => x.chainId === chainId,
     );
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders.filter(
-        (x) => x.chainId === chainData.chainId,
+        (x) => x.chainId === chainId,
     );
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
@@ -401,7 +402,6 @@ function Orders(props: propsIF) {
 
     const currentRowItemContent = currentLimits.map((order, idx) => (
         <OrderRow
-            chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}
@@ -421,7 +421,6 @@ function Orders(props: propsIF) {
 
     const sortedRowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
-            chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showPair={showPair}

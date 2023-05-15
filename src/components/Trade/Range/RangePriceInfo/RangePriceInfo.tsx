@@ -14,6 +14,7 @@ import { isStableToken } from '../../../../utils/data/stablePairs';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
@@ -27,7 +28,6 @@ interface propsIF {
     poolPriceCharacter: string;
     isDenomBase: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
-    chainId: string;
     isTokenABase: boolean;
     baseToken: TokenIF;
     quoteToken: TokenIF;
@@ -58,7 +58,6 @@ function RangePriceInfo(props: propsIF) {
         isDenomBase,
         cachedFetchTokenPrice,
         tokenPair,
-        chainId,
         isTokenABase,
         baseToken,
         quoteToken,
@@ -67,6 +66,9 @@ function RangePriceInfo(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 

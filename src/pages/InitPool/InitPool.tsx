@@ -1,8 +1,13 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
-import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -25,11 +30,11 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 // interface for props
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
@@ -44,7 +49,6 @@ export default function InitPool(props: propsIF) {
     const {
         openModalWallet,
         isUserLoggedIn,
-        crocEnv,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
@@ -52,6 +56,8 @@ export default function InitPool(props: propsIF) {
         ethMainnetUsdPrice,
         gasPriceInGwei,
     } = props;
+
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 

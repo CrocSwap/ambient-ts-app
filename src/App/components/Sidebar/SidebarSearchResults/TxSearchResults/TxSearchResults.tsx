@@ -4,9 +4,9 @@ import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    chainId: string;
     searchedTxs: TransactionIF[];
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -14,11 +14,13 @@ interface propsIF {
 
 export default function TxSearchResults(props: propsIF) {
     const {
-        chainId,
         searchedTxs,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
     } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },

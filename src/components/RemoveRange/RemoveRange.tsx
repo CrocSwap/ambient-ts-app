@@ -3,13 +3,12 @@ import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
 import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
 import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
-import { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
 import { BigNumber, ethers } from 'ethers';
 import {
     ambientPosSlot,
-    ChainSpec,
     concPosSlot,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
@@ -43,18 +42,8 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
-    chainData: ChainSpec;
-    chainId: string;
-    poolIdx: number;
-    user: string;
-    bidTick: number;
-    askTick: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -63,23 +52,17 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    openGlobalModal: (content: ReactNode) => void;
-    closeGlobalModal: () => void;
     handleModalClose: () => void;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function RemoveRange(props: propsIF) {
     const {
-        chainData,
         position,
         baseTokenAddress,
         quoteTokenAddress,
-        chainId,
         handleModalClose,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
         isAmbient,
     } = props;
 
@@ -87,7 +70,11 @@ export default function RemoveRange(props: propsIF) {
         (state) => state.graphData,
     ).lastBlock;
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
@@ -252,7 +239,7 @@ export default function RemoveRange(props: propsIF) {
                   position.user,
                   position.base,
                   position.quote,
-                  chainData.poolIndex,
+                  poolIndex,
               )
             : concPosSlot(
                   position.user,
@@ -260,7 +247,7 @@ export default function RemoveRange(props: propsIF) {
                   position.quote,
                   position.bidTick,
                   position.askTick,
-                  chainData.poolIndex,
+                  poolIndex,
               );
 
     const isPositionPendingUpdate =
@@ -487,7 +474,6 @@ export default function RemoveRange(props: propsIF) {
         <TxSubmittedSimplify
             hash={newRemovalTransactionHash}
             content='Removal Transaction Successfully Submitted'
-            chainId={chainId}
         />
     );
 

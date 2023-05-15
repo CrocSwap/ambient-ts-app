@@ -20,7 +20,6 @@ import {
 } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -43,6 +42,7 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -57,10 +57,7 @@ interface propsIF {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-    tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
-    chainId: string;
-    chainData: ChainSpec;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -83,7 +80,6 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    ethMainnetUsdPrice: number | undefined;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
     poolPriceChangePercent: string | undefined;
@@ -99,9 +95,6 @@ function Trade(props: propsIF) {
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        chainId,
-        chainData,
-        tokenMap,
         poolPriceDisplay,
         provider,
         lastBlockNumber,
@@ -127,7 +120,6 @@ function Trade(props: propsIF) {
         setRepositionRangeWidth,
         repositionRangeWidth,
         gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
 
     const { params } = useParams();
@@ -136,7 +128,9 @@ function Trade(props: propsIF) {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
-
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const {
         candleData: { value: candleData },
         isCandleSelected: {
@@ -452,7 +446,6 @@ function Trade(props: propsIF) {
     const tradeChartsProps = {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
-        chainData: chainData,
         poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
@@ -460,7 +453,6 @@ function Trade(props: propsIF) {
         changeState: changeState,
         liquidityData: liquidityData,
         lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
@@ -490,8 +482,6 @@ function Trade(props: propsIF) {
         isTokenABase: isTokenABase,
         provider: provider,
         lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
-        chainData: chainData,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         baseTokenBalance: baseTokenBalance,
@@ -502,7 +492,6 @@ function Trade(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
@@ -525,7 +514,6 @@ function Trade(props: propsIF) {
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,

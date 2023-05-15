@@ -2,13 +2,12 @@ import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    tokenMap: Map<string, TokenIF>;
-    chainId: string;
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
     isShowAllEnabled: boolean;
@@ -20,8 +19,6 @@ interface propsIF {
 export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
-        tokenMap,
-        chainId,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
@@ -36,6 +33,9 @@ export default function SidebarLimitOrders(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
         sidebar: { close: closeSidebar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -89,7 +89,6 @@ export default function SidebarLimitOrders(props: propsIF) {
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokenMap={tokenMap}
                         />
                     ))}
             </div>
