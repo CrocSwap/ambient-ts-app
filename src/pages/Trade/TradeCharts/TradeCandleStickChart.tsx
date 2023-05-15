@@ -591,7 +591,18 @@ function TradeCandleStickChart(props: propsIF) {
 
             const priceRange = d3fc
                 .extentLinear()
-                .accessors([(d: any) => d.high, (d: any) => d.low])
+                .accessors([
+                    (d: any) => {
+                        return (
+                            denominationsInBase
+                                ? d.invMinPriceExclMEVDecimalCorrected
+                                : d.maxPriceExclMEVDecimalCorrected,
+                            denominationsInBase
+                                ? d.invMaxPriceExclMEVDecimalCorrected
+                                : d.minPriceExclMEVDecimalCorrected
+                        );
+                    },
+                ])
                 .pad([0.05, 0.05]);
 
             const xExtent = d3fc
