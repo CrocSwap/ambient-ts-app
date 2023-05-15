@@ -31,10 +31,7 @@ import {
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
 } from '../../utils/state/tradeDataSlice';
-import {
-    CandleChartData,
-    LiquidityDataLocal,
-} from '../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -123,7 +120,7 @@ interface propsIF {
     poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleChartData | undefined>
+        React.SetStateAction<CandleData | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
@@ -6349,6 +6346,7 @@ export default function Chart(props: propsIF) {
     ) => {
         if (isHoverCandleOrVolumeData) {
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
+                console.log({ nearest });
                 props.setCurrentData(nearest);
 
                 const volumeData = unparsedCandleData.find(
@@ -6421,6 +6419,7 @@ export default function Chart(props: propsIF) {
         )[1];
 
         if (selectedDate === undefined) {
+            console.log({ nearest });
             props.setCurrentData(nearest);
 
             props.setCurrentVolumeData(

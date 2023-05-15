@@ -12,13 +12,7 @@ import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import {
-    CandleChartData,
-    FeeChartData,
-    LiquidityDataLocal,
-    TvlChartData,
-    VolumeChartData,
-} from './TradeCharts';
+import { LiquidityDataLocal } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -70,7 +64,7 @@ interface propsIF {
     truncatedPoolPrice: number | undefined;
     poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleChartData | undefined>
+        React.SetStateAction<CandleData | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
@@ -110,16 +104,6 @@ type chartItemStates = {
     showFeeRate: boolean;
     liqMode: string;
 };
-
-export interface ChartUtils {
-    period: any;
-    bandwidth: any;
-    chartData: CandleData[];
-    tvlChartData: TvlChartData[];
-    feeChartData: FeeChartData[];
-    volumeChartData: VolumeChartData[];
-    poolAdressComb: string;
-}
 
 function TradeCandleStickChart(props: propsIF) {
     const {
