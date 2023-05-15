@@ -8,6 +8,7 @@ import {
     useContext,
     useEffect,
     useState,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -60,7 +61,7 @@ interface propsIF {
 }
 
 // react functional component
-export default function Leaderboard(props: propsIF) {
+function Leaderboard(props: propsIF) {
     const {
         isUserLoggedIn,
         chainData,
@@ -391,3 +392,5 @@ export default function Leaderboard(props: propsIF) {
         </section>
     );
 }
+
+export default memo(Leaderboard);

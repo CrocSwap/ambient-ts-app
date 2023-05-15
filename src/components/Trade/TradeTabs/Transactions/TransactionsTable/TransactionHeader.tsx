@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Transactions.module.css';
@@ -18,7 +18,7 @@ interface TransactionHeaderPropsIF {
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function TransactionHeader(props: TransactionHeaderPropsIF) {
+function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
@@ -78,3 +78,5 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
         </>
     );
 }
+
+export default memo(TransactionHeader);

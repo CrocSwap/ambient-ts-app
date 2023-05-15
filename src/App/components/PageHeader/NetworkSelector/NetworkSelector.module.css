@@ -1,6 +1,6 @@
 .dropdown_menu_container {
     min-width: 100px;
-    z-index: 999;
+    z-index: 99999;
 }
 
 .selector_select {
@@ -107,4 +107,5 @@
     align-items: center;
     justify-content: space-between;
     color: var(--text1);
+    z-index: 9999;
 }

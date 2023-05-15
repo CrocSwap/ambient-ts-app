@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { memo, ReactNode } from 'react';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 
 interface IconWithTooltipPropsIF {
@@ -23,7 +23,7 @@ interface IconWithTooltipPropsIF {
     enterDelay?: string;
 }
 
-export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
+function IconWithTooltip(props: IconWithTooltipPropsIF) {
     const { children, title, placement, style, enterDelay } = props;
     return (
         <DefaultTooltip
@@ -38,3 +38,5 @@ export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
         </DefaultTooltip>
     );
 }
+
+export default memo(IconWithTooltip);

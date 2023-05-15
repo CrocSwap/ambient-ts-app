@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './DropdownMenu2.module.css';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional components
 interface DropdownMenuPropsIF {
@@ -15,11 +16,12 @@ interface DropdownMenuPropsIF {
     marginTop?: string;
     titleWidth?: string;
     titleBackground?: string;
+    logo?: string;
 }
 
 // react functional component
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth } = props;
+    const { title, children, marginTop, titleWidth, logo } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
@@ -47,18 +49,36 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     );
 
     // TODO:   @Junior do we need the wrapper below?  See `menu_item`  -Emily
+
+    const desktopScreen = useMediaQuery('(min-width: 1020px)');
+
     return (
         <div ref={dropdownRefItem}>
             <div
                 className={styles.menu}
                 onClick={toggleMenu}
                 style={{
-                    minWidth: titleWidth ? titleWidth : '100px',
+                    minWidth: !desktopScreen
+                        ? ''
+                        : titleWidth
+                        ? titleWidth
+                        : '100px',
                     // background: titleBackground ? titleBackground : 'transparent',
                 }}
             >
                 <div className={styles.menu_item}>
-                    <div className={styles.icon}>{title}</div>
+                    {desktopScreen && (
+                        <div className={styles.icon}>{title}</div>
+                    )}
+                    {!desktopScreen && (
+                        <img
+                            src={logo}
+                            alt={title}
+                            width='20px'
+                            height='20px'
+                            style={{ borderRadius: '50%' }}
+                        />
+                    )}
                 </div>
                 <FaAngleDown />
             </div>

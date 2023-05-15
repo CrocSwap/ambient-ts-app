@@ -11,7 +11,7 @@ export const useTokenSearch = (
         chn: string,
         exact: boolean,
     ) => TokenIF[],
-    getDefaultTokens: () => TokenIF[],
+    defaultTokens: TokenIF[],
     walletTokens: TokenIF[],
     getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
@@ -93,7 +93,7 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = getDefaultTokens();
+            const outputTokens = defaultTokens;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -159,7 +159,7 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        getDefaultTokens().length,
+        defaultTokens.length,
         walletTokens.length,
         getRecentTokens().length,
         validatedInput,

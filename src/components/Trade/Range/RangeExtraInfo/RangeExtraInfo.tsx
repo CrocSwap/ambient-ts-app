@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -27,7 +27,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function RangeExtraInfo(props: propsIF) {
+function RangeExtraInfo(props: propsIF) {
     const {
         tokenPair,
         rangeGasPriceinDollars,
@@ -162,3 +162,5 @@ export default function RangeExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(RangeExtraInfo);
