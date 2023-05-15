@@ -13,7 +13,7 @@ interface NoTableDataPropsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    setSelectedDate?: Dispatch<Date | undefined>;
+    setSelectedDate?: Dispatch<number | undefined>;
     isOnPortfolioPage: boolean;
 }
 function NoTableData(props: NoTableDataPropsIF) {
