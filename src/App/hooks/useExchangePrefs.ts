@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 // interface for one object with a value and reducers to update said value
 export interface dexBalancePrefIF {
@@ -89,8 +89,11 @@ export const useExchangePrefs = (txType: string): dexBalanceMethodsIF => {
     }
 
     // return objects to retrieve and update user preferences
-    return {
-        outputToDexBal: new DexBalPref(outputToDexBal, setOutputToDexBal),
-        drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal),
-    };
+    return useMemo(
+        () => ({
+            outputToDexBal: new DexBalPref(outputToDexBal, setOutputToDexBal),
+            drawFromDexBal: new DexBalPref(drawFromDexBal, setDrawFromDexBal),
+        }),
+        [outputToDexBal, drawFromDexBal],
+    );
 };

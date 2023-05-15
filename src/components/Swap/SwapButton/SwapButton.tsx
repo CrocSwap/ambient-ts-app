@@ -1,6 +1,7 @@
 import styles from './SwapButton.module.css';
 import Button from '../../Global/Button/Button';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { memo } from 'react';
 
 interface propsIF {
     onClickFn: () => void;
@@ -10,7 +11,7 @@ interface propsIF {
     areBothAckd: boolean;
 }
 
-export default function SwapButton(props: propsIF) {
+function SwapButton(props: propsIF) {
     const {
         bypassConfirmSwap,
         swapAllowed,
@@ -42,3 +43,5 @@ export default function SwapButton(props: propsIF) {
         </div>
     );
 }
+
+export default memo(SwapButton);

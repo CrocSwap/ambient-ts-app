@@ -17,7 +17,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
@@ -25,11 +25,10 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface propsIF {
     chainId: string;
     isPairStable: boolean;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
-export default function LimitHeader(props: propsIF) {
+function LimitHeader(props: propsIF) {
     const { isPairStable } = props;
     const { mintSlippage, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
@@ -96,3 +95,5 @@ export default function LimitHeader(props: propsIF) {
         </ContentHeader>
     );
 }
+
+export default memo(LimitHeader);

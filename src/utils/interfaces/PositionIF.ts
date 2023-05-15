@@ -18,7 +18,6 @@ export interface PositionIF {
     quote: string;
     user: string;
     ensResolution: string;
-    // userEnsName: string;
     baseSymbol: string;
     quoteSymbol: string;
     poolPriceInTicks: number;

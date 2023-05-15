@@ -309,6 +309,7 @@ export const txRowConstants = (props: Props) => {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {tx.baseSymbol} / {tx.quoteSymbol}
