@@ -28,10 +28,10 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -227,35 +227,7 @@ function Transactions(props: propsIF) {
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
-
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { height } = useWindowDimensions();
-
-    const showColumnTransactionItems = showColumns
-        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
-        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
-    const transactionsPerPage = showColumnTransactionItems;
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
-
     // Get current transactions
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction =
-        indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = sortedTransactions?.slice(
-        indexOfFirstTransaction,
-        indexOfLastTransaction,
-    );
-
-    // Change page
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -415,37 +387,81 @@ function Transactions(props: propsIF) {
         </ul>
     );
 
-    const tradePageCheck = expandTradeTable && transactionData.length > 30;
-
     const [page, setPage] = useState(1);
-    const PER_PAGE = showColumns
-        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
-        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
-    const count = Math.ceil(sortedTransactions.length / PER_PAGE);
-    const _DATA = usePagination(sortedTransactions, PER_PAGE);
-    const handleChange = (e: React.ChangeEvent<any>, p: number) => {
+    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+
+    const count = Math.ceil(sortedTransactions.length / rowsPerPage);
+    const _DATA = usePagination(sortedTransactions, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
     };
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {transactionsPerPage > 0 &&
-                ((isAccountView && transactionData.length > 10) ||
-                    (!isAccountView && tradePageCheck)) && (
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
+        useState(false);
+    const listRef = useRef<HTMLUListElement>(null);
+    const element = listRef.current;
+    useEffect(() => {
+        if (element) {
+            const resizeObserver = new ResizeObserver((entries) => {
+                const firstEntry = entries[0];
+                const elementHeight = firstEntry.contentRect.height;
+                const screenHeight = window.innerHeight;
+                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
+
+                setIsHeightGreaterThanHalf(isGreaterThanHalf);
+            });
+
+            resizeObserver.observe(element);
+
+            return () => {
+                resizeObserver.unobserve(element);
+            };
+        }
+    }, [element]);
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && transactionData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div
+                className={styles.footer}
+                style={{
+                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
+                }}
+            >
+                <p
+                    className={styles.showing_text}
+                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedTransactions.length}
+                    />
                     <Pagination
                         count={count}
                         size='large'
                         page={page}
-                        // variant="outlined"
                         shape='circular'
                         color='secondary'
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
                     />
-                )}
-        </div>
-    );
+                </div>
+            </div>
+        );
 
     const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
@@ -489,7 +505,6 @@ function Transactions(props: propsIF) {
             chainData={chainData}
         />
     ));
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -530,7 +545,9 @@ function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef} id='current_row_scroll'>
+                {currentRowItemContent}
+            </ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
             {!expandTradeTable &&
@@ -562,18 +579,22 @@ function Transactions(props: propsIF) {
         : expandStyle;
 
     return (
-        <section
-            className={styles.main_list_container}
-            style={{ height: portfolioPageStyle }}
-        >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TransactionsSkeletons />
-            ) : (
-                transactionDataOrNull
-            )}
-            {footerDisplay}
-        </section>
+        <>
+            <section
+                className={styles.main_list_container}
+                style={{ height: portfolioPageStyle }}
+            >
+                {headerColumnsDisplay}
+
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TransactionsSkeletons />
+                ) : (
+                    transactionDataOrNull
+                )}
+
+                {footerDisplay}
+            </section>
+        </>
     );
 }
 

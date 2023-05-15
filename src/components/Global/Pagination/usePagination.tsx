@@ -42,6 +42,7 @@ function usePagination<T>(
 
     function jump(page: number): void {
         const pageNumber: number = Math.max(1, page);
+        // eslint-disable-next-line
         setCurrentPage((currentPage) => Math.min(pageNumber, maxPage));
     }
 
