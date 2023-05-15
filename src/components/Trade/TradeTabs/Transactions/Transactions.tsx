@@ -21,7 +21,7 @@ import {
 } from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import Pagination from '../../../Global/Pagination/Pagination';
+import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
@@ -31,6 +31,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import usePagination from '../../../Global/Pagination/usePagination';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -415,22 +416,38 @@ function Transactions(props: propsIF) {
     );
 
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const [page, setPage] = useState(1);
+    const PER_PAGE = showColumns
+        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
+        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
+    const count = Math.ceil(sortedTransactions.length / PER_PAGE);
+    const _DATA = usePagination(sortedTransactions, PER_PAGE);
+    const handleChange = (e: React.ChangeEvent<any>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
     const footerDisplay = (
         <div className={styles.footer}>
             {transactionsPerPage > 0 &&
                 ((isAccountView && transactionData.length > 10) ||
                     (!isAccountView && tradePageCheck)) && (
                     <Pagination
-                        itemsPerPage={transactionsPerPage}
-                        totalItems={transactionData.length}
-                        paginate={paginate}
-                        currentPage={currentPage}
+                        count={count}
+                        size='large'
+                        page={page}
+                        // variant="outlined"
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
                     />
                 )}
         </div>
     );
 
-    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
             account={account}
             key={idx}

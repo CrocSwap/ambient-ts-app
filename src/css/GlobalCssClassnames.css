@@ -140,3 +140,16 @@ aside.emoji-picker-react {
         0px 0px 3px rgba(205, 193, 255, 0.3);
     border-radius: 4px;
 }
+
+
+.MuiPaginationItem-root{
+    color: var(--text2) !important;
+    outline: 1px solid transparent !important
+}
+
+.Mui-selected.MuiPaginationItem-root {
+    color: var(--text1) !important;
+    background: var(--dark3) !important
+   
+}
+/* class="MuiButtonBase-root MuiPaginationItem-root MuiPaginationItem-sizeLarge MuiPaginationItem-outlined MuiPaginationItem-circular MuiPaginationItem-outlinedSecondary MuiPaginationItem-page css-1j4k3n5-MuiButtonBase-root-MuiPaginationItem-root" */
