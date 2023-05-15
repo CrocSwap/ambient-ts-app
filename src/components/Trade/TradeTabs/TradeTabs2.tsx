@@ -74,8 +74,8 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
@@ -571,9 +571,7 @@ function TradeTabs2(props: propsIF) {
                     {isCandleSelected &&
                         candleTime.time === 86400 &&
                         selectedDate &&
-                        `Showing Transactions ${moment(
-                            new Date(selectedDate.getTime() * 1000),
-                        )
+                        `Showing Transactions ${moment(new Date(selectedDate))
                             .subtract(utcDiffHours, 'hours')
                             .calendar(null, {
                                 sameDay: 'for [Today]',

@@ -137,8 +137,8 @@ interface propsIF {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    selectedDate: Date | undefined;
-    setSelectedDate: React.Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: React.Dispatch<number | undefined>;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -4773,7 +4773,7 @@ export default function Chart(props: propsIF) {
 
                     context.fillStyle =
                         selectedDate !== undefined &&
-                        selectedDate.getTime() === d.date.getTime()
+                        selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
                             ? props.upBodyColor
@@ -4781,7 +4781,7 @@ export default function Chart(props: propsIF) {
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
-                        selectedDate.getTime() === d.date.getTime()
+                        selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
                             ? props.upBorderColor
@@ -5008,7 +5008,7 @@ export default function Chart(props: propsIF) {
                         d.volumeUSD === null
                             ? 'transparent'
                             : selectedDate !== undefined &&
-                              selectedDate.getTime() === d.date.getTime()
+                              selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
                             ? props.upVolumeColor
@@ -5018,7 +5018,7 @@ export default function Chart(props: propsIF) {
                         d.volumeUSD === null
                             ? 'transparent'
                             : selectedDate !== undefined &&
-                              selectedDate.getTime() === d.date.getTime()
+                              selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
                             ? props.upVolumeColor
@@ -5347,7 +5347,8 @@ export default function Chart(props: propsIF) {
                 const xmax = scaleData?.xScale.domain()[1];
 
                 const filtered = unparsedCandleData.filter(
-                    (data: any) => data.date >= xmin && data.date <= xmax,
+                    (data: CandleData) =>
+                        data.time * 1000 >= xmin && data.time * 1000 <= xmax,
                 );
 
                 if (filtered !== undefined) {
@@ -5920,6 +5921,7 @@ export default function Chart(props: propsIF) {
         ranges,
         limit,
         location.pathname,
+        period,
         diffHashSigChart(unparsedCandleData),
         noGoZoneBoudnaries,
         maxTickForLimit,
@@ -6428,7 +6430,7 @@ export default function Chart(props: propsIF) {
         } else if (selectedDate) {
             props.setCurrentVolumeData(
                 unparsedCandleData.find(
-                    (item: any) => item.time * 1000 === selectedDate.getTime(),
+                    (item: any) => item.time * 1000 === selectedDate,
                 )?.volumeUSD,
             );
         }
@@ -6854,9 +6856,9 @@ export default function Chart(props: propsIF) {
     // // Candle transactions
     useEffect(() => {
         if (selectedDate !== undefined) {
+            console.log(selectedDate);
             const candle = unparsedCandleData.find(
-                (candle: CandleData) =>
-                    candle.time * 1000 === selectedDate.getTime(),
+                (candle: CandleData) => candle.time * 1000 === selectedDate,
             ) as any;
 
             if (candle !== undefined) {

@@ -68,8 +68,8 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
     TradeSettingsColor: JSX.Element;
 
     poolPriceChangePercent: string | undefined;
