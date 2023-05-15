@@ -507,7 +507,6 @@ export default function TradeCandleStickChart(props: propsIF) {
     }, [unparsedCandleData?.length && unparsedCandleData.length > 0]);
 
     useEffect(() => {
-        console.log({ unparsedCandleData });
         setScaleForChart(unparsedCandleData, false);
     }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
 
@@ -562,7 +561,11 @@ export default function TradeCandleStickChart(props: propsIF) {
         unparsedCandleData: any,
         isChangeYscale: boolean,
     ) => {
-        if (unparsedCandleData !== undefined && period) {
+        if (
+            unparsedCandleData !== undefined &&
+            unparsedCandleData.length > 0 &&
+            period
+        ) {
             const temp = [...unparsedCandleData];
             const boundaryCandles = temp.splice(0, 99);
 
@@ -571,10 +574,10 @@ export default function TradeCandleStickChart(props: propsIF) {
                 .accessors([
                     (d: any) => {
                         return (
-                            !isDenomBase
+                            isDenomBase
                                 ? d.invMinPriceExclMEVDecimalCorrected
                                 : d.maxPriceExclMEVDecimalCorrected,
-                            !isDenomBase
+                            isDenomBase
                                 ? d.invMaxPriceExclMEVDecimalCorrected
                                 : d.minPriceExclMEVDecimalCorrected
                         );
@@ -599,18 +602,11 @@ export default function TradeCandleStickChart(props: propsIF) {
                 xScale.domain(xExtent(boundaryCandles));
                 xScaleCopy = xScale.copy();
             } else {
-                console.log('heyu');
-
                 xScale = scaleData?.xScale;
                 xScaleCopy = scaleData?.xScaleCopy;
             }
 
             yScale.domain(priceRange(boundaryCandles));
-            console.log(
-                'yScale.domain',
-                { isDenomBase, unparsedCandleData },
-                yScale.domain(),
-            );
 
             const volumeScale = d3.scaleLinear();
 

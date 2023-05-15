@@ -974,57 +974,12 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
-    // useEffect(() => {
-    //     console.log('burdasınsu',isNaN(scaleData?.yScale.domain()[0]),unparsedCandleData,scaleData?.yScale.range());
-
-    // }, [isNaN(scaleData?.yScale.domain()[0])])
-
-    // useEffect(() => {
-    //     const ad =unparsedCandleData.sort(
-    //         (a, b) => b.time - a.time,
-    //     );
-
-    //     console.log('ad',ad,new Date(ad[0].time*1000),new Date(ad[ad.length-1].time));
-    //     console.log('dom',new Date(scaleData?.xScale.domain()[0]),new Date(scaleData?.xScale.domain()[1]));
-
-    // }, [unparsedCandleData]);
-
-    useEffect(() => {
-        // console.log('scaleDataDomain',scaleData?.yScale.domain());
-        if (poolPriceDisplay) {
-            const filteredTime = unparsedCandleData.filter(
-                (data: CandleData) => data.time,
-            );
-
-            // const lastCandleDate = d3.min(filteredTime, (d) => d.time * 1000);
-            // if (lastCandleDate) {
-
-            //     console.log('hey',lastCandleDate,new Date(scaleData?.xScale.domain()[0]),new Date(lastCandleDate));
-            // }
-
-            // if (lastCandleDate)
-            // getNewCandleData( lastCandleDate+(period * 1000 * 100),lastCandleDate)
-            // getNewCandleData( scaleData?.xScale.domain()[0],scaleData?.xScale.domain()[1])
-            const candleDomain = {
-                lastCandleDate: scaleData?.xScale.domain()[1],
-                domainBoundry: scaleData?.xScale.domain()[0],
-            };
-
-            console.log('pool');
-
-            setCandleDomains(candleDomain);
-        }
-    }, [pool, poolPriceDisplay]);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (newBoundary: any, candleDate: any) => {
-        // console.log(newBoundary< candleDate);
-
         if (newBoundary < candleDate) {
             const filtered = unparsedCandleData.filter(
                 (data: CandleData) => data.time !== undefined,
             );
-            // console.log('hey2');
 
             if (filtered) {
                 const maxBoundary: number | undefined =
@@ -1039,9 +994,6 @@ export default function Chart(props: propsIF) {
 
                 const lastCandleDate = d3.min(filtered, (d) => d.time * 1000);
 
-                if (lastCandleDate)
-                    console.log('lastCandleDate', new Date(lastCandleDate));
-
                 const candleDomain = {
                     lastCandleDate:
                         lastCandleDate !== undefined
@@ -1049,7 +1001,6 @@ export default function Chart(props: propsIF) {
                             : filtered[0].time * 1000,
                     domainBoundry: finalData,
                 };
-                console.log('zoom');
 
                 setCandleDomains(candleDomain);
             }
@@ -7027,6 +6978,23 @@ export default function Chart(props: propsIF) {
             }
         });
     };
+
+    useEffect(() => {
+        if (poolPriceDisplay) {
+            const isFutureDay =
+                new Date(scaleData?.xScale.domain()[1]).getTime() >
+                new Date().getTime();
+
+            const candleDomain = {
+                lastCandleDate: isFutureDay
+                    ? new Date().getTime()
+                    : new Date(scaleData?.xScale.domain()[1]).getTime(),
+                domainBoundry: scaleData?.xScale.domain()[0] * 1000,
+            };
+
+            setCandleDomains(candleDomain);
+        }
+    }, [pool, poolPriceDisplay]);
 
     return (
         <div
