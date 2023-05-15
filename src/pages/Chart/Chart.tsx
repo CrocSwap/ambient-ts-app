@@ -2201,8 +2201,8 @@ export default function Chart(props: propsIF) {
 
     const setMarketLineValue = () => {
         const lastCandlePrice = denomInBase
-            ? unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected
-            : unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected;
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
 
         setMarket(() => {
             return [
@@ -5493,6 +5493,49 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (scaleData !== undefined && gradientForBid) {
+            const d3CanvasLiqBidChart = d3fc
+                .seriesCanvasArea()
+                .decorate((context: any) => {
+                    context.fillStyle = gradientForBid;
+                    context.strokeWidth = 2;
+                })
+                .orient('horizontal')
+                .curve(d3.curveBasis)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(liquidityScale)
+                .yScale(scaleData?.yScale);
+
+            setLiqBidSeries(() => d3CanvasLiqBidChart);
+
+            const d3CanvasLiqBidDepthChart = d3fc
+                .seriesCanvasArea()
+                .decorate((context: any) => {
+                    context.fillStyle = gradientForBid;
+                    context.strokeWidth = 2;
+                })
+                .orient('horizontal')
+                .curve(d3.curveStepAfter)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(liquidityDepthScale)
+                .yScale(scaleData?.yScale);
+
+            setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
+
+            renderCanvas();
+            render();
+        }
+    }, [
+        diffHashSig(scaleData),
+        liqMode,
+        gradientForBid,
+        liquidityScale,
+        liquidityDepthScale,
+    ]);
+
+    useEffect(() => {
         const canvas = d3
             .select(d3CanvasLiqAsk.current)
             .select('canvas')
@@ -5539,49 +5582,6 @@ export default function Chart(props: propsIF) {
         liqAskSeries,
         liqAskDepthSeries,
         liqMode,
-    ]);
-
-    useEffect(() => {
-        if (scaleData !== undefined && gradientForBid) {
-            const d3CanvasLiqBidChart = d3fc
-                .seriesCanvasArea()
-                .decorate((context: any) => {
-                    context.fillStyle = gradientForBid;
-                    context.strokeWidth = 2;
-                })
-                .orient('horizontal')
-                .curve(d3.curveBasis)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityScale)
-                .yScale(scaleData?.yScale);
-
-            setLiqBidSeries(() => d3CanvasLiqBidChart);
-
-            const d3CanvasLiqBidDepthChart = d3fc
-                .seriesCanvasArea()
-                .decorate((context: any) => {
-                    context.fillStyle = gradientForBid;
-                    context.strokeWidth = 2;
-                })
-                .orient('horizontal')
-                .curve(d3.curveStepAfter)
-                .mainValue((d: any) => d.activeLiq)
-                .crossValue((d: any) => d.liqPrices)
-                .xScale(liquidityDepthScale)
-                .yScale(scaleData?.yScale);
-
-            setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
-
-            renderCanvas();
-            render();
-        }
-    }, [
-        diffHashSig(scaleData),
-        liqMode,
-        gradientForBid,
-        liquidityScale,
-        liquidityDepthScale,
     ]);
 
     useEffect(() => {
