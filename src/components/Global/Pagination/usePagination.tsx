@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PaginationResult<T> {
     next: () => void;
@@ -18,6 +18,8 @@ function usePagination<T>(
     itemsPerPage: number,
 ): PaginationResult<T> {
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [resetPage, setResetPage] = useState<boolean>(false);
+
     const maxPage: number = Math.ceil(data.length / itemsPerPage);
     const showingFrom: number = (currentPage - 1) * itemsPerPage + 1;
     const showingTo: number = Math.min(
@@ -45,6 +47,25 @@ function usePagination<T>(
         // eslint-disable-next-line
         setCurrentPage((currentPage) => Math.min(pageNumber, maxPage));
     }
+
+    useEffect(() => {
+        if (resetPage) {
+            setCurrentPage(1);
+            setResetPage(false);
+        }
+    }, [resetPage]);
+
+    useEffect(() => {
+        if (currentPage > maxPage) {
+            setResetPage(true);
+        }
+    }, [currentPage, maxPage]);
+
+    useEffect(() => {
+        if (itemsPerPage !== data.length) {
+            setResetPage(true);
+        }
+    }, [itemsPerPage, data.length]);
 
     return {
         next,
