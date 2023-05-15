@@ -1864,6 +1864,7 @@ export default function App() {
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
+        isFirstFetch: false,
     });
 
     const domainBoundaryInSeconds = Math.floor(
@@ -1926,12 +1927,6 @@ export default function App() {
                     const newCandles: CandleData[] = [];
                     const updatedCandles: CandleData[] = candleData.candles;
 
-                    const isSamePool =
-                        baseTokenAddress.toLocaleLowerCase() +
-                            quoteTokenAddress.toLocaleLowerCase() ===
-                        candleData.pool.baseAddress.toLocaleLowerCase() +
-                            candleData.pool.quoteAddress.toLocaleLowerCase();
-
                     for (
                         let index = 0;
                         index < fetchedCandles.length;
@@ -1961,9 +1956,9 @@ export default function App() {
 
                         duration: candleData.duration,
 
-                        candles: isSamePool
-                            ? newCandles.concat(updatedCandles)
-                            : fetchedCandles,
+                        candles: candleDomains?.isFirstFetch
+                            ? fetchedCandles
+                            : newCandles.concat(updatedCandles),
                     };
 
                     setCandleData(newCandleData);

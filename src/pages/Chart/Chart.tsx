@@ -975,31 +975,52 @@ export default function Chart(props: propsIF) {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getNewCandleData = (newBoundary: any, candleDate: any) => {
-        if (newBoundary < candleDate) {
-            const filtered = unparsedCandleData.filter(
-                (data: CandleData) => data.time !== undefined,
-            );
+    const getNewCandleData = (
+        newBoundary: any,
+        candleDate: any,
+        isZoomRight = true,
+    ) => {
+        const filtered = unparsedCandleData.filter(
+            (data: CandleData) => data.time !== undefined,
+        );
+        if (filtered) {
+            if (isZoomRight) {
+                if (newBoundary < candleDate) {
+                    const maxBoundary: number | undefined =
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        d3.min(filtered, (d: any) => d.time) * 1000 -
+                        200 * period * 1000;
 
-            if (filtered) {
-                const maxBoundary: number | undefined =
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    d3.min(filtered, (d: any) => d.time) * 1000 -
-                    200 * period * 1000;
+                    const newLastCandle = newBoundary - 100 * period * 1000;
 
-                const newLastCandle = newBoundary - 100 * period * 1000;
+                    const finalData =
+                        maxBoundary < newLastCandle
+                            ? maxBoundary
+                            : newLastCandle;
 
-                const finalData =
-                    maxBoundary < newLastCandle ? maxBoundary : newLastCandle;
+                    const lastCandleDate = d3.min(
+                        filtered,
+                        (d) => d.time * 1000,
+                    );
 
-                const lastCandleDate = d3.min(filtered, (d) => d.time * 1000);
+                    const candleDomain = {
+                        lastCandleDate:
+                            lastCandleDate !== undefined
+                                ? lastCandleDate
+                                : filtered[0].time * 1000,
+                        domainBoundry: finalData,
+                        isFirstFetch: false,
+                    };
+
+                    setCandleDomains(candleDomain);
+                }
+            } else {
+                const lastCandleDate = d3.max(filtered, (d) => d.time * 1000);
 
                 const candleDomain = {
-                    lastCandleDate:
-                        lastCandleDate !== undefined
-                            ? lastCandleDate
-                            : filtered[0].time * 1000,
-                    domainBoundry: finalData,
+                    lastCandleDate: new Date().getTime(),
+                    domainBoundry: lastCandleDate,
+                    isFirstFetch: false,
                 };
 
                 setCandleDomains(candleDomain);
@@ -1511,10 +1532,24 @@ export default function Chart(props: propsIF) {
                                     }
 
                                     if (deltaX) {
-                                        getNewCandleData(
-                                            domainX[0] + deltaX,
-                                            lastCandleDate,
-                                        );
+                                        if (deltaX < 0) {
+                                            getNewCandleData(
+                                                domainX[0] + deltaX,
+                                                lastCandleDate,
+                                            );
+                                        } else {
+                                            const maxCandleDate = d3.max(
+                                                filteredTime,
+                                                (d) => d.time * 1000,
+                                            );
+                                            if (maxCandleDate) {
+                                                getNewCandleData(
+                                                    maxCandleDate + deltaX,
+                                                    maxCandleDate,
+                                                    false,
+                                                );
+                                            }
+                                        }
                                         scaleData?.xScale.domain([
                                             domainX[0] + deltaX,
                                             domainX[1] + deltaX,
@@ -3454,6 +3489,10 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
+
+        if (reset) {
+            getNewCandleData(undefined, undefined, false);
+        }
     }, [reset]);
 
     // Axis's
@@ -6990,6 +7029,7 @@ export default function Chart(props: propsIF) {
                     ? new Date().getTime()
                     : new Date(scaleData?.xScale.domain()[1]).getTime(),
                 domainBoundry: scaleData?.xScale.domain()[0] * 1000,
+                isFirstFetch: true,
             };
 
             setCandleDomains(candleDomain);
