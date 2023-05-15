@@ -6346,7 +6346,6 @@ export default function Chart(props: propsIF) {
     ) => {
         if (isHoverCandleOrVolumeData) {
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
-                console.log({ nearest });
                 props.setCurrentData(nearest);
 
                 const volumeData = unparsedCandleData.find(
@@ -6419,7 +6418,6 @@ export default function Chart(props: propsIF) {
         )[1];
 
         if (selectedDate === undefined) {
-            console.log({ nearest });
             props.setCurrentData(nearest);
 
             props.setCurrentVolumeData(
