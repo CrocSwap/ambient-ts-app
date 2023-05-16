@@ -49,6 +49,12 @@ export default function WalletModalWagmi() {
         : 'wallets';
 
     const [page, setPage] = useState(defaultState);
+    // reset the page everytime the modal is closed
+    useEffect(() => {
+        if (!isModalOpen) {
+            setPage(defaultState);
+        }
+    }, [isModalOpen]);
 
     const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] =
         useState(false);
