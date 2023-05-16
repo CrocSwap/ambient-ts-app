@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 // import { CrocImpact } from '@crocswap-libs/sdk';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -34,7 +34,7 @@ interface propsIF {
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function BypassConfirmRepositionButton(props: propsIF) {
+function BypassConfirmRepositionButton(props: propsIF) {
     const {
         newRepositionTransactionHash,
         txErrorCode,
@@ -200,9 +200,4 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
     );
 }
 
-// setShowBypassConfirm => True => Render the new button(tx denied)
-// setShowBypassConfirm => False => Render Open Confirmation button
-
-// For users with skip this confirmation
-// Click swap now button => initiates swap and renders new button => setShowBypassConfirm(true)
-// When receipt is successful, we render the old button => setShowBypassConfirm(false)
+export default memo(BypassConfirmRepositionButton);

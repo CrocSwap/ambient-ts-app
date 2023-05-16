@@ -1,5 +1,5 @@
 import styles from './TradeSettingsColor.module.css';
-import { Dispatch, SetStateAction, MouseEventHandler } from 'react';
+import { Dispatch, SetStateAction, MouseEventHandler, memo } from 'react';
 
 import { SketchPicker } from 'react-color';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -38,7 +38,7 @@ interface ColorPickerDisplayTooltipPropsIF {
     color: string;
     label: string;
 }
-export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
+function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const {
         setUpBodyColorPicker,
         upBodyColor,
@@ -150,3 +150,5 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         </div>
     );
 }
+
+export default memo(TradeSettingsColor);

@@ -1,5 +1,5 @@
 import styles from './AppOverlay.module.css';
-import { useState, useContext } from 'react';
+import { useState, useContext, memo } from 'react';
 import OverlayComponent from '../OverlayComponent/OverlayComponent';
 import {
     MdOutlineArrowBackIosNew,
@@ -8,7 +8,7 @@ import {
 import { VscClose } from 'react-icons/vsc';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
-export default function AppOverlay() {
+function AppOverlay() {
     // const navigate = useNavigate();
     const {
         appOverlay: {
@@ -148,3 +148,5 @@ export default function AppOverlay() {
         </div>
     );
 }
+
+export default memo(AppOverlay);

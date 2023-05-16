@@ -8,8 +8,8 @@ import {
     useContext,
 } from 'react';
 // import { Link } from 'react-router-dom';
-import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
-
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
 // import Modal from '../../../../Global/Modal/Modal';
 
@@ -367,7 +367,7 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => setShowDropdownMenu(!showDropdownMenu)}
                 className={styles.dropdown_button}
             >
-                <FiMoreHorizontal />
+                <CiCircleMore size={25} color='var(--text3)' />
             </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>

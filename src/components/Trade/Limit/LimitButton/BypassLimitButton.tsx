@@ -11,7 +11,7 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 // import { CrocImpact } from '@crocswap-libs/sdk';
@@ -28,7 +28,7 @@ interface propsIF {
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
 }
-export default function BypassLimitButton(props: propsIF) {
+function BypassLimitButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
     const {
         newLimitOrderTransactionHash,
@@ -192,3 +192,5 @@ export default function BypassLimitButton(props: propsIF) {
         </section>
     );
 }
+
+export default memo(BypassLimitButton);

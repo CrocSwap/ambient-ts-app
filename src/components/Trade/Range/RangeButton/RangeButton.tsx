@@ -1,6 +1,6 @@
 import styles from './RangeButton.module.css';
 import Button from '../../../Global/Button/Button';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
@@ -12,7 +12,7 @@ interface propsIF {
     areBothAckd: boolean;
 }
 
-export default function RangeButton(props: propsIF) {
+function RangeButton(props: propsIF) {
     const {
         isAmbient,
         isAdd,
@@ -49,3 +49,5 @@ export default function RangeButton(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeButton);

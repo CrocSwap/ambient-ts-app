@@ -11,7 +11,7 @@ interface propsIF {
     thisToken: TokenIF;
 }
 
-export default function LimitCurrencyQuantity(props: propsIF) {
+function LimitCurrencyQuantity(props: propsIF) {
     const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
@@ -75,3 +75,5 @@ export default function LimitCurrencyQuantity(props: propsIF) {
         </div>
     );
 }
+
+export default LimitCurrencyQuantity;

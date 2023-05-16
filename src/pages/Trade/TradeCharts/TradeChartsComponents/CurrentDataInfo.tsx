@@ -1,6 +1,6 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 
@@ -15,7 +15,7 @@ interface CurrentDataInfoPropsIF {
     rescale: boolean;
     reset: boolean;
 }
-export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
+function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     const {
         showTooltip,
         currentData,
@@ -27,9 +27,6 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         rescale,
         reset,
     } = props;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const denominationsInBase = tradeData.isDenomBase;
 
     function formattedCurrentData(data: number | undefined): string {
         if (data) {
@@ -45,6 +42,9 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
 
         return '-';
     }
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const denominationsInBase = tradeData.isDenomBase;
 
     return (
         <div className={styles.chart_tooltips}>
@@ -139,3 +139,5 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         </div>
     );
 }
+
+export default memo(CurrentDataInfo);

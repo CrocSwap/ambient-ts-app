@@ -250,18 +250,6 @@ export const tradeDataSlice = createSlice({
         setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
             state.rescaleRangeBoundaries = action.payload;
         },
-        setMainnetBaseTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
-            state.mainnetBaseTokenAddress = action.payload;
-        },
-        setMainnetQuoteTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
-            state.mainnetQuoteTokenAddress = action.payload;
-        },
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
@@ -314,8 +302,6 @@ export const {
     setRangeHighLineTriggered,
     setRescaleRangeBoundaries,
     setCandleDomains,
-    setMainnetBaseTokenReduxAddress,
-    setMainnetQuoteTokenReduxAddress,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

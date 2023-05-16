@@ -52,7 +52,10 @@ import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigChart,
+} from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 
@@ -314,60 +317,10 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // const [limitTriangleData, setLimitTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
-    // const [rangeTriangleData, setRangeTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
     const [market, setMarket] = useState([
         {
             name: 'Market Value',
             value: 0,
-        },
-    ]);
-
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
-    const [subChartValues, setsubChartValues] = useState([
-        {
-            name: 'feeRate',
-            value: lastCandleData?.averageLiquidityFee,
-        },
-        {
-            name: 'tvl',
-            value: lastCandleData?.tvlData.tvl,
-        },
-        {
-            name: 'volume',
-            value: undefined,
         },
     ]);
 
@@ -406,6 +359,25 @@ export default function Chart(props: propsIF) {
 
     // d3
 
+    const lastCandleData = unparsedCandleData.find(
+        (item: any) =>
+            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
+    );
+
+    const [subChartValues, setsubChartValues] = useState([
+        {
+            name: 'feeRate',
+            value: lastCandleData?.averageLiquidityFee,
+        },
+        {
+            name: 'tvl',
+            value: lastCandleData?.tvlData.tvl,
+        },
+        {
+            name: 'volume',
+            value: undefined,
+        },
+    ]);
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -490,34 +462,6 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
-
-    // const setTriangleRangeValues = (max: number, min: number) => {
-    //     setRangeTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         const maxPrice = max !== undefined ? max : 0;
-    //         const minPrice = min !== undefined ? min : 0;
-
-    //         newData[0].value = maxPrice;
-    //         newData[1].value = maxPrice;
-    //         newData[2].value = minPrice;
-    //         newData[3].value = minPrice;
-
-    //         return newData;
-    //     });
-    // };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const setTriangleLimitValues = (limit: any) => {
-    //     setLimitTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         newData[0].value = limit;
-    //         newData[1].value = limit;
-
-    //         return newData;
-    //     });
-    // };
 
     useEffect(() => {
         if (
@@ -728,8 +672,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        unparsedCandleData.length,
-        unparsedCandleData[0]?.time,
+        diffHashSigChart(unparsedCandleData),
         firstCandle,
     ]);
 
@@ -1076,11 +1019,14 @@ export default function Chart(props: propsIF) {
                     domainX: any,
                     deltaX: number,
                     offsetX: number,
+                    zoomCandle: undefined | number = undefined,
                 ) => {
-                    const gapTop =
-                        domainX[1] - scaleData?.xScale.invert(offsetX);
-                    const gapBot =
-                        scaleData?.xScale.invert(offsetX) - domainX[0];
+                    const point = zoomCandle
+                        ? zoomCandle
+                        : scaleData?.xScale.invert(offsetX);
+
+                    const gapTop = domainX[1] - point;
+                    const gapBot = point - domainX[0];
 
                     const minGap = Math.min(gapTop, gapBot);
                     const maxGap = Math.max(gapTop, gapBot);
@@ -1348,71 +1294,72 @@ export default function Chart(props: propsIF) {
                                 ) {
                                     const newBoundary = domainX[0] - deltaX;
 
-                                    const lastXIndex =
-                                        unparsedCandleData.findIndex(
-                                            (d: CandleData) =>
-                                                d.time ===
-                                                d3.max(
-                                                    unparsedCandleData,
-                                                    (d: CandleData) => d.time,
-                                                ),
-                                        );
+                                    const lastXIndex = d3.maxIndex(
+                                        unparsedCandleData,
+                                        (d: CandleData) => d.time,
+                                    );
 
                                     if (
                                         newBoundary >
-                                        unparsedCandleData[lastXIndex].time *
-                                            1000 -
-                                            period * 1000 * 2
-                                    ) {
-                                        const leftBoudnary =
-                                            unparsedCandleData[lastXIndex + 1]
+                                            unparsedCandleData[lastXIndex]
                                                 .time *
                                                 1000 -
-                                            period * 1000 * 5;
-                                        getNewCandleData(
-                                            leftBoudnary,
-                                            lastCandleDate,
-                                        );
-                                        scaleData?.xScale.domain([
-                                            leftBoudnary,
-                                            lastTime + deltaX,
-                                        ]);
+                                                period * 1000 * 2 &&
+                                        deltaX < 0
+                                    ) {
+                                        return;
                                     } else {
                                         getNewCandleData(
                                             newBoundary,
                                             lastCandleDate,
                                         );
 
-                                        if (
-                                            lastCandleTime <= lastTime &&
-                                            deltaX < 0
-                                        ) {
-                                            changeCandleSize(
-                                                domainX,
-                                                deltaX,
-                                                event.sourceEvent.offsetX,
-                                            );
-                                        } else {
-                                            if (deltaX > 0) {
+                                        if (deltaX > 0) {
+                                            if (
+                                                lastTime >
+                                                lastCandleTime * 1000
+                                            ) {
+                                                changeCandleSize(
+                                                    domainX,
+                                                    deltaX,
+                                                    event.sourceEvent.offsetX,
+                                                    lastCandleTime * 1000,
+                                                );
+                                            } else {
                                                 scaleData?.xScale.domain([
                                                     newBoundary,
                                                     lastTime,
                                                 ]);
-                                            } else {
+                                            }
+                                        } else {
+                                            if (
+                                                firstCandleTime * 1000 <
+                                                lastTime
+                                            ) {
                                                 if (
-                                                    firstCandleTime < lastTime
+                                                    lastCandleTime * 1000 <=
+                                                        lastTime &&
+                                                    deltaX < 0
                                                 ) {
+                                                    changeCandleSize(
+                                                        domainX,
+                                                        deltaX,
+                                                        event.sourceEvent
+                                                            .offsetX,
+                                                        lastCandleTime * 1000,
+                                                    );
+                                                } else {
                                                     scaleData?.xScale.domain([
                                                         firstTime -
                                                             deltaX * 1.3,
                                                         lastTime,
                                                     ]);
-                                                } else {
-                                                    scaleData?.xScale.domain([
-                                                        firstTime,
-                                                        lastTime - deltaX,
-                                                    ]);
                                                 }
+                                            } else {
+                                                scaleData?.xScale.domain([
+                                                    firstTime,
+                                                    lastTime - deltaX,
+                                                ]);
                                             }
                                         }
                                     }
@@ -2110,7 +2057,7 @@ export default function Chart(props: propsIF) {
         candlestick,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
-        diffHashSig(showLatest),
+        showLatest,
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
@@ -2256,8 +2203,8 @@ export default function Chart(props: propsIF) {
 
     const setMarketLineValue = () => {
         const lastCandlePrice = denomInBase
-            ? unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected
-            : unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected;
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
 
         setMarket(() => {
             return [
@@ -2271,7 +2218,7 @@ export default function Chart(props: propsIF) {
 
     const findLiqNearest = (liqDataAll: any[]) => {
         if (scaleData !== undefined) {
-            const point = scaleData?.yScale(scaleData?.yScale.domain()[0]);
+            const point = scaleData?.yScale.domain()[0];
 
             if (point == undefined) return 0;
             if (liqDataAll) {
@@ -2892,10 +2839,6 @@ export default function Chart(props: propsIF) {
 
                                     return newTargets;
                                 });
-                                // setTriangleRangeValues(
-                                //     liquidityData?.topBoundary,
-                                //     minValue,
-                                // );
                             } else {
                                 if (lineToBeSet === 'Max') {
                                     const pinnedTick =
@@ -3671,7 +3614,7 @@ export default function Chart(props: propsIF) {
             if (canvas !== null) {
                 const height = canvas.height;
 
-                const factor = height > 400 ? 7 : 4;
+                const factor = Math.floor(height / 60);
 
                 context.stroke();
                 context.textAlign = 'left';
@@ -4176,10 +4119,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const passValue =
-            liqMode === 'curve'
-                ? liquidityData?.liqBoundaryCurve
-                : liquidityData?.liqBoundaryDepth;
+        const passValue = poolPriceDisplay ?? 0;
 
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
@@ -5442,7 +5382,8 @@ export default function Chart(props: propsIF) {
                 const xmax = scaleData?.xScale.domain()[1];
 
                 const filtered = unparsedCandleData.filter(
-                    (data: any) => data.date >= xmin && data.date <= xmax,
+                    (data: CandleData) =>
+                        data.time * 1000 >= xmin && data.time * 1000 <= xmax,
                 );
 
                 if (filtered !== undefined) {
@@ -5552,55 +5493,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasLiqAsk.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        const canvasDepth = d3
-            .select(d3CanvasLiqAskDepth.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctxDepth = canvasDepth.getContext('2d');
-
-        if (liqAskSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAsk.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    liqAskSeries(liquidityData?.liqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liqAskSeries.context(ctx);
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 6,
-                    ]);
-                });
-        }
-        if (liqAskDepthSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAskDepth.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvasDepth);
-                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liquidityDepthScale.range([
-                        event.detail.width,
-                        event.detail.width * 0.5,
-                    ]);
-                    liqAskDepthSeries.context(ctxDepth);
-                });
-        }
-    }, [
-        liquidityData?.liqAskData,
-        liquidityData?.depthLiqAskData,
-        liqAskSeries,
-        liqAskDepthSeries,
-        liqMode,
-    ]);
-
-    useEffect(() => {
         if (scaleData !== undefined && gradientForBid) {
             const d3CanvasLiqBidChart = d3fc
                 .seriesCanvasArea()
@@ -5641,6 +5533,55 @@ export default function Chart(props: propsIF) {
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
+    ]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
+
+        if (liqAskSeries && liquidityData?.liqAskData) {
+            d3.select(d3CanvasLiqAsk.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    liqAskSeries(liquidityData?.liqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liqAskSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
+                });
+        }
+        if (liqAskDepthSeries && liquidityData?.depthLiqAskData) {
+            d3.select(d3CanvasLiqAskDepth.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
+                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
+                    liqAskDepthSeries.context(ctxDepth);
+                });
+        }
+    }, [
+        liquidityData?.liqAskData,
+        liquidityData?.depthLiqAskData,
+        liqAskSeries,
+        liqAskDepthSeries,
+        liqMode,
     ]);
 
     useEffect(() => {
@@ -6011,7 +5952,7 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         period,
-        diffHashSig(unparsedCandleData[0]),
+        diffHashSigChart(unparsedCandleData),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
