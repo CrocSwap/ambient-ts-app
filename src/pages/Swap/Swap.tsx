@@ -55,7 +55,6 @@ import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import _ from 'lodash';
 import { PoolContext } from '../../contexts/PoolContext';
 
 interface propsIF {
