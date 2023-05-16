@@ -227,6 +227,7 @@ export const orderRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='tokens'
+            onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
