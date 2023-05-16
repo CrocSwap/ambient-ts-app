@@ -28,7 +28,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     /* line-height: var(--body-lh); */
-    color: var(--text2);
+    color: var(--text1);
 
     background: var(--dark1);
     border: 1px solid var(--dark3);
@@ -82,7 +82,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text2);
+    color: var(--text1);
     background: transparent;
     outline: none;
     border: none;
@@ -112,10 +112,13 @@
     background: transparent;
     outline: none;
     border: none;
-
+    cursor: pointer;
 }
 .dropdown_button:focus-visible {
     border: 1px solid var(--text1)
+}
+.dropdown_button path {
+    color: var(--dark3);
 }
 .dropdown_wrapper,
 .dropdown_wrapper_active {
