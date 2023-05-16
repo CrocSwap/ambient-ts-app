@@ -93,6 +93,7 @@ import {
     setMainnetQuoteTokenReduxAddress,
     candleDomain,
     setAdvancedMode,
+    candleScale,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
@@ -1555,6 +1556,9 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            const currentTime = Math.floor(Date.now() / 1000);
+            console.log('nası', { candleScale });
+
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
@@ -1568,8 +1572,10 @@ export default function App() {
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: candleTimeLocal.toString(),
-                                // time: '1657833300', // optional
-                                n: '200', // positive integer
+                                time: candleScale?.lastCandleDate
+                                    ? candleScale?.lastCandleDate.toString()
+                                    : currentTime.toString(), // optional
+                                n: candleScale?.nCandle.toString(), // positive integer
                                 // page: '0', // nonnegative integer
                                 chainId: mktDataChainId(chainData.chainId),
                                 dex: 'all',
@@ -1865,6 +1871,11 @@ export default function App() {
         lastCandleDate: undefined,
         domainBoundry: undefined,
         isFirstFetch: false,
+    });
+
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
     });
 
     const domainBoundaryInSeconds = Math.floor(
@@ -3404,6 +3415,10 @@ export default function App() {
         candleDomains: {
             value: candleDomains,
             setValue: setCandleDomains,
+        },
+        candleScale: {
+            value: candleScale,
+            setValue: setCandleScale,
         },
     };
 

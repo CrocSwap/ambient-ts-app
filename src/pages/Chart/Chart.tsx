@@ -241,6 +241,7 @@ export default function Chart(props: propsIF) {
 
     const {
         candleDomains: { setValue: setCandleDomains },
+        candleScale: { setValue: setCandleScale },
     } = useContext(CandleContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -974,6 +975,30 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
+    useEffect(() => {
+        if (scaleData) {
+            console.log(scaleData?.xScale.domain());
+
+            const xDomain = scaleData?.xScale.domain();
+            const isFutureDay =
+                new Date(xDomain[1]).getTime() > new Date().getTime();
+
+            const domainMax = isFutureDay
+                ? new Date().getTime()
+                : new Date(scaleData?.xScale.domain()[1]).getTime();
+
+            const nCandle = Math.floor(
+                (xDomain[1] - xDomain[0]) / (period * 1000),
+            );
+            const candleScale = {
+                lastCandleDate: Math.floor(domainMax / 1000),
+                nCandle: nCandle,
+            };
+
+            setCandleScale(candleScale);
+        }
+    }, [diffHashSig(scaleData?.xScale.domain())]);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (
         newBoundary: any,
@@ -1016,6 +1041,7 @@ export default function Chart(props: propsIF) {
                 }
             } else {
                 const lastCandleDate = d3.max(filtered, (d) => d.time * 1000);
+                console.log('dd', { lastCandleDate });
 
                 const candleDomain = {
                     lastCandleDate: new Date().getTime(),
@@ -7017,24 +7043,6 @@ export default function Chart(props: propsIF) {
             }
         });
     };
-
-    useEffect(() => {
-        if (poolPriceDisplay) {
-            const isFutureDay =
-                new Date(scaleData?.xScale.domain()[1]).getTime() >
-                new Date().getTime();
-
-            const candleDomain = {
-                lastCandleDate: isFutureDay
-                    ? new Date().getTime()
-                    : new Date(scaleData?.xScale.domain()[1]).getTime(),
-                domainBoundry: scaleData?.xScale.domain()[0] * 1000,
-                isFirstFetch: true,
-            };
-
-            setCandleDomains(candleDomain);
-        }
-    }, [pool, poolPriceDisplay]);
 
     return (
         <div

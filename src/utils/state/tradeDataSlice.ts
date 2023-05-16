@@ -15,6 +15,11 @@ export interface candleDomain {
     isFirstFetch: boolean;
 }
 
+export interface candleScale {
+    lastCandleDate: number | undefined;
+    nCandle: number;
+}
+
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
