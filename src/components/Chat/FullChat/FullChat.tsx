@@ -202,11 +202,8 @@ export default function FullChat(props: FullChatPropsIF) {
 
         if (roomArray.some(({ name }) => name === readableRoomName)) {
             setIsRoomInRoomArray(true);
-            console.log('aa');
         } else {
             setIsRoomInRoomArray(false);
-            console.log(readableRoomName, '  ', roomArray);
-            console.log('bb');
         }
 
         if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
