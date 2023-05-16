@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    memo,
 } from 'react';
 import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
@@ -87,7 +88,7 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
-export default function Portfolio(props: propsIF) {
+function Portfolio(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -646,3 +647,5 @@ export default function Portfolio(props: propsIF) {
         </main>
     );
 }
+
+export default memo(Portfolio);

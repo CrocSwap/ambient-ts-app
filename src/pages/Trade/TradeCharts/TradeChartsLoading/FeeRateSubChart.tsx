@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { FeeChartData } from '../TradeCharts';
@@ -24,7 +24,7 @@ interface FreeRateData {
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function FeeRateSubChart(props: FreeRateData) {
+function FeeRateSubChart(props: FreeRateData) {
     const {
         feeData,
         period,
@@ -353,3 +353,5 @@ export default function FeeRateSubChart(props: FreeRateData) {
         </div>
     );
 }
+
+export default memo(FeeRateSubChart);

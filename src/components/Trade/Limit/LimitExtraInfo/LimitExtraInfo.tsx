@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -31,7 +31,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function LimitExtraInfo(props: propsIF) {
+function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         poolPriceDisplay,
@@ -225,3 +225,5 @@ export default function LimitExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(LimitExtraInfo);

@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useState,
+    memo,
 } from 'react';
 import {
     useLocation,
@@ -80,7 +81,7 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
-export default function Reposition(props: propsIF) {
+function Reposition(props: propsIF) {
     const {
         isDenomBase,
         ambientApy,
@@ -848,3 +849,5 @@ export default function Reposition(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Reposition);

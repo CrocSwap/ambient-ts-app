@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useState,
@@ -79,7 +80,7 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
-export default function RangeCurrencySelector(props: propsIF) {
+function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,
@@ -468,3 +469,5 @@ export default function RangeCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeCurrencySelector);

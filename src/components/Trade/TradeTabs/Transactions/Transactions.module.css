@@ -82,13 +82,18 @@
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
+
 }
+
 
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+
+}
+.row_container li:not(:last-child){
     cursor: pointer;
 }
 

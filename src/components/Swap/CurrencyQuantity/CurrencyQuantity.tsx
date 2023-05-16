@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useState,
@@ -24,7 +25,7 @@ interface propsIF {
     isLoading: boolean;
 }
 
-export default function CurrencyQuantity(props: propsIF) {
+function CurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,
@@ -156,3 +157,5 @@ export default function CurrencyQuantity(props: propsIF) {
         </div>
     );
 }
+
+export default memo(CurrencyQuantity);

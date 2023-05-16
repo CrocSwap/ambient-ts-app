@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
@@ -11,7 +11,7 @@ interface propsIF {
     isAdvancedMode: boolean;
     thisToken: TokenIF;
 }
-export default function RangeCurrencyQuantity(props: propsIF) {
+function RangeCurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,
@@ -88,3 +88,5 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeCurrencyQuantity);

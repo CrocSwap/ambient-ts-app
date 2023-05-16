@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // interface for a Slippage Pair (not needed outside this file)
 interface SlippagePairIF {
@@ -17,10 +17,7 @@ export interface SlippageMethodsIF {
     volatile: number;
     updateStable: (val: number) => void;
     updateVolatile: (val: number) => void;
-    presets: {
-        stable: number[];
-        volatile: number[];
-    };
+    presets: { stable: number[]; volatile: number[] };
 }
 
 export interface allSlippageMethodsIF {
@@ -75,24 +72,19 @@ export const useSlippage = (
         );
     }, [stable, volatile]);
 
-    // fn to accept a new slippage value from the DOM
-    // @param slipType ➡ denotes stable vs volatile and is hardcoded into fn calls
-    // @param newVal ➡ new value supplied by the user through the DOM
-    const updateSlippage = (slipType: string, newVal: number): void => {
-        slipType === 'stable' && setStable(newVal);
-        slipType === 'volatile' && setVolatile(newVal);
-    };
-
     // return data object
     // stable ➡ number, active slippage value for stable pairs
     // volatile ➡ number, active slippage value for non-stable pairs
     // updateStable ➡ accepts a new `stable` value from the DOM
     // updateVolatile ➡ accepts a new `volatile` value from the DOM
-    return {
-        stable,
-        volatile,
-        updateStable: (val: number) => updateSlippage('stable', val),
-        updateVolatile: (val: number) => updateSlippage('volatile', val),
-        presets: defaults.presets,
-    };
+    return useMemo(
+        () => ({
+            stable,
+            volatile,
+            updateStable: setStable,
+            updateVolatile: setVolatile,
+            presets: defaults.presets,
+        }),
+        [stable, volatile],
+    );
 };

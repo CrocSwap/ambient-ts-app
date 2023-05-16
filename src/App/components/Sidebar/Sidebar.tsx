@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
@@ -28,10 +29,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import {
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../utils/interfaces/exports';
+import { TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
@@ -76,7 +74,7 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
@@ -338,7 +336,7 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (sidebar.status === 'closed') {
+                if (!sidebar.isOpen) {
                     sidebar.open();
                 }
                 setOpenAllDefault(true);
@@ -346,7 +344,7 @@ export default function Sidebar(props: propsIF) {
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            {openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -389,20 +387,11 @@ export default function Sidebar(props: propsIF) {
                     </div>
                 </DefaultTooltip>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    placement={sidebar.isOpen ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <BiSearch
-                        size={18}
-                        color='#CDC1FF'
-                        onClick={() => sidebar.open(true)}
-                    />
-                </DefaultTooltip>
+                <BiSearch
+                    size={18}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
@@ -534,3 +523,5 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Sidebar);

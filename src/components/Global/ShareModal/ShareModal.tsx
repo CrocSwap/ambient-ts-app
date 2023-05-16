@@ -77,52 +77,6 @@ export default function ShareModal() {
         openSnackbar(`${linkToShare} copied`, 'info');
     }
 
-    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
-    // const [shareOptions, setShareOptions] = useState([
-    //     { slug: 'first', name: 'Include Swap 1', checked: false },
-    //     { slug: 'second', name: 'Include Swap 2', checked: false },
-    //     { slug: 'third', name: 'Include Swap 3', checked: false },
-    //     { slug: 'fourth', name: 'Include Swap 4', checked: false },
-    // ]);
-
-    // const handleShareOptionChange = (slug: string) => {
-    //     const copyShareOptions = [...shareOptions];
-    //     const modifiedShareOptions = copyShareOptions.map((option) => {
-    //         if (slug === option.slug) {
-    //             option.checked = !option.checked;
-    //         }
-
-    //         return option;
-    //     });
-
-    //     setShareOptions(modifiedShareOptions);
-    // };
-
-    // const shareOptionsDisplay = (
-    //     <div className={styles.option_control_container}>
-    //         {shareIconsContent}
-    //         <div className={styles.options_control_display_container}>
-    //             <p className={styles.control_title}>Options</p>
-    //             <ul>
-    //                 {shareOptions.map((option, idx) => (
-    //                     <SwapShareControl
-    //                         key={idx}
-    //                         option={option}
-    //                         handleShareOptionChange={handleShareOptionChange}
-    //                     />
-    //                 ))}
-    //             </ul>
-    //         </div>
-    //         <p className={styles.control_title}>URL:</p>
-    //         <p className={styles.url_link}>
-    //             {`https://ambient-finance.netlify.app${linkToShare}`}
-    //             <div style={{ cursor: 'pointer' }}>
-    //                 <FiCopy color='#cdc1ff' />
-    //             </div>
-    //         </p>
-    //     </div>
-    // );
-
     const shareIconsContent = (
         <section className={styles.share_links_container}>
             {socialLinksData.map((link, idx) => (

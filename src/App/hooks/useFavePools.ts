@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 
@@ -132,10 +132,13 @@ export const useFavePools = (): favePoolsMethodsIF => {
         );
     };
 
-    return {
-        pools: favePools,
-        check: checkFavePools,
-        add: addPoolToFaves,
-        remove: removePoolFromFaves,
-    };
+    return useMemo(
+        () => ({
+            pools: favePools,
+            check: checkFavePools,
+            add: addPoolToFaves,
+            remove: removePoolFromFaves,
+        }),
+        [favePools],
+    );
 };

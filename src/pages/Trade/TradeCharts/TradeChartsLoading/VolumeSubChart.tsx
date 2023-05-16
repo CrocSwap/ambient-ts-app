@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { VolumeChartData } from '../TradeCharts';
-import { useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 
 interface VolumeData {
@@ -30,7 +30,7 @@ interface VolumeData {
     mouseMoveChartName: string | undefined;
 }
 
-export default function VolumeSubChart(props: VolumeData) {
+function VolumeSubChart(props: VolumeData) {
     const {
         volumeData,
         period,
@@ -337,3 +337,5 @@ export default function VolumeSubChart(props: VolumeData) {
         </div>
     );
 }
+
+export default memo(VolumeSubChart);

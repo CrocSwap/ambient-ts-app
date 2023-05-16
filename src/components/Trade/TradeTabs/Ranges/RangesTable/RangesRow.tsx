@@ -5,6 +5,7 @@ import {
     useRef,
     useState,
     useContext,
+    memo,
 } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -54,7 +55,7 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
 }
 
-export default function RangesRow(props: propsIF) {
+function RangesRow(props: propsIF) {
     const {
         chainId,
         cachedQuerySpotPrice,
@@ -260,8 +261,8 @@ export default function RangesRow(props: propsIF) {
         );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -347,13 +348,11 @@ export default function RangesRow(props: propsIF) {
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
                 className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
+                style={{ backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
                 {showPair && rangeTimeWithTooltip}
@@ -387,3 +386,5 @@ export default function RangesRow(props: propsIF) {
         </>
     );
 }
+
+export default memo(RangesRow);

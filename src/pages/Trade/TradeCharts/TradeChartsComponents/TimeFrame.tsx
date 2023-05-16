@@ -1,5 +1,5 @@
 import styles from './TimeFrame.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
@@ -8,7 +8,7 @@ interface propsIF {
     candleTime: candleTimeIF;
 }
 
-export default function TimeFrame(props: propsIF) {
+function TimeFrame(props: propsIF) {
     const { candleTime } = props;
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
@@ -84,3 +84,5 @@ export default function TimeFrame(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TimeFrame);

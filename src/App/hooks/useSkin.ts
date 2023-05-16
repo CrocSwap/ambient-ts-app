@@ -23,9 +23,12 @@ export const useSkin = (defaultSkin: string): skinMethodsIF => {
         return {};
     }, [skin]);
 
-    return {
-        colors,
-        choosePurpleDark: () => setSkin('purple_dark'),
-        choosePurpleLight: () => setSkin('purple_light'),
-    };
+    return useMemo(
+        () => ({
+            colors,
+            choosePurpleDark: () => setSkin('purple_dark'),
+            choosePurpleLight: () => setSkin('purple_light'),
+        }),
+        [colors],
+    );
 };

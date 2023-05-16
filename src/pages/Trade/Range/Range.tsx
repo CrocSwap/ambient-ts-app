@@ -7,6 +7,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
@@ -34,7 +35,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -68,7 +69,6 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
@@ -113,10 +113,6 @@ interface propsIF {
     dailyVol: number | undefined;
     poolExists: boolean | undefined;
     isRangeCopied: boolean;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
-    setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
-    setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -133,7 +129,7 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
-export default function Range(props: propsIF) {
+function Range(props: propsIF) {
     const {
         account,
         isUserLoggedIn,
@@ -159,10 +155,6 @@ export default function Range(props: propsIF) {
         dailyVol,
         poolExists,
         isRangeCopied,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -212,6 +204,9 @@ export default function Range(props: propsIF) {
 
     const [isAmbient, setIsAmbient] = useState(false);
 
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
+
     const dispatch = useAppDispatch();
     useUrlParams(tokens, chainId, provider);
 
@@ -239,10 +234,18 @@ export default function Range(props: propsIF) {
 
     const { navigationMenu } = useTradeData();
 
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
+    const tokenPair = useMemo(
+        () => ({
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        }),
+        [
+            tradeData.tokenB.address,
+            tradeData.tokenB.chainId,
+            tradeData.tokenA.address,
+            tradeData.tokenA.chainId,
+        ],
+    );
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
@@ -1215,8 +1218,6 @@ export default function Range(props: propsIF) {
         </div>
     );
 
-    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
-
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
@@ -1346,7 +1347,6 @@ export default function Range(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -1585,61 +1585,17 @@ export default function Range(props: propsIF) {
             flat={true}
         />
     );
-    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Range 1', checked: false },
-        { slug: 'second', name: 'Include Range 2', checked: false },
-        { slug: 'third', name: 'Include Range 3', checked: false },
-        { slug: 'fourth', name: 'Include Range 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <RangeShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verify(
         tokenPair.dataTokenA.address,
-        tokenPair.dataTokenA.chainId
+        tokenPair.dataTokenA.chainId,
     );
     const needConfirmTokenB = !tokens.verify(
         tokenPair.dataTokenB.address,
-        tokenPair.dataTokenB.chainId
+        tokenPair.dataTokenB.chainId,
     );
 
     // token acknowledgement needed message (empty string if none needed)
@@ -1710,7 +1666,6 @@ export default function Range(props: propsIF) {
                         isPairStable={isPairStable}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isTokenABase}
-                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}
                     <motion.div
@@ -1873,3 +1828,5 @@ export default function Range(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Range);
