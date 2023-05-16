@@ -231,7 +231,7 @@ export default function RoomDropdown(props: propsIF) {
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [favePools, props.selectedRoom]);
+    }, [favePools, props.selectedRoom, rooms.length === 0]);
 
     const [isActive, setIsActive] = useState(false);
 

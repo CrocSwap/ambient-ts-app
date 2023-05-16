@@ -321,7 +321,7 @@ export default function FullChat(props: FullChatPropsIF) {
         });
         const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
         props.favoritePoolsArray.splice(0, middleIndex);
-    }, [favePools]);
+    }, [favePools, rooms.length === 0]);
 
     function handleGlobalClick() {
         props.setRoom('Global');
