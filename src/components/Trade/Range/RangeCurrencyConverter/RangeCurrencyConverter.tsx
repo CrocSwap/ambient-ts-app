@@ -33,7 +33,6 @@ import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
 
@@ -89,7 +88,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
@@ -137,7 +135,6 @@ function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
     } = props;
@@ -753,7 +750,6 @@ function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
     };

@@ -24,7 +24,6 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
@@ -83,7 +82,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -123,7 +121,6 @@ function RangeCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
     const {
@@ -475,7 +472,6 @@ function RangeCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

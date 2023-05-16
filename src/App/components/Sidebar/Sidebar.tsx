@@ -41,10 +41,10 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -66,7 +66,6 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
-    ackTokens: ackTokensMethodsIF;
 }
 
 function Sidebar(props: propsIF) {
@@ -85,13 +84,13 @@ function Sidebar(props: propsIF) {
         verifyToken,
         tokenPair,
         recentPools,
-        ackTokens,
     } = props;
 
     const { sidebar } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { ackTokens } = useContext(UserPreferenceContext);
 
     const location = useLocation();
 

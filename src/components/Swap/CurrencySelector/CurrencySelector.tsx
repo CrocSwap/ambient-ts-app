@@ -23,7 +23,6 @@ import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
@@ -85,7 +84,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
@@ -126,7 +124,6 @@ function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -591,7 +588,6 @@ function CurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

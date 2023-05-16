@@ -16,8 +16,8 @@ import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -48,7 +48,6 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    ackTokens: ackTokensMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -69,12 +68,12 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         tokenPair,
-        ackTokens,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { ackTokens } = useContext(UserPreferenceContext);
 
     // add an event listener for custom functionalities on modal close
     // this needs to be coordinated with data in Modal.tsx

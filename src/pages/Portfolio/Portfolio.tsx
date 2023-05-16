@@ -40,7 +40,6 @@ import {
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
@@ -86,7 +85,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -121,7 +119,6 @@ function Portfolio(props: propsIF) {
         searchType,
         mainnetProvider,
         setSimpleRangeWidth,
-        ackTokens,
         setExpandTradeTable,
     } = props;
 
@@ -633,7 +630,6 @@ function Portfolio(props: propsIF) {
                         getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
-                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

@@ -36,7 +36,6 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
 
@@ -88,7 +87,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
@@ -133,7 +131,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        ackTokens,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
     } = props;
@@ -546,7 +543,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
@@ -615,7 +611,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }

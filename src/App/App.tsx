@@ -945,23 +945,11 @@ export default function App() {
     /* ------------------------------------------ END TRADE TOKEN CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ USER PREFERENCES CONTEXT ------------------------------------------ */
-    // TODO: add to user preference context
     // hook to manage acknowledged tokens
     const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
     const ackTokens = useMemo(
         () => ackTokensHooks,
         [diffHashSig(ackTokensHooks.tokens)],
-    );
-    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
-        () =>
-            getMoneynessRank(
-                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
-            ) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
-                ) >=
-            0,
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
 
     const userPreferencesProps = {
@@ -976,6 +964,7 @@ export default function App() {
         bypassConfirmLimit: useSkipConfirm('limit'),
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
+        ackTokens,
     };
 
     // Memoize the object being passed to context. This assumes that all of the individual top-level values
@@ -987,6 +976,17 @@ export default function App() {
         [...Object.values(userPreferencesProps)],
     );
 
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
+        () =>
+            getMoneynessRank(
+                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
+            ) -
+                getMoneynessRank(
+                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
+                ) >=
+            0,
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
+    );
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default
@@ -1686,7 +1686,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
     };
 
     // props for <Swap/> React element on trade route
@@ -1715,7 +1714,6 @@ export default function App() {
         setInput,
         searchType,
         tokenPairLocal,
-        ackTokens,
     };
 
     // props for <Limit/> React element on trade route
@@ -1743,7 +1741,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
     };
 
     // props for <Range/> React element
@@ -1782,7 +1779,6 @@ export default function App() {
         maxPrice: maxRangePrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        ackTokens,
         cachedFetchTokenPrice,
     };
 
@@ -1807,7 +1803,6 @@ export default function App() {
         verifyToken: verifyToken,
         tokenPair: tokenPair,
         recentPools,
-        ackTokens,
     };
 
     // Take away margin from left if we are on homepage or swap
@@ -1986,7 +1981,6 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         mainnetProvider,
         setSimpleRangeWidth,
-        ackTokens,
         setExpandTradeTable,
     };
 

@@ -74,7 +74,6 @@ import {
 import { formatAmountOld } from '../../../utils/numbers';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
@@ -117,7 +116,6 @@ interface propsIF {
     searchType: string;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -150,7 +148,6 @@ function Range(props: propsIF) {
         setSimpleRangeWidth,
         simpleRangeWidth,
         cachedFetchTokenPrice,
-        ackTokens,
     } = props;
 
     const {
@@ -173,9 +170,8 @@ function Range(props: propsIF) {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeStateContext);
-    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
-        UserPreferenceContext,
-    );
+    const { mintSlippage, dexBalRange, bypassConfirmRange, ackTokens } =
+        useContext(UserPreferenceContext);
 
     const [
         isConfirmationModalOpen,
@@ -1365,7 +1361,6 @@ function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };

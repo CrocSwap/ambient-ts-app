@@ -64,7 +64,6 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -101,7 +100,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    ackTokens: ackTokensMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -129,7 +127,6 @@ export default function Limit(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        ackTokens,
     } = props;
 
     const {
@@ -143,7 +140,7 @@ export default function Limit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
-    const { dexBalLimit, bypassConfirmLimit } = useContext(
+    const { dexBalLimit, bypassConfirmLimit, ackTokens } = useContext(
         UserPreferenceContext,
     );
 
@@ -798,7 +795,6 @@ export default function Limit(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setResetLimitTick: setResetLimitTick,
-        ackTokens: ackTokens,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };

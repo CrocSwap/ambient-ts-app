@@ -28,7 +28,6 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -81,7 +80,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -114,7 +112,6 @@ function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
@@ -432,7 +429,6 @@ function LimitCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}

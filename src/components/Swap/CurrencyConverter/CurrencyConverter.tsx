@@ -27,7 +27,6 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
@@ -77,7 +76,6 @@ interface propsIF {
     searchType: string;
     priceImpact: CrocImpact | undefined;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
-    ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
 }
@@ -117,7 +115,6 @@ function CurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setTokenAQtyCoveredByWalletBalance,
-        ackTokens,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -913,7 +910,6 @@ function CurrencyConverter(props: propsIF) {
                 setInput={setInput}
                 searchType={searchType}
                 setDisableReverseTokens={setDisableReverseTokens}
-                ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
@@ -978,7 +974,6 @@ function CurrencyConverter(props: propsIF) {
                     setInput={setInput}
                     searchType={searchType}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }

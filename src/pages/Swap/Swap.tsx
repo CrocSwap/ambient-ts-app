@@ -51,7 +51,6 @@ import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -90,7 +89,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     tokenPairLocal: string[] | null;
-    ackTokens: ackTokensMethodsIF;
 }
 
 function Swap(props: propsIF) {
@@ -118,7 +116,6 @@ function Swap(props: propsIF) {
         setInput,
         searchType,
         tokenPairLocal,
-        ackTokens,
     } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -133,9 +130,8 @@ function Swap(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
-        UserPreferenceContext,
-    );
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap, ackTokens } =
+        useContext(UserPreferenceContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -615,7 +611,6 @@ function Swap(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        ackTokens: ackTokens,
     };
 
     const {
