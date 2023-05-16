@@ -388,12 +388,14 @@ function Transactions(props: propsIF) {
     );
 
     const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
     const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
 
     const count = Math.ceil(sortedTransactions.length / rowsPerPage);
     const _DATA = usePagination(sortedTransactions, rowsPerPage);
 
-    const { showingFrom, showingTo, totalItems } = _DATA;
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
@@ -448,6 +450,8 @@ function Transactions(props: propsIF) {
                         value={rowsPerPage}
                         onChange={handleChangeRowsPerPage}
                         itemCount={sortedTransactions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
                     />
                     <Pagination
                         count={count}

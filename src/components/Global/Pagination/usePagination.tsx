@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 
 interface PaginationResult<T> {
     next: () => void;
     prev: () => void;
     jump: (page: number) => void;
+
     currentData: T[];
     currentPage: number;
     maxPage: number;
@@ -11,6 +12,7 @@ interface PaginationResult<T> {
     showingFrom: number;
     showingTo: number;
     totalItems: number;
+    setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
 function usePagination<T>(
@@ -18,7 +20,6 @@ function usePagination<T>(
     itemsPerPage: number,
 ): PaginationResult<T> {
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [resetPage, setResetPage] = useState<boolean>(false);
 
     const maxPage: number = Math.ceil(data.length / itemsPerPage);
     const showingFrom: number = (currentPage - 1) * itemsPerPage + 1;
@@ -34,6 +35,8 @@ function usePagination<T>(
         return data.slice(begin, end);
     };
 
+    console.log({ currentPage });
+
     function next(): void {
         setCurrentPage((currentPage) => Math.min(currentPage + 1, maxPage));
     }
@@ -48,25 +51,6 @@ function usePagination<T>(
         setCurrentPage((currentPage) => Math.min(pageNumber, maxPage));
     }
 
-    useEffect(() => {
-        if (resetPage) {
-            setCurrentPage(1);
-            setResetPage(false);
-        }
-    }, [resetPage]);
-
-    useEffect(() => {
-        if (currentPage > maxPage) {
-            setResetPage(true);
-        }
-    }, [currentPage, maxPage]);
-
-    useEffect(() => {
-        if (itemsPerPage !== data.length) {
-            setResetPage(true);
-        }
-    }, [itemsPerPage, data.length]);
-
     return {
         next,
         prev,
@@ -77,6 +61,7 @@ function usePagination<T>(
         showingFrom,
         showingTo,
         totalItems,
+        setCurrentPage,
     };
 }
 

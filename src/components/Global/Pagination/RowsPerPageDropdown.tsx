@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 const dropdownStyles = {
     background: 'var(--dark2)',
@@ -13,10 +13,14 @@ export const RowsPerPageDropdown = ({
     value,
     onChange,
     itemCount,
+    resetPageToFirst,
+    setCurrentPage,
 }: {
     value: number;
     onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
     itemCount: number;
+    resetPageToFirst: () => void;
+    setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
     const generateOptions = (count: number) => {
         const maxOptions = 10;
@@ -43,6 +47,12 @@ export const RowsPerPageDropdown = ({
 
     const rowsPerPageOptions = generateOptions(itemCount);
 
+    const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        onChange(event);
+        resetPageToFirst();
+        setCurrentPage(1);
+    };
+
     return (
         <div
             style={{
@@ -57,7 +67,7 @@ export const RowsPerPageDropdown = ({
             <select
                 id='rows-per-page-select'
                 value={value}
-                onChange={onChange}
+                onChange={handleSelectChange}
                 style={dropdownStyles}
             >
                 {rowsPerPageOptions.map((option) => (
