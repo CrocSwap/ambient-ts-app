@@ -286,9 +286,9 @@ export default function RangesMenu(props: propsIF) {
         <div className={styles.dropdown_menu} ref={menuItemRef}>
             <div
                 onClick={() => setShowDropdownMenu(!showDropdownMenu)}
-                style={{ cursor: 'pointer' }}
+                className={styles.dropdown_button}
             >
-                <CiCircleMore size={25} color='var(--text3)' />
+                <CiCircleMore size={25} color='var(--text1)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
