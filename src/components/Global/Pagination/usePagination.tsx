@@ -35,8 +35,6 @@ function usePagination<T>(
         return data.slice(begin, end);
     };
 
-    console.log({ currentPage });
-
     function next(): void {
         setCurrentPage((currentPage) => Math.min(currentPage + 1, maxPage));
     }
