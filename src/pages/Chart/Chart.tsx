@@ -5499,7 +5499,7 @@ export default function Chart(props: propsIF) {
                     ]);
                 });
         }
-        if (liqAskDepthSeries && liquidityData?.liqAskData) {
+        if (liqAskDepthSeries && liquidityData?.depthLiqAskData) {
             d3.select(d3CanvasLiqAskDepth.current)
                 .on('draw', () => {
                     setCanvasResolution(canvasDepth);

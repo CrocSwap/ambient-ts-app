@@ -141,6 +141,11 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
+
+    const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
+        undefined,
+    );
+
     const expandTradeTable = props?.expandTradeTable;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -178,6 +183,41 @@ function TradeCandleStickChart(props: propsIF) {
     }, [candleTimeInSeconds, denominationsInBase]);
 
     useEffect(() => {
+        if (props.liquidityData !== undefined) {
+            const barThreshold =
+                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+
+            const liqBoundaryData = props.liquidityData.ranges.find(
+                (liq: any) => {
+                    return denominationsInBase
+                        ? liq.upperBoundInvPriceDecimalCorrected <
+                              barThreshold &&
+                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                              liq.upperBoundPriceDecimalCorrected !== '+inf';
+                },
+            );
+
+            const liqBoundaryArg =
+                liqBoundaryData !== undefined
+                    ? denominationsInBase
+                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
+                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                    : barThreshold;
+            const liqBoundary =
+                typeof liqBoundaryArg === 'number'
+                    ? liqBoundaryArg
+                    : parseFloat(liqBoundaryArg);
+
+            setLiqBoundary(() => liqBoundary);
+        }
+    }, [
+        diffHashSigLiquidity(liquidityPullData),
+        denominationsInBase,
+        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
+    ]);
+
+    useEffect(() => {
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
     }, [diffHashSigCandles(candleData), denominationsInBase]);
@@ -185,6 +225,7 @@ function TradeCandleStickChart(props: propsIF) {
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
         if (
+            liqBoundary &&
             props.liquidityData &&
             poolPriceDisplay !== undefined &&
             poolPriceDisplay > 0 &&
@@ -291,27 +332,6 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .range([30, 550]);
 
-            const liqBoundaryData = props.liquidityData.ranges.find(
-                (liq: any) => {
-                    return denominationsInBase
-                        ? liq.upperBoundInvPriceDecimalCorrected <
-                              barThreshold &&
-                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
-                              liq.upperBoundPriceDecimalCorrected !== '+inf';
-                },
-            );
-
-            const liqBoundaryArg =
-                liqBoundaryData !== undefined
-                    ? denominationsInBase
-                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
-                    : barThreshold;
-            const liqBoundary =
-                typeof liqBoundaryArg === 'number'
-                    ? liqBoundaryArg
-                    : parseFloat(liqBoundaryArg);
             let liqBoundaryDepth = liqBoundary;
 
             props.liquidityData.ranges.map((data: any) => {
@@ -511,11 +531,7 @@ function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [
-        diffHashSigLiquidity(liquidityPullData),
-        denominationsInBase,
-        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
-    ]);
+    }, [liqBoundary]);
 
     useEffect(() => {
         if (!(unparsedCandleData?.length && unparsedCandleData.length > 0)) {
