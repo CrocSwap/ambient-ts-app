@@ -920,8 +920,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData) {
-            console.log(scaleData?.xScale.domain());
-
             const xDomain = scaleData?.xScale.domain();
             const isFutureDay =
                 new Date(xDomain[1]).getTime() > new Date().getTime();
@@ -929,6 +927,28 @@ export default function Chart(props: propsIF) {
             const domainMax = isFutureDay
                 ? new Date().getTime()
                 : new Date(scaleData?.xScale.domain()[1]).getTime();
+
+            const nCandle = Math.floor(
+                (xDomain[1] - xDomain[0]) / (period * 1000),
+            );
+            const candleScale = {
+                lastCandleDate: Math.floor(domainMax / 1000),
+                nCandle: nCandle,
+            };
+
+            setCandleScale(candleScale);
+        }
+    }, [diffHashSig(scaleData?.xScale.domain())]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const xDomain = scaleData?.xScale.domain();
+            const isFutureDay =
+                new Date(xDomain[1]).getTime() > new Date().getTime();
+
+            const domainMax = isFutureDay
+                ? new Date().getTime()
+                : new Date(xDomain[1]).getTime();
 
             const nCandle = Math.floor(
                 (xDomain[1] - xDomain[0]) / (period * 1000),
@@ -984,8 +1004,6 @@ export default function Chart(props: propsIF) {
                 }
             } else {
                 const lastCandleDate = d3.max(filtered, (d) => d.time * 1000);
-                console.log('dd', { lastCandleDate });
-
                 const candleDomain = {
                     lastCandleDate: new Date().getTime(),
                     domainBoundry: lastCandleDate,
@@ -6984,6 +7002,29 @@ export default function Chart(props: propsIF) {
             }
         });
     };
+
+    useEffect(() => {
+        if (scaleData) {
+            const xDomain = scaleData?.xScale.domain();
+
+            const isFutureDay =
+                new Date(xDomain[1]).getTime() > new Date().getTime();
+
+            const domainMax = isFutureDay
+                ? new Date().getTime()
+                : new Date(xDomain[1]).getTime();
+
+            const domainMin = xDomain[0];
+
+            const candleDomain = {
+                lastCandleDate: Math.floor(domainMax / 1000),
+                domainBoundry: Math.floor(domainMin / 1000),
+                isFirstFetch: false,
+            };
+
+            setCandleDomains(candleDomain);
+        }
+    }, [period]);
 
     return (
         <div
