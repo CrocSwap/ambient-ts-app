@@ -464,34 +464,6 @@ export default function Chart(props: propsIF) {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
 
-    // const setTriangleRangeValues = (max: number, min: number) => {
-    //     setRangeTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         const maxPrice = max !== undefined ? max : 0;
-    //         const minPrice = min !== undefined ? min : 0;
-
-    //         newData[0].value = maxPrice;
-    //         newData[1].value = maxPrice;
-    //         newData[2].value = minPrice;
-    //         newData[3].value = minPrice;
-
-    //         return newData;
-    //     });
-    // };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const setTriangleLimitValues = (limit: any) => {
-    //     setLimitTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         newData[0].value = limit;
-    //         newData[1].value = limit;
-
-    //         return newData;
-    //     });
-    // };
-
     useEffect(() => {
         if (
             minPrice !== 0 &&
@@ -2172,8 +2144,8 @@ export default function Chart(props: propsIF) {
 
     const setMarketLineValue = () => {
         const lastCandlePrice = denomInBase
-            ? unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected
-            : unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected;
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
 
         setMarket(() => {
             return [
@@ -2187,7 +2159,7 @@ export default function Chart(props: propsIF) {
 
     const findLiqNearest = (liqDataAll: any[]) => {
         if (scaleData !== undefined) {
-            const point = scaleData?.yScale(scaleData?.yScale.domain()[0]);
+            const point = scaleData?.yScale.domain()[0];
 
             if (point == undefined) return 0;
             if (liqDataAll) {
@@ -5458,55 +5430,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasLiqAsk.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        const canvasDepth = d3
-            .select(d3CanvasLiqAskDepth.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctxDepth = canvasDepth.getContext('2d');
-
-        if (liqAskSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAsk.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    liqAskSeries(liquidityData?.liqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liqAskSeries.context(ctx);
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 6,
-                    ]);
-                });
-        }
-        if (liqAskDepthSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAskDepth.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvasDepth);
-                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liquidityDepthScale.range([
-                        event.detail.width,
-                        event.detail.width * 0.5,
-                    ]);
-                    liqAskDepthSeries.context(ctxDepth);
-                });
-        }
-    }, [
-        liquidityData?.liqAskData,
-        liquidityData?.depthLiqAskData,
-        liqAskSeries,
-        liqAskDepthSeries,
-        liqMode,
-    ]);
-
-    useEffect(() => {
         if (scaleData !== undefined && gradientForBid) {
             const d3CanvasLiqBidChart = d3fc
                 .seriesCanvasArea()
@@ -5547,6 +5470,55 @@ export default function Chart(props: propsIF) {
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
+    ]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
+
+        if (liqAskSeries && liquidityData?.liqAskData) {
+            d3.select(d3CanvasLiqAsk.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    liqAskSeries(liquidityData?.liqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liqAskSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
+                });
+        }
+        if (liqAskDepthSeries && liquidityData?.depthLiqAskData) {
+            d3.select(d3CanvasLiqAskDepth.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
+                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
+                    liqAskDepthSeries.context(ctxDepth);
+                });
+        }
+    }, [
+        liquidityData?.liqAskData,
+        liquidityData?.depthLiqAskData,
+        liqAskSeries,
+        liqAskDepthSeries,
+        liqMode,
     ]);
 
     useEffect(() => {
@@ -6856,7 +6828,6 @@ export default function Chart(props: propsIF) {
     // // Candle transactions
     useEffect(() => {
         if (selectedDate !== undefined) {
-            console.log(selectedDate);
             const candle = unparsedCandleData.find(
                 (candle: CandleData) => candle.time * 1000 === selectedDate,
             ) as any;
