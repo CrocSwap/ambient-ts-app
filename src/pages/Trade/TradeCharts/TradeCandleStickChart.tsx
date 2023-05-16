@@ -134,7 +134,7 @@ function TradeCandleStickChart(props: propsIF) {
     const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<any>();
-    const [liquidityScale, setLiquidityScale] = useState<any>();
+    const [liquidityScale, setLiquidityScale] = useState<any>(undefined);
     const [liquidityDepthScale, setLiquidityDepthScale] = useState<any>();
     const [prevPeriod, setPrevPeriod] = useState<any>();
     const [prevFirsCandle, setPrevFirsCandle] = useState<any>();
@@ -529,14 +529,16 @@ function TradeCandleStickChart(props: propsIF) {
 
     // Liq Scale
     useEffect(() => {
-        if (liquidityData === undefined) {
+        if (liquidityData !== undefined) {
+            if (liquidityScale === undefined) {
+                setScaleForChartLiquidity(liquidityData);
+            }
+        } else {
             setLiquidityScale(() => {
                 return undefined;
             });
-        } else {
-            setScaleForChartLiquidity(liquidityData);
         }
-    }, [liquidityData]);
+    }, [liquidityData, liquidityScale]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         IS_LOCAL_ENV && console.debug('parse Liq Scale');
