@@ -67,6 +67,7 @@
     outline: none;
     border: none;
     background: transparent;
+    cursor: pointer;
 }
 
 .tab_ul li.selected,
@@ -91,19 +92,20 @@
 }
 
 .selected button, .non_selected button{
+    font-family: var(--font-family);
     font-weight: 500;
-    font-size: 13px;
-    line-height: 16.25px;
+    line-height: 19px;
 }
 
 
 .selected button{
-    color: var(--accent1)
+    color: var(--accent1);
+    font-size: 15px;
 }
 
 .non_selected button{
-    color: var(--text2);
-    opacity: 0.5;
+    color: var(--text3);
+    font-size: 13px;
 }
 
 .underline {
@@ -164,7 +166,7 @@
     .tab_ul li,
     .menu_content li,
     .tab_ul_left li {
-        padding: 10px 15px;
+        padding: 8px 10px;
         justify-content: flex-start;
     }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -19,11 +19,11 @@ import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
-    ensName: string;
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
@@ -36,7 +36,7 @@ interface HeaderPropsIF {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
-export default function PageHeader(props: HeaderPropsIF) {
+const PageHeader = function (props: HeaderPropsIF) {
     const {
         ethMainnetUsdPrice,
         chainId,
@@ -121,13 +121,14 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainData: chainData,
         walletDropdownTokenData,
     };
+    const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
             onClick={() => openWagmiModalWallet()}
         >
-            Connect Wallet
+            {desktopScreen ? 'Connect Wallet' : 'Connect'}
         </button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
@@ -222,7 +223,11 @@ export default function PageHeader(props: HeaderPropsIF) {
         : '/trade/market/';
 
     const linkData = [
-        { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
+        {
+            title: t('common:homeTitle'),
+            destination: '/',
+            shouldDisplay: desktopScreen,
+        },
         {
             title: t('common:swapTitle'),
             destination: '/swap/' + paramsSlug,
@@ -355,11 +360,13 @@ export default function PageHeader(props: HeaderPropsIF) {
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
                 <img src={logo} alt='ambient' className={styles.logo} />
-                <img
-                    src={logoText}
-                    alt='ambient'
-                    className={styles.logo_text}
-                />
+                {desktopScreen && (
+                    <img
+                        src={logoText}
+                        alt='ambient'
+                        className={styles.logo_text}
+                    />
+                )}
             </Link>
             {routeDisplay}
             {show ? (
@@ -403,4 +410,6 @@ export default function PageHeader(props: HeaderPropsIF) {
             {isChainSupported || <SwitchNetwork />}
         </header>
     );
-}
+};
+
+export default memo(PageHeader);

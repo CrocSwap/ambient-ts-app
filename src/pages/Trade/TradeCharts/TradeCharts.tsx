@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import {
     AiOutlineCamera,
@@ -21,12 +22,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-    LiquidityData,
-} from '../../../utils/state/graphDataSlice';
+import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -59,9 +55,8 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    candleData: CandlesByPoolAndDuration | undefined;
     limitTick: number | undefined;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     upBodyColor: string;
@@ -71,9 +66,10 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
     TradeSettingsColor: JSX.Element;
 
     poolPriceChangePercent: string | undefined;
@@ -81,45 +77,10 @@ interface propsIF {
     isPoolPriceChangePositive: boolean;
 
     handlePulseAnimation: (type: string) => void;
-    fetchingCandle: boolean;
-    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
-    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
     chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
-}
-
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
-
-export interface TvlChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-}
-
-export interface VolumeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-    volume: number;
-    color: string;
-}
-export interface FeeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,7 +107,7 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: propsIF) {
+function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
         chainData,
@@ -159,9 +120,6 @@ export default function TradeCharts(props: propsIF) {
         poolPriceChangePercent,
         isPoolPriceChangePositive,
         handlePulseAnimation,
-        fetchingCandle,
-        setFetchingCandle,
-        setCandleDomains,
         setSimpleRangeWidth,
         chartSettings,
     } = props;
@@ -430,9 +388,7 @@ export default function TradeCharts(props: propsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<
-        CandleChartData | undefined
-    >();
+    const [currentData, setCurrentData] = useState<CandleData | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();
@@ -526,7 +482,6 @@ export default function TradeCharts(props: propsIF) {
                         isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}
                         expandTradeTable={expandTradeTable}
-                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitTick={props.limitTick}
@@ -544,6 +499,7 @@ export default function TradeCharts(props: propsIF) {
                         upVolumeColor={props.upVolumeColor}
                         downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
+                        quoteTokenAddress={props.quoteTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
@@ -558,9 +514,6 @@ export default function TradeCharts(props: propsIF) {
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
                         handlePulseAnimation={handlePulseAnimation}
-                        fetchingCandle={fetchingCandle}
-                        setFetchingCandle={setFetchingCandle}
-                        setCandleDomains={setCandleDomains}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}
                         repositionRangeWidth={props.repositionRangeWidth}
@@ -578,3 +531,5 @@ export default function TradeCharts(props: propsIF) {
         // </FocusTrap>
     );
 }
+
+export default memo(TradeCharts);

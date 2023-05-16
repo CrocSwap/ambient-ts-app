@@ -8,7 +8,7 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -28,7 +28,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 
-export default function TradeChartsTokenInfo(props: propsIF) {
+function TradeChartsTokenInfo(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceDisplay,
@@ -116,11 +116,15 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 style={
                     isPoolPriceChangePositive
                         ? {
-                              color: 'green',
+                              color: 'var(--other-green)',
                               marginTop: '4.5px',
                               fontSize: '15px',
                           }
-                        : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
+                        : {
+                              color: 'var(--other-red)',
+                              marginTop: '4.5px',
+                              fontSize: '15px',
+                          }
                 }
                 aria-label={`Pool price change is ${poolPriceNumber}`}
             >
@@ -316,3 +320,5 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeChartsTokenInfo);

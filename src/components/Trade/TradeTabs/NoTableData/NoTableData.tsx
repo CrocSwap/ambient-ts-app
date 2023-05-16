@@ -1,6 +1,6 @@
 import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../constants';
 
@@ -13,10 +13,10 @@ interface NoTableDataPropsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    setSelectedDate?: Dispatch<Date | undefined>;
+    setSelectedDate?: Dispatch<number | undefined>;
     isOnPortfolioPage: boolean;
 }
-export default function NoTableData(props: NoTableDataPropsIF) {
+function NoTableData(props: NoTableDataPropsIF) {
     const {
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -46,3 +46,5 @@ export default function NoTableData(props: NoTableDataPropsIF) {
         </div>
     );
 }
+
+export default memo(NoTableData);

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -35,7 +35,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function ExtraInfo(props: propsIF) {
+function ExtraInfo(props: propsIF) {
     const {
         priceImpact,
         displayEffectivePriceString,
@@ -166,20 +166,7 @@ export default function ExtraInfo(props: propsIF) {
                                 placement={item.placement as 'bottom'}
                             />
                         </div>
-                        <div
-                            className={styles.data}
-                            style={{
-                                color:
-                                    item.title === 'Price Impact' &&
-                                    priceImpactNum
-                                        ? Math.abs(priceImpactNum) > 2
-                                            ? '#f6385b'
-                                            : '#15be67'
-                                        : '#bdbdbd',
-                            }}
-                        >
-                            {item.data}
-                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
                 ) : null,
             )}
@@ -198,20 +185,7 @@ export default function ExtraInfo(props: propsIF) {
                                 placement={item.placement as 'bottom'}
                             />
                         </div>
-                        <div
-                            className={styles.data}
-                            style={{
-                                color:
-                                    item.title === 'Price Impact' &&
-                                    priceImpactNum
-                                        ? Math.abs(priceImpactNum) > 2
-                                            ? '#f6385b'
-                                            : '#15be67'
-                                        : '#bdbdbd',
-                            }}
-                        >
-                            {item.data}
-                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
                 ) : null,
             )}
@@ -258,7 +232,6 @@ export default function ExtraInfo(props: propsIF) {
             className={`${styles.extra_info_content} ${
                 priceImpact && styles.extra_info_content_active
             }`}
-            style={{ padding: '0 1.7rem' }}
             onClick={
                 priceImpact
                     ? () => {
@@ -315,3 +288,5 @@ export default function ExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(ExtraInfo);

@@ -2,6 +2,7 @@ import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
@@ -40,7 +41,7 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     chainData: ChainSpec;
 }
-export default function TransactionRow(props: propsIF) {
+function TransactionRow(props: propsIF) {
     const {
         account,
         showColumns,
@@ -126,7 +127,7 @@ export default function TransactionRow(props: propsIF) {
 
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
@@ -269,16 +270,19 @@ export default function TransactionRow(props: propsIF) {
         priceDisplay,
     } = txRowConstants(txRowConstantsProps);
 
+    function handleRowClick() {
+        if (tx.id === currentTxActiveInTransactions) {
+            return;
+        }
+        setCurrentTxActiveInTransactions('');
+        openDetailsModal();
+    }
     // end of portfolio page li element ---------------
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
-            style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-            onClick={() =>
-                tx.id === currentTxActiveInTransactions
-                    ? null
-                    : setCurrentTxActiveInTransactions('')
-            }
+            style={{ backgroundColor: highlightStyle }}
+            onClick={handleRowClick}
             id={txDomId}
             ref={currentTxActiveInTransactions ? activePositionRef : null}
             tabIndex={0}
@@ -325,3 +329,5 @@ export default function TransactionRow(props: propsIF) {
         </ul>
     );
 }
+
+export default memo(TransactionRow);

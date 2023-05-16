@@ -6,6 +6,7 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import { memo } from 'react';
 
 // interface for props
 // interface denominationSwitchPropsIF {
@@ -21,7 +22,7 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 // TODO:  ... which token to initialize the display too, if it's not necessary in the
 // TODO   ... end, please remove the value from props
 
-export default function DenominationSwitch() {
+function DenominationSwitch() {
     // const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
 
     const dispatch = useAppDispatch();
@@ -67,3 +68,5 @@ export default function DenominationSwitch() {
         </div>
     );
 }
+
+export default memo(DenominationSwitch);

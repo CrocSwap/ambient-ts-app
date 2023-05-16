@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useContext } from 'react';
+import { useState, Dispatch, SetStateAction, useContext, memo } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -46,7 +46,7 @@ interface propsIF {
     tokenBQtyLocal: number;
 }
 
-export default function ConfirmRangeModal(props: propsIF) {
+function ConfirmRangeModal(props: propsIF) {
     const {
         sendTransaction,
         newRangeTransactionHash,
@@ -269,12 +269,10 @@ export default function ConfirmRangeModal(props: propsIF) {
                     <Button
                         title={
                             isAdd
-                                ? `Add to ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
-                                : `Create ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
+                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                                : `Submit ${
+                                      isAmbient ? 'Ambient' : ''
+                                  } Liquidity`
                         }
                         action={() => {
                             // if this modal is launched we can infer user wants confirmation
@@ -296,3 +294,5 @@ export default function ConfirmRangeModal(props: propsIF) {
         </div>
     );
 }
+
+export default memo(ConfirmRangeModal);

@@ -46,9 +46,6 @@ export default function TransactionDetailsGraph(
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
 
-    // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
-    // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
-
     const mainnetBaseTokenAddress =
         baseTokenAddress === ZERO_ADDRESS
             ? baseTokenAddress
@@ -620,10 +617,30 @@ export default function TransactionDetailsGraph(
             horizontalBand: any,
         ) => {
             if (graphData.length > 0) {
+                const buffer =
+                    Math.abs(
+                        scaleData.xScale.domain()[1].getTime() -
+                            scaleData.xScale.domain()[0].getTime(),
+                    ) / 30;
+
+                const tickTempValues = scaleData.xScale.ticks(7);
+                const tickValues: any[] = [];
+
+                tickTempValues.map((tick: any) => {
+                    if (
+                        tick.getTime() + buffer <
+                            scaleData.xScale.domain()[1].getTime() &&
+                        tick.getTime() - buffer >
+                            scaleData.xScale.domain()[0].getTime()
+                    ) {
+                        tickValues.push(tick);
+                    }
+                });
+
                 const xAxis = d3fc
                     .axisBottom()
                     .scale(scaleData?.xScale)
-                    .ticks(5);
+                    .tickValues(tickValues);
 
                 // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
                 // const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');

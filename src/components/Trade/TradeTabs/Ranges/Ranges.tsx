@@ -9,6 +9,7 @@ import {
     useState,
     useMemo,
     useContext,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -77,7 +78,7 @@ interface propsIF {
 }
 
 // react functional component
-export default function Ranges(props: propsIF) {
+function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
@@ -287,10 +288,10 @@ export default function Ranges(props: propsIF) {
     // 30 => Height of each paginated row item
 
     const regularRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 250)) / 36,
+        (height - (isOnPortfolioPage ? 450 : 350)) / 36,
     );
     const showColumnRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 250)) / 60,
+        (height - (isOnPortfolioPage ? 400 : 300)) / 60,
     );
     const rangesPerPage = showColumns
         ? showColumnRangesItems
@@ -310,19 +311,20 @@ export default function Ranges(props: propsIF) {
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    const tradePageCheck = expandTradeTable && rangeData.length > 30;
+    const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {((isOnPortfolioPage && rangeData.length > 7) ||
-                (!isOnPortfolioPage && tradePageCheck)) && (
-                <Pagination
-                    itemsPerPage={rangesPerPage}
-                    totalItems={rangeData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
+            {rangesPerPage > 0 &&
+                ((isOnPortfolioPage && rangeData.length > 7) ||
+                    (!isOnPortfolioPage && tradePageCheck)) && (
+                    <Pagination
+                        itemsPerPage={rangesPerPage}
+                        totalItems={rangeData.length}
+                        paginate={paginate}
+                        currentPage={currentPage}
+                    />
+                )}
         </div>
     );
 
@@ -602,3 +604,5 @@ export default function Ranges(props: propsIF) {
         </section>
     );
 }
+
+export default memo(Ranges);

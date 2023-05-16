@@ -8,8 +8,8 @@ import {
     useContext,
 } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
-
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
@@ -284,8 +284,11 @@ export default function RangesMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownRangesMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
+            <div
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                style={{ cursor: 'pointer' }}
+            >
+                <CiCircleMore size={25} color='var(--text3)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
@@ -301,7 +304,10 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {rangesMenu}
             {dropdownRangesMenu}
             {isHarvestModalOpen && (

@@ -78,3 +78,20 @@ const WAGMI_CHAIN_MAP = {
     '0x5': goerli,
     '0x66eed': arbitrumGoerli,
 };
+
+// Converts the network labels used in the backend to a canonical chain id
+export function backendNetworkToChainId(label: string): ChainIdType {
+    const caseLabel = label.toLowerCase() as BackendLabels;
+    const lookup = BACKEND_NETWORK_LABELS_MAP[caseLabel];
+    return (lookup ?? DFLT_SUPPORTED_CHAINS[0]) as ChainIdType;
+}
+
+const BACKEND_NETWORK_LABELS_MAP = {
+    '0x5': '0x5',
+    goerli: '0x5',
+    '0x1': '0x1',
+    mainnet: '0x1',
+    'arbitrum-goerli': '0x66eed',
+    '0x66eed': '0x66eed',
+};
+type BackendLabels = keyof typeof BACKEND_NETWORK_LABELS_MAP;

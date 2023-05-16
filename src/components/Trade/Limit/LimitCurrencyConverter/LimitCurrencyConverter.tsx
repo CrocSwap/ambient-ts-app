@@ -2,6 +2,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useState,
@@ -94,10 +95,11 @@ interface propsIF {
     searchType: string;
     ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central react functional component
-export default function LimitCurrencyConverter(props: propsIF) {
+function LimitCurrencyConverter(props: propsIF) {
     const {
         displayPrice,
         previousDisplayPrice,
@@ -144,6 +146,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setResetLimitTick,
         ackTokens,
         isOrderValid,
+        setTokenAQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -262,8 +265,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData.shouldLimitDirectionReverse) {
+            reverseTokens();
             setIsTokenAPrimaryLocal((state) => {
-                reverseTokens();
                 return !state;
             });
         }
@@ -497,6 +500,10 @@ export default function LimitCurrencyConverter(props: propsIF) {
             : 0
         : parseFloat(tokenAQtyLocal || '0');
 
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
+
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
@@ -645,3 +652,5 @@ export default function LimitCurrencyConverter(props: propsIF) {
         </section>
     );
 }
+
+export default memo(LimitCurrencyConverter);

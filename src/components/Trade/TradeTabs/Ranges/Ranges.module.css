@@ -15,7 +15,7 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text1);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
@@ -84,22 +84,24 @@
     background: var(--dark2);
 } */
 
-.row_container:hover{
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
 .main_list_container ul {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
     table-layout: fixed;
     display: table;
+ 
 }
 
 .main_list_container ul > li {
@@ -109,6 +111,7 @@
     width: 100%;
 
     padding: 0.5em 0.4em;
+  
     vertical-align: middle;
 }
 
@@ -116,7 +119,7 @@
     color: var(--text2);
 }
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 .hover_style:hover {
     -webkit-mask-image: linear-gradient(
@@ -248,12 +251,11 @@
 .view_wallet_link:hover .view_wallet_link svg {
     color: var(--text1);
 }
-.view_wallet_link p{
+.view_wallet_link p {
     display: flex;
 }
-.view_wallet_link svg:first-of-type{
+.view_wallet_link svg:first-of-type {
     display: none;
-
 }
 
 .row_container:focus-visible,
@@ -289,23 +291,22 @@
 }
 
 /* tooltips */
-.id_tooltip_style{
+.id_tooltip_style {
     margin-left: -60px;
     background: var(--dark3);
     color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: default;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 440px;
     display: flex;
     align-items: center;
     gap: 4px;
-
 }
 
-.wallet_tooltip_div{
+.wallet_tooltip_div {
     margin-right: -80px;
     background: var(--dark3);
     color: var(--text1);
@@ -313,15 +314,16 @@
     border-radius: 4px;
     cursor: default;
 }
-.wallet_tooltip_p{
-    font-family: monospace;
+.wallet_tooltip_p {
+    font-family: var(--roboto);
     display: flex;
     flex-direction: row;
     align-items: center;
     white-space: nowrap;
+    gap: 4px;
 }
 
-.base_display_div{
+.base_display_div {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -330,7 +332,7 @@
     white-space: nowrap;
 }
 
-.range_time_p{
+.range_time_p {
     margin-left: -70px;
     background: var(--dark3);
     color: var(--text1);
@@ -339,11 +341,10 @@
     cursor: pointer;
 }
 @media only screen and (max-width: 768px) {
-
-    .view_wallet_link p{
+    .view_wallet_link p {
         display: none;
     }
-    .view_wallet_link svg:first-of-type{
+    .view_wallet_link svg:first-of-type {
         display: flex;
     }
     .header li {

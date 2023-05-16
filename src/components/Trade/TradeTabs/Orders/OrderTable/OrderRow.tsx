@@ -5,6 +5,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 import {
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useEffect,
@@ -42,7 +43,7 @@ interface propsIF {
     account: string;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: propsIF) {
+function OrderRow(props: propsIF) {
     const {
         account,
         chainData,
@@ -133,7 +134,7 @@ export default function OrderRow(props: propsIF) {
             : styles.base_color;
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const openDetailsModal = () => {
@@ -217,8 +218,8 @@ export default function OrderRow(props: propsIF) {
         );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isOnPortfolioPage) {
             dispatch(
@@ -285,20 +286,33 @@ export default function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
+    function handleRowClick() {
+        if (limitOrder.limitOrderIdentifier === currentPositionActive) {
+            return;
+        }
+        setCurrentPositionActive('');
+        openDetailsModal();
+    }
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+        }
+    };
+
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-                onClick={() =>
-                    limitOrder.limitOrderIdentifier === currentPositionActive
-                        ? null
-                        : setCurrentPositionActive('')
-                }
+                style={{ backgroundColor: highlightStyle }}
+                onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
+                tabIndex={0}
+                onKeyDown={handleKeyPress}
             >
                 {!showColumns && OrderTimeWithTooltip}
                 {isOnPortfolioPage && showPair && tokenPair}
@@ -318,7 +332,7 @@ export default function OrderRow(props: propsIF) {
                 {showColumns && tokensColumn}
                 {!ipadView && statusDisplay}
 
-                <li data-label='menu'>
+                <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
                         account={account}
                         chainData={chainData}
@@ -340,3 +354,5 @@ export default function OrderRow(props: propsIF) {
         </>
     );
 }
+
+export default memo(OrderRow);

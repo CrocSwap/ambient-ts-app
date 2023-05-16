@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useRef,
     useContext,
+    memo,
 } from 'react';
 
 import {
@@ -73,8 +74,8 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
@@ -92,7 +93,7 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
-export default function TradeTabs2(props: propsIF) {
+function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -569,7 +570,8 @@ export default function TradeTabs2(props: propsIF) {
                 >
                     {isCandleSelected &&
                         candleTime.time === 86400 &&
-                        `Showing Transactions ${moment(selectedDate)
+                        selectedDate &&
+                        `Showing Transactions ${moment(new Date(selectedDate))
                             .subtract(utcDiffHours, 'hours')
                             .calendar(null, {
                                 sameDay: 'for [Today]',
@@ -612,3 +614,5 @@ export default function TradeTabs2(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeTabs2);

@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
@@ -79,7 +80,7 @@ interface propsIF {
     topPools: topPoolIF[];
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
@@ -317,7 +318,6 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -332,7 +332,7 @@ export default function Sidebar(props: propsIF) {
                 type='text'
                 id='search_input'
                 ref={searchInputRef}
-                placeholder='Search anything...'
+                placeholder='Search...'
                 maxLength={40}
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
@@ -354,7 +354,7 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (sidebar.status === 'closed') {
+                if (!sidebar.isOpen) {
                     sidebar.open();
                 }
                 setOpenAllDefault(true);
@@ -362,7 +362,7 @@ export default function Sidebar(props: propsIF) {
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            {openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -380,7 +380,9 @@ export default function Sidebar(props: propsIF) {
 
     const searchContainerDisplay = (
         <div
-            className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}
+            className={` ${styles.sidebar_link_search} ${
+                styles.main_search_container
+            } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
             {location.pathname.includes('analytics')
                 ? AnalyticsSearchContainer
@@ -403,22 +405,11 @@ export default function Sidebar(props: propsIF) {
                     </div>
                 </DefaultTooltip>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    placement={sidebar.isOpen ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', rotate: '180deg' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='open sidebar'
-                            onClick={() => sidebar.open(true)}
-                        />
-                    </div>
-                </DefaultTooltip>
+                <BiSearch
+                    size={18}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
@@ -526,7 +517,7 @@ export default function Sidebar(props: propsIF) {
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
-                <ul className={styles.sidebar_nav}>
+                <div className={styles.sidebar_nav}>
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
@@ -545,8 +536,10 @@ export default function Sidebar(props: propsIF) {
                     ) : (
                         regularSidebarDisplay
                     )}
-                </ul>
+                </div>
             </nav>
         </div>
     );
 }
+
+export default memo(Sidebar);

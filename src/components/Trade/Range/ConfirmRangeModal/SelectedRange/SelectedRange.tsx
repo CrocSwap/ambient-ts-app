@@ -1,5 +1,5 @@
 import styles from './SelectedRange.module.css';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 interface propsIF {
@@ -18,7 +18,7 @@ interface propsIF {
     // poolPriceTruncatedInBase: string;
     // poolPriceTruncatedInQuote: string;
 }
-export default function SelectedRange(props: propsIF) {
+function SelectedRange(props: propsIF) {
     const {
         poolPriceDisplayNum,
         denominationsInBase,
@@ -157,3 +157,5 @@ export default function SelectedRange(props: propsIF) {
         </>
     );
 }
+
+export default memo(SelectedRange);

@@ -58,8 +58,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
-import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
@@ -677,8 +676,14 @@ export default function Limit(props: propsIF) {
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
     };
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const loginButton = (
         <button
             onClick={openModalWallet}
@@ -776,51 +781,6 @@ export default function Limit(props: propsIF) {
         />
     );
 
-    // -------------------------Limit SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Limit 1', checked: false },
-        { slug: 'second', name: 'Include Limit 2', checked: false },
-        { slug: 'third', name: 'Include Limit 3', checked: false },
-        { slug: 'fourth', name: 'Include Limit 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <LimitShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     const currencyConverterProps = {
         displayPrice: displayPrice,
         previousDisplayPrice: previousDisplayPrice,
@@ -867,6 +827,7 @@ export default function Limit(props: propsIF) {
         setResetLimitTick: setResetLimitTick,
         ackTokens: ackTokens,
         isOrderValid: isOrderValid,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -948,7 +909,6 @@ export default function Limit(props: propsIF) {
                     <LimitHeader
                         chainId={chainId}
                         isPairStable={isPairStable}
-                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}
                     <motion.div

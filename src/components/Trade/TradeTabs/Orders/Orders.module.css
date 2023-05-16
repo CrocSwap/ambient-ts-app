@@ -15,7 +15,7 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text1);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
@@ -81,19 +81,21 @@
 }
 .row_container {
     width: 100%;
+    min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.row_container:hover{
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
 .main_list_container ul {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
@@ -115,7 +117,7 @@
     color: var(--text2);
 }
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 .gradient_text {
     background: var(--title-gradient);
@@ -299,7 +301,7 @@
     padding: 12px;
     border-radius: 4px;
     cursor: default;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 440px;
     display: flex;
@@ -314,16 +316,18 @@
     color: var(--text1);
     padding: 12px;
     border-radius: 4px;
-    cursor: default
+    cursor: default;
+
 }
 
 .wallet_tooltip_p{
 
- font-family: monospace;
+ font-family: var(--roboto);
  display: flex;
  flex-direction: row;
  align-items: center;
  white-space: nowrap;
+ gap: 4px;
 }
 
 .token_qty_tooltip{

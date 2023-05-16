@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useState,
     useEffect,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -47,8 +48,6 @@ interface propsIF {
     poolPriceNonDisplay: number | undefined;
     isAdvancedMode: boolean;
     tokenPair: TokenPairIF;
-    isTokenAPrimaryLocal: boolean;
-    // setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -93,10 +92,12 @@ interface propsIF {
     searchType: string;
     poolExists: boolean | undefined;
     ackTokens: ackTokensMethodsIF;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central React functional component
-export default function RangeCurrencyConverter(props: propsIF) {
+function RangeCurrencyConverter(props: propsIF) {
     const {
         poolExists,
         isUserLoggedIn,
@@ -106,7 +107,6 @@ export default function RangeCurrencyConverter(props: propsIF) {
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
-        isTokenAPrimaryLocal,
         isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -144,6 +144,8 @@ export default function RangeCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         ackTokens,
+        setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -250,30 +252,24 @@ export default function RangeCurrencyConverter(props: propsIF) {
         tokenBDexBalance,
     ]);
 
-    useEffect(() => {
-        if (tradeData.isTokenAPrimaryRange !== isTokenAPrimaryLocal) {
-            if (tradeData.isTokenAPrimaryRange === true) {
-                dispatch(setIsTokenAPrimaryRange(true));
-                dispatch(setPrimaryQuantityRange(tokenAQtyLocal.toString()));
-            } else {
-                dispatch(setIsTokenAPrimaryRange(false));
-                dispatch(setPrimaryQuantityRange(tokenBQtyLocal.toString()));
-            }
-        }
-    }, [tradeData.isTokenAPrimaryRange]);
-
     const primaryQuantityRange = tradeData.primaryQuantityRange;
+    const isTokenAPrimaryRange = tradeData.isTokenAPrimaryRange;
 
     useEffect(() => {
         if (tradeData) {
-            if (tradeData.isTokenAPrimaryRange) {
+            if (
+                tradeData.isTokenAPrimaryRange &&
+                tradeData.primaryQuantityRange
+            ) {
                 setTokenAInputQty(tradeData.primaryQuantityRange);
-            } else {
+                setTokenAQtyValue(parseFloat(tradeData.primaryQuantityRange));
+            } else if (tradeData.primaryQuantityRange) {
                 IS_LOCAL_ENV &&
                     console.debug(
                         `setting tokenbinputqty to ${tradeData.primaryQuantityRange}`,
                     );
                 setTokenBInputQty(tradeData.primaryQuantityRange);
+                setTokenBQtyValue(parseFloat(tradeData.primaryQuantityRange));
             }
         }
     }, []);
@@ -403,7 +399,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
                     tokenPair.dataTokenA,
                 ),
         );
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
+        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
@@ -692,6 +688,14 @@ export default function RangeCurrencyConverter(props: propsIF) {
             : 0
         : tokenBQtyLocal;
 
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
+
+    useEffect(() => {
+        setTokenBQtyCoveredByWalletBalance(tokenBQtyCoveredByWalletBalance);
+    }, [tokenBQtyCoveredByWalletBalance]);
+
     const tokenAQtyCoveredBySurplusBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum >= 0
             ? tokenAQtyLocal
@@ -788,3 +792,5 @@ export default function RangeCurrencyConverter(props: propsIF) {
         </section>
     );
 }
+
+export default memo(RangeCurrencyConverter);

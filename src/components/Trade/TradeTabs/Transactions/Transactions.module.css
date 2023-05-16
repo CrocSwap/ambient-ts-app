@@ -13,7 +13,7 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text1);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
@@ -82,13 +82,18 @@
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
+
 }
+
 
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+
+}
+.row_container li:not(:last-child){
     cursor: pointer;
 }
 
@@ -184,7 +189,7 @@
 }
 
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 
 .tooltip_style {
@@ -278,7 +283,7 @@
     padding: 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 460px;
 }
