@@ -31,6 +31,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -41,7 +42,6 @@ interface propsIF {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function Deposit(props: propsIF) {
@@ -54,9 +54,9 @@ export default function Deposit(props: propsIF) {
         setRecheckTokenBalances,
         openTokenModal,
         selectedTokenDecimals,
-        gasPriceInGwei,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,

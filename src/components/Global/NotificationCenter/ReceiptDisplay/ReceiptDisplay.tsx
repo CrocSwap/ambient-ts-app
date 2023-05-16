@@ -11,20 +11,21 @@ import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
 import { getChainExplorer } from '../../../../utils/data/chains';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
     txBlockNumber?: number;
-    lastBlockNumber: number;
     txType: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, lastBlockNumber, txType } = props;
+    const { status, hash, txBlockNumber, txType } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const pending = (
         <div className={styles.pending}>

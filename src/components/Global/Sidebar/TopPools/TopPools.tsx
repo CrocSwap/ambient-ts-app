@@ -9,12 +9,11 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 interface propsIF {
     tradeData: tradeData;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
     poolList: TempPoolIF[];
 }
 
 export default function TopPools(props: propsIF) {
-    const { tradeData, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, cachedPoolStatsFetch } = props;
 
     const { topPools } = useContext(CrocEnvContext);
 
@@ -32,7 +31,6 @@ export default function TopPools(props: propsIF) {
                         pool={pool}
                         key={idx}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>

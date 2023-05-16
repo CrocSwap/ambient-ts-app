@@ -13,17 +13,12 @@ interface NotificationTableProps {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     pendingTransactions: string[];
-    lastBlockNumber: number;
     notificationItemRef: RefObject<HTMLDivElement>;
 }
 
 const NotificationTable = (props: NotificationTableProps) => {
-    const {
-        showNotificationTable,
-        pendingTransactions,
-        lastBlockNumber,
-        notificationItemRef,
-    } = props;
+    const { showNotificationTable, pendingTransactions, notificationItemRef } =
+        props;
 
     const dispatch = useAppDispatch();
 
@@ -50,7 +45,6 @@ const NotificationTable = (props: NotificationTableProps) => {
                 status='successful'
                 hash={tx?.transactionHash}
                 txBlockNumber={tx.blockNumber}
-                lastBlockNumber={lastBlockNumber}
                 txType={
                     transactionsByType.find(
                         (e) => e.txHash === tx?.transactionHash,
@@ -65,7 +59,6 @@ const NotificationTable = (props: NotificationTableProps) => {
             status='failed'
             hash={tx?.transactionHash}
             txBlockNumber={tx.blockNumber}
-            lastBlockNumber={lastBlockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === tx?.transactionHash)
                     ?.txType
@@ -77,7 +70,6 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='pending'
             hash={tx}
-            lastBlockNumber={lastBlockNumber}
             txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
         />
     ));

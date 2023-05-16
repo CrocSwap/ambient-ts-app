@@ -36,7 +36,6 @@ interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
-    lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -51,7 +50,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
 }
 
 // react functional component
@@ -63,7 +61,6 @@ function Leaderboard(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        lastBlockNumber,
         expandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
@@ -71,7 +68,6 @@ function Leaderboard(props: propsIF) {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         setSimpleRangeWidth,
-        gasPriceInGwei,
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -349,14 +345,12 @@ function Leaderboard(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={false}
             isLeaderboard={true}
             idx={idx + 1}
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            gasPriceInGwei={gasPriceInGwei}
         />
     ));
 

@@ -60,16 +60,15 @@ import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     isDenomBase: boolean;
     provider: ethers.providers.Provider;
     isPairStable: boolean;
     tokenPair: TokenPairIF;
-    lastBlockNumber: number;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    gasPriceInGwei: number | undefined;
 }
 
 function Reposition(props: propsIF) {
@@ -78,10 +77,8 @@ function Reposition(props: propsIF) {
         provider,
         isPairStable,
         tokenPair,
-        lastBlockNumber,
         setSimpleRangeWidth,
         simpleRangeWidth,
-        gasPriceInGwei,
     } = props;
 
     // current URL parameter string
@@ -92,6 +89,7 @@ function Reposition(props: propsIF) {
         chainData: { chainId, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
         useContext(RangeStateContext);

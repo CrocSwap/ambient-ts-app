@@ -51,7 +51,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
-    lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -67,7 +66,6 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
@@ -82,7 +80,6 @@ function Ranges(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
         currentPositionActive,
@@ -92,7 +89,6 @@ function Ranges(props: propsIF) {
         setIsShowAllEnabled,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
-        gasPriceInGwei,
         cachedPositionUpdateQuery,
     } = props;
     const {
@@ -495,13 +491,11 @@ function Ranges(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            gasPriceInGwei={gasPriceInGwei}
         />
     ));
 
@@ -520,13 +514,11 @@ function Ranges(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
             handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
-            gasPriceInGwei={gasPriceInGwei}
         />
     ));
 

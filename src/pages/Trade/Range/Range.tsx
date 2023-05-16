@@ -82,12 +82,11 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
-    gasPriceInGwei: number | undefined;
-    lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
@@ -137,7 +136,6 @@ function Range(props: propsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        gasPriceInGwei,
         isRangeCopied,
         verifyToken,
         getTokensByName,
@@ -163,6 +161,7 @@ function Range(props: propsIF) {
         chainData: { chainId, poolIndex, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
         useContext(PoolContext);
     const {
@@ -1332,7 +1331,6 @@ function Range(props: propsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        gasPriceInGwei: gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,

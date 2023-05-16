@@ -33,6 +33,7 @@ import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -57,7 +58,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
-    gasPriceInGwei: number | undefined;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -76,7 +76,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     priceImpact: CrocImpact | undefined;
-    lastBlockNumber: number;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
@@ -152,9 +151,7 @@ function CurrencyConverter(props: propsIF) {
         shallowEqual,
     );
 
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData.lastBlock,
-    );
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const [tokenALocal, setTokenALocal] = useState<string>(tokenAAddress);
     const [tokenBLocal, setTokenBLocal] = useState<string>(tokenBAddress);

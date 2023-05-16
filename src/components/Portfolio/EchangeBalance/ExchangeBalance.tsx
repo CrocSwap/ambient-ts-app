@@ -27,10 +27,8 @@ interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -42,12 +40,10 @@ export default function ExchangeBalance(props: propsIF) {
         tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        lastBlockNumber,
         openTokenModal,
         fullLayoutActive,
         setFullLayoutActive,
         selectedTokenDecimals,
-        gasPriceInGwei,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -134,7 +130,6 @@ export default function ExchangeBalance(props: propsIF) {
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     openTokenModal={openTokenModal}
                     selectedTokenDecimals={selectedTokenDecimals}
-                    gasPriceInGwei={gasPriceInGwei}
                 />
             ),
             icon: depositImage,
@@ -146,14 +141,12 @@ export default function ExchangeBalance(props: propsIF) {
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
-                    lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
-                    gasPriceInGwei={gasPriceInGwei}
                 />
             ),
             icon: withdrawImage,
@@ -162,17 +155,14 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Transfer',
             content: (
                 <Transfer
-                    // connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenDexBalance={tokenDexBalance}
-                    lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
-                    gasPriceInGwei={gasPriceInGwei}
                 />
             ),
             icon: transferImage,

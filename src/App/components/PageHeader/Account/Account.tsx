@@ -14,6 +14,7 @@ import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -22,7 +23,6 @@ interface AccountPropsIF {
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    lastBlockNumber: number;
 
     walletDropdownTokenData:
         | {
@@ -35,18 +35,14 @@ interface AccountPropsIF {
 }
 
 export default function Account(props: AccountPropsIF) {
-    const {
-        nativeBalance,
-        clickLogout,
-        ensName,
-        lastBlockNumber,
-        walletDropdownTokenData,
-    } = props;
+    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
+        props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const { chainData, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;

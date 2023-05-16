@@ -7,12 +7,11 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePools(props: propsIF) {
-    const { lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { cachedPoolStatsFetch } = props;
 
     const { tradeData } = useAppSelector((state) => state);
     const {
@@ -57,7 +56,6 @@ export default function FavoritePools(props: propsIF) {
                         key={idx}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>

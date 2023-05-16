@@ -7,19 +7,20 @@ import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     tradeData: tradeData;
     pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, cachedPoolStatsFetch } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { pathname } = useLocation();
 

@@ -44,6 +44,7 @@ import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
     addRecentToken: (tkn: TokenIF) => void;
@@ -65,7 +66,6 @@ interface propsIF {
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    lastBlockNumber: number;
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
     openModalWallet: () => void;
@@ -86,7 +86,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
     ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -106,7 +105,6 @@ function Portfolio(props: propsIF) {
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        lastBlockNumber,
         tokensOnActiveLists,
         userAccount,
         baseTokenBalance,
@@ -123,7 +121,6 @@ function Portfolio(props: propsIF) {
         searchType,
         mainnetProvider,
         setSimpleRangeWidth,
-        gasPriceInGwei,
         ackTokens,
         setExpandTradeTable,
     } = props;
@@ -136,6 +133,7 @@ function Portfolio(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const dispatch = useAppDispatch();
 
@@ -321,12 +319,10 @@ function Portfolio(props: propsIF) {
                 tokenDexBalance={tokenDexBalance}
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
-                lastBlockNumber={lastBlockNumber}
                 openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
                 selectedTokenDecimals={selectedTokenDecimals}
-                gasPriceInGwei={gasPriceInGwei}
             />
         </div>
     );
@@ -522,7 +518,6 @@ function Portfolio(props: propsIF) {
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
-        lastBlockNumber: lastBlockNumber,
         connectedAccountActive: connectedAccountActive,
         tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
@@ -537,7 +532,6 @@ function Portfolio(props: propsIF) {
         fullLayoutToggle: fullLayerToggle,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
         setExpandTradeTable: setExpandTradeTable,
     };
 

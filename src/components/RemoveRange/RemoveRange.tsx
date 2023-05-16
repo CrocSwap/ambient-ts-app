@@ -39,6 +39,7 @@ import { FaGasPump } from 'react-icons/fa';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -53,7 +54,6 @@ interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     handleModalClose: () => void;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function RemoveRange(props: propsIF) {
@@ -62,13 +62,10 @@ export default function RemoveRange(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         handleModalClose,
-        gasPriceInGwei,
         isAmbient,
     } = props;
 
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
+    const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
     const {
         crocEnv,

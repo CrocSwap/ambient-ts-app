@@ -31,6 +31,7 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 // interface for props
 interface propsIF {
@@ -41,7 +42,6 @@ interface propsIF {
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     ethMainnetUsdPrice?: number;
-    gasPriceInGwei: number | undefined;
 }
 
 // react functional component
@@ -54,10 +54,10 @@ export default function InitPool(props: propsIF) {
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         ethMainnetUsdPrice,
-        gasPriceInGwei,
     } = props;
 
     const { crocEnv } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const dispatch = useAppDispatch();
 

@@ -13,18 +13,12 @@ interface propsIF {
     tradeData: tradeData;
     userData: userData;
     cachedQuerySpotPrice: SpotPriceFn;
-    lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function TopPools(props: propsIF) {
-    const {
-        tradeData,
-        userData,
-        lastBlockNumber,
-        cachedQuerySpotPrice,
-        cachedPoolStatsFetch,
-    } = props;
+    const { tradeData, userData, cachedQuerySpotPrice, cachedPoolStatsFetch } =
+        props;
     const { topPools } = useContext(CrocEnvContext);
 
     const { t } = useTranslation();
@@ -52,7 +46,6 @@ export default function TopPools(props: propsIF) {
                         tradeData={tradeData}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         key={idx}
-                        lastBlockNumber={lastBlockNumber}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                     />

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { formatAmountOld } from '../../../utils/numbers';
@@ -14,7 +15,6 @@ interface StatCardProps {
 
 interface StatsProps {
     userData: userData;
-    lastBlockNumber: number;
 }
 
 function StatCard(props: StatCardProps) {
@@ -33,13 +33,14 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats(props: StatsProps) {
-    const { userData, lastBlockNumber } = props;
+    const { userData } = props;
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const isUserIdle = userData.isUserIdle;
 

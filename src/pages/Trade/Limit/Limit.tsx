@@ -69,13 +69,12 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceInGwei: number | undefined;
-    lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -116,10 +115,8 @@ export default function Limit(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         tokenPair,
-        gasPriceInGwei,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        lastBlockNumber,
         isOrderCopied,
         verifyToken,
         getTokensByName,
@@ -144,6 +141,7 @@ export default function Limit(props: propsIF) {
         chainData: { chainId, poolIndex, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
@@ -788,7 +786,6 @@ export default function Limit(props: propsIF) {
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
         isDenominationInBase: tradeData.isDenomBase,
-        gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,

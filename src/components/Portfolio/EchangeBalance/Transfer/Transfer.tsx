@@ -32,37 +32,33 @@ import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    // connectedAccount: string;
     selectedToken: TokenIF;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     sendToAddress: string | undefined;
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function Transfer(props: propsIF) {
     const {
         selectedToken,
-        // tokenAllowance,
         tokenDexBalance,
-        // setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        // lastBlockNumber,
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        gasPriceInGwei,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const dispatch = useAppDispatch();
 

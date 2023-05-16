@@ -67,7 +67,6 @@ interface propsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
-    gasPriceInGwei: number | undefined;
 
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
@@ -98,7 +97,6 @@ interface propsIF {
 // central React functional component
 function RangeCurrencyConverter(props: propsIF) {
     const {
-        gasPriceInGwei,
         isLiq,
         poolPriceNonDisplay,
         tokenPair,
@@ -713,7 +711,6 @@ function RangeCurrencyConverter(props: propsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
-        gasPriceInGwei: gasPriceInGwei,
         resetTokenQuantities: resetTokenQuantities,
         tokenPair: tokenPair,
         isTokenAEth,

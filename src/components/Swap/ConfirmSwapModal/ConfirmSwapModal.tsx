@@ -25,6 +25,7 @@ import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -45,7 +46,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    lastBlockNumber: number;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -65,9 +65,9 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        lastBlockNumber,
     } = props;
     const { pool } = useContext(PoolContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         bypassConfirmLimit,
         bypassConfirmRange,

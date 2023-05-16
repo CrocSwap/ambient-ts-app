@@ -62,7 +62,6 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
@@ -81,7 +80,6 @@ function Sidebar(props: propsIF) {
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        lastBlockNumber,
         setAnalyticsSearchInput,
         poolList,
         verifyToken,
@@ -131,7 +129,6 @@ function Sidebar(props: propsIF) {
                 <RecentPools
                     tradeData={tradeData}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
                     recentPools={recentPools}
                 />
             ),
@@ -146,7 +143,6 @@ function Sidebar(props: propsIF) {
                 <TopPools
                     tradeData={tradeData}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
                     poolList={poolList}
                 />
             ),
@@ -191,12 +187,7 @@ function Sidebar(props: propsIF) {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
 
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                />
-            ),
+            data: <FavoritePools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
 

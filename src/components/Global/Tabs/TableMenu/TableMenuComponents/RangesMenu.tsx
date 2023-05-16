@@ -51,7 +51,6 @@ interface propsIF {
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     isPositionInRange: boolean;
-    gasPriceInGwei: number | undefined;
 
     handleAccountClick: () => void;
 
@@ -71,7 +70,6 @@ export default function RangesMenu(props: propsIF) {
         handlePulseAnimation,
         setSimpleRangeWidth,
         isPositionInRange,
-        gasPriceInGwei,
     } = props;
 
     const {
@@ -309,7 +307,6 @@ export default function RangesMenu(props: propsIF) {
                     <HarvestPosition
                         handleModalClose={handleModalClose}
                         position={position}
-                        gasPriceInGwei={gasPriceInGwei}
                         {...rangeDetailsProps}
                     />
                 </Modal>
@@ -323,7 +320,6 @@ export default function RangesMenu(props: propsIF) {
                     <RemoveRange
                         position={position}
                         handleModalClose={handleModalClose}
-                        gasPriceInGwei={gasPriceInGwei}
                         {...rangeDetailsProps}
                     />
                 </Modal>

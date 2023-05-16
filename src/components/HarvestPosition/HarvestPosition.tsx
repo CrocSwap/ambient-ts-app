@@ -36,6 +36,7 @@ import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -48,17 +49,11 @@ interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     handleModalClose: () => void;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function HarvestPosition(props: propsIF) {
-    const {
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
-        position,
-        handleModalClose,
-        gasPriceInGwei,
-    } = props;
+    const { baseTokenLogoURI, quoteTokenLogoURI, position, handleModalClose } =
+        props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
@@ -68,6 +63,7 @@ export default function HarvestPosition(props: propsIF) {
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const isPairStable: boolean = isStablePair(

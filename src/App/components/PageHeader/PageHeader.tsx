@@ -26,13 +26,12 @@ import { PoolContext } from '../../../contexts/PoolContext';
 interface HeaderPropsIF {
     clickLogout: () => void;
     shouldDisplayAccountTab: boolean | undefined;
-    lastBlockNumber: number;
     recentPools: recentPoolsMethodsIF;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
-    const { lastBlockNumber, recentPools, clickLogout } = props;
+    const { recentPools, clickLogout } = props;
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -105,7 +104,6 @@ const PageHeader = function (props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        lastBlockNumber: lastBlockNumber,
         walletDropdownTokenData,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -385,7 +383,6 @@ const PageHeader = function (props: HeaderPropsIF) {
                         <NotificationCenter
                             showNotificationTable={showNotificationTable}
                             setShowNotificationTable={setShowNotificationTable}
-                            lastBlockNumber={lastBlockNumber}
                         />
                     </div>
                 </div>

@@ -34,7 +34,6 @@ interface propsIF {
     view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
-    lastBlockNumber: number;
 
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -55,7 +54,6 @@ function OrderRow(props: propsIF) {
         isShowAllEnabled,
         isOnPortfolioPage,
         handlePulseAnimation,
-        lastBlockNumber,
     } = props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
@@ -146,7 +144,6 @@ function OrderRow(props: propsIF) {
             <OrderDetails
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
@@ -339,7 +336,6 @@ function OrderRow(props: propsIF) {
                         limitOrder={limitOrder}
                         {...orderMenuProps}
                         handlePulseAnimation={handlePulseAnimation}
-                        lastBlockNumber={lastBlockNumber}
                         showHighlightedButton={showHighlightedButton}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual

@@ -10,12 +10,10 @@ import { PoolStatsFn } from '../../App/functions/getPoolStats';
 
 interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
-    lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 export default function Home(props: propsIF) {
-    const { lastBlockNumber, cachedQuerySpotPrice, cachedPoolStatsFetch } =
-        props;
+    const { cachedQuerySpotPrice, cachedPoolStatsFetch } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const userData = useAppSelector((state) => state.userData);
@@ -28,11 +26,10 @@ export default function Home(props: propsIF) {
                     tradeData={tradeData}
                     userData={userData}
                     cachedQuerySpotPrice={cachedQuerySpotPrice}
-                    lastBlockNumber={lastBlockNumber}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                 />
                 <DividerDark />
-                <Stats lastBlockNumber={lastBlockNumber} userData={userData} />
+                <Stats userData={userData} />
             </div>
             <DividerDark />
             <Home1 />

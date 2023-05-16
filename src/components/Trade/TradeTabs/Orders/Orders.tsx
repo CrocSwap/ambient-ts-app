@@ -47,7 +47,6 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    lastBlockNumber: number;
     handlePulseAnimation?: (type: string) => void;
     isAccountView: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -66,7 +65,6 @@ function Orders(props: propsIF) {
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
-        lastBlockNumber,
         isAccountView,
         setExpandTradeTable,
     } = props;
@@ -415,7 +413,6 @@ function Orders(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
-            lastBlockNumber={lastBlockNumber}
         />
     ));
 
@@ -434,7 +431,6 @@ function Orders(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
-            lastBlockNumber={lastBlockNumber}
         />
     ));
 

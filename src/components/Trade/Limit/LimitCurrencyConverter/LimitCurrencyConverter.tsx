@@ -70,7 +70,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     isDenominationInBase: boolean;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -122,7 +121,6 @@ function LimitCurrencyConverter(props: propsIF) {
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         isDenominationInBase,
-        gasPriceInGwei,
         isOrderCopied,
         verifyToken,
         getTokensByName,
@@ -536,7 +534,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
                 verifyToken={verifyToken}
                 getTokensByName={getTokensByName}
@@ -606,7 +603,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    gasPriceInGwei={gasPriceInGwei}
                     isOrderCopied={isOrderCopied}
                     verifyToken={verifyToken}
                     getTokensByName={getTokensByName}

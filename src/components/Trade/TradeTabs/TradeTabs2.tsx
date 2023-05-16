@@ -41,12 +41,12 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     tokenList: TokenIF[];
-    lastBlockNumber: number;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -79,7 +79,6 @@ interface propsIF {
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
@@ -100,7 +99,6 @@ function TradeTabs2(props: propsIF) {
         setIsCandleSelected,
         filter,
         setTransactionFilter,
-        lastBlockNumber,
         expandTradeTable,
         setExpandTradeTable,
         currentPositionActive,
@@ -120,7 +118,6 @@ function TradeTabs2(props: propsIF) {
         isCandleArrived,
         setIsCandleDataArrived,
         setSimpleRangeWidth,
-        gasPriceInGwei,
         candleTime,
     } = props;
     const {
@@ -133,6 +130,7 @@ function TradeTabs2(props: propsIF) {
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
@@ -375,7 +373,6 @@ function TradeTabs2(props: propsIF) {
         provider: provider,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
-        lastBlockNumber: lastBlockNumber,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         currentPositionActive: currentPositionActive,
@@ -386,7 +383,6 @@ function TradeTabs2(props: propsIF) {
         handlePulseAnimation: handlePulseAnimation,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
     };
 
     // Props for <Transactions/> React Element
@@ -424,7 +420,6 @@ function TradeTabs2(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
-        lastBlockNumber: lastBlockNumber,
         isAccountView: false,
         setExpandTradeTable,
     };

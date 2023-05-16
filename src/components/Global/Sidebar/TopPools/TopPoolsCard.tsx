@@ -6,19 +6,20 @@ import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     tradeData: tradeData;
     pool: topPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, cachedPoolStatsFetch } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { pathname } = useLocation();
 

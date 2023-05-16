@@ -14,6 +14,7 @@ import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -73,6 +74,7 @@ export default function RangeDetails(props: propsIF) {
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
@@ -80,10 +82,6 @@ export default function RangeDetails(props: propsIF) {
             printDomToImage(detailsRef.current);
         }
     };
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
-
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<

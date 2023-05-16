@@ -56,13 +56,12 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { PoolContext } from '../../contexts/PoolContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceInGwei: number | undefined;
-    lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -99,7 +98,6 @@ function Swap(props: propsIF) {
         isPairStable,
         provider,
         isOnTradeRoute,
-        gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -119,7 +117,6 @@ function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        lastBlockNumber,
         tokenPairLocal,
         ackTokens,
     } = props;
@@ -134,6 +131,7 @@ function Swap(props: propsIF) {
         chainData: { chainId, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
@@ -531,7 +529,6 @@ function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
-        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -606,7 +603,6 @@ function Swap(props: propsIF) {
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        gasPriceInGwei: gasPriceInGwei,
         isSwapCopied: isSwapCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
@@ -618,7 +614,6 @@ function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        lastBlockNumber: lastBlockNumber,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         ackTokens: ackTokens,
     };

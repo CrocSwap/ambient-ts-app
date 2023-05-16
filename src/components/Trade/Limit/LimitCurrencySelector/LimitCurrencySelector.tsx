@@ -32,6 +32,7 @@ import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 // interface for component props
 interface propsIF {
@@ -61,7 +62,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -101,7 +101,6 @@ function LimitCurrencySelector(props: propsIF) {
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
-        gasPriceInGwei,
         handleChangeClick,
         isOrderCopied,
         verifyToken,
@@ -126,6 +125,7 @@ function LimitCurrencySelector(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const thisToken =
         fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;

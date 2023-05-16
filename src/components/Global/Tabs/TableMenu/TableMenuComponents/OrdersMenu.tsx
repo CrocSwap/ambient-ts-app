@@ -34,7 +34,6 @@ interface propsIF {
     isShowAllEnabled: boolean;
     isOrderFilled: boolean;
     handlePulseAnimation?: (type: string) => void;
-    lastBlockNumber: number;
     showHighlightedButton: boolean;
     isOnPortfolioPage: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
@@ -52,7 +51,6 @@ export default function OrdersMenu(props: propsIF) {
         isOrderFilled,
         isOwnerActiveAccount,
         handlePulseAnimation,
-        lastBlockNumber,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
     } = props;
@@ -185,7 +183,6 @@ export default function OrdersMenu(props: propsIF) {
             <OrderDetails
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }

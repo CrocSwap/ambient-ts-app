@@ -27,10 +27,10 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
-    gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
     tokenPair: TokenPairIF;
@@ -90,7 +90,6 @@ interface propsIF {
 function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
-        gasPriceInGwei,
         tokenPair,
         isTokenAEth,
         isTokenBEth,
@@ -130,6 +129,7 @@ function RangeCurrencySelector(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,

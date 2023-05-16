@@ -34,7 +34,6 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    lastBlockNumber: number;
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
@@ -49,7 +48,6 @@ interface propsIF {
     handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
 }
 
 function RangesRow(props: propsIF) {
@@ -66,7 +64,6 @@ function RangesRow(props: propsIF) {
         isLeaderboard,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        gasPriceInGwei,
     } = props;
     const {
         globalModal: { open: openGlobalModal },
@@ -129,7 +126,6 @@ function RangesRow(props: propsIF) {
         isDenomBase: isDenomBase,
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
-        lastBlockNumber: props.lastBlockNumber,
         positionApy: position.apy,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
@@ -148,7 +144,6 @@ function RangesRow(props: propsIF) {
         isOnPortfolioPage: props.isOnPortfolioPage,
         handlePulseAnimation: handlePulseAnimation,
         isPositionInRange: isPositionInRange,
-        gasPriceInGwei: gasPriceInGwei,
     };
 
     const openDetailsModal = () => {

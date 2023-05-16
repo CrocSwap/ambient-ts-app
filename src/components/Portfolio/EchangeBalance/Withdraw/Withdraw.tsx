@@ -36,38 +36,33 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     sendToAddress: string | undefined;
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function Withdraw(props: propsIF) {
     const {
         selectedToken,
-        // tokenAllowance,
-        // tokenWalletBalance,
         tokenDexBalance,
-        // setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        // lastBlockNumber,
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        gasPriceInGwei,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,

@@ -11,13 +11,11 @@ import { memo } from 'react';
 interface propsIF {
     tradeData: tradeData;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
     recentPools: recentPoolsMethodsIF;
 }
 
 function RecentPools(props: propsIF) {
-    const { tradeData, lastBlockNumber, cachedPoolStatsFetch, recentPools } =
-        props;
+    const { tradeData, cachedPoolStatsFetch, recentPools } = props;
 
     return (
         <div className={styles.container}>
@@ -33,7 +31,6 @@ function RecentPools(props: propsIF) {
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>

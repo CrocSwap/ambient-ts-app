@@ -41,8 +41,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
-    // poolPriceTick: number | undefined;
-    lastBlockNumber: number;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;

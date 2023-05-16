@@ -55,7 +55,6 @@ interface propsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    lastBlockNumber: number;
     isTokenABase: boolean;
     tokenPair: TokenPairIF;
     currentTxActiveInTransactions: string;
@@ -79,7 +78,6 @@ interface propsIF {
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
     chartSettings: chartSettingsMethodsIF;
-    gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
@@ -91,7 +89,6 @@ function Trade(props: propsIF) {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         provider,
-        lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenBalance,
@@ -112,7 +109,6 @@ function Trade(props: propsIF) {
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        gasPriceInGwei,
     } = props;
 
     const { params } = useParams();
@@ -438,7 +434,6 @@ function Trade(props: propsIF) {
         isTokenABase: isTokenABase,
         changeState: changeState,
         liquidityData: liquidityData,
-        lastBlockNumber: lastBlockNumber,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
         simpleRangeWidth: simpleRangeWidth,
@@ -466,7 +461,6 @@ function Trade(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
         provider: provider,
-        lastBlockNumber: lastBlockNumber,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         baseTokenBalance: baseTokenBalance,
@@ -495,7 +489,6 @@ function Trade(props: propsIF) {
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,

@@ -8,7 +8,6 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
-    lastBlockNumber: number;
     resolvedAddress: string;
     connectedAccountActive: boolean;
 }

@@ -17,7 +17,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    lastBlockNumber: number;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isOnPortfolioPage: boolean;

@@ -48,6 +48,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -58,7 +59,6 @@ interface propsIF {
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
-    lastBlockNumber: number;
     connectedAccountActive: boolean;
     tokenList: TokenIF[];
     searchableTokens: TokenIF[];
@@ -76,7 +76,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
 }
 
 // React functional component
@@ -90,7 +89,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
-        lastBlockNumber,
         connectedAccountActive,
         tokenList,
         openTokenModal,
@@ -101,7 +99,6 @@ export default function PortfolioTabs(props: propsIF) {
         handlePulseAnimation,
         setExpandTradeTable,
         setSimpleRangeWidth,
-        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -109,6 +106,7 @@ export default function PortfolioTabs(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -325,7 +323,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
     };
 
@@ -335,7 +332,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
     };
@@ -351,7 +347,6 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccountPositionData: activeAccountPositionData,
         isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
         provider: props.provider,
         searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
@@ -360,7 +355,6 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenDexBalance: quoteTokenDexBalance,
         handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
         setExpandTradeTable: setExpandTradeTable,
     };
 
@@ -396,7 +390,6 @@ export default function PortfolioTabs(props: propsIF) {
         setCurrentPositionActive: props.setCurrentPositionActive,
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
-        lastBlockNumber: lastBlockNumber,
         setExpandTradeTable: setExpandTradeTable,
         isAccountView: true,
     };
