@@ -2,7 +2,6 @@ import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
@@ -16,12 +15,9 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 
 interface propsIF {
     onClose: () => void;
-    crocEnv: CrocEnv | undefined;
     position: PositionIF;
     newRepositionTransactionHash: string;
     tokenPair: TokenPairIF;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
@@ -42,7 +38,6 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    poolPriceDisplayNum: number;
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
     isDenomBase: boolean;
@@ -53,7 +48,6 @@ interface propsIF {
 export default function ConfirmRepositionModal(props: propsIF) {
     const {
         tokenPair,
-        poolPriceDisplayNum,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
@@ -245,7 +239,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <SelectedRange
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
-                    poolPriceDisplayNum={poolPriceDisplayNum}
                     tokenPair={tokenPair}
                     denominationsInBase={isDenomBase}
                     isTokenABase={isTokenABase}

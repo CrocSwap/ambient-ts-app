@@ -11,7 +11,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -56,13 +56,13 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import _ from 'lodash';
+import { PoolContext } from '../../contexts/PoolContext';
 
 interface propsIF {
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -70,11 +70,9 @@ interface propsIF {
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     isInitialized: boolean;
-    poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -95,16 +93,13 @@ interface propsIF {
     searchType: string;
     tokenPairLocal: string[] | null;
     ackTokens: ackTokensMethodsIF;
-    pool: CrocPoolView | undefined;
 }
 
 function Swap(props: propsIF) {
     const {
-        pool,
         isPairStable,
         provider,
         isOnTradeRoute,
-        ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
@@ -112,10 +107,8 @@ function Swap(props: propsIF) {
         quoteTokenDexBalance,
         isSellTokenBase,
         tokenPair,
-        poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        poolExists,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -140,7 +133,9 @@ function Swap(props: propsIF) {
     const {
         crocEnv,
         chainData: { chainId, blockExplorer },
+        ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -513,8 +508,6 @@ function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
-        pool: pool,
-        poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
         baseTokenSymbol: tradeData.baseToken.symbol,
@@ -592,14 +585,12 @@ function Swap(props: propsIF) {
         isLiquidityInsufficient: isLiquidityInsufficient,
         setIsLiquidityInsufficient: setIsLiquidityInsufficient,
         tokenPairLocal: tokenPairLocal,
-        poolExists: poolExists,
         provider: provider,
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
         tokenPair: tokenPair,
         priceImpact: priceImpact,
         isLiq: false,
-        poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
         isSellTokenBase: isSellTokenBase,
         baseTokenBalance: baseTokenBalance,
@@ -799,7 +790,6 @@ function Swap(props: propsIF) {
                             displayEffectivePriceString={
                                 displayEffectivePriceString
                             }
-                            poolPriceDisplay={poolPriceDisplay || 0}
                             slippageTolerance={slippageTolerancePercentage}
                             liquidityProviderFeeString={
                                 liquidityProviderFeeString
@@ -812,7 +802,7 @@ function Swap(props: propsIF) {
                         />
                         {isUserConnected ===
                         undefined ? null : isUserConnected === true ? (
-                            poolExists &&
+                            isPoolInitialized &&
                             !isTokenAAllowanceSufficient &&
                             parseFloat(sellQtyString) > 0 &&
                             sellQtyString !== 'Infinity' ? (

@@ -113,8 +113,6 @@ interface propsIF {
     denomInBase: boolean;
     limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
-    truncatedPoolPrice: number | undefined;
-    poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleChartData | undefined>
@@ -183,7 +181,6 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         denomInBase,
         isAdvancedModeActive,
-        poolPriceDisplay,
         expandTradeTable,
         setIsCandleAdded,
         scaleData,
@@ -225,7 +222,8 @@ export default function Chart(props: propsIF) {
     const {
         candleDomains: { setValue: setCandleDomains },
     } = useContext(CandleContext);
-    const pool = useContext(PoolContext);
+    const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
+        useContext(PoolContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -245,6 +243,11 @@ export default function Chart(props: propsIF) {
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
 
     const parsedChartData = props.candleData;
+    const poolPriceDisplay = poolPriceWithoutDenom
+        ? isDenomBase && poolPriceWithoutDenom
+            ? 1 / poolPriceWithoutDenom
+            : poolPriceWithoutDenom ?? 0
+        : 0;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
     const d3CanvasCandle = useRef<HTMLInputElement | null>(null);

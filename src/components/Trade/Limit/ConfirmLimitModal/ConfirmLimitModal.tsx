@@ -11,12 +11,12 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
@@ -35,7 +35,6 @@ interface propsIF {
 export default function ConfirmLimitModal(props: propsIF) {
     const {
         tokenPair,
-        poolPriceDisplay,
         initiateLimitOrderMethod,
         insideTickDisplayPrice,
         newLimitOrderTransactionHash,
@@ -50,6 +49,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenBInputQty,
     } = props;
 
+    const { poolPriceDisplay } = useContext(PoolContext);
     const {
         bypassConfirmLimit,
         bypassConfirmRange,
@@ -63,9 +63,10 @@ export default function ConfirmLimitModal(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPoolPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPoolPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPoolPriceString =
         displayPoolPriceWithDenom === Infinity ||

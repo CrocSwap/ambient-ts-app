@@ -37,7 +37,9 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | undefined>();
+    const [isPoolInitialized, setIsPoolInitialized] = useState<
+        boolean | undefined
+    >();
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         number | undefined
@@ -111,7 +113,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
             // resolve the promise object to see if pool exists
             Promise.resolve(doesPoolExist)
                 // track whether pool exists on state (can be undefined)
-                .then((res) => setPoolExists(res));
+                .then((res) => setIsPoolInitialized(res));
         }
     }, [
         props.crocEnv,
@@ -214,7 +216,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
 
     return {
         poolPriceDisplay, // Display price based on user-selected denomination
-        poolExists, // Whether the pool is initialized on-chain
+        isPoolInitialized, // Whether the pool is initialized on-chain
         poolPriceChangePercent, // Previous 24-hour price change
         isPoolPriceChangePositive, // True if previous 24-hour price change is green
     };

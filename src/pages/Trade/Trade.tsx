@@ -43,6 +43,7 @@ import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { PoolContext } from '../../contexts/PoolContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -56,7 +57,6 @@ interface propsIF {
     quoteTokenDexBalance: string;
     lastBlockNumber: number;
     isTokenABase: boolean;
-    poolPriceDisplay?: number;
     tokenPair: TokenPairIF;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -70,7 +70,6 @@ interface propsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
-    poolExists: boolean | undefined;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -82,20 +81,15 @@ interface propsIF {
     chartSettings: chartSettingsMethodsIF;
     gasPriceInGwei: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
-    poolPriceChangePercent: string | undefined;
-    isPoolPriceChangePositive: boolean;
 }
 
 // React functional component
 function Trade(props: propsIF) {
     const {
-        isPoolPriceChangePositive,
-        poolPriceChangePercent,
         chartSettings,
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        poolPriceDisplay,
         provider,
         lastBlockNumber,
         baseTokenAddress,
@@ -113,7 +107,6 @@ function Trade(props: propsIF) {
         poolPriceNonDisplay,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        poolExists,
         handlePulseAnimation,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -139,6 +132,7 @@ function Trade(props: propsIF) {
         },
         isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
+    const { isPoolInitialized } = useContext(PoolContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -195,12 +189,6 @@ function Trade(props: propsIF) {
         : tradeData.baseToken.symbol;
 
     const liquidityData = graphData?.liquidityData;
-
-    const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : 0;
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -401,7 +389,7 @@ function Trade(props: propsIF) {
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
     const poolNotInitializedContent =
-        poolExists === false ? (
+        isPoolInitialized === false ? (
             <div className={styles.pool_not_initialialized_container}>
                 <div className={styles.pool_not_initialialized_content}>
                     <div
@@ -444,9 +432,7 @@ function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
         chartSettings: chartSettings,
-        poolPriceDisplay: poolPriceDisplayWithDenom,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         isTokenABase: isTokenABase,
@@ -468,7 +454,6 @@ function Trade(props: propsIF) {
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
         handlePulseAnimation: handlePulseAnimation,
-        poolPriceChangePercent: poolPriceChangePercent,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
@@ -506,9 +491,6 @@ function Trade(props: propsIF) {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        poolPriceDisplay: poolPriceDisplayWithDenom,
-        poolPriceChangePercent: poolPriceChangePercent,
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,

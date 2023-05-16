@@ -18,21 +18,14 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
-    isPoolPriceChangePositive: boolean;
-    poolPriceDisplay: number;
-    poolPriceChangePercent: string | undefined;
     simplifyVersion?: boolean;
 }
 
 function TradeChartsTokenInfo(props: propsIF) {
-    const {
-        isPoolPriceChangePositive,
-        poolPriceDisplay,
-        poolPriceChangePercent,
-        simplifyVersion,
-    } = props;
+    const { simplifyVersion } = props;
     const dispatch = useAppDispatch();
 
     const { tradeData } = useAppSelector((state) => state);
@@ -42,6 +35,11 @@ function TradeChartsTokenInfo(props: propsIF) {
     const {
         chainData: { chainId, poolIndex, blockExplorer },
     } = useContext(CrocEnvContext);
+    const {
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+    } = useContext(PoolContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     const denomInBase = tradeData.isDenomBase;
@@ -66,15 +64,21 @@ function TradeChartsTokenInfo(props: propsIF) {
         : // denom in b, return token a character
           getUnicodeCharacter(tradeData.baseToken.symbol);
 
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? tradeData.isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
+
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
-            : poolPriceDisplay < 2
-            ? poolPriceDisplay.toLocaleString(undefined, {
+            : poolPriceDisplayWithDenom < 2
+            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
               })
-            : poolPriceDisplay.toLocaleString(undefined, {
+            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });

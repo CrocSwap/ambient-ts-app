@@ -35,6 +35,7 @@ import {
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -65,8 +66,6 @@ interface propsIF {
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
-    truncatedPoolPrice: number | undefined;
-    poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleChartData | undefined>
     >;
@@ -128,7 +127,6 @@ function TradeCandleStickChart(props: propsIF) {
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        poolPriceDisplay,
         chartSettings,
         isMarketOrLimitModule,
     } = props;
@@ -138,7 +136,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleData: { value: candleData },
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
-
+    const { poolPriceDisplay } = useContext(PoolContext);
     const rangeState = useContext(RangeStateContext);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -818,8 +816,6 @@ function TradeCandleStickChart(props: propsIF) {
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         rangeSimpleRangeWidth={props.simpleRangeWidth}
-                        poolPriceDisplay={props.poolPriceDisplay}
-                        truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}

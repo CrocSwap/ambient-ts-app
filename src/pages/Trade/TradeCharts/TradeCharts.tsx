@@ -43,7 +43,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 interface propsIF {
     // poolPriceTick: number | undefined;
     lastBlockNumber: number;
-    poolPriceDisplay: number;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
@@ -67,11 +66,6 @@ interface propsIF {
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
     TradeSettingsColor: JSX.Element;
-
-    poolPriceChangePercent: string | undefined;
-
-    isPoolPriceChangePositive: boolean;
-
     handlePulseAnimation: (type: string) => void;
     chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -137,13 +131,10 @@ export interface LiqSnap {
 // React functional component
 function TradeCharts(props: propsIF) {
     const {
-        poolPriceDisplay,
         expandTradeTable,
         selectedDate,
         setSelectedDate,
         TradeSettingsColor,
-        poolPriceChangePercent,
-        isPoolPriceChangePositive,
         handlePulseAnimation,
         setSimpleRangeWidth,
         chartSettings,
@@ -171,19 +162,6 @@ function TradeCharts(props: propsIF) {
     const [showLatest, setShowLatest] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
-
-    const truncatedPoolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '…'
-            : poolPriceDisplay < 2
-            ? poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
@@ -424,11 +402,7 @@ function TradeCharts(props: propsIF) {
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <TradeChartsTokenInfo
-                isPoolPriceChangePositive={isPoolPriceChangePositive}
-                poolPriceDisplay={poolPriceDisplay}
-                poolPriceChangePercent={poolPriceChangePercent}
-            />
+            <TradeChartsTokenInfo />
             <div
                 style={{
                     display: 'flex',
@@ -511,8 +485,6 @@ function TradeCharts(props: propsIF) {
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}
-                        poolPriceDisplay={poolPriceDisplay}
-                        truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}

@@ -63,12 +63,9 @@ import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
     isDenomBase: boolean;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
     provider: ethers.providers.Provider;
     isPairStable: boolean;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number | undefined;
     lastBlockNumber: number;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
@@ -78,12 +75,9 @@ interface propsIF {
 function Reposition(props: propsIF) {
     const {
         isDenomBase,
-        ambientApy,
-        dailyVol,
         provider,
         isPairStable,
         tokenPair,
-        poolPriceDisplay,
         lastBlockNumber,
         setSimpleRangeWidth,
         simpleRangeWidth,
@@ -689,8 +683,6 @@ function Reposition(props: propsIF) {
         isPositionInRange: isPositionInRange,
         crocEnv: crocEnv,
         position: position as PositionIF,
-        ambientApy: ambientApy,
-        dailyVol: dailyVol,
         currentPoolPriceDisplay: currentPoolPriceDisplay,
         currentPoolPriceTick: currentPoolPriceTick,
         rangeWidthPercentage: rangeWidthPercentage,
@@ -722,7 +714,6 @@ function Reposition(props: propsIF) {
             pinnedMaxPriceDisplayTruncatedInQuote,
         isDenomBase: isDenomBase,
         isTokenABase: isTokenABase,
-        poolPriceDisplayNum: poolPriceDisplay || 0,
         // showBypassConfirm,
         // setShowBypassConfirm,
 
@@ -781,8 +772,6 @@ function Reposition(props: propsIF) {
                 />
                 <RepositionPriceInfo
                     position={position}
-                    ambientApy={ambientApy}
-                    dailyVol={dailyVol}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
@@ -798,7 +787,6 @@ function Reposition(props: propsIF) {
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
                     isPairStable={isPairStable}
-                    poolPriceDisplay={poolPriceDisplay}
                     isDenomBase={isDenomBase}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}

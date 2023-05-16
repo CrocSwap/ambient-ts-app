@@ -4,6 +4,7 @@ import {
     Dispatch,
     memo,
     SetStateAction,
+    useContext,
     useEffect,
     useState,
 } from 'react';
@@ -34,10 +35,10 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
@@ -46,7 +47,6 @@ interface propsIF {
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     provider?: ethers.providers.Provider;
-    pool: CrocPoolView | undefined;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     tokenPair: TokenPairIF;
     poolPriceNonDisplay: number | undefined;
@@ -70,7 +70,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     isDenominationInBase: boolean;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
@@ -103,7 +102,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setDisplayPrice,
         setPreviousDisplayPrice,
         provider,
-        pool,
         setPriceInputFieldBlurred,
         tokenPair,
         poolPriceNonDisplay,
@@ -124,7 +122,6 @@ function LimitCurrencyConverter(props: propsIF) {
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         isDenominationInBase,
-        poolExists,
         gasPriceInGwei,
         isOrderCopied,
         verifyToken,
@@ -144,6 +141,8 @@ function LimitCurrencyConverter(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+
+    const { isPoolInitialized } = useContext(PoolContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -274,7 +273,7 @@ function LimitCurrencyConverter(props: propsIF) {
             ? handleTokenAChangeEvent()
             : handleTokenBChangeEvent();
     }, [
-        poolExists,
+        isPoolInitialized,
         limitTickDisplayPrice,
         isSellTokenBase,
         isTokenAPrimaryLocal,
@@ -286,10 +285,11 @@ function LimitCurrencyConverter(props: propsIF) {
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (!poolExists) {
+        if (!isPoolInitialized) {
             setLimitAllowed(false);
-            if (poolExists === undefined) setLimitButtonErrorMessage('...');
-            if (poolExists === false)
+            if (isPoolInitialized === undefined)
+                setLimitButtonErrorMessage('...');
+            if (isPoolInitialized === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (!isOrderValid) {
             setLimitAllowed(false);
@@ -630,7 +630,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 displayPrice={displayPrice}
                 setDisplayPrice={setDisplayPrice}
                 setPreviousDisplayPrice={setPreviousDisplayPrice}
-                pool={pool}
                 isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                 tokenPair={tokenPair}

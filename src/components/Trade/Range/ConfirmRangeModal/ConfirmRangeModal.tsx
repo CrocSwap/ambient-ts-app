@@ -24,7 +24,6 @@ interface propsIF {
     newRangeTransactionHash: string;
     setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
     tokenPair: TokenPairIF;
-    poolPriceDisplayNum: number;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
@@ -53,7 +52,6 @@ function ConfirmRangeModal(props: propsIF) {
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
-        poolPriceDisplayNum,
         tokenPair,
         denominationsInBase,
         isTokenABase,
@@ -216,7 +214,6 @@ function ConfirmRangeModal(props: propsIF) {
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     spotPriceDisplay={spotPriceDisplay}
-                    poolPriceDisplayNum={poolPriceDisplayNum}
                     tokenPair={tokenPair}
                     denominationsInBase={denominationsInBase}
                     isTokenABase={isTokenABase}

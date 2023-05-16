@@ -5,11 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
-
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
-
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -20,7 +16,6 @@ import { GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
-    cachedQuerySpotPrice: SpotPriceFn;
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
     user: string;
@@ -29,9 +24,7 @@ interface propsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
-    baseTokenDecimals: number;
     quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
     lowRangeDisplay: string;
     highRangeDisplay: string;
     isDenomBase: boolean;
@@ -51,8 +44,6 @@ export default function RangeDetails(props: propsIF) {
 
     const {
         baseTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         quoteTokenAddress,
         baseTokenLogoURI,
         quoteTokenLogoURI,
@@ -65,7 +56,6 @@ export default function RangeDetails(props: propsIF) {
         positionApy,
         // isPositionInRange,
         isAmbient,
-        cachedQuerySpotPrice,
         isOnPortfolioPage,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
@@ -81,7 +71,6 @@ export default function RangeDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
-        crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
 
@@ -117,8 +106,6 @@ export default function RangeDetails(props: propsIF) {
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
     >(positionApy);
-
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
     const { posHash } = useProcessRange(position, userAddress);
 
@@ -264,35 +251,6 @@ export default function RangeDetails(props: propsIF) {
                 })
                 .catch(console.error);
         }
-        if (
-            crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            baseTokenDecimals &&
-            quoteTokenDecimals &&
-            lastBlockNumber !== 0
-        ) {
-            (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    chainId,
-                    lastBlockNumber,
-                );
-
-                if (spotPrice) {
-                    const newDisplayPrice = toDisplayPrice(
-                        spotPrice,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                    );
-                    if (newDisplayPrice !== poolPriceDisplay) {
-                        setPoolPriceDisplay(newDisplayPrice);
-                    }
-                }
-            })();
-        }
     }, [lastBlockNumber]);
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
@@ -329,7 +287,6 @@ export default function RangeDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        poolPriceDisplay={poolPriceDisplay}
                         usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}

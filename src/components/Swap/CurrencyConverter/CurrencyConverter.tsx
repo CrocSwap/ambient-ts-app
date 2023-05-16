@@ -32,16 +32,15 @@ import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 interface propsIF {
-    poolExists: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     isLiq: boolean;
-    poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
     // nativeBalance: string;
     baseTokenBalance: string;
@@ -88,13 +87,11 @@ function CurrencyConverter(props: propsIF) {
     const {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
-        poolExists,
         provider,
         slippageTolerancePercentage,
         setPriceImpact,
         tokenPair,
         isLiq,
-        poolPriceDisplay,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
@@ -132,6 +129,7 @@ function CurrencyConverter(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
 
     const dispatch = useAppDispatch();
 
@@ -323,7 +321,7 @@ function CurrencyConverter(props: propsIF) {
 
     const reverseTokens = useMemo(
         () => (): void => {
-            if (disableReverseTokens || !poolExists) {
+            if (disableReverseTokens || !isPoolInitialized) {
                 return;
             } else {
                 setDisableReverseTokens(true);
@@ -400,7 +398,7 @@ function CurrencyConverter(props: propsIF) {
             : handleTokenBChangeEvent();
     }, [
         crocEnv,
-        poolExists,
+        isPoolInitialized,
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
@@ -418,24 +416,24 @@ function CurrencyConverter(props: propsIF) {
     }, [account]);
 
     useEffect(() => {
-        if (!poolExists) {
+        if (!isPoolInitialized) {
             setSwapAllowed(false);
 
-            if (poolExists === undefined) {
+            if (isPoolInitialized === undefined) {
                 setSwapButtonErrorMessage('...');
-            } else if (poolExists === false) {
+            } else if (isPoolInitialized === false) {
                 setSwapButtonErrorMessage('Pool Not Initialized');
             }
         }
-    }, [poolExists === undefined, poolExists]);
+    }, [isPoolInitialized === undefined, isPoolInitialized]);
 
     const handleSwapButtonMessage = useMemo(
         () => (tokenAAmount: number) => {
-            if (!poolExists) {
+            if (!isPoolInitialized) {
                 setSwapAllowed(false);
-                if (poolExists === undefined) {
+                if (isPoolInitialized === undefined) {
                     setSwapButtonErrorMessage('...');
-                } else if (poolExists === false) {
+                } else if (isPoolInitialized === false) {
                     setSwapButtonErrorMessage('Pool Not Initialized');
                 }
             } else if (isLiquidityInsufficient) {
@@ -475,7 +473,7 @@ function CurrencyConverter(props: propsIF) {
         },
         [
             crocEnv,
-            poolExists,
+            isPoolInitialized,
             poolPriceDisplay,
             tokenALocal,
             tokenBLocal,
@@ -548,12 +546,12 @@ function CurrencyConverter(props: propsIF) {
                     setSwapAllowed(false);
                 }
             } else {
-                if (!poolExists) {
+                if (!isPoolInitialized) {
                     setSwapAllowed(false);
 
-                    if (poolExists === undefined) {
+                    if (isPoolInitialized === undefined) {
                         setSwapButtonErrorMessage('...');
-                    } else if (poolExists === false) {
+                    } else if (isPoolInitialized === false) {
                         setSwapButtonErrorMessage('Pool Not Initialized');
                     }
                     return;
@@ -606,7 +604,7 @@ function CurrencyConverter(props: propsIF) {
         },
         [
             crocEnv,
-            poolExists,
+            isPoolInitialized,
             poolPriceDisplay,
             tokenALocal,
             tokenBLocal,
@@ -713,7 +711,7 @@ function CurrencyConverter(props: propsIF) {
         [
             crocEnv,
             poolPriceDisplay,
-            poolExists,
+            isPoolInitialized,
             tokenALocal,
             tokenBLocal,
             slippageTolerancePercentage,
@@ -789,12 +787,12 @@ function CurrencyConverter(props: propsIF) {
                     console.debug(
                         'token B change event triggered - no keyboard event',
                     );
-                if (!poolExists) {
+                if (!isPoolInitialized) {
                     setSwapAllowed(false);
 
-                    if (poolExists === undefined) {
+                    if (isPoolInitialized === undefined) {
                         setSwapButtonErrorMessage('...');
-                    } else if (poolExists === false) {
+                    } else if (isPoolInitialized === false) {
                         setSwapButtonErrorMessage('Pool Not Initialized');
                     }
                     return;
@@ -854,7 +852,7 @@ function CurrencyConverter(props: propsIF) {
         [
             crocEnv,
             poolPriceDisplay,
-            poolExists,
+            isPoolInitialized,
             tokenALocal,
             tokenBLocal,
             slippageTolerancePercentage,

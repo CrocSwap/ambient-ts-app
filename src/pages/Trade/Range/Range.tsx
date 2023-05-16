@@ -81,6 +81,7 @@ import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 interface propsIF {
     isPairStable: boolean;
@@ -89,7 +90,6 @@ interface propsIF {
     lastBlockNumber: number;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    poolPriceDisplay: string;
     poolPriceNonDisplay: number | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -99,9 +99,6 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
-    poolExists: boolean | undefined;
     isRangeCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -131,7 +128,6 @@ function Range(props: propsIF) {
         provider,
         baseTokenAddress,
         quoteTokenAddress,
-        poolPriceDisplay,
         poolPriceNonDisplay,
         baseTokenBalance,
         quoteTokenBalance,
@@ -142,9 +138,6 @@ function Range(props: propsIF) {
         tokenBAllowance,
         setRecheckTokenBApproval,
         gasPriceInGwei,
-        ambientApy,
-        dailyVol,
-        poolExists,
         isRangeCopied,
         verifyToken,
         getTokensByName,
@@ -170,6 +163,8 @@ function Range(props: propsIF) {
         chainData: { chainId, poolIndex, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
+        useContext(PoolContext);
     const {
         minRangePrice: minPrice,
         maxRangePrice: maxPrice,
@@ -262,11 +257,10 @@ function Range(props: propsIF) {
         ? mintSlippage.stable
         : mintSlippage.volatile;
 
-    const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
-
-    const displayPriceWithDenom = denominationsInBase
-        ? 1 / poolPriceDisplayNum
-        : poolPriceDisplayNum;
+    const displayPriceWithDenom =
+        denominationsInBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -553,17 +547,19 @@ function Range(props: propsIF) {
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
     useEffect(() => {
-        // console.log({ poolExists });
-        if (poolExists === undefined || poolPriceNonDisplay === undefined) {
+        if (
+            isPoolInitialized === undefined ||
+            poolPriceNonDisplay === undefined
+        ) {
             setRangeButtonErrorMessage('…');
-        } else if (!poolExists) {
+        } else if (!isPoolInitialized) {
             setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
         } else if (!isQtyEntered) {
             setRangeButtonErrorMessage('Enter an Amount');
         }
-    }, [isQtyEntered, poolExists, isInvalidRange, poolPriceNonDisplay]);
+    }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
@@ -1330,7 +1326,6 @@ function Range(props: propsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
-        poolExists: poolExists,
         provider: provider,
         poolPriceNonDisplay: poolPriceNonDisplay,
         tokenPair: tokenPair,
@@ -1454,7 +1449,7 @@ function Range(props: propsIF) {
                     lowBoundOnBlur={lowBoundOnBlur}
                     rangeLowTick={defaultLowTick}
                     rangeHighTick={defaultHighTick}
-                    disable={isInvalidRange || !poolExists}
+                    disable={isInvalidRange || !isPoolInitialized}
                     maxPrice={maxPrice}
                     minPrice={minPrice}
                     setMaxPrice={setMaxPrice}
@@ -1698,7 +1693,7 @@ function Range(props: propsIF) {
                                             : ackAsNeeded
                                     }
                                     rangeAllowed={
-                                        poolExists === true &&
+                                        isPoolInitialized === true &&
                                         rangeAllowed &&
                                         !isInvalidRange
                                     }
@@ -1777,7 +1772,6 @@ function Range(props: propsIF) {
                             tokenBQtyLocal={tokenBQtyLocal}
                             tokenPair={tokenPair}
                             spotPriceDisplay={displayPriceString}
-                            poolPriceDisplayNum={poolPriceDisplayNum}
                             denominationsInBase={denominationsInBase}
                             isTokenABase={isTokenABase}
                             isAmbient={isAmbient}

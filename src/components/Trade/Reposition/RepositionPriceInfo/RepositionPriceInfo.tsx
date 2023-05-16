@@ -19,6 +19,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -40,26 +41,16 @@ interface IRepositionPriceInfoProps {
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
     isConfirmModal?: boolean;
-
     minPriceDisplay: string;
     maxPriceDisplay: string;
-
     currentBaseQtyDisplayTruncated: string;
     currentQuoteQtyDisplayTruncated: string;
-
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
     rangeGasPriceinDollars: string | undefined;
-
     isPairStable: boolean;
-
-    poolPriceDisplay: number | undefined;
-
     isDenomBase: boolean;
-
     currentMinPrice: string;
     currentMaxPrice: string;
 }
@@ -69,11 +60,9 @@ interface IRepositionPriceInfoProps {
 export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
         position,
-        ambientApy,
         currentPoolPriceDisplay,
         currentPoolPriceTick,
         rangeWidthPercentage,
-
         isConfirmModal,
         minPriceDisplay,
         maxPriceDisplay,
@@ -82,16 +71,16 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         newBaseQtyDisplay,
         newQuoteQtyDisplay,
         rangeGasPriceinDollars,
-
         currentMinPrice,
         currentMaxPrice,
         // isPairStable
     } = props;
 
-    const { repoSlippage } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { ambientApy } = useContext(PoolContext);
+    const { repoSlippage } = useContext(UserPreferenceContext);
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;

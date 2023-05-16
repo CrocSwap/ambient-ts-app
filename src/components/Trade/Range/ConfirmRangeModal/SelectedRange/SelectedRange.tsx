@@ -1,12 +1,12 @@
 import styles from './SelectedRange.module.css';
-import { memo, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { PoolContext } from '../../../../../contexts/PoolContext';
 
 interface propsIF {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
     spotPriceDisplay?: string;
-    poolPriceDisplayNum: number;
     denominationsInBase: boolean;
     isTokenABase: boolean;
     tokenPair: TokenPairIF;
@@ -20,7 +20,6 @@ interface propsIF {
 }
 function SelectedRange(props: propsIF) {
     const {
-        poolPriceDisplayNum,
         denominationsInBase,
         isTokenABase,
         tokenPair,
@@ -30,6 +29,8 @@ function SelectedRange(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
     } = props;
+
+    const { poolPriceDisplay } = useContext(PoolContext);
 
     const reverseDisplayDefault =
         (isTokenABase && denominationsInBase) ||
@@ -46,9 +47,10 @@ function SelectedRange(props: propsIF) {
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
-    const displayPriceWithDenom = denomInBase
-        ? 1 / poolPriceDisplayNum
-        : poolPriceDisplayNum;
+    const displayPriceWithDenom =
+        denomInBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0

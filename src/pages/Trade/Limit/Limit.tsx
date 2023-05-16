@@ -16,7 +16,6 @@ import {
     pinTickLower,
     pinTickUpper,
     priceHalfAboveTick,
-    CrocPoolView,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 
@@ -69,9 +68,9 @@ import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 interface propsIF {
-    pool: CrocPoolView | undefined;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -83,10 +82,8 @@ interface propsIF {
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    poolPriceDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | undefined;
     isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -113,7 +110,6 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 export default function Limit(props: propsIF) {
     const {
         provider,
-        pool,
         isPairStable,
         baseTokenBalance,
         quoteTokenBalance,
@@ -121,10 +117,8 @@ export default function Limit(props: propsIF) {
         quoteTokenDexBalance,
         tokenPair,
         gasPriceInGwei,
-        poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        poolExists,
         lastBlockNumber,
         isOrderCopied,
         verifyToken,
@@ -150,6 +144,7 @@ export default function Limit(props: propsIF) {
         chainData: { chainId, poolIndex, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { pool } = useContext(PoolContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
@@ -774,7 +769,6 @@ export default function Limit(props: propsIF) {
         setPreviousDisplayPrice: setPreviousDisplayPrice,
         provider: provider,
         setPriceInputFieldBlurred: setPriceInputFieldBlurred,
-        pool: pool,
         tokenPair: tokenPair,
         poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
@@ -794,7 +788,6 @@ export default function Limit(props: propsIF) {
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
         isDenominationInBase: tradeData.isDenomBase,
-        poolExists: poolExists,
         gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,
         verifyToken: verifyToken,
@@ -905,7 +898,6 @@ export default function Limit(props: propsIF) {
                         }
                         tokenPair={tokenPair}
                         orderGasPriceInDollars={orderGasPriceInDollars}
-                        poolPriceDisplay={poolPriceDisplay || 0}
                         liquidityProviderFeeString={liquidityProviderFeeString}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isTokenABase={isSellTokenBase}
@@ -1008,7 +1000,6 @@ export default function Limit(props: propsIF) {
                         <ConfirmLimitModal
                             onClose={handleModalClose}
                             tokenPair={tokenPair}
-                            poolPriceDisplay={poolPriceDisplay || 0}
                             initiateLimitOrderMethod={sendLimitOrder}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}

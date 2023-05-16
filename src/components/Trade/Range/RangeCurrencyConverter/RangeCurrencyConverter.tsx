@@ -6,6 +6,7 @@ import {
     useState,
     useEffect,
     memo,
+    useContext,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -34,6 +35,7 @@ import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput'
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
@@ -88,7 +90,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    poolExists: boolean | undefined;
     ackTokens: ackTokensMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
@@ -97,7 +98,6 @@ interface propsIF {
 // central React functional component
 function RangeCurrencyConverter(props: propsIF) {
     const {
-        poolExists,
         gasPriceInGwei,
         isLiq,
         poolPriceNonDisplay,
@@ -143,6 +143,8 @@ function RangeCurrencyConverter(props: propsIF) {
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
     } = props;
+
+    const { isPoolInitialized } = useContext(PoolContext);
 
     const dispatch = useAppDispatch();
 
@@ -656,13 +658,13 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
-        if (poolExists) {
+        if (isPoolInitialized) {
             tradeData.isTokenAPrimaryRange
                 ? handleTokenAQtyFieldUpdate()
                 : handleTokenBQtyFieldUpdate();
         }
     }, [
-        poolExists,
+        isPoolInitialized,
         poolPriceNonDisplay,
         depositSkew,
         primaryQuantityRange,

@@ -74,9 +74,6 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    poolPriceDisplay: number;
-    poolPriceChangePercent: string | undefined;
-    isPoolPriceChangePositive: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
@@ -119,9 +116,6 @@ function TradeTabs2(props: propsIF) {
         setHasInitialized,
         unselectCandle,
         tokenList,
-        poolPriceDisplay,
-        poolPriceChangePercent,
-        isPoolPriceChangePositive,
         isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
@@ -461,9 +455,6 @@ function TradeTabs2(props: propsIF) {
     };
 
     const TradeChartsTokenInfoProps = {
-        poolPriceDisplay: poolPriceDisplay,
-        poolPriceChangePercent: poolPriceChangePercent,
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
         simplifyVersion: true,
     };
 

@@ -182,6 +182,17 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
     const isUserIdle = userData.isUserIdle;
     const currentPoolInfo = tradeData;
+    const receiptData = useAppSelector((state) => state.receiptData);
+    const lastReceipt =
+        receiptData.sessionReceipts.length > 0 &&
+        isJsonString(receiptData.sessionReceipts[0])
+            ? JSON.parse(receiptData.sessionReceipts[0])
+            : null;
+    const isLastReceiptSuccess = lastReceipt?.status === 1;
+    const lastReceiptHash = useMemo(
+        () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
+        [lastReceipt],
+    );
 
     // CONTEXT: remove and reference as necessary
     const provider = useProvider();
@@ -194,6 +205,9 @@ export default function App() {
         //  isLoading
     } = useSigner();
     const dispatch = useAppDispatch();
+
+    // CONTEXT: can be removed
+    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
     /* ------------------------------------------ APP STATE CONTEXT ------------------------------------------ */
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -634,6 +648,17 @@ export default function App() {
 
     /* ------------------------------------------ END CHAIN DATA CONTEXT ------------------------------------------ */
 
+    /* ------------------------------------------ USER DATA CONTEXT ------------------------------------------ */
+    // TODO: add to user data context
+    const { addRecentToken, getRecentTokens } = useRecentTokens(
+        chainData.chainId,
+    );
+    useEffect(() => {
+        dispatch(resetUserGraphData());
+    }, [userAddress]);
+
+    /* ------------------------------------------ END USER DATA CONTEXT ------------------------------------------ */
+
     /* ------------------------------------------ CHART CONTEXT ------------------------------------------ */
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
@@ -711,6 +736,206 @@ export default function App() {
 
     /* ------------------------------------------ END RANGE CONTEXT ------------------------------------------ */
 
+    /* ------------------------------------------ TOKEN CONTEXT ------------------------------------------ */
+    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
+    const {
+        verifyToken,
+        ambientTokens,
+        onChainTokens,
+        getTokenByAddress,
+        getTokensByName,
+    } = useToken(chainData.chainId);
+    // all tokens from active token lists
+    const [searchableTokens, setSearchableTokens] =
+        useState<TokenIF[]>(defaultTokens);
+    const {
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        ambientApy,
+        dailyVol,
+        isTokenABase,
+    } = usePoolMetadata({
+        crocEnv,
+        httpGraphCacheServerDomain,
+        pathname: location.pathname,
+        chainData,
+        searchableTokens,
+        receiptCount: receiptData.sessionReceipts.length,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedPoolLiquidity,
+        setSimpleRangeWidth,
+        isChartEnabled,
+    });
+
+    useEffect(() => {
+        setSearchableTokens(onChainTokens);
+    }, [chainData.chainId, onChainTokens]);
+    const [needTokenLists, setNeedTokenLists] = useState(true);
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
+    if (needTokenLists) {
+        IS_LOCAL_ENV && console.debug('fetching token lists');
+        setNeedTokenLists(false);
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
+    }
+    useEffect(() => {
+        IS_LOCAL_ENV && console.debug('initializing local storage');
+        initializeUserLocalStorage();
+    }, [tokenListsReceived]);
+
+    /* ------------------------------------------ END TOKEN CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ POOL CONTEXT ------------------------------------------ */
+    const pool = useMemo(
+        () =>
+            crocEnv?.pool(
+                tradeData.baseToken.address,
+                tradeData.quoteToken.address,
+            ),
+        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+    );
+
+    const {
+        isPoolInitialized,
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+    } = usePoolPricing({
+        crocEnv,
+        pathname: location.pathname,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        searchableTokens,
+        chainData,
+        receiptCount: receiptData.sessionReceipts.length,
+        isUserLoggedIn: isConnected,
+        isUserIdle,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedQuerySpotPrice,
+    });
+
+    const poolState = {
+        pool,
+        isPoolInitialized,
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+        ambientApy,
+        dailyVol,
+    };
+
+    /* ------------------------------------------ END POOL CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ TRADE TABLE CONTEXT ------------------------------------------ */
+    // CONTEXT: trade table context, rename - toggle (your transactions vs all transactions)
+    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
+        useState('');
+    const [currentPositionActive, setCurrentPositionActive] = useState('');
+    const [expandTradeTable, setExpandTradeTable] = useState(true);
+
+    /* ------------------------------------------ END TRADE TABLE CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ TRADE TOKEN CONTEXT ------------------------------------------ */
+    const {
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useTokenPairAllowance({
+        crocEnv,
+        userAddress,
+        lastBlockNumber,
+    });
+
+    // CONTEXT: trade token context - to be refactored for better usage
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
+    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
+        useState<string>('');
+
+    // CONTEXT: trade token context
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (
+                crocEnv &&
+                userAddress &&
+                isConnected &&
+                tradeData.baseToken.address &&
+                tradeData.quoteToken.address
+            ) {
+                crocEnv
+                    .token(tradeData.baseToken.address)
+                    .walletDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
+                            setBaseTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.baseToken.address)
+                    .balanceDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
+                            setBaseTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.quoteToken.address)
+                    .walletDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
+                            setQuoteTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.quoteToken.address)
+                    .balanceDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
+                            setQuoteTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })();
+    }, [
+        crocEnv,
+        isConnected,
+        userAddress,
+        tradeData.baseToken.address,
+        tradeData.quoteToken.address,
+        lastBlockNumber,
+    ]);
+
+    /* ------------------------------------------ END TRADE TOKEN CONTEXT ------------------------------------------ */
+
     /* ------------------------------------------ USER PREFERENCES CONTEXT ------------------------------------------ */
     // TODO: add to user preference context
     // hook to manage acknowledged tokens
@@ -718,6 +943,17 @@ export default function App() {
     const ackTokens = useMemo(
         () => ackTokensHooks,
         [diffHashSig(ackTokensHooks.tokens)],
+    );
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
+        () =>
+            getMoneynessRank(
+                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
+            ) -
+                getMoneynessRank(
+                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
+                ) >=
+            0,
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
     );
 
     const userPreferencesProps = {
@@ -742,26 +978,43 @@ export default function App() {
         () => userPreferencesProps,
         [...Object.values(userPreferencesProps)],
     );
+
+    function updateDenomIsInBase() {
+        // we need to know if the denom token is base or quote
+        // currently the denom token is the cheaper one by default
+        // ergo we need to know if the cheaper token is base or quote
+        // whether pool price is greater or less than 1 indicates which is more expensive
+        // if pool price is < 0.1 then denom token will be quote (cheaper one)
+        // if pool price is > 0.1 then denom token will be base (also cheaper one)
+        // then reverse if didUserToggleDenom === true
+
+        const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
+            ? tradeData.didUserFlipDenom
+            : !tradeData.didUserFlipDenom;
+
+        return isDenomInBase;
+    }
+    useEffect(() => {
+        const isDenomBase = updateDenomIsInBase();
+        if (isDenomBase !== undefined) {
+            if (tradeData.isDenomBase !== isDenomBase) {
+                IS_LOCAL_ENV && console.debug('denomination changed');
+                dispatch(setDenomInBase(isDenomBase));
+            }
+        }
+    }, [
+        tradeData.didUserFlipDenom,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenA.chainId,
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenB.chainId,
+        isBaseTokenMoneynessGreaterOrEqual,
+    ]);
     /* ------------------------------------------ END USER PREFERENCES CONTEXT ------------------------------------------ */
 
-    /* ------------------------------------------ USER DATA CONTEXT ------------------------------------------ */
-    // TODO: add to user data context
-    const { addRecentToken, getRecentTokens } = useRecentTokens(
-        chainData.chainId,
-    );
+    /* ------------------------------------------ SIDEBAR CONTEXT ------------------------------------------ */
+    // TODO: add to context, bring sidebar from appStateContext over
 
-    /* ------------------------------------------ END USER DATA CONTEXT ------------------------------------------ */
-
-    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
-    const {
-        verifyToken,
-        ambientTokens,
-        onChainTokens,
-        getTokenByAddress,
-        getTokensByName,
-    } = useToken(chainData.chainId);
-
-    // CONTEXT: sidebar context
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
         chainData.chainId,
@@ -771,19 +1024,41 @@ export default function App() {
         ackTokens,
     );
 
-    // CONTEXT: can be removed
-    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
+    useEffect(() => {
+        if (lastReceiptHash) {
+            IS_LOCAL_ENV && console.debug('new receipt to display');
+            appState.snackbar.open(
+                lastReceipt
+                    ? isLastReceiptSuccess
+                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+                        : `Transaction ${lastReceipt.transactionHash} failed`
+                    : '',
+                isLastReceiptSuccess ? 'info' : 'warning',
+            );
+        }
+    }, [lastReceiptHash]);
 
-    // CONTEXT: trade table context, rename - toggle (your transactions vs all transactions)
-    const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
+    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
+    function toggleSidebarBasedOnRoute() {
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            appState.sidebar.close();
+        } else if (showSidebarByDefault) {
+            appState.sidebar.open();
+        } else {
+            appState.sidebar.close();
+        }
+    }
+    useEffect(() => {
+        toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
 
-    // CONTEXT: trade table context
-    const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
-        useState('');
-    const [currentPositionActive, setCurrentPositionActive] = useState('');
-
-    // CONTEXT: trade table context
-    const [expandTradeTable, setExpandTradeTable] = useState(true);
+    /* ------------------------------------------ END SIDEBAR CONTEXT ------------------------------------------ */
 
     // CONTEXT: move into sidebar component
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
@@ -826,27 +1101,6 @@ export default function App() {
         }
     }, [isConnected, userAddress]);
 
-    // CONTEXT: token context?
-    // all tokens from active token lists
-    const [searchableTokens, setSearchableTokens] =
-        useState<TokenIF[]>(defaultTokens);
-    useEffect(() => {
-        setSearchableTokens(onChainTokens);
-    }, [chainData.chainId, onChainTokens]);
-    const [needTokenLists, setNeedTokenLists] = useState(true);
-    // trigger a useEffect() which needs to run when new token lists are received
-    // true vs false is an arbitrary distinction here
-    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-    if (needTokenLists) {
-        IS_LOCAL_ENV && console.debug('fetching token lists');
-        setNeedTokenLists(false);
-        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
-    }
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('initializing local storage');
-        initializeUserLocalStorage();
-    }, [tokenListsReceived]);
-
     // CONTEXT: move inside Portolio
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
@@ -874,92 +1128,6 @@ export default function App() {
         [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
-    // CONTEXT: remove and reference as necessary
-    const receiptData = useAppSelector((state) => state.receiptData);
-    const lastReceipt =
-        receiptData.sessionReceipts.length > 0 &&
-        isJsonString(receiptData.sessionReceipts[0])
-            ? JSON.parse(receiptData.sessionReceipts[0])
-            : null;
-    const isLastReceiptSuccess = lastReceipt?.status === 1;
-    const lastReceiptHash = useMemo(
-        () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
-        [lastReceipt],
-    );
-    // CONTEXT: move into sidebar context to open sidebar
-    useEffect(() => {
-        if (lastReceiptHash) {
-            IS_LOCAL_ENV && console.debug('new receipt to display');
-            appState.snackbar.open(
-                lastReceipt
-                    ? isLastReceiptSuccess
-                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
-                        : `Transaction ${lastReceipt.transactionHash} failed`
-                    : '',
-                isLastReceiptSuccess ? 'info' : 'warning',
-            );
-        }
-    }, [lastReceiptHash]);
-
-    // CONTEXT: move into pool context
-    const pool = useMemo(
-        () =>
-            crocEnv?.pool(
-                tradeData.baseToken.address,
-                tradeData.quoteToken.address,
-            ),
-        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
-    );
-
-    // CONTEXT: trade token context - base token: address, decimal; quoteToken: address, decimal...
-    // CONTEXT: ambientApy, dailyVol: pool context
-    const {
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        ambientApy,
-        dailyVol,
-        isTokenABase,
-    } = usePoolMetadata({
-        crocEnv,
-        httpGraphCacheServerDomain,
-        pathname: location.pathname,
-        chainData,
-        searchableTokens,
-        receiptCount: receiptData.sessionReceipts.length,
-        lastBlockNumber,
-        isServerEnabled,
-        cachedPoolLiquidity,
-        setSimpleRangeWidth,
-        isChartEnabled,
-    });
-
-    // CONTEXT: move into pool context
-    const {
-        poolPriceDisplay,
-        isPoolPriceChangePositive,
-        poolExists,
-        poolPriceChangePercent,
-    } = usePoolPricing({
-        crocEnv,
-        pathname: location.pathname,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        searchableTokens,
-        chainData,
-        receiptCount: receiptData.sessionReceipts.length,
-        isUserLoggedIn: isConnected,
-        isUserIdle,
-        lastBlockNumber,
-        isServerEnabled,
-        cachedQuerySpotPrice,
-    });
-
     // CONTEXT: remove and setPoolPriceNonDisplay and setLimitTick where it needs to be set
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -968,18 +1136,6 @@ export default function App() {
             dispatch(setLimitTick(undefined));
         }
     }, [resetLimitTick]);
-
-    // CONTEXT: trade token context
-    const {
-        tokenAAllowance,
-        tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
-    } = useTokenPairAllowance({
-        crocEnv,
-        userAddress,
-        lastBlockNumber,
-    });
 
     // CONTEXT: move to a chart/candle component - does not need to be a context
     // local logic to determine current chart period
@@ -1166,84 +1322,7 @@ export default function App() {
         }
     }, [numDurationsNeeded]);
 
-    // CONTEXT: trade token context - to be refactored for better usage
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
-    // CONTEXT: trade token context
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (
-                crocEnv &&
-                userAddress &&
-                isConnected &&
-                tradeData.baseToken.address &&
-                tradeData.quoteToken.address
-            ) {
-                crocEnv
-                    .token(tradeData.baseToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.baseToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.quoteToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.quoteToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        isConnected,
-        userAddress,
-        tradeData.baseToken.address,
-        tradeData.quoteToken.address,
-        lastBlockNumber,
-    ]);
-
-    // CONTEXT: user data context
+    // CONTEXT: user data context -- ask Ben whether this should really be in user data context - lots of inner dependencies that don't make sense... trade context?
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
     useEffect(() => {
@@ -1440,27 +1519,6 @@ export default function App() {
         crocEnv,
     ]);
 
-    // CONTEXT: sidebar context
-    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
-    function toggleSidebarBasedOnRoute() {
-        if (
-            currentLocation === '/' ||
-            currentLocation === '/swap' ||
-            currentLocation.includes('/account')
-        ) {
-            appState.sidebar.close();
-        } else if (showSidebarByDefault) {
-            appState.sidebar.open();
-        } else {
-            appState.sidebar.close();
-        }
-    }
-    useEffect(() => {
-        toggleSidebarBasedOnRoute();
-        if (!currentTxActiveInTransactions && !currentPositionActive)
-            toggleTradeTabBasedOnRoute();
-    }, [location.pathname.includes('/trade')]);
-
     // CONTEXT: move into header component - have contexts listen to logged out and reset
     // function to sever connection between user wallet and the app
     const clickLogout = useCallback(async () => {
@@ -1580,7 +1638,6 @@ export default function App() {
         clickLogout,
         shouldDisplayAccountTab,
         lastBlockNumber,
-        poolPriceDisplay,
         recentPools,
         getTokenByAddress,
     };
@@ -1598,7 +1655,6 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
-        pool,
         tokenPairLocal,
         isConnected,
         provider,
@@ -1611,11 +1667,9 @@ export default function App() {
         quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair,
-        poolPriceDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
         isInitialized,
-        poolExists,
         setTokenPairLocal,
         verifyToken,
         getTokensByName,
@@ -1632,7 +1686,6 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
-        pool: pool,
         provider: provider,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
@@ -1644,11 +1697,9 @@ export default function App() {
         quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance,
         isInitialized,
-        poolExists,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -1666,7 +1717,6 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        pool,
         provider,
         isPairStable,
         isOnTradeRoute: true,
@@ -1678,11 +1728,9 @@ export default function App() {
         quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay,
         setResetLimitTick,
         setRecheckTokenAApproval,
         tokenAAllowance,
-        poolExists: poolExists,
         isOrderCopied,
         verifyToken,
         getTokensByName,
@@ -1697,9 +1745,7 @@ export default function App() {
         ackTokens,
     };
 
-    // CONTEXT: put inside range component, context if necessary
     // props for <Range/> React element
-
     const rangeProps = {
         provider,
         isPairStable,
@@ -1708,7 +1754,6 @@ export default function App() {
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
-        poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
         tokenAAllowance,
         setRecheckTokenAApproval,
         baseTokenBalance,
@@ -1717,9 +1762,6 @@ export default function App() {
         quoteTokenDexBalance,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        ambientApy,
-        dailyVol,
-        poolExists,
         isRangeCopied,
         verifyToken,
         getTokensByName,
@@ -1769,55 +1811,6 @@ export default function App() {
         recentPools,
         ackTokens,
     };
-
-    // CONTEXT: user preference context
-    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
-        () =>
-            getMoneynessRank(
-                baseTokenAddress.toLowerCase() + '_' + chainData.chainId,
-            ) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainData.chainId,
-                ) >=
-            0,
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    );
-    function updateDenomIsInBase() {
-        // we need to know if the denom token is base or quote
-        // currently the denom token is the cheaper one by default
-        // ergo we need to know if the cheaper token is base or quote
-        // whether pool price is greater or less than 1 indicates which is more expensive
-        // if pool price is < 0.1 then denom token will be quote (cheaper one)
-        // if pool price is > 0.1 then denom token will be base (also cheaper one)
-        // then reverse if didUserToggleDenom === true
-
-        const isDenomInBase = isBaseTokenMoneynessGreaterOrEqual
-            ? tradeData.didUserFlipDenom
-            : !tradeData.didUserFlipDenom;
-
-        return isDenomInBase;
-    }
-    useEffect(() => {
-        const isDenomBase = updateDenomIsInBase();
-        if (isDenomBase !== undefined) {
-            if (tradeData.isDenomBase !== isDenomBase) {
-                IS_LOCAL_ENV && console.debug('denomination changed');
-                dispatch(setDenomInBase(isDenomBase));
-            }
-        }
-    }, [
-        tradeData.didUserFlipDenom,
-        tokenPair.dataTokenA.address,
-        tokenPair.dataTokenA.chainId,
-        tokenPair.dataTokenB.address,
-        tokenPair.dataTokenB.chainId,
-        isBaseTokenMoneynessGreaterOrEqual,
-    ]);
-
-    // CONTEXT: user data context
-    useEffect(() => {
-        dispatch(resetUserGraphData());
-    }, [userAddress]);
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
@@ -1918,8 +1911,6 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
-        poolPriceChangePercent,
-        isPoolPriceChangePositive,
         gasPriceInGwei,
         chartSettings,
         tokenList: searchableTokens,
@@ -1936,7 +1927,6 @@ export default function App() {
         tokenPair,
         lastBlockNumber,
         isTokenABase,
-        poolPriceDisplay,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
@@ -1949,7 +1939,6 @@ export default function App() {
         poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         limitRate: '',
         searchableTokens: searchableTokens,
-        poolExists,
         setTokenPairLocal,
         handlePulseAnimation,
         isCandleSelected,
@@ -2012,11 +2001,8 @@ export default function App() {
         lastBlockNumber,
         tokenPair,
         provider,
-        ambientApy,
-        dailyVol,
         isDenomBase: tradeData.isDenomBase,
         isPairStable,
-        poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
     };
@@ -2093,7 +2079,7 @@ export default function App() {
                                 <Route
                                     path='trade'
                                     element={
-                                        <PoolContext.Provider value={pool}>
+                                        <PoolContext.Provider value={poolState}>
                                             <RangeStateContext.Provider
                                                 value={rangeState}
                                             >

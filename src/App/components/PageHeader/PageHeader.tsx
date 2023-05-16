@@ -21,24 +21,24 @@ import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/Trad
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 interface HeaderPropsIF {
     clickLogout: () => void;
     shouldDisplayAccountTab: boolean | undefined;
     lastBlockNumber: number;
-    poolPriceDisplay: number | undefined;
     recentPools: recentPoolsMethodsIF;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
-    const { lastBlockNumber, recentPools, poolPriceDisplay, clickLogout } =
-        props;
+    const { lastBlockNumber, recentPools, clickLogout } = props;
 
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const { isChainSupported } = useContext(CrocEnvContext);
+    const { poolPriceDisplay } = useContext(PoolContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
