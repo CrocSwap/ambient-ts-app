@@ -332,7 +332,7 @@ export default function FullChat(props: FullChatPropsIF) {
         props.setRoom(userCurrentPool);
         setReadableName(userCurrentPool);
         setReadableRoom(currentPoolInfo);
-        if (!roomArray.some(({ name }) => name === userCurrentPool)) {
+        if (roomArray.some(({ name }) => name === userCurrentPool)) {
             setIsRoomInRoomArray(true);
         } else {
             setIsRoomInRoomArray(false);
