@@ -127,7 +127,7 @@
     padding: 0.2em 0.5em;
 }
 .base_color {
-    color: var(--text2);
+    color: var(--text1);
 }
 .hover_style:hover {
     -webkit-mask-image: linear-gradient(
