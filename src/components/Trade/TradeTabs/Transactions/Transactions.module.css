@@ -329,7 +329,8 @@ overflow-y: hidden;
 
 .showing_text{
     font-size: 10px;
-    color: var(--text2)
+    color: var(--text2);
+    white-space: nowrap;
 }
 @media only screen and (max-width: 768px) {
     .view_wallet_link p {

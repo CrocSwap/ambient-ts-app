@@ -411,41 +411,12 @@ function Transactions(props: propsIF) {
     };
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
 
-    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
-        useState(false);
     const listRef = useRef<HTMLUListElement>(null);
-    const element = listRef.current;
-    useEffect(() => {
-        if (element) {
-            const resizeObserver = new ResizeObserver((entries) => {
-                const firstEntry = entries[0];
-                const elementHeight = firstEntry.contentRect.height;
-                const screenHeight = window.innerHeight;
-                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
-
-                setIsHeightGreaterThanHalf(isGreaterThanHalf);
-            });
-
-            resizeObserver.observe(element);
-
-            return () => {
-                resizeObserver.unobserve(element);
-            };
-        }
-    }, [element]);
 
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && transactionData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div
-                className={styles.footer}
-                // style={{
-                //     position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
-                // }}
-            >
-                <p
-                    className={styles.showing_text}
-                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+            <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
                         value={rowsPerPage}
@@ -463,6 +434,9 @@ function Transactions(props: propsIF) {
                         showFirstButton
                         showLastButton
                     />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
                 </div>
             </div>
         );
@@ -583,26 +557,24 @@ function Transactions(props: propsIF) {
         : expandStyle;
 
     return (
-        <>
-            <section
-                className={`${styles.main_list_container} ${
-                    expandTradeTable && styles.main_list_expanded
-                }`}
-                style={{ height: portfolioPageStyle }}
-            >
-                <div>{headerColumnsDisplay}</div>
+        <section
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
+            style={{ height: portfolioPageStyle }}
+        >
+            <div>{headerColumnsDisplay}</div>
 
-                <div className={styles.table_content}>
-                    {debouncedShouldDisplayLoadingAnimation ? (
-                        <TransactionsSkeletons />
-                    ) : (
-                        transactionDataOrNull
-                    )}
-                </div>
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TransactionsSkeletons />
+                ) : (
+                    transactionDataOrNull
+                )}
+            </div>
 
-                <div>{footerDisplay}</div>
-            </section>
-        </>
+            <div>{footerDisplay}</div>
+        </section>
     );
 }
 
