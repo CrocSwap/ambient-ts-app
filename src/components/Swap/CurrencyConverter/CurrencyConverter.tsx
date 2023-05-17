@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useMemo,
@@ -25,9 +26,10 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
+import { useAccount } from 'wagmi';
+import { shallowEqual } from 'react-redux';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -76,20 +78,14 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     priceImpact: CrocImpact | undefined;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     lastBlockNumber: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     ackTokens: ackTokensMethodsIF;
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function CurrencyConverter(props: propsIF) {
+function CurrencyConverter(props: propsIF) {
     const {
         crocEnv,
         isLiquidityInsufficient,
@@ -117,7 +113,6 @@ export default function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        gasPriceInGwei,
         isSwapCopied,
         verifyToken,
         getTokensByName,
@@ -129,8 +124,6 @@ export default function CurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
-        dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance,
         ackTokens,
     } = props;
@@ -141,58 +134,75 @@ export default function CurrencyConverter(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const {
+        tokenAAddress,
+        tokenBAddress,
+        tokenASymbol,
+        tokenBSymbol,
+        isTokenAPrimary,
+        primaryQuantity,
+    } = useAppSelector(
+        (state) => ({
+            tokenAAddress: state.tradeData.tokenA.address,
+            tokenBAddress: state.tradeData.tokenB.address,
+            tokenASymbol: state.tradeData.tokenA.symbol,
+            tokenBSymbol: state.tradeData.tokenB.symbol,
+            isTokenAPrimary: state.tradeData.isTokenAPrimary,
+            primaryQuantity: state.tradeData.primaryQuantity,
+        }),
+        shallowEqual,
+    );
 
     const lastBlockNumber = useAppSelector(
         (state) => state.graphData.lastBlock,
     );
 
-    const [tokenALocal, setTokenALocal] = useState<string>(
-        tradeData.tokenA.address,
-    );
-    const [tokenBLocal, setTokenBLocal] = useState<string>(
-        tradeData.tokenB.address,
-    );
-    const [tokenASymbolLocal, setTokenASymbolLocal] = useState<string>(
-        tradeData.tokenA.symbol,
-    );
-    const [tokenBSymbolLocal, setTokenBSymbolLocal] = useState<string>(
-        tradeData.tokenB.symbol,
-    );
+    const [tokenALocal, setTokenALocal] = useState<string>(tokenAAddress);
+    const [tokenBLocal, setTokenBLocal] = useState<string>(tokenBAddress);
+    const [tokenASymbolLocal, setTokenASymbolLocal] =
+        useState<string>(tokenASymbol);
+    const [tokenBSymbolLocal, setTokenBSymbolLocal] =
+        useState<string>(tokenBSymbol);
 
-    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
+    const [isSellLoading, setIsSellLoading] = useState(false);
+    const [isBuyLoading, setIsBuyLoading] = useState(false);
+
+    const isSellTokenEth = tokenAAddress === ZERO_ADDRESS;
 
     useEffect(() => {
-        setTokenALocal(tradeData.tokenA.address);
-        setTokenASymbolLocal(tradeData.tokenA.symbol);
-    }, [
-        tradeData.tokenA.address,
-        tradeData.tokenA.symbol,
-        tradeData.tokenA.chainId,
-    ]);
+        setTokenALocal(tokenAAddress);
+        setTokenASymbolLocal(tokenASymbol);
+    }, [tokenAAddress, tokenASymbol, chainId]);
 
     useEffect(() => {
-        setTokenBLocal(tradeData.tokenB.address);
-        setTokenBSymbolLocal(tradeData.tokenB.symbol);
-    }, [
-        tradeData.tokenB.address,
-        tradeData.tokenB.symbol,
-        tradeData.tokenB.chainId,
-    ]);
+        setTokenBLocal(tokenBAddress);
+        setTokenBSymbolLocal(tokenBSymbol);
+    }, [tokenBAddress, tokenBSymbol, chainId]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-        tradeData.isTokenAPrimary,
-    );
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] =
+        useState<boolean>(isTokenAPrimary);
 
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
-        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
-        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
+
+    useEffect(() => {
+        if (isTokenAPrimaryLocal) {
+            if (tokenAQtyLocal !== '') {
+                setIsBuyLoading(true);
+            }
+        } else {
+            if (tokenBQtyLocal !== '') {
+                setIsSellLoading(true);
+            }
+        }
+    }, []);
 
     const navigate = useNavigate();
 
@@ -212,6 +222,7 @@ export default function CurrencyConverter(props: propsIF) {
         : baseTokenDexBalance;
 
     const combinedTokenABalance = tokenABalance + tokenADexBalance;
+    const combinedTokenBBalance = tokenBBalance + tokenBDexBalance;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
@@ -289,8 +300,8 @@ export default function CurrencyConverter(props: propsIF) {
             locationSlug +
             formSlugForPairParams(
                 tokenPair.dataTokenA.chainId,
-                tokenPair.dataTokenB,
-                tokenPair.dataTokenA,
+                tokenPair.dataTokenB.address,
+                tokenPair.dataTokenA.address,
             )
         );
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
@@ -309,39 +320,60 @@ export default function CurrencyConverter(props: propsIF) {
         return () => clearInterval(timerId);
     }, []);
 
-    const reverseTokens = (): void => {
-        if (disableReverseTokens || !poolExists) {
-            return;
-        } else {
-            setDisableReverseTokens(true);
-            setSwitchBoxes(!switchBoxes);
-
-            setTokenALocal(tokenBLocal);
-            setTokenBLocal(tokenALocal);
-            setTokenASymbolLocal(tokenBSymbolLocal);
-            setTokenBSymbolLocal(tokenASymbolLocal);
-
-            navigate(linkPathReversed);
-            if (!isTokenAPrimaryLocal) {
-                setTokenAQtyLocal(tokenBQtyLocal);
-
-                setBuyQtyString('');
-
-                setSellQtyString(
-                    tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
-                );
-                setTokenBQtyLocal('');
+    const reverseTokens = useMemo(
+        () => (): void => {
+            if (disableReverseTokens || !poolExists) {
+                return;
             } else {
-                setTokenBQtyLocal(tokenAQtyLocal);
-                setSellQtyString('');
+                setDisableReverseTokens(true);
+                setUserClickedCombinedMax(false);
+                setSwitchBoxes(!switchBoxes);
 
-                setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
-                setTokenAQtyLocal('');
+                isTokenAPrimaryLocal
+                    ? tokenAQtyLocal !== '' && parseFloat(tokenAQtyLocal) > 0
+                        ? setIsSellLoading(true)
+                        : null
+                    : tokenBQtyLocal !== '' && parseFloat(tokenBQtyLocal) > 0
+                    ? setIsBuyLoading(true)
+                    : null;
+
+                setTokenALocal(tokenBLocal);
+                setTokenBLocal(tokenALocal);
+                setTokenASymbolLocal(tokenBSymbolLocal);
+                setTokenBSymbolLocal(tokenASymbolLocal);
+
+                navigate(linkPathReversed);
+                if (!isTokenAPrimaryLocal) {
+                    setTokenAQtyLocal(tokenBQtyLocal);
+                    setBuyQtyString('');
+
+                    setSellQtyString(
+                        tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
+                    );
+                    setTokenBQtyLocal('');
+                } else {
+                    setTokenBQtyLocal(tokenAQtyLocal);
+                    setSellQtyString('');
+                    setBuyQtyString(
+                        tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal,
+                    );
+                    setTokenAQtyLocal('');
+                }
+                dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+                setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
             }
-            dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
-            setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-        }
-    };
+        },
+        [
+            crocEnv,
+            poolPriceDisplay,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage,
+            isTokenAPrimaryLocal,
+            linkPathReversed,
+            disableReverseTokens,
+        ],
+    );
 
     const handleBlockUpdate = () => {
         if (!disableReverseTokens) {
@@ -355,7 +387,7 @@ export default function CurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-    }, [tokenAQtyLocal, buyQtyString]);
+    }, [tokenAQtyLocal, buyQtyString, isWithdrawFromDexChecked]);
 
     useEffect(() => {
         handleBlockUpdate();
@@ -371,10 +403,18 @@ export default function CurrencyConverter(props: propsIF) {
         tokenALocal + tokenBLocal,
         isTokenAPrimaryLocal,
         combinedTokenABalance,
-        isWithdrawFromDexChecked,
+        combinedTokenBBalance,
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
+
+    const { address: account } = useAccount();
+
+    useEffect(() => {
+        if (account) {
+            setUserClickedCombinedMax(false);
+        }
+    }, [account]);
 
     useEffect(() => {
         if (!poolExists) {
@@ -386,369 +426,450 @@ export default function CurrencyConverter(props: propsIF) {
                 setSwapButtonErrorMessage('Pool Not Initialized');
             }
         }
-    }, [poolExists === undefined, poolExists === false]);
+    }, [poolExists === undefined, poolExists]);
 
-    const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (!poolExists) {
-            setSwapAllowed(false);
-
-            if (poolExists === undefined) {
+    const handleSwapButtonMessage = useMemo(
+        () => (tokenAAmount: number) => {
+            if (!poolExists) {
+                setSwapAllowed(false);
+                if (poolExists === undefined) {
+                    setSwapButtonErrorMessage('...');
+                } else if (poolExists === false) {
+                    setSwapButtonErrorMessage('Pool Not Initialized');
+                }
+            } else if (isLiquidityInsufficient) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Liquidity Insufficient');
+            } else if (isNaN(tokenAAmount)) {
+                return;
+            } else if (tokenAAmount <= 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+            } else if (tokenAQtyLocal === '') {
                 setSwapButtonErrorMessage('...');
-            } else if (poolExists === false) {
-                setSwapButtonErrorMessage('Pool Not Initialized');
-            }
-        } else if (isLiquidityInsufficient) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Liquidity Insufficient');
-        } else if (isNaN(tokenAAmount)) {
-            return;
-        } else if (tokenAAmount <= 0) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
-        } else if (buyQtyString === '' || sellQtyString === '') {
-            setSwapButtonErrorMessage('...');
-        } else {
-            if (isWithdrawFromDexChecked) {
-                if (
-                    tokenAAmount >
-                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                ) {
-                    setSwapAllowed(false);
-                    setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
-                    );
+            } else {
+                if (isWithdrawFromDexChecked) {
+                    if (
+                        tokenAAmount >
+                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    ) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
                 } else {
-                    setSwapAllowed(true);
+                    if (tokenAAmount > parseFloat(tokenABalance)) {
+                        setSwapAllowed(false);
+                        setSwapButtonErrorMessage(
+                            `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
+                        );
+                    } else {
+                        setSwapAllowed(true);
+                    }
+                }
+            }
+        },
+        [
+            crocEnv,
+            poolExists,
+            poolPriceDisplay,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage,
+            isTokenAPrimaryLocal,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
+        ],
+    );
+
+    const handleTokenAChangeEvent = useMemo(
+        () => async (evt?: ChangeEvent<HTMLInputElement>) => {
+            if (!crocEnv) {
+                return;
+            }
+            let rawTokenBQty;
+            if (evt) {
+                setUserClickedCombinedMax(false);
+
+                const targetValue = evt.target.value.replaceAll(',', '');
+
+                const input = targetValue.startsWith('.')
+                    ? '0' + targetValue
+                    : targetValue;
+
+                const parsedInput = parseFloat(input);
+
+                setTokenAQtyLocal(input);
+                setIsTokenAPrimaryLocal(true);
+                dispatch(setIsTokenAPrimary(true));
+                dispatch(setPrimaryQuantity(input));
+                handleSwapButtonMessage(parseFloat(input));
+                if (!poolPriceDisplay) return;
+
+                if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage('Enter an Amount');
+                    setPriceImpact(undefined);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+
+                    if (isNaN(parsedInput) || parsedInput === 0) return;
+                }
+                try {
+                    const impact =
+                        input !== ''
+                            ? await calcImpact(
+                                  true,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  input,
+                              )
+                            : undefined;
+
+                    setPriceImpact(impact);
+
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+
+                    rawTokenBQty = impact
+                        ? parseFloat(impact.buyQty)
+                        : undefined;
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
+                    setSwapAllowed(false);
                 }
             } else {
-                if (tokenAAmount > parseFloat(tokenABalance)) {
+                if (!poolExists) {
                     setSwapAllowed(false);
-                    setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
-                    );
-                } else {
-                    setSwapAllowed(true);
+
+                    if (poolExists === undefined) {
+                        setSwapButtonErrorMessage('...');
+                    } else if (poolExists === false) {
+                        setSwapButtonErrorMessage('Pool Not Initialized');
+                    }
+                    return;
                 }
-            }
-        }
-    };
+                if (!(parseFloat(tokenAQtyLocal) > 0)) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage('Enter an Amount');
+                    setTokenBQtyLocal('');
 
-    const handleTokenAChangeEvent = async (
-        evt?: ChangeEvent<HTMLInputElement>,
-    ) => {
-        if (!crocEnv) {
-            return;
-        }
-        let rawTokenBQty;
-        if (evt) {
-            setUserClickedCombinedMax(false);
+                    return;
+                }
+                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
-            const targetValue = evt.target.value.replaceAll(',', '');
+                try {
+                    const impact =
+                        tokenAQtyLocal !== ''
+                            ? await calcImpact(
+                                  true,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  tokenAQtyLocal,
+                              )
+                            : undefined;
+                    setPriceImpact(impact);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
 
-            const input = targetValue.startsWith('.')
-                ? '0' + targetValue
-                : targetValue;
-
-            const parsedInput = parseFloat(input);
-
-            setTokenAQtyLocal(input);
-            setIsTokenAPrimaryLocal(true);
-            dispatch(setIsTokenAPrimary(true));
-            dispatch(setPrimaryQuantity(input));
-            handleSwapButtonMessage(parseFloat(input));
-            if (!poolPriceDisplay) return;
-
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                setPriceImpact(undefined);
-
-                if (isNaN(parsedInput) || parsedInput === 0) return;
-            }
-            try {
-                const impact =
-                    input !== ''
-                        ? await calcImpact(
-                              true,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              input,
-                          )
+                    rawTokenBQty = impact
+                        ? parseFloat(impact.buyQty)
                         : undefined;
-
-                setPriceImpact(impact);
-
-                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
-                }
-                setSwapAllowed(false);
-            }
-        } else {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'token a change event triggered - no keyboard event',
-                );
-            if (!poolExists) {
-                setSwapAllowed(false);
-
-                if (poolExists === undefined) {
-                    setSwapButtonErrorMessage('...');
-                } else if (poolExists === false) {
-                    setSwapButtonErrorMessage('Pool Not Initialized');
-                }
-                return;
-            }
-            if (!(parseFloat(tokenAQtyLocal) > 0)) {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                setTokenBQtyLocal('');
-
-                return;
-            }
-            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-
-            try {
-                const impact =
-                    tokenAQtyLocal !== ''
-                        ? await calcImpact(
-                              true,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              tokenAQtyLocal,
-                          )
-                        : undefined;
-                setPriceImpact(impact);
-
-                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
                 }
             }
-        }
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(3)
+                    : truncateDecimals(rawTokenBQty, 2)
+                : '';
 
-        setTokenBQtyLocal(truncatedTokenBQty);
-        setBuyQtyString(truncatedTokenBQty);
-    };
-
-    const handleTokenAChangeClick = async (value: string) => {
-        if (!crocEnv) {
-            return;
-        }
-        let rawTokenBQty;
-        const tokenAInputField = document.getElementById('sell-quantity');
-        if (tokenAInputField) {
-            (tokenAInputField as HTMLInputElement).value = value;
-        }
-        if (value) {
-            const input = value.replaceAll(',', '');
-            setSellQtyString(input);
-            setTokenAQtyLocal(input);
-            setIsTokenAPrimaryLocal(true);
-            dispatch(setIsTokenAPrimary(true));
-            dispatch(setPrimaryQuantity(input));
-            handleSwapButtonMessage(parseFloat(input));
-
-            if (!poolPriceDisplay) return;
-
-            try {
-                const impact =
-                    input !== ''
-                        ? await calcImpact(
-                              true,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              input,
-                          )
-                        : undefined;
-                setPriceImpact(impact);
-
-                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
-                }
-            }
-        } else {
-            if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                return;
-            }
-            handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-            try {
-                const impact =
-                    tokenAQtyLocal !== ''
-                        ? await calcImpact(
-                              true,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              tokenAQtyLocal,
-                          )
-                        : undefined;
-
-                setPriceImpact(impact);
-
-                rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
-                }
-            }
-        }
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
-
-        if (truncatedTokenBQty !== tokenBQtyLocal)
             setTokenBQtyLocal(truncatedTokenBQty);
-        if (truncatedTokenBQty !== buyQtyString)
             setBuyQtyString(truncatedTokenBQty);
-    };
+        },
+        [
+            crocEnv,
+            poolExists,
+            poolPriceDisplay,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage,
+            isTokenAPrimaryLocal,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
+        ],
+    );
 
-    const handleTokenBChangeEvent = async (
-        evt?: ChangeEvent<HTMLInputElement>,
-    ) => {
-        if (!crocEnv) {
-            return;
-        }
-
-        let rawTokenAQty: number | undefined;
-        if (evt) {
-            setUserClickedCombinedMax(false);
-
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value.replaceAll(',', '')
-                : evt.target.value.replaceAll(',', '');
-
-            setTokenBQtyLocal(input);
-            setIsTokenAPrimaryLocal(false);
-            dispatch(setIsTokenAPrimary(false));
-            dispatch(setPrimaryQuantity(input));
-
-            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address)
+    const handleTokenAChangeClick = useMemo(
+        () => async (value: string) => {
+            if (!crocEnv) {
                 return;
-
-            const parsedInput = parseFloat(input);
-
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                setPriceImpact(undefined);
-                if (isNaN(parsedInput) || parsedInput === 0) return;
             }
-            try {
-                const impact =
-                    input !== ''
-                        ? await calcImpact(
-                              false,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              input,
-                          )
+            let rawTokenBQty;
+            const tokenAInputField = document.getElementById('sell-quantity');
+            if (tokenAInputField) {
+                (tokenAInputField as HTMLInputElement).value = value;
+            }
+            if (value) {
+                const input = value.replaceAll(',', '');
+                setSellQtyString(input);
+                setTokenAQtyLocal(input);
+                setIsTokenAPrimaryLocal(true);
+                dispatch(setIsTokenAPrimary(true));
+                dispatch(setPrimaryQuantity(input));
+                handleSwapButtonMessage(parseFloat(input));
+
+                if (!poolPriceDisplay) return;
+
+                try {
+                    const impact =
+                        input !== ''
+                            ? await calcImpact(
+                                  true,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  input,
+                              )
+                            : undefined;
+                    setPriceImpact(impact);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+
+                    rawTokenBQty = impact
+                        ? parseFloat(impact.buyQty)
                         : undefined;
-
-                setPriceImpact(impact);
-
-                rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
                 }
-                setSwapAllowed(false);
-            }
-            rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
-        } else {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'token B change event triggered - no keyboard event',
-                );
-            if (!poolExists) {
-                setSwapAllowed(false);
-
-                if (poolExists === undefined) {
-                    setSwapButtonErrorMessage('...');
-                } else if (poolExists === false) {
-                    setSwapButtonErrorMessage('Pool Not Initialized');
+            } else {
+                if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage('Enter an Amount');
+                    return;
                 }
-                return;
-            }
-            if (!(parseFloat(tokenBQtyLocal) > 0)) {
-                setSwapAllowed(false);
-                setSwapButtonErrorMessage('Enter an Amount');
-                setTokenAQtyLocal('');
+                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
+                try {
+                    const impact =
+                        tokenAQtyLocal !== ''
+                            ? await calcImpact(
+                                  true,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  tokenAQtyLocal,
+                              )
+                            : undefined;
 
-                return;
-            }
+                    setPriceImpact(impact);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
 
-            try {
-                const impact =
-                    tokenBQtyLocal !== ''
-                        ? await calcImpact(
-                              false,
-                              crocEnv,
-                              tokenALocal,
-                              tokenBLocal,
-                              slippageTolerancePercentage / 100,
-                              tokenBQtyLocal,
-                          )
+                    rawTokenBQty = impact
+                        ? parseFloat(impact.buyQty)
                         : undefined;
-
-                setPriceImpact(impact);
-
-                rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
-                setIsLiquidityInsufficient(false);
-            } catch (error) {
-                console.error({ error });
-                if (error.errorName === 'Panic') {
-                    setIsLiquidityInsufficient(true);
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
                 }
             }
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(3)
+                    : truncateDecimals(rawTokenBQty, 2)
+                : '';
 
-            handleSwapButtonMessage(rawTokenAQty ?? 0);
-        }
+            if (truncatedTokenBQty !== tokenBQtyLocal)
+                setTokenBQtyLocal(truncatedTokenBQty);
+            if (truncatedTokenBQty !== buyQtyString)
+                setBuyQtyString(truncatedTokenBQty);
+        },
+        [
+            crocEnv,
+            poolPriceDisplay,
+            poolExists,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage,
+            isTokenAPrimaryLocal,
+        ],
+    );
 
-        const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(3)
-                : truncateDecimals(rawTokenAQty, 2)
-            : '';
+    const handleTokenBChangeEvent = useMemo(
+        () => async (evt?: ChangeEvent<HTMLInputElement>) => {
+            if (!crocEnv) {
+                return;
+            }
 
-        if (truncatedTokenAQty !== tokenAQtyLocal)
-            setTokenAQtyLocal(truncatedTokenAQty);
+            let rawTokenAQty: number | undefined;
+            if (evt) {
+                setUserClickedCombinedMax(false);
 
-        if (truncatedTokenAQty !== sellQtyString)
-            setSellQtyString(truncatedTokenAQty);
-    };
+                const input = evt.target.value.startsWith('.')
+                    ? '0' + evt.target.value.replaceAll(',', '')
+                    : evt.target.value.replaceAll(',', '');
+
+                setTokenBQtyLocal(input);
+                setIsTokenAPrimaryLocal(false);
+                dispatch(setIsTokenAPrimary(false));
+                dispatch(setPrimaryQuantity(input));
+
+                if (
+                    tokenPair.dataTokenA.address ===
+                    tokenPair.dataTokenB.address
+                )
+                    return;
+
+                const parsedInput = parseFloat(input);
+
+                if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage('Enter an Amount');
+                    setPriceImpact(undefined);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+                    if (isNaN(parsedInput) || parsedInput === 0) return;
+                }
+                try {
+                    const impact =
+                        input !== ''
+                            ? await calcImpact(
+                                  false,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  input,
+                              )
+                            : undefined;
+
+                    setPriceImpact(impact);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+
+                    rawTokenAQty = impact
+                        ? parseFloat(impact.sellQty)
+                        : undefined;
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
+                    setSwapAllowed(false);
+                }
+                rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
+            } else {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'token B change event triggered - no keyboard event',
+                    );
+                if (!poolExists) {
+                    setSwapAllowed(false);
+
+                    if (poolExists === undefined) {
+                        setSwapButtonErrorMessage('...');
+                    } else if (poolExists === false) {
+                        setSwapButtonErrorMessage('Pool Not Initialized');
+                    }
+                    return;
+                }
+                if (!(parseFloat(tokenBQtyLocal) > 0)) {
+                    setSwapAllowed(false);
+                    setSwapButtonErrorMessage('Enter an Amount');
+                    setTokenAQtyLocal('');
+
+                    return;
+                }
+
+                try {
+                    const impact =
+                        tokenBQtyLocal !== ''
+                            ? await calcImpact(
+                                  false,
+                                  crocEnv,
+                                  tokenALocal,
+                                  tokenBLocal,
+                                  slippageTolerancePercentage / 100,
+                                  tokenBQtyLocal,
+                              )
+                            : undefined;
+
+                    setPriceImpact(impact);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
+
+                    rawTokenAQty = impact
+                        ? parseFloat(impact.sellQty)
+                        : undefined;
+                    setIsLiquidityInsufficient(false);
+                } catch (error) {
+                    console.error({ error });
+                    if (error.errorName === 'Panic') {
+                        setIsLiquidityInsufficient(true);
+                    }
+                }
+
+                handleSwapButtonMessage(rawTokenAQty ?? 0);
+            }
+
+            const truncatedTokenAQty = rawTokenAQty
+                ? rawTokenAQty < 2
+                    ? rawTokenAQty.toPrecision(3)
+                    : truncateDecimals(rawTokenAQty, 2)
+                : '';
+
+            if (truncatedTokenAQty !== tokenAQtyLocal)
+                setTokenAQtyLocal(truncatedTokenAQty);
+
+            if (truncatedTokenAQty !== sellQtyString)
+                setSellQtyString(truncatedTokenAQty);
+        },
+        [
+            crocEnv,
+            poolPriceDisplay,
+            poolExists,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage,
+            isTokenAPrimaryLocal,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
+        ],
+    );
 
     return (
         <section
@@ -758,6 +879,7 @@ export default function CurrencyConverter(props: propsIF) {
         >
             <CurrencySelector
                 provider={provider}
+                disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
@@ -767,6 +889,7 @@ export default function CurrencyConverter(props: propsIF) {
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
+                isLoading={isSellLoading}
                 tokenAorB={'A'}
                 sellToken
                 handleChangeEvent={handleTokenAChangeEvent}
@@ -794,7 +917,6 @@ export default function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
                 importedTokensPlus={importedTokensPlus}
                 verifyToken={verifyToken}
@@ -806,15 +928,15 @@ export default function CurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                openGlobalPopup={openGlobalPopup}
                 setDisableReverseTokens={setDisableReverseTokens}
-                dexBalancePrefs={dexBalancePrefs}
                 ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
                 setUserClickedCombinedMax={setUserClickedCombinedMax}
                 userClickedCombinedMax={userClickedCombinedMax}
+                setIsSellLoading={setIsSellLoading}
+                setIsBuyLoading={setIsBuyLoading}
             />
             <div
                 className={
@@ -829,6 +951,7 @@ export default function CurrencyConverter(props: propsIF) {
             <div id='swap_currency_converter'>
                 <CurrencySelector
                     provider={provider}
+                    disableReverseTokens={disableReverseTokens}
                     sellQtyString={sellQtyString}
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
@@ -839,6 +962,7 @@ export default function CurrencyConverter(props: propsIF) {
                     chainId={chainId}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
+                    isLoading={isBuyLoading}
                     tokenAorB={'B'}
                     handleChangeEvent={handleTokenBChangeEvent}
                     tokenABalance={tokenABalance}
@@ -860,7 +984,6 @@ export default function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    gasPriceInGwei={gasPriceInGwei}
                     isSwapCopied={isSwapCopied}
                     importedTokensPlus={importedTokensPlus}
                     verifyToken={verifyToken}
@@ -872,17 +995,19 @@ export default function CurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    openGlobalPopup={openGlobalPopup}
                     setDisableReverseTokens={setDisableReverseTokens}
-                    dexBalancePrefs={dexBalancePrefs}
                     ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
                     setUserClickedCombinedMax={setUserClickedCombinedMax}
                     userClickedCombinedMax={userClickedCombinedMax}
+                    setIsSellLoading={setIsSellLoading}
+                    setIsBuyLoading={setIsBuyLoading}
                 />
             </div>
         </section>
     );
 }
+
+export default memo(CurrencyConverter);

@@ -17,8 +17,8 @@
     transition: color 0.15s ease-in-out;
     text-align: center;
 
-    color: #ebebff;
-    border: 1px solid #565656;
+    color: var(--text1);
+    border: 1px solid var(--text3);
     border-radius: 4px;
     outline: none;
     border: none;

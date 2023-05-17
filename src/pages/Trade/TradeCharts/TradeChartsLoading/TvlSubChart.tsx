@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
@@ -20,14 +20,14 @@ interface TvlData {
     getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
-    setIsCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
-    isCrosshairActive: string;
+    setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
+    crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     isMouseMoveCrosshair: boolean;
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function TvlSubChart(props: TvlData) {
+function TvlSubChart(props: TvlData) {
     const {
         tvlData,
         period,
@@ -39,8 +39,8 @@ export default function TvlSubChart(props: TvlData) {
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
-        setIsCrosshairActive,
-        isCrosshairActive,
+        setCrosshairActive,
+        crosshairActive,
         isMouseMoveCrosshair,
         setIsMouseMoveCrosshair,
     } = props;
@@ -65,7 +65,7 @@ export default function TvlSubChart(props: TvlData) {
     const [resizeHeight, setResizeHeight] = useState<number>();
 
     useEffect(() => {
-        const yScale = d3.scaleSymlog();
+        const yScale = d3.scaleLinear();
 
         const xmin = new Date(Math.floor(scaleData?.xScale.domain()[0]));
         const xmax = new Date(Math.floor(scaleData?.xScale.domain()[1]));
@@ -76,29 +76,20 @@ export default function TvlSubChart(props: TvlData) {
 
         if (filtered !== undefined) {
             const maxYBoundary = d3.max(filtered, (d: any) => d.value);
-            const minYBoundary = d3.min(filtered, (d: any) => d.value);
+            const minYBoundary = 0;
 
             if (maxYBoundary === minYBoundary) {
-                const domainLog = [
-                    Math.pow(10, Math.log10(maxYBoundary / 2)),
-                    Math.pow(10, Math.log10(maxYBoundary * 2)),
-                ];
+                const domain = [0, maxYBoundary * 2];
 
-                yScale.domain(domainLog);
+                yScale.domain(domain);
             } else {
-                const buffer =
-                    Math.abs(
-                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
-                    ) / 5;
+                const buffer = Math.abs(maxYBoundary - minYBoundary) / 4;
 
                 setBuffer(() => buffer);
 
-                const domainLog = [
-                    Math.pow(10, Math.log10(minYBoundary) - buffer),
-                    Math.pow(10, Math.log10(maxYBoundary) + buffer * 2),
-                ];
+                const domain = [0, maxYBoundary + buffer * 2];
 
-                yScale.domain(domainLog);
+                yScale.domain(domain);
             }
         }
 
@@ -163,35 +154,17 @@ export default function TvlSubChart(props: TvlData) {
             const yAxis = d3fc.axisRight().scale(tvlyScale);
 
             if (filtered !== undefined) {
-                const minYBoundary = d3.min(filtered, (d: any) => d.value);
+                const minYBoundary = 0;
                 const maxYBoundary = d3.max(filtered, (d: any) => d.value);
 
-                const buffer =
-                    Math.abs(
-                        Math.log10(maxYBoundary) - Math.log10(minYBoundary),
-                    ) / 5;
+                const buffer = Math.abs(maxYBoundary - minYBoundary) / 4;
 
                 setBuffer(() => buffer);
 
-                const domainLog =
-                    maxYBoundary === minYBoundary
-                        ? [
-                              Math.pow(10, Math.log10(maxYBoundary / 2)),
-                              Math.pow(10, Math.log10(maxYBoundary * 2)),
-                          ]
-                        : [
-                              Math.pow(10, Math.log10(minYBoundary) - buffer),
-                              Math.pow(
-                                  10,
-                                  Math.log10(maxYBoundary) + buffer * 2,
-                              ),
-                          ];
+                const domain = [0, maxYBoundary + buffer * 2];
 
                 yAxis
-                    .tickValues([
-                        Math.pow(10, Math.log10(minYBoundary) + buffer),
-                        Math.pow(10, Math.log10(maxYBoundary) - buffer),
-                    ])
+                    .tickValues([0, maxYBoundary])
                     .tickFormat(formatDollarAmountAxis);
 
                 const d3YaxisCanvas = d3
@@ -212,16 +185,25 @@ export default function TvlSubChart(props: TvlData) {
 
                         yAxis.tickValues().forEach((d: number) => {
                             d3YaxisContext.beginPath();
-                            d3YaxisContext.fillText(
-                                formatDollarAmountAxis(d),
-                                d3YaxisCanvas.width / 6,
-                                tvlyScale(d),
-                            );
+
+                            if (0.0 === d) {
+                                d3YaxisContext.fillText(
+                                    '$' + 0,
+                                    d3YaxisCanvas.width / 6,
+                                    tvlyScale(buffer),
+                                );
+                            } else {
+                                d3YaxisContext.fillText(
+                                    formatDollarAmountAxis(d),
+                                    d3YaxisCanvas.width / 6,
+                                    tvlyScale(d),
+                                );
+                            }
                         });
                     }
                 });
 
-                tvlyScale.domain(domainLog);
+                tvlyScale.domain(domain);
             }
         }
     }, [
@@ -242,8 +224,7 @@ export default function TvlSubChart(props: TvlData) {
                 const startPoint =
                     buffer === 0
                         ? 4
-                        : (Math.log10(tvlyScale.domain()[1]) -
-                              Math.log10(tvlyScale.domain()[0])) /
+                        : (tvlyScale.domain()[1] - tvlyScale.domain()[0]) /
                           (buffer * 2);
 
                 const DFLT_COLOR_STOP = 0.2;
@@ -258,7 +239,7 @@ export default function TvlSubChart(props: TvlData) {
                     0,
                     resizeHeight,
                 );
-                tvlGradient.addColorStop(1, 'transparent');
+                tvlGradient.addColorStop(1, 'rgba(115, 113, 252, 0)');
                 tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
 
                 setTvlGradient(() => {
@@ -329,7 +310,8 @@ export default function TvlSubChart(props: TvlData) {
             crosshairVerticalCanvas.decorate((context: any) => {
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairVerticalCanvas(() => crosshairVerticalCanvas);
@@ -345,7 +327,8 @@ export default function TvlSubChart(props: TvlData) {
                 context.visibility = 'hidden';
                 context.strokeStyle = 'rgb(255, 255, 255)';
                 context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
+                context.lineWidth = 0.3;
+                context.fillStyle = 'transparent';
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
@@ -391,10 +374,10 @@ export default function TvlSubChart(props: TvlData) {
             d3.select(d3CanvasCrosshair.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
-                    if (isMouseMoveCrosshair && isCrosshairActive !== 'none') {
+                    ctx.setLineDash([4, 2]);
+                    if (isMouseMoveCrosshair && crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
-                        if (isCrosshairActive === 'tvl') {
+                        if (crosshairActive === 'tvl') {
                             crosshairHorizontalCanvas([
                                 {
                                     x: crosshairForSubChart[0].x,
@@ -405,9 +388,9 @@ export default function TvlSubChart(props: TvlData) {
                     }
                 })
                 .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
+                    ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
-                    if (isCrosshairActive === 'tvl') {
+                    if (crosshairActive === 'tvl') {
                         crosshairHorizontalCanvas.context(ctx);
                     }
                 });
@@ -418,7 +401,7 @@ export default function TvlSubChart(props: TvlData) {
         crosshairForSubChart,
         crosshairHorizontalCanvas,
         tvlHorizontalyValue,
-        isCrosshairActive,
+        crosshairActive,
         isMouseMoveCrosshair,
     ]);
 
@@ -461,14 +444,14 @@ export default function TvlSubChart(props: TvlData) {
                             return tvlyScale.invert(event.layerY);
                         });
                         setCrossHairLocation(event, false);
-                        setIsCrosshairActive('tvl');
+                        setCrosshairActive('tvl');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
-                    setIsCrosshairActive('none');
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                     renderCanvas();
                 });
@@ -510,3 +493,5 @@ export default function TvlSubChart(props: TvlData) {
         </div>
     );
 }
+
+export default memo(TvlSubChart);

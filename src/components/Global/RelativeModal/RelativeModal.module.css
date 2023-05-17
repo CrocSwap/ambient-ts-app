@@ -61,7 +61,7 @@
 }
 
 .close_button {
-    color: var(--text-grey-light);
+    color: var(--text2);
     cursor: pointer;
 }
 
@@ -96,8 +96,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: #f65656;
-    color: #fff;
+    background: var(--negative);
+    color: white;
     line-height: 40px;
     font-size: 14px;
     font-weight: 400;

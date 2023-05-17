@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RiSettings5Line } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
@@ -14,31 +14,30 @@ import styles from './RepositionHeader.module.css';
 import trimString from '../../../../utils/functions/trimString';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useRepoExitPath } from './useRepoExitPath';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     positionHash: string;
-    repoSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     resetTxHash: () => void;
 }
 
-export default function RepositionHeader(props: propsIF) {
+function RepositionHeader(props: propsIF) {
     const {
         setRangeWidthPercentage,
         positionHash,
-        repoSlippage,
         isPairStable,
-        bypassConfirm,
         setSimpleRangeWidth,
         resetTxHash,
     } = props;
+
+    const { bypassConfirmRepo, repoSlippage } = useContext(
+        UserPreferenceContext,
+    );
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -71,7 +70,7 @@ export default function RepositionHeader(props: propsIF) {
                         slippage={repoSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.repo}
+                        bypassConfirm={bypassConfirmRepo}
                     />
                 </Modal>
             )}
@@ -90,3 +89,5 @@ export default function RepositionHeader(props: propsIF) {
         </ContentHeader>
     );
 }
+
+export default memo(RepositionHeader);

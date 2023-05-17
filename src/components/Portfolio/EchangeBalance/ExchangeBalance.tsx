@@ -3,7 +3,6 @@ import styles from './ExchangeBalance.module.css';
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
-import vaultImage from '../../../assets/images/sidebarImages/vault.svg';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 
 import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
@@ -23,10 +22,6 @@ interface propsIF {
     crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.Provider | undefined;
     connectedAccount: string;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -47,10 +42,6 @@ export default function ExchangeBalance(props: propsIF) {
         crocEnv,
         mainnetProvider,
         connectedAccount,
-        openGlobalModal,
-        closeGlobalModal,
-        setSelectedOutsideTab,
-        setOutsideControl,
         selectedToken,
         tokenAllowance,
         tokenWalletBalance,
@@ -144,8 +135,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Deposit
                     crocEnv={crocEnv}
                     connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
@@ -166,8 +155,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Withdraw
                     crocEnv={crocEnv}
                     connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
@@ -190,8 +177,6 @@ export default function ExchangeBalance(props: propsIF) {
                 <Transfer
                     crocEnv={crocEnv}
                     // connectedAccount={connectedAccount}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenDexBalance={tokenDexBalance}
                     lastBlockNumber={lastBlockNumber}
@@ -216,7 +201,8 @@ export default function ExchangeBalance(props: propsIF) {
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
                 <img
-                    src={!fullLayoutActive ? closeSidebarImage : vaultImage}
+                    src={closeSidebarImage}
+                    style={{ rotate: fullLayoutActive ? '180deg' : undefined }}
                     alt='toggleSidebar'
                     width='20px'
                 />
@@ -243,10 +229,6 @@ export default function ExchangeBalance(props: propsIF) {
                         <TabComponent
                             data={accountData}
                             rightTabOptions={false}
-                            setSelectedOutsideTab={setSelectedOutsideTab}
-                            setOutsideControl={setOutsideControl}
-                            outsideControl={false}
-                            selectedOutsideTab={0}
                         />
                     )}
                     {exchangeControl}
@@ -256,11 +238,8 @@ export default function ExchangeBalance(props: propsIF) {
                 <section>
                     <div className={styles.info_text}>
                         Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs.
-                    </div>
-                    <div className={styles.info_text2}>
-                        {' '}
-                        Collateral can be withdrawn at any time.
+                        can be traded at lower gas costs. Collateral can be
+                        withdrawn at any time.
                     </div>
                 </section>
             )}

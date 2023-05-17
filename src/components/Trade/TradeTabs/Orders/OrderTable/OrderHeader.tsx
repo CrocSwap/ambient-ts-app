@@ -18,7 +18,7 @@ interface OrderHeaderPropsIF {
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function OrderHeader(props: OrderHeaderPropsIF) {
+function OrderHeader(props: OrderHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignCenter, alignRight } = header;
 
@@ -77,3 +77,5 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
         </>
     );
 }
+
+export default OrderHeader;

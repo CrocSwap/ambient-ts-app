@@ -7,9 +7,9 @@ import moment from 'moment';
 // import Apy from '../../Global/Tabs/Apy/Apy';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { useState } from 'react';
-import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
+import { useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -61,20 +61,11 @@ export default function RangeDetailsSimplify(
         quoteDisplayFrontend,
     } = useProcessRange(position, account, isOnPortfolioPage);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
-    const [value, copy] = useCopyToClipboard();
-    // const [copiedData, setCopiedData] = useState('');
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount
@@ -91,9 +82,7 @@ export default function RangeDetailsSimplify(
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
-        // setCopiedData(posHash.toString());
-
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     function handleOpenBaseAddress() {
@@ -342,7 +331,6 @@ export default function RangeDetailsSimplify(
                         ))}
                 </section>
             </div>
-            {snackbarContent}
         </div>
     );
 }

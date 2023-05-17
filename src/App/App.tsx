@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     Routes,
     Route,
@@ -12,38 +12,20 @@ import { useIdleTimer } from 'react-idle-timer';
 
 import {
     resetUserGraphData,
-    setPositionsByPool,
     setPositionsByUser,
     setChangesByUser,
-    setChangesByPool,
-    setLiquidity,
-    setPoolVolumeSeries,
-    setPoolTvlSeries,
-    addPositionsByUser,
-    addPositionsByPool,
     setLimitOrdersByUser,
-    setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    addChangesByUser,
     setLastBlock,
-    addLimitOrderChangesByUser,
-    setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
-    addChangesByPool,
-    addLimitOrderChangesByPool,
 } from '../utils/state/graphDataSlice';
 
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
 
 import useWebSocket from 'react-use-websocket';
-import {
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-    CrocEnv,
-    toDisplayQty,
-} from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
 
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
@@ -81,36 +63,23 @@ import {
 } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
     setDenomInBase,
-    setDidUserFlipDenom,
     setLimitTick,
-    setLiquidityFee,
     setPoolPriceNonDisplay,
-    setPrimaryQuantityRange,
-    setMainnetBaseTokenReduxAddress,
-    setMainnetQuoteTokenReduxAddress,
     candleDomain,
-    setAdvancedMode,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
-import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
     memoizeFetchErc20TokenBalances,
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
-import { get24hChange, memoizePoolStats } from './functions/getPoolStats';
-import { getNFTs } from './functions/getNFTs';
-import { useFavePools, favePoolsMethodsIF } from './hooks/useFavePools';
+import { memoizePoolStats } from './functions/getPoolStats';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
     resetUserAddresses,
     setAddressAtLogin,
     setAddressCurrent,
-    setEnsNameCurrent,
-    setEnsOrAddressTruncated,
     setErc20Tokens,
     setIsLoggedIn,
     setIsUserIdle,
@@ -119,18 +88,14 @@ import {
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import { testTokenMap } from '../utils/data/testTokenMap';
 import {
     APP_ENVIRONMENT,
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
-    ZERO_ADDRESS,
 } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
 import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
-import { getVolumeSeries } from './functions/getVolumeSeries';
-import { getTvlSeries } from './functions/getTvlSeries';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
@@ -139,14 +104,10 @@ import {
     memoizePositionUpdate,
 } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
-import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import { getLiquidityFee } from './functions/getLiquidityFee';
-import trimString from '../utils/functions/trimString';
 import { useToken } from './hooks/useToken';
-import { sidebarMethodsIF, useSidebar } from './hooks/useSidebar';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
@@ -156,28 +117,19 @@ import { recentPoolsMethodsIF, useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
-import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
-import { checkBlacklist } from '../utils/data/blacklist';
-import {
-    memoizePoolLiquidity,
-    poolLiquidityCacheEndpoint,
-} from './functions/getPoolLiquidity';
+import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
-import { useTermsOfService, tosMethodsIF } from './hooks/useTermsOfService';
-import { useSlippage, SlippageMethodsIF } from './hooks/useSlippage';
+import { useSlippage } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import {
     useChartSettings,
     chartSettingsMethodsIF,
 } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
-import {
-    useExchangePrefs,
-    dexBalanceMethodsIF,
-} from './hooks/useExchangePrefs';
-import { useSkipConfirm, skipConfirmIF } from './hooks/useSkipConfirm';
+import { useExchangePrefs } from './hooks/useExchangePrefs';
+import { useSkipConfirm } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
@@ -188,29 +140,31 @@ import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
 import { diffHashSig } from '../utils/functions/diffHashSig';
+import { useFavePools } from './hooks/useFavePools';
+import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
+import { AppStateContext } from '../contexts/AppStateContext';
+import { useSnackbar } from '../components/Global/SnackbarComponent/useSnackbar';
+import useWebSocketSubs from './hooks/useWebSocketSubs';
+import { usePoolMetadata } from './hooks/usePoolMetadata';
+import { usePoolPricing } from './hooks/usePoolPricing';
+import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';
+import { RangeStateContext } from '../contexts/RangeStateContext';
+import { CandleContext } from '../contexts/CandleContext';
+import { useBlacklist } from './hooks/useBlacklist';
 
-const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedLiquidityQuery = memoizePoolLiquidity();
 const cachedPositionUpdateQuery = memoizePositionUpdate();
 const cachedPoolStatsFetch = memoizePoolStats();
+const cachedPoolLiquidity = memoizePoolLiquidity();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
-
-const LIQUIDITY_FETCH_PERIOD_MS = 60000; // We will call (and cache) fetchLiquidity every N milliseconds
-
-const isChartEnabled =
-    !!process.env.REACT_APP_CHART_IS_ENABLED &&
-    process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
-        ? false
-        : true;
 
 /** ***** React Function *******/
 export default function App() {
@@ -219,115 +173,149 @@ export default function App() {
     // useKeyboardShortcuts()
 
     const { disconnect } = useDisconnect();
-    const [isTutorialMode, setIsTutorialMode] = useState(false);
-
-    // hooks to manage ToS agreements in the app
-    const walletToS: tosMethodsIF = useTermsOfService(
-        'wallet',
-        process.env.REACT_APP_WALLET_TOS_CID as string,
-    );
-    const chatToS: tosMethodsIF = useTermsOfService(
-        'chat',
-        process.env.REACT_APP_CHAT_TOS_CID as string,
-    );
-    // this line is just here to make the linter happy
-    // it should be removed when the chatToS line is moved
-    // please and thank you
-    false && chatToS;
-
-    // hooks to manage slippage in the app
-    const swapSlippage: SlippageMethodsIF = useSlippage('swap', slippage.swap);
-    const mintSlippage: SlippageMethodsIF = useSlippage('mint', slippage.mint);
-    const repoSlippage: SlippageMethodsIF = useSlippage(
-        'repo',
-        slippage.reposition,
-    );
 
     // hook to manage chart settings
     const chartSettings: chartSettingsMethodsIF = useChartSettings();
 
-    // hook to manage favorite pools in the app
-    const favePools: favePoolsMethodsIF = useFavePools();
-
-    // hook to manage exchange balance preferences
-    const dexBalPrefSwap: dexBalanceMethodsIF = useExchangePrefs('swap');
-    const dexBalPrefLimit: dexBalanceMethodsIF = useExchangePrefs('limit');
-    const dexBalPrefRange: dexBalanceMethodsIF = useExchangePrefs('range');
-
-    // hooks to manage user preferences to skip confirmation modals
-    const bypassConfirmSwap: skipConfirmIF = useSkipConfirm('swap');
-    const bypassConfirmLimit: skipConfirmIF = useSkipConfirm('limit');
-    const bypassConfirmRange: skipConfirmIF = useSkipConfirm('range');
-    const bypassConfirmRepo: skipConfirmIF = useSkipConfirm('repo');
-
-    // hook to manage app skin
-    const skin = useSkin('purple_dark');
-    false && skin;
-
-    // hook to track user's sidebar preference open or closed
-    const sidebar: sidebarMethodsIF = useSidebar(location.pathname);
-
     const { address: account, isConnected } = useAccount();
 
-    useEffect(() => {
-        if (account && checkBlacklist(account)) {
-            disconnect();
-        }
-        if (!account) {
-            setCrocEnv(undefined);
-            setIsShowAllEnabled(true);
-        }
-    }, [account]);
+    const userPreferencesProps = {
+        favePools: useFavePools(),
+        swapSlippage: useSlippage('swap', slippage.swap),
+        mintSlippage: useSlippage('mint', slippage.mint),
+        repoSlippage: useSlippage('repo', slippage.reposition),
+        dexBalSwap: useExchangePrefs('swap'),
+        dexBalLimit: useExchangePrefs('limit'),
+        dexBalRange: useExchangePrefs('range'),
+        bypassConfirmSwap: useSkipConfirm('swap'),
+        bypassConfirmLimit: useSkipConfirm('limit'),
+        bypassConfirmRange: useSkipConfirm('range'),
+        bypassConfirmRepo: useSkipConfirm('repo'),
+    };
+
+    // Memoize the object being passed to context. This assumes that all of the individual top-level values
+    // in the userPreferencesProps object are themselves correctly memo-ized at the object level. E.g. the
+    // value from `useSlippage()` or `useSkipConfirm()` should be a new object reference if and only if their
+    // content needs to be updated
+    const userPreferences = useMemo(
+        () => userPreferencesProps,
+        [...Object.values(userPreferencesProps)],
+    );
+
+    // TODO: this should be initialized inside AppStateContext - unable to do so currently due to dependencies that should be moved into child components
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+    const [isTutorialMode, setIsTutorialMode] = useState(false);
+    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
+    const [outsideControl, setOutsideControl] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [isChatEnabled, setIsChatEnabled] = useState(
+        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+            : true,
+    );
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
+    const areSubscriptionsEnabled =
+        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
+              'true'
+            : true;
+    const isChartEnabled =
+        !!process.env.REACT_APP_CHART_IS_ENABLED &&
+        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+            ? false
+            : true;
+
+    // All of these objects results from use*() functions are assumed to be memoized correct,
+    // I.e. updated if and only if their conrents need to be updated.
+    const sidebar = useSidebar(location.pathname);
+    const snackbar = useSnackbar();
+    const globalModal = useGlobalModal();
+    const globalPopup = useGlobalPopup();
+    const skin = useSkin('purple_dark');
+
+    const appState = useMemo(
+        () => ({
+            appOverlay: {
+                isActive: isAppOverlayActive,
+                setIsActive: setIsAppOverlayActive,
+            },
+            globalModal: globalModal,
+            globalPopup: globalPopup,
+            sidebar: sidebar,
+            snackbar: snackbar,
+            tutorial: {
+                isActive: isTutorialMode,
+                setIsActive: setIsTutorialMode,
+            },
+            skin: skin,
+            theme: { selected: theme, setSelected: setTheme },
+            outsideTab: {
+                selected: selectedOutsideTab,
+                setSelected: setSelectedOutsideTab,
+            },
+            outsideControl: {
+                isActive: outsideControl,
+                setIsActive: setOutsideControl,
+            },
+            chat: {
+                isOpen: isChatOpen,
+                setIsOpen: setIsChatOpen,
+                isEnabled: isChatEnabled,
+                setIsEnabled: setIsChatEnabled,
+            },
+            chart: {
+                isFullScreen: fullScreenChart,
+                setIsFullScreen: setFullScreenChart,
+                isEnabled: isChartEnabled,
+            },
+            server: { isEnabled: isServerEnabled },
+            subscriptions: { isEnabled: areSubscriptionsEnabled },
+        }),
+        [
+            // Dependence list includes the memoized use*() values from above and any primitives
+            // directly references in above appState object
+            sidebar,
+            snackbar,
+            globalModal,
+            globalPopup,
+            skin,
+            isChatOpen,
+            isChatEnabled,
+            isChartEnabled,
+            isServerEnabled,
+            areSubscriptionsEnabled,
+            isAppOverlayActive,
+            isTutorialMode,
+            fullScreenChart,
+            theme,
+            selectedOutsideTab,
+            outsideControl,
+        ],
+    );
+
+    useBlacklist(account);
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-
-    const ticksInParams =
-        location.pathname.includes('lowTick') &&
-        location.pathname.includes('highTick');
-
-    // hook to check if token addresses in URL match token addresses in RTK
-    const rtkMatchesParams = useMemo(() => {
-        // output value, false is default return
-        let matching = false;
-        // address of token A as held by RTK
-        const rtkTokenA = tradeData.tokenA.address;
-        // address of token B as held by RTK
-        const rtkTokenB = tradeData.tokenB.address;
-        // current URL pathway
-        const { pathname } = location;
-        // make sure app is on a pathway with two URLs in params
-        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
-            // function to extract token addresses from URL string (absolute)
-            const getAddrFromParams = (token: string) => {
-                const idx = pathname.indexOf(token);
-                const address = pathname.substring(idx + 7, idx + 49);
-                return address;
-            };
-            // address of token A from URL params
-            const addrTokenA = getAddrFromParams('tokenA');
-            // address of token B from URL params
-            const addrTokenB = getAddrFromParams('tokenB');
-            // check if URL param addresses match RTK token addresses
-            if (
-                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
-                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
-            ) {
-                // if match set return value as true
-                matching = true;
-            }
-        }
-        // return output variable (boolean)
-        return matching;
-        // run hook when URL or token addresses in RTK change
-    }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
+    const tokenPair = useMemo(() => {
+        return {
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        };
+    }, [tradeData.tokenA, tradeData.tokenB]);
 
     const onIdle = () => {
         IS_LOCAL_ENV && console.debug('user is idle');
         dispatch(setIsUserIdle(true));
-        // reload to avoid stale wallet connections and excessive state accumulation
-        window.location.reload();
     };
 
     const onActive = () => {
@@ -381,26 +369,10 @@ export default function App() {
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
 
     // hook to manage acknowledged tokens
-    const ackTokens: ackTokensMethodsIF = useAckTokens();
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
-    const areSubscriptionsEnabled =
-        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
-            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
-              'true'
-            : true;
-
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
+    const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
+    const ackTokens = useMemo(
+        () => ackTokensHooks,
+        [diffHashSig(ackTokensHooks.tokens)],
     );
 
     useEffect(() => {
@@ -442,6 +414,8 @@ export default function App() {
         boolean | undefined
     >();
 
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+
     // Range States
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -454,13 +428,28 @@ export default function App() {
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
-    const [
+    const rangeState = {
+        maxRangePrice,
+        setMaxRangePrice,
+        minRangePrice,
+        setMinRangePrice,
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+    };
+
+    const {
         verifyToken,
-        getAmbientTokens,
-        getTokensOnChain,
+        ambientTokens,
+        onChainTokens,
         getTokenByAddress,
         getTokensByName,
-    ] = useToken(chainData.chainId);
+    } = useToken(chainData.chainId);
 
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -480,8 +469,6 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
-
-    const [fetchingCandle, setFetchingCandle] = useState(false);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -546,7 +533,12 @@ export default function App() {
 
     useEffect(() => {
         setNewCrocEnv();
-    }, [signerStatus === 'success', crocEnv === undefined, chainData.chainId]);
+    }, [
+        // signerStatus === 'success',
+        crocEnv === undefined,
+        chainData.chainId,
+        signer,
+    ]);
 
     useEffect(() => {
         if (provider) {
@@ -588,8 +580,8 @@ export default function App() {
         useState<TokenIF[]>(defaultTokens);
 
     useEffect(() => {
-        setSearchableTokens(getTokensOnChain(chainData.chainId));
-    }, [chainData.chainId, getTokensOnChain(chainData.chainId).length]);
+        setSearchableTokens(onChainTokens);
+    }, [chainData.chainId, onChainTokens]);
 
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
@@ -659,6 +651,15 @@ export default function App() {
         })();
     }, [chainData.nodeUrl, BLOCK_NUM_POLL_MS]);
 
+    function isJsonString(str: string) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =
@@ -726,32 +727,13 @@ export default function App() {
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-
-    const sessionReceipts = receiptData?.sessionReceipts;
-
     const lastReceipt =
-        sessionReceipts.length > 0 && isJsonString(sessionReceipts[0])
-            ? JSON.parse(sessionReceipts[0])
+        receiptData.sessionReceipts.length > 0 &&
+        isJsonString(receiptData.sessionReceipts[0])
+            ? JSON.parse(receiptData.sessionReceipts[0])
             : null;
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
-
-    const snackMessage = lastReceipt
-        ? isLastReceiptSuccess
-            ? `Transaction ${lastReceipt.transactionHash} successfully completed`
-            : `Transaction ${lastReceipt.transactionHash} failed`
-        : '';
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity={isLastReceiptSuccess ? 'info' : 'warning'}
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {snackMessage}
-        </SnackbarComponent>
-    );
 
     const lastReceiptHash = useMemo(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
@@ -760,59 +742,16 @@ export default function App() {
     useEffect(() => {
         if (lastReceiptHash) {
             IS_LOCAL_ENV && console.debug('new receipt to display');
-            setOpenSnackbar(true);
+            appState.snackbar.open(
+                lastReceipt
+                    ? isLastReceiptSuccess
+                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+                        : `Transaction ${lastReceipt.transactionHash} failed`
+                    : '',
+                isLastReceiptSuccess ? 'info' : 'warning',
+            );
         }
     }, [lastReceiptHash]);
-
-    const ensName = userData.ensNameCurrent || '';
-
-    // check for ENS name account changes
-    useEffect(() => {
-        (async () => {
-            if (isUserLoggedIn && account && provider) {
-                IS_LOCAL_ENV && console.debug('checking for ens name');
-                try {
-                    const ensName = await cachedFetchAddress(
-                        provider,
-                        account,
-                        chainData.chainId,
-                    );
-                    if (ensName) {
-                        // setEnsName(ensName);
-                        dispatch(setEnsNameCurrent(ensName));
-                        if (ensName.length > 15) {
-                            dispatch(
-                                setEnsOrAddressTruncated(
-                                    trimString(ensName, 10, 3, '…'),
-                                ),
-                            );
-                        } else {
-                            dispatch(setEnsOrAddressTruncated(ensName));
-                        }
-                    } else {
-                        dispatch(setEnsNameCurrent(undefined));
-                        // setEnsName('');
-
-                        dispatch(
-                            setEnsOrAddressTruncated(
-                                trimString(account, 5, 3, '…'),
-                            ),
-                        );
-                    }
-                } catch (error) {
-                    dispatch(setEnsNameCurrent(undefined));
-                    // setEnsName('');
-                    dispatch(
-                        setEnsOrAddressTruncated(
-                            trimString(account, 5, 3, '…'),
-                        ),
-                    );
-                }
-            } else if (!isUserLoggedIn || !account) {
-                dispatch(setEnsOrAddressTruncated(undefined));
-            }
-        })();
-    }, [isUserLoggedIn, account, chainData.chainId]);
 
     // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
     const everyEigthBlock = useMemo(
@@ -871,27 +810,6 @@ export default function App() {
         })();
     }, [crocEnv, isUserLoggedIn, account, chainData.chainId, everyEigthBlock]);
 
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
-
-    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] =
-        useState<string>('');
-    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] =
-        useState<string>('');
-
-    const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
-    const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
-    const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
-
-    const [ambientApy, setAmbientApy] = useState<number | undefined>();
-    const [dailyVol, setDailyVol] = useState<number | undefined>();
-
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
-
     const pool = useMemo(
         () =>
             crocEnv?.pool(
@@ -901,595 +819,70 @@ export default function App() {
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
 
-    // Fetch liquidity every minute
-    const fetchLiquidity = async () => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-
-        cachedLiquidityQuery(
-            chainData.chainId,
-            baseTokenAddress.toLowerCase(),
-            quoteTokenAddress.toLowerCase(),
-            chainData.poolIndex,
-            Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-        )
-            .then((jsonData) => {
-                dispatch(setLiquidity(jsonData));
-            })
-            .catch(console.error);
-    };
-
-    // Runs nyquist of our 1 minute caching function.
-    useEffect(() => {
-        if (
-            !isChartEnabled ||
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        const id = setInterval(() => {
-            fetchLiquidity();
-        }, LIQUIDITY_FETCH_PERIOD_MS / 2);
-        return () => clearInterval(id);
-    }, [
-        baseTokenAddress + quoteTokenAddress,
-        chainData === undefined,
-        lastBlockNumber === 0,
-        isChartEnabled,
-    ]);
-
-    useEffect(() => {
-        if (
-            !baseTokenAddress ||
-            !quoteTokenAddress ||
-            !chainData ||
-            !lastBlockNumber
-        )
-            return;
-        const timer1 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
-                })
-                .catch(console.error);
-        }, 2000);
-        const timer2 = setTimeout(() => {
-            fetch(
-                poolLiquidityCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainData.chainId,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: chainData.poolIndex.toString(),
-                        concise: 'true',
-                        latestTick: 'true',
-                    }),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    return json.data;
-                })
-                .then((jsonData) => {
-                    dispatch(setLiquidity(jsonData));
-                })
-                .catch(console.error);
-        }, 15000);
-        return () => {
-            clearTimeout(timer1);
-            clearTimeout(timer2);
-        };
-    }, [sessionReceipts.length]);
-
-    // value for whether a pool exists on current chain and token pair
-    // ... true => pool exists
-    // ... false => pool does not exist
-    // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | undefined>();
-
-    // hook to update `poolExists` when crocEnv changes
-    useEffect(() => {
-        if (crocEnv && baseTokenAddress && quoteTokenAddress) {
-            IS_LOCAL_ENV && console.debug('checking if pool exists');
-            if (
-                baseTokenAddress.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            )
-                return;
-            // token pair has an initialized pool on-chain
-            // returns a promise object
-            const doesPoolExist = crocEnv
-                // TODO: make this function pill addresses directly from URL params
-                .pool(baseTokenAddress, quoteTokenAddress)
-                .isInit();
-            // resolve the promise object to see if pool exists
-            Promise.resolve(doesPoolExist)
-                // track whether pool exists on state (can be undefined)
-                .then((res) => setPoolExists(res));
-        }
-        // run every time crocEnv updates
-        // this indirectly tracks a new chain being used
-    }, [
-        crocEnv,
+    const {
         baseTokenAddress,
         quoteTokenAddress,
-        chainData.chainId,
-        sessionReceipts.length,
-    ]);
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        ambientApy,
+        dailyVol,
+        isTokenABase,
+    } = usePoolMetadata({
+        crocEnv,
+        httpGraphCacheServerDomain,
+        pathname: location.pathname,
+        chainData,
+        searchableTokens,
+        receiptCount: receiptData.sessionReceipts.length,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedPoolLiquidity,
+        setSimpleRangeWidth,
+        isChartEnabled,
+    });
+
+    const {
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolExists,
+        poolPriceChangePercent,
+    } = usePoolPricing({
+        crocEnv,
+        pathname: location.pathname,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        searchableTokens,
+        chainData,
+        receiptCount: receiptData.sessionReceipts.length,
+        isUserLoggedIn,
+        isUserIdle,
+        lastBlockNumber,
+        isServerEnabled,
+        cachedQuerySpotPrice,
+    });
 
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
         if (resetLimitTick) {
-            IS_LOCAL_ENV && console.debug('resetting limit tick');
             dispatch(setPoolPriceNonDisplay(0));
-
             dispatch(setLimitTick(undefined));
         }
     }, [resetLimitTick]);
 
-    useEffect(() => {
-        if (!location.pathname.includes('limitTick')) {
-            dispatch(setLimitTick(undefined));
-        }
-        dispatch(setPrimaryQuantityRange(''));
-        setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
-        setPoolPriceChangePercent(undefined);
-    }, [baseTokenAddress + quoteTokenAddress]);
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
-                const poolAmbientApyCacheEndpoint =
-                    GRAPHCACHE_URL + '/pool_ambient_apy_cached?';
-
-                fetch(
-                    poolAmbientApyCacheEndpoint +
-                        new URLSearchParams({
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: chainData.poolIndex.toString(),
-                            chainId: chainData.chainId,
-                            concise: 'true',
-                            lookback: '604800',
-                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const ambientApy = json?.data?.apy;
-                        setAmbientApy(ambientApy);
-
-                        const tickVol = json?.data?.tickStdev;
-                        const dailyVol = tickVol ? tickVol / 10000 : undefined;
-                        setDailyVol(dailyVol);
-                    });
-            }
-        })();
-    }, [isServerEnabled, baseTokenAddress + quoteTokenAddress]);
-
-    const resetAdvancedTicksIfNotCopy = () => {
-        if (!ticksInParams) {
-            dispatch(setAdvancedLowTick(0));
-            dispatch(setAdvancedHighTick(0));
-            dispatch(setAdvancedMode(false));
-            setSimpleRangeWidth(10);
-            const sliderInput = document.getElementById(
-                'input-slider-range',
-            ) as HTMLInputElement;
-            if (sliderInput) sliderInput.value = '10';
-        }
-    };
-    // useEffect that runs when token pair changes
-    useEffect(() => {
-        if (rtkMatchesParams && crocEnv) {
-            // reset rtk values for user specified range in ticks
-            IS_LOCAL_ENV && console.debug('resetting advanced ticks');
-
-            // reset advanced ticks if token pair change not the result of a 'copy trade'
-            resetAdvancedTicksIfNotCopy();
-
-            const tokenAAddress = tokenPair?.dataTokenA?.address;
-            const tokenBAddress = tokenPair?.dataTokenB?.address;
-
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-                const tokenAMainnetEquivalent =
-                    tokenAAddress === ZERO_ADDRESS
-                        ? tokenAAddress
-                        : testTokenMap
-                              .get(
-                                  tokenAAddress.toLowerCase() +
-                                      '_' +
-                                      chainData.chainId,
-                              )
-                              ?.split('_')[0];
-                const tokenBMainnetEquivalent =
-                    tokenBAddress === ZERO_ADDRESS
-                        ? tokenBAddress
-                        : testTokenMap
-                              .get(
-                                  tokenBAddress.toLowerCase() +
-                                      '_' +
-                                      chainData.chainId,
-                              )
-                              ?.split('_')[0];
-
-                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                    const sortedMainnetTokens = sortBaseQuoteTokens(
-                        tokenAMainnetEquivalent,
-                        tokenBMainnetEquivalent,
-                    );
-
-                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-
-                    dispatch(
-                        setMainnetBaseTokenReduxAddress(sortedMainnetTokens[0]),
-                    );
-                    dispatch(
-                        setMainnetQuoteTokenReduxAddress(
-                            sortedMainnetTokens[1],
-                        ),
-                    );
-                } else {
-                    setMainnetBaseTokenAddress('');
-                    setMainnetQuoteTokenAddress('');
-                }
-
-                setBaseTokenAddress(sortedTokens[0]);
-                setQuoteTokenAddress(sortedTokens[1]);
-                if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                    setIsTokenABase(true);
-                    setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
-                    setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
-                } else {
-                    setIsTokenABase(false);
-                    setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
-                    setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
-                }
-
-                // retrieve pool liquidity provider fee
-
-                if (isServerEnabled && httpGraphCacheServerDomain) {
-                    getLiquidityFee(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                    )
-                        .then((liquidityFeeNum) => {
-                            if (liquidityFeeNum)
-                                dispatch(setLiquidityFee(liquidityFeeNum));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool TVL series
-                    getTvlSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((tvlSeries) => {
-                            if (
-                                tvlSeries &&
-                                tvlSeries.base &&
-                                tvlSeries.quote &&
-                                tvlSeries.poolIdx &&
-                                tvlSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolTvlSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: tvlSeries.base,
-                                                    quote: tvlSeries.quote,
-                                                    poolIdx: tvlSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool volume series
-                    getVolumeSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        chainData.poolIndex,
-                        chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((volumeSeries) => {
-                            if (
-                                volumeSeries &&
-                                volumeSeries.base &&
-                                volumeSeries.quote &&
-                                volumeSeries.poolIdx &&
-                                volumeSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolVolumeSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: volumeSeries.base,
-                                                    quote: volumeSeries.quote,
-                                                    poolIdx:
-                                                        volumeSeries.poolIdx,
-                                                    chainId: chainData.chainId,
-                                                },
-                                                volumeData: volumeSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool liquidity
-
-                    cachedLiquidityQuery(
-                        chainData.chainId,
-                        sortedTokens[0].toLowerCase(),
-                        sortedTokens[1].toLowerCase(),
-                        chainData.poolIndex,
-                        Math.floor(Date.now() / LIQUIDITY_FETCH_PERIOD_MS),
-                    )
-                        .then((jsonData) => {
-                            dispatch(setLiquidity(jsonData));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool_positions
-                    const allPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                annotate: 'true', // token quantities
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                n: '50',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolRangeData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolPositions && crocEnv) {
-                                Promise.all(
-                                    poolPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        dispatch(
-                                            setPositionsByPool({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/annotated_pool_positions?';
-                    fetch(
-                        poolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                sortByAPY: 'true',
-                                n: '50',
-                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const leaderboardPositions = json.data;
-
-                            if (leaderboardPositions && crocEnv) {
-                                Promise.all(
-                                    leaderboardPositions.map(
-                                        (position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        const top10Positions = updatedPositions
-                                            .filter(
-                                                (
-                                                    updatedPosition: PositionIF,
-                                                ) => {
-                                                    return (
-                                                        updatedPosition.isPositionInRange &&
-                                                        updatedPosition.apy !==
-                                                            0
-                                                    );
-                                                },
-                                            )
-                                            .slice(0, 10);
-
-                                        dispatch(
-                                            setLeaderboardByPool({
-                                                dataReceived: true,
-                                                positions: top10Positions,
-                                            }),
-                                        );
-                                    })
-                                    .catch(console.error);
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool recent changes
-                    fetchPoolRecentChanges({
-                        tokenList: searchableTokens,
-                        base: sortedTokens[0],
-                        quote: sortedTokens[1],
-                        poolIdx: chainData.poolIndex,
-                        chainId: chainData.chainId,
-                        annotate: true,
-                        addValue: true,
-                        simpleCalc: true,
-                        annotateMEV: false,
-                        ensResolution: true,
-                        n: 80,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolTxData',
-                                        loadingStatus: false,
-                                    }),
-                                );
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
-                            }
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool limit order states
-
-                    const poolLimitOrderStatesCacheEndpoint =
-                        httpGraphCacheServerDomain +
-                        '/pool_limit_order_states?';
-
-                    fetch(
-                        poolLimitOrderStatesCacheEndpoint +
-                            new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                chainId: chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                n: '50',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLimitOrderStates = json?.data;
-
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolOrderData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
-                            if (poolLimitOrderStates) {
-                                Promise.all(
-                                    poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                searchableTokens,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
-                                        }),
-                                    );
-                                });
-                            }
-                        })
-                        .catch(console.error);
-                }
-            }
-        }
-    }, [
-        searchableTokens.length,
-        rtkMatchesParams,
-        baseTokenAddress + quoteTokenAddress,
-        chainData.chainId,
+    const {
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useTokenPairAllowance({
         crocEnv,
-    ]);
+        account,
+        lastBlockNumber,
+    });
 
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
@@ -1509,11 +902,13 @@ export default function App() {
     ]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress + mainnetQuoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
         candleTimeLocal,
+        isUserIdle,
     ]);
 
     const fetchCandles = () => {
@@ -1587,249 +982,6 @@ export default function App() {
             setExpandTradeTable(true);
         }
     };
-
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
-        string | undefined
-    >();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] =
-        useState<boolean>(true);
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
-                try {
-                    const priceChangeResult = await get24hChange(
-                        chainData.chainId,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        chainData.poolIndex,
-                        tradeData.isDenomBase,
-                    );
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
-                        setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
-                        priceChangeResult > 0
-                            ? setIsPoolPriceChangePositive(true)
-                            : setIsPoolPriceChangePositive(false);
-
-                        const priceChangeString =
-                            priceChangeResult > 0
-                                ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) +
-                                  '%'
-                                : priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) + '%';
-                        setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
-                    }
-                } catch (error) {
-                    setPoolPriceChangePercent(undefined);
-                }
-            }
-        })();
-    }, [
-        isServerEnabled,
-        tradeData.isDenomBase,
-        baseTokenAddress + quoteTokenAddress,
-        lastBlockNumber,
-    ]);
-
-    const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_liqchanges?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                // baseTokenAddress.toLowerCase() || '0x0000000000000000000000000000000000000000',
-                quote: quoteTokenAddress.toLowerCase(),
-                // quoteTokenAddress.toLowerCase() || '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa',
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                addValue: 'true',
-            }),
-        [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolLiqChangeMessage,
-        //  readyState
-    } = useWebSocket(
-        poolLiqChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            // onOpen: () => console.debug('pool liqChange subscription opened'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // onClose: (event: any) => console.debug({ event }),
-            // onClose: () => console.debug('allPositions websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            baseTokenAddress !== '' &&
-            quoteTokenAddress !== '',
-    );
-
-    useEffect(() => {
-        if (lastPoolLiqChangeMessage !== null) {
-            IS_LOCAL_ENV &&
-                console.debug('new pool liq change message received');
-            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastPoolLiqChangeMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            searchableTokens,
-                            crocEnv,
-                            chainData.chainId,
-                            lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByPool(updatedPositions));
-                });
-            }
-        }
-    }, [lastPoolLiqChangeMessage]);
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addValue: 'true',
-            }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-        ],
-    );
-
-    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
-        poolRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('pool recent changes subscription opened');
-            },
-            onClose: (event: CloseEvent) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            baseTokenAddress !== '' &&
-            quoteTokenAddress !== '',
-    );
-
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByPool(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                IS_LOCAL_ENV && console.debug({ lastMessageData });
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByPool(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    const candleSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_candles?' +
-            new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                period: candleTimeLocal.toString(),
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-            }),
-        [
-            mainnetBaseTokenAddress,
-            mainnetQuoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-            candleTimeLocal,
-        ],
-    );
-
-    const { lastMessage: candlesMessage } = useWebSocket(
-        candleSubscriptionEndpoint,
-        {
-            onClose: (event) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            shouldReconnect: () => shouldCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            mainnetBaseTokenAddress !== '' &&
-            mainnetQuoteTokenAddress !== '',
-    );
 
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -1929,335 +1081,15 @@ export default function App() {
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
-            IS_LOCAL_ENV &&
-                console.debug(`fetching ${numDurationsNeeded} new candles`);
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
-
-    useEffect(() => {
-        if (candlesMessage) {
-            if (!isJsonString(candlesMessage.data)) return;
-            const lastMessageData = JSON.parse(candlesMessage.data).data;
-            if (lastMessageData && candleData) {
-                const newCandles: CandleData[] = [];
-                const updatedCandles: CandleData[] = candleData.candles;
-
-                for (let index = 0; index < lastMessageData.length; index++) {
-                    const messageCandle = lastMessageData[index];
-                    const indexOfExistingCandle = candleData.candles.findIndex(
-                        (savedCandle) =>
-                            savedCandle.time === messageCandle.time,
-                    );
-
-                    if (indexOfExistingCandle === -1) {
-                        IS_LOCAL_ENV &&
-                            console.debug('pushing new candle from message');
-                        newCandles.push(messageCandle);
-                    } else if (
-                        diffHashSig(
-                            candleData.candles[indexOfExistingCandle],
-                        ) !== diffHashSig(messageCandle)
-                    ) {
-                        updatedCandles[indexOfExistingCandle] = messageCandle;
-                    }
-                }
-                const newCandleData: CandlesByPoolAndDuration = {
-                    pool: candleData.pool,
-                    duration: candleData.duration,
-                    candles: newCandles.concat(updatedCandles),
-                };
-                setCandleData(newCandleData);
-            }
-        }
-    }, [candlesMessage]);
-
-    const userLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_liqchanges?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                ensResolution: 'true',
-                addValue: 'true',
-                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastUserPositionsMessage,
-        //  readyState
-    } = useWebSocket(
-        userLiqChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('user liqChange subscription opened');
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    function isJsonString(str: string) {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
-    useEffect(() => {
-        try {
-            if (lastUserPositionsMessage !== null) {
-                if (!isJsonString(lastUserPositionsMessage.data)) return;
-
-                const lastMessageData = JSON.parse(
-                    lastUserPositionsMessage.data,
-                ).data;
-
-                if (lastMessageData && crocEnv) {
-                    Promise.all(
-                        lastMessageData.map((position: PositionIF) => {
-                            return getPositionData(
-                                position,
-                                searchableTokens,
-                                crocEnv,
-                                chainData.chainId,
-                                lastBlockNumber,
-                            );
-                        }),
-                    ).then((updatedPositions) => {
-                        dispatch(addPositionsByUser(updatedPositions));
-                    });
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }, [lastUserPositionsMessage]);
-
-    const userRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_recent_changes?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                addValue: 'true',
-                annotate: 'true',
-                ensResolution: 'true',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
-        userRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug('user recent changes subscription opened');
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    useEffect(() => {
-        if (lastUserRecentChangesMessage !== null) {
-            IS_LOCAL_ENV && console.debug('received new user recent change');
-            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserRecentChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, searchableTokens);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByUser(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastUserRecentChangesMessage]);
-
-    const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_user_limit_order_changes?' +
-            new URLSearchParams({
-                user: account || '',
-                chainId: chainData.chainId,
-                addValue: 'true',
-                ensResolution: 'true',
-            }),
-        [account, chainData.chainId],
-    );
-
-    const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
-        userLimitOrderChangesCacheSubscriptionEndpoint,
-        {
-            // share: true,
-            onOpen: () => {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'user limit order changes subscription opened',
-                    );
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => {
-                IS_LOCAL_ENV && console.debug({ event });
-            },
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        isServerEnabled &&
-            areSubscriptionsEnabled &&
-            account !== null &&
-            account !== undefined,
-    );
-
-    useEffect(() => {
-        if (lastUserLimitOrderChangesMessage !== null) {
-            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserLimitOrderChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                IS_LOCAL_ENV &&
-                    console.debug('received new user limit order change');
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, searchableTokens);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByUser(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastUserLimitOrderChangesMessage]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
-
-    // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
-    // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug('resetting pool price because base/quote changed');
-        setPoolPriceDisplay(0);
-        // setPoolPriceTick(undefined);
-    }, [baseTokenAddress + quoteTokenAddress]);
-
-    const getDisplayPrice = (spotPrice: number) => {
-        return toDisplayPrice(spotPrice, baseTokenDecimals, quoteTokenDecimals);
-    };
-
-    const getSpotPrice = async (
-        baseTokenAddress: string,
-        quoteTokenAddress: string,
-    ) => {
-        if (!crocEnv) {
-            return;
-        }
-        return await cachedQuerySpotPrice(
-            crocEnv,
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            lastBlockNumber,
-        );
-    };
-
-    // useEffect to get spot price when tokens change and block updates
-    useEffect(() => {
-        if (
-            !isUserIdle &&
-            crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            lastBlockNumber !== 0
-        ) {
-            (async () => {
-                const spotPrice = await getSpotPrice(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                );
-                // const spotPrice = await cachedQuerySpotPrice(
-                //     crocEnv,
-                //     baseTokenAddress,
-                //     quoteTokenAddress,
-                //     chainData.chainId,
-                //     lastBlockNumber,
-                // );
-                if (spotPrice) {
-                    const newDisplayPrice = getDisplayPrice(spotPrice);
-                    if (newDisplayPrice !== poolPriceDisplay) {
-                        IS_LOCAL_ENV &&
-                            console.debug(
-                                'setting new display pool price to: ' +
-                                    newDisplayPrice,
-                            );
-                        setPoolPriceDisplay(newDisplayPrice);
-                    }
-                }
-                if (spotPrice && spotPrice !== poolPriceNonDisplay) {
-                    IS_LOCAL_ENV &&
-                        console.debug('dispatching new non-display spot price');
-                    dispatch(setPoolPriceNonDisplay(spotPrice));
-                }
-            })();
-        }
-    }, [
-        isUserIdle,
-        lastBlockNumber,
-        baseTokenAddress + quoteTokenAddress,
-        crocEnv,
-        poolPriceNonDisplay === 0,
-        isUserLoggedIn,
-    ]);
 
     // useEffect to update selected token balances
     useEffect(() => {
@@ -2326,80 +1158,6 @@ export default function App() {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
-    ]);
-
-    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
-    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
-
-    const [recheckTokenAApproval, setRecheckTokenAApproval] =
-        useState<boolean>(false);
-    const [recheckTokenBApproval, setRecheckTokenBApproval] =
-        useState<boolean>(false);
-
-    const tokenAAddress = tokenPair?.dataTokenA?.address;
-    const tokenADecimals = tokenPair?.dataTokenA?.decimals;
-    const tokenBAddress = tokenPair?.dataTokenB?.address;
-    const tokenBDecimals = tokenPair?.dataTokenB?.decimals;
-    // useEffect to check if user has approved CrocSwap to sell the token A
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && account && tokenAAddress) {
-                try {
-                    const allowance = await crocEnv
-                        .token(tokenAAddress)
-                        .allowance(account);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenADecimals,
-                    );
-                    if (tokenAAllowance !== newTokenAllowance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('setting new token a allowance');
-                        setTokenAAllowance(newTokenAllowance);
-                    }
-                } catch (err) {
-                    console.warn(err);
-                }
-                if (recheckTokenAApproval) setRecheckTokenAApproval(false);
-            }
-        })();
-    }, [
-        crocEnv,
-        tokenAAddress,
-        lastBlockNumber,
-        account,
-        recheckTokenAApproval,
-    ]);
-
-    // useEffect to check if user has approved CrocSwap to sell the token B
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && tokenBAddress && tokenBDecimals && account) {
-                try {
-                    const allowance = await crocEnv
-                        .token(tokenBAddress)
-                        .allowance(account);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenBDecimals,
-                    );
-                    if (tokenBAllowance !== newTokenAllowance) {
-                        IS_LOCAL_ENV &&
-                            console.debug('new token b allowance set');
-                        setTokenBAllowance(newTokenAllowance);
-                    }
-                } catch (err) {
-                    console.warn(err);
-                }
-                if (recheckTokenBApproval) setRecheckTokenBApproval(false);
-            }
-        })();
-    }, [
-        crocEnv,
-        tokenBAddress,
-        lastBlockNumber,
-        account,
-        recheckTokenBApproval,
     ]);
 
     const userLimitOrderStatesCacheEndpoint =
@@ -2531,59 +1289,57 @@ export default function App() {
                                     changes: updatedTransactions,
                                 }),
                             );
-                        }
-                        const result: TokenIF[] = [];
-                        const tokenMap = new Map();
-                        const ambientTokens = getAmbientTokens();
-                        for (const item of updatedTransactions as TransactionIF[]) {
-                            if (!tokenMap.has(item.base)) {
-                                const isFoundInAmbientList = ambientTokens.some(
-                                    (ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.base.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    },
-                                );
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.base, true); // set any value to Map
-                                    result.push({
-                                        name: item.baseName,
-                                        address: item.base,
-                                        symbol: item.baseSymbol,
-                                        decimals: item.baseDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.baseTokenLogoURI,
-                                    });
+
+                            const result: TokenIF[] = [];
+                            const tokenMap = new Map();
+                            for (const item of updatedTransactions as TransactionIF[]) {
+                                if (!tokenMap.has(item.base)) {
+                                    const isFoundInAmbientList =
+                                        ambientTokens.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.base.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.base, true); // set any value to Map
+                                        result.push({
+                                            name: item.baseName,
+                                            address: item.base,
+                                            symbol: item.baseSymbol,
+                                            decimals: item.baseDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.baseTokenLogoURI,
+                                        });
+                                    }
+                                }
+                                if (!tokenMap.has(item.quote)) {
+                                    const isFoundInAmbientList =
+                                        ambientTokens.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.quote.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.quote, true); // set any value to Map
+                                        result.push({
+                                            name: item.quoteName,
+                                            address: item.quote,
+                                            symbol: item.quoteSymbol,
+                                            decimals: item.quoteDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.quoteTokenLogoURI,
+                                        });
+                                    }
                                 }
                             }
-                            if (!tokenMap.has(item.quote)) {
-                                const isFoundInAmbientList = ambientTokens.some(
-                                    (ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.quote.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    },
-                                );
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.quote, true); // set any value to Map
-                                    result.push({
-                                        name: item.quoteName,
-                                        address: item.quote,
-                                        symbol: item.quoteSymbol,
-                                        decimals: item.quoteDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.quoteTokenLogoURI,
-                                    });
-                                }
-                            }
+                            dispatch(setRecentTokens(result));
                         }
-                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.error);
             } catch (error) {
@@ -2605,47 +1361,53 @@ export default function App() {
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
 
     function toggleSidebarBasedOnRoute() {
-        if (!showSidebarByDefault) {
-            return;
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            appState.sidebar.close();
+        } else if (showSidebarByDefault) {
+            appState.sidebar.open();
         } else {
-            sidebar.open();
-            if (
-                currentLocation === '/' ||
-                currentLocation === '/swap' ||
-                currentLocation.includes('/account')
-            ) {
-                sidebar.close();
-            }
+            appState.sidebar.close();
         }
     }
 
     function toggleTradeTabBasedOnRoute() {
-        setOutsideControl(true);
-        if (currentLocation.includes('/market')) {
-            setSelectedOutsideTab(0);
-        } else if (currentLocation.includes('/limit')) {
-            setSelectedOutsideTab(1);
-        } else if (
-            currentLocation.includes('/range') ||
-            currentLocation.includes('reposition') ||
-            currentLocation.includes('add')
-        ) {
-            setSelectedOutsideTab(2);
+        if (!isCandleSelected) {
+            appState.outsideControl.setIsActive(true);
+            if (currentLocation.includes('/market')) {
+                appState.outsideTab.setSelected(0);
+            } else if (currentLocation.includes('/limit')) {
+                appState.outsideTab.setSelected(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                appState.outsideTab.setSelected(2);
+            }
         }
     }
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
+        if (!currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
+
+    useEffect(() => {
         if (
-            !isCandleSelected &&
             !currentTxActiveInTransactions &&
-            !currentPositionActive
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
         )
             toggleTradeTabBasedOnRoute();
-    }, [location, isCandleSelected]);
+    }, [location.pathname]);
 
     // function to sever connection between user wallet and the app
-    const clickLogout = async () => {
+    const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
@@ -2657,7 +1419,7 @@ export default function App() {
         dispatch(resetUserAddresses());
         setIsShowAllEnabled(true);
         disconnect();
-    };
+    }, []);
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
@@ -2687,33 +1449,13 @@ export default function App() {
         closeWagmiModalWallet,
     ] = useModal();
 
-    const [
-        isGlobalModalOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        currentContent,
-        title,
-    ] = useGlobalModal();
-    const [
-        isGlobalPopupOpen,
-        openGlobalPopup,
-        closeGlobalPopup,
-        popupContent,
-        popupTitle,
-        popupPlacement,
-    ] = useGlobalPopup();
-
-    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-
-    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
-
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
     const [isSwapCopied, setIsSwapCopied] = useState(false);
     const [isOrderCopied, setIsOrderCopied] = useState(false);
     const [isRangeCopied, setIsRangeCopied] = useState(false);
 
-    const handlePulseAnimation = (type: string) => {
+    const handlePulseAnimation = useCallback((type: string) => {
         switch (type) {
             case 'swap':
                 setIsSwapCopied(true);
@@ -2737,37 +1479,25 @@ export default function App() {
             default:
                 break;
         }
-    };
+    }, []);
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
-
-    // --------------THEME--------------------------
-    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const [theme, setTheme] = useState('dark');
-
-    const switchTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-    };
-
-    // --------------END OF THEME--------------------------
 
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
     );
-    // TODO: move this function up to App.tsx
-    const getImportedTokensPlus = () => {
-        // array of all tokens on Ambient list
-        const ambientTokens = getAmbientTokens();
-        // array of addresses on Ambient list
+
+    const { addRecentToken, getRecentTokens } = useRecentTokens(
+        chainData.chainId,
+    );
+
+    const importedTokensPlus = useMemo(() => {
         const ambientAddresses = ambientTokens.map((tkn) =>
             tkn.address.toLowerCase(),
         );
-        // use Ambient token list as scaffold to build larger token array
-        const output = ambientTokens;
-        // limiter for tokens to add from connected wallet
+
+        const output = [...ambientTokens];
         let tokensAdded = 0;
-        // iterate over tokens in connected wallet
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
             // ... that the token can be verified against a known list,
@@ -2783,15 +1513,13 @@ export default function App() {
             ) {
                 tokensAdded++;
                 output.push({ ...tkn, fromList: 'wallet' });
-                // increment the limiter by one
                 tokensAdded++;
-                // add the token to the output array
                 output.push({ ...tkn, fromList: 'wallet' });
             }
         });
+
         // limiter for tokens to add from in-session recent tokens list
         let recentTokensAdded = 0;
-        // iterate over tokens in recent tokens list
         getRecentTokens().forEach((tkn) => {
             // gatekeep to make sure the token isn't already in the list,
             // ... is on the current chain, and that the limiter has not
@@ -2806,46 +1534,33 @@ export default function App() {
                 tkn.chainId === parseInt(chainData.chainId) &&
                 recentTokensAdded < 2
             ) {
-                // increment the limiter by one
                 recentTokensAdded++;
-                // add the token to the output array
                 output.push(tkn);
             }
         });
-        // return compiled array of tokens
         return output;
-    };
-
-    const { addRecentToken, getRecentTokens } = useRecentTokens(
+    }, [
+        ambientTokens,
         chainData.chainId,
-    );
+        getRecentTokens,
+        connectedUserErc20Tokens,
+    ]);
 
     // props for <PageHeader/> React element
     const headerProps = {
-        isUserLoggedIn: isUserLoggedIn,
-        clickLogout: clickLogout,
-        ensName: ensName,
-        shouldDisplayAccountTab: shouldDisplayAccountTab,
+        isUserLoggedIn,
+        clickLogout,
+        shouldDisplayAccountTab,
         chainId: chainData.chainId,
-        isChainSupported: isChainSupported,
-        openWagmiModalWallet: openWagmiModalWallet,
+        isChainSupported,
+        openWagmiModalWallet,
         openMoralisModalWallet: openWagmiModalWallet,
-        lastBlockNumber: lastBlockNumber,
-        isMobileSidebarOpen: isMobileSidebarOpen,
-        setIsMobileSidebarOpen: setIsMobileSidebarOpen,
-        poolPriceDisplay: poolPriceDisplay,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
-        isAppOverlayActive: isAppOverlayActive,
-        setIsAppOverlayActive: setIsAppOverlayActive,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        recentPools: recentPools,
-        switchTheme: switchTheme,
-        theme: theme,
-        chainData: chainData,
-        getTokenByAddress: getTokenByAddress,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
+        lastBlockNumber,
+        poolPriceDisplay,
+        ethMainnetUsdPrice,
+        recentPools,
+        chainData,
+        getTokenByAddress,
     };
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
@@ -2853,64 +1568,48 @@ export default function App() {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
-        getAmbientTokens,
+        ambientTokens,
         connectedUserErc20Tokens ?? [],
         getRecentTokens,
     );
 
     // props for <Swap/> React element
     const swapProps = {
-        pool: pool,
-        tokenPairLocal: tokenPairLocal,
-        isUserLoggedIn: isUserLoggedIn,
-        account: account,
-        provider: provider,
-        swapSlippage: swapSlippage,
-        isPairStable: isPairStable,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        lastBlockNumber: lastBlockNumber,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
+        pool,
+        tokenPairLocal,
+        isUserLoggedIn,
+        account,
+        provider,
+        isPairStable,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        lastBlockNumber,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
-        tokenPair: tokenPair,
-        poolPriceDisplay: poolPriceDisplay,
-        tokenAAllowance: tokenAAllowance,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
+        tokenPair,
+        poolPriceDisplay,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        isInitialized: isInitialized,
-        poolExists: poolExists,
-        setTokenPairLocal: setTokenPairLocal,
-        openGlobalModal: openGlobalModal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        ackTokens: ackTokens,
-        chainData: chainData,
+        isInitialized,
+        poolExists,
+        setTokenPairLocal,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        ackTokens,
+        chainData,
     };
 
     // props for <Swap/> React element on trade route
@@ -2919,7 +1618,6 @@ export default function App() {
         isUserLoggedIn: isConnected,
         account: account,
         provider: provider,
-        swapSlippage: swapSlippage,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
@@ -2933,214 +1631,147 @@ export default function App() {
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenAAllowance: tokenAAllowance,
+        tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        isInitialized: isInitialized,
-        poolExists: poolExists,
-        openGlobalModal: openGlobalModal,
-        isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        tokenPairLocal: tokenPairLocal,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        ackTokens: ackTokens,
-        chainData: chainData,
+        isInitialized,
+        poolExists,
+        isSwapCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        tokenPairLocal,
+        ackTokens,
+        chainData,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        account: account,
-        pool: pool,
-        chainData: chainData,
-        isUserLoggedIn: isUserLoggedIn,
-        provider: provider,
-        mintSlippage: mintSlippage,
-        isPairStable: isPairStable,
+        account,
+        pool,
+        chainData,
+        isUserLoggedIn,
+        provider,
+        isPairStable,
         isOnTradeRoute: true,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        lastBlockNumber: lastBlockNumber,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        lastBlockNumber,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
-        tokenAAllowance: tokenAAllowance,
+        setResetLimitTick,
+        setRecheckTokenAApproval,
+        tokenAAllowance,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        openGlobalModal: openGlobalModal,
-        closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
-        isOrderCopied: isOrderCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        setResetLimitTick: setResetLimitTick,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        ackTokens: ackTokens,
+        isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        ackTokens,
     };
 
     // props for <Range/> React element
-    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
-    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
-        account: account,
-        isUserLoggedIn: isUserLoggedIn,
-        provider: provider,
-        mintSlippage: mintSlippage,
-        isPairStable: isPairStable,
-        lastBlockNumber: lastBlockNumber,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        baseTokenAddress: baseTokenAddress,
-        quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay,
+        account,
+        isUserLoggedIn,
+        provider,
+        isPairStable,
+        lastBlockNumber,
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        baseTokenAddress,
+        quoteTokenAddress,
+        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         poolPriceDisplay: poolPriceDisplay ? poolPriceDisplay.toString() : '0',
-        tokenAAllowance: tokenAAllowance,
-        setRecheckTokenAApproval: setRecheckTokenAApproval,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        tokenBAllowance: tokenBAllowance,
-        setRecheckTokenBApproval: setRecheckTokenBApproval,
+        tokenAAllowance,
+        setRecheckTokenAApproval,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+        tokenBAllowance,
+        setRecheckTokenBApproval,
         chainId: chainData.chainId,
         openModalWallet: openWagmiModalWallet,
-        ambientApy: ambientApy,
-        dailyVol: dailyVol,
-        openGlobalModal: openGlobalModal,
-        poolExists: poolExists,
-        isRangeCopied: isRangeCopied,
-        tokenAQtyLocal: rangetokenAQtyLocal,
-        tokenBQtyLocal: rangetokenBQtyLocal,
-        setTokenAQtyLocal: setRangeTokenAQtyLocal,
-        setTokenBQtyLocal: setRangeTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        importedTokensPlus: getImportedTokensPlus(),
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        isTutorialMode: isTutorialMode,
-        setIsTutorialMode: setIsTutorialMode,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        simpleRangeWidth: simpleRangeWidth,
+        ambientApy,
+        dailyVol,
+        poolExists,
+        isRangeCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        setSimpleRangeWidth,
+        simpleRangeWidth,
         setMaxPrice: setMaxRangePrice,
         setMinPrice: setMinRangePrice,
-        setChartTriggeredBy: setChartTriggeredBy,
-        chartTriggeredBy: chartTriggeredBy,
+        setChartTriggeredBy,
+        chartTriggeredBy,
         minPrice: minRangePrice,
         maxPrice: maxRangePrice,
-        rescaleRangeBoundariesWithSlider: rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        ackTokens: ackTokens,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
-        chainData: chainData,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        ackTokens,
+        cachedFetchTokenPrice,
+        chainData,
     };
-
-    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
-    const [outsideControl, setOutsideControl] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
-
-    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
     const sidebarProps = {
-        sidebar: sidebar,
         tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
-        isShowAllEnabled: isShowAllEnabled,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        expandTradeTable,
+        setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        lastBlockNumber: lastBlockNumber,
-        favePools: favePools,
-        selectedOutsideTab: selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: outsideControl,
-        setOutsideControl: setOutsideControl,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        analyticsSearchInput: analyticsSearchInput,
-        setAnalyticsSearchInput: setAnalyticsSearchInput,
+        lastBlockNumber,
+        currentPositionActive,
+        setCurrentPositionActive,
+        analyticsSearchInput,
+        setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
-        poolList: poolList,
+        poolList,
         verifyToken: verifyToken,
         tokenPair: tokenPair,
-        recentPools: recentPools,
-        isConnected: isConnected,
-        ackTokens: ackTokens,
-        topPools: topPools,
+        recentPools,
+        isConnected,
+        ackTokens,
+        topPools,
     };
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
@@ -3183,21 +1814,17 @@ export default function App() {
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
-    }, [tradeData.didUserFlipDenom, tokenPair]);
-
-    const [imageData, setImageData] = useState<string[]>([]);
+    }, [
+        tradeData.didUserFlipDenom,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenA.chainId,
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenB.chainId,
+        isBaseTokenMoneynessGreaterOrEqual,
+    ]);
 
     useEffect(() => {
         dispatch(resetUserGraphData());
-    }, [account]);
-
-    useEffect(() => {
-        (async () => {
-            if (account) {
-                const imageLocalURLs = await getNFTs(account);
-                if (imageLocalURLs) setImageData(imageLocalURLs);
-            }
-        })();
     }, [account]);
 
     // Take away margin from left if we are on homepage or swap
@@ -3210,10 +1837,10 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
+        !appState.chart.isFullScreen &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
-    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 10 seconds.
+    // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
         if (
@@ -3223,20 +1850,20 @@ export default function App() {
         ) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    setIsChatEnabled(isChatUp);
+                    appState.chat.setIsEnabled(isChatUp);
                 });
-            }, 10000);
+            }, 60000);
             return () => clearInterval(interval);
         }
-    }, [isChatEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {
-            setFullScreenChart(false);
+            appState.chart.setIsFullScreen(false);
         }
     }, [currentLocation]);
 
-    const sidebarDislayStyle = sidebar.isOpen
+    const sidebarDislayStyle = appState.sidebar.isOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -3265,9 +1892,9 @@ export default function App() {
         const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
         return {
             swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}&lowTick=0&highTick=0`,
-            range: `/trade/range/${pairSlug}&lowTick=0&highTick=0`,
-            limit: `/trade/limit/${pairSlug}&lowTick=0&highTick=0`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
         };
     }
 
@@ -3301,13 +1928,13 @@ export default function App() {
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: ' ' },
         () => {
-            sidebar.toggle('persist');
+            appState.sidebar.toggle(true);
         },
     );
     useKeyboardShortcuts(
         { modifierKeys: ['Shift', 'Control'], key: 'C' },
         () => {
-            setIsChatOpen(!isChatOpen);
+            appState.chat.setIsOpen(!appState.chat.isOpen);
         },
     );
 
@@ -3357,20 +1984,10 @@ export default function App() {
         expandTradeTable,
         setExpandTradeTable,
         tokenMap: tokensOnActiveLists,
-        favePools,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         currentPositionActive,
         setCurrentPositionActive,
-        openGlobalModal,
-        closeGlobalModal,
         isInitialized,
-        poolPriceNonDisplay,
-        setLimitRate: function (): void {
-            throw new Error('Function not implemented.');
-        },
+        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         limitRate: '',
         searchableTokens: searchableTokens,
         poolExists,
@@ -3378,38 +1995,19 @@ export default function App() {
         handlePulseAnimation,
         isCandleSelected,
         setIsCandleSelected,
-        fullScreenChart,
-        setFullScreenChart,
         fetchingCandle,
         setFetchingCandle,
         isCandleDataNull,
         setIsCandleDataNull,
-        minPrice: minRangePrice,
-        maxPrice: maxRangePrice,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
-        isTutorialMode,
-        setIsTutorialMode,
         setCandleDomains,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
         setChartTriggeredBy,
         chartTriggeredBy,
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const accountProps = {
@@ -3420,7 +2018,7 @@ export default function App() {
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getAmbientTokens,
+        ambientTokens,
         getTokensByName,
         verifyToken: verifyToken,
         getTokenByAddress,
@@ -3429,18 +2027,10 @@ export default function App() {
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
-        ensName,
         lastBlockNumber,
         connectedAccount: account ? account : '',
-        userImageData: imageData,
         chainId: chainData.chainId,
         tokensOnActiveLists,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
-        openGlobalModal,
-        closeGlobalModal,
         chainData: chainData,
         currentPositionActive,
         setCurrentPositionActive,
@@ -3460,19 +2050,8 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         mainnetProvider,
         setSimpleRangeWidth,
-        dexBalancePrefs: {
-            swap: dexBalPrefSwap,
-            limit: dexBalPrefLimit,
-            range: dexBalPrefRange,
-        },
-        slippage: {
-            swapSlippage,
-            mintSlippage,
-            repoSlippage,
-        },
         ackTokens,
         setExpandTradeTable,
-        isSidebarOpen: sidebar.isOpen,
     };
 
     const repositionProps = {
@@ -3487,294 +2066,320 @@ export default function App() {
         ambientApy,
         dailyVol,
         isDenomBase: tradeData.isDenomBase,
-        repoSlippage,
         isPairStable,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
-        setRescaleRangeBoundariesWithSlider,
         poolPriceDisplay,
         setSimpleRangeWidth: setRepositionRangeWidth,
         simpleRangeWidth: repositionRangeWidth,
-        bypassConfirm: {
-            swap: bypassConfirmSwap,
-            limit: bypassConfirmLimit,
-            range: bypassConfirmRange,
-            repo: bypassConfirmRepo,
-        },
-        openGlobalPopup,
     };
 
+    const chatOnClose = useCallback(() => {
+        console.error('Function not implemented.');
+    }, []);
+
     const chatProps = {
-        isChatEnabled: isChatEnabled,
-        areSubscriptionsEnabled: areSubscriptionsEnabled,
-        isChatOpen: true,
-        onClose: () => {
-            console.error('Function not implemented.');
-        },
-        favePools: favePools,
+        onClose: chatOnClose,
         currentPool: currentPoolInfo,
-        setIsChatOpen: setIsChatOpen,
         isFullScreen: true,
-        userImageData: imageData,
-        username: ensName,
         appPage: true,
         topPools: topPools,
-        setIsChatEnabled: setIsChatEnabled,
+    };
+
+    useWebSocketSubs({
+        crocEnv,
+        wssGraphCacheServerDomain,
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        isServerEnabled,
+        shouldNonCandleSubscriptionsReconnect,
+        areSubscriptionsEnabled,
+        tokenUniv: searchableTokens,
+        chainData,
+        lastBlockNumber,
+        candleData,
+        setCandleData,
+        candleTimeLocal,
+        account,
+        shouldCandleSubscriptionsReconnect,
+    });
+
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
     };
 
     return (
-        <>
-            <div className={containerStyle} data-theme={theme}>
-                {isMobileSidebarOpen && <div className='blur_app' />}
-                <AppOverlay
-                    isAppOverlayActive={isAppOverlayActive}
-                    setIsAppOverlayActive={setIsAppOverlayActive}
-                />
-                {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-                <CrocEnvContext.Provider value={crocEnv}>
-                    <section
-                        className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
-                    >
-                        {!currentLocation.startsWith('/swap') && sidebarRender}
-                        <Routes>
-                            <Route
-                                index
-                                element={
-                                    <Home
-                                        cachedQuerySpotPrice={
-                                            cachedQuerySpotPrice
-                                        }
-                                        tokenMap={tokensOnActiveLists}
-                                        lastBlockNumber={lastBlockNumber}
-                                        chainId={chainData.chainId}
-                                        isServerEnabled={isServerEnabled}
-                                        topPools={topPools}
-                                        cachedPoolStatsFetch={
-                                            cachedPoolStatsFetch
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='accessibility'
-                                element={<Accessibility />}
-                            />
-                            <Route
-                                path='trade'
-                                element={
-                                    <PoolContext.Provider value={pool}>
-                                        <Trade {...tradeProps} />
-                                    </PoolContext.Provider>
-                                }
-                            >
-                                <Route
-                                    path=''
-                                    element={
-                                        <Navigate to='/trade/market' replace />
-                                    }
-                                />
-                                <Route
-                                    path='market'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.market}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='market/:params'
-                                    element={<Swap {...swapPropsTrade} />}
-                                />
-
-                                <Route
-                                    path='limit'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.limit}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='limit/:params'
-                                    element={<Limit {...limitPropsTrade} />}
-                                />
-
-                                <Route
-                                    path='range'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.range}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='range/:params'
-                                    element={<Range {...rangeProps} />}
-                                />
-                                <Route
-                                    path='reposition'
-                                    element={
-                                        <Navigate
-                                            to={defaultUrlParams.range}
-                                            replace
-                                        />
-                                    }
-                                />
-                                <Route
-                                    path='reposition/:params'
-                                    element={
-                                        <Reposition {...repositionProps} />
-                                    }
-                                />
-                                <Route path='add' element={<RangeAdd />} />
-                                <Route
-                                    path='edit/'
-                                    element={
-                                        <Navigate to='/trade/market' replace />
-                                    }
-                                />
-                            </Route>
-                            <Route
-                                path='chat'
-                                element={<ChatPanel {...chatProps} />}
-                            />
-
-                            <Route
-                                path='chat/:params'
-                                element={<ChatPanel {...chatProps} />}
-                            />
-                            <Route
-                                path='range2'
-                                element={<Range {...rangeProps} />}
-                            />
-                            <Route
-                                path='initpool/:params'
-                                element={
-                                    <InitPool
-                                        isUserLoggedIn={isUserLoggedIn}
-                                        crocEnv={crocEnv}
-                                        gasPriceInGwei={gasPriceInGwei}
-                                        ethMainnetUsdPrice={ethMainnetUsdPrice}
-                                        openModalWallet={openWagmiModalWallet}
-                                        tokenAAllowance={tokenAAllowance}
-                                        tokenBAllowance={tokenBAllowance}
-                                        setRecheckTokenAApproval={
-                                            setRecheckTokenAApproval
-                                        }
-                                        setRecheckTokenBApproval={
-                                            setRecheckTokenBApproval
-                                        }
-                                    />
-                                }
-                            />
-                            <Route
-                                path='account'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={true}
-                                    />
-                                }
-                            />
-                            <Route
-                                path='account/:address'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={false}
-                                    />
-                                }
-                            />
-
-                            <Route
-                                path='swap'
-                                element={
-                                    <Navigate
-                                        replace
-                                        to={defaultUrlParams.swap}
-                                    />
-                                }
-                            />
-                            <Route
-                                path='swap/:params'
-                                element={<Swap {...swapProps} />}
-                            />
-                            <Route path='tos' element={<TermsOfService />} />
-                            {IS_LOCAL_ENV && (
-                                <Route
-                                    path='testpage'
-                                    element={
-                                        <TestPage
-                                            openGlobalModal={openGlobalModal}
-                                            walletToS={walletToS}
-                                            chartSettings={chartSettings}
-                                            bypassConf={{
-                                                swap: bypassConfirmSwap,
-                                                limit: bypassConfirmLimit,
-                                                range: bypassConfirmRange,
-                                                repo: bypassConfirmRepo,
-                                            }}
-                                        />
-                                    }
-                                />
-                            )}
-                            <Route
-                                path='/:address'
-                                element={
-                                    <Portfolio
-                                        {...accountProps}
-                                        userAccount={false}
-                                    />
-                                }
-                            />
-                            <Route path='/404' element={<NotFound />} />
-                        </Routes>
-                    </section>
-                </CrocEnvContext.Provider>
-                {snackbarContent}
-            </div>
-            <div className='footer_container'>
-                {currentLocation !== '/' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && (
-                        <ChatPanel
-                            isChatOpen={isChatOpen}
-                            onClose={() => {
-                                console.error('Function not implemented.');
-                            }}
-                            favePools={favePools}
-                            currentPool={currentPoolInfo}
-                            setIsChatOpen={setIsChatOpen}
-                            isFullScreen={false}
-                            userImageData={imageData}
-                            topPools={topPools}
-                            isChatEnabled={isChatEnabled}
-                            areSubscriptionsEnabled={areSubscriptionsEnabled}
-                        />
+        <AppStateContext.Provider value={appState}>
+            <UserPreferenceContext.Provider value={userPreferences}>
+                <div
+                    className={containerStyle}
+                    data-theme={appState.theme.selected}
+                >
+                    <AppOverlay />
+                    {currentLocation !== '/404' && (
+                        <PageHeader {...headerProps} />
                     )}
-            </div>
-            <SidebarFooter />
-            <GlobalModal
-                isGlobalModalOpen={isGlobalModalOpen}
-                closeGlobalModal={closeGlobalModal}
-                openGlobalModal={openGlobalModal}
-                currentContent={currentContent}
-                title={title}
-            />
-            <GlobalPopup
-                isGlobalPopupOpen={isGlobalPopupOpen}
-                openGlobalPopup={openGlobalPopup}
-                closeGlobalPopup={closeGlobalPopup}
-                popupContent={popupContent}
-                popupTitle={popupTitle}
-                placement={popupPlacement}
-            />
-            {isWagmiModalOpenWallet && (
-                <WalletModalWagmi closeModalWallet={closeWagmiModalWallet} />
-            )}
-        </>
+                    <CrocEnvContext.Provider value={crocEnv}>
+                        <section
+                            className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                        >
+                            {!currentLocation.startsWith('/swap') &&
+                                sidebarRender}
+                            <Routes>
+                                <Route
+                                    index
+                                    element={
+                                        <Home
+                                            cachedQuerySpotPrice={
+                                                cachedQuerySpotPrice
+                                            }
+                                            tokenMap={tokensOnActiveLists}
+                                            lastBlockNumber={lastBlockNumber}
+                                            chainId={chainData.chainId}
+                                            topPools={topPools}
+                                            cachedPoolStatsFetch={
+                                                cachedPoolStatsFetch
+                                            }
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='accessibility'
+                                    element={<Accessibility />}
+                                />
+                                <Route
+                                    path='trade'
+                                    element={
+                                        <PoolContext.Provider value={pool}>
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <CandleContext.Provider
+                                                    value={candleState}
+                                                >
+                                                    <Trade {...tradeProps} />
+                                                </CandleContext.Provider>
+                                            </RangeStateContext.Provider>
+                                        </PoolContext.Provider>
+                                    }
+                                >
+                                    <Route
+                                        path=''
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='market'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.market}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='market/:params'
+                                        element={<Swap {...swapPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='limit'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.limit}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='limit/:params'
+                                        element={<Limit {...limitPropsTrade} />}
+                                    />
+
+                                    <Route
+                                        path='range'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='range/:params'
+                                        element={
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Range {...rangeProps} />
+                                            </RangeStateContext.Provider>
+                                        }
+                                    />
+                                    <Route
+                                        path='reposition'
+                                        element={
+                                            <Navigate
+                                                to={defaultUrlParams.range}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path='reposition/:params'
+                                        element={
+                                            <RangeStateContext.Provider
+                                                value={rangeState}
+                                            >
+                                                <Reposition
+                                                    {...repositionProps}
+                                                />
+                                            </RangeStateContext.Provider>
+                                        }
+                                    />
+                                    <Route
+                                        path='edit/'
+                                        element={
+                                            <Navigate
+                                                to='/trade/market'
+                                                replace
+                                            />
+                                        }
+                                    />
+                                </Route>
+                                <Route
+                                    path='chat'
+                                    element={<ChatPanel {...chatProps} />}
+                                />
+
+                                <Route
+                                    path='chat/:params'
+                                    element={<ChatPanel {...chatProps} />}
+                                />
+                                <Route
+                                    path='initpool/:params'
+                                    element={
+                                        <InitPool
+                                            isUserLoggedIn={isUserLoggedIn}
+                                            crocEnv={crocEnv}
+                                            gasPriceInGwei={gasPriceInGwei}
+                                            ethMainnetUsdPrice={
+                                                ethMainnetUsdPrice
+                                            }
+                                            openModalWallet={
+                                                openWagmiModalWallet
+                                            }
+                                            tokenAAllowance={tokenAAllowance}
+                                            tokenBAllowance={tokenBAllowance}
+                                            setRecheckTokenAApproval={
+                                                setRecheckTokenAApproval
+                                            }
+                                            setRecheckTokenBApproval={
+                                                setRecheckTokenBApproval
+                                            }
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='account'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={true}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='account/:address'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
+                                    }
+                                />
+
+                                <Route
+                                    path='swap'
+                                    element={
+                                        <Navigate
+                                            replace
+                                            to={defaultUrlParams.swap}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='swap/:params'
+                                    element={<Swap {...swapProps} />}
+                                />
+                                <Route
+                                    path='tos'
+                                    element={<TermsOfService />}
+                                />
+                                {IS_LOCAL_ENV && (
+                                    <Route
+                                        path='testpage'
+                                        element={<TestPage />}
+                                    />
+                                )}
+                                <Route
+                                    path='/:address'
+                                    element={
+                                        <Portfolio
+                                            {...accountProps}
+                                            userAccount={false}
+                                        />
+                                    }
+                                />
+                                <Route path='/404' element={<NotFound />} />
+                            </Routes>
+                        </section>
+                    </CrocEnvContext.Provider>
+                </div>
+                <div className='footer_container'>
+                    {currentLocation !== '/' &&
+                        !currentLocation.includes('/chat') &&
+                        appState.chat.isEnabled && (
+                            <ChatPanel
+                                onClose={chatOnClose}
+                                currentPool={currentPoolInfo}
+                                isFullScreen={false}
+                                topPools={topPools}
+                            />
+                        )}
+                </div>
+                <SidebarFooter />
+                <GlobalModal />
+                <GlobalPopup />
+                <SnackbarComponent />
+                {isWagmiModalOpenWallet && (
+                    <WalletModalWagmi
+                        closeModalWallet={closeWagmiModalWallet}
+                    />
+                )}
+            </UserPreferenceContext.Provider>
+        </AppStateContext.Provider>
     );
 }

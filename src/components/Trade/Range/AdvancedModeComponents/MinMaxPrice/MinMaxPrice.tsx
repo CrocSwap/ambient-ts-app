@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
+import { ChangeEvent, Dispatch, memo, SetStateAction, useEffect } from 'react';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
@@ -33,7 +33,7 @@ interface MinMaxPriceIF {
     setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
-export default function MinMaxPrice(props: MinMaxPriceIF) {
+function MinMaxPrice(props: MinMaxPriceIF) {
     const {
         minPricePercentage,
         maxPricePercentage,
@@ -188,3 +188,5 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         </div>
     );
 }
+
+export default memo(MinMaxPrice);

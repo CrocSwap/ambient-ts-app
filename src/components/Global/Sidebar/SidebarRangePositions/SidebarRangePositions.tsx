@@ -1,19 +1,17 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { SetStateAction, Dispatch } from 'react';
+import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
-    closeSidebar: () => void;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
@@ -23,11 +21,14 @@ export default function SidebarRangePositions(props: propsIF) {
         userPositions,
         setCurrentPositionActive,
         isUserLoggedIn,
-        closeSidebar,
-        setOutsideControl,
-        setSelectedOutsideTab,
         setIsShowAllEnabled,
     } = props;
+
+    const {
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+        sidebar: { close: closeSidebar },
+    } = useContext(AppStateContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -43,8 +44,8 @@ export default function SidebarRangePositions(props: propsIF) {
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {
-        setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
         navigate(
@@ -59,8 +60,8 @@ export default function SidebarRangePositions(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControlActive(true);
+        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

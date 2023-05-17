@@ -6,8 +6,8 @@ import {
     useMemo,
     Dispatch,
     SetStateAction,
-    ReactNode,
     useContext,
+    memo,
 } from 'react';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
@@ -35,7 +35,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -69,7 +69,6 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
@@ -77,21 +76,20 @@ import {
     rangeTutorialSteps,
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { RangeStateContext } from '../../../contexts/RangeStateContext';
 
 interface propsIF {
     account: string | undefined;
     isUserLoggedIn: boolean | undefined;
-    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
@@ -113,13 +111,8 @@ interface propsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
     poolExists: boolean | undefined;
     isRangeCopied: boolean;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
-    setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
-    setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -136,35 +129,17 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    minPrice: number;
-    maxPrice: number;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
     ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
     chainData: ChainSpec;
 }
 
-export default function Range(props: propsIF) {
+function Range(props: propsIF) {
     const {
         account,
         isUserLoggedIn,
-        mintSlippage,
         isPairStable,
         provider,
         baseTokenAddress,
@@ -185,13 +160,8 @@ export default function Range(props: propsIF) {
         openModalWallet,
         ambientApy,
         dailyVol,
-        openGlobalModal,
         poolExists,
         isRangeCopied,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -202,22 +172,29 @@ export default function Range(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
-        bypassConfirm,
-        dexBalancePrefs,
         setSimpleRangeWidth,
         simpleRangeWidth,
-        setMaxPrice,
-        setMinPrice,
-        setRescaleRangeBoundariesWithSlider,
-        minPrice,
-        maxPrice,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         cachedFetchTokenPrice,
         ackTokens,
         chainData,
     } = props;
+
+    const {
+        minRangePrice: minPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
+        setChartTriggeredBy,
+        chartTriggeredBy,
+        setRescaleRangeBoundariesWithSlider,
+    } = useContext(RangeStateContext);
+
+    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
+        UserPreferenceContext,
+    );
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const [
         isConfirmationModalOpen,
@@ -225,7 +202,20 @@ export default function Range(props: propsIF) {
         closeConfirmationModal,
     ] = useModal();
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
+    const [
+        tokenBQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const [isAmbient, setIsAmbient] = useState(false);
+
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
     useUrlParams(chainId, provider);
@@ -234,9 +224,9 @@ export default function Range(props: propsIF) {
     // ... wallet funds, this layer of logic matters because the DOM may need
     // ... to use wallet funds without switching the persisted preference
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
-        useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
-        useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
 
     const crocEnv = useContext(CrocEnvContext);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
@@ -254,10 +244,18 @@ export default function Range(props: propsIF) {
 
     const { navigationMenu } = useTradeData();
 
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
+    const tokenPair = useMemo(
+        () => ({
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        }),
+        [
+            tradeData.tokenB.address,
+            tradeData.tokenB.chainId,
+            tradeData.tokenA.address,
+            tradeData.tokenA.chainId,
+        ],
+    );
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
@@ -1230,8 +1228,6 @@ export default function Range(props: propsIF) {
         </div>
     );
 
-    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
-
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
@@ -1250,7 +1246,6 @@ export default function Range(props: propsIF) {
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         chainId: chainId,
         isAmbient: isAmbient,
-        openGlobalPopup,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1362,7 +1357,6 @@ export default function Range(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -1393,9 +1387,9 @@ export default function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs,
         ackTokens: ackTokens,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };
 
     // props for <RangeWidth/> React element
@@ -1403,7 +1397,6 @@ export default function Range(props: propsIF) {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
         isRangeCopied: isRangeCopied,
-        openGlobalPopup: openGlobalPopup,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
     };
@@ -1502,9 +1495,10 @@ export default function Range(props: propsIF) {
     );
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
+        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     const loginButton = (
         <button
@@ -1606,50 +1600,6 @@ export default function Range(props: propsIF) {
             flat={true}
         />
     );
-    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Range 1', checked: false },
-        { slug: 'second', name: 'Include Range 2', checked: false },
-        { slug: 'third', name: 'Include Range 3', checked: false },
-        { slug: 'fourth', name: 'Include Range 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <RangeShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -1713,7 +1663,7 @@ export default function Range(props: propsIF) {
                 data-testid={'range'}
                 className={styles.scrollable_container}
             >
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -1732,9 +1682,6 @@ export default function Range(props: propsIF) {
                         isPairStable={isPairStable}
                         isDenomBase={tradeData.isDenomBase}
                         isTokenABase={isTokenABase}
-                        openGlobalModal={openGlobalModal}
-                        shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
                     />
                     {navigationMenu}
                     <motion.div
@@ -1765,7 +1712,7 @@ export default function Range(props: propsIF) {
                                 <RangeButton
                                     onClickFn={
                                         areBothAckd
-                                            ? bypassConfirm.range.isEnabled
+                                            ? bypassConfirmRange.isEnabled
                                                 ? handleRangeButtonClickWithBypass
                                                 : openConfirmationModal
                                             : ackAsNeeded
@@ -1777,9 +1724,6 @@ export default function Range(props: propsIF) {
                                     }
                                     rangeButtonErrorMessage={
                                         rangeButtonErrorMessage
-                                    }
-                                    isBypassConfirmEnabled={
-                                        bypassConfirm.range.isEnabled
                                     }
                                     isAmbient={isAmbient}
                                     isAdd={isAdd}
@@ -1845,11 +1789,7 @@ export default function Range(props: propsIF) {
                 {isConfirmationModalOpen && (
                     <Modal
                         onClose={handleModalClose}
-                        title={
-                            isAmbient
-                                ? 'Ambient Confirmation'
-                                : 'Range Confirmation'
-                        }
+                        title={'Pool Confirmation'}
                         centeredTitle
                     >
                         <ConfirmRangeModal
@@ -1888,7 +1828,6 @@ export default function Range(props: propsIF) {
                             pinnedMaxPriceDisplayTruncatedInQuote={
                                 pinnedMaxPriceDisplayTruncatedInQuote
                             }
-                            bypassConfirm={bypassConfirm}
                         />
                     </Modal>
                 )}
@@ -1905,3 +1844,5 @@ export default function Range(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Range);

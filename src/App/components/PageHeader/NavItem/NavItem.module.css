@@ -11,15 +11,13 @@
 
     outline: none;
     border: none;
-    background: transparent
+    background: transparent;
 }
 
-.nav_item:focus-visible .icon_button{
+.nav_item:focus-visible .icon_button {
     filter: brightness(1.2);
     background: var(--dark2);
 }
-
-
 
 /* Icon Button */
 .icon_button {
@@ -34,15 +32,17 @@
     align-items: center;
     justify-content: center;
     transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
 }
 
-.icon_button:hover, .icon_button:focus-visible {
+.icon_button:hover,
+.icon_button:focus-visible {
     filter: brightness(1.2);
     background: var(--dark2);
 }
 
 .icon_button svg {
-    fill: var(--text-grey-white);
+    fill: var(--text1);
     width: 20px;
     height: 20px;
 }

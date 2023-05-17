@@ -36,7 +36,7 @@
 .nav_container {
     padding: 1px;
 
-    color: var(--text-grey-white);
+    color: var(--text1);
     width: 116.67px;
     height: 25px;
     background: var(--dark2);
@@ -55,15 +55,15 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: var(--text-grey-light);
+    color: var(--text1);
 
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .navigation_menu a[class='active'],
 .navigation_menu a:hover {
-    background: var(--text-highlight-dark);
-    color: var(--text-grey-white);
+    background: var(--accent1);
+    color: var(--text1);
 }
 
 /* .middle_col{
@@ -115,7 +115,7 @@
     flex-direction: row;
     background: var(--dark2);
     border-radius: 4px;
-    outline: 1px solid var(--text-grey-dark);
+    outline: 1px solid var(--text3);
     /* max-width: 200px; */
     margin: 10px auto;
 }
@@ -130,15 +130,15 @@
     outline: none;
 }
 .mobile_toggle_container button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .active_button_mobile_toggle {
     color: rgb(0, 0, 0);
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 }
 
 .non_active_button_mobile_toggle {
-    color: var(--text-grey-white);
+    color: var(--text1);
     background-color: transparent;
 }
 
@@ -167,7 +167,7 @@
 
     border-radius: var(--border-radius);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    border: 1px solid var(--text-highlight);
+    border: 1px solid var(--accent5);
 
     padding: 3rem;
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
@@ -186,8 +186,8 @@
     padding: 1px; 
     background:var(--title-gradient); 
     -webkit-mask: 
-       linear-gradient(#fff 0 0) content-box, 
-       linear-gradient(#fff 0 0);
+       linear-gradient(white 0 0) content-box, 
+       linear-gradient(white 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude; 
   } */
@@ -195,12 +195,12 @@
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .pool_not_initialialized_content h3 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-dark);
+    color: var(--text3);
 }
 
 .initialize_link {
@@ -219,21 +219,14 @@
     background: transparent;
     text-transform: uppercase;
 
-    color: #cdc1ff;
+    color: var(--accent5);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    border: 1px solid var(--accent1);
 }
 
 .initialize_link:hover {
@@ -258,7 +251,7 @@
     outline: none;
     border: none;
     cursor: pointer;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 /* .initialiaze_token_img img::before{
@@ -286,7 +279,7 @@
     background: var(--dark2);
     outline: none;
     border: none;
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 4px 8px;
     width: 100%;
     cursor: pointer;
@@ -301,7 +294,7 @@
 }
 
 .mobile_trades_dropdown .active_mobile_trade_dropdown:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .mobile_trade_dropdown_items_containers,
@@ -323,9 +316,9 @@
     outline: none;
     border: none;
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 8px;
-    /* border-bottom: 1px solid var(--text-grey-dark); */
+    /* border-bottom: 1px solid var(--text3); */
     text-align: start;
 }
 .mobile_trade_dropdown_items_containers {
@@ -412,7 +405,7 @@
     .middle_col {
         height: 100%;
 
-        padding: 0.5rem 0rem 0rem 0.5rem;
+        /* padding: 0.5rem 0rem 0rem 0.5rem; */
         background: var(--dark2);
 
         display: grid;

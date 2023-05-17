@@ -1,5 +1,5 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { ackTokensMethodsIF } from './useAckTokens';
@@ -110,9 +110,12 @@ export const useRecentPools = (
         setRecentPools([]);
     }
 
-    return {
-        addPool,
-        getPools,
-        resetPools,
-    };
+    return useMemo(
+        () => ({
+            addPool,
+            getPools,
+            resetPools,
+        }),
+        [recentPools],
+    );
 };

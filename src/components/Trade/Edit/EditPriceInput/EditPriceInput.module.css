@@ -8,14 +8,14 @@
 
 .title,
 .percentage {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 5px;
 }
 
 .percentage {
-    color: var(--light-blue);
+    color: var(--accent5);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
@@ -23,7 +23,7 @@
 .price_input_container {
     display: grid;
     grid-template-columns: 30px 1fr 30px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     text-align: center;
@@ -38,7 +38,7 @@
     overflow: hidden;
     width: 100%;
     padding: 0;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-align: center;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -51,7 +51,7 @@
     appearance: textfield;
 }
 .currency_quantity::placeholder {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
 }

@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -15,9 +22,8 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 // START: Import Other Local Files
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { AiOutlineWarning } from 'react-icons/ai';
-import DividerDark from '../../Global/DividerDark/DividerDark';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -39,7 +45,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    bypassConfirm: allSkipConfirmMethodsIF;
     lastBlockNumber: number;
     pool: CrocPoolView | undefined;
 }
@@ -61,10 +66,15 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        bypassConfirm,
         lastBlockNumber,
         pool,
     } = props;
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -189,7 +199,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        tokenInitial={buyTokenData.symbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -199,23 +209,32 @@ export default function ConfirmSwapModal(props: propsIF) {
         </div>
     );
 
-    const priceIncreaseComponentOrNull = isWaitingForPriceChangeAckt ? (
+    const priceIncreaseComponent = (
         <div className={` ${styles.warning_box}`}>
-            <AiOutlineWarning color='var(--negative)' />
-            <p>
-                WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
-                {buyTokenPriceChangeString + '%'}
-            </p>
+            <ul>
+                <div>
+                    <AiOutlineWarning
+                        color='var(--other-red)'
+                        size={20}
+                        style={{ marginRight: '4px' }}
+                    />
+                    Price Updated
+                </div>
+                <p>
+                    The price of {buyTokenData.symbol} has increased by{' '}
+                    {buyTokenPriceChangeString + '%'}
+                </p>
+            </ul>
             <button
                 onClick={() => {
                     setBaselineBlockNumber(lastBlockNumber);
                     setIsWaitingForPriceChangeAckt(false);
                 }}
             >
-                Acknowledge
+                Accept
             </button>
         </div>
-    ) : null;
+    );
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -228,7 +247,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        tokenInitial={sellTokenData.symbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -275,8 +294,6 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
-                {!!priceIncreaseComponentOrNull && <DividerDark />}
-                {priceIncreaseComponentOrNull}
             </div>
             {!isWaitingForPriceChangeAckt && (
                 <ConfirmationModalControl
@@ -336,26 +353,29 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation && !isWaitingForPriceChangeAckt && (
-                    <Button
-                        title='Send Swap'
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (tempBypassConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
-                            }
-                            initiateSwapMethod();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                        disabled={isWaitingForPriceChangeAckt}
-                    />
-                )}
+                {showConfirmation &&
+                    (!isWaitingForPriceChangeAckt ? (
+                        <Button
+                            title='Submit Swap'
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (tempBypassConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                initiateSwapMethod();
+                                setShowConfirmation(false);
+                            }}
+                            flat
+                            disabled={isWaitingForPriceChangeAckt}
+                        />
+                    ) : (
+                        priceIncreaseComponent
+                    ))}
             </footer>
         </div>
     );

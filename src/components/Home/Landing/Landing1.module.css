@@ -60,20 +60,13 @@
     text-align: center;
 
     transition: all var(--animation-speed) ease-in-out;
-    background: linear-gradient(
-        270deg,
-        #5a58c7,
-        #b2a8dd,
-        #4947a1,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--highlight-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #222157;
+    border: 1px solid var(--dark3);
     /* animation: shine 8s linear infinite; */
-    /* color: #CDC1FF; */
+    /* color: var(--accent5); */
 }
 
 .button_text {
@@ -101,7 +94,7 @@
     animation-play-state: paused;
 }
 .action_button p {
-    color: var(--text-highlight);
+    color: var(--accent5);
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;

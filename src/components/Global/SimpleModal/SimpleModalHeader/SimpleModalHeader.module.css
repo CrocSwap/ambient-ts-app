@@ -27,18 +27,18 @@
 }
 .header_container svg {
     cursor: pointer;
-    color: var(--text-grey-light);
+    color: var(--text2);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 .header_container svg:hover{
-    color: var(--text-grey-white)
+    color: var(--text1)
 }
 
 .header_container h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     font-weight: 200;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

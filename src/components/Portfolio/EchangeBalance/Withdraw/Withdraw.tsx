@@ -8,7 +8,6 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
-import Toggle from '../../../Global/Toggle/Toggle';
 import {
     addPendingTx,
     addReceipt,
@@ -25,12 +24,11 @@ import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
@@ -49,8 +47,6 @@ export default function Withdraw(props: propsIF) {
     const {
         crocEnv,
         connectedAccount,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         // tokenWalletBalance,
@@ -317,9 +313,8 @@ export default function Withdraw(props: propsIF) {
 
     const toggleContent = (
         <span className={styles.surplus_toggle}>
-            Send to a different address
             <div className={styles.toggle_container}>
-                <Toggle
+                <Toggle2
                     isOn={isSendToAddressChecked}
                     handleToggle={() =>
                         setIsSendToAddressChecked(!isSendToAddressChecked)
@@ -329,6 +324,7 @@ export default function Withdraw(props: propsIF) {
                     disabled={isWithdrawPending}
                 />
             </div>
+            Send to a different address
         </span>
     );
 
@@ -378,7 +374,7 @@ export default function Withdraw(props: propsIF) {
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text_non_clickable}>
-                Withdraw deposited collateral to your wallet:
+                Withdraw tokens from the exchange to your wallet
             </div>
             {toggleContent}
             {transferAddressOrNull}
@@ -394,8 +390,11 @@ export default function Withdraw(props: propsIF) {
                 disable={isCurrencyFieldDisabled}
             />
             <div className={styles.additional_info}>
-                <div className={styles.info_text_non_clickable}>
-                    Available: {tokenDexBalanceTruncated || '0.0'}
+                <div
+                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
+                >
+                    <div className={styles.available_text}>Available:</div>
+                    {tokenDexBalanceTruncated || '0.0'}
                     {tokenDexBalance !== '0' ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}

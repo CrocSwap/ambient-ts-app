@@ -1,25 +1,21 @@
 import styles from './GlobalPopup.module.css';
 import { VscClose } from 'react-icons/vsc';
+import { memo, useContext } from 'react';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
-interface GlobalPopupProps {
-    isGlobalPopupOpen: boolean;
-    openGlobalPopup: (page: string) => void;
-    closeGlobalPopup: () => void;
-    popupContent: React.ReactNode;
-    popupTitle?: string;
-    placement: string | 'left' | 'center' | 'right';
-}
-
-export default function GlobalPopup(props: GlobalPopupProps) {
-    const showGlobalPopupStyle = props.isGlobalPopupOpen
+function GlobalPopup() {
+    const {
+        globalPopup: { isOpen, close, title, content, placement },
+    } = useContext(AppStateContext);
+    const showGlobalPopupStyle = isOpen
         ? styles.global_popup_active
         : styles.global_popup;
     const placementStyle =
-        props.placement === 'left'
+        placement === 'left'
             ? styles.popup_left
-            : props.placement === 'center'
+            : placement === 'center'
             ? styles.popup_center
-            : props.placement === 'right'
+            : placement === 'right'
             ? styles.popup_right
             : styles.popup_right;
 
@@ -29,12 +25,14 @@ export default function GlobalPopup(props: GlobalPopupProps) {
         >
             <header>
                 <p />
-                <h3>{props.popupTitle}</h3>
-                <div onClick={props.closeGlobalPopup}>
+                <h3>{title}</h3>
+                <div onClick={close}>
                     <VscClose size={18} />
                 </div>
             </header>
-            <section>{props.popupContent}</section>
+            <section>{content}</section>
         </div>
     );
 }
+
+export default memo(GlobalPopup);

@@ -9,7 +9,7 @@
 }
 
 .skeleton_wrapper {
-    background: #ddd;
+    background: var(--text1);
     height: 40px;
     width: 100%;
     overflow: hidden;
@@ -29,7 +29,7 @@
 
 .skeleton_indicator {
     width: 5px;
-    background: #bbb;
+    background: var(--text2);
     height: 100%;
-    box-shadow: 0 0 5px 5px #bbb;
+    box-shadow: 0 0 5px 5px var(--text2);
 }

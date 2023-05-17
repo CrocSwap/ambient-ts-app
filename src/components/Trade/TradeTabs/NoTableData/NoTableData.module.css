@@ -12,19 +12,19 @@
 .container h2 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .container p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .container button {
     outline: none;
     border: none;
-    background: #7371fc;
-    color: var(--text-grey-white);
+    background: var(--accent1);
+    color: var(--text1);
     padding: 4px;
     border-radius: 4px;
     cursor: pointer;
@@ -32,6 +32,6 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 .container button:hover {
-    background: #cdc1ff;
-    color: var(--text-grey-dark);
+    background: var(--accent5);
+    color: var(--text3);
 }

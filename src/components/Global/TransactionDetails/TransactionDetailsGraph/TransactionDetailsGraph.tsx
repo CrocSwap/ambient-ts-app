@@ -46,9 +46,6 @@ export default function TransactionDetailsGraph(
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
 
-    // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
-    // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
-
     const mainnetBaseTokenAddress =
         baseTokenAddress === ZERO_ADDRESS
             ? baseTokenAddress
@@ -129,9 +126,15 @@ export default function TransactionDetailsGraph(
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 if (period !== undefined) {
-                    const numberofCandleNeeded = Math.floor(
+                    const calcNumberCandlesNeeded = Math.floor(
                         (diff * 2) / (period * 1000),
                     );
+                    const maxNumCandlesNeeded = 3000;
+
+                    const numCandlesNeeded =
+                        calcNumberCandlesNeeded < maxNumCandlesNeeded
+                            ? calcNumberCandlesNeeded
+                            : maxNumCandlesNeeded;
 
                     const startBoundary = Math.floor(
                         new Date().getTime() / 1000,
@@ -147,7 +150,7 @@ export default function TransactionDetailsGraph(
                             baseTokenAddress,
                             quoteTokenAddress,
                             startBoundary.toString(),
-                            numberofCandleNeeded.toString(),
+                            numCandlesNeeded.toString(),
                         );
 
                         if (graphData) {
@@ -614,10 +617,30 @@ export default function TransactionDetailsGraph(
             horizontalBand: any,
         ) => {
             if (graphData.length > 0) {
+                const buffer =
+                    Math.abs(
+                        scaleData.xScale.domain()[1].getTime() -
+                            scaleData.xScale.domain()[0].getTime(),
+                    ) / 30;
+
+                const tickTempValues = scaleData.xScale.ticks(7);
+                const tickValues: any[] = [];
+
+                tickTempValues.map((tick: any) => {
+                    if (
+                        tick.getTime() + buffer <
+                            scaleData.xScale.domain()[1].getTime() &&
+                        tick.getTime() - buffer >
+                            scaleData.xScale.domain()[0].getTime()
+                    ) {
+                        tickValues.push(tick);
+                    }
+                });
+
                 const xAxis = d3fc
                     .axisBottom()
                     .scale(scaleData?.xScale)
-                    .ticks(5);
+                    .tickValues(tickValues);
 
                 // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
                 // const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');

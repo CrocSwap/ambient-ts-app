@@ -10,21 +10,28 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+} from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import Pagination from '../../../Global/Pagination/Pagination';
+import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-
-const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
+import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -48,16 +55,13 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
-    isSidebarOpen: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
-export default function Transactions(props: propsIF) {
+function Transactions(props: propsIF) {
     const {
         isTokenABase,
         activeAccountTransactionData,
@@ -71,9 +75,6 @@ export default function Transactions(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         isCandleSelected,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
@@ -83,6 +84,13 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(AppStateContext);
+
+    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+    // NOTE: this is done to improve rendering speed for this page.
 
     const dispatch = useAppDispatch();
 
@@ -178,7 +186,7 @@ export default function Transactions(props: propsIF) {
         if (isOnPortfolioPage && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
         }
-    }, [isOnPortfolioPage, diffHashSig(activeAccountTransactionData)]);
+    }, [isOnPortfolioPage, diffHashSigTxs(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
@@ -202,12 +210,13 @@ export default function Transactions(props: propsIF) {
         }
     }, [
         isOnPortfolioPage,
-
-        isCandleSelected
-            ? diffHashSig(changesInSelectedCandle)
-            : isShowAllEnabled
-            ? diffHashSig(changesByPoolWithoutFills)
-            : diffHashSig(changesByUserMatchingSelectedTokens),
+        isCandleSelected,
+        isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
+        changesByPoolWithoutFills.length,
+        changesByPoolWithoutFills.at(0)?.poolHash,
+        changesByUserMatchingSelectedTokens.length,
+        changesByUserMatchingSelectedTokens.at(0)?.user,
+        isShowAllEnabled,
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
@@ -219,37 +228,7 @@ export default function Transactions(props: propsIF) {
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
-
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { height } = useWindowDimensions();
-
-    const showColumnTransactionItems = showColumns
-        ? Math.round((height - 250) / 50)
-        : Math.round((height - 250) / 38);
-    const transactionsPerPage = showColumnTransactionItems;
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
-
     // Get current transactions
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction =
-        indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = sortedTransactions?.slice(
-        indexOfFirstTransaction,
-        indexOfLastTransaction,
-    );
-
-    // Change page
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -409,20 +388,87 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {expandTradeTable && transactionData.length > 30 && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </div>
-    );
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
 
-    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+
+    const count = Math.ceil(sortedTransactions.length / rowsPerPage);
+    const _DATA = usePagination(sortedTransactions, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
+        useState(false);
+    const listRef = useRef<HTMLUListElement>(null);
+    const element = listRef.current;
+    useEffect(() => {
+        if (element) {
+            const resizeObserver = new ResizeObserver((entries) => {
+                const firstEntry = entries[0];
+                const elementHeight = firstEntry.contentRect.height;
+                const screenHeight = window.innerHeight;
+                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
+
+                setIsHeightGreaterThanHalf(isGreaterThanHalf);
+            });
+
+            resizeObserver.observe(element);
+
+            return () => {
+                resizeObserver.unobserve(element);
+            };
+        }
+    }, [element]);
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && transactionData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div
+                className={styles.footer}
+                style={{
+                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
+                }}
+            >
+                <p
+                    className={styles.showing_text}
+                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedTransactions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        size='large'
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                    />
+                </div>
+            </div>
+        );
+
+    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
             account={account}
             key={idx}
@@ -431,15 +477,12 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
@@ -455,22 +498,18 @@ export default function Transactions(props: propsIF) {
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
             blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             setSimpleRangeWidth={setSimpleRangeWidth}
             chainData={chainData}
         />
     ));
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -511,36 +550,24 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : isAccountView
-                    ? // NOTE: the account view of this content should not be paginated
-                      sortedRowItemContent
-                    : sortedRowItemContent.slice(
-                          0,
-                          NUM_TRANSACTIONS_WHEN_COLLAPSED,
-                      )}
+            <ul ref={listRef} id='current_row_scroll'>
+                {currentRowItemContent}
             </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
-                    !isAccountView &&
-                    sortedRowItemContent.length >
-                        NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    setExpandTradeTable(true);
-                                }}
-                            >
-                                View More
-                            </button>
-                        </div>
-                    )
-            }
+
+            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
+            {!expandTradeTable &&
+                !isAccountView &&
+                sortedRowItemContent.length >
+                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
+                    <div className={styles.view_more_container}>
+                        <button
+                            className={styles.view_more_button}
+                            onClick={() => setExpandTradeTable(true)}
+                        >
+                            View More
+                        </button>
+                    </div>
+                )}
         </div>
     );
 
@@ -557,17 +584,23 @@ export default function Transactions(props: propsIF) {
         : expandStyle;
 
     return (
-        <section
-            className={styles.main_list_container}
-            style={{ height: portfolioPageStyle }}
-        >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TransactionsSkeletons />
-            ) : (
-                transactionDataOrNull
-            )}
-            {footerDisplay}
-        </section>
+        <>
+            <section
+                className={styles.main_list_container}
+                style={{ height: portfolioPageStyle }}
+            >
+                {headerColumnsDisplay}
+
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TransactionsSkeletons />
+                ) : (
+                    transactionDataOrNull
+                )}
+
+                {footerDisplay}
+            </section>
+        </>
     );
 }
+
+export default memo(Transactions);

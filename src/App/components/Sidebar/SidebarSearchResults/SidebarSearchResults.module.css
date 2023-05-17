@@ -1,12 +1,11 @@
 .container {
-    /* background: var(--dark1); */
     margin-top: 3rem;
-    background: var(--dark1);
+    background: var(--dark4);
 
     border-radius: 4px;
     width: 100%;
+    margin: 8px;
     padding: 8px 0;
-    margin: 0 8px;
     height: 100%;
 
     overflow-y: hidden;
@@ -20,13 +19,13 @@
 .search_input_container {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 /* individual search results */
 
 .main_result_container {
-    margin: 10px 0;
+    margin-bottom: 12px;
 
     max-height: 140px;
     overflow-y: scroll;
@@ -40,7 +39,7 @@
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     cursor: pointer;
     padding: 5px;
 }
@@ -55,30 +54,29 @@
 .header {
     padding: 5px 0;
 
-    border-bottom: 1px solid var(--dark2);
-    color: var(--text-grey-dark);
+    border-bottom: 1px solid var(--dark3);
+    color: var(--text2);
 }
 
 .card_title {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    padding: 0 2rem;
+    padding: 0 8px;
     font-weight: 500;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 .search_result_title {
-    margin: 10px 0;
-    color: #cdc1ff;
-    color: var(--text-grey-dark);
+    margin: 8px;
+    margin-top: 0px;
+    color: var(--accent5);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    text-align: center;
 }
 
 .not_found_text {
@@ -86,6 +84,6 @@
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    color: var(--text-grey-light);
-    padding: 0 2rem;
+    color: var(--text2);
+    padding: 4px 12px;
 }

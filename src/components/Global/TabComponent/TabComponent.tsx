@@ -7,6 +7,7 @@ import {
     cloneElement,
     ReactNode,
     ReactElement,
+    useContext,
 } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -14,6 +15,7 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 import styles from './TabComponent.module.css';
 import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 type tabData = {
     label: string;
@@ -26,10 +28,6 @@ interface TabPropsIF {
     data: tabData[];
     setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     showPositionsOnlyToggle?: boolean;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
 
@@ -40,13 +38,17 @@ export default function TabComponent(props: TabPropsIF) {
     const {
         data,
         setSelectedInsideTab,
-        selectedOutsideTab,
         rightTabOptions,
-        outsideControl,
-        setOutsideControl,
         // showPositionsOnlyToggle,
         setShowPositionsOnlyToggle,
     } = props;
+    const {
+        outsideControl: {
+            isActive: isOutsideControlActive,
+            setIsActive: setOutsideControlActive,
+        },
+        outsideTab: { selected: outsideTabSelected },
+    } = useContext(AppStateContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
@@ -66,7 +68,7 @@ export default function TabComponent(props: TabPropsIF) {
                     break;
             }
         }
-        setOutsideControl(false);
+        setOutsideControlActive(false);
         setSelectedTab(item);
     }
 
@@ -87,15 +89,15 @@ export default function TabComponent(props: TabPropsIF) {
         ) {
             setShowPositionsOnlyToggle(true);
         }
-    }, [data, outsideControl]);
+    }, [data, isOutsideControlActive]);
 
     function handleOutside2() {
-        if (!outsideControl) {
+        if (!isOutsideControlActive) {
             return;
         } else {
-            if (outsideControl) {
-                if (data[selectedOutsideTab]) {
-                    setSelectedTab(data[selectedOutsideTab]);
+            if (isOutsideControlActive) {
+                if (data[outsideTabSelected]) {
+                    setSelectedTab(data[outsideTabSelected]);
                 } else {
                     setSelectedTab(data[0]);
                 }
@@ -105,7 +107,7 @@ export default function TabComponent(props: TabPropsIF) {
 
     useEffect(() => {
         handleOutside2();
-    }, [selectedTab, selectedOutsideTab, outsideControl]);
+    }, [selectedTab, outsideTabSelected, isOutsideControlActive]);
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (

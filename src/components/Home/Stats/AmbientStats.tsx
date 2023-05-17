@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import { userData } from '../../../utils/state/userDataSlice';
@@ -11,7 +12,6 @@ interface StatCardProps {
 }
 
 interface StatsProps {
-    isServerEnabled: boolean;
     userData: userData;
     lastBlockNumber: number;
     chainId: string;
@@ -33,7 +33,10 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats(props: StatsProps) {
-    const { isServerEnabled, userData, lastBlockNumber, chainId } = props;
+    const { userData, lastBlockNumber, chainId } = props;
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
 
     const isUserIdle = userData.isUserIdle;
 

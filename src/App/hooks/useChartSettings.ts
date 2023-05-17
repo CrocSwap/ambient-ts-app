@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
@@ -141,7 +141,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getCandleTime('market') ?? 900,
     );
     const [candleTimeRange, setCandleTimeRange] = useState<number>(
-        getCandleTime('range') ?? 86400,
+        getCandleTime('range') ?? 900, // switched from 86400 (1 day)
     );
 
     // hook to update local storage any time one of the preference primitives changes
@@ -238,24 +238,36 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         }
     }
 
-    return {
-        volumeSubchart: new Subchart(
-            isVolumeSubchartEnabled,
-            setIsVolumeSubchartEnabled,
-        ),
-        tvlSubchart: new Subchart(
-            isTvlSubchartEnabled,
-            setIsTvlSubchartEnabled,
-        ),
-        feeRateSubchart: new Subchart(
-            isFeeRateSubchartEnabled,
-            setIsFeeRateSubchartEnabled,
-        ),
-        marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
-        rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
-        candleTime: {
-            market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
-            range: new CandleTime(candleTimeRange, setCandleTimeRange),
-        },
-    };
+    const chartSettings = useMemo(() => {
+        return {
+            volumeSubchart: new Subchart(
+                isVolumeSubchartEnabled,
+                setIsVolumeSubchartEnabled,
+            ),
+            tvlSubchart: new Subchart(
+                isTvlSubchartEnabled,
+                setIsTvlSubchartEnabled,
+            ),
+            feeRateSubchart: new Subchart(
+                isFeeRateSubchartEnabled,
+                setIsFeeRateSubchartEnabled,
+            ),
+            marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
+            rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
+            candleTime: {
+                market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
+                range: new CandleTime(candleTimeRange, setCandleTimeRange),
+            },
+        };
+    }, [
+        isVolumeSubchartEnabled,
+        isTvlSubchartEnabled,
+        isFeeRateSubchartEnabled,
+        candleTimeMarket,
+        candleTimeRange,
+        marketOverlay,
+        rangeOverlay,
+    ]);
+
+    return chartSettings;
 };

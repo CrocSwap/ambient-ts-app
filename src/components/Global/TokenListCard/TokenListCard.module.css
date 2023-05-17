@@ -17,7 +17,7 @@
 
 .token_list_card_content:hover {
     background: var(--dark2);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .left_content {
@@ -47,7 +47,7 @@
     align-items: center;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .token_list_card_name .token_count svg {
@@ -79,13 +79,13 @@
     flex-direction: column;
     padding: 5px 10px;
 
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: 12px;
 }
 
 .popover_content a {
     text-decoration: none;
-    color: var(--text-grey-white);
+    color: var(--text1);
     cursor: pointer;
 }
 
@@ -95,5 +95,5 @@
 }
 
 .menu {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }

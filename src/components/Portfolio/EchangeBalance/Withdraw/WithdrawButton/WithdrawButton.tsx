@@ -1,13 +1,13 @@
 import styles from './WithdrawButton.module.css';
 import Button from '../../../../Global/Button/Button';
+import { memo } from 'react';
 
 interface PortfolioWithdrawButtonProps {
     onClick: () => void;
     disabled: boolean;
     buttonMessage: string;
 }
-
-export default function WithdrawButton(props: PortfolioWithdrawButtonProps) {
+function WithdrawButton(props: PortfolioWithdrawButtonProps) {
     const { onClick, disabled, buttonMessage } = props;
 
     const ButtonDisplay = (
@@ -29,3 +29,5 @@ export default function WithdrawButton(props: PortfolioWithdrawButtonProps) {
 
     return <div>{ButtonDisplay}</div>;
 }
+
+export default memo(WithdrawButton);

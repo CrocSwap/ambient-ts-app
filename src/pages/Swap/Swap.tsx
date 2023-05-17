@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
@@ -43,24 +44,21 @@ import {
     addTransactionByType,
     removePendingTx,
 } from '../../utils/state/receiptDataSlice';
-import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
-import { SlippageMethodsIF } from '../../App/hooks/useSlippage';
-import { allDexBalanceMethodsIF } from '../../App/hooks/useExchangePrefs';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { allSkipConfirmMethodsIF } from '../../App/hooks/useSkipConfirm';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
-    swapSlippage: SlippageMethodsIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
@@ -81,14 +79,6 @@ interface propsIF {
     isInitialized: boolean;
     poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
-
-    openGlobalModal: (content: React.ReactNode) => void;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -106,22 +96,17 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
     tokenPairLocal: string[] | null;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    bypassConfirm: allSkipConfirmMethodsIF;
     ackTokens: ackTokensMethodsIF;
     chainData: ChainSpec;
     pool: CrocPoolView | undefined;
 }
 
-export default function Swap(props: propsIF) {
+function Swap(props: propsIF) {
     const {
         pool,
         isUserLoggedIn,
         account,
-        swapSlippage,
         isPairStable,
         provider,
         isOnTradeRoute,
@@ -150,11 +135,8 @@ export default function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        openGlobalPopup,
         lastBlockNumber,
         tokenPairLocal,
-        dexBalancePrefs,
-        bypassConfirm,
         ackTokens,
         chainData,
     } = props;
@@ -165,6 +147,9 @@ export default function Swap(props: propsIF) {
     useUrlParams(chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -224,7 +209,7 @@ export default function Swap(props: propsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
-        useState<boolean>(dexBalancePrefs.swap.outputToDexBal.isEnabled);
+        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
 
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
@@ -245,7 +230,7 @@ export default function Swap(props: propsIF) {
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
             txErrorCode === '' &&
-            bypassConfirm.swap.isEnabled
+            bypassConfirmSwap.isEnabled
         ) {
             setNewSwapTransactionHash('');
             setShowBypassConfirm(false);
@@ -254,7 +239,7 @@ export default function Swap(props: propsIF) {
         currentPendingTransactionsArray.length,
         isWaitingForWallet,
         txErrorCode === '',
-        bypassConfirm.swap.isEnabled,
+        bypassConfirmSwap.isEnabled,
     ]);
 
     const resetConfirmation = () => {
@@ -555,7 +540,6 @@ export default function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
-        bypassConfirm: bypassConfirm,
         lastBlockNumber: lastBlockNumber,
     };
 
@@ -603,95 +587,6 @@ export default function Swap(props: propsIF) {
         ? styles.swap_page
         : styles.scrollable_container;
 
-    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Swap 1', checked: false },
-        { slug: 'second', name: 'Include Swap 2', checked: false },
-        { slug: 'third', name: 'Include Swap 3', checked: false },
-        { slug: 'fourth', name: 'Include Swap 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const swapLink =
-        'https://ambient-finance.netlify.app/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
-
-    const shareIconsContent = (
-        <section>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://telegram.me/share/url?url=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='telegram'
-            >
-                Telegram{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://twitter.com/intent/tweet?text=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='twitter'
-            >
-                Twitter{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
-                className={styles.share_icon}
-                aria-label='facebook'
-            >
-                Facebook{' '}
-            </a>
-            <a
-                target='_blank'
-                rel='noreferrer'
-                href=''
-                className={styles.share_icon}
-                aria-label='discord'
-            >
-                Discord{' '}
-            </a>
-        </section>
-    );
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <SwapShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     const currencyConverterProps = {
@@ -737,12 +632,14 @@ export default function Swap(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        openGlobalPopup: openGlobalPopup,
         lastBlockNumber: lastBlockNumber,
-        dexBalancePrefs: dexBalancePrefs,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         ackTokens: ackTokens,
     };
+
+    const {
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
         IS_LOCAL_ENV && console.debug('setting to true');
@@ -801,14 +698,7 @@ export default function Swap(props: propsIF) {
                             placement='bottom'
                         />
                     </div>
-                    <div
-                        className={styles.data}
-                        style={{
-                            color: '#f6385b',
-                        }}
-                    >
-                        {priceImpactString}%
-                    </div>
+                    <div className={styles.data}>{priceImpactString}%</div>
                 </div>
             </div>
         ) : null;
@@ -870,14 +760,16 @@ export default function Swap(props: propsIF) {
         maximumFractionDigits: 2,
     });
 
+    const focusTrapOptions = useMemo(
+        () => ({
+            clickOutsideDeactivates: true,
+        }),
+        [],
+    );
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
+        <FocusTrap focusTrapOptions={focusTrapOptions}>
             <section data-testid={'swap'} className={swapPageStyle}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -893,12 +785,8 @@ export default function Swap(props: propsIF) {
                         padding={isOnTradeRoute ? '0 1rem' : '1rem'}
                     >
                         <SwapHeader
-                            swapSlippage={swapSlippage}
                             isPairStable={isPairStable}
                             isOnTradeRoute={isOnTradeRoute}
-                            openGlobalModal={props.openGlobalModal}
-                            shareOptionsDisplay={shareOptionsDisplay}
-                            bypassConfirm={bypassConfirm}
                         />
                         {navigationMenu}
                         <motion.div
@@ -910,10 +798,7 @@ export default function Swap(props: propsIF) {
                         </motion.div>
                         <ExtraInfo
                             account={account}
-                            tokenPair={{
-                                dataTokenA: tokenA,
-                                dataTokenB: tokenB,
-                            }}
+                            tokenPair={tokenPair}
                             priceImpact={priceImpact}
                             isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
@@ -944,8 +829,7 @@ export default function Swap(props: propsIF) {
                                         <SwapButton
                                             onClickFn={
                                                 areBothAckd
-                                                    ? bypassConfirm.swap
-                                                          .isEnabled
+                                                    ? bypassConfirmSwap.isEnabled
                                                         ? handleSwapButtonClickWithBypass
                                                         : openModal
                                                     : ackAsNeeded
@@ -959,7 +843,7 @@ export default function Swap(props: propsIF) {
                                                 swapButtonErrorMessage
                                             }
                                             bypassConfirmSwap={
-                                                bypassConfirm.swap
+                                                bypassConfirmSwap
                                             }
                                             areBothAckd={areBothAckd}
                                         />
@@ -1046,3 +930,5 @@ export default function Swap(props: propsIF) {
         </FocusTrap>
     );
 }
+
+export default memo(Swap);

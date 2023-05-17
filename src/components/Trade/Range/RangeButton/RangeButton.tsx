@@ -1,19 +1,19 @@
 import styles from './RangeButton.module.css';
 import Button from '../../../Global/Button/Button';
+import { memo, useContext } from 'react';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     onClickFn: () => void;
     rangeAllowed: boolean;
     rangeButtonErrorMessage: string;
-    isBypassConfirmEnabled: boolean;
     isAmbient: boolean;
     isAdd: boolean;
     areBothAckd: boolean;
 }
 
-export default function RangeButton(props: propsIF) {
+function RangeButton(props: propsIF) {
     const {
-        isBypassConfirmEnabled,
         isAmbient,
         isAdd,
         rangeButtonErrorMessage,
@@ -22,21 +22,23 @@ export default function RangeButton(props: propsIF) {
         areBothAckd,
     } = props;
 
+    const { bypassConfirmRange } = useContext(UserPreferenceContext);
+
     return (
         <div className={styles.button_container}>
             <Button
                 title={
                     areBothAckd
                         ? rangeAllowed
-                            ? isBypassConfirmEnabled
+                            ? bypassConfirmRange.isEnabled
                                 ? isAdd
-                                    ? `Add to ${
-                                          isAmbient ? 'Ambient' : 'Range'
-                                      } Position`
-                                    : `Create ${
-                                          isAmbient ? 'Ambient' : 'Range'
-                                      } Position`
-                                : 'Open Confirmation'
+                                    ? `Add ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
+                                    : `Submit ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
+                                : 'Confirm'
                             : rangeButtonErrorMessage
                         : 'Acknowledge'
                 }
@@ -47,3 +49,5 @@ export default function RangeButton(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeButton);

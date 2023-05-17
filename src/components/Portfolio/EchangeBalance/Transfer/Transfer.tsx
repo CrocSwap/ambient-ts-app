@@ -6,14 +6,7 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import {
-    Dispatch,
-    ReactNode,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
@@ -35,8 +28,6 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 interface propsIF {
     crocEnv: CrocEnv | undefined;
     // connectedAccount: string;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
@@ -53,8 +44,6 @@ interface propsIF {
 export default function Transfer(props: propsIF) {
     const {
         crocEnv,
-        // openGlobalModal,
-        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         tokenDexBalance,
@@ -366,8 +355,11 @@ export default function Transfer(props: propsIF) {
                 disable={isCurrencyFieldDisabled}
             />
             <div className={styles.additional_info}>
-                <div className={styles.info_text_non_clickable}>
-                    Available: {tokenDexBalanceTruncated || '0.0'}
+                <div
+                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
+                >
+                    <div className={styles.available_text}>Available:</div>
+                    {tokenDexBalanceTruncated || '0.0'}
                     {tokenDexBalance !== '0' ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}

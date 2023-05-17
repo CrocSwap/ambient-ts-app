@@ -5,7 +5,13 @@ import { useMemo, useState } from 'react';
 // TODO:   @Junior  ... to read the current value of `skin` & return the
 // TODO:   @Junior  ... correct JSON color set
 
-export const useSkin = (defaultSkin: string) => {
+export interface skinMethodsIF {
+    colors: Record<string, unknown>;
+    choosePurpleDark: () => void;
+    choosePurpleLight: () => void;
+}
+
+export const useSkin = (defaultSkin: string): skinMethodsIF => {
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<string>(localStorage.skin ?? defaultSkin);
@@ -17,9 +23,12 @@ export const useSkin = (defaultSkin: string) => {
         return {};
     }, [skin]);
 
-    return {
-        colors,
-        choosePurpleDark: () => setSkin('purple_dark'),
-        choosePurpleLight: () => setSkin('purple_light'),
-    };
+    return useMemo(
+        () => ({
+            colors,
+            choosePurpleDark: () => setSkin('purple_dark'),
+            choosePurpleLight: () => setSkin('purple_light'),
+        }),
+        [colors],
+    );
 };

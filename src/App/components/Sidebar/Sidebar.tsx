@@ -1,5 +1,13 @@
 // START: Import React and Dongles
-import { SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
+import {
+    SetStateAction,
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
@@ -37,17 +45,15 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../hooks/useFavePools';
 import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
-import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface propsIF {
-    sidebar: sidebarMethodsIF;
     tradeData: tradeData;
     isDenomBase: boolean;
     chainId: string;
@@ -64,11 +70,6 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    favePools: favePoolsMethodsIF;
-    selectedOutsideTab: number;
-    outsideControl: boolean;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
@@ -79,9 +80,8 @@ interface propsIF {
     topPools: topPoolIF[];
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
-        sidebar,
         tradeData,
         isDenomBase,
         chainId,
@@ -95,7 +95,6 @@ export default function Sidebar(props: propsIF) {
         setExpandTradeTable,
         tokenMap,
         lastBlockNumber,
-        favePools,
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
@@ -103,17 +102,25 @@ export default function Sidebar(props: propsIF) {
         tokenPair,
         recentPools,
         isConnected,
-        outsideControl,
-        setOutsideControl,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
         ackTokens,
         topPools,
     } = props;
 
+    const { sidebar } = useContext(AppStateContext);
+
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+
+    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
+
+    useEffect(() => {
+        overflowSidebarMQ
+            ? sidebar.close()
+            : sidebar.isOpen
+            ? sidebar.open()
+            : null;
+    }, [overflowSidebarMQ, sidebar.isOpen]);
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
@@ -171,11 +178,8 @@ export default function Sidebar(props: propsIF) {
                     chainId={chainId}
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
                     setCurrentPositionActive={setCurrentPositionActive}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    closeSidebar={sidebar.close}
                     isUserLoggedIn={isConnected}
                 />
             ),
@@ -192,17 +196,12 @@ export default function Sidebar(props: propsIF) {
                     tokenMap={tokenMap}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
-                    selectedOutsideTab={selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    outsideControl={outsideControl}
-                    setOutsideControl={setOutsideControl}
                     isShowAllEnabled={isShowAllEnabled}
                     setCurrentPositionActive={setCurrentPositionActive}
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
                     isUserLoggedIn={isConnected}
-                    closeSidebar={sidebar.close}
                 />
             ),
         },
@@ -215,7 +214,6 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <FavoritePools
-                    favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
@@ -245,12 +243,7 @@ export default function Sidebar(props: propsIF) {
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
-                    selectedOutsideTab={selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
-                    outsideControl={outsideControl}
                     isUserLoggedIn={isConnected}
-                    closeSidebar={sidebar.close}
                 />
             ),
         },
@@ -325,7 +318,6 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -340,7 +332,7 @@ export default function Sidebar(props: propsIF) {
                 type='text'
                 id='search_input'
                 ref={searchInputRef}
-                placeholder='Search anything...'
+                placeholder='Search...'
                 maxLength={40}
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
@@ -362,15 +354,15 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (sidebar.status === 'closed') {
+                if (!sidebar.isOpen) {
                     sidebar.open();
                 }
                 setOpenAllDefault(true);
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
+            {openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -382,14 +374,15 @@ export default function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {'Collapse All'}
+            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
         </button>
     );
 
     const searchContainerDisplay = (
         <div
-            className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}
+            className={` ${styles.sidebar_link_search} ${
+                styles.main_search_container
+            } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
             {location.pathname.includes('analytics')
                 ? AnalyticsSearchContainer
@@ -407,37 +400,20 @@ export default function Sidebar(props: propsIF) {
                         <img
                             src={closeSidebarImage}
                             alt='close sidebar'
-                            onClick={() => sidebar.close('persist')}
+                            onClick={() => sidebar.close(true)}
                         />
                     </div>
                 </DefaultTooltip>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    placement={sidebar.isOpen ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', rotate: '180deg' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='open sidebar'
-                            onClick={() => sidebar.open('persist')}
-                        />
-                    </div>
-                </DefaultTooltip>
+                <BiSearch
+                    size={18}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
-
-    const overflowSidebarMQ = useMediaQuery('(max-width: 4000px)');
-
-    useEffect(() => {
-        overflowSidebarMQ ? sidebar.close() : sidebar.open();
-    }, [overflowSidebarMQ]);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
@@ -537,11 +513,11 @@ export default function Sidebar(props: propsIF) {
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
-                    sidebar.isOpen || sidebar.open('persist');
+                    sidebar.isOpen || sidebar.open(true);
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
-                <ul className={styles.sidebar_nav}>
+                <div className={styles.sidebar_nav}>
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
@@ -551,8 +527,6 @@ export default function Sidebar(props: propsIF) {
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            setOutsideControl={setOutsideControl}
-                            setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
                             setCurrentTxActiveInTransactions={
                                 setCurrentTxActiveInTransactions
@@ -562,8 +536,10 @@ export default function Sidebar(props: propsIF) {
                     ) : (
                         regularSidebarDisplay
                     )}
-                </ul>
+                </div>
             </nav>
         </div>
     );
 }
+
+export default memo(Sidebar);

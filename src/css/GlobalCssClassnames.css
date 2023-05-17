@@ -9,52 +9,56 @@
 /* order table */
 
 .color_white {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .base_color {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .username_base_color {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-family: monospace;
 }
 
 .order_sell {
-    color: var(--accent-secondary);
+    color: var(--accent2);
 }
 .owned_tx_contrast {
-    color: var(--accent-secondary);
+    color: var(--accent2);
 }
 
 .order_buy {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 /* transactions */
 .add_style {
-    color: var(--accent-5);
+    color: var(--accent3);
+    border-color: var(--accent3) !important;
 }
 .claim_style,
 .remove_style {
-    color: #5fa2ff;
+    color: var(--accent4);
+    border-color: var(--accent4) !important;
 }
 .buy_style {
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
+    border-color: var(--accent1) !important;
 }
 .sell_style {
-    color: var(--accent-secondary);
+    color: var(--accent2);
+    border-color: var(--accent2) !important;
 }
 
 /* apy */
 
 .apy_positive {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .apy_negative {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 /* sort */
@@ -65,7 +69,7 @@
 
 .emoji-picker-react .emoji-group:before,
 .emoji-picker-react input.emoji-search {
-    color: var(--text-grey-light) !important;
+    color: var(--text2) !important;
     background: var(--dark2) !important;
 }
 
@@ -85,17 +89,17 @@ aside.emoji-picker-react {
 
 .introjs-tooltip {
     background: var(--dark2) !important;
-    /* background: #fff !important; */
+    /* background: white !important; */
 }
 .introjs-tooltip-header {
-    color: var(--text-grey-white);
+    color: var(--text1);
     /* color: black; */
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
 }
 .introjs-tooltip-title {
-    color: var(--text-grey-light) !important;
+    color: var(--text2) !important;
     /* color: black !important; */
     font-weight: 300;
     font-size: 12px;
@@ -106,19 +110,19 @@ aside.emoji-picker-react {
 
     outline: none !important;
     border: none !important;
-    color: var(--text-grey-light) !important;
+    color: var(--text2) !important;
     text-shadow: none !important;
     transition: all var(--animation-speed) ease-in-out !important;
     padding: 0 1rem !important;
 }
 .introjs-tooltipbuttons a {
     /* font-size: 1.2rem; */
-    color: var(--text-highlight);
+    color: var(--accent5);
     /* font-weight: 700; */
 }
 
 .introjs-button:hover {
-    color: var(--text-grey-white) !important;
+    color: var(--text1) !important;
     border: none !important;
     outline: none !important;
 }
@@ -135,4 +139,16 @@ aside.emoji-picker-react {
         0px 0px 6px rgba(205, 193, 255, 0.3),
         0px 0px 3px rgba(205, 193, 255, 0.3);
     border-radius: 4px;
+}
+
+
+.MuiPaginationItem-root{
+    color: var(--text2) !important;
+    outline: 1px solid transparent !important
+}
+
+.Mui-selected.MuiPaginationItem-root {
+    color: var(--text1) !important;
+    background: var(--dark3) !important
+   
 }

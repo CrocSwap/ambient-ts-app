@@ -17,23 +17,25 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { memo, useContext } from 'react';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
     chainId: string;
-    mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
-export default function LimitHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, openGlobalModal, bypassConfirm } =
-        props;
+function LimitHeader(props: propsIF) {
+    const { isPairStable } = props;
+    const { mintSlippage, bypassConfirmLimit } = useContext(
+        UserPreferenceContext,
+    );
+    const {
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -86,10 +88,12 @@ export default function LimitHeader(props: propsIF) {
                         slippage={mintSlippage}
                         isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.limit}
+                        bypassConfirm={bypassConfirmLimit}
                     />
                 </Modal>
             )}
         </ContentHeader>
     );
 }
+
+export default memo(LimitHeader);

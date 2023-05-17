@@ -15,7 +15,7 @@
 .apr_display p:first-of-type{
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 
     display: flex;
     flex-direction: row;
@@ -26,17 +26,15 @@
 .apr_display p:nth-of-type(2){
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    background: var(--apr-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
 
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
+    /* glow/positive */
 
-/* glow/positive */
-
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
 .row_display{
@@ -55,7 +53,7 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
 .row_display p:first-of-type, .row_display p:nth-of-type(3){
-    color: var(--text-grey-white);
+    color: var(--text1);
     /* background: red; */
 }
 
@@ -66,13 +64,13 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     text-align: end;
 }
 .row_display p:nth-of-type(2){
-    color: var(--text-grey-light);
+    color: var(--text2);
     text-align: center;
 }
 
 .divider{
     width: 100%;
-    background: #242F3F;
+    background: var(--dark3);
     height: 1px;
     margin: 6px 8px;
     border-radius: 9999;
@@ -95,21 +93,21 @@ width: 100%;
     align-items: center;
     justify-content: space-between;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 
     cursor: pointer;
 }
 .gas_pump_dropdown button:hover{
-    color: var(--text-grey-white);
+    color: var(--text1);
     cursor: pointer;
 }
 .gas_pump_dropdown button:focus-visible{
-    border: 1px solid var(--text-grey-white)
+    border: 1px solid var(--text1)
 }
 .dropdown_content{
-    border: 1px solid #242F3F;
+    border: 1px solid var(--dark3);
 border-radius: 4px;
 padding: 8px;
 
@@ -139,7 +137,7 @@ transition: all var(--animation-speed) ease-in-out;
 }
 
 .extra_row p{
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }

@@ -41,7 +41,7 @@
     font-size: 18px;
     line-height: 22px;
     font-family: var(--font-logo);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .settings_control div {
@@ -51,7 +51,7 @@
 .info_button {
     outline: none;
     border: none;
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
     border-radius: var(--border-radius);
     width: 70px;
     height: 25px;

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -31,7 +31,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function LimitExtraInfo(props: propsIF) {
+function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         poolPriceDisplay,
@@ -141,13 +141,13 @@ export default function LimitExtraInfo(props: propsIF) {
         {
             title: 'Minimum Rebate Rate',
             tooltipTitle:
-                'The minimum provider fee for market orders in this pool. Provider fees are effectively rebated for limit orders.',
+                'The minimum provider fee for swaps in this pool. Provider fees are effectively rebated for limit orders.',
             data: '0.05%',
         },
         {
             title: 'Current Rebate Rate',
             tooltipTitle:
-                'The current provider fee for market orders. Provider fees are effectively rebated for limit orders.',
+                'The current provider fee for swaps. Provider fees are effectively rebated for limit orders.',
             data: `${liquidityProviderFeeString}%`,
         },
     ];
@@ -225,3 +225,5 @@ export default function LimitExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(LimitExtraInfo);
