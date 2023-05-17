@@ -26,7 +26,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
-import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import {
     diffHashSigCandles,
@@ -36,6 +35,7 @@ import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -96,7 +96,6 @@ interface propsIF {
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
-    chartSettings: chartSettingsMethodsIF;
     isMarketOrLimitModule: boolean;
 }
 
@@ -127,7 +126,6 @@ function TradeCandleStickChart(props: propsIF) {
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
-        chartSettings,
         isMarketOrLimitModule,
     } = props;
 
@@ -138,6 +136,7 @@ function TradeCandleStickChart(props: propsIF) {
     } = useContext(CandleContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const rangeState = useContext(RangeStateContext);
+    const { chartSettings } = useContext(ChartContext);
 
     const [scaleData, setScaleData] = useState<any>();
     const [liquidityScale, setLiquidityScale] = useState<any>();

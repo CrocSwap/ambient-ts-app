@@ -25,11 +25,6 @@ interface AppStateIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    chart: {
-        isFullScreen: boolean;
-        setIsFullScreen: (val: boolean) => void;
-        isEnabled: boolean;
-    };
     server: { isEnabled: boolean };
     subscriptions: { isEnabled: boolean };
     wagmiModal: {

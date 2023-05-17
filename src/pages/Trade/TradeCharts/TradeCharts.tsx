@@ -36,8 +36,8 @@ import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
-import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -65,7 +65,6 @@ interface propsIF {
     setSelectedDate: Dispatch<Date | undefined>;
     TradeSettingsColor: JSX.Element;
     handlePulseAnimation: (type: string) => void;
-    chartSettings: chartSettingsMethodsIF;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
@@ -135,16 +134,16 @@ function TradeCharts(props: propsIF) {
         TradeSettingsColor,
         handlePulseAnimation,
         setSimpleRangeWidth,
-        chartSettings,
     } = props;
 
     const {
-        chart: {
-            isFullScreen: isChartFullScreen,
-            setIsFullScreen: setIsChartFullScreen,
-        },
         tutorial: { isActive: isTutorialActive },
     } = useContext(AppStateContext);
+    const {
+        chartSettings,
+        isFullScreen: isChartFullScreen,
+        setIsFullScreen: setIsChartFullScreen,
+    } = useContext(ChartContext);
 
     const { pathname } = useLocation();
 
@@ -364,7 +363,6 @@ function TradeCharts(props: propsIF) {
                     showVolume={showVolume}
                     showTvl={showTvl}
                     showFeeRate={showFeeRate}
-                    chartSettings={chartSettings}
                 />
             </div>
             <div
@@ -509,7 +507,6 @@ function TradeCharts(props: propsIF) {
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}
                         repositionRangeWidth={props.repositionRangeWidth}
-                        chartSettings={chartSettings}
                         isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>

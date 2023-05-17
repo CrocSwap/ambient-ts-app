@@ -119,10 +119,7 @@ import { Provider } from '@ethersproject/providers';
 import { ethers } from 'ethers';
 import { useSlippage } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
-import {
-    useChartSettings,
-    chartSettingsMethodsIF,
-} from './hooks/useChartSettings';
+import { useChartSettings } from './hooks/useChartSettings';
 import { useSkin } from './hooks/useSkin';
 import { useExchangePrefs } from './hooks/useExchangePrefs';
 import { useSkipConfirm } from './hooks/useSkipConfirm';
@@ -148,6 +145,7 @@ import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { useBlacklist } from './hooks/useBlacklist';
 import { ChainDataContext } from '../contexts/ChainDataContext';
+import { ChartContext } from '../contexts/ChartContext';
 
 // CONTEXT: cached data context - investigate if this is necessary after context changes
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -222,7 +220,6 @@ export default function App() {
             ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
             : true,
     );
-    const [fullScreenChart, setFullScreenChart] = useState(false);
     const { address: userAddress, isConnected } = useAccount();
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -237,11 +234,6 @@ export default function App() {
         process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
             ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
-            : true;
-    const isChartEnabled =
-        !!process.env.REACT_APP_CHART_IS_ENABLED &&
-        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
-            ? false
             : true;
 
     // All of these objects results from use*() functions are assumed to be memoized correct,
@@ -290,12 +282,6 @@ export default function App() {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            // TODO: move into chart context
-            chart: {
-                isFullScreen: fullScreenChart,
-                setIsFullScreen: setFullScreenChart,
-                isEnabled: isChartEnabled,
-            },
             server: { isEnabled: isServerEnabled },
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             wagmiModal: {
@@ -314,12 +300,10 @@ export default function App() {
             skin,
             isChatOpen,
             isChatEnabled,
-            isChartEnabled,
             isServerEnabled,
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
-            fullScreenChart,
             theme,
             selectedOutsideTab,
             outsideControl,
@@ -371,12 +355,6 @@ export default function App() {
             return () => clearInterval(interval);
         }
     }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
-
-    useEffect(() => {
-        if (!currentLocation.startsWith('/trade')) {
-            appState.chart.setIsFullScreen(false);
-        }
-    }, [currentLocation]);
 
     /* ------------------------------------------ END APP STATE CONTEXT ------------------------------------------ */
 
@@ -668,9 +646,26 @@ export default function App() {
     /* ------------------------------------------ END USER DATA CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ CHART CONTEXT ------------------------------------------ */
-    // hook to manage chart settings
-    const chartSettings: chartSettingsMethodsIF = useChartSettings();
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+    const isChartEnabled =
+        !!process.env.REACT_APP_CHART_IS_ENABLED &&
+        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+            ? false
+            : true;
+    const chartSettings = useChartSettings();
 
+    const chartState = {
+        chartSettings,
+        isFullScreen: fullScreenChart,
+        setIsFullScreen: setFullScreenChart,
+        isEnabled: isChartEnabled,
+    };
+
+    useEffect(() => {
+        if (!currentLocation.startsWith('/trade')) {
+            setFullScreenChart(false);
+        }
+    }, [currentLocation]);
     /* ------------------------------------------ END CHART CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ CANDLE CONTEXT ------------------------------------------ */
@@ -1815,7 +1810,7 @@ export default function App() {
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
-        !appState.chart.isFullScreen &&
+        !fullScreenChart &&
         isChainSupported && <Sidebar {...sidebarProps} />;
 
     const sidebarDislayStyle = appState.sidebar.isOpen
@@ -1904,7 +1899,6 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
-        chartSettings,
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -2072,9 +2066,13 @@ export default function App() {
                                                     <CandleContext.Provider
                                                         value={candleState}
                                                     >
-                                                        <Trade
-                                                            {...tradeProps}
-                                                        />
+                                                        <ChartContext.Provider
+                                                            value={chartState}
+                                                        >
+                                                            <Trade
+                                                                {...tradeProps}
+                                                            />
+                                                        </ChartContext.Provider>
                                                     </CandleContext.Provider>
                                                 </RangeStateContext.Provider>
                                             }

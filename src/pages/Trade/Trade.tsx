@@ -36,7 +36,6 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
@@ -44,6 +43,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
+import { ChartContext } from '../../contexts/ChartContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -77,14 +77,12 @@ interface propsIF {
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
     repositionRangeWidth: number;
-    chartSettings: chartSettingsMethodsIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // React functional component
 function Trade(props: propsIF) {
     const {
-        chartSettings,
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -113,7 +111,6 @@ function Trade(props: propsIF) {
 
     const { params } = useParams();
     const {
-        chart: { isFullScreen: isChartFullScreen },
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
@@ -128,6 +125,8 @@ function Trade(props: propsIF) {
         },
         isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
+    const { isFullScreen: isChartFullScreen, chartSettings } =
+        useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -428,7 +427,6 @@ function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
-        chartSettings: chartSettings,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         isTokenABase: isTokenABase,
