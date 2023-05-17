@@ -211,6 +211,7 @@ function Transactions(props: propsIF) {
         changesByPoolWithoutFills.at(0)?.poolHash,
         changesByUserMatchingSelectedTokens.length,
         changesByUserMatchingSelectedTokens.at(0)?.user,
+        isShowAllEnabled,
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
