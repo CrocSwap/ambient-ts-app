@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 export const useUrlPath = () => {
     // index of all base URL pathways in the Ambient app
     const BASE_URL_PATHS = {
@@ -13,6 +14,8 @@ export const useUrlPath = () => {
         testpage: '/testpage',
     };
 
+    const location = useLocation();
+
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
 
@@ -22,6 +25,7 @@ export const useUrlPath = () => {
     }
 
     return {
+        location,
         getPath,
     };
 };

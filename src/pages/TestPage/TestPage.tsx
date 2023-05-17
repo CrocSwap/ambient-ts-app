@@ -7,7 +7,7 @@ export default function TestPage() {
 
     return (
         <section className={styles.main}>
-            <button onClick={() => console.log(urlMethods.getPath('tos'))}>
+            <button onClick={() => console.log(urlMethods.location)}>
                 Get Path
             </button>
         </section>
