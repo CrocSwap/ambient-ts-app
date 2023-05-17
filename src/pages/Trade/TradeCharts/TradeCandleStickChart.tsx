@@ -749,14 +749,6 @@ function TradeCandleStickChart(props: propsIF) {
                 };
 
                 setCandleScale(candleScale);
-
-                // const candleDomain = {
-                //     lastCandleDate: firsShownDomain ,
-                //     domainBoundry: lastShownCandle,
-                //     isFirstFetch: false,
-                // };
-
-                // setCandleDomains(candleDomain);
             }
 
             setPrevPeriod(() => period);
