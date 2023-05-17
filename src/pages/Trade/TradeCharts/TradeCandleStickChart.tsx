@@ -127,7 +127,7 @@ function TradeCandleStickChart(props: propsIF) {
     const rangeState = useContext(RangeStateContext);
 
     const {
-        candleData: { value: candleData, setValue: setCandleData },
+        candleData: { value: candleData },
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
 
