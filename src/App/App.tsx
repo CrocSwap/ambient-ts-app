@@ -67,6 +67,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     candleDomain,
+    candleScale,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import {
@@ -884,6 +885,12 @@ export default function App() {
         lastBlockNumber,
     });
 
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
+        isFetchForTimeframe: false,
+    });
+
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
@@ -909,6 +916,7 @@ export default function App() {
         mainnetQuoteTokenAddress,
         candleTimeLocal,
         isUserIdle,
+        candleScale?.isFetchForTimeframe,
     ]);
 
     const fetchCandles = () => {
@@ -920,6 +928,7 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            const currentTime = Math.floor(Date.now() / 1000);
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
@@ -933,8 +942,10 @@ export default function App() {
                                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: candleTimeLocal.toString(),
-                                // time: '1657833300', // optional
-                                n: '200', // positive integer
+                                time: candleScale?.lastCandleDate
+                                    ? candleScale?.lastCandleDate.toString()
+                                    : currentTime.toString(), // optional
+                                n: candleScale?.nCandle.toString(), // positive integer
                                 // page: '0', // nonnegative integer
                                 chainId: mktDataChainId(chainData.chainId),
                                 dex: 'all',
@@ -1001,10 +1012,13 @@ export default function App() {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
         IS_LOCAL_ENV && console.debug({ candleDataLength });
-        return candleData.candles.reduce((prev, curr) =>
-            prev.time < curr.time ? prev : curr,
-        )?.time;
-    }, [candleData?.candles?.length]);
+
+        const lastDate = new Date(
+            (candleDomains?.lastCandleDate as number) / 1000,
+        ).getTime();
+
+        return lastDate;
+    }, [candleData?.candles?.length, candleDomains?.lastCandleDate]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
@@ -1068,11 +1082,15 @@ export default function App() {
                                 messageCandle;
                         }
                     }
+
                     const newCandleData: CandlesByPoolAndDuration = {
                         pool: candleData.pool,
+
                         duration: candleData.duration,
+
                         candles: newCandles.concat(updatedCandles),
                     };
+
                     setCandleData(newCandleData);
                 }
             })
@@ -2125,6 +2143,10 @@ export default function App() {
         candleDomains: {
             value: candleDomains,
             setValue: setCandleDomains,
+        },
+        candleScale: {
+            value: candleScale,
+            setValue: setCandleScale,
         },
     };
 
