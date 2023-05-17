@@ -319,10 +319,10 @@ function CurrencyConverter(props: propsIF) {
                 setSwitchBoxes(!switchBoxes);
 
                 isTokenAPrimaryLocal
-                    ? tokenAQtyLocal !== ''
+                    ? tokenAQtyLocal !== '' && parseFloat(tokenAQtyLocal) > 0
                         ? setIsSellLoading(true)
                         : null
-                    : tokenBQtyLocal !== ''
+                    : tokenBQtyLocal !== '' && parseFloat(tokenBQtyLocal) > 0
                     ? setIsBuyLoading(true)
                     : null;
 
@@ -502,6 +502,9 @@ function CurrencyConverter(props: propsIF) {
                     setSwapAllowed(false);
                     setSwapButtonErrorMessage('Enter an Amount');
                     setPriceImpact(undefined);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
 
                     if (isNaN(parsedInput) || parsedInput === 0) return;
                 }
@@ -600,6 +603,8 @@ function CurrencyConverter(props: propsIF) {
             tokenBLocal,
             slippageTolerancePercentage,
             isTokenAPrimaryLocal,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
         ],
     );
 
@@ -740,6 +745,9 @@ function CurrencyConverter(props: propsIF) {
                     setSwapAllowed(false);
                     setSwapButtonErrorMessage('Enter an Amount');
                     setPriceImpact(undefined);
+                    isTokenAPrimaryLocal
+                        ? setIsBuyLoading(false)
+                        : setIsSellLoading(false);
                     if (isNaN(parsedInput) || parsedInput === 0) return;
                 }
                 try {
@@ -847,6 +855,8 @@ function CurrencyConverter(props: propsIF) {
             tokenBLocal,
             slippageTolerancePercentage,
             isTokenAPrimaryLocal,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
         ],
     );
 
