@@ -18,40 +18,66 @@
 
 .main_list_container {
     width: 100%;
-    max-height: 90%;
+  height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
     position: relative;
+}
+
+.main_list_container{
+
+
+display: grid;
+grid-template-rows: 20px 1fr ;
+overflow-y: hidden;
+}
+
+
+.main_list_expanded{
+    display: grid;
+    grid-template-rows: 20px 1fr 70px;
+    overflow-y: hidden;
+
 }
 
 .header {
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    
+}
+
+.table_content{
+    flex-grow: 1; /* Allow the content to grow and occupy remaining space */
+    overflow: auto; /* Enable scrolling for the content */
+
+  
 }
 
 .footer {
     background: var(--dark1);
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-  
-    bottom: 0;
+  /* position: sticky;
+    bottom: 0; */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
-    padding: 1rem 0;
-  
+    
+    
 }
 
 .footer_content{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-  width: 60%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 60%;
+   
 }
 /* width */
 .main_list_container::-webkit-scrollbar {

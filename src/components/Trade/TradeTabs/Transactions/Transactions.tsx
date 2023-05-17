@@ -439,9 +439,9 @@ function Transactions(props: propsIF) {
             (!isAccountView && tradePageCheck)) && (
             <div
                 className={styles.footer}
-                style={{
-                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
-                }}
+                // style={{
+                //     position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
+                // }}
             >
                 <p
                     className={styles.showing_text}
@@ -456,7 +456,6 @@ function Transactions(props: propsIF) {
                     />
                     <Pagination
                         count={count}
-                        size='large'
                         page={page}
                         shape='circular'
                         color='secondary'
@@ -573,10 +572,10 @@ function Transactions(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage
@@ -586,18 +585,22 @@ function Transactions(props: propsIF) {
     return (
         <>
             <section
-                className={styles.main_list_container}
+                className={`${styles.main_list_container} ${
+                    expandTradeTable && styles.main_list_expanded
+                }`}
                 style={{ height: portfolioPageStyle }}
             >
-                {headerColumnsDisplay}
+                <div>{headerColumnsDisplay}</div>
 
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <TransactionsSkeletons />
-                ) : (
-                    transactionDataOrNull
-                )}
+                <div className={styles.table_content}>
+                    {debouncedShouldDisplayLoadingAnimation ? (
+                        <TransactionsSkeletons />
+                    ) : (
+                        transactionDataOrNull
+                    )}
+                </div>
 
-                {footerDisplay}
+                <div>{footerDisplay}</div>
             </section>
         </>
     );
