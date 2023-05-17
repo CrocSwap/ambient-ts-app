@@ -123,7 +123,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        tokenInitial={buyTokenData.symbol?.charAt(0)}
                         width='35px'
                     />
                 )}
@@ -143,7 +143,7 @@ export default function ConfirmLimitModal(props: propsIF) {
                     />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        tokenInitial={sellTokenData.symbol?.charAt(0)}
                         width='35px'
                     />
                 )}

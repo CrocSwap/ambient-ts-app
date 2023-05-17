@@ -1289,58 +1289,57 @@ export default function App() {
                                     changes: updatedTransactions,
                                 }),
                             );
-                        }
-                        const result: TokenIF[] = [];
-                        const tokenMap = new Map();
-                        for (const item of updatedTransactions as TransactionIF[]) {
-                            if (!tokenMap.has(item.base)) {
-                                const isFoundInAmbientList = ambientTokens.some(
-                                    (ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.base.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    },
-                                );
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.base, true); // set any value to Map
-                                    result.push({
-                                        name: item.baseName,
-                                        address: item.base,
-                                        symbol: item.baseSymbol,
-                                        decimals: item.baseDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.baseTokenLogoURI,
-                                    });
+
+                            const result: TokenIF[] = [];
+                            const tokenMap = new Map();
+                            for (const item of updatedTransactions as TransactionIF[]) {
+                                if (!tokenMap.has(item.base)) {
+                                    const isFoundInAmbientList =
+                                        ambientTokens.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.base.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.base, true); // set any value to Map
+                                        result.push({
+                                            name: item.baseName,
+                                            address: item.base,
+                                            symbol: item.baseSymbol,
+                                            decimals: item.baseDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.baseTokenLogoURI,
+                                        });
+                                    }
+                                }
+                                if (!tokenMap.has(item.quote)) {
+                                    const isFoundInAmbientList =
+                                        ambientTokens.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.quote.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.quote, true); // set any value to Map
+                                        result.push({
+                                            name: item.quoteName,
+                                            address: item.quote,
+                                            symbol: item.quoteSymbol,
+                                            decimals: item.quoteDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.quoteTokenLogoURI,
+                                        });
+                                    }
                                 }
                             }
-                            if (!tokenMap.has(item.quote)) {
-                                const isFoundInAmbientList = ambientTokens.some(
-                                    (ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.quote.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    },
-                                );
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.quote, true); // set any value to Map
-                                    result.push({
-                                        name: item.quoteName,
-                                        address: item.quote,
-                                        symbol: item.quoteSymbol,
-                                        decimals: item.quoteDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.quoteTokenLogoURI,
-                                    });
-                                }
-                            }
+                            dispatch(setRecentTokens(result));
                         }
-                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.error);
             } catch (error) {
