@@ -226,6 +226,8 @@ export default function Chart(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         unparsedData,
+        prevPeriod,
+        candleTimeInSeconds,
         // candleTime,
     } = props;
 
@@ -5939,7 +5941,12 @@ export default function Chart(props: propsIF) {
 
     // autoScaleF
     useEffect(() => {
-        if (rescale && !isLineDrag) {
+        if (
+            rescale &&
+            !isLineDrag &&
+            prevPeriod === period &&
+            candleTimeInSeconds === period
+        ) {
             changeScale();
         }
     }, [
@@ -5951,6 +5958,8 @@ export default function Chart(props: propsIF) {
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
+        prevPeriod === period,
+        candleTimeInSeconds === period,
     ]);
 
     // Call drawChart()
