@@ -367,7 +367,7 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => setShowDropdownMenu(!showDropdownMenu)}
                 className={styles.dropdown_button}
             >
-                <CiCircleMore size={25} color='var(--text3)' />
+                <CiCircleMore size={25} color='var(--text1)' />
             </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
