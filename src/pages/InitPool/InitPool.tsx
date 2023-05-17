@@ -255,7 +255,8 @@ export default function InitPool(props: propsIF) {
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
                             '/trade/range/chain=' +
-                                baseToken.chainId +
+                                '0x' +
+                                baseToken.chainId.toString(16) +
                                 '&tokenA=' +
                                 baseToken.address +
                                 '&tokenB=' +
@@ -316,7 +317,8 @@ export default function InitPool(props: propsIF) {
                 <Navigate
                     to={
                         '/trade/market/chain=' +
-                        baseToken.chainId +
+                        '0x' +
+                        baseToken.chainId.toString(16) +
                         '&tokenA=' +
                         baseToken.address +
                         '&tokenB=' +
