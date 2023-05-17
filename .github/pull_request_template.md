@@ -5,9 +5,9 @@ _Describe the purpose + content of these changes_
 _Closes #0000_
 
 ### Checklist before requesting a review
-- [ ] Is this a PR ready for merge? (Please convert to a draft PR if not).
+- [ ] Is this PR ready for merge? (Please convert to a draft PR otherwise)
 - [ ] I have performed a self-review of my code.
-- [ ] Did you request feedback from another team member prior to merge? 
+- [ ] Did I request feedback from a team member prior to merge? 
 - [ ] Does my code following the style guide at `docs/CODING-STYLE.md`?
 
 ### Instructions for Reviewer
@@ -23,4 +23,4 @@ _Closes #0000_
 
 2.
 
-### If relevant, list additional work pre-merge (delete logging, code abstraction, etc)
+### If relevant, list additional work to complete pre-merge (delete logging, code abstraction, etc)
