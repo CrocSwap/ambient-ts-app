@@ -926,28 +926,6 @@ export default function Chart(props: propsIF) {
 
             const domainMax = isFutureDay
                 ? new Date().getTime()
-                : new Date(scaleData?.xScale.domain()[1]).getTime();
-
-            const nCandle = Math.floor(
-                (xDomain[1] - xDomain[0]) / (period * 1000),
-            );
-            const candleScale = {
-                lastCandleDate: Math.floor(domainMax / 1000),
-                nCandle: nCandle,
-            };
-
-            setCandleScale(candleScale);
-        }
-    }, [diffHashSig(scaleData?.xScale.domain())]);
-
-    useEffect(() => {
-        if (scaleData) {
-            const xDomain = scaleData?.xScale.domain();
-            const isFutureDay =
-                new Date(xDomain[1]).getTime() > new Date().getTime();
-
-            const domainMax = isFutureDay
-                ? new Date().getTime()
                 : new Date(xDomain[1]).getTime();
 
             const nCandle = Math.floor(
@@ -956,6 +934,7 @@ export default function Chart(props: propsIF) {
             const candleScale = {
                 lastCandleDate: Math.floor(domainMax / 1000),
                 nCandle: nCandle,
+                isFetchForTimeframe: false,
             };
 
             setCandleScale(candleScale);
@@ -997,7 +976,6 @@ export default function Chart(props: propsIF) {
                                 ? lastCandleDate
                                 : filtered[0].time * 1000,
                         domainBoundry: finalData,
-                        isFirstFetch: false,
                     };
 
                     setCandleDomains(candleDomain);
@@ -1007,7 +985,6 @@ export default function Chart(props: propsIF) {
                 const candleDomain = {
                     lastCandleDate: new Date().getTime(),
                     domainBoundry: lastCandleDate,
-                    isFirstFetch: false,
                 };
 
                 setCandleDomains(candleDomain);
@@ -7002,30 +6979,6 @@ export default function Chart(props: propsIF) {
             }
         });
     };
-
-    useEffect(() => {
-        if (scaleData) {
-            const xDomain = scaleData?.xScale.domain();
-
-            const isFutureDay =
-                new Date(xDomain[1]).getTime() > new Date().getTime();
-
-            const domainMax = isFutureDay
-                ? new Date().getTime()
-                : new Date(xDomain[1]).getTime();
-
-            const domainMin = xDomain[0];
-
-            const candleDomain = {
-                lastCandleDate: Math.floor(domainMax / 1000),
-                domainBoundry: Math.floor(domainMin / 1000),
-                isFirstFetch: false,
-            };
-
-            setCandleDomains(candleDomain);
-        }
-    }, [period]);
-
     return (
         <div
             ref={d3Container}

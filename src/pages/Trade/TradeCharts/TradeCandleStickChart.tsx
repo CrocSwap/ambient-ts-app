@@ -127,7 +127,7 @@ function TradeCandleStickChart(props: propsIF) {
     const rangeState = useContext(RangeStateContext);
 
     const {
-        candleData: { value: candleData },
+        candleData: { value: candleData, setValue: setCandleData },
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
 
@@ -186,6 +186,10 @@ function TradeCandleStickChart(props: propsIF) {
     const candleTimeInSeconds: number = isMarketOrLimitModule
         ? chartSettings.candleTime.market.time
         : chartSettings.candleTime.range.time;
+
+    const {
+        candleScale: { setValue: setCandleScale },
+    } = useContext(CandleContext);
 
     useEffect(() => {
         setIsLoading(true);
@@ -732,7 +736,27 @@ function TradeCandleStickChart(props: propsIF) {
                 const lastShownCandle = firsShownDomain - newDiffDomain;
 
                 scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
-                scaleData.xScaleCopy.domain([lastShownCandle, firsShownDomain]);
+                // scaleData.xScaleCopy.domain([lastShownCandle, firsShownDomain]);
+
+                const nCandle = Math.floor(
+                    (firsShownDomain - lastShownCandle) / (period * 1000),
+                );
+
+                const candleScale = {
+                    lastCandleDate: Math.floor(firsShownDomain / 1000),
+                    nCandle: nCandle,
+                    isFetchForTimeframe: true,
+                };
+
+                setCandleScale(candleScale);
+
+                // const candleDomain = {
+                //     lastCandleDate: firsShownDomain ,
+                //     domainBoundry: lastShownCandle,
+                //     isFirstFetch: false,
+                // };
+
+                // setCandleDomains(candleDomain);
             }
 
             setPrevPeriod(() => period);

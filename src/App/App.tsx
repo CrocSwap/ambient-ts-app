@@ -885,6 +885,12 @@ export default function App() {
         lastBlockNumber,
     });
 
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
+        isFetchForTimeframe: false,
+    });
+
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
@@ -910,6 +916,7 @@ export default function App() {
         mainnetQuoteTokenAddress,
         candleTimeLocal,
         isUserIdle,
+        candleScale?.isFetchForTimeframe,
     ]);
 
     const fetchCandles = () => {
@@ -922,8 +929,6 @@ export default function App() {
             candleTimeLocal
         ) {
             const currentTime = Math.floor(Date.now() / 1000);
-            console.log('nası', { candleScale });
-
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
@@ -992,12 +997,6 @@ export default function App() {
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
-        isFirstFetch: false,
-    });
-
-    const [candleScale, setCandleScale] = useState<candleScale>({
-        lastCandleDate: undefined,
-        nCandle: 200,
     });
 
     const domainBoundaryInSeconds = Math.floor(
@@ -1089,9 +1088,7 @@ export default function App() {
 
                         duration: candleData.duration,
 
-                        candles: candleDomains?.isFirstFetch
-                            ? fetchedCandles
-                            : newCandles.concat(updatedCandles),
+                        candles: newCandles.concat(updatedCandles),
                     };
 
                     setCandleData(newCandleData);
