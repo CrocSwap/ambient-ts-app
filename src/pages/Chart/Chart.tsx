@@ -3551,7 +3551,7 @@ export default function Chart(props: propsIF) {
             if (canvas !== null) {
                 const height = canvas.height;
 
-                const factor = Math.floor(height / 60);
+                const factor = height < 500 ? 5 : height.toString().length * 2;
 
                 context.stroke();
                 context.textAlign = 'left';
