@@ -59,7 +59,7 @@ import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
@@ -92,7 +92,7 @@ function Reposition(props: propsIF) {
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
-        useContext(RangeStateContext);
+        useContext(RangeContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');

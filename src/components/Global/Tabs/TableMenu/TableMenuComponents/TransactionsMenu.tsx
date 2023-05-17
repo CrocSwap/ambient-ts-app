@@ -36,6 +36,7 @@ import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -63,11 +64,13 @@ export default function TransactionsMenu(props: propsIF) {
     } = props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
-        sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 

@@ -38,7 +38,7 @@ import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -93,7 +93,7 @@ function Ranges(props: propsIF) {
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,

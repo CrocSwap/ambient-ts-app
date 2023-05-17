@@ -31,7 +31,7 @@ import {
     diffHashSigCandles,
     diffHashSigLiquidity,
 } from '../../../utils/functions/diffHashSig';
-import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -135,7 +135,7 @@ function TradeCandleStickChart(props: propsIF) {
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
     const { poolPriceDisplay } = useContext(PoolContext);
-    const rangeState = useContext(RangeStateContext);
+    const rangeState = useContext(RangeContext);
     const { chartSettings } = useContext(ChartContext);
 
     const [scaleData, setScaleData] = useState<any>();

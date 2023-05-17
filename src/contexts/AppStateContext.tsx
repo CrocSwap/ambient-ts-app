@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 import { globalModalMethodsIF } from '../App/components/GlobalModal/useGlobalModal';
 import { globalPopupMethodsIF } from '../App/components/GlobalPopup/useGlobalPopup';
-import { sidebarMethodsIF } from '../App/hooks/useSidebar';
 import { skinMethodsIF } from '../App/hooks/useSkin';
 import { snackbarMethodsIF } from '../components/Global/SnackbarComponent/useSnackbar';
 
@@ -9,7 +8,6 @@ interface AppStateIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     globalModal: globalModalMethodsIF;
     globalPopup: globalPopupMethodsIF;
-    sidebar: sidebarMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     skin: skinMethodsIF;

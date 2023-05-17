@@ -27,8 +27,8 @@ import NoTableData from '../NoTableData/NoTableData';
 import Pagination from '../../../Global/Pagination/Pagination';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -70,7 +70,7 @@ function Orders(props: propsIF) {
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);

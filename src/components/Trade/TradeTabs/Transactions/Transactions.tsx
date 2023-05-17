@@ -29,7 +29,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -79,7 +79,7 @@ function Transactions(props: propsIF) {
 
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.

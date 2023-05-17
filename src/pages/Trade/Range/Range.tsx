@@ -79,7 +79,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { RangeContext } from '../../../contexts/RangeContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
@@ -169,7 +169,7 @@ function Range(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
-    } = useContext(RangeStateContext);
+    } = useContext(RangeContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange, ackTokens } =
         useContext(UserPreferenceContext);
 

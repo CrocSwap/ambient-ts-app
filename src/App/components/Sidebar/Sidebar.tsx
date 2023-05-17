@@ -29,7 +29,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import { TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { TokenPairIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
@@ -39,10 +39,9 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
-import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
@@ -56,16 +55,12 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    analyticsSearchInput: string;
-    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
-    recentPools: recentPoolsMethodsIF;
 }
 
 function Sidebar(props: propsIF) {
@@ -79,14 +74,11 @@ function Sidebar(props: propsIF) {
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        setAnalyticsSearchInput,
-        poolList,
         verifyToken,
         tokenPair,
-        recentPools,
     } = props;
 
-    const { sidebar } = useContext(AppStateContext);
+    const { sidebar, poolList } = useContext(SidebarContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -95,6 +87,9 @@ function Sidebar(props: propsIF) {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
 
@@ -128,7 +123,6 @@ function Sidebar(props: propsIF) {
                 <RecentPools
                     tradeData={tradeData}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    recentPools={recentPools}
                 />
             ),
         },
@@ -142,7 +136,6 @@ function Sidebar(props: propsIF) {
                 <TopPools
                     tradeData={tradeData}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    poolList={poolList}
                 />
             ),
         },

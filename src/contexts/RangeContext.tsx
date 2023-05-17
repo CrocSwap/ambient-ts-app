@@ -15,6 +15,4 @@ interface RangeStateIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
 }
 
-export const RangeStateContext = createContext<RangeStateIF>(
-    {} as RangeStateIF,
-);
+export const RangeContext = createContext<RangeStateIF>({} as RangeStateIF);

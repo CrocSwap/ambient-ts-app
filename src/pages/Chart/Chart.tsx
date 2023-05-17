@@ -53,9 +53,9 @@ import {
     diffHashSig,
     diffHashSigChart,
 } from '../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../contexts/SidebarContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -216,7 +216,7 @@ export default function Chart(props: propsIF) {
 
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
     const {

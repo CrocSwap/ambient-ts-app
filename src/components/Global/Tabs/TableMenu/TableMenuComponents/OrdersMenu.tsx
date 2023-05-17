@@ -25,6 +25,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -57,8 +58,10 @@ export default function OrdersMenu(props: propsIF) {
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
-        sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const [
         isModalOpen,

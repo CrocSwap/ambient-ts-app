@@ -29,7 +29,7 @@ import RangesRow from './RangesTable/RangesRow';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 // interface for props
 interface propsIF {
@@ -71,7 +71,7 @@ function Leaderboard(props: propsIF) {
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state?.userData,

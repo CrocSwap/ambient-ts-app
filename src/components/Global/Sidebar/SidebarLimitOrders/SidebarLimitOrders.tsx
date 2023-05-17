@@ -6,6 +6,7 @@ import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -31,11 +32,13 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
-        sidebar: { close: closeSidebar },
     } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const {
+        sidebar: { close: closeSidebar },
+    } = useContext(SidebarContext);
 
     const location = useLocation();
     const navigate = useNavigate();

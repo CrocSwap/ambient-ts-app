@@ -2,20 +2,19 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './RecentPools.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
-import {
-    recentPoolsMethodsIF,
-    SmallerPoolIF,
-} from '../../../../App/hooks/useRecentPools';
-import { memo } from 'react';
+import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import { memo, useContext } from 'react';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     tradeData: tradeData;
     cachedPoolStatsFetch: PoolStatsFn;
-    recentPools: recentPoolsMethodsIF;
 }
 
 function RecentPools(props: propsIF) {
-    const { tradeData, cachedPoolStatsFetch, recentPools } = props;
+    const { tradeData, cachedPoolStatsFetch } = props;
+
+    const { recentPools } = useContext(SidebarContext);
 
     return (
         <div className={styles.container}>
