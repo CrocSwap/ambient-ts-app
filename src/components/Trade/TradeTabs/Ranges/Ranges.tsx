@@ -10,6 +10,7 @@ import {
     useMemo,
     useContext,
     memo,
+    useRef,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -21,7 +22,7 @@ import {
     addPositionsByPool,
     addPositionsByUser,
 } from '../../../../utils/state/graphDataSlice';
-import Pagination from '../../../Global/Pagination/Pagination';
+import { Pagination } from '@mui/material';
 import {
     useAppDispatch,
     useAppSelector,
@@ -37,9 +38,10 @@ import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -75,6 +77,7 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    isAccountView: boolean;
 }
 
 // react functional component
@@ -105,6 +108,7 @@ function Ranges(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
+        isAccountView,
     } = props;
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -275,58 +279,95 @@ function Ranges(props: propsIF) {
     ]);
 
     // ---------------------
-    const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
     const showColumns = useMediaQuery('(max-width: 1900px)');
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
-
-    const { height } = useWindowDimensions();
-    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    const regularRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 450 : 350)) / 36,
-    );
-    const showColumnRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 300)) / 60,
-    );
-    const rangesPerPage = showColumns
-        ? showColumnRangesItems
-        : regularRangesItems;
 
     useEffect(() => {
         setCurrentPage(1);
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
-    const indexOfLastRanges = currentPage * rangesPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRanges = sortedPositions?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
-    );
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+
+    const count = Math.ceil(sortedPositions.length / rowsPerPage);
+    const _DATA = usePagination(sortedPositions, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
+    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
+        useState(false);
+    const listRef = useRef<HTMLUListElement>(null);
+    const element = listRef.current;
+    useEffect(() => {
+        if (element) {
+            const resizeObserver = new ResizeObserver((entries) => {
+                const firstEntry = entries[0];
+                const elementHeight = firstEntry.contentRect.height;
+                const screenHeight = window.innerHeight;
+                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {rangesPerPage > 0 &&
-                ((isOnPortfolioPage && rangeData.length > 7) ||
-                    (!isOnPortfolioPage && tradePageCheck)) && (
-                    <Pagination
-                        itemsPerPage={rangesPerPage}
-                        totalItems={rangeData.length}
-                        paginate={paginate}
-                        currentPage={currentPage}
+                setIsHeightGreaterThanHalf(isGreaterThanHalf);
+            });
+
+            resizeObserver.observe(element);
+
+            return () => {
+                resizeObserver.unobserve(element);
+            };
+        }
+    }, [element]);
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && rangeData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div
+                className={styles.footer}
+                style={{
+                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
+                }}
+            >
+                <p
+                    className={styles.showing_text}
+                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedPositions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
                     />
-                )}
-        </div>
-    );
+                    <Pagination
+                        count={count}
+                        size='large'
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                    />
+                </div>
+            </div>
+        );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
@@ -518,7 +559,7 @@ function Ranges(props: propsIF) {
         />
     ));
 
-    const currentRowItemContent = currentRanges.map((position, idx) => (
+    const currentRowItemContent = _DATA.currentData.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
@@ -560,7 +601,7 @@ function Ranges(props: propsIF) {
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         <div>
-            {currentRowItemContent}
+            <ul ref={listRef}>{currentRowItemContent}</ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
