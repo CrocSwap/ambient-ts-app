@@ -445,7 +445,7 @@ function CurrencyConverter(props: propsIF) {
             } else if (tokenAAmount <= 0) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
-            } else if (buyQtyString === '' || sellQtyString === '') {
+            } else if (tokenAQtyLocal === '') {
                 setSwapButtonErrorMessage('...');
             } else {
                 if (isWithdrawFromDexChecked) {
@@ -480,8 +480,8 @@ function CurrencyConverter(props: propsIF) {
             tokenBLocal,
             slippageTolerancePercentage,
             isTokenAPrimaryLocal,
-            buyQtyString,
-            sellQtyString,
+            tokenAQtyLocal,
+            tokenBQtyLocal,
         ],
     );
 
