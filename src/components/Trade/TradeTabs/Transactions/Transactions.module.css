@@ -28,14 +28,14 @@
 
 
 display: grid;
-grid-template-rows: 20px 1fr ;
+grid-template-rows: 40px 1fr ;
 overflow-y: hidden;
 }
 
 
 .main_list_expanded{
     display: grid;
-    grid-template-rows: 20px 1fr 70px;
+    grid-template-rows: 40px 1fr 70px;
     overflow-y: hidden;
 
 }
@@ -75,10 +75,11 @@ overflow-y: hidden;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     margin: 0 auto;
     width: 60%;
-   
-}
+
+  }
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
