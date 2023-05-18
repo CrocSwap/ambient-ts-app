@@ -65,10 +65,6 @@ interface propsIF {
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenList: TokenIF[];
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
-    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
-    repositionRangeWidth: number;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
@@ -88,10 +84,6 @@ function Trade(props: propsIF) {
         searchableTokens,
         isTokenABase,
         poolPriceNonDisplay,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
     } = props;
 
     const { params } = useParams();
@@ -418,7 +410,6 @@ function Trade(props: propsIF) {
         liquidityData: liquidityData,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
-        simpleRangeWidth: simpleRangeWidth,
         upBodyColor: upBodyColor,
         upBorderColor: upBorderColor,
         downBodyColor: downBodyColor,
@@ -431,9 +422,6 @@ function Trade(props: propsIF) {
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        setRepositionRangeWidth: setRepositionRangeWidth,
-        repositionRangeWidth: repositionRangeWidth,
     };
 
     const tradeTabsProps = {
@@ -460,7 +448,6 @@ function Trade(props: propsIF) {
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,

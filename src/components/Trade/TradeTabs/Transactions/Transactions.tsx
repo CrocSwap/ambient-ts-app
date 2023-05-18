@@ -48,7 +48,6 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     setSelectedDate?: Dispatch<Date | undefined>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 function Transactions(props: propsIF) {
     const {
@@ -59,7 +58,6 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         changeState,
         setSelectedDate,
-        setSimpleRangeWidth,
         isAccountView,
     } = props;
 
@@ -81,9 +79,6 @@ function Transactions(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -469,7 +464,6 @@ function Transactions(props: propsIF) {
             view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
-            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
     const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
@@ -483,7 +477,6 @@ function Transactions(props: propsIF) {
             view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
-            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
     const handleKeyDownViewTransaction = (

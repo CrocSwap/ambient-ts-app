@@ -11,7 +11,6 @@ import logo from '../../../assets/images/logos/ambient_logo.png';
 import logoText from '../../../assets/images/logos/logo_text.png';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import { useAccount, useEnsName, useSwitchNetwork } from 'wagmi';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
@@ -22,22 +21,23 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 
 interface HeaderPropsIF {
     clickLogout: () => void;
     shouldDisplayAccountTab: boolean | undefined;
-    recentPools: recentPoolsMethodsIF;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
-    const { recentPools, clickLogout } = props;
+    const { clickLogout } = props;
 
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const { isChainSupported } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
+    const { recentPools } = useContext(SidebarContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
 

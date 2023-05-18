@@ -1,14 +1,6 @@
 import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import {
-    Dispatch,
-    memo,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
@@ -36,7 +28,6 @@ interface propsIF {
     view2: boolean;
     showColumns: boolean;
     isAccountView: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 function TransactionRow(props: propsIF) {
     const {
@@ -47,7 +38,6 @@ function TransactionRow(props: propsIF) {
         tx,
         isAccountView,
         showPair,
-        setSimpleRangeWidth,
     } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -320,7 +310,6 @@ function TransactionRow(props: propsIF) {
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual
                     }
-                    setSimpleRangeWidth={setSimpleRangeWidth}
                     handleWalletClick={handleWalletClick}
                 />
             </li>

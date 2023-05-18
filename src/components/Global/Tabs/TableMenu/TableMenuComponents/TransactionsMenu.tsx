@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    useRef,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useContext,
-} from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
@@ -38,6 +31,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -47,25 +41,20 @@ interface propsIF {
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     handleWalletClick: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const {
-        tradeData,
-        isBaseTokenMoneynessGreaterOrEqual,
-        tx,
-        isAccountView,
-        setSimpleRangeWidth,
-    } = props;
+    const { tradeData, isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } =
+        props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);

@@ -1635,10 +1635,8 @@ export default function App() {
 
     // props for <PageHeader/> React element
     const headerProps = {
-        isConnected,
         clickLogout,
         shouldDisplayAccountTab,
-        recentPools,
         getTokenByAddress,
     };
 
@@ -1656,7 +1654,6 @@ export default function App() {
     // props for <Swap/> React element
     const swapProps = {
         tokenPairLocal,
-        isConnected,
         provider,
         isPairStable,
         baseTokenBalance,
@@ -1751,16 +1748,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-        setMaxPrice: setMaxRangePrice,
-        setMinPrice: setMinRangePrice,
-        setChartTriggeredBy,
-        chartTriggeredBy,
-        minPrice: minRangePrice,
-        maxPrice: maxRangePrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
         cachedFetchTokenPrice,
     };
 
@@ -1879,7 +1866,6 @@ export default function App() {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         provider,
-        candleData,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenBalance,
@@ -1893,21 +1879,6 @@ export default function App() {
         limitRate: '',
         searchableTokens: searchableTokens,
         setTokenPairLocal,
-        isCandleSelected,
-        setIsCandleSelected,
-        fetchingCandle,
-        setFetchingCandle,
-        isCandleDataNull,
-        setIsCandleDataNull,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setCandleDomains,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
     };
 
     const accountProps = {
@@ -1932,9 +1903,7 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        openModalWallet: openWagmiModalWallet,
         mainnetProvider,
-        setSimpleRangeWidth,
     };
 
     const repositionProps = {
@@ -1942,8 +1911,6 @@ export default function App() {
         provider,
         isDenomBase: tradeData.isDenomBase,
         isPairStable,
-        setSimpleRangeWidth: setRepositionRangeWidth,
-        simpleRangeWidth: repositionRangeWidth,
     };
 
     const chatOnClose = useCallback(() => {
@@ -1951,6 +1918,7 @@ export default function App() {
     }, []);
 
     const chatProps = {
+        // CONTEXT: remove and figure out why we're passing an error message through
         onClose: chatOnClose,
         currentPool: currentPoolInfo,
         isFullScreen: true,

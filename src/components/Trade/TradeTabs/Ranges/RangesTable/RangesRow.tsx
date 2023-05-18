@@ -1,12 +1,4 @@
-import {
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useRef,
-    useState,
-    useContext,
-    memo,
-} from 'react';
+import { useEffect, useRef, useState, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
@@ -44,7 +36,6 @@ interface propsIF {
     isLeaderboard?: boolean;
     idx: number;
     cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 function RangesRow(props: propsIF) {
@@ -56,7 +47,6 @@ function RangesRow(props: propsIF) {
         position,
         isAccountView,
         isLeaderboard,
-        setSimpleRangeWidth,
     } = props;
     const {
         globalModal: { open: openGlobalModal },
@@ -361,7 +351,6 @@ function RangesRow(props: propsIF) {
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         showHighlightedButton={showHighlightedButton}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
                         handleAccountClick={handleAccountClick}
                     />
                 </li>

@@ -1,13 +1,5 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    memo,
-} from 'react';
+import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import {
     useLocation,
     // useNavigate,
@@ -67,19 +59,10 @@ interface propsIF {
     provider: ethers.providers.Provider;
     isPairStable: boolean;
     tokenPair: TokenPairIF;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
 }
 
 function Reposition(props: propsIF) {
-    const {
-        isDenomBase,
-        provider,
-        isPairStable,
-        tokenPair,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-    } = props;
+    const { isDenomBase, provider, isPairStable, tokenPair } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -91,8 +74,12 @@ function Reposition(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
-    const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
-        useContext(RangeContext);
+    const {
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
+    } = useContext(RangeContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -758,7 +745,6 @@ function Reposition(props: propsIF) {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
-                setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
                 isPairStable={isPairStable}
                 resetTxHash={() => setNewRepositionTransactionHash('')}

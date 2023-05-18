@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    useRef,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useContext,
-} from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
@@ -34,6 +27,7 @@ import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 // interface for React functional component props
 interface propsIF {
     baseTokenBalance: string;
@@ -49,7 +43,6 @@ interface propsIF {
     isPositionEmpty: boolean;
     showHighlightedButton: boolean;
     isEmpty: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
 }
@@ -64,13 +57,13 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount,
         rangeDetailsProps,
         position,
-        setSimpleRangeWidth,
         isPositionInRange,
     } = props;
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
 
     const { isAmbient } = rangeDetailsProps;
 

@@ -108,8 +108,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -136,8 +134,6 @@ function Range(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
         cachedFetchTokenPrice,
     } = props;
 
@@ -153,6 +149,8 @@ function Range(props: propsIF) {
     const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
         useContext(PoolContext);
     const {
+        simpleRangeWidth,
+        setSimpleRangeWidth,
         minRangePrice: minPrice,
         maxRangePrice: maxPrice,
         setMaxRangePrice: setMaxPrice,

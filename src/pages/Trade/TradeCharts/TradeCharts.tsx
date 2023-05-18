@@ -42,7 +42,6 @@ interface propsIF {
     limitTick: number | undefined;
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
-    simpleRangeWidth: number | undefined;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -55,9 +54,6 @@ interface propsIF {
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
     TradeSettingsColor: JSX.Element;
-    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    repositionRangeWidth: number;
 }
 
 export interface CandleChartData {
@@ -117,12 +113,7 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const {
-        selectedDate,
-        setSelectedDate,
-        TradeSettingsColor,
-        setSimpleRangeWidth,
-    } = props;
+    const { selectedDate, setSelectedDate, TradeSettingsColor } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -468,7 +459,6 @@ function TradeCharts(props: propsIF) {
                         limitTick={props.limitTick}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
-                        simpleRangeWidth={props.simpleRangeWidth}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}
@@ -491,9 +481,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
-                        setRepositionRangeWidth={props.setRepositionRangeWidth}
-                        repositionRangeWidth={props.repositionRangeWidth}
                         isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>

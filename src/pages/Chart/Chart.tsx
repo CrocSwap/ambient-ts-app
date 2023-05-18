@@ -6,9 +6,7 @@ import moment from 'moment';
 
 import {
     DetailedHTMLProps,
-    Dispatch,
     HTMLAttributes,
-    SetStateAction,
     useCallback,
     useContext,
     useEffect,
@@ -58,6 +56,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { handlePulseAnimation } from '../../utils/functions/handlePulseAnimation';
+import { RangeContext } from '../../contexts/RangeContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -146,18 +145,6 @@ interface propsIF {
     liquidityScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityDepthScale: any;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
-    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    rangeSimpleRangeWidth: number | undefined;
-    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
-    repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
     candleTime: candleTimeIF;
 }
 
@@ -197,18 +184,6 @@ export default function Chart(props: propsIF) {
         liquidityData,
         liquidityScale,
         liquidityDepthScale,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setRangeSimpleRangeWidth,
-        rangeSimpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         // candleTime,
     } = props;
 
@@ -222,6 +197,20 @@ export default function Chart(props: propsIF) {
     } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
+    const {
+        minRangePrice: minPrice,
+        setMinRangePrice: setMinPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+        simpleRangeWidth: rangeSimpleRangeWidth,
+        setSimpleRangeWidth: setRangeSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+    } = useContext(RangeContext);
     const { expandTradeTable } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(

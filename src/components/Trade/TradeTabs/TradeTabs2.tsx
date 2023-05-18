@@ -70,7 +70,6 @@ interface propsIF {
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
@@ -100,7 +99,6 @@ function TradeTabs2(props: propsIF) {
         isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
-        setSimpleRangeWidth,
         candleTime,
     } = props;
     const {
@@ -358,7 +356,6 @@ function TradeTabs2(props: propsIF) {
         notOnTradeRoute: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: false,
     };
 
@@ -373,7 +370,6 @@ function TradeTabs2(props: propsIF) {
         filter: filter,
         changeState: changeState,
         setSelectedDate: setSelectedDate,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: false,
     };
 

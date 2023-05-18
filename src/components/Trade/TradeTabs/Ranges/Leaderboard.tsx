@@ -45,7 +45,6 @@ interface propsIF {
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // react functional component
@@ -58,7 +57,6 @@ function Leaderboard(props: propsIF) {
         quoteTokenDexBalance,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        setSimpleRangeWidth,
     } = props;
 
     const { expandTradeTable, showAllData } = useContext(TradeTableContext);
@@ -339,7 +337,6 @@ function Leaderboard(props: propsIF) {
             isLeaderboard={true}
             idx={idx + 1}
             showPair={showPair}
-            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 

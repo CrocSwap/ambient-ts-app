@@ -60,7 +60,6 @@ interface propsIF {
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     cachedPositionUpdateQuery: PositionUpdateFn;
     isAccountView: boolean;
 }
@@ -76,7 +75,6 @@ function Ranges(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         cachedQuerySpotPrice,
-        setSimpleRangeWidth,
         cachedPositionUpdateQuery,
         isAccountView,
     } = props;
@@ -527,7 +525,6 @@ function Ranges(props: propsIF) {
             isAccountView={isAccountView}
             idx={idx}
             showPair={showPair}
-            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 
@@ -546,7 +543,6 @@ function Ranges(props: propsIF) {
             isAccountView={isAccountView}
             idx={idx}
             showPair={showPair}
-            setSimpleRangeWidth={setSimpleRangeWidth}
         />
     ));
 

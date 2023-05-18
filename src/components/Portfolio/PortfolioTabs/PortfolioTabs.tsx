@@ -2,8 +2,6 @@ import {
     // START: Import React and Dongles
     useEffect,
     useState,
-    Dispatch,
-    SetStateAction,
     useContext,
 } from 'react';
 // START: Import JSX Functional Components
@@ -69,7 +67,6 @@ interface propsIF {
     quoteTokenDexBalance: string;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 // React functional component
@@ -90,7 +87,6 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        setSimpleRangeWidth,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -340,7 +336,6 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
     };
 
@@ -353,7 +348,6 @@ export default function PortfolioTabs(props: propsIF) {
         changesInSelectedCandle: undefined,
         tokenList: tokenList,
         isCandleSelected: false,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
     };
 

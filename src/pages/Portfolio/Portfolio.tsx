@@ -44,6 +44,7 @@ import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     ambientTokens: TokenIF[];
@@ -62,7 +63,6 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
-    openModalWallet: () => void;
     searchableTokens: TokenIF[];
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -74,7 +74,6 @@ interface propsIF {
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
 function Portfolio(props: propsIF) {
@@ -96,19 +95,20 @@ function Portfolio(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        openModalWallet,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
         mainnetProvider,
-        setSimpleRangeWidth,
     } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
     const { data: ensName } = useEnsName({ address: userAddress });
 
+    const {
+        wagmiModal: { open: openModalWallet },
+    } = useContext(AppStateContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -506,7 +506,6 @@ function Portfolio(props: propsIF) {
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         fullLayoutToggle: fullLayerToggle,
-        setSimpleRangeWidth: setSimpleRangeWidth,
     };
 
     const portfolioBannerProps = {

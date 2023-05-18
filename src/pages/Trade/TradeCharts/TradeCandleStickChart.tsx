@@ -31,7 +31,6 @@ import {
     diffHashSigCandles,
     diffHashSigLiquidity,
 } from '../../../utils/functions/diffHashSig';
-import { RangeContext } from '../../../contexts/RangeContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -64,7 +63,6 @@ interface propsIF {
     limitTick: number | undefined;
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
-    simpleRangeWidth: number | undefined;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleChartData | undefined>
     >;
@@ -91,9 +89,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    repositionRangeWidth: number;
     isMarketOrLimitModule: boolean;
 }
 
@@ -120,9 +115,6 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        setSimpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
         isMarketOrLimitModule,
     } = props;
 
@@ -132,7 +124,6 @@ function TradeCandleStickChart(props: propsIF) {
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
     const { poolPriceDisplay } = useContext(PoolContext);
-    const rangeState = useContext(RangeContext);
     const { chartSettings } = useContext(ChartContext);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -809,7 +800,6 @@ function TradeCandleStickChart(props: propsIF) {
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
-                        rangeSimpleRangeWidth={props.simpleRangeWidth}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}
@@ -834,21 +824,6 @@ function TradeCandleStickChart(props: propsIF) {
                         setShowTooltip={props.setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
-                        minPrice={rangeState.minRangePrice}
-                        maxPrice={rangeState.maxRangePrice}
-                        setMaxPrice={rangeState.setMaxRangePrice}
-                        setMinPrice={rangeState.setMinRangePrice}
-                        rescaleRangeBoundariesWithSlider={
-                            rangeState.rescaleRangeBoundariesWithSlider
-                        }
-                        setRescaleRangeBoundariesWithSlider={
-                            rangeState.setRescaleRangeBoundariesWithSlider
-                        }
-                        setRangeSimpleRangeWidth={setSimpleRangeWidth}
-                        setRepositionRangeWidth={setRepositionRangeWidth}
-                        repositionRangeWidth={repositionRangeWidth}
-                        setChartTriggeredBy={rangeState.setChartTriggeredBy}
-                        chartTriggeredBy={rangeState.chartTriggeredBy}
                         candleTime={
                             isMarketOrLimitModule
                                 ? chartSettings.candleTime.market
