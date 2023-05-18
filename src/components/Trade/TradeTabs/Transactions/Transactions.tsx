@@ -412,7 +412,7 @@ function Transactions(props: propsIF) {
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
 
     const listRef = useRef<HTMLUListElement>(null);
-
+    const sPagination = useMediaQuery('(max-width: 800px)');
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && transactionData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
@@ -433,6 +433,7 @@ function Transactions(props: propsIF) {
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
                     <p
                         className={styles.showing_text}

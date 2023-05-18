@@ -359,6 +359,7 @@ function Orders(props: propsIF) {
     const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && limitOrderData.length > 10) ||
@@ -380,6 +381,7 @@ function Orders(props: propsIF) {
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
                     <p
                         className={styles.showing_text}
@@ -509,10 +511,18 @@ function Orders(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
     const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 9rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage

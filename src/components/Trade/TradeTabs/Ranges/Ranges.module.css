@@ -395,8 +395,22 @@ overflow-y: hidden;
         font-size: 10px;
     }
 }
-@media only screen and (max-width: 1200px) {
-    .footer {
+@media only screen and (max-width: 800px) {
+    .main_list_expanded{
+        display: grid;
+        grid-template-rows: 40px 1fr 150px;
+        overflow-y: hidden;
+    
+    }
+
+   
+    .footer_content {
+       width: 95%;
+       flex-direction: column;
+       gap: 4px;
+    }
+
+    .showing_text{
         display: none;
     }
 }

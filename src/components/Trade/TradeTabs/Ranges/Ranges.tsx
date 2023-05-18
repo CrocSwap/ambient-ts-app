@@ -314,6 +314,7 @@ function Ranges(props: propsIF) {
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 10) ||
@@ -335,6 +336,7 @@ function Ranges(props: propsIF) {
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
                     <p
                         className={styles.showing_text}
@@ -562,14 +564,22 @@ function Ranges(props: propsIF) {
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
-
     const mobileView = useMediaQuery('(max-width: 1200px)');
+
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
 
     const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 9rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
+
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
