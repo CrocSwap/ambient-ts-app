@@ -123,7 +123,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleData: { value: candleData },
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
     const { chartSettings } = useContext(ChartContext);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -145,6 +145,12 @@ function TradeCandleStickChart(props: propsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const poolPriceDisplay = poolPriceWithoutDenom
+        ? denominationsInBase && poolPriceWithoutDenom
+            ? 1 / poolPriceWithoutDenom
+            : poolPriceWithoutDenom ?? 0
+        : 0;
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
