@@ -82,13 +82,13 @@ function TransferCurrencySelector(props: propsIF) {
                             <img
                                 className={styles.token_list_img}
                                 src={uriToHttp(selectedToken.logoURI)}
-                                alt={selectedToken.symbol.charAt(0)}
+                                alt={selectedToken.symbol?.charAt(0)}
                                 // alt={`logo for token ${token.name}`}
                                 width='30px'
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={selectedToken.symbol.charAt(0)}
+                                tokenInitial={selectedToken.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
