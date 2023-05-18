@@ -1018,7 +1018,7 @@ export default function App() {
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, candleDomains?.lastCandleDate]);
+    }, [candleData?.candles?.length, domainBoundaryInSecondsDebounced]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
