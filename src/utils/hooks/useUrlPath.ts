@@ -19,6 +19,12 @@ export const useUrlPath = () => {
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
 
+    // fn to make a params slug
+    function makeParams(paramTuples: string[][]): string {
+        return paramTuples.map((tup: string[]) => tup.join('=')).join('&');
+    }
+    false && makeParams;
+
     // fn to return a base URL slug for a given page
     function getPath(page: pageNames): string {
         return BASE_URL_PATHS[page];
