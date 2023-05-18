@@ -33,7 +33,6 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
@@ -107,7 +106,9 @@ function Trade(props: propsIF) {
     const { isPoolInitialized } = useContext(PoolContext);
     const { expandTradeTable } = useContext(TradeTableContext);
 
+    // CONTEXT: state exists just to pass onto trade tabs, setState is used here, could move to PositionsOnlyToggle, or common trade context
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    // CONTEXT: state exists just to pass onto trade tabs, setState is used here but is reliant on Context, move to PositionsOnlyToggle
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
@@ -143,6 +144,7 @@ function Trade(props: propsIF) {
         }
     }, [candleData]);
 
+    // CONTEXT: passed down from here to many components, setter is used in unselectCandle, which is dependent on trade data
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
@@ -214,62 +216,6 @@ function Trade(props: propsIF) {
         [],
     );
 
-    const [chartBg, setChartBg] = useState('transparent');
-
-    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
-    const [upBorderColorPicker, setUpBorderColorPicker] =
-        useState<boolean>(false);
-    const [downBodyColorPicker, setDownBodyColorPicker] =
-        useState<boolean>(false);
-    const [downBorderColorPicker, setDownBorderColorPicker] =
-        useState<boolean>(false);
-
-    const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
-    const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
-    const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
-    const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
-    const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.5)');
-    const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.5)');
-
-    const handleChartBgColorPickerChange = (color: any) => {
-        setChartBg(color.hex);
-    };
-    const handleBodyColorPickerChange = (color: any) => {
-        setUpBodyColor(color.hex);
-    };
-    const handleBorderColorPickerChange = (color: any) => {
-        setUpBorderColor(color.hex);
-    };
-    const handleDownBodyColorPickerChange = (color: any) => {
-        setDownBodyColor(color.hex);
-    };
-    const handleDownBorderColorPickerChange = (color: any) => {
-        setDownBorderColor(color.hex);
-    };
-    const tradeSettingsColorProps = {
-        upBodyColorPicker: upBodyColorPicker,
-        setUpBodyColorPicker: setUpBodyColorPicker,
-        upBodyColor: upBodyColor,
-        handleBodyColorPickerChange: handleBodyColorPickerChange,
-        handleBorderColorPickerChange: handleBorderColorPickerChange,
-        handleDownBodyColorPickerChange: handleDownBodyColorPickerChange,
-        handleDownBorderColorPickerChange: handleDownBorderColorPickerChange,
-        setUpBorderColorPicker: setUpBorderColorPicker,
-        setDownBodyColorPicker: setDownBodyColorPicker,
-        setDownBorderColorPicker: setDownBorderColorPicker,
-        upBorderColor: upBorderColor,
-        upBorderColorPicker: upBorderColorPicker,
-        downBodyColor: downBodyColor,
-        downBodyColorPicker: downBodyColorPicker,
-        downBorderColor: downBorderColor,
-        downBorderColorPicker: downBorderColorPicker,
-        chartBg: chartBg,
-        setChartBg: setChartBg,
-        handleChartBgColorPickerChange: handleChartBgColorPickerChange,
-    };
-
-    // const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
-
     const [showMobileDropdown, setMobileDropdown] = useState(false);
 
     const handleMobileDropdownClick = (component: string) => {
@@ -339,6 +285,7 @@ function Trade(props: propsIF) {
         </section>
     );
 
+    // CONTEXT: move to common trade context
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
         changeState(false, undefined);
@@ -410,18 +357,11 @@ function Trade(props: propsIF) {
         liquidityData: liquidityData,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
-        upBodyColor: upBodyColor,
-        upBorderColor: upBorderColor,
-        downBodyColor: downBodyColor,
-        downBorderColor: downBorderColor,
-        upVolumeColor: upVolumeColor,
-        downVolumeColor: downVolumeColor,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
     };
 
     const tradeTabsProps = {
@@ -509,7 +449,7 @@ function Trade(props: propsIF) {
                         activeMobileComponent !== 'chart' ? styles.hide : ''
                     } ${fullScreenStyle}`}
                     style={{
-                        background: chartBg,
+                        background: 'transparent',
                     }}
                 >
                     <div className={styles.main__chart_container}>

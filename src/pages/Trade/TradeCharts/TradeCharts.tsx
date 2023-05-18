@@ -5,7 +5,6 @@ import {
     AiOutlineFullscreen,
     AiOutlineDownload,
 } from 'react-icons/ai';
-import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -17,9 +16,6 @@ import printDomToImage from '../../../utils/functions/printDomToImage';
 import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
-import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
-// import { formatAmountOld } from '../../../utils/numbers';
-import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
@@ -42,18 +38,11 @@ interface propsIF {
     limitTick: number | undefined;
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
-    upBodyColor: string;
-    upBorderColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
-    TradeSettingsColor: JSX.Element;
 }
 
 export interface CandleChartData {
@@ -113,7 +102,7 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const { selectedDate, setSelectedDate, TradeSettingsColor } = props;
+    const { selectedDate, setSelectedDate } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -182,73 +171,6 @@ function TradeCharts(props: propsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
-    const chartSettingsRef = useRef<HTMLDivElement>(null);
-
-    const chartSettingsOutsideClickHandler = () => {
-        setShowChartSettings(false);
-    };
-    UseOnClickOutside(chartSettingsRef, chartSettingsOutsideClickHandler);
-
-    const exDataContent = (
-        <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perferendis, doloremque.
-        </div>
-    );
-    const chartSettingsData = [
-        { icon: '🍅', label: 'Tomato', content: exDataContent },
-        { icon: '🥬', label: 'Lettuce', content: exDataContent },
-        { icon: '🥕', label: 'Carrot', content: exDataContent },
-        { icon: '🫐', label: 'Blueberries', content: exDataContent },
-        { icon: '🥂 ', label: 'Colors', content: TradeSettingsColor },
-    ];
-
-    const [showChartSettings, setShowChartSettings] = useState(false);
-    const [selectedChartSetting, setSelectedChartSetting] = useState(
-        chartSettingsData[0],
-    );
-    const chartSettingNavs = (
-        <ul className={styles.chart_settings_nav}>
-            {chartSettingsData.map((item, idx) => (
-                <li
-                    key={idx}
-                    className={
-                        item.label === selectedChartSetting.label
-                            ? styles.setting_active
-                            : styles.setting
-                    }
-                    onClick={() => setSelectedChartSetting(item)}
-                >
-                    <IconWithTooltip title={item.label} placement='left'>
-                        {item.icon}
-                    </IconWithTooltip>
-                </li>
-            ))}
-        </ul>
-    );
-
-    const mainChartSettingsContent = (
-        <div
-            className={`${styles.main_settings_container} ${
-                showChartSettings && styles.main_settings_container_active
-            }`}
-        >
-            <header>
-                <p />
-                <h2>Chart Settings</h2>
-                <div onClick={() => setShowChartSettings(false)}>
-                    <VscClose size={24} />
-                </div>
-            </header>
-            <div className={styles.chart_settings_inner}>
-                {chartSettingNavs}
-                <section className={styles.main_chart_settings_content}>
-                    <h1>{selectedChartSetting.label}</h1>
-                    {selectedChartSetting.content}
-                </section>
-            </div>
-        </div>
-    );
 
     const saveImageContent = (
         <div
@@ -421,7 +343,6 @@ function TradeCharts(props: propsIF) {
             }}
             ref={canvasRef}
         >
-            {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
@@ -461,12 +382,6 @@ function TradeCharts(props: propsIF) {
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
-                        upBodyColor={props.upBodyColor}
-                        upBorderColor={props.upBorderColor}
-                        downBodyColor={props.downBodyColor}
-                        downBorderColor={props.downBorderColor}
-                        upVolumeColor={props.upVolumeColor}
-                        downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
                         quoteTokenAddress={props.quoteTokenAddress}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}

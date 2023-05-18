@@ -120,10 +120,6 @@ interface propsIF {
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    upBodyColor: string;
-    upBorderColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
