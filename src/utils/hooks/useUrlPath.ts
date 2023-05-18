@@ -12,6 +12,8 @@ export const useUrlPath = () => {
         reposition: '/reposition',
         tos: '/tos',
         testpage: '/testpage',
+        account: '/account',
+        privacy: '/privacy',
     };
 
     const location = useLocation();
