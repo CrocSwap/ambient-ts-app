@@ -353,7 +353,21 @@ overflow-y: hidden;
 }
 
 @media only screen and (max-width: 800px) {
-    .footer {
+    .main_list_expanded{
+        display: grid;
+        grid-template-rows: 40px 1fr 150px;
+        overflow-y: hidden;
+    
+    }
+
+   
+    .footer_content {
+       width: 95%;
+       flex-direction: column;
+       gap: 4px;
+    }
+
+    .showing_text{
         display: none;
     }
 }
