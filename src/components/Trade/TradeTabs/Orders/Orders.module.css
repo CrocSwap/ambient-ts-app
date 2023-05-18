@@ -129,7 +129,7 @@ overflow-y: hidden;
 .row_container li:not(:last-child){
     cursor: pointer;
 }
-.main_list_container ul {
+.main_list_container .row_container , .main_list_container .header{
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -137,14 +137,13 @@ overflow-y: hidden;
     display: table;
 }
 
-.main_list_container ul > li {
+.main_list_container .row_container > li, .main_list_container .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-    
-    padding: 0.2em 0.5em;
     vertical-align: middle;
+    padding: 0.2em 0.5em;
 }
 .base_color {
     color: var(--text2);

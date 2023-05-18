@@ -161,4 +161,6 @@ aside.emoji-picker-react {
    
 }
 
-
+.MuiPaginationItem-root {
+    display: inline-flex !important;
+}
