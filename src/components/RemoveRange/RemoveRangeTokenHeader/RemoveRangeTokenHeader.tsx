@@ -31,7 +31,7 @@ export default function RemoveRangeTokenHeader(props: propsIF) {
                     />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={props.baseTokenSymbol.charAt(0)}
+                        tokenInitial={props.baseTokenSymbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -42,7 +42,7 @@ export default function RemoveRangeTokenHeader(props: propsIF) {
                     />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={props.quoteTokenSymbol.charAt(0)}
+                        tokenInitial={props.quoteTokenSymbol?.charAt(0)}
                         width='30px'
                     />
                 )}

@@ -25,6 +25,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 // interface for props
 interface propsIF {
@@ -155,17 +156,17 @@ export default function InitPool(props: propsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (token: TokenIF) => {
         if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
+            const tx = await crocEnv.token(token.address).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
             if (tx?.hash)
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                        txType: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -224,7 +225,7 @@ export default function InitPool(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Pool Initialization',
+                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;
@@ -255,7 +256,8 @@ export default function InitPool(props: propsIF) {
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
                             '/trade/range/chain=' +
-                                baseToken.chainId +
+                                '0x' +
+                                baseToken.chainId.toString(16) +
                                 '&tokenA=' +
                                 baseToken.address +
                                 '&tokenB=' +
@@ -289,7 +291,7 @@ export default function InitPool(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA.address);
+                await approve(tokenA);
             }}
             flat={true}
         />
@@ -304,7 +306,7 @@ export default function InitPool(props: propsIF) {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenB.address);
+                await approve(tokenB);
             }}
             flat={true}
         />
@@ -316,7 +318,8 @@ export default function InitPool(props: propsIF) {
                 <Navigate
                     to={
                         '/trade/market/chain=' +
-                        baseToken.chainId +
+                        '0x' +
+                        baseToken.chainId.toString(16) +
                         '&tokenA=' +
                         baseToken.address +
                         '&tokenB=' +
