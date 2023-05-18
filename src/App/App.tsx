@@ -914,7 +914,7 @@ export default function App() {
         isChartEnabled,
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
-        candleTimeLocal,
+        // candleTimeLocal,
         isUserIdle,
         candleScale?.isFetchForTimeframe,
     ]);
@@ -929,6 +929,8 @@ export default function App() {
             candleTimeLocal
         ) {
             const currentTime = Math.floor(Date.now() / 1000);
+            console.log({ candleScale });
+
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
@@ -1008,17 +1010,26 @@ export default function App() {
         500,
     );
 
+    const lastCandleDateInSeconds = Math.floor(
+        (candleDomains?.lastCandleDate || 0) / 1000,
+    );
+
+    const lastCandleDateInSecondsDebounced = useDebounce(
+        lastCandleDateInSeconds,
+        500,
+    );
+
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
-        IS_LOCAL_ENV && console.debug({ candleDataLength });
+        // IS_LOCAL_ENV && console.debug({ candleDataLength });
 
         const lastDate = new Date(
             (candleDomains?.lastCandleDate as number) / 1000,
         ).getTime();
 
         return lastDate;
-    }, [candleData?.candles?.length, domainBoundaryInSecondsDebounced]);
+    }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;

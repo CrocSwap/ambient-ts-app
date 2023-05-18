@@ -30,6 +30,7 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
+import { candleScale } from '../../../utils/state/tradeDataSlice';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -111,6 +112,7 @@ function TradeCandleStickChart(props: propsIF) {
         isUserLoggedIn,
         chainData,
         baseTokenAddress,
+        quoteTokenAddress,
         chainId,
         poolPriceNonDisplay,
         selectedDate,
@@ -127,11 +129,11 @@ function TradeCandleStickChart(props: propsIF) {
     const rangeState = useContext(RangeStateContext);
 
     const {
-        candleData: { value: candleData },
+        candleData: { value: candleData, setValue: setCandleData },
         fetchingCandle: { setValue: setFetchingCandle },
     } = useContext(CandleContext);
 
-    const period = candleData?.duration;
+    const period = chartSettings.candleTime.market.time;
     const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -583,13 +585,15 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         if (!(unparsedCandleData?.length && unparsedCandleData.length > 0)) {
-            setScaleData(() => {
-                return undefined;
-            });
+            if (prevPeriod === period) {
+                setScaleData(() => {
+                    return undefined;
+                });
+            }
         } else {
             setScaleForChart(unparsedCandleData, true);
         }
-    }, [unparsedCandleData?.length && unparsedCandleData.length > 0]);
+    }, [unparsedCandleData && unparsedCandleData?.length > 0]);
 
     useEffect(() => {
         setScaleForChart(unparsedCandleData, false);
@@ -713,8 +717,30 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (unparsedCandleData) {
-            if (scaleData && prevPeriod && prevFirsCandle && period) {
+        if (unparsedCandleData && period !== prevPeriod && prevPeriod) {
+            console.log({ period }, chartSettings.candleTime, prevPeriod);
+            setCandleData({
+                pool: {
+                    baseAddress: baseTokenAddress,
+                    quoteAddress: quoteTokenAddress,
+                    poolIdx: chainData.poolIndex,
+                    network: chainData.chainId,
+                },
+                duration: period,
+                candles: [],
+            });
+        }
+    }, [period, prevPeriod]);
+
+    useEffect(() => {
+        if (unparsedCandleData && unparsedCandleData.length > 0) {
+            if (
+                scaleData &&
+                prevPeriod &&
+                prevFirsCandle &&
+                period &&
+                period !== prevPeriod
+            ) {
                 const domain = scaleData.xScale.domain();
 
                 const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
@@ -764,19 +790,31 @@ function TradeCandleStickChart(props: propsIF) {
                     (firsShownDomain - lastShownCandle) / (period * 1000),
                 );
 
+                console.log(
+                    new Date(firsShownDomain),
+                    new Date(lastShownCandle),
+                );
+
                 const candleScale = {
                     lastCandleDate: Math.floor(firsShownDomain / 1000),
                     nCandle: nCandle,
                     isFetchForTimeframe: true,
                 };
 
-                setCandleScale(candleScale);
+                setCandleScale((prev: candleScale) => {
+                    return {
+                        isFetchForTimeframe: !prev.isFetchForTimeframe,
+                        lastCandleDate: Math.floor(firsShownDomain / 1000),
+                        nCandle: nCandle,
+                    };
+                });
+                // setCandleScale(candleScale);
             }
 
             setPrevPeriod(() => period);
             setPrevFirsCandle(() => unparsedCandleData[0].time);
         }
-    }, [period]);
+    }, [period, unparsedCandleData?.length]);
 
     const loading = (
         <div
