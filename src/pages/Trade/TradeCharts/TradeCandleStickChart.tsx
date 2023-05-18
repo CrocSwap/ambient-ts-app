@@ -69,12 +69,6 @@ interface propsIF {
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    upBodyColor: string;
-    upBorderColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
@@ -137,6 +131,13 @@ function TradeCandleStickChart(props: propsIF) {
     >(undefined);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const upBodyColor = '#CDC1FF';
+    const upBorderColor = '#CDC1FF';
+    const downBodyColor = '#24243e';
+    const downBorderColor = '#7371FC';
+    const upVolumeColor = 'rgba(205,193,255, 0.5)';
+    const downVolumeColor = 'rgba(115,113,252, 0.5)';
 
     const tokenPair = {
         dataTokenA: tradeData.tokenA,
@@ -204,12 +205,8 @@ function TradeCandleStickChart(props: propsIF) {
                         : data.minPriceExclMEVDecimalCorrected,
                     time: data.time,
                     allSwaps: [],
-                    color:
-                        close > open ? props.upBodyColor : props.downBodyColor,
-                    stroke:
-                        close > open
-                            ? props.upBorderColor
-                            : props.downBorderColor,
+                    color: close > open ? upBodyColor : downBodyColor,
+                    stroke: close > open ? upBorderColor : downBorderColor,
                 });
 
                 tvlChartData.push({
@@ -221,10 +218,7 @@ function TradeCandleStickChart(props: propsIF) {
                     time: new Date(data.time * 1000),
                     value: data.volumeUSD,
                     volume: data.volumeUSD,
-                    color:
-                        close > open
-                            ? props.upVolumeColor
-                            : props.downVolumeColor,
+                    color: close > open ? upVolumeColor : downVolumeColor,
                 });
 
                 feeChartData.push({
@@ -803,10 +797,6 @@ function TradeCandleStickChart(props: propsIF) {
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}
-                        upBodyColor={props.upBodyColor}
-                        upBorderColor={props.upBorderColor}
-                        downBodyColor={props.downBodyColor}
-                        downBorderColor={props.downBorderColor}
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}

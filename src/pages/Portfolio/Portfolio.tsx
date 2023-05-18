@@ -117,6 +117,7 @@ function Portfolio(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    // CONTEXT: revisit after token changes go in
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
     );
