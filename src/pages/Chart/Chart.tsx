@@ -30,6 +30,7 @@ import {
     setIsLinesSwitched,
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
+    candleScale,
 } from '../../utils/state/tradeDataSlice';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -933,13 +934,16 @@ export default function Chart(props: propsIF) {
             const nCandle = Math.floor(
                 (xDomain[1] - xDomain[0]) / (period * 1000),
             );
-            const candleScale = {
-                lastCandleDate: Math.floor(domainMax / 1000),
-                nCandle: nCandle,
-                isFetchForTimeframe: false,
-            };
 
-            setCandleScale(candleScale);
+            setCandleScale((prev: candleScale) => {
+                console.log({ prev });
+
+                return {
+                    isFetchForTimeframe: prev.isFetchForTimeframe,
+                    lastCandleDate: Math.floor(domainMax / 1000),
+                    nCandle: nCandle,
+                };
+            });
         }
     }, [diffHashSig(scaleData?.xScale.domain())]);
 
