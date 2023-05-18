@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 export const handlePulseAnimation = (type: 'swap' | 'limitOrder' | 'range') => {
