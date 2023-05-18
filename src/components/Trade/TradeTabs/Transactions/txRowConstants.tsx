@@ -256,7 +256,7 @@ export const txRowConstants = (props: Props) => {
                 placement='bottom'
             >
                 <NoTokenIcon
-                    tokenInitial={tx.baseSymbol.charAt(0)}
+                    tokenInitial={tx.baseSymbol?.charAt(0)}
                     width={logoSizes}
                 />
             </IconWithTooltip>
@@ -285,7 +285,7 @@ export const txRowConstants = (props: Props) => {
                 placement='right'
             >
                 <NoTokenIcon
-                    tokenInitial={tx.quoteSymbol.charAt(0)}
+                    tokenInitial={tx.quoteSymbol?.charAt(0)}
                     width={logoSizes}
                 />
             </IconWithTooltip>

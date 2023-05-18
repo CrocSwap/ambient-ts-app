@@ -1,6 +1,8 @@
 .trade_tab_container {
     position: relative;
     height: 100%;
+
+   
 }
 
 .show_tx_message {
@@ -42,3 +44,12 @@
 .option_button:hover {
     opacity: 0.8;
 }
+
+/* @media only screen and (max-width: 800px) {
+
+    .trade_tab_container {
+     height: 70%;
+     background: yellow;
+    }
+
+} */

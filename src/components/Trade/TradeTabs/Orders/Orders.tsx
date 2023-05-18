@@ -16,12 +16,13 @@ import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import Pagination from '../../../Global/Pagination/Pagination';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { Pagination } from '@mui/material';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -308,62 +309,95 @@ function Orders(props: propsIF) {
         : styles.trade_header;
 
     // ---------------------
-    const [currentPage, setCurrentPage] = useState(1);
     // orders per page media queries
     const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
-
-    const { height } = useWindowDimensions();
-
-    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    const regularOrdersItems = Math.round(
-        (height - (isAccountView ? 500 : 350)) / 30,
-    );
-    const showColumnOrdersItems = Math.round(
-        (height - (isAccountView ? 500 : 300)) / 50,
-    );
-    const limitsPerPage = showColumns
-        ? showColumnOrdersItems
-        : regularOrdersItems;
 
     useEffect(() => {
         setCurrentPage(1);
     }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
-    const indexOfLastLimits = currentPage * limitsPerPage;
-    const indexOfFirstLimits = indexOfLastLimits - limitsPerPage;
-    const currentLimits = sortedLimits?.slice(
-        indexOfFirstLimits,
-        indexOfLastLimits,
-    );
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+
+    const count = Math.ceil(sortedLimits.length / rowsPerPage);
+    const _DATA = usePagination(sortedLimits, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
     };
 
     const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {limitsPerPage > 0 &&
-                ((isAccountView && limitOrderData.length > 7) ||
-                    (!isAccountView && tradePageCheck)) && (
-                    <Pagination
-                        itemsPerPage={limitsPerPage}
-                        totalItems={
-                            limitOrderData.filter(
-                                (limitOrder) => limitOrder.totalValueUSD !== 0,
-                            ).length
-                        }
-                        paginate={paginate}
-                        currentPage={currentPage}
+    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
+        useState(false);
+    const listRef = useRef<HTMLUListElement>(null);
+    const element = listRef.current;
+    useEffect(() => {
+        if (element) {
+            const resizeObserver = new ResizeObserver((entries) => {
+                const firstEntry = entries[0];
+                const elementHeight = firstEntry.contentRect.height;
+                const screenHeight = window.innerHeight;
+                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
+
+                setIsHeightGreaterThanHalf(isGreaterThanHalf);
+            });
+
+            resizeObserver.observe(element);
+
+            return () => {
+                resizeObserver.unobserve(element);
+            };
+        }
+    }, [element]);
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && limitOrderData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div
+                className={styles.footer}
+                style={{
+                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
+                }}
+            >
+                <p
+                    className={styles.showing_text}
+                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedLimits.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
                     />
-                )}
-        </div>
-    );
+                    <Pagination
+                        count={count}
+                        size='large'
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                    />
+                </div>
+            </div>
+        );
 
     // ----------------------
 
@@ -382,7 +416,7 @@ function Orders(props: propsIF) {
         </ul>
     );
 
-    const currentRowItemContent = currentLimits.map((order, idx) => (
+    const currentRowItemContent = _DATA.currentData.map((order, idx) => (
         <OrderRow
             tradeData={tradeData}
             showPair={showPair}
@@ -408,7 +442,6 @@ function Orders(props: propsIF) {
         />
     ));
 
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewOrder = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {

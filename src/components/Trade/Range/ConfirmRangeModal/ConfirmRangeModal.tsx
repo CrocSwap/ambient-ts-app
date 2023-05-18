@@ -137,7 +137,7 @@ function ConfirmRangeModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                tokenInitial={dataTokenA.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
@@ -148,7 +148,7 @@ function ConfirmRangeModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                tokenInitial={dataTokenB.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
@@ -174,7 +174,7 @@ function ConfirmRangeModal(props: propsIF) {
                                 />
                             ) : (
                                 <NoTokenIcon
-                                    tokenInitial={dataTokenA.symbol.charAt(0)}
+                                    tokenInitial={dataTokenA.symbol?.charAt(0)}
                                     width='20px'
                                 />
                             )}
@@ -195,7 +195,7 @@ function ConfirmRangeModal(props: propsIF) {
                                 />
                             ) : (
                                 <NoTokenIcon
-                                    tokenInitial={dataTokenB.symbol.charAt(0)}
+                                    tokenInitial={dataTokenB.symbol?.charAt(0)}
                                     width='20px'
                                 />
                             )}

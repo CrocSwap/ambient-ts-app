@@ -128,7 +128,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             <img src={baseToken.logoURI} alt={baseToken.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={baseToken.symbol.charAt(0)}
+                                tokenInitial={baseToken.symbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -143,7 +143,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             <img src={baseToken.logoURI} alt={baseToken.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={baseToken.symbol.charAt(0)}
+                                tokenInitial={baseToken.symbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -162,7 +162,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={quoteToken.symbol.charAt(0)}
+                                tokenInitial={quoteToken.symbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -179,7 +179,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={quoteToken.symbol.charAt(0)}
+                                tokenInitial={quoteToken.symbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -208,7 +208,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
+                                tokenInitial={dataTokenA.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
@@ -219,7 +219,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
+                                tokenInitial={dataTokenB.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}

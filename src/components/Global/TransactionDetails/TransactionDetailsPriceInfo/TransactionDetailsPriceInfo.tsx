@@ -82,7 +82,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     <img src={baseTokenLogo} alt={baseTokenSymbol} />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={baseTokenSymbol.charAt(0)}
+                        tokenInitial={baseTokenSymbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -90,7 +90,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={quoteTokenSymbol.charAt(0)}
+                        tokenInitial={quoteTokenSymbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -240,7 +240,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
+                            tokenInitial={quoteTokenSymbol?.charAt(0)}
                             width='15px'
                         />
                     )}
@@ -264,7 +264,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={baseTokenSymbol.charAt(0)}
+                            tokenInitial={baseTokenSymbol?.charAt(0)}
                             width='15px'
                         />
                     )}
@@ -298,7 +298,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={baseTokenSymbol.charAt(0)}
+                            tokenInitial={baseTokenSymbol?.charAt(0)}
                             width='15px'
                         />
                     )}
@@ -322,7 +322,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
+                            tokenInitial={quoteTokenSymbol?.charAt(0)}
                             width='15px'
                         />
                     )}

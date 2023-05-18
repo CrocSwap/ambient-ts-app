@@ -219,7 +219,7 @@ export default function rangeRowConstants(props: Props) {
             <img src={baseTokenLogo} alt='base token' width={logoSizes} />
         ) : (
             <NoTokenIcon
-                tokenInitial={position.baseSymbol.charAt(0)}
+                tokenInitial={position.baseSymbol?.charAt(0)}
                 width={logoSizes}
             />
         );
@@ -229,7 +229,7 @@ export default function rangeRowConstants(props: Props) {
             <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
         ) : (
             <NoTokenIcon
-                tokenInitial={position.quoteSymbol.charAt(0)}
+                tokenInitial={position.quoteSymbol?.charAt(0)}
                 width={logoSizes}
             />
         );
