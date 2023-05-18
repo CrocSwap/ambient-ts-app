@@ -199,7 +199,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol.charAt(0)}
+                        tokenInitial={buyTokenData.symbol?.charAt(0)}
                         width='30px'
                     />
                 )}
@@ -247,7 +247,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                     />
                 ) : (
                     <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol.charAt(0)}
+                        tokenInitial={sellTokenData.symbol?.charAt(0)}
                         width='30px'
                     />
                 )}

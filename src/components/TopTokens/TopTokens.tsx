@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
 import TopTokenHeader from './TopTokenHeader';
 import TopTokenRow from './TopTokenRow';
@@ -20,7 +20,7 @@ export const SORT_FIELD = {
     priceUSDChangeWeek: 'priceUSDChangeWeek',
 };
 
-export default function TopTokens(props: TokenProps) {
+function TopTokens(props: TokenProps) {
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
 
@@ -70,3 +70,5 @@ export default function TopTokens(props: TokenProps) {
         </div>
     );
 }
+
+export default memo(TopTokens);

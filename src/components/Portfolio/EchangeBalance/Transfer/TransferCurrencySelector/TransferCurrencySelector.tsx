@@ -1,7 +1,7 @@
 import styles from './TransferCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -19,7 +19,7 @@ interface propsIF {
     setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function TransferCurrencySelector(props: propsIF) {
+function TransferCurrencySelector(props: propsIF) {
     const {
         fieldId,
         disable,
@@ -82,13 +82,13 @@ export default function TransferCurrencySelector(props: propsIF) {
                             <img
                                 className={styles.token_list_img}
                                 src={uriToHttp(selectedToken.logoURI)}
-                                alt={selectedToken.symbol.charAt(0)}
+                                alt={selectedToken.symbol?.charAt(0)}
                                 // alt={`logo for token ${token.name}`}
                                 width='30px'
                             />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={selectedToken.symbol.charAt(0)}
+                                tokenInitial={selectedToken.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
@@ -103,3 +103,5 @@ export default function TransferCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TransferCurrencySelector);

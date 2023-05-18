@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
-import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
-
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
 import Modal from '../../../../Global/Modal/Modal';
 
@@ -315,9 +315,9 @@ export default function OrdersMenu(props: propsIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
+            {(view3 || view2WithNoSidebar) && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {(view3 || view2WithNoSidebar) && detailsButton}
             {!isOwnerActiveAccount && copyButton}
         </div>
     );
@@ -344,8 +344,11 @@ export default function OrdersMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownOrdersMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
+            <div
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
+                <CiCircleMore size={25} color='var(--text1)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>

@@ -6,21 +6,19 @@
     padding: 2px;
     flex-grow: 1;
     align-self: end;
-    vertical-align: middle; 
+    vertical-align: middle;
     margin: 10px;
 }
 
-.avatar_blockies {
+.avatar_jazzicons {
     display: flex;
 }
 
-.avatar_blockies canvas {
+.avatar_jazzicons canvas {
     border-radius: 50%;
     border: 1px solid var(--accent1);
 }
-.nft_container{
-    
-   
+.nft_container {
     max-width: 25px;
     max-height: 25px;
     border-radius: 50%;
@@ -31,8 +29,6 @@
     vertical-align: middle;
     margin: 10px;
 }
-
-
 
 .avatar_image_position {
     max-width: 13px;
@@ -145,25 +141,19 @@
     white-space: normal;
     margin-left: 0px;
     margin-right: 0px;
-    
 }
 
 .mention_message_block {
-    
     margin-left: 6px;
     width: 80%;
     height: 80%;
 }
 
 .mention_message_block_without_avatar {
-    
     margin-left: 30px;
     width: 80%;
-    height: 80%
+    height: 80%;
 }
-
-
-
 
 .right_image_box {
     display: flex;

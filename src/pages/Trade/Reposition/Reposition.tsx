@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useState,
+    memo,
 } from 'react';
 import {
     useLocation,
@@ -78,7 +79,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 
-export default function Reposition(props: propsIF) {
+function Reposition(props: propsIF) {
     const {
         isDenomBase,
         ambientApy,
@@ -815,7 +816,7 @@ export default function Reposition(props: propsIF) {
                                     ? 'Position Currently In Range'
                                     : bypassConfirmRepo.isEnabled
                                     ? 'Reposition'
-                                    : 'Open Confirmation'
+                                    : 'Confirm'
                             }
                             action={
                                 bypassConfirmRepo.isEnabled
@@ -845,3 +846,5 @@ export default function Reposition(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Reposition);

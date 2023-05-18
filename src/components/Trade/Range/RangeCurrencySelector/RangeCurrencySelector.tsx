@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useContext,
     useState,
@@ -87,7 +88,7 @@ interface propsIF {
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RangeCurrencySelector(props: propsIF) {
+function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,
@@ -431,7 +432,7 @@ export default function RangeCurrencySelector(props: propsIF) {
                         />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={thisToken.symbol.charAt(0)}
+                            tokenInitial={thisToken.symbol?.charAt(0)}
                             width='30px'
                         />
                     )}
@@ -481,3 +482,5 @@ export default function RangeCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(RangeCurrencySelector);

@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useState,
@@ -24,7 +25,7 @@ interface propsIF {
     isLoading: boolean;
 }
 
-export default function CurrencyQuantity(props: propsIF) {
+function CurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,
@@ -71,6 +72,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 setIsBuyLoading(true);
                 setSellQtyString(inputValue);
             }
+            if (!value) setIsBuyLoading(false);
 
             // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
         } else if (fieldId === 'buy') {
@@ -79,6 +81,7 @@ export default function CurrencyQuantity(props: propsIF) {
                 setIsSellLoading(true);
                 setBuyQtyString(inputValue);
             }
+            if (!value) setIsSellLoading(false);
 
             // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
         }
@@ -154,3 +157,5 @@ export default function CurrencyQuantity(props: propsIF) {
         </div>
     );
 }
+
+export default memo(CurrencyQuantity);

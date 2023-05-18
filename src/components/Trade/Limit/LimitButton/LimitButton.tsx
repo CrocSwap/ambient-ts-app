@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import Button from '../../../Global/Button/Button';
 import styles from './LimitButton.module.css';
 
@@ -9,7 +10,7 @@ interface propsIF {
     areBothAckd: boolean;
 }
 
-export default function LimitButton(props: propsIF) {
+function LimitButton(props: propsIF) {
     const {
         onClickFn,
         limitAllowed,
@@ -29,7 +30,7 @@ export default function LimitButton(props: propsIF) {
                         ? limitAllowed
                             ? isBypassConfirmEnabled
                                 ? 'Submit Limit Order'
-                                : 'Open Confirmation'
+                                : 'Confirm'
                             : limitButtonErrorMessage
                         : 'Acknowledge'
                 }
@@ -40,3 +41,5 @@ export default function LimitButton(props: propsIF) {
         </div>
     );
 }
+
+export default memo(LimitButton);

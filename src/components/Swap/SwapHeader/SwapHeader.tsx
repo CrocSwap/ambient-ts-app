@@ -22,7 +22,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // main react functional component

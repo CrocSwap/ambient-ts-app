@@ -54,7 +54,10 @@ import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigChart,
+} from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 
@@ -306,36 +309,6 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // const [limitTriangleData, setLimitTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
-    // const [rangeTriangleData, setRangeTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
     const [market, setMarket] = useState([
         {
             name: 'Market Value',
@@ -344,14 +317,14 @@ export default function Chart(props: propsIF) {
     ]);
 
     const lastTvlData = parsedChartData?.tvlChartData.find(
-        (item: any) =>
+        (item) =>
             item.time ===
-            d3.max(parsedChartData?.tvlChartData, (data: any) => data.time),
+            d3.max(parsedChartData?.tvlChartData, (data) => data.time),
     );
     const lastFeeRateData = parsedChartData?.feeChartData.find(
-        (item: any) =>
+        (item) =>
             item.time ===
-            d3.max(parsedChartData?.feeChartData, (data: any) => data.time),
+            d3.max(parsedChartData?.feeChartData, (data) => data.time),
     );
 
     const [subChartValues, setsubChartValues] = useState([
@@ -718,8 +691,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        parsedChartData?.chartData.length,
-        parsedChartData?.chartData[0]?.time,
+        diffHashSigChart(parsedChartData),
         firstCandle,
     ]);
 
@@ -2045,7 +2017,7 @@ export default function Chart(props: propsIF) {
         candlestick,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
-        diffHashSig(showLatest),
+        showLatest,
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
@@ -2823,10 +2795,6 @@ export default function Chart(props: propsIF) {
 
                                     return newTargets;
                                 });
-                                // setTriangleRangeValues(
-                                //     liquidityData?.topBoundary,
-                                //     minValue,
-                                // );
                             } else {
                                 if (lineToBeSet === 'Max') {
                                     const pinnedTick =
@@ -4086,10 +4054,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const passValue =
-            liqMode === 'curve'
-                ? liquidityData?.liqBoundaryCurve
-                : liquidityData?.liqBoundaryDepth;
+        const passValue = poolPriceDisplay ?? 0;
 
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
@@ -5843,8 +5808,7 @@ export default function Chart(props: propsIF) {
         ranges,
         limit,
         location.pathname,
-        parsedChartData?.period,
-        diffHashSig(parsedChartData?.chartData[0]),
+        diffHashSigChart(parsedChartData),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,

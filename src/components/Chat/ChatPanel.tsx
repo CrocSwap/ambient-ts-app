@@ -4,10 +4,9 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
-import { useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -43,13 +42,12 @@ interface propsIF {
     currentPool: currentPoolInfo;
     isFullScreen: boolean;
     fullScreen?: boolean;
-    userImageData: string[];
     appPage?: boolean;
     username?: string | null;
     topPools: topPoolIF[];
 }
 
-export default function ChatPanel(props: propsIF) {
+function ChatPanel(props: propsIF) {
     const { isFullScreen, currentPool, topPools } = props;
     const {
         chat: {
@@ -93,14 +91,6 @@ export default function ChatPanel(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
-
-    const secondaryImageData = userData.secondaryImageData || '';
-
-    const { address: addressFromParams } = useParams();
-
-    const connectedAccountActive =
-        !addressFromParams ||
-        resolvedAddress?.toLowerCase() === address?.toLowerCase();
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -345,11 +335,6 @@ export default function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         isCurrentUser={item.sender === currentUser}
                         currentUser={currentUser}
-                        userImageData={
-                            connectedAccountActive
-                                ? props.userImageData
-                                : secondaryImageData
-                        }
                         resolvedAddress={resolvedAddress}
                         connectedAccountActive={address}
                         moderator={moderator}
@@ -539,3 +524,5 @@ export default function ChatPanel(props: propsIF) {
         </div>
     );
 }
+
+export default memo(ChatPanel);

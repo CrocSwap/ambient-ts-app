@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useModal = (
     modalCloseCustom?: () => void,
@@ -11,8 +11,8 @@ export const useModal = (
     // TODO:  ... we should rework things such that it only needs to be defined once
 
     // click handlers to to open and close the modal
-    const openModal = (): void => setIsModalOpen(true);
-    const closeModal = (): void => {
+    const openModal = useCallback((): void => setIsModalOpen(true), []);
+    const closeModal = useCallback((): void => {
         // close the modal
         setIsModalOpen(false);
         // emit a custom event to trigger extra functionality on modal close
@@ -25,7 +25,7 @@ export const useModal = (
         // the presence of a close function implies the event listener was created
         modalCloseCustom &&
             window.removeEventListener('closeModalEvent', modalCloseCustom);
-    };
+    }, [modalCloseCustom]);
 
     // return all data and functions needed for local use
     return [isModalOpen, openModal, closeModal];

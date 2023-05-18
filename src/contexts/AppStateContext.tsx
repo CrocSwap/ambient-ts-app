@@ -3,7 +3,6 @@ import { globalModalMethodsIF } from '../App/components/GlobalModal/useGlobalMod
 import { globalPopupMethodsIF } from '../App/components/GlobalPopup/useGlobalPopup';
 import { sidebarMethodsIF } from '../App/hooks/useSidebar';
 import { skinMethodsIF } from '../App/hooks/useSkin';
-import { tosMethodsIF } from '../App/hooks/useTermsOfService';
 import { snackbarMethodsIF } from '../components/Global/SnackbarComponent/useSnackbar';
 
 interface AppStateIF {
@@ -14,8 +13,6 @@ interface AppStateIF {
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
     skin: skinMethodsIF;
-    walletToS: tosMethodsIF;
-    chatToS: tosMethodsIF;
     theme: {
         selected: 'dark' | 'light';
         setSelected: (val: 'dark' | 'light') => void;

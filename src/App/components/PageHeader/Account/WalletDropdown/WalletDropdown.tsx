@@ -3,7 +3,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
-import Blockies from 'react-blockies';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 
 interface WalletDropdownPropsIF {
@@ -55,18 +55,17 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         // showWalletDropdown, setShowWalletDropdown
     } = props;
 
-    const blockiesSeed = accountAddressFull.toLowerCase();
+    const jazziconsSeed = accountAddressFull.toLowerCase();
+
     const blockExplorer = getChainExplorer(chainId);
 
-    const myBlockie = (
-        <div className={styles.blockie_container}>
-            <Blockies seed={blockiesSeed} scale={6} />
-        </div>
+    const myJazzicon = (
+        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
     const nameContent = (
         <div className={styles.name_display_container}>
-            {myBlockie}
+            {myJazzicon}
             <div className={styles.name_display_content}>
                 <div className={styles.name_display}>
                     <h2>{ensName !== '' ? ensName : accountAddress}</h2>
