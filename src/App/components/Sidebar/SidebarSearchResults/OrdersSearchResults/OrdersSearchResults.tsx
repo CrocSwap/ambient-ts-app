@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -6,12 +6,11 @@ import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharac
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 interface limitOrderPropsIF {
     limitOrder: LimitOrderIF;
@@ -55,12 +54,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 }
 
 export default function OrdersSearchResults(props: propsIF) {
-    const {
-        searchedLimitOrders,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    const { searchedLimitOrders, isDenomBase } = props;
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -69,6 +63,8 @@ export default function OrdersSearchResults(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setCurrentPositionActive, setShowAllData } =
+        useContext(TradeTableContext);
 
     const navigate = useNavigate();
 
@@ -76,7 +72,7 @@ export default function OrdersSearchResults(props: propsIF) {
         setOutsideControlActive(true);
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         navigate(
             '/trade/limit/chain=' +
                 chainId +

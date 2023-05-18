@@ -25,20 +25,17 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     tx: TransactionIF;
     tradeData: tradeData;
     isTokenABase: boolean;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
     ipadView: boolean;
     showPair: boolean;
     view2: boolean;
     showColumns: boolean;
-    handlePulseAnimation?: (type: string) => void;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 function TransactionRow(props: propsIF) {
@@ -48,11 +45,7 @@ function TransactionRow(props: propsIF) {
         ipadView,
         isTokenABase,
         tx,
-        handlePulseAnimation,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        isShowAllEnabled,
-        isOnPortfolioPage,
+        isAccountView,
         showPair,
         setSimpleRangeWidth,
     } = props;
@@ -94,7 +87,7 @@ function TransactionRow(props: propsIF) {
         sideTypeStyle,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, userAddress, isOnPortfolioPage);
+    } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
@@ -103,6 +96,14 @@ function TransactionRow(props: propsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+    const {
+        showAllData: showAllDataSelection,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tab page
+    const showAllData = !isAccountView && showAllDataSelection;
 
     const dispatch = useAppDispatch();
 
@@ -117,7 +118,7 @@ function TransactionRow(props: propsIF) {
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -128,12 +129,12 @@ function TransactionRow(props: propsIF) {
             : '';
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
+        userNameToDisplay === 'You' && showAllData
             ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
-        isOwnerActiveAccount && isShowAllEnabled
+        isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
@@ -187,7 +188,7 @@ function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        if (!isOnPortfolioPage)
+        if (!isAccountView)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
@@ -224,7 +225,7 @@ function TransactionRow(props: propsIF) {
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
-        isOnPortfolioPage,
+        isAccountView,
         tx,
         elapsedTimeString,
         baseQuantityDisplayShort,
@@ -291,9 +292,9 @@ function TransactionRow(props: propsIF) {
             onKeyDown={handleKeyPress}
         >
             {!showColumns && TxTimeWithTooltip}
-            {isOnPortfolioPage && showPair && tokenPair}
+            {isAccountView && showPair && tokenPair}
             {!showColumns && <li>{IDWithTooltip}</li>}
-            {!showColumns && !isOnPortfolioPage && <li>{walletWithTooltip}</li>}
+            {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange'
@@ -315,14 +316,12 @@ function TransactionRow(props: propsIF) {
                     tx={tx}
                     tradeData={tradeData}
                     isTokenABase={isTokenABase}
-                    isOnPortfolioPage={props.isOnPortfolioPage}
-                    handlePulseAnimation={handlePulseAnimation}
+                    isAccountView={props.isAccountView}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     setSimpleRangeWidth={setSimpleRangeWidth}
                     handleWalletClick={handleWalletClick}
-                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
         </ul>

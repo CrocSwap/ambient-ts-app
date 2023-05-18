@@ -56,7 +56,6 @@ declare global {
 }
 
 interface propsIF {
-    expandTradeTable: boolean;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -92,7 +91,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
@@ -122,7 +120,6 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        handlePulseAnimation,
         setSimpleRangeWidth,
         setRepositionRangeWidth,
         repositionRangeWidth,
@@ -147,7 +144,6 @@ function TradeCandleStickChart(props: propsIF) {
     const [parsedChartData, setParsedChartData] = useState<
         ChartUtils | undefined
     >(undefined);
-    const expandTradeTable = props?.expandTradeTable;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -807,7 +803,6 @@ function TradeCandleStickChart(props: propsIF) {
                     <Chart
                         isTokenABase={isTokenABase}
                         candleData={parsedChartData}
-                        expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
                         volumeData={volumeData}
                         changeState={props.changeState}
@@ -839,7 +834,6 @@ function TradeCandleStickChart(props: propsIF) {
                         setShowTooltip={props.setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
-                        handlePulseAnimation={handlePulseAnimation}
                         minPrice={rangeState.minRangePrice}
                         maxPrice={rangeState.maxRangePrice}
                         setMaxPrice={rangeState.setMaxRangePrice}

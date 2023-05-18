@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
@@ -13,22 +12,11 @@ interface propsIF {
     tokenPair: TokenPairIF;
     cachedPoolStatsFetch: PoolStatsFn;
     isDenomBase: boolean;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     searchData: sidebarSearchIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
-    const {
-        searchData,
-        tokenPair,
-        cachedPoolStatsFetch,
-        isDenomBase,
-        setCurrentPositionActive,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+    const { searchData, tokenPair, cachedPoolStatsFetch, isDenomBase } = props;
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -43,24 +31,14 @@ export default function SidebarSearchResults(props: propsIF) {
             />
             {isUserConnected && (
                 <>
-                    <TxSearchResults
-                        searchedTxs={searchData.txs}
-                        setCurrentTxActiveInTransactions={
-                            setCurrentTxActiveInTransactions
-                        }
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                    />
+                    <TxSearchResults searchedTxs={searchData.txs} />
                     <OrdersSearchResults
                         searchedLimitOrders={searchData.limits}
                         isDenomBase={isDenomBase}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <PositionsSearchResults
                         searchedPositions={searchData.positions}
                         isDenomBase={isDenomBase}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 </>
             )}

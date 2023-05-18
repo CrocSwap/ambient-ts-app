@@ -13,11 +13,11 @@ interface propsIF {
     tx: TransactionIF;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetails(props: propsIF) {
-    const { tx, isBaseTokenMoneynessGreaterOrEqual, isOnPortfolioPage } = props;
+    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -84,7 +84,7 @@ export default function TransactionDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -110,7 +110,7 @@ export default function TransactionDetails(props: propsIF) {
             ) : (
                 <TransactionDetailsSimplify
                     tx={tx}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

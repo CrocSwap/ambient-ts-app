@@ -1,9 +1,10 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
@@ -15,20 +16,10 @@ import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
-    const {
-        mostRecentTransactions,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+    const { mostRecentTransactions } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -41,6 +32,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setCurrentTxActiveInTransactions, setShowAllData } =
+        useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
@@ -61,7 +54,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const handleCardClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
             '/trade/market/chain=' +

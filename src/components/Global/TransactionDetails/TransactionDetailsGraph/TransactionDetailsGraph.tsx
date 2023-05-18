@@ -16,7 +16,7 @@ interface TransactionDetailsGraphIF {
     transactionType: string;
     useTx?: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetailsGraph(
@@ -26,7 +26,7 @@ export default function TransactionDetailsGraph(
         tx,
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
+        isAccountView,
     } = props;
     const { chainData } = useContext(CrocEnvContext);
 
@@ -178,7 +178,7 @@ export default function TransactionDetailsGraph(
                 .crossValue((d: any) => d.time * 1000)
                 .mainValue((d: any) =>
                     (
-                        !isOnPortfolioPage
+                        !isAccountView
                             ? denominationsInBase
                             : !isBaseTokenMoneynessGreaterOrEqual
                     )
@@ -242,7 +242,7 @@ export default function TransactionDetailsGraph(
     }, [
         scaleData,
         denominationsInBase,
-        isOnPortfolioPage,
+        isAccountView,
         !isBaseTokenMoneynessGreaterOrEqual,
     ]);
 
@@ -253,7 +253,7 @@ export default function TransactionDetailsGraph(
                 .accessors([
                     (d: any) =>
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
@@ -277,14 +277,14 @@ export default function TransactionDetailsGraph(
                 if (tx !== undefined) {
                     const lowBoundary = Math.min(
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
@@ -293,14 +293,14 @@ export default function TransactionDetailsGraph(
                     );
                     const topBoundary = Math.max(
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
@@ -327,14 +327,14 @@ export default function TransactionDetailsGraph(
                 if (tx !== undefined && tx.positionType !== 'ambient') {
                     const lowBoundary = Math.min(
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
@@ -343,14 +343,14 @@ export default function TransactionDetailsGraph(
                     );
                     const topBoundary = Math.max(
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
                             ? tx.askTickInvPriceDecimalCorrected
                             : tx.askTickPriceDecimalCorrected,
                         (
-                            !isOnPortfolioPage
+                            !isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual
                         )
@@ -381,7 +381,7 @@ export default function TransactionDetailsGraph(
 
             if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
                 const topLineTick = (
-                    !isOnPortfolioPage
+                    !isAccountView
                         ? denominationsInBase
                         : !isBaseTokenMoneynessGreaterOrEqual
                 )
@@ -389,7 +389,7 @@ export default function TransactionDetailsGraph(
                     : tx.bidTickPriceDecimalCorrected;
 
                 const lowLineTick = (
-                    !isOnPortfolioPage
+                    !isAccountView
                         ? denominationsInBase
                         : !isBaseTokenMoneynessGreaterOrEqual
                 )
@@ -417,7 +417,7 @@ export default function TransactionDetailsGraph(
                 if (lowerBoudnaryFactor < 2) {
                     lowValues[0] =
                         shouldRound &&
-                        (!isOnPortfolioPage
+                        (!isAccountView
                             ? denominationsInBase
                             : !isBaseTokenMoneynessGreaterOrEqual)
                             ? Math.round(
@@ -428,7 +428,7 @@ export default function TransactionDetailsGraph(
                     for (let i = 1; i <= lowerBoudnaryFactor; i++) {
                         lowValues[i - 1] =
                             shouldRound &&
-                            (!isOnPortfolioPage
+                            (!isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual)
                                 ? Math.round(
@@ -458,7 +458,7 @@ export default function TransactionDetailsGraph(
                 if (topBoudnaryFactor < 2) {
                     topValues[0] =
                         shouldRound &&
-                        (!isOnPortfolioPage
+                        (!isAccountView
                             ? denominationsInBase
                             : !isBaseTokenMoneynessGreaterOrEqual)
                             ? Math.round((topLimit + topBoundaryFill) / 10) * 10
@@ -467,7 +467,7 @@ export default function TransactionDetailsGraph(
                     for (let i = 1; i <= topBoudnaryFactor; i++) {
                         topValues[i - 1] =
                             shouldRound &&
-                            (!isOnPortfolioPage
+                            (!isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual)
                                 ? Math.round(
@@ -494,7 +494,7 @@ export default function TransactionDetailsGraph(
                     if (bandBoudnaryFactor < 2) {
                         bandValues[0] =
                             shouldRound &&
-                            (!isOnPortfolioPage
+                            (!isAccountView
                                 ? denominationsInBase
                                 : !isBaseTokenMoneynessGreaterOrEqual)
                                 ? Math.round(
@@ -505,7 +505,7 @@ export default function TransactionDetailsGraph(
                         for (let i = 1; i < bandBoudnaryFactor; i++) {
                             bandValues[i - 1] =
                                 shouldRound &&
-                                (!isOnPortfolioPage
+                                (!isAccountView
                                     ? denominationsInBase
                                     : !isBaseTokenMoneynessGreaterOrEqual)
                                     ? Math.round(
@@ -525,7 +525,7 @@ export default function TransactionDetailsGraph(
 
                 if (
                     shouldRound &&
-                    (!isOnPortfolioPage
+                    (!isAccountView
                         ? denominationsInBase
                         : !isBaseTokenMoneynessGreaterOrEqual)
                 ) {
@@ -708,14 +708,14 @@ export default function TransactionDetailsGraph(
                         ) {
                             horizontalBandData[0] = [
                                 (
-                                    !isOnPortfolioPage
+                                    !isAccountView
                                         ? denominationsInBase
                                         : !isBaseTokenMoneynessGreaterOrEqual
                                 )
                                     ? tx.bidTickInvPriceDecimalCorrected
                                     : tx.bidTickPriceDecimalCorrected,
                                 (
-                                    !isOnPortfolioPage
+                                    !isAccountView
                                         ? denominationsInBase
                                         : !isBaseTokenMoneynessGreaterOrEqual
                                 )
@@ -739,14 +739,14 @@ export default function TransactionDetailsGraph(
                             if (tx.positionType !== 'ambient') {
                                 horizontalBandData[0] = [
                                     (
-                                        !isOnPortfolioPage
+                                        !isAccountView
                                             ? denominationsInBase
                                             : !isBaseTokenMoneynessGreaterOrEqual
                                     )
                                         ? tx.bidTickInvPriceDecimalCorrected
                                         : tx.bidTickPriceDecimalCorrected,
                                     (
-                                        !isOnPortfolioPage
+                                        !isAccountView
                                             ? denominationsInBase
                                             : !isBaseTokenMoneynessGreaterOrEqual
                                     )
@@ -775,7 +775,7 @@ export default function TransactionDetailsGraph(
                                     {
                                         x: tx.time * 1000,
                                         y: (
-                                            !isOnPortfolioPage
+                                            !isAccountView
                                                 ? denominationsInBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )

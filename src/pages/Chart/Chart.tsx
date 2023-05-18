@@ -56,6 +56,8 @@ import {
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
+import { handlePulseAnimation } from '../../utils/functions/handlePulseAnimation';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -102,7 +104,6 @@ type lineValue = {
 
 interface propsIF {
     isTokenABase: boolean;
-    expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityData: any;
@@ -141,7 +142,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,7 +181,6 @@ export default function Chart(props: propsIF) {
         isTokenABase,
         denomInBase,
         isAdvancedModeActive,
-        expandTradeTable,
         setIsCandleAdded,
         scaleData,
         poolPriceNonDisplay,
@@ -196,7 +195,6 @@ export default function Chart(props: propsIF) {
         latest,
         setLatest,
         liquidityData,
-        handlePulseAnimation,
         liquidityScale,
         liquidityDepthScale,
         minPrice,
@@ -224,6 +222,7 @@ export default function Chart(props: propsIF) {
     } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
+    const { expandTradeTable } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,

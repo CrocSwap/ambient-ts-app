@@ -26,17 +26,16 @@ import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 
 // interface for React functional component props
 interface propsIF {
     tradeData: tradeData;
     limitOrder: LimitOrderIF;
     isOwnerActiveAccount?: boolean;
-    isShowAllEnabled: boolean;
     isOrderFilled: boolean;
-    handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
 }
@@ -46,14 +45,12 @@ export default function OrdersMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        // isShowAllEnabled,
         tradeData,
         limitOrder,
         isOrderFilled,
         isOwnerActiveAccount,
-        handlePulseAnimation,
         isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
+        isAccountView,
     } = props;
 
     const {
@@ -79,7 +76,7 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
-        handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
+        handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
         if (IS_LOCAL_ENV) {
             console.debug({ tradeData });
@@ -189,7 +186,7 @@ export default function OrdersMenu(props: propsIF) {
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
+                isAccountView={isAccountView}
             />,
         );
 

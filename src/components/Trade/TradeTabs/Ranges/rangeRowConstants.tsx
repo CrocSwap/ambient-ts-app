@@ -44,7 +44,7 @@ interface Props {
     // truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isAmbient: boolean;
     ipadView: boolean;
     isPositionInRange: boolean;
@@ -87,7 +87,7 @@ export default function rangeRowConstants(props: Props) {
         elapsedTimeString,
 
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
 
         minRangeDenomByMoneyness,
@@ -337,7 +337,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage && !isAmbient
+                {isAccountView && !isAmbient
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
@@ -370,7 +370,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage
+                {isAccountView
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
@@ -388,7 +388,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage && !isAmbient
+                    {isAccountView && !isAmbient
                         ? minRangeDenomByMoneyness || '…'
                         : ambientOrMin || '…'}
                 </span>
@@ -396,7 +396,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? maxRangeDenomByMoneyness || '…'
                         : ambientOrMax || '…'}
                 </span>

@@ -46,11 +46,6 @@ import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
-    addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: {
-        onCurrentChain?: boolean;
-        count?: number | null;
-    }) => TokenIF[];
     ambientTokens: TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -69,15 +64,10 @@ interface propsIF {
     userAccount?: boolean;
     openModalWallet: () => void;
     searchableTokens: TokenIF[];
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    handlePulseAnimation: (type: string) => void;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -85,7 +75,6 @@ interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 
 function Portfolio(props: propsIF) {
@@ -93,8 +82,6 @@ function Portfolio(props: propsIF) {
         searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        addRecentToken,
-        getRecentTokens,
         getTokensByName,
         getTokenByAddress,
         verifyToken,
@@ -109,9 +96,6 @@ function Portfolio(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        handlePulseAnimation,
         openModalWallet,
         outputTokens,
         validatedInput,
@@ -119,7 +103,6 @@ function Portfolio(props: propsIF) {
         searchType,
         mainnetProvider,
         setSimpleRangeWidth,
-        setExpandTradeTable,
     } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
@@ -518,18 +501,12 @@ function Portfolio(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         fullLayoutToggle: fullLayerToggle,
-        handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        setExpandTradeTable: setExpandTradeTable,
     };
 
     const portfolioBannerProps = {
@@ -626,8 +603,6 @@ function Portfolio(props: propsIF) {
                         validatedInput={validatedInput}
                         setInput={setInput}
                         searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
                     />

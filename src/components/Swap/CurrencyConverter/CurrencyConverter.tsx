@@ -26,7 +26,6 @@ import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
@@ -66,10 +65,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -108,8 +103,6 @@ function CurrencyConverter(props: propsIF) {
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -903,8 +896,6 @@ function CurrencyConverter(props: propsIF) {
                 verifyToken={verifyToken}
                 getTokensByName={getTokensByName}
                 getTokenByAddress={getTokenByAddress}
-                getRecentTokens={getRecentTokens}
-                addRecentToken={addRecentToken}
                 outputTokens={outputTokens}
                 validatedInput={validatedInput}
                 setInput={setInput}
@@ -967,8 +958,6 @@ function CurrencyConverter(props: propsIF) {
                     verifyToken={verifyToken}
                     getTokensByName={getTokensByName}
                     getTokenByAddress={getTokenByAddress}
-                    getRecentTokens={getRecentTokens}
-                    addRecentToken={addRecentToken}
                     outputTokens={outputTokens}
                     validatedInput={validatedInput}
                     setInput={setInput}

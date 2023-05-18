@@ -24,7 +24,6 @@ import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -32,6 +31,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // interface for component props
 interface propsIF {
@@ -61,8 +61,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-
-    isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -71,10 +69,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -100,13 +94,10 @@ function LimitCurrencySelector(props: propsIF) {
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
         handleChangeClick,
-        isOrderCopied,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         tokenAorB,
         outputTokens,
         validatedInput,
@@ -123,6 +114,7 @@ function LimitCurrencySelector(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const thisToken =
         fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -153,7 +145,7 @@ function LimitCurrencySelector(props: propsIF) {
     const tokenSelect = (
         <button
             className={`${styles.token_select} ${
-                isOrderCopied && styles.pulse_animation
+                showOrderPulseAnimation && styles.pulse_animation
             }`}
             onClick={openTokenModal}
             tabIndex={0}
@@ -423,8 +415,6 @@ function LimitCurrencySelector(props: propsIF) {
                         validatedInput={validatedInput}
                         setInput={setInput}
                         searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}

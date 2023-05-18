@@ -34,7 +34,7 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
@@ -57,7 +57,7 @@ export default function RangeDetails(props: propsIF) {
         positionApy,
         // isPositionInRange,
         isAmbient,
-        isOnPortfolioPage,
+        isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
@@ -311,7 +311,7 @@ export default function RangeDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
+                        isAccountView={isAccountView}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
@@ -340,7 +340,7 @@ export default function RangeDetails(props: propsIF) {
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

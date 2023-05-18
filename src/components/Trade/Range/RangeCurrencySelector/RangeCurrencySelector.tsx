@@ -19,7 +19,6 @@ import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -27,6 +26,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
     provider?: ethers.providers.Provider;
@@ -63,7 +63,6 @@ interface propsIF {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
-    isRangeCopied: boolean;
     handleChangeClick: (input: string) => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -73,10 +72,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -109,13 +104,10 @@ function RangeCurrencySelector(props: propsIF) {
         isTokenBDisabled,
         isAdvancedMode,
         handleChangeClick,
-        isRangeCopied,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         tokenAorB,
         outputTokens,
         validatedInput,
@@ -127,6 +119,7 @@ function RangeCurrencySelector(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -414,7 +407,7 @@ function RangeCurrencySelector(props: propsIF) {
                 </div>
                 <button
                     className={`${styles.token_select} ${
-                        isRangeCopied && styles.pulse_animation
+                        showRangePulseAnimation && styles.pulse_animation
                     }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
@@ -466,8 +459,6 @@ function RangeCurrencySelector(props: propsIF) {
                         validatedInput={validatedInput}
                         setInput={setInput}
                         searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}

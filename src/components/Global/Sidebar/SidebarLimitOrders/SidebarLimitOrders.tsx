@@ -1,29 +1,20 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
-import { SetStateAction, Dispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrders(props: propsIF) {
-    const {
-        limitOrderByUser,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    const { limitOrderByUser, isDenomBase } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -36,6 +27,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setCurrentPositionActive, setShowAllData } =
+        useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
@@ -56,7 +49,7 @@ export default function SidebarLimitOrders(props: propsIF) {
         setOutsideControlActive(true);
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         navigate(
             '/trade/limit/chain=' +
                 chainId +

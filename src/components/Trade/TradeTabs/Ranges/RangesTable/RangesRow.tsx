@@ -27,6 +27,7 @@ import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -37,15 +38,11 @@ interface propsIF {
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
-    isShowAllEnabled: boolean;
     position: PositionIF;
     rank?: number;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isLeaderboard?: boolean;
     idx: number;
-    handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
@@ -56,19 +53,24 @@ function RangesRow(props: propsIF) {
         ipadView,
         showColumns,
         showPair,
-        isShowAllEnabled,
         position,
-        currentPositionActive,
-        setCurrentPositionActive,
-        isOnPortfolioPage,
+        isAccountView,
         isLeaderboard,
-        handlePulseAnimation,
         setSimpleRangeWidth,
     } = props;
     const {
         globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        showAllData: showAllDataSelection,
+        currentPositionActive,
+        setCurrentPositionActive,
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -100,7 +102,7 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
-    } = useProcessRange(position, userAddress, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -141,8 +143,7 @@ function RangesRow(props: propsIF) {
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
-        isOnPortfolioPage: props.isOnPortfolioPage,
-        handlePulseAnimation: handlePulseAnimation,
+        isAccountView: props.isAccountView,
         isPositionInRange: isPositionInRange,
     };
 
@@ -155,7 +156,7 @@ function RangesRow(props: propsIF) {
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -171,7 +172,7 @@ function RangesRow(props: propsIF) {
 
     const activePositionRef = useRef(null);
 
-    const sideCharacter = isOnPortfolioPage
+    const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -211,12 +212,10 @@ function RangesRow(props: propsIF) {
     }, [currentPositionActive]);
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
-            : null;
+        userNameToDisplay === 'You' && showAllData ? styles.border_left : null;
 
     const usernameStyle =
-        isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
+        isOwnerActiveAccount && (showAllData || isLeaderboard)
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
@@ -233,11 +232,11 @@ function RangesRow(props: propsIF) {
     const handleRowMouseOut = () => setHighlightRow(false);
 
     function handleWalletLinkClick() {
-        if (!isOnPortfolioPage)
+        if (!isAccountView)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
-                    loadingStatus: isOnPortfolioPage ? false : true,
+                    loadingStatus: isAccountView ? false : true,
                 }),
             );
 
@@ -251,7 +250,7 @@ function RangesRow(props: propsIF) {
     // eslint-disable-next-line
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
-        if (!isOnPortfolioPage) {
+        if (!isAccountView) {
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
@@ -292,7 +291,7 @@ function RangesRow(props: propsIF) {
         elapsedTimeString,
 
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
 
         minRangeDenomByMoneyness,
@@ -343,11 +342,9 @@ function RangesRow(props: propsIF) {
             >
                 {rankingOrNull}
                 {showPair && rangeTimeWithTooltip}
-                {isOnPortfolioPage && showPair && tokenPair}
+                {isAccountView && showPair && tokenPair}
                 {idOrNull}
-                {!showColumns && !isOnPortfolioPage && (
-                    <li>{walletWithTooltip}</li>
-                )}
+                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
                 {!showColumns && fullScreenMinDisplay}
                 {!showColumns && fullScreenMaxDisplay}
@@ -366,7 +363,6 @@ function RangesRow(props: propsIF) {
                         showHighlightedButton={showHighlightedButton}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         handleAccountClick={handleAccountClick}
-                        isShowAllEnabled={isShowAllEnabled}
                     />
                 </li>
             </ul>

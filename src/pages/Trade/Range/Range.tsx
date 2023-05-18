@@ -64,7 +64,6 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import {
@@ -97,7 +96,6 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    isRangeCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -106,10 +104,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -134,13 +128,10 @@ function Range(props: propsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        isRangeCopied,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -1346,7 +1337,6 @@ function Range(props: propsIF) {
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
-        isRangeCopied: isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
         setTokenAQtyLocal,
@@ -1355,8 +1345,6 @@ function Range(props: propsIF) {
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
@@ -1369,7 +1357,6 @@ function Range(props: propsIF) {
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
-        isRangeCopied: isRangeCopied,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
     };
@@ -1447,7 +1434,6 @@ function Range(props: propsIF) {
                     minPrice={minPrice}
                     setMaxPrice={setMaxPrice}
                     setMinPrice={setMinPrice}
-                    isRangeCopied={isRangeCopied}
                 />
             </motion.div>
             <DividerDark addMarginTop />

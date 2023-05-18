@@ -44,6 +44,7 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -57,20 +58,11 @@ interface propsIF {
     quoteTokenDexBalance: string;
     isTokenABase: boolean;
     tokenPair: TokenPairIF;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     limitRate: string;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
-    handlePulseAnimation: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -94,15 +86,8 @@ function Trade(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         searchableTokens,
-        expandTradeTable,
-        setExpandTradeTable,
-        isShowAllEnabled,
-        setIsShowAllEnabled,
         isTokenABase,
         poolPriceNonDisplay,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        handlePulseAnimation,
         setSimpleRangeWidth,
         simpleRangeWidth,
         setRepositionRangeWidth,
@@ -128,6 +113,7 @@ function Trade(props: propsIF) {
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
+    const { expandTradeTable } = useContext(TradeTableContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -427,8 +413,6 @@ function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
         isTokenABase: isTokenABase,
         changeState: changeState,
         liquidityData: liquidityData,
@@ -446,7 +430,6 @@ function Trade(props: propsIF) {
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        handlePulseAnimation: handlePulseAnimation,
         TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
         setSimpleRangeWidth: setSimpleRangeWidth,
         setRepositionRangeWidth: setRepositionRangeWidth,
@@ -459,24 +442,15 @@ function Trade(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
         provider: provider,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        isShowAllEnabled: isShowAllEnabled,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
         searchableTokens: searchableTokens,
-        handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,

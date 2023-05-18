@@ -1,27 +1,21 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { SetStateAction, Dispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
     isDenomBase: boolean;
     userPositions?: PositionIF[];
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
-    const {
-        isDenomBase,
-        userPositions,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    const { isDenomBase, userPositions } = props;
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -30,6 +24,8 @@ export default function SidebarRangePositions(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setCurrentPositionActive, setShowAllData } =
+        useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
@@ -54,7 +50,7 @@ export default function SidebarRangePositions(props: propsIF) {
         setOutsideControlActive(true);
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         navigate(
             '/trade/range/chain=' +
                 chainId +

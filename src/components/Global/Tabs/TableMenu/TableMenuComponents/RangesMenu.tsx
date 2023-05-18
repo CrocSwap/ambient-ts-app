@@ -33,6 +33,7 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 // interface for React functional component props
 interface propsIF {
     baseTokenBalance: string;
@@ -44,17 +45,13 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isPositionEmpty: boolean;
-    handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
     isEmpty: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     isPositionInRange: boolean;
-
     handleAccountClick: () => void;
-
-    isShowAllEnabled: boolean;
 }
 
 // React functional component
@@ -67,7 +64,6 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount,
         rangeDetailsProps,
         position,
-        handlePulseAnimation,
         setSimpleRangeWidth,
         isPositionInRange,
     } = props;
@@ -113,9 +109,7 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
-        {
-            handlePulseAnimation ? handlePulseAnimation('range') : null;
-        }
+        handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {
             setSimpleRangeWidth(100);

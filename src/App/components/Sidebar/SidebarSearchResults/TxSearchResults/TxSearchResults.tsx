@@ -1,23 +1,18 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     searchedTxs: TransactionIF[];
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TxSearchResults(props: propsIF) {
-    const {
-        searchedTxs,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+    const { searchedTxs } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -26,13 +21,15 @@ export default function TxSearchResults(props: propsIF) {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+    const { setCurrentTxActiveInTransactions, setShowAllData } =
+        useContext(TradeTableContext);
 
     const navigate = useNavigate();
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(0);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
             '/trade/market/chain=' +

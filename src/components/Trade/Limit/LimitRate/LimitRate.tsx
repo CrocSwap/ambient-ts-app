@@ -11,6 +11,7 @@ import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -27,7 +28,6 @@ interface propsIF {
     // onBlur: () => void;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
-    isOrderCopied: boolean;
 }
 
 export default function LimitRate(props: propsIF) {
@@ -42,7 +42,6 @@ export default function LimitRate(props: propsIF) {
         disable,
         // poolPriceNonDisplay,
         // limitTickDisplayPrice,
-        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -50,6 +49,7 @@ export default function LimitRate(props: propsIF) {
         chainData: { gridSize },
     } = useContext(CrocEnvContext);
     const { pool } = useContext(PoolContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -165,7 +165,7 @@ export default function LimitRate(props: propsIF) {
     return (
         <div
             className={`${styles.swapbox} ${
-                isOrderCopied && styles.pulse_animation
+                showOrderPulseAnimation && styles.pulse_animation
             }`}
         >
             <span

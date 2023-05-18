@@ -1,13 +1,5 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-} from 'react';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -38,11 +30,10 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     changeState: (
         isOpen: boolean | undefined,
@@ -64,7 +55,6 @@ interface propsIF {
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
     TradeSettingsColor: JSX.Element;
-    handlePulseAnimation: (type: string) => void;
     setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
@@ -128,11 +118,9 @@ export interface LiqSnap {
 // React functional component
 function TradeCharts(props: propsIF) {
     const {
-        expandTradeTable,
         selectedDate,
         setSelectedDate,
         TradeSettingsColor,
-        handlePulseAnimation,
         setSimpleRangeWidth,
     } = props;
 
@@ -144,6 +132,7 @@ function TradeCharts(props: propsIF) {
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
     } = useContext(ChartContext);
+    const { expandTradeTable } = useContext(TradeTableContext);
 
     const { pathname } = useLocation();
 
@@ -414,7 +403,7 @@ function TradeCharts(props: propsIF) {
     );
     // END OF TOKEN INFO----------------------------------------------------------------
 
-    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
 
     const [graphIsLoading, setGraphIsLoading] = useState(true);
 
@@ -474,7 +463,6 @@ function TradeCharts(props: propsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
-                        expandTradeTable={expandTradeTable}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitTick={props.limitTick}
@@ -503,7 +491,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        handlePulseAnimation={handlePulseAnimation}
                         setSimpleRangeWidth={setSimpleRangeWidth}
                         setRepositionRangeWidth={props.setRepositionRangeWidth}
                         repositionRangeWidth={props.repositionRangeWidth}

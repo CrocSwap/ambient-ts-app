@@ -18,6 +18,7 @@ import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -39,11 +40,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: {
-        onCurrentChain?: boolean;
-        count?: number | null;
-    }) => TokenIF[];
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
@@ -62,14 +58,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         validatedInput,
         setInput,
         searchType,
-        addRecentToken,
-        getRecentTokens,
         isSingleToken,
         tokenAorB,
         reverseTokens,
         tokenPair,
     } = props;
 
+    const { addRecentToken, getRecentTokens } = useContext(UserDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);

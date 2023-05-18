@@ -1,16 +1,15 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 interface PositionLiPropsIF {
     position: PositionIF;
@@ -44,12 +43,7 @@ function PositionLI(props: PositionLiPropsIF) {
 }
 
 export default function PositionsSearchResults(props: propsIF) {
-    const {
-        searchedPositions,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    const { searchedPositions, isDenomBase } = props;
 
     const navigate = useNavigate();
 
@@ -60,12 +54,14 @@ export default function PositionsSearchResults(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { setCurrentPositionActive, setShowAllData } =
+        useContext(TradeTableContext);
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(2);
         setCurrentPositionActive(position.positionStorageSlot);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         navigate(
             '/trade/range/chain=' +
                 chainId +

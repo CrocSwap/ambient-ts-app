@@ -38,7 +38,7 @@ interface OrderDetailsSimplifyPropsIF {
     quoteTokenSymbol: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function OrderDetailsSimplify(
     props: OrderDetailsSimplifyPropsIF,
@@ -59,7 +59,7 @@ export default function OrderDetailsSimplify(
         // isDenomBase,
         usdValue,
         limitOrder,
-        isOnPortfolioPage,
+        isAccountView,
     } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -108,7 +108,7 @@ export default function OrderDetailsSimplify(
         // truncatedDisplayPriceDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessOrder(limitOrder, userAddress, isOnPortfolioPage);
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },
@@ -276,14 +276,14 @@ export default function OrderDetailsSimplify(
 
         {
             title: 'Fill Start ',
-            content: isOnPortfolioPage
+            content: isAccountView
                 ? startPriceDisplayDenomByMoneyness
                 : startPriceDisplay,
             explanation: 'Price at which the limit order fill starts',
         },
         {
             title: 'Fill Middle ',
-            content: isOnPortfolioPage
+            content: isAccountView
                 ? middlePriceDisplayDenomByMoneyness
                 : middlePriceDisplay,
             explanation:
@@ -291,7 +291,7 @@ export default function OrderDetailsSimplify(
         },
         {
             title: 'Fill End ',
-            content: isOnPortfolioPage
+            content: isAccountView
                 ? truncatedDisplayPriceDenomByMoneyness
                 : truncatedDisplayPrice,
             explanation: 'Price at which limit order fill ends',

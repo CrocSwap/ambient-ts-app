@@ -30,23 +30,19 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // interface for props
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
-    isShowAllEnabled: boolean;
     notOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -56,19 +52,16 @@ interface propsIF {
 function Leaderboard(props: propsIF) {
     const {
         provider,
-        isShowAllEnabled,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        expandTradeTable,
-        currentPositionActive,
-        setCurrentPositionActive,
-        handlePulseAnimation,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         setSimpleRangeWidth,
     } = props;
+
+    const { expandTradeTable, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -108,7 +101,7 @@ function Leaderboard(props: propsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
+                    if (showAllData) {
                         dispatch(updateLeaderboard(updatedPositions));
                     } else {
                         dispatch(updateLeaderboard(updatedPositions));
@@ -123,7 +116,7 @@ function Leaderboard(props: propsIF) {
             id2: topThreePositions[2]?.positionId,
         }),
         currentTimeForPositionUpdateCaching,
-        isShowAllEnabled,
+        showAllData,
     ]);
 
     // ---------------------
@@ -132,7 +125,7 @@ function Leaderboard(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -335,9 +328,6 @@ function Leaderboard(props: propsIF) {
                     (posId) => posId === position.positionId,
                 ) + 1
             }
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             provider={provider}
@@ -345,10 +335,9 @@ function Leaderboard(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            isOnPortfolioPage={false}
+            isAccountView={false}
             isLeaderboard={true}
             idx={idx + 1}
-            handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
         />

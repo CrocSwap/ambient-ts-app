@@ -17,12 +17,12 @@ interface ItemRowPropsIF {
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
-    const { tx, isOnPortfolioPage } = props;
+    const { tx, isAccountView } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -224,14 +224,14 @@ export default function TransactionDetailsSimplify(
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
             content: isSwap
-                ? isOnPortfolioPage
+                ? isAccountView
                     ? isBaseTokenMoneynessGreaterOrEqual
                         ? `${baseTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                         : `${quoteTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
                     : isDenomBase
                     ? `${quoteTokenCharacter}${truncatedDisplayPrice} / ${baseTokenSymbol}`
                     : `${baseTokenCharacter}${truncatedDisplayPrice} / ${quoteTokenSymbol}`
-                : isOnPortfolioPage
+                : isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
                     ? `${baseTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                     : `${quoteTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
@@ -264,7 +264,7 @@ export default function TransactionDetailsSimplify(
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: isOnPortfolioPage
+                content: isAccountView
                     ? isBaseTokenMoneynessGreaterOrEqual
                         ? `${baseTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                         : `${quoteTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`

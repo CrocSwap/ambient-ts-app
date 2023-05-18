@@ -35,7 +35,6 @@ import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
 
@@ -69,8 +68,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     isDenominationInBase: boolean;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-
-    isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -79,10 +76,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -119,13 +112,10 @@ function LimitCurrencyConverter(props: propsIF) {
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         isDenominationInBase,
-        isOrderCopied,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -531,13 +521,10 @@ function LimitCurrencyConverter(props: propsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                isOrderCopied={isOrderCopied}
                 verifyToken={verifyToken}
                 getTokensByName={getTokensByName}
                 getTokenByAddress={getTokenByAddress}
                 importedTokensPlus={importedTokensPlus}
-                getRecentTokens={getRecentTokens}
-                addRecentToken={addRecentToken}
                 tokenAorB={'A'}
                 outputTokens={outputTokens}
                 validatedInput={validatedInput}
@@ -599,13 +586,10 @@ function LimitCurrencyConverter(props: propsIF) {
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    isOrderCopied={isOrderCopied}
                     verifyToken={verifyToken}
                     getTokensByName={getTokensByName}
                     getTokenByAddress={getTokenByAddress}
                     importedTokensPlus={importedTokensPlus}
-                    getRecentTokens={getRecentTokens}
-                    addRecentToken={addRecentToken}
                     tokenAorB={'B'}
                     outputTokens={outputTokens}
                     validatedInput={validatedInput}
@@ -628,7 +612,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens={reverseTokens}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 limitTickDisplayPrice={limitTickDisplayPrice}
-                isOrderCopied={isOrderCopied}
             />
         </section>
     );

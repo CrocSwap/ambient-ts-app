@@ -57,8 +57,6 @@ import {
 } from '../../../utils/TransactionError';
 import { FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
@@ -82,7 +80,6 @@ interface propsIF {
     tokenPair: TokenPairIF;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    isOrderCopied: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
         searchName: string,
@@ -91,10 +88,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -115,13 +108,10 @@ export default function Limit(props: propsIF) {
         tokenPair,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        isOrderCopied,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -783,13 +773,10 @@ export default function Limit(props: propsIF) {
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
         isDenominationInBase: tradeData.isDenomBase,
-        isOrderCopied: isOrderCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,

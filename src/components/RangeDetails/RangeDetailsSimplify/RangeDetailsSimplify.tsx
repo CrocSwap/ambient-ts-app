@@ -23,12 +23,12 @@ interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function RangeDetailsSimplify(
     props: RangeDetailsSimplifyPropsIF,
 ) {
-    const { position, baseFeesDisplay, quoteFeesDisplay, isOnPortfolioPage } =
+    const { position, baseFeesDisplay, quoteFeesDisplay, isAccountView } =
         props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -57,7 +57,7 @@ export default function RangeDetailsSimplify(
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-    } = useProcessRange(position, userAddress, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },

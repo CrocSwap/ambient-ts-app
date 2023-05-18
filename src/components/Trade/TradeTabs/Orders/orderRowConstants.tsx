@@ -36,7 +36,7 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isOrderFilled: boolean;
 
     handleCopyPosHash: () => void;
@@ -73,7 +73,7 @@ export const orderRowConstants = (props: Props) => {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
-        isOnPortfolioPage,
+        isAccountView,
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
@@ -331,7 +331,7 @@ export const orderRowConstants = (props: Props) => {
                 <p className={`${styles.align_right} `}>
                     <span>{priceCharacter}</span>
                     <span>
-                        {isOnPortfolioPage
+                        {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness
                             : truncatedDisplayPrice}
                     </span>

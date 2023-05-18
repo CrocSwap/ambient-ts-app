@@ -34,7 +34,6 @@ interface MinMaxPriceIF {
     // setRangeHighTick: Dispatch<SetStateAction<number>>;
     maxPrice: number;
     minPrice: number;
-    isRangeCopied: boolean;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
 }
@@ -57,7 +56,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         minPrice,
         setMaxPrice,
         setMinPrice,
-        isRangeCopied,
     } = props;
 
     const {
@@ -170,7 +168,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     decreaseTick={
                         !isDenomBase ? decreaseLowTick : increaseHighTick
                     }
-                    isRangeCopied={isRangeCopied}
                 />
                 <PriceInput
                     fieldId='max'
@@ -188,7 +185,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     decreaseTick={
                         !isDenomBase ? decreaseHighTick : increaseLowTick
                     }
-                    isRangeCopied={isRangeCopied}
                 />
             </div>
             {disable && disableInputContent}

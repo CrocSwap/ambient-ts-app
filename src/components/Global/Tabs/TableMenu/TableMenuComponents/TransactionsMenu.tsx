@@ -37,6 +37,7 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 
 // interface for React functional component props
 interface propsIF {
@@ -44,11 +45,9 @@ interface propsIF {
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
     tx: TransactionIF;
-    handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    isShowAllEnabled: boolean;
     handleWalletClick: () => void;
 }
 
@@ -58,8 +57,7 @@ export default function TransactionsMenu(props: propsIF) {
         tradeData,
         isBaseTokenMoneynessGreaterOrEqual,
         tx,
-        handlePulseAnimation,
-        isOnPortfolioPage,
+        isAccountView,
         setSimpleRangeWidth,
     } = props;
     const {
@@ -77,14 +75,12 @@ export default function TransactionsMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const handleCopyClick = () => {
-        if (handlePulseAnimation) {
-            if (tx.entityType === 'swap') {
-                handlePulseAnimation('swap');
-            } else if (tx.entityType === 'limitOrder') {
-                handlePulseAnimation('limitOrder');
-            } else if (tx.entityType === 'liqchange') {
-                handlePulseAnimation('range');
-            }
+        if (tx.entityType === 'swap') {
+            handlePulseAnimation('swap');
+        } else if (tx.entityType === 'limitOrder') {
+            handlePulseAnimation('limitOrder');
+        } else if (tx.entityType === 'liqchange') {
+            handlePulseAnimation('range');
         }
 
         if (tx.positionType === 'ambient') {
@@ -194,7 +190,7 @@ export default function TransactionsMenu(props: propsIF) {
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
+                isAccountView={isAccountView}
             />,
         );
     };

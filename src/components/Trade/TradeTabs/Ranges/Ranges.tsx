@@ -39,6 +39,7 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -48,25 +49,18 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     provider: ethers.providers.Provider | undefined;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    isOnPortfolioPage: boolean; // when viewing from /account: fullscreen and not paginated
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation?: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    isAccountView: boolean;
 }
 
 // react functional component
@@ -75,25 +69,28 @@ function Ranges(props: propsIF) {
         activeAccountPositionData,
         connectedAccountActive,
         provider,
-        isShowAllEnabled,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        expandTradeTable,
-        setExpandTradeTable,
-        currentPositionActive,
-        setCurrentPositionActive,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        setIsShowAllEnabled,
         cachedQuerySpotPrice,
         setSimpleRangeWidth,
         cachedPositionUpdateQuery,
+        isAccountView,
     } = props;
+
+    const {
+        showAllData: showAllDataSelection,
+        expandTradeTable: expandTradeTableSelection,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+    const expandTradeTable = !isAccountView && expandTradeTableSelection;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -121,12 +118,12 @@ function Ranges(props: propsIF) {
         (!connectedAccountActive && isLookupUserRangeDataLoading);
 
     const isRangeDataLoadingForTradeTable =
-        (isShowAllEnabled && isPoolRangeDataLoading) ||
-        (!isShowAllEnabled && isConnectedUserRangeDataLoading);
+        (showAllData && isPoolRangeDataLoading) ||
+        (!showAllData && isConnectedUserRangeDataLoading);
 
     const shouldDisplayLoadingAnimation =
-        (isOnPortfolioPage && isRangeDataLoadingForPortfolio) ||
-        (!isOnPortfolioPage && isRangeDataLoadingForTradeTable);
+        (isAccountView && isRangeDataLoadingForPortfolio) ||
+        (!isAccountView && isRangeDataLoadingForTradeTable);
 
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
@@ -157,7 +154,7 @@ function Ranges(props: propsIF) {
         });
 
     const [rangeData, setRangeData] = useState(
-        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
+        isAccountView ? activeAccountPositionData || [] : positionsByPool,
     );
 
     const sumHashActiveAccountPositionData = useMemo(
@@ -179,14 +176,14 @@ function Ranges(props: propsIF) {
 
     const updateRangeData = () => {
         if (
-            isOnPortfolioPage &&
+            isAccountView &&
             activeAccountPositionData &&
             sumHashActiveAccountPositionData !== sumHashRangeData
         ) {
             setRangeData(activeAccountPositionData);
-        } else if (!isShowAllEnabled && !isOnPortfolioPage) {
+        } else if (!showAllData && !isAccountView) {
             setRangeData(userPositionsToDisplayOnTrade);
-        } else if (positionsByPool && !isOnPortfolioPage) {
+        } else if (positionsByPool && !isAccountView) {
             setRangeData(positionsByPool);
         }
     };
@@ -194,8 +191,8 @@ function Ranges(props: propsIF) {
     useEffect(() => {
         updateRangeData();
     }, [
-        isOnPortfolioPage,
-        isShowAllEnabled,
+        isAccountView,
+        showAllData,
         connectedAccountActive,
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
@@ -224,8 +221,8 @@ function Ranges(props: propsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (!isOnPortfolioPage) {
-                        if (isShowAllEnabled) {
+                    if (!isAccountView) {
+                        if (showAllData) {
                             if (updatedPositions)
                                 dispatch(addPositionsByPool(updatedPositions));
                         } else {
@@ -258,8 +255,8 @@ function Ranges(props: propsIF) {
             id2: sortedPositions[2]?.positionId,
         }),
         currentTimeForPositionUpdateCaching,
-        isShowAllEnabled,
-        isOnPortfolioPage,
+        showAllData,
+        isAccountView,
     ]);
 
     // ---------------------
@@ -276,10 +273,10 @@ function Ranges(props: propsIF) {
     // 30 => Height of each paginated row item
 
     const regularRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 450 : 350)) / 36,
+        (height - (isAccountView ? 450 : 350)) / 36,
     );
     const showColumnRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 300)) / 60,
+        (height - (isAccountView ? 400 : 300)) / 60,
     );
     const rangesPerPage = showColumns
         ? showColumnRangesItems
@@ -287,7 +284,7 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [userAddress, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -304,8 +301,8 @@ function Ranges(props: propsIF) {
     const footerDisplay = (
         <div className={styles.footer}>
             {rangesPerPage > 0 &&
-                ((isOnPortfolioPage && rangeData.length > 7) ||
-                    (!isOnPortfolioPage && tradePageCheck)) && (
+                ((isAccountView && rangeData.length > 7) ||
+                    (!isAccountView && tradePageCheck)) && (
                     <Pagination
                         itemsPerPage={rangesPerPage}
                         totalItems={rangeData.length}
@@ -334,7 +331,7 @@ function Ranges(props: propsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = isOnPortfolioPage ? (
+    const tokens = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
@@ -353,7 +350,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && showPair,
+            show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
@@ -367,16 +364,16 @@ function Ranges(props: propsIF) {
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns && !isOnPortfolioPage,
+            show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: isShowAllEnabled,
+            sortable: showAllData,
         },
         {
             name: walID,
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: isShowAllEnabled,
+            sortable: showAllData,
         },
         {
             name: 'Min',
@@ -410,7 +407,7 @@ function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
+            name: isAccountView ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -418,7 +415,7 @@ function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
+            name: isAccountView ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -458,7 +455,7 @@ function Ranges(props: propsIF) {
         },
     ];
 
-    const headerStyle = isOnPortfolioPage
+    const headerStyle = isAccountView
         ? styles.portfolio_header
         : styles.trade_header;
 
@@ -481,9 +478,6 @@ function Ranges(props: propsIF) {
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             key={idx}
             position={position}
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             provider={provider}
@@ -491,9 +485,8 @@ function Ranges(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            isOnPortfolioPage={isOnPortfolioPage}
+            isAccountView={isAccountView}
             idx={idx}
-            handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
         />
@@ -504,9 +497,6 @@ function Ranges(props: propsIF) {
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             key={idx}
             position={position}
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             provider={provider}
@@ -514,9 +504,8 @@ function Ranges(props: propsIF) {
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
-            isOnPortfolioPage={isOnPortfolioPage}
+            isAccountView={isAccountView}
             idx={idx}
-            handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
             setSimpleRangeWidth={setSimpleRangeWidth}
         />
@@ -529,7 +518,7 @@ function Ranges(props: propsIF) {
     const expandStyle = expandTradeTable
         ? 'calc(100vh - 10rem)'
         : mobileViewHeight;
-    const portfolioPageStyle = props.isOnPortfolioPage
+    const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
@@ -539,7 +528,7 @@ function Ranges(props: propsIF) {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
                 !expandTradeTable &&
-                    !props.isOnPortfolioPage &&
+                    !props.isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <div className={styles.view_more_container}>
                             <button
@@ -555,12 +544,7 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData
-            isShowAllEnabled={isShowAllEnabled}
-            type='ranges'
-            isOnPortfolioPage={isOnPortfolioPage}
-            setIsShowAllEnabled={setIsShowAllEnabled}
-        />
+        <NoTableData type='ranges' isAccountView={isAccountView} />
     );
 
     return (

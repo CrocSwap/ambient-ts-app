@@ -30,7 +30,6 @@ import {
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
@@ -66,8 +65,6 @@ interface propsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
-
-    isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
@@ -80,10 +77,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -120,7 +113,6 @@ function RangeCurrencyConverter(props: propsIF) {
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
-        isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
         setTokenAQtyLocal,
@@ -129,8 +121,6 @@ function RangeCurrencyConverter(props: propsIF) {
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         outputTokens,
         validatedInput,
         setInput,
@@ -739,13 +729,10 @@ function RangeCurrencyConverter(props: propsIF) {
             tokenBSurplusMinusTokenBRemainderNum,
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
-        isRangeCopied: isRangeCopied,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,

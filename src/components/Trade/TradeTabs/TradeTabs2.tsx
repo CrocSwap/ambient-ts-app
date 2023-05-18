@@ -42,29 +42,21 @@ import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 interface propsIF {
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     tokenList: TokenIF[];
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     searchableTokens: TokenIF[];
-    handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -88,8 +80,6 @@ function TradeTabs2(props: propsIF) {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isTokenABase,
-        isShowAllEnabled,
-        setIsShowAllEnabled,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -99,14 +89,7 @@ function TradeTabs2(props: propsIF) {
         setIsCandleSelected,
         filter,
         setTransactionFilter,
-        expandTradeTable,
-        setExpandTradeTable,
-        currentPositionActive,
-        setCurrentPositionActive,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
         searchableTokens,
-        handlePulseAnimation,
         changeState,
         selectedDate,
         setSelectedDate,
@@ -131,6 +114,13 @@ function TradeTabs2(props: propsIF) {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const {
+        showAllData,
+        setShowAllData,
+        setCurrentPositionActive,
+        setCurrentTxActiveInTransactions,
+        expandTradeTable,
+    } = useContext(TradeTableContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
@@ -211,18 +201,18 @@ function TradeTabs2(props: propsIF) {
                 (!outsideControlActive && selectedInsideTab === 0)
             ) {
                 if (isCandleSelected) {
-                    setIsShowAllEnabled(false);
+                    setShowAllData(false);
                 } else if (
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
-                        !isShowAllEnabled &&
+                        !showAllData &&
                         matchingUserChangesLength < 1)
                 ) {
-                    setIsShowAllEnabled(true);
+                    setShowAllData(true);
                 } else if (matchingUserChangesLength < 1) {
                     return;
-                } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
-                    setIsShowAllEnabled(false);
+                } else if (showAllData && matchingUserChangesLength >= 1) {
+                    setShowAllData(false);
                 }
             } else if (
                 (outsideControlActive && outsideTabSelected === 1) ||
@@ -231,17 +221,14 @@ function TradeTabs2(props: propsIF) {
                 if (
                     !isUserConnected ||
                     (!isCandleSelected &&
-                        !isShowAllEnabled &&
+                        !showAllData &&
                         matchingUserLimitOrdersLength < 1)
                 ) {
-                    setIsShowAllEnabled(true);
+                    setShowAllData(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
                     return;
-                } else if (
-                    isShowAllEnabled &&
-                    matchingUserLimitOrdersLength >= 1
-                ) {
-                    setIsShowAllEnabled(false);
+                } else if (showAllData && matchingUserLimitOrdersLength >= 1) {
+                    setShowAllData(false);
                 }
             } else if (
                 (outsideControlActive && outsideTabSelected === 2) ||
@@ -250,17 +237,14 @@ function TradeTabs2(props: propsIF) {
                 if (
                     !isUserConnected ||
                     (!isCandleSelected &&
-                        !isShowAllEnabled &&
+                        !showAllData &&
                         matchingUserPositionsLength < 1)
                 ) {
-                    setIsShowAllEnabled(true);
+                    setShowAllData(true);
                 } else if (matchingUserPositionsLength < 1) {
                     return;
-                } else if (
-                    isShowAllEnabled &&
-                    matchingUserPositionsLength >= 1
-                ) {
-                    setIsShowAllEnabled(false);
+                } else if (showAllData && matchingUserPositionsLength >= 1) {
+                    setShowAllData(false);
                 }
             }
             setHasInitialized(true);
@@ -274,7 +258,7 @@ function TradeTabs2(props: propsIF) {
         outsideControlActive,
         selectedInsideTab,
         outsideTabSelected,
-        isShowAllEnabled,
+        showAllData,
         matchingUserPositionsLength,
         matchingUserChangesLength,
         matchingUserLimitOrdersLength,
@@ -283,7 +267,7 @@ function TradeTabs2(props: propsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (userAddress && isServerEnabled && !isShowAllEnabled) {
+        if (userAddress && isServerEnabled && !showAllData) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokenList,
@@ -311,7 +295,7 @@ function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, isShowAllEnabled]);
+    }, [isServerEnabled, userAddress, showAllData]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
@@ -371,39 +355,24 @@ function TradeTabs2(props: propsIF) {
         quoteTokenDexBalance: quoteTokenDexBalance,
         searchableTokens: searchableTokens,
         provider: provider,
-        isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        isOnPortfolioPage: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
-        handlePulseAnimation: handlePulseAnimation,
-        setIsShowAllEnabled: setIsShowAllEnabled,
         setSimpleRangeWidth: setSimpleRangeWidth,
+        isAccountView: false,
     };
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
-        isShowAllEnabled: isShowAllEnabled,
         searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         tokenList: tokenList,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
-        expandTradeTable: expandTradeTable,
-        setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,
         filter: filter,
         changeState: changeState,
         setSelectedDate: setSelectedDate,
-        isOnPortfolioPage: false,
-        handlePulseAnimation: handlePulseAnimation,
-        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: false,
     };
@@ -411,17 +380,10 @@ function TradeTabs2(props: propsIF) {
     // Props for <Orders/> React Element
     const ordersProps = {
         searchableTokens: searchableTokens,
-        expandTradeTable: expandTradeTable,
-        isShowAllEnabled: isShowAllEnabled,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        isOnPortfolioPage: false,
-        handlePulseAnimation: handlePulseAnimation,
-        setIsShowAllEnabled: setIsShowAllEnabled,
+        setShowAllData: setShowAllData,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
         isAccountView: false,
-        setExpandTradeTable,
     };
 
     const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] =
@@ -430,14 +392,10 @@ function TradeTabs2(props: propsIF) {
     const positionsOnlyToggleProps = {
         setHasUserSelectedViewAll: setHasUserSelectedViewAll,
         changeState: changeState,
-        isShowAllEnabled: isShowAllEnabled,
         setHasInitialized: setHasInitialized,
-        setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,
         setTransactionFilter: setTransactionFilter,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
         showPositionsOnlyToggle: showPositionsOnlyToggle,
         setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
         leader: leader,

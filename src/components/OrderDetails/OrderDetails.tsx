@@ -19,7 +19,7 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 
 export default function OrderDetails(props: propsIF) {
@@ -28,11 +28,8 @@ export default function OrderDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const {
-        limitOrder,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-    } = props;
+    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
+        props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -335,7 +332,7 @@ export default function OrderDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -377,7 +374,7 @@ export default function OrderDetails(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

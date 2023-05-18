@@ -22,7 +22,7 @@ import { diffHashSig } from '../functions/diffHashSig';
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
-    isOnPortfolioPage = false,
+    isAccountView = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -330,7 +330,7 @@ export const useProcessOrder = (
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
         }
-    }, [diffHashSig(limitOrder), isDenomBase, isOnPortfolioPage]);
+    }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
 
     const isBid = limitOrder.isBid;
 
@@ -339,7 +339,7 @@ export const useProcessOrder = (
             ? 'priceBuy'
             : 'priceSell';
 
-    const sideType = isOnPortfolioPage
+    const sideType = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? isBid
                 ? 'buy'

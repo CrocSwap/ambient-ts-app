@@ -24,7 +24,6 @@ import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import Button from '../../components/Global/Button/Button';
-import { getRecentTokensParamsIF } from '../../App/hooks/useRecentTokens';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -80,10 +79,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -109,8 +104,6 @@ function Swap(props: propsIF) {
         getTokensByName,
         getTokenByAddress,
         importedTokensPlus,
-        addRecentToken,
-        getRecentTokens,
         outputTokens,
         validatedInput,
         setInput,
@@ -604,8 +597,6 @@ function Swap(props: propsIF) {
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
-        addRecentToken: addRecentToken,
-        getRecentTokens: getRecentTokens,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,

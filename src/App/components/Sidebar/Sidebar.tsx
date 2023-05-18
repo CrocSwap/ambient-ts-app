@@ -1,13 +1,5 @@
 // START: Import React and Dongles
-import {
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-} from 'react';
+import { useState, useEffect, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import { BsChevronBarDown } from 'react-icons/bs';
@@ -51,32 +43,12 @@ const cachedPoolStatsFetch = memoizePoolStats();
 interface propsIF {
     tradeData: tradeData;
     isDenomBase: boolean;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     verifyToken: (addr: string, chn: string) => boolean;
     tokenPair: TokenPairIF;
 }
 
 function Sidebar(props: propsIF) {
-    const {
-        tradeData,
-        isDenomBase,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        setCurrentPositionActive,
-        isShowAllEnabled,
-        setIsShowAllEnabled,
-        expandTradeTable,
-        setExpandTradeTable,
-        verifyToken,
-        tokenPair,
-    } = props;
+    const { tradeData, isDenomBase, verifyToken, tokenPair } = props;
 
     const { sidebar, poolList } = useContext(SidebarContext);
     const {
@@ -149,8 +121,6 @@ function Sidebar(props: propsIF) {
                 <SidebarRangePositions
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
                 />
             ),
         },
@@ -164,11 +134,6 @@ function Sidebar(props: propsIF) {
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
                     limitOrderByUser={mostRecentLimitOrders}
-                    isShowAllEnabled={isShowAllEnabled}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
                 />
             ),
         },
@@ -191,16 +156,6 @@ function Sidebar(props: propsIF) {
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
-                    currentTxActiveInTransactions={
-                        currentTxActiveInTransactions
-                    }
-                    setCurrentTxActiveInTransactions={
-                        setCurrentTxActiveInTransactions
-                    }
-                    isShowAllEnabled={isShowAllEnabled}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
                 />
             ),
         },
@@ -476,11 +431,6 @@ function Sidebar(props: propsIF) {
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            setCurrentPositionActive={setCurrentPositionActive}
-                            setCurrentTxActiveInTransactions={
-                                setCurrentTxActiveInTransactions
-                            }
-                            setIsShowAllEnabled={setIsShowAllEnabled}
                         />
                     ) : (
                         regularSidebarDisplay

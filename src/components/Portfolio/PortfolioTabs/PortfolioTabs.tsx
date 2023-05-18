@@ -63,18 +63,12 @@ interface propsIF {
     tokenList: TokenIF[];
     searchableTokens: TokenIF[];
     openTokenModal: () => void;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation: (type: string) => void;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
@@ -96,8 +90,6 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        handlePulseAnimation,
-        setExpandTradeTable,
         setSimpleRangeWidth,
     } = props;
 
@@ -340,12 +332,7 @@ export default function PortfolioTabs(props: propsIF) {
     const rangeProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        expandTradeTable: false,
-        isShowAllEnabled: false,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
         activeAccountPositionData: activeAccountPositionData,
-        isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
         provider: props.provider,
         searchableTokens: searchableTokens,
@@ -353,9 +340,8 @@ export default function PortfolioTabs(props: propsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        handlePulseAnimation: handlePulseAnimation,
         setSimpleRangeWidth: setSimpleRangeWidth,
-        setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     // props for <Transactions/> React Element
@@ -364,17 +350,9 @@ export default function PortfolioTabs(props: propsIF) {
         isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
-        isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
         tokenList: tokenList,
-        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions:
-            props.setCurrentTxActiveInTransactions,
-        expandTradeTable: false,
         isCandleSelected: false,
-        handlePulseAnimation: handlePulseAnimation,
-        isOnPortfolioPage: true,
-        setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
     };
@@ -384,13 +362,6 @@ export default function PortfolioTabs(props: propsIF) {
         searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
-        expandTradeTable: false,
-        isShowAllEnabled: false,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        isOnPortfolioPage: true,
-        handlePulseAnimation: handlePulseAnimation,
-        setExpandTradeTable: setExpandTradeTable,
         isAccountView: true,
     };
 
