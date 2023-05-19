@@ -1,6 +1,10 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+
 export const useUrlPath = (chainId: string) => {
     false && chainId;
+
+    const { params } = useParams();
+    console.log(params);
 
     // index of all base URL pathways in the Ambient app
     const BASE_URL_PATHS = {

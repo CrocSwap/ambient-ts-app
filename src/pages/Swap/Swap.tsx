@@ -55,6 +55,7 @@ import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { useUrlPath } from '../../utils/hooks/useUrlPath';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -140,7 +141,7 @@ function Swap(props: propsIF) {
         ackTokens,
         chainData,
     } = props;
-
+useUrlPath(chainData.chainId);
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
