@@ -75,11 +75,15 @@ export const useUrlPath = (chainId: string) => {
     return {
         // non-parameterized link gen functions
         toIndex: () => buildURL('index'),
+        toTrade: () => buildURL('trade'),
+        toTOS: () => buildURL('tos'),
+        toAccount: () => buildURL('account'),
+        toPrivacy: () => buildURL('privacy'),
         // parameterized link gen functions
         toSwap: (params: swapParamsIF) => buildURL('swap', params),
         toMarket: (params: marketParamsIF) => buildURL('market', params),
         toLimit: (params: limitParamsIF) => buildURL('limit', params),
         toRange: (params: rangeParamsIF) => buildURL('range', params),
-        toRepo: (params: repoParamsIF) => buildURL('reposition', params)
+        toRepo: (params: repoParamsIF) => buildURL('reposition', params),
     };
 };
