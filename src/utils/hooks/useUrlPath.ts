@@ -22,6 +22,36 @@ export const useUrlPath = (chainId: string) => {
         privacy: '/privacy',
     };
 
+    interface swapParamsIF {
+        chain: string,
+        tokenA: string,
+        tokenB: string,
+    }
+    interface marketParamsIF {
+        chain: string,
+        tokenA: string,
+        tokenB: string,
+    }
+    interface limitParamsIF {
+        chain: string,
+        tokenA: string,
+        tokenB: string,
+    }
+    interface poolParamsIF {
+        chain: string,
+        tokenA: string,
+        tokenB: string,
+        highTick?: string,
+        lowTick?: string,
+    }
+    interface repoParamsIF {
+        chain: string,
+        tokenA: string,
+        tokenB: string,
+        highTick: string,
+        lowTick: string,
+    }
+
     const location = useLocation();
 
     // type that maps to keys (strings) in the BASE_URL_PATHS object
