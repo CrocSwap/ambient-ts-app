@@ -56,44 +56,28 @@ const BASE_URL_PATHS = {
 // type that maps to keys (strings) in the BASE_URL_PATHS object
 type pageNames = keyof typeof BASE_URL_PATHS;
 
-interface PathIF {
-    baseURL: string,
-    buildFullURL(anyParamIFs?: anyParamsIF): string,
-    navigate(paramsObj?: anyParamsIF): void
-}
-
-export const useUrlPath = () => {
+export const useUrlPath = (page: pageNames) => {
     const navigate = useNavigate();
 
-    class Path implements PathIF {
-        readonly baseURL: string
-        constructor(page: pageNames) {
-            this.baseURL = BASE_URL_PATHS[page];
+    const baseURL: string = BASE_URL_PATHS[page];
+
+    function getFullURL(paramsObj?: anyParamsIF): string {
+        let paramsSlug = '';
+        if (paramsObj) {
+            paramsSlug = '/' + Object.entries(paramsObj)
+                .map((tup: string[]) => tup.join('='))
+                .join('&');
         }
-        buildFullURL(paramsObj?: anyParamsIF): string {
-            let paramsSlug = '';
-            if (paramsObj) {
-                paramsSlug = '/' + Object.entries(paramsObj)
-                    .map((tup: string[]) => tup.join('='))
-                    .join('&');
-            }
-            return this.baseURL + paramsSlug;
-        };
-        navigate(paramsObj?: anyParamsIF): void {
-            navigate(this.buildFullURL(paramsObj));
-        };
+        return baseURL + paramsSlug;
+    }
+
+    function navigateUser(paramsObj?: anyParamsIF): void {
+        navigate(getFullURL(paramsObj));
     }
 
     return {
-        index: new Path('index'),
-        swap: new Path('swap'),
-        trade: new Path('trade'),
-        market: new Path('market'),
-        limit: new Path('limit'),
-        range: new Path('range'),
-        repo: new Path('reposition'),
-        account: new Path('account'),
-        privacy: new Path('privacy'),
-        tos: new Path('tos'),
+        baseURL: BASE_URL_PATHS[page],
+        getFullURL,
+        navigate: navigateUser,
     }
 };
