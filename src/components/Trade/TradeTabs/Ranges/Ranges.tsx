@@ -227,7 +227,7 @@ function Ranges(props: propsIF) {
         setRangeData([]);
         dispatch(
             setPositionsByPool({
-                dataReceived: true,
+                dataReceived: false,
                 positions: [],
             }),
         );
