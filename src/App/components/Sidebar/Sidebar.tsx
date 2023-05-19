@@ -49,6 +49,7 @@ import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { Drawer } from '@mui/material';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -113,6 +114,7 @@ function Sidebar(props: propsIF) {
     const graphData = useAppSelector((state) => state.graphData);
 
     const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
+    const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
     useEffect(() => {
         overflowSidebarMQ
@@ -120,7 +122,9 @@ function Sidebar(props: propsIF) {
             : sidebar.isOpen
             ? sidebar.open()
             : null;
-    }, [overflowSidebarMQ, sidebar.isOpen]);
+
+        if (bottomTabs) sidebar.open();
+    }, [overflowSidebarMQ, sidebar.isOpen, bottomTabs]);
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
@@ -507,6 +511,32 @@ function Sidebar(props: propsIF) {
             {bottomElementsDisplay}
         </>
     );
+
+    const [drawer, setDrawer] = useState(false);
+    const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
+    const toggleDrawer =
+        (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            setIsSidebarDrawerOpen(open);
+        };
+
+    if (drawer)
+        return (
+            <Drawer
+                anchor='left'
+                open={isSidebarDrawerOpen}
+                onClose={toggleDrawer(false)}
+            >
+                <button>Sidebar drawer</button>
+            </Drawer>
+        );
 
     return (
         <div ref={sidebarRef}>

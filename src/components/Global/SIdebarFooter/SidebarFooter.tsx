@@ -11,7 +11,16 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { memo } from 'react';
 
-function SidebarFooter() {
+interface PropsIF {
+    toggleTradeDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleSidebarDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+}
+function SidebarFooter(props: PropsIF) {
+    const { toggleSidebarDrawer, toggleTradeDrawer } = props;
     const location = useLocation();
 
     const currentLocation = location.pathname;
@@ -57,6 +66,7 @@ function SidebarFooter() {
 
     return (
         <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
+            <button onClick={toggleSidebarDrawer(true)}>Draw1</button>
             {linksData.map((link) => (
                 <Link to={link.destination} key={link.destination}>
                     <link.icon
@@ -70,6 +80,7 @@ function SidebarFooter() {
                     <p> {link.title}</p>
                 </Link>
             ))}
+            <button onClick={toggleTradeDrawer(true)}>draw2</button>
         </div>
     );
 }

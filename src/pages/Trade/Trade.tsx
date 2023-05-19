@@ -43,6 +43,7 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { Drawer } from '@mui/material';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -90,6 +91,10 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     poolPriceChangePercent: string | undefined;
     isPoolPriceChangePositive: boolean;
+    isTradeDrawerOpen: boolean;
+    toggleTradeDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
 }
 
 // React functional component
@@ -132,6 +137,8 @@ function Trade(props: propsIF) {
         repositionRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        isTradeDrawerOpen,
+        toggleTradeDrawer,
     } = props;
 
     const { params } = useParams();
@@ -451,7 +458,8 @@ function Trade(props: propsIF) {
             </div>
         ) : null;
 
-    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    // const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const showActiveMobileComponent = false;
 
     const tradeChartsProps = {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
@@ -580,6 +588,9 @@ function Trade(props: propsIF) {
             )}
         </section>
     );
+
+    const bottomTabs = useMediaQuery('(max-width: 1020px)');
+
     if (showActiveMobileComponent) return mobileTrade;
 
     return (
@@ -590,8 +601,7 @@ function Trade(props: propsIF) {
             >
                 {poolNotInitializedContent}
                 <div
-                    className={` ${expandGraphStyle} ${
-                        activeMobileComponent !== 'chart' ? styles.hide : ''
+                    className={` ${expandGraphStyle} 
                     } ${fullScreenStyle}`}
                     style={{
                         background: chartBg,
@@ -612,17 +622,24 @@ function Trade(props: propsIF) {
                     }
                 >
                     <div
-                        className={
-                            activeMobileComponent !== 'transactions'
-                                ? styles.hide
-                                : ''
-                        }
+                    // className={
+                    //     activeMobileComponent !== 'transactions'
+                    //         ? styles.hide
+                    //         : ''
+                    // }
                     >
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>
                 </motion.div>
             </div>
-            {mainContent}
+            {!bottomTabs && mainContent}
+            <Drawer
+                anchor='right'
+                open={isTradeDrawerOpen}
+                onClose={toggleTradeDrawer(false)}
+            >
+                {mainContent}
+            </Drawer>
         </section>
     );
 }

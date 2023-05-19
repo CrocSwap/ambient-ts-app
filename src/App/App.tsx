@@ -151,6 +151,7 @@ import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';
 import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { useBlacklist } from './hooks/useBlacklist';
+import { Drawer } from '@mui/material';
 
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
@@ -1951,6 +1952,28 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const [isTradeDrawerOpen, setIsTradeDrawerOpen] = useState(false);
+
+    const toggleTradeDrawer =
+        (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            if (
+                event.type === 'keydown' &&
+                (event as React.KeyboardEvent).key === 'Escape'
+            ) {
+                setIsTradeDrawerOpen(false);
+                return;
+            }
+
+            setIsTradeDrawerOpen(true);
+        };
 
     const tradeProps = {
         poolPriceChangePercent,
@@ -2008,6 +2031,8 @@ export default function App() {
         repositionRangeWidth,
         setChartTriggeredBy,
         chartTriggeredBy,
+        isTradeDrawerOpen,
+        toggleTradeDrawer,
     };
 
     const accountProps = {
@@ -2127,6 +2152,39 @@ export default function App() {
         },
     };
 
+    const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
+
+    const toggleSidebarDrawer =
+        (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            if (
+                event.type === 'keydown' &&
+                (event as React.KeyboardEvent).key === 'Escape'
+            ) {
+                setIsSidebarDrawerOpen(false);
+                return;
+            }
+
+            setIsSidebarDrawerOpen(open);
+        };
+
+    const bottomTabs = useMediaQuery('(max-width: 1020px)');
+
+    // useEffect(() => {
+    //     if (bottomTabs) {
+    //         appState.sidebar.open();
+    //     }
+    // }, [bottomTabs])
+
+    console.log({ isTradeDrawerOpen });
+
     return (
         <AppStateContext.Provider value={appState}>
             <UserPreferenceContext.Provider value={userPreferences}>
@@ -2135,6 +2193,14 @@ export default function App() {
                     data-theme={appState.theme.selected}
                 >
                     <AppOverlay />
+
+                    <Drawer
+                        anchor='left'
+                        open={isSidebarDrawerOpen}
+                        onClose={toggleSidebarDrawer(false)}
+                    >
+                        {!currentLocation.startsWith('/swap') && sidebarRender}
+                    </Drawer>
                     {currentLocation !== '/404' && (
                         <PageHeader {...headerProps} />
                     )}
@@ -2143,7 +2209,9 @@ export default function App() {
                             className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                         >
                             {!currentLocation.startsWith('/swap') &&
+                                !bottomTabs &&
                                 sidebarRender}
+
                             <Routes>
                                 <Route
                                     index
@@ -2370,7 +2438,10 @@ export default function App() {
                             />
                         )}
                 </div>
-                <SidebarFooter />
+                <SidebarFooter
+                    toggleTradeDrawer={toggleTradeDrawer}
+                    toggleSidebarDrawer={toggleSidebarDrawer}
+                />
                 <GlobalModal />
                 <GlobalPopup />
                 <SnackbarComponent />

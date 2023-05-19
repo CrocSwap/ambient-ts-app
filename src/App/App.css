@@ -257,6 +257,7 @@ p:focus-visible {
         transition: all var(--animation-speed) ease-in-out;
         display: grid;
         grid-template-columns: 296px auto;
+      
     }
     .sidebar_content_layout_close {
         transition: all var(--animation-speed) ease-in-out;

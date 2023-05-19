@@ -152,3 +152,7 @@ aside.emoji-picker-react {
     background: var(--dark3) !important
    
 }
+
+.MuiDrawer-paper{
+   z-index: 9999999999 !important;
+}

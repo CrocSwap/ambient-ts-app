@@ -10,10 +10,10 @@
     width: 100%;
 }
 
-.middle_col {
+/* .middle_col {
     display: flex;
     flex-direction: column;
-}
+} */
 /* .left_col{
     background-color: #151d27;
     padding-bottom: 40rem;
@@ -334,9 +334,7 @@
 /* end of pool not initialized */
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
-    .graph_container {
-        margin-bottom: 35px;
-    }
+
     .mobile_toggle_container {
         display: flex;
     }
@@ -349,21 +347,16 @@
         height: calc(100vh - 7.5rem);
     }
 
-    .right_col {
-        padding-left: 30px;
-    }
 }
 @media (min-width: 320px) {
     .middle_content_style {
         display: flex;
         flex-direction: column;
     }
-    .main_layout {
+    /* .main_layout {
         display: grid;
-        /* height: 100%; */
-        /* background: brown; */
-        /* overflow-y: hidden; */
-    }
+  
+    } */
 
     .main__chart {
         flex: 1 0;
@@ -396,23 +389,23 @@
     }
 }
 
-@media (min-width: 1200px) {
+.middle_col {
+    height: 100%;
+
+    /* padding: 0.5rem 0rem 0rem 0.5rem; */
+    background: var(--dark2);
+
+    display: grid;
+    grid-template-rows: auto 300px;
+    /* background: red; */
+    grid-gap: 8px;
+    position: relative;
+}
+@media (min-width: 1020px) {
     .main_layout {
         display: grid;
         grid-template-columns: auto 380px;
         /* grid-gap: 1em; */
-    }
-    .middle_col {
-        height: 100%;
-
-        /* padding: 0.5rem 0rem 0rem 0.5rem; */
-        background: var(--dark2);
-
-        display: grid;
-        grid-template-rows: auto 300px;
-        /* background: red; */
-        grid-gap: 8px;
-        position: relative;
     }
 
     .right_col {
@@ -480,27 +473,3 @@
     }
 }
 
-@media only screen and (max-width: 1200px) {
-    /* COMMENTING OUT MIDDLE COL AND MAIN LAYOUT FIXES THE DISSAPEARING CHAT ISSUE BUT THIS DOESNT SOLVE THE LAYOUT ISSUE */
-    /* .middle_col {
-        width: 95%;
-        margin: 0 auto;
-    }
-
-    .main_layout {
-        display: flex;
-        flex-direction: column;
-    } */
-
-    /* .main_layout {
-        gap: 1rem;
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-    } */
-}
-
-@media only screen and (max-width: 1280px) {
-    .middle_col {
-        padding-left: 30px;
-    }
-}
