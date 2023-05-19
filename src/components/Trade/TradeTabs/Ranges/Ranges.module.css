@@ -199,7 +199,7 @@ overflow-y: hidden;
     z-index: 3;
 }
 
-.leaderboard > ul:nth-child(2) {
+.leaderboard  .row_container:nth-child(1) {
     background: linear-gradient(
         90deg,
         rgba(212, 175, 55, 0.65) 0%,
@@ -209,7 +209,7 @@ overflow-y: hidden;
     transition: background 0.5s ease-out;
 }
 
-.leaderboard > ul:nth-child(3) {
+.leaderboard .row_container:nth-child(2) {
     background: linear-gradient(
         90deg,
         rgba(224, 224, 224, 0.35) 0%,
@@ -218,7 +218,7 @@ overflow-y: hidden;
     );
     transition: background 0.5s ease-out;
 }
-.leaderboard > ul:nth-child(4) {
+.leaderboard  .row_container:nth-child(3) {
     background: linear-gradient(
         90deg,
         rgba(176, 141, 87, 0.35) 0%,
@@ -226,6 +226,7 @@ overflow-y: hidden;
         rgba(255, 152, 56, 0) 100%
     );
     transition: background 0.5s ease-out;
+   
 }
 
 .align_right {
