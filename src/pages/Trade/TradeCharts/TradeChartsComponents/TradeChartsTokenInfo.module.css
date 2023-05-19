@@ -6,8 +6,10 @@
 }
 
 .tokens_info_simplify {
-    margin: 0 5px 1px -5px;
+    margin: 0 5px -2px -5px;
     background: var(--dark1);
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
     /* margin: 0 -5px ; */
     /* align-items: center; */
 }
