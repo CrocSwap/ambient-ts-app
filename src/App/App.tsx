@@ -90,6 +90,7 @@ import { isStablePair } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
 import {
     APP_ENVIRONMENT,
+    CHAT_ENABLED,
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
@@ -209,11 +210,7 @@ export default function App() {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
-    );
+    const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -1843,11 +1840,7 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (
-            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-                : true
-        ) {
+        if (CHAT_ENABLED) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     appState.chat.setIsEnabled(isChatUp);
@@ -1855,7 +1848,7 @@ export default function App() {
             }, 60000);
             return () => clearInterval(interval);
         }
-    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, CHAT_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {

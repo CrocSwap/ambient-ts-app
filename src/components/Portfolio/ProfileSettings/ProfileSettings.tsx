@@ -13,7 +13,7 @@ import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 
 import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { CHAT_BACKEND_URL, IS_LOCAL_ENV } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 const pageVariant3D = {
@@ -53,7 +53,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const host = 'https://ambichat.link:5000';
+    const host = CHAT_BACKEND_URL;
     const nameDisplay = (
         <div className={styles.row}>
             <h4>Name</h4>
