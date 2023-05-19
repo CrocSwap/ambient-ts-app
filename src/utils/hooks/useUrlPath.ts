@@ -56,10 +56,9 @@ const BASE_URL_PATHS = {
 // type that maps to keys (strings) in the BASE_URL_PATHS object
 type pageNames = keyof typeof BASE_URL_PATHS;
 
-    
 interface PathIF {
     baseURL: string,
-    getURL(anyParamIFs?: anyParamsIF): string,
+    buildFullURL(anyParamIFs?: anyParamsIF): string,
     navigate(paramsObj?: anyParamsIF): void
 }
 
@@ -71,7 +70,7 @@ export const useUrlPath = () => {
         constructor(page: pageNames) {
             this.baseURL = BASE_URL_PATHS[page];
         }
-        getURL(paramsObj?: anyParamsIF): string {
+        buildFullURL(paramsObj?: anyParamsIF): string {
             let paramsSlug = '';
             if (paramsObj) {
                 paramsSlug = '/' + Object.entries(paramsObj)
@@ -81,7 +80,7 @@ export const useUrlPath = () => {
             return this.baseURL + paramsSlug;
         };
         navigate(paramsObj?: anyParamsIF): void {
-            navigate(this.getURL(paramsObj));
+            navigate(this.buildFullURL(paramsObj));
         };
     }
 
