@@ -49,16 +49,20 @@ export const useUrlPath = (chainId: string) => {
         lowTick: string,
     }
 
+    // type containing all the URL parameter interfaces
+    type anyParamIFs = swapParamsIF |
+        marketParamsIF |
+        limitParamsIF |
+        poolParamsIF |
+        repoParamsIF;
+
     const location = useLocation();
 
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
 
     // fn to return a base URL slug for a given page
-    function buildURL(
-        page: pageNames,
-        paramsObj: swapParamsIF
-    ): string {
+    function buildURL(page: pageNames, paramsObj: anyParamIFs): string {
         const baseUrl: string = BASE_URL_PATHS[page];
         const paramsSlug: string = Object.entries(paramsObj)
             .map((tup: string[]) => tup.join('='))
