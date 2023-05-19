@@ -2341,7 +2341,7 @@ export default function App() {
                                 {IS_LOCAL_ENV && (
                                     <Route
                                         path='testpage'
-                                        element={<TestPage chainId={chainData.chainId} />}
+                                        element={<TestPage />}
                                     />
                                 )}
                                 <Route

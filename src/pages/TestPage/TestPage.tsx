@@ -2,15 +2,8 @@ import styles from './TestPage.module.css';
 import 'intro.js/introjs.css';
 import { useUrlPath } from '../../utils/hooks/useUrlPath';
 
-interface propsIF {
-    chainId: string;
-};
-
-export default function TestPage(props: propsIF) {
-    const { chainId } = props;
-    const paths = useUrlPath(chainId);
-
-    console.log(paths);
+export default function TestPage() {
+    const navPaths = useUrlPath();
 
     const logPath = (): void => {
         const paramsForLink = {
@@ -18,7 +11,7 @@ export default function TestPage(props: propsIF) {
             tokenA: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
             tokenB: '0x0000000000000000000000000000000000000000',
         };
-        const urlSlug: string = paths.swap.getURL(paramsForLink)
+        const urlSlug: string = navPaths.swap.getURL(paramsForLink)
         console.log({urlSlug});
     }
 
@@ -28,7 +21,7 @@ export default function TestPage(props: propsIF) {
             tokenA: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
             tokenB: '0x0000000000000000000000000000000000000000',
         };
-        paths.swap.navigate(paramsForLink);
+        navPaths.swap.navigate(paramsForLink);
     }
 
     return (

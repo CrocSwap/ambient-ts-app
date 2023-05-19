@@ -63,10 +63,8 @@ interface PathIF {
     navigate(paramsObj?: anyParamIFs): void
 }
 
-export const useUrlPath = (chainId: string) => {
+export const useUrlPath = () => {
     const navigate = useNavigate();
-
-    false && chainId;
 
     class Path implements PathIF {
         readonly baseURL: string
