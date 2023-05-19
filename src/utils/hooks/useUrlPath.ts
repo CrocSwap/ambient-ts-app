@@ -34,7 +34,7 @@ export const useUrlPath = (chainId: string) => {
         tokenA: string,
         tokenB: string,
     }
-    interface poolParamsIF {
+    interface rangeParamsIF {
         chain: string,
         tokenA: string,
         tokenB: string,
@@ -53,7 +53,7 @@ export const useUrlPath = (chainId: string) => {
     type anyParamIFs = swapParamsIF |
         marketParamsIF |
         limitParamsIF |
-        poolParamsIF |
+        rangeParamsIF |
         repoParamsIF;
 
     const location = useLocation();
@@ -74,6 +74,10 @@ export const useUrlPath = (chainId: string) => {
         location,
         getPath: {
             toSwap: (params: swapParamsIF) => buildURL('swap', params),
+            toMarket: (params: marketParamsIF) => buildURL('market', params),
+            toLimit: (params: limitParamsIF) => buildURL('limit', params),
+            toRange: (params: rangeParamsIF) => buildURL('range', params),
+            toRepo: (params: repoParamsIF) => buildURL('reposition', params)
         },
     };
 };
