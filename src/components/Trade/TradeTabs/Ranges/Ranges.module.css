@@ -18,7 +18,7 @@
     border-left: 2px solid var(--text1);
 }
 
-.main_list_container {
+.main_list_container , .leaderboard{
     width: 100%;
   height: 100%;
     overflow-y: scroll;
@@ -83,20 +83,21 @@ overflow-y: hidden;
 
   }
 /* width */
-.main_list_container::-webkit-scrollbar {
+.main_list_container::-webkit-scrollbar , .leaderboard::-webkit-scrollbar{
     width: 4px;
     height: 4px;
 }
 
 /* Track */
-.main_list_container::-webkit-scrollbar-track {
+.main_list_container::-webkit-scrollbar-track , .leaderboard::-webkit-scrollbar-track{
     border-radius: 100vh;
 }
 
 /* Handle */
-.main_list_container::-webkit-scrollbar-thumb {
+.main_list_container::-webkit-scrollbar-thumb, .leaderboard::-webkit-scrollbar-thumb {
     background: var(--title-gradient);
 }
+
 
 .header {
     position: sticky;
@@ -129,7 +130,8 @@ overflow-y: hidden;
 .row_container li:not(:last-child){
     cursor: pointer;
 }
-.main_list_container .row_container , .main_list_container .header{
+.main_list_container .row_container , .main_list_container .header,
+.leaderboard .row_container , .leaderboard .header{
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -137,7 +139,8 @@ overflow-y: hidden;
     display: table;
 }
 
-.main_list_container .row_container > li, .main_list_container .header > li {
+.main_list_container .row_container > li, .main_list_container .header > li,
+.leaderboard .row_container > li, .leaderboard .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
@@ -192,7 +195,7 @@ overflow-y: hidden;
     border-radius: 50%;
     margin: 0 2px;
 }
-.main_list_container > ul:nth-child(1) {
+.main_list_container > ul:nth-child(1), .leaderboard > ul:nth-child(1) {
     z-index: 3;
 }
 
@@ -398,6 +401,10 @@ overflow-y: hidden;
         grid-template-rows: 40px 1fr 150px;
         overflow-y: hidden;
     
+    }
+
+    .leaderboard{
+        overflow-y: hidden;
     }
 
    
