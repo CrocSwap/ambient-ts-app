@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 export interface swapParamsIF {
     chain: string,
     tokenA: string,
@@ -36,6 +38,8 @@ type anyParamIFs = swapParamsIF |
     repoParamsIF;
 
 export const useUrlPath = (chainId: string) => {
+    const navigate = useNavigate();
+
     false && chainId;
 
     // index of all base URL pathways in the Ambient app
@@ -57,49 +61,37 @@ export const useUrlPath = (chainId: string) => {
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
 
-    // fn to return a base URL slug for a given page
-    function buildURL(
-        page: pageNames,
-        paramsObj?: anyParamIFs
-    ): string {
-        const baseUrl: string = BASE_URL_PATHS[page];
-        let paramsSlug = '';
-        if (paramsObj) {
-            paramsSlug = '/' + Object.entries(paramsObj)
-            .map((tup: string[]) => tup.join('='))
-            .join('&');
+    class Path {
+        page: pageNames;
+        baseURL: string;
+        constructor(page: pageNames) {
+            this.page = page;
+            this.baseURL = BASE_URL_PATHS[page];
         }
-        return baseUrl + paramsSlug;
+        getURL(paramsObj?: anyParamIFs): string {
+            let paramsSlug = '';
+            if (paramsObj) {
+                paramsSlug = '/' + Object.entries(paramsObj)
+                    .map((tup: string[]) => tup.join('='))
+                    .join('&');
+            }
+            return this.baseURL + paramsSlug;
+        };
+        goTo(paramsObj?: anyParamIFs): void {
+            navigate(this.getURL(paramsObj));
+        };
     }
 
     return {
-        getURL: {
-            // non-parameterized link gen functions
-            toIndex: () => buildURL('index'),
-            toTrade: () => buildURL('trade'),
-            toTOS: () => buildURL('tos'),
-            toAccount: () => buildURL('account'),
-            toPrivacy: () => buildURL('privacy'),
-            // parameterized link gen functions
-            toSwap: (params: swapParamsIF) => buildURL('swap', params),
-            toMarket: (params: marketParamsIF) => buildURL('market', params),
-            toLimit: (params: limitParamsIF) => buildURL('limit', params),
-            toRange: (params: rangeParamsIF) => buildURL('range', params),
-            toRepo: (params: repoParamsIF) => buildURL('reposition', params),
-        },
-        navigate: {
-            // non-parameterized link gen functions
-            toIndex: () => buildURL('index'),
-            toTrade: () => buildURL('trade'),
-            toTOS: () => buildURL('tos'),
-            toAccount: () => buildURL('account'),
-            toPrivacy: () => buildURL('privacy'),
-            // parameterized link gen functions
-            toSwap: (params: swapParamsIF) => buildURL('swap', params),
-            toMarket: (params: marketParamsIF) => buildURL('market', params),
-            toLimit: (params: limitParamsIF) => buildURL('limit', params),
-            toRange: (params: rangeParamsIF) => buildURL('range', params),
-            toRepo: (params: repoParamsIF) => buildURL('reposition', params),
-        }
+        index: new Path('index'),
+        swap: new Path('swap'),
+        trade: new Path('trade'),
+        market: new Path('market'),
+        limit: new Path('limit'),
+        range: new Path('range'),
+        repo: new Path('reposition'),
+        account: new Path('account'),
+        privacy: new Path('privacy'),
+        tos: new Path('tos'),
     }
 };
