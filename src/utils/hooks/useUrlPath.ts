@@ -37,34 +37,41 @@ type anyParamIFs = swapParamsIF |
     rangeParamsIF |
     repoParamsIF;
 
+// index of all base URL pathways in the Ambient app
+const BASE_URL_PATHS = {
+    index: '',
+    home: '',
+    swap: '/swap',
+    trade: '/trade',
+    market: '/trade/market',
+    limit: '/trade/limit',
+    range: '/trade/range',
+    reposition: '/reposition',
+    tos: '/tos',
+    testpage: '/testpage',
+    account: '/account',
+    privacy: '/privacy',
+};
+
+// type that maps to keys (strings) in the BASE_URL_PATHS object
+type pageNames = keyof typeof BASE_URL_PATHS;
+
+    
+interface PathIF {
+    baseURL: string,
+    getURL(anyParamIFs?: anyParamIFs): string,
+    navigate(paramsObj?: anyParamIFs): void
+}
+
 export const useUrlPath = (chainId: string) => {
     const navigate = useNavigate();
 
     false && chainId;
 
-    // index of all base URL pathways in the Ambient app
-    const BASE_URL_PATHS = {
-        index: '',
-        home: '',
-        swap: '/swap',
-        trade: '/trade',
-        market: '/trade/market',
-        limit: '/trade/limit',
-        range: '/trade/range',
-        reposition: '/reposition',
-        tos: '/tos',
-        testpage: '/testpage',
-        account: '/account',
-        privacy: '/privacy',
-    };
-
-    // type that maps to keys (strings) in the BASE_URL_PATHS object
-    type pageNames = keyof typeof BASE_URL_PATHS;
-
-    class Path {
-        private readonly page: pageNames;
+    class Path implements PathIF {
+        readonly baseURL: string
         constructor(page: pageNames) {
-            this.page = page;
+            this.baseURL = BASE_URL_PATHS[page];
         }
         getURL(paramsObj?: anyParamIFs): string {
             let paramsSlug = '';
@@ -73,7 +80,7 @@ export const useUrlPath = (chainId: string) => {
                     .map((tup: string[]) => tup.join('='))
                     .join('&');
             }
-            return BASE_URL_PATHS[this.page] + paramsSlug;
+            return this.baseURL + paramsSlug;
         };
         navigate(paramsObj?: anyParamIFs): void {
             navigate(this.getURL(paramsObj));
