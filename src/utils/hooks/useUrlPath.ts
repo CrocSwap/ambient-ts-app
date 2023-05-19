@@ -3,9 +3,6 @@ import { useLocation, useParams } from 'react-router-dom';
 export const useUrlPath = (chainId: string) => {
     false && chainId;
 
-    const { params } = useParams();
-    console.log(params);
-
     // index of all base URL pathways in the Ambient app
     const BASE_URL_PATHS = {
         index: '',
@@ -58,9 +55,12 @@ export const useUrlPath = (chainId: string) => {
     type pageNames = keyof typeof BASE_URL_PATHS;
 
     // fn to return a base URL slug for a given page
-    function getPath(page: pageNames, paramTuples: string[][]): string {
+    function buildURL(
+        page: pageNames,
+        paramsObj: swapParamsIF
+    ): string {
         const baseUrl: string = BASE_URL_PATHS[page];
-        const paramsSlug: string = paramTuples
+        const paramsSlug: string = Object.entries(paramsObj)
             .map((tup: string[]) => tup.join('='))
             .join('&');
         return baseUrl + '/' + paramsSlug;
@@ -68,6 +68,8 @@ export const useUrlPath = (chainId: string) => {
 
     return {
         location,
-        getPath,
+        getPath: {
+            toSwap: (params: swapParamsIF) => buildURL('swap', params),
+        },
     };
 };
