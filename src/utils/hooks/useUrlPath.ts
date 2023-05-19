@@ -1,5 +1,3 @@
-import { useLocation, useParams } from 'react-router-dom';
-
 export const useUrlPath = (chainId: string) => {
     false && chainId;
 
@@ -56,8 +54,6 @@ export const useUrlPath = (chainId: string) => {
         rangeParamsIF |
         repoParamsIF;
 
-    const location = useLocation();
-
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
 
@@ -71,7 +67,6 @@ export const useUrlPath = (chainId: string) => {
     }
 
     return {
-        location,
         getPath: {
             toSwap: (params: swapParamsIF) => buildURL('swap', params),
             toMarket: (params: marketParamsIF) => buildURL('market', params),
