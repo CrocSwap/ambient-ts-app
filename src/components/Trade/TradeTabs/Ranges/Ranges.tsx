@@ -21,6 +21,7 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
+    setPositionsByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { Pagination } from '@mui/material';
 import {
@@ -122,6 +123,8 @@ function Ranges(props: propsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
+    const memoKeyPoolInRTK = baseTokenAddress + quoteTokenAddress;
+
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase =
         tradeData.quoteToken.address.toLowerCase();
@@ -151,6 +154,13 @@ function Ranges(props: propsIF) {
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
+    const [rangeData, setRangeData] = useState(
+        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
+    );
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+        useSortedPositions('time', rangeData);
+
     const positionsByUserMatchingSelectedTokens =
         graphData?.positionsByUser?.positions.filter((position) => {
             if (
@@ -172,10 +182,6 @@ function Ranges(props: propsIF) {
             }
         });
 
-    const [rangeData, setRangeData] = useState(
-        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
-    );
-
     const sumHashActiveAccountPositionData = useMemo(
         () => diffHashSig(activeAccountPositionData),
         [activeAccountPositionData],
@@ -193,6 +199,16 @@ function Ranges(props: propsIF) {
         [positionsByPool],
     );
 
+    const sumHashTop3PositionsByPool = useMemo(
+        () =>
+            diffHashSig({
+                id0: sortedPositions[0]?.positionId,
+                id1: sortedPositions[1]?.positionId,
+                id2: sortedPositions[2]?.positionId,
+            }),
+        [sortedPositions],
+    );
+
     const updateRangeData = () => {
         if (
             isOnPortfolioPage &&
@@ -208,6 +224,16 @@ function Ranges(props: propsIF) {
     };
 
     useEffect(() => {
+        setRangeData([]);
+        dispatch(
+            setPositionsByPool({
+                dataReceived: false,
+                positions: [],
+            }),
+        );
+    }, [memoKeyPoolInRTK]);
+
+    useEffect(() => {
         updateRangeData();
     }, [
         isOnPortfolioPage,
@@ -216,11 +242,7 @@ function Ranges(props: propsIF) {
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
-        sumHashRangeData,
     ]);
-
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('time', rangeData);
 
     const dispatch = useAppDispatch();
 
@@ -229,7 +251,6 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         const topThreePositions = sortedPositions.slice(0, 3);
-
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
@@ -242,8 +263,9 @@ function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            if (updatedPositions)
+                            if (updatedPositions) {
                                 dispatch(addPositionsByPool(updatedPositions));
+                            }
                         } else {
                             const updatedPositionsMatchingUser =
                                 updatedPositions.filter(
@@ -268,11 +290,7 @@ function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        diffHashSig({
-            id0: sortedPositions[0]?.positionId,
-            id1: sortedPositions[1]?.positionId,
-            id2: sortedPositions[2]?.positionId,
-        }),
+        sumHashTop3PositionsByPool,
         currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
@@ -287,8 +305,6 @@ function Ranges(props: propsIF) {
     useEffect(() => {
         setCurrentPage(1);
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
-
-    // Get current tranges
 
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
