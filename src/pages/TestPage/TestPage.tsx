@@ -10,6 +10,8 @@ export default function TestPage(props: propsIF) {
     const { chainId } = props;
     const paths = useUrlPath(chainId);
 
+    console.log(paths);
+
     const logPath = (): void => {
         const paramsForLink = {
             chain: '0x5',
@@ -26,7 +28,7 @@ export default function TestPage(props: propsIF) {
             tokenA: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
             tokenB: '0x0000000000000000000000000000000000000000',
         };
-        paths.swap.goTo(paramsForLink);
+        paths.swap.navigate(paramsForLink);
     }
 
     return (

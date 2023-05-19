@@ -62,11 +62,9 @@ export const useUrlPath = (chainId: string) => {
     type pageNames = keyof typeof BASE_URL_PATHS;
 
     class Path {
-        page: pageNames;
-        baseURL: string;
+        private readonly page: pageNames;
         constructor(page: pageNames) {
             this.page = page;
-            this.baseURL = BASE_URL_PATHS[page];
         }
         getURL(paramsObj?: anyParamIFs): string {
             let paramsSlug = '';
@@ -75,9 +73,9 @@ export const useUrlPath = (chainId: string) => {
                     .map((tup: string[]) => tup.join('='))
                     .join('&');
             }
-            return this.baseURL + paramsSlug;
+            return BASE_URL_PATHS[this.page] + paramsSlug;
         };
-        goTo(paramsObj?: anyParamIFs): void {
+        navigate(paramsObj?: anyParamIFs): void {
             navigate(this.getURL(paramsObj));
         };
     }
