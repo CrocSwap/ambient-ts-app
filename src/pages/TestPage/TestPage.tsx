@@ -8,7 +8,7 @@ interface propsIF {
 
 export default function TestPage(props: propsIF) {
     const { chainId } = props;
-    const getURL = useUrlPath(chainId);
+    const { getURL } = useUrlPath(chainId);
 
     const handleClick = () => {
         const paramsForLink = {
