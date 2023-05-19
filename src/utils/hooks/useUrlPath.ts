@@ -31,7 +31,7 @@ interface repoParamsIF {
 }
 
 // type containing all the URL parameter interfaces
-type anyParamIFs = swapParamsIF |
+type anyParamsIF = swapParamsIF |
     marketParamsIF |
     limitParamsIF |
     rangeParamsIF |
@@ -59,8 +59,8 @@ type pageNames = keyof typeof BASE_URL_PATHS;
     
 interface PathIF {
     baseURL: string,
-    getURL(anyParamIFs?: anyParamIFs): string,
-    navigate(paramsObj?: anyParamIFs): void
+    getURL(anyParamIFs?: anyParamsIF): string,
+    navigate(paramsObj?: anyParamsIF): void
 }
 
 export const useUrlPath = () => {
@@ -71,7 +71,7 @@ export const useUrlPath = () => {
         constructor(page: pageNames) {
             this.baseURL = BASE_URL_PATHS[page];
         }
-        getURL(paramsObj?: anyParamIFs): string {
+        getURL(paramsObj?: anyParamsIF): string {
             let paramsSlug = '';
             if (paramsObj) {
                 paramsSlug = '/' + Object.entries(paramsObj)
@@ -80,7 +80,7 @@ export const useUrlPath = () => {
             }
             return this.baseURL + paramsSlug;
         };
-        navigate(paramsObj?: anyParamIFs): void {
+        navigate(paramsObj?: anyParamsIF): void {
             navigate(this.getURL(paramsObj));
         };
     }
