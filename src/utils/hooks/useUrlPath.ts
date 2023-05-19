@@ -1,3 +1,40 @@
+interface swapParamsIF {
+    chain: string,
+    tokenA: string,
+    tokenB: string,
+}
+interface marketParamsIF {
+    chain: string,
+    tokenA: string,
+    tokenB: string,
+}
+interface limitParamsIF {
+    chain: string,
+    tokenA: string,
+    tokenB: string,
+}
+interface rangeParamsIF {
+    chain: string,
+    tokenA: string,
+    tokenB: string,
+    highTick?: string,
+    lowTick?: string,
+}
+interface repoParamsIF {
+    chain: string,
+    tokenA: string,
+    tokenB: string,
+    highTick: string,
+    lowTick: string,
+}
+
+// type containing all the URL parameter interfaces
+type anyParamIFs = swapParamsIF |
+    marketParamsIF |
+    limitParamsIF |
+    rangeParamsIF |
+    repoParamsIF;
+
 export const useUrlPath = (chainId: string) => {
     false && chainId;
 
@@ -16,43 +53,6 @@ export const useUrlPath = (chainId: string) => {
         account: '/account',
         privacy: '/privacy',
     };
-
-    interface swapParamsIF {
-        chain: string,
-        tokenA: string,
-        tokenB: string,
-    }
-    interface marketParamsIF {
-        chain: string,
-        tokenA: string,
-        tokenB: string,
-    }
-    interface limitParamsIF {
-        chain: string,
-        tokenA: string,
-        tokenB: string,
-    }
-    interface rangeParamsIF {
-        chain: string,
-        tokenA: string,
-        tokenB: string,
-        highTick?: string,
-        lowTick?: string,
-    }
-    interface repoParamsIF {
-        chain: string,
-        tokenA: string,
-        tokenB: string,
-        highTick: string,
-        lowTick: string,
-    }
-
-    // type containing all the URL parameter interfaces
-    type anyParamIFs = swapParamsIF |
-        marketParamsIF |
-        limitParamsIF |
-        rangeParamsIF |
-        repoParamsIF;
 
     // type that maps to keys (strings) in the BASE_URL_PATHS object
     type pageNames = keyof typeof BASE_URL_PATHS;
