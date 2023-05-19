@@ -67,12 +67,10 @@ export const useUrlPath = (chainId: string) => {
     }
 
     return {
-        getPath: {
-            toSwap: (params: swapParamsIF) => buildURL('swap', params),
-            toMarket: (params: marketParamsIF) => buildURL('market', params),
-            toLimit: (params: limitParamsIF) => buildURL('limit', params),
-            toRange: (params: rangeParamsIF) => buildURL('range', params),
-            toRepo: (params: repoParamsIF) => buildURL('reposition', params)
-        },
+        toSwap: (params: swapParamsIF) => buildURL('swap', params),
+        toMarket: (params: marketParamsIF) => buildURL('market', params),
+        toLimit: (params: limitParamsIF) => buildURL('limit', params),
+        toRange: (params: rangeParamsIF) => buildURL('range', params),
+        toRepo: (params: repoParamsIF) => buildURL('reposition', params)
     };
 };
