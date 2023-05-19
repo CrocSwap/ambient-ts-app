@@ -3,15 +3,16 @@ import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { getLimitPrice, getLimitValue } from './functions/exports';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    isDenomBase: boolean;
     order: LimitOrderIF;
     handleClick: (limitOrder: LimitOrderIF) => void;
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
-    const { order, isDenomBase, handleClick } = props;
+    const { order, handleClick } = props;
     const { tokensOnActiveLists: tokenMap } = useContext(CrocEnvContext);
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // human-readable limit price to display in the DOM
     const price = getLimitPrice(order, tokenMap, isDenomBase);

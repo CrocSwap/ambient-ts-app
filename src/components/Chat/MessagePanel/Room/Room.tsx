@@ -7,6 +7,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -29,7 +30,6 @@ interface currentPoolInfo {
 interface propsIF {
     selectedRoom: any;
     setRoom: any;
-    currentPool: currentPoolInfo;
     isFullScreen: boolean;
     room: any;
     isCurrentPool: any;
@@ -46,7 +46,6 @@ interface propsIF {
 
 export default function RoomDropdown(props: propsIF) {
     const {
-        currentPool,
         isFullScreen,
         isCurrentPool,
         setIsCurrentPool,
@@ -57,6 +56,7 @@ export default function RoomDropdown(props: propsIF) {
     } = props;
     const { topPools: rooms } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
+    const currentPool = useAppSelector((state) => state.tradeData);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);

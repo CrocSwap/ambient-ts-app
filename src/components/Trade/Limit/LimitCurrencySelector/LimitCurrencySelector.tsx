@@ -35,8 +35,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // interface for component props
 interface propsIF {
-    provider?: ethers.providers.Provider;
-    tokenPair: TokenPairIF;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -80,8 +78,6 @@ interface propsIF {
 // central react functional component
 function LimitCurrencySelector(props: propsIF) {
     const {
-        provider,
-        tokenPair,
         tokenAInputQty,
         tokenBInputQty,
         fieldId,
@@ -109,6 +105,7 @@ function LimitCurrencySelector(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const { dexBalLimit } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
@@ -116,8 +113,7 @@ function LimitCurrencySelector(props: propsIF) {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
-    const thisToken =
-        fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const thisToken = fieldId === 'sell' ? tokenA : tokenB;
 
     const isSellTokenSelector = fieldId === 'sell';
 
@@ -401,7 +397,6 @@ function LimitCurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
@@ -418,7 +413,6 @@ function LimitCurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
                     />
                 </Modal>
             )}

@@ -6,12 +6,11 @@ import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    tradeData: tradeData;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function TopPools(props: propsIF) {
-    const { tradeData, cachedPoolStatsFetch } = props;
+    const { cachedPoolStatsFetch } = props;
 
     const { topPools } = useContext(CrocEnvContext);
 
@@ -25,7 +24,6 @@ export default function TopPools(props: propsIF) {
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
                     <TopPoolsCard
-                        tradeData={tradeData}
                         pool={pool}
                         key={idx}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}

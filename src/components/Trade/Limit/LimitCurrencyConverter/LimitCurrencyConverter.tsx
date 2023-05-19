@@ -44,10 +44,7 @@ interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
-    provider?: ethers.providers.Provider;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    tokenPair: TokenPairIF;
-    poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
@@ -66,7 +63,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    isDenominationInBase: boolean;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (
@@ -91,10 +87,7 @@ function LimitCurrencyConverter(props: propsIF) {
         previousDisplayPrice,
         setDisplayPrice,
         setPreviousDisplayPrice,
-        provider,
         setPriceInputFieldBlurred,
-        tokenPair,
-        poolPriceNonDisplay,
         limitTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
@@ -111,7 +104,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        isDenominationInBase,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -225,9 +217,9 @@ function LimitCurrencyConverter(props: propsIF) {
             navigate(
                 '/trade/limit/' +
                     formSlugForPairParams(
-                        tokenPair.dataTokenA.chainId,
-                        tokenPair.dataTokenB,
-                        tokenPair.dataTokenA,
+                        tradeData.tokenA.chainId,
+                        tradeData.tokenB,
+                        tradeData.tokenA,
                     ),
             );
             if (!isTokenAPrimaryLocal) {
@@ -280,8 +272,8 @@ function LimitCurrencyConverter(props: propsIF) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage(
                 `Limit ${
-                    (isSellTokenBase && !isDenominationInBase) ||
-                    (!isSellTokenBase && isDenominationInBase)
+                    (isSellTokenBase && !tradeData.isDenomBase) ||
+                    (!isSellTokenBase && tradeData.isDenomBase)
                         ? 'Above Maximum'
                         : 'Below Minimum'
                 }  Price`,
@@ -297,7 +289,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -306,7 +298,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 if (tokenAAmount > parseFloat(tokenABalance)) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -338,7 +330,7 @@ function LimitCurrencyConverter(props: propsIF) {
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
 
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) * parseFloat(input)
                     : limitTickDisplayPrice * parseFloat(input);
@@ -349,7 +341,7 @@ function LimitCurrencyConverter(props: propsIF) {
             }
             handleLimitButtonMessage(parseFloat(input));
         } else {
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) *
                       parseFloat(tradeData.primaryQuantity)
@@ -387,7 +379,7 @@ function LimitCurrencyConverter(props: propsIF) {
         dispatch(setIsTokenAPrimary(true));
         dispatch(setPrimaryQuantity(input));
 
-        if (!isDenominationInBase) {
+        if (!tradeData.isDenomBase) {
             rawTokenBQty = isSellTokenBase
                 ? (1 / limitTickDisplayPrice) * parseFloat(input)
                 : limitTickDisplayPrice * parseFloat(input);
@@ -431,7 +423,7 @@ function LimitCurrencyConverter(props: propsIF) {
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(input)
                     : (1 / limitTickDisplayPrice) * parseFloat(input);
@@ -443,7 +435,7 @@ function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(rawTokenAQty);
         } else {
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity)
@@ -489,8 +481,6 @@ function LimitCurrencyConverter(props: propsIF) {
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
-                provider={provider}
-                tokenPair={tokenPair}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
                 setTokenAInputQty={setTokenAInputQty}
@@ -554,7 +544,6 @@ function LimitCurrencyConverter(props: propsIF) {
             </div>
             <div id='limit_currency_converter'>
                 <LimitCurrencySelector
-                    tokenPair={tokenPair}
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
                     setTokenAInputQty={setTokenAInputQty}
@@ -607,10 +596,8 @@ function LimitCurrencyConverter(props: propsIF) {
                 setPreviousDisplayPrice={setPreviousDisplayPrice}
                 isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                tokenPair={tokenPair}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
-                poolPriceNonDisplay={poolPriceNonDisplay}
                 limitTickDisplayPrice={limitTickDisplayPrice}
             />
         </section>

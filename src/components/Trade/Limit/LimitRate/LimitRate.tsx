@@ -19,14 +19,12 @@ interface propsIF {
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    tokenPair: TokenPairIF;
     fieldId: string;
     sellToken?: boolean;
     isSellTokenBase: boolean;
     disable?: boolean;
     reverseTokens: () => void;
     // onBlur: () => void;
-    poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
 }
 
@@ -40,8 +38,6 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred,
         fieldId,
         disable,
-        // poolPriceNonDisplay,
-        // limitTickDisplayPrice,
     } = props;
 
     const dispatch = useAppDispatch();

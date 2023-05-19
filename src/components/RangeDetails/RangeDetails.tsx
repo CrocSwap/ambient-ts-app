@@ -17,7 +17,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     position: PositionIF;
     user: string;
     bidTick: number;

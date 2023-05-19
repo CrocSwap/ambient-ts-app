@@ -183,7 +183,6 @@ export default function App() {
     }, [tradeData.tokenA, tradeData.tokenB]);
     const userData = useAppSelector((state) => state.userData);
     const isUserIdle = userData.isUserIdle;
-    const currentPoolInfo = tradeData;
     const receiptData = useAppSelector((state) => state.receiptData);
     const lastReceipt =
         receiptData.sessionReceipts.length > 0 &&
@@ -198,7 +197,6 @@ export default function App() {
 
     // CONTEXT: remove and reference as necessary
     const provider = useProvider();
-    const isInitialized = !!provider;
     const {
         data: signer,
         isError,
@@ -206,10 +204,8 @@ export default function App() {
         status: signerStatus,
         //  isLoading
     } = useSigner();
-    const dispatch = useAppDispatch();
 
-    // CONTEXT: can be removed
-    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
+    const dispatch = useAppDispatch();
 
     /* ------------------------------------------ APP STATE CONTEXT ------------------------------------------ */
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -1653,19 +1649,14 @@ export default function App() {
 
     // props for <Swap/> React element
     const swapProps = {
-        tokenPairLocal,
-        provider,
         isPairStable,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
-        tokenPair,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        isInitialized,
-        setTokenPairLocal,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -1678,7 +1669,6 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
-        provider: provider,
         isPairStable: isPairStable,
         isOnTradeRoute: true,
         baseTokenBalance: baseTokenBalance,
@@ -1686,10 +1676,8 @@ export default function App() {
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
-        tokenPair: tokenPair,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance,
-        isInitialized,
         verifyToken,
         getTokensByName,
         getTokenByAddress,
@@ -1698,12 +1686,10 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        tokenPairLocal,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        provider,
         isPairStable,
         isOnTradeRoute: true,
         baseTokenBalance,
@@ -1711,7 +1697,6 @@ export default function App() {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
-        tokenPair: tokenPair,
         setResetLimitTick,
         setRecheckTokenAApproval,
         tokenAAllowance,
@@ -1727,11 +1712,9 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
-        provider,
         isPairStable,
         baseTokenAddress,
         quoteTokenAddress,
-        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
         baseTokenBalance,
@@ -1755,12 +1738,7 @@ export default function App() {
 
     // props for <Sidebar/> React element
     const sidebarProps = {
-        tradeData: tradeData,
-        isDenomBase: tradeData.isDenomBase,
-        poolList,
         verifyToken: verifyToken,
-        tokenPair: tokenPair,
-        recentPools,
     };
 
     // Take away margin from left if we are on homepage or swap
@@ -1865,20 +1843,15 @@ export default function App() {
         tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        provider,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        tokenPair,
         isTokenABase,
-        isInitialized,
-        poolPriceNonDisplay: tradeData.poolPriceNonDisplay,
         limitRate: '',
         searchableTokens: searchableTokens,
-        setTokenPairLocal,
     };
 
     const accountProps = {
@@ -1890,7 +1863,6 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress,
         isTokenABase,
-        provider,
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
@@ -1907,22 +1879,11 @@ export default function App() {
     };
 
     const repositionProps = {
-        tokenPair,
-        provider,
-        isDenomBase: tradeData.isDenomBase,
         isPairStable,
     };
 
-    const chatOnClose = useCallback(() => {
-        console.error('Function not implemented.');
-    }, []);
-
     const chatProps = {
-        // CONTEXT: remove and figure out why we're passing an error message through
-        onClose: chatOnClose,
-        currentPool: currentPoolInfo,
         isFullScreen: true,
-        // CONTEXT: remove and use location to determine
         appPage: true,
     };
 
@@ -2250,10 +2211,6 @@ export default function App() {
                                                 ) &&
                                                 appState.chat.isEnabled && (
                                                     <ChatPanel
-                                                        onClose={chatOnClose}
-                                                        currentPool={
-                                                            currentPoolInfo
-                                                        }
                                                         isFullScreen={false}
                                                     />
                                                 )}

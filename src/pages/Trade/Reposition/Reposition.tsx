@@ -53,16 +53,14 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { useProvider } from 'wagmi';
 
 interface propsIF {
-    isDenomBase: boolean;
-    provider: ethers.providers.Provider;
     isPairStable: boolean;
-    tokenPair: TokenPairIF;
 }
 
 function Reposition(props: propsIF) {
-    const { isDenomBase, provider, isPairStable, tokenPair } = props;
+    const { isPairStable } = props;
 
     // current URL parameter string
     const { params } = useParams();
@@ -102,6 +100,8 @@ function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
+    const provider = useProvider();
+
     useUrlParams(chainId, provider);
 
     // redirect path to use in this module
@@ -145,11 +145,14 @@ function Reposition(props: propsIF) {
         updateConcLiq();
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
-    const { tradeData, receiptData } = useAppSelector((state) => state);
-
-    const isTokenABase = tradeData.isTokenABase;
-
-    const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+    const {
+        tradeData: {
+            isTokenABase,
+            poolPriceNonDisplay: currentPoolPriceNonDisplay,
+            isDenomBase,
+        },
+        receiptData,
+    } = useAppSelector((state) => state);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -678,7 +681,6 @@ function Reposition(props: propsIF) {
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         newRepositionTransactionHash: newRepositionTransactionHash,
-        tokenPair: tokenPair,
         resetConfirmation: resetConfirmation,
         txErrorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
@@ -697,7 +699,6 @@ function Reposition(props: propsIF) {
             pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
-        isDenomBase: isDenomBase,
         isTokenABase: isTokenABase,
         // showBypassConfirm,
         // setShowBypassConfirm,
@@ -709,7 +710,6 @@ function Reposition(props: propsIF) {
     const bypassConfirmRepositionButtonProps = {
         newRepositionTransactionHash,
         txErrorCode,
-        tokenPair,
         onSend: sendRepositionTransaction,
         resetConfirmation,
         showExtraInfo,
@@ -771,7 +771,6 @@ function Reposition(props: propsIF) {
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
                     isPairStable={isPairStable}
-                    isDenomBase={isDenomBase}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}
                 />

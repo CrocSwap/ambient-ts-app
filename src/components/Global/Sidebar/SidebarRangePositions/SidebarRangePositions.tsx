@@ -10,12 +10,11 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    isDenomBase: boolean;
     userPositions?: PositionIF[];
 }
 
 export default function SidebarRangePositions(props: propsIF) {
-    const { isDenomBase, userPositions } = props;
+    const { userPositions } = props;
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -81,7 +80,6 @@ export default function SidebarRangePositions(props: propsIF) {
                         <SidebarRangePositionsCard
                             key={idx}
                             position={position}
-                            isDenomBase={isDenomBase}
                             handleClick={handleRangePositionClick}
                         />
                     ))}

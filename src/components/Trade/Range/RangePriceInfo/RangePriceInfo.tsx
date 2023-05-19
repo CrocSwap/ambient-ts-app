@@ -3,7 +3,10 @@ import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
@@ -18,19 +21,14 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
     aprPercentage: number | undefined;
     daysInRange: number | undefined;
-    didUserFlipDenom: boolean;
     poolPriceCharacter: string;
-    isDenomBase: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
     isTokenABase: boolean;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
     pinnedDisplayPrices:
         | {
               pinnedMinPriceDisplay: string;
@@ -55,12 +53,8 @@ function RangePriceInfo(props: propsIF) {
         poolPriceCharacter,
         aprPercentage,
         pinnedDisplayPrices,
-        isDenomBase,
         cachedFetchTokenPrice,
-        tokenPair,
         isTokenABase,
-        baseToken,
-        quoteToken,
         isAmbient,
     } = props;
     const {
@@ -69,6 +63,9 @@ function RangePriceInfo(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
+        useAppSelector((state) => state.tradeData);
 
     const dispatch = useAppDispatch();
 
@@ -116,8 +113,8 @@ function RangePriceInfo(props: propsIF) {
     const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
         useState<string>('');
 
-    const tokenAAddress = tokenPair?.dataTokenA?.address;
-    const tokenBAddress = tokenPair?.dataTokenB?.address;
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     const minPrice = userFlippedMaxMinDisplay
         ? isAmbient

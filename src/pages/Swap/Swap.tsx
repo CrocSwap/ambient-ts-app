@@ -55,20 +55,18 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { useProvider } from 'wagmi';
 
 interface propsIF {
     isPairStable: boolean;
-    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
-    tokenPair: TokenPairIF;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    isInitialized: boolean;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -83,20 +81,17 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    tokenPairLocal: string[] | null;
 }
 
 function Swap(props: propsIF) {
     const {
         isPairStable,
-        provider,
         isOnTradeRoute,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isSellTokenBase,
-        tokenPair,
         tokenAAllowance,
         setRecheckTokenAApproval,
         isSwapCopied,
@@ -108,7 +103,6 @@ function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        tokenPairLocal,
     } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -125,6 +119,8 @@ function Swap(props: propsIF) {
     const { isPoolInitialized } = useContext(PoolContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap, ackTokens } =
         useContext(UserPreferenceContext);
+
+    const provider = useProvider();
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -394,8 +390,8 @@ function Swap(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -570,11 +566,9 @@ function Swap(props: propsIF) {
     const currencyConverterProps = {
         isLiquidityInsufficient: isLiquidityInsufficient,
         setIsLiquidityInsufficient: setIsLiquidityInsufficient,
-        tokenPairLocal: tokenPairLocal,
         provider: provider,
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
-        tokenPair: tokenPair,
         priceImpact: priceImpact,
         isLiq: false,
         isTokenAPrimary: isTokenAPrimary,
@@ -679,8 +673,8 @@ function Swap(props: propsIF) {
     };
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenB);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -689,18 +683,16 @@ function Swap(props: propsIF) {
         // !Important   ... review for a pull request on GitHub
         let text: string;
         if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
-            } and ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
+                tokenB.symbol || tokenB.name
             } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenA) {
             text = `The token ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+                tokenA.symbol || tokenA.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenB) {
             text = `The token ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+                tokenB.symbol || tokenB.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else {
             text = '';
@@ -717,8 +709,8 @@ function Swap(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && ackTokens.acknowledge(tokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenB);
     };
 
     const liquidityProviderFeeString = (
@@ -765,7 +757,6 @@ function Swap(props: propsIF) {
                             <CurrencyConverter {...currencyConverterProps} />
                         </motion.div>
                         <ExtraInfo
-                            tokenPair={tokenPair}
                             priceImpact={priceImpact}
                             isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
@@ -777,8 +768,6 @@ function Swap(props: propsIF) {
                             }
                             quoteTokenIsBuy={true}
                             swapGasPriceinDollars={swapGasPriceinDollars}
-                            didUserFlipDenom={tradeData.didUserFlipDenom}
-                            isDenomBase={tradeData.isDenomBase}
                             isOnTradeRoute={isOnTradeRoute}
                         />
                         {isUserConnected ===
@@ -837,15 +826,13 @@ function Swap(props: propsIF) {
                                                 href={
                                                     blockExplorer +
                                                     'token/' +
-                                                    tokenPair.dataTokenA.address
+                                                    tokenA.address
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
                                                 aria-label={`approve ${tokenA.symbol}`}
                                             >
-                                                {tokenPair.dataTokenA.symbol ||
-                                                    tokenPair.dataTokenA
-                                                        .name}{' '}
+                                                {tokenA.symbol || tokenA.name}{' '}
                                                 <FiExternalLink />
                                             </a>
                                         )}
@@ -854,15 +841,13 @@ function Swap(props: propsIF) {
                                                 href={
                                                     blockExplorer +
                                                     'token/' +
-                                                    tokenPair.dataTokenB.address
+                                                    tokenB.address
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
                                                 aria-label={`approve ${tokenB.symbol}`}
                                             >
-                                                {tokenPair.dataTokenB.symbol ||
-                                                    tokenPair.dataTokenB
-                                                        .name}{' '}
+                                                {tokenB.symbol || tokenB.name}{' '}
                                                 <FiExternalLink />
                                             </a>
                                         )}

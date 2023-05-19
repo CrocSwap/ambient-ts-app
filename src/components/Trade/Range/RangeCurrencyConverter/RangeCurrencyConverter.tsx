@@ -37,15 +37,12 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
-    provider?: ethers.providers.Provider;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
-    poolPriceNonDisplay: number | undefined;
     isAdvancedMode: boolean;
-    tokenPair: TokenPairIF;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -89,8 +86,6 @@ interface propsIF {
 function RangeCurrencyConverter(props: propsIF) {
     const {
         isLiq,
-        poolPriceNonDisplay,
-        tokenPair,
         isTokenABase,
         isAmbient,
         depositSkew,
@@ -265,25 +260,25 @@ function RangeCurrencyConverter(props: propsIF) {
         const precision = precisionOfInput(value.toString());
 
         setTokenAQtyLocal(
-            parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)),
+            parseFloat(truncateDecimals(value, tradeData.tokenA.decimals)),
         );
         setTokenAInputQty(
             value === 0
                 ? ''
-                : precision <= tokenPair.dataTokenA.decimals
+                : precision <= tradeData.tokenA.decimals
                 ? value.toString()
-                : truncateDecimals(value, tokenPair.dataTokenA.decimals),
+                : truncateDecimals(value, tradeData.tokenA.decimals),
         );
 
         handleRangeButtonMessageTokenA(value);
 
-        if (poolPriceNonDisplay === undefined) return;
+        if (tradeData.poolPriceNonDisplay === undefined) return;
 
         const qtyTokenB =
             calculateSecondaryDepositQty(
-                poolPriceNonDisplay,
-                tokenPair.dataTokenA.decimals,
-                tokenPair.dataTokenB.decimals,
+                tradeData.poolPriceNonDisplay,
+                tradeData.tokenA.decimals,
+                tradeData.tokenB.decimals,
                 value.toString(),
                 true,
                 isTokenABase,
@@ -295,7 +290,7 @@ function RangeCurrencyConverter(props: propsIF) {
 
         const truncatedTokenBQty = qtyTokenB
             ? qtyTokenB < 0.00001
-                ? truncateDecimals(qtyTokenB, tokenPair.dataTokenA.decimals)
+                ? truncateDecimals(qtyTokenB, tradeData.tokenA.decimals)
                 : qtyTokenB < 2
                 ? qtyTokenB.toPrecision(3)
                 : truncateDecimals(qtyTokenB, 2)
@@ -323,25 +318,25 @@ function RangeCurrencyConverter(props: propsIF) {
     const setTokenBQtyValue = (value: number) => {
         const precision = precisionOfInput(value.toString());
         setTokenBQtyLocal(
-            parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)),
+            parseFloat(truncateDecimals(value, tradeData.tokenB.decimals)),
         );
         setTokenBInputQty(
             value === 0
                 ? ''
-                : precision <= tokenPair.dataTokenB.decimals
+                : precision <= tradeData.tokenB.decimals
                 ? value.toString()
-                : truncateDecimals(value, tokenPair.dataTokenB.decimals),
+                : truncateDecimals(value, tradeData.tokenB.decimals),
         );
 
         handleRangeButtonMessageTokenB(value);
 
-        if (poolPriceNonDisplay === undefined) return;
+        if (tradeData.poolPriceNonDisplay === undefined) return;
 
         const qtyTokenA =
             calculateSecondaryDepositQty(
-                poolPriceNonDisplay,
-                tokenPair.dataTokenA.decimals,
-                tokenPair.dataTokenB.decimals,
+                tradeData.poolPriceNonDisplay,
+                tradeData.tokenA.decimals,
+                tradeData.tokenB.decimals,
                 value.toString(),
                 false,
                 isTokenABase,
@@ -353,7 +348,7 @@ function RangeCurrencyConverter(props: propsIF) {
 
         const truncatedTokenAQty = qtyTokenA
             ? qtyTokenA < 0.00001
-                ? truncateDecimals(qtyTokenA, tokenPair.dataTokenA.decimals)
+                ? truncateDecimals(qtyTokenA, tradeData.tokenA.decimals)
                 : qtyTokenA < 2
                 ? qtyTokenA.toPrecision(3)
                 : truncateDecimals(qtyTokenA, 2)
@@ -381,16 +376,16 @@ function RangeCurrencyConverter(props: propsIF) {
         navigate(
             '/trade/range/' +
                 formSlugForPairParams(
-                    tokenPair.dataTokenA.chainId,
-                    tokenPair.dataTokenB,
-                    tokenPair.dataTokenA,
+                    tradeData.tokenA.chainId,
+                    tradeData.tokenB,
+                    tradeData.tokenA,
                 ),
         );
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
-        if (poolPriceNonDisplay === 0) {
+        if (tradeData.poolPriceNonDisplay === 0) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
@@ -406,7 +401,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenAAllowed(true);
@@ -415,7 +410,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 if (tokenAAmount > parseFloat(tokenABalance)) {
                     setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setTokenAAllowed(true);
@@ -425,7 +420,7 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: number) => {
-        if (poolPriceNonDisplay === 0) {
+        if (tradeData.poolPriceNonDisplay === 0) {
             setTokenBAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenBAmount) || tokenBAmount <= 0) {
@@ -441,7 +436,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenBAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tradeData.tokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenBAllowed(true);
@@ -450,7 +445,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 if (tokenBAmount > parseFloat(tokenBBalance)) {
                     setTokenBAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+                        `${tradeData.tokenB.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setTokenBAllowed(true);
@@ -650,7 +645,7 @@ function RangeCurrencyConverter(props: propsIF) {
         }
     }, [
         isPoolInitialized,
-        poolPriceNonDisplay,
+        tradeData.poolPriceNonDisplay,
         depositSkew,
         primaryQuantityRange,
         isWithdrawTokenAFromDexChecked,
@@ -699,7 +694,6 @@ function RangeCurrencyConverter(props: propsIF) {
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
         resetTokenQuantities: resetTokenQuantities,
-        tokenPair: tokenPair,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,

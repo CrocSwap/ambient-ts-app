@@ -20,15 +20,12 @@ import { PoolContext } from '../../../contexts/PoolContext';
 
 // interface for props in this file
 interface propsIF {
-    tokenPair: TokenPairIF;
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
     quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
-    didUserFlipDenom: boolean;
     isTokenABase: boolean;
-    isDenomBase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
 }

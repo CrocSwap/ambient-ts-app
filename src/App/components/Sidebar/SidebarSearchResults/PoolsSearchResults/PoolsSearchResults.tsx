@@ -6,17 +6,18 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    tokenPair: TokenPairIF;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, tokenPair, cachedPoolStatsFetch } = props;
+    const { searchedPools, cachedPoolStatsFetch } = props;
+    const { tokenA } = useAppSelector((state) => state.tradeData);
 
     const {
         chainData: { chainId },
@@ -24,13 +25,12 @@ export default function PoolsSearchResults(props: propsIF) {
 
     const navigate = useNavigate();
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const { dataTokenA } = tokenPair;
         const tokenAString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? baseAddr
                 : quoteAddr;
         const tokenBString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
         navigate(

@@ -48,7 +48,6 @@ import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     baseTokenBalance: string;
@@ -56,12 +55,8 @@ interface propsIF {
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
     isTokenABase: boolean;
-    tokenPair: TokenPairIF;
     limitRate: string;
-    isInitialized: boolean;
-    poolPriceNonDisplay: number | undefined;
     searchableTokens: TokenIF[];
-    setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenList: TokenIF[];
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -73,7 +68,6 @@ function Trade(props: propsIF) {
         tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        provider,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenBalance,
@@ -82,7 +76,6 @@ function Trade(props: propsIF) {
         quoteTokenDexBalance,
         searchableTokens,
         isTokenABase,
-        poolPriceNonDisplay,
     } = props;
 
     const { params } = useParams();
@@ -359,7 +352,6 @@ function Trade(props: propsIF) {
         isAdvancedModeActive: advancedMode,
         baseTokenAddress: baseTokenAddress,
         quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
     };
@@ -369,7 +361,6 @@ function Trade(props: propsIF) {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
-        provider: provider,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,

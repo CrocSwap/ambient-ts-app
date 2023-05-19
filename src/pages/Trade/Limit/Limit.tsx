@@ -67,17 +67,16 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { useProvider } from 'wagmi';
 
 interface propsIF {
     isPairStable: boolean;
-    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
-    tokenPair: TokenPairIF;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -99,13 +98,11 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: propsIF) {
     const {
-        provider,
         isPairStable,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        tokenPair,
         tokenAAllowance,
         setRecheckTokenAApproval,
         verifyToken,
@@ -135,10 +132,12 @@ export default function Limit(props: propsIF) {
     );
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
+    const { tokenA, tokenB } = tradeData;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
 
     const dispatch = useAppDispatch();
+    const provider = useProvider();
     useUrlParams(chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -196,8 +195,8 @@ export default function Limit(props: propsIF) {
     const { baseToken, quoteToken } = tradeData;
 
     const isSellTokenBase = useMemo(
-        () => pool?.baseToken.tokenAddr === tokenPair.dataTokenA.address,
-        [pool?.baseToken, tokenPair.dataTokenA.address],
+        () => pool?.baseToken.tokenAddr === tokenA.address,
+        [pool?.baseToken, tokenA.address],
     );
 
     useEffect(() => {
@@ -206,7 +205,7 @@ export default function Limit(props: propsIF) {
         }
 
         dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
+    }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -415,13 +414,11 @@ export default function Limit(props: propsIF) {
             if (!limitTick) return;
 
             const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tokenPair.dataTokenA.address, 0)
-                : crocEnv.buy(tokenPair.dataTokenB.address, 0);
+                ? crocEnv.sell(tokenA.address, 0)
+                : crocEnv.buy(tokenB.address, 0);
 
             const ko = testOrder.atLimit(
-                isTokenAPrimary
-                    ? tokenPair.dataTokenB.address
-                    : tokenPair.dataTokenA.address,
+                isTokenAPrimary ? tokenB.address : tokenA.address,
                 limitTick,
             );
 
@@ -443,7 +440,7 @@ export default function Limit(props: propsIF) {
         isTokenAPrimary,
         limitTick,
         poolPriceNonDisplay,
-        tokenPair.dataTokenA.address + tokenPair.dataTokenB.address,
+        tokenA.address + tokenB.address,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
@@ -637,7 +634,6 @@ export default function Limit(props: propsIF) {
         txErrorCode: txErrorCode,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
-        tokenPair: tokenPair,
         resetConfirmation: resetConfirmation,
         showBypassConfirmButton: showBypassConfirmButton,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
@@ -733,15 +729,12 @@ export default function Limit(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(
-                    tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenA.symbol,
-                );
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat={true}
         />
@@ -752,10 +745,7 @@ export default function Limit(props: propsIF) {
         previousDisplayPrice: previousDisplayPrice,
         setDisplayPrice: setDisplayPrice,
         setPreviousDisplayPrice: setPreviousDisplayPrice,
-        provider: provider,
         setPriceInputFieldBlurred: setPriceInputFieldBlurred,
-        tokenPair: tokenPair,
-        poolPriceNonDisplay: poolPriceNonDisplay,
         isSellTokenBase: isSellTokenBase,
         setLimitAllowed: setLimitAllowed,
         baseTokenBalance: baseTokenBalance,
@@ -772,7 +762,6 @@ export default function Limit(props: propsIF) {
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
-        isDenominationInBase: tradeData.isDenomBase,
         verifyToken: verifyToken,
         getTokensByName: getTokensByName,
         getTokenByAddress: getTokenByAddress,
@@ -795,8 +784,8 @@ export default function Limit(props: propsIF) {
     };
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA: boolean = isTokenUnknown(tokenA);
+    const needConfirmTokenB: boolean = isTokenUnknown(tokenB);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -805,18 +794,16 @@ export default function Limit(props: propsIF) {
         // !Important   ... review for a pull request on GitHub
         let text: string;
         if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
-            } and ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
+                tokenB.symbol || tokenB.name
             } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenA) {
             text = `The token ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+                tokenA.symbol || tokenA.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenB) {
             text = `The token ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+                tokenB.symbol || tokenB.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else {
             text = '';
@@ -833,8 +820,8 @@ export default function Limit(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && ackTokens.acknowledge(tokenA);
+        needConfirmTokenB && ackTokens.acknowledge(tokenB);
     };
 
     const liquidityProviderFeeString = (
@@ -876,12 +863,9 @@ export default function Limit(props: propsIF) {
                         isQtyEntered={
                             tokenAInputQty !== '' || tokenBInputQty !== ''
                         }
-                        tokenPair={tokenPair}
                         orderGasPriceInDollars={orderGasPriceInDollars}
                         liquidityProviderFeeString={liquidityProviderFeeString}
-                        didUserFlipDenom={tradeData.didUserFlipDenom}
                         isTokenABase={isSellTokenBase}
-                        isDenomBase={isDenomBase}
                         limitRate={endDisplayPrice.toString()}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
@@ -935,14 +919,13 @@ export default function Limit(props: propsIF) {
                                             href={
                                                 blockExplorer +
                                                 'token/' +
-                                                tokenPair.dataTokenA.address
+                                                tokenA.address
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
-                                            aria-label={`approve ${tokenPair.dataTokenA.symbol}`}
+                                            aria-label={`approve ${tokenA.symbol}`}
                                         >
-                                            {tokenPair.dataTokenA.symbol ||
-                                                tokenPair.dataTokenA.name}{' '}
+                                            {tokenA.symbol || tokenA.name}{' '}
                                             <FiExternalLink />
                                         </a>
                                     )}
@@ -951,16 +934,13 @@ export default function Limit(props: propsIF) {
                                             href={
                                                 blockExplorer +
                                                 'token/' +
-                                                tokenPair.dataTokenB.address
+                                                tokenB.address
                                             }
                                             rel={'noopener noreferrer'}
                                             target='_blank'
-                                            aria-label={
-                                                tokenPair.dataTokenB.symbol
-                                            }
+                                            aria-label={tokenB.symbol}
                                         >
-                                            {tokenPair.dataTokenB.symbol ||
-                                                tokenPair.dataTokenB.name}{' '}
+                                            {tokenB.symbol || tokenB.name}{' '}
                                             <FiExternalLink />
                                         </a>
                                     )}
@@ -979,7 +959,6 @@ export default function Limit(props: propsIF) {
                     >
                         <ConfirmLimitModal
                             onClose={handleModalClose}
-                            tokenPair={tokenPair}
                             initiateLimitOrderMethod={sendLimitOrder}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}

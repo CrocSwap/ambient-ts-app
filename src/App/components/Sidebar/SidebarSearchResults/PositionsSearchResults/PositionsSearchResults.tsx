@@ -6,19 +6,19 @@ import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     searchedPositions: PositionIF[];
-    isDenomBase: boolean;
 }
 interface PositionLiPropsIF {
     position: PositionIF;
-    isDenomBase: boolean;
     handleClick: (position: PositionIF) => void;
 }
 
 function PositionLI(props: PositionLiPropsIF) {
-    const { position, isDenomBase, handleClick } = props;
+    const { position, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // fn to generate human-readable range output (from X to Y)
     const rangeDisplay = getRangeDisplay(position, isDenomBase);
@@ -43,7 +43,7 @@ function PositionLI(props: PositionLiPropsIF) {
 }
 
 export default function PositionsSearchResults(props: propsIF) {
-    const { searchedPositions, isDenomBase } = props;
+    const { searchedPositions } = props;
 
     const navigate = useNavigate();
 
@@ -91,7 +91,6 @@ export default function PositionsSearchResults(props: propsIF) {
                                         position,
                                     )}`}
                                     position={position}
-                                    isDenomBase={isDenomBase}
                                     handleClick={handleClick}
                                 />
                             ))}

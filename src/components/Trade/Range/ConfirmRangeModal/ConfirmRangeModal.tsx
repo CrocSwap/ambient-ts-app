@@ -17,17 +17,16 @@ import styles from './ConfirmRangeModal.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     sendTransaction: () => void;
     closeModal: () => void;
     newRangeTransactionHash: string;
     setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
-    tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
-    denominationsInBase: boolean;
     isTokenABase: boolean;
     isAmbient: boolean;
     isInRange: boolean;
@@ -52,8 +51,6 @@ function ConfirmRangeModal(props: propsIF) {
         minPriceDisplay,
         maxPriceDisplay,
         spotPriceDisplay,
-        tokenPair,
-        denominationsInBase,
         isTokenABase,
         isAmbient,
         isInRange,
@@ -76,7 +73,7 @@ function ConfirmRangeModal(props: propsIF) {
         bypassConfirmRepo,
         bypassConfirmSwap,
     } = useContext(UserPreferenceContext);
-    const { dataTokenA, dataTokenB } = tokenPair;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const txApproved = newRangeTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
@@ -108,17 +105,17 @@ function ConfirmRangeModal(props: propsIF) {
     const txSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
-            tokenBSymbol={dataTokenB.symbol}
-            tokenBAddress={dataTokenB.address}
-            tokenBDecimals={dataTokenB.decimals}
-            tokenBImage={dataTokenB.logoURI}
-            chainId={dataTokenB.chainId}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+            chainId={tokenB.chainId}
             range
         />
     );
 
-    const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
-    const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
+    const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
+    const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
 
     // this is the starting state for the bypass confirmation toggle switch
     // if this modal is being shown, we can assume bypass is disabled
@@ -130,31 +127,25 @@ function ConfirmRangeModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
+                        {tokenA.logoURI ? (
+                            <img src={tokenA.logoURI} alt={tokenA.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol?.charAt(0)}
+                                tokenInitial={tokenA.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
+                        {tokenB.logoURI ? (
+                            <img src={tokenB.logoURI} alt={tokenB.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol?.charAt(0)}
+                                tokenInitial={tokenB.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
                     </div>
                     <span className={styles.token_symbol}>
-                        {dataTokenA.symbol}/{dataTokenB.symbol}
+                        {tokenA.symbol}/{tokenB.symbol}
                     </span>
                 </div>
                 <RangeStatus
@@ -167,18 +158,15 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.fee_tier_container}>
                     <div className={styles.detail_line}>
                         <div>
-                            {dataTokenA.logoURI ? (
-                                <img
-                                    src={dataTokenA.logoURI}
-                                    alt={dataTokenA.name}
-                                />
+                            {tokenA.logoURI ? (
+                                <img src={tokenA.logoURI} alt={tokenA.name} />
                             ) : (
                                 <NoTokenIcon
-                                    tokenInitial={dataTokenA.symbol?.charAt(0)}
+                                    tokenInitial={tokenA.symbol?.charAt(0)}
                                     width='20px'
                                 />
                             )}
-                            <span>{dataTokenA.symbol}</span>
+                            <span>{tokenA.symbol}</span>
                         </div>
                         <span>
                             {localeTokenAString !== ''
@@ -188,18 +176,15 @@ function ConfirmRangeModal(props: propsIF) {
                     </div>
                     <div className={styles.detail_line}>
                         <div>
-                            {dataTokenB.logoURI ? (
-                                <img
-                                    src={dataTokenB.logoURI}
-                                    alt={dataTokenB.name}
-                                />
+                            {tokenB.logoURI ? (
+                                <img src={tokenB.logoURI} alt={tokenB.name} />
                             ) : (
                                 <NoTokenIcon
-                                    tokenInitial={dataTokenB.symbol?.charAt(0)}
+                                    tokenInitial={tokenB.symbol?.charAt(0)}
                                     width='20px'
                                 />
                             )}
-                            <span>{dataTokenB.symbol}</span>
+                            <span>{tokenB.symbol}</span>
                         </div>
                         <span>
                             {localeTokenBString
@@ -214,8 +199,6 @@ function ConfirmRangeModal(props: propsIF) {
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     spotPriceDisplay={spotPriceDisplay}
-                    tokenPair={tokenPair}
-                    denominationsInBase={denominationsInBase}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={
@@ -244,9 +227,9 @@ function ConfirmRangeModal(props: propsIF) {
         <WaitingConfirmation
             content={`Minting a Position with ${
                 localeTokenAString ? localeTokenAString : '0'
-            } ${dataTokenA.symbol} and ${
+            } ${tokenA.symbol} and ${
                 localeTokenBString ? localeTokenBString : '0'
-            } ${dataTokenB.symbol} `}
+            } ${tokenB.symbol} `}
         />
     );
 

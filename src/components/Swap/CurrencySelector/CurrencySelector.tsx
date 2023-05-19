@@ -30,9 +30,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     disableReverseTokens: boolean;
-    tokenPair: TokenPairIF;
     fieldId: string;
     tokenAorB: string | null;
     direction: string;
@@ -88,12 +86,10 @@ interface propsIF {
 function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
-        provider,
         sellQtyString,
         setSellQtyString,
         buyQtyString,
         setBuyQtyString,
-        tokenPair,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -132,11 +128,10 @@ function CurrencySelector(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isSellTokenSelector = fieldId === 'sell';
-    const thisToken = isSellTokenSelector
-        ? tokenPair.dataTokenA
-        : tokenPair.dataTokenB;
+    const thisToken = isSellTokenSelector ? tokenA : tokenB;
 
     const displayAmountToReduceEth = 0.2;
 
@@ -561,7 +556,6 @@ function CurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
@@ -578,7 +572,6 @@ function CurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
                     />
                 </Modal>
             )}

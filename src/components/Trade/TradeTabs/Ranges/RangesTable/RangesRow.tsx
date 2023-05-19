@@ -22,7 +22,6 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -96,7 +95,6 @@ function RangesRow(props: propsIF) {
 
     const rangeDetailsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
-        provider: props.provider,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,

@@ -16,7 +16,6 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 interface propsIF {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
-    tokenPair: TokenPairIF;
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
@@ -34,7 +33,6 @@ interface propsIF {
 
 export default function ConfirmLimitModal(props: propsIF) {
     const {
-        tokenPair,
         initiateLimitOrderMethod,
         insideTickDisplayPrice,
         newLimitOrderTransactionHash,
@@ -112,8 +110,8 @@ export default function ConfirmLimitModal(props: propsIF) {
               })
             : tokenBInputQty;
 
-    const sellTokenData = tokenPair.dataTokenA;
-    const buyTokenData = tokenPair.dataTokenB;
+    const sellTokenData = tradeData.tokenA;
+    const buyTokenData = tradeData.tokenB;
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -241,8 +239,8 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
             </div>
             <div className={styles.confSwap_detail_note}>
-                {`${tokenPair.dataTokenB.symbol} will be available for withdrawal after the limit order is filled. 
-                ${tokenPair.dataTokenA.symbol} can be withdrawn at any time before fill completion.`}
+                {`${tradeData.tokenB.symbol} will be available for withdrawal after the limit order is filled. 
+                ${tradeData.tokenA.symbol} can be withdrawn at any time before fill completion.`}
             </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}

@@ -12,12 +12,12 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     onClose: () => void;
     position: PositionIF;
     newRepositionTransactionHash: string;
-    tokenPair: TokenPairIF;
     rangeWidthPercentage: number;
     currentPoolPriceTick: number;
     currentPoolPriceDisplay: string;
@@ -40,14 +40,12 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
-    isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
     const {
-        tokenPair,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
@@ -65,7 +63,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
         newQuoteQtyDisplay,
-        isDenomBase,
         isTokenABase,
         isPositionInRange,
     } = props;
@@ -76,10 +73,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
         bypassConfirmSwap,
     } = useContext(UserPreferenceContext);
 
-    const { dataTokenA, dataTokenB } = tokenPair;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const baseToken = isTokenABase ? dataTokenA : dataTokenB;
-    const quoteToken = isTokenABase ? dataTokenB : dataTokenA;
+    const baseToken = isTokenABase ? tokenA : tokenB;
+    const quoteToken = isTokenABase ? tokenB : tokenA;
 
     const txApproved = newRepositionTransactionHash !== '';
     const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
@@ -89,11 +86,11 @@ export default function ConfirmRepositionModal(props: propsIF) {
     const txSubmitted = (
         <TransactionSubmitted
             hash={newRepositionTransactionHash}
-            tokenBSymbol={dataTokenB.symbol}
-            tokenBAddress={dataTokenB.address}
-            tokenBDecimals={dataTokenB.decimals}
-            tokenBImage={dataTokenB.logoURI}
-            chainId={dataTokenB.chainId}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+            chainId={tokenB.chainId}
             reposition
         />
     );
@@ -139,7 +136,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenA.logoURI ? (
+                        {tokenA.logoURI ? (
                             <img src={baseToken.logoURI} alt={baseToken.name} />
                         ) : (
                             <NoTokenIcon
@@ -201,31 +198,25 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
+                        {tokenA.logoURI ? (
+                            <img src={tokenA.logoURI} alt={tokenA.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol?.charAt(0)}
+                                tokenInitial={tokenA.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
+                        {tokenB.logoURI ? (
+                            <img src={tokenB.logoURI} alt={tokenB.name} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol?.charAt(0)}
+                                tokenInitial={tokenB.symbol?.charAt(0)}
                                 width='30px'
                             />
                         )}
                     </div>
                     <span className={styles.token_symbol}>
-                        {dataTokenA.symbol}/{dataTokenB.symbol}
+                        {tokenA.symbol}/{tokenB.symbol}
                     </span>
                 </div>
                 <RangeStatus
@@ -239,8 +230,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <SelectedRange
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
-                    tokenPair={tokenPair}
-                    denominationsInBase={isDenomBase}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={

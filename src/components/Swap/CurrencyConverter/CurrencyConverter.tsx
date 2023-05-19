@@ -34,11 +34,9 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isSellTokenBase: boolean;
-    tokenPair: TokenPairIF;
     isLiq: boolean;
     isTokenAPrimary: boolean;
     // nativeBalance: string;
@@ -79,10 +77,8 @@ function CurrencyConverter(props: propsIF) {
     const {
         isLiquidityInsufficient,
         setIsLiquidityInsufficient,
-        provider,
         slippageTolerancePercentage,
         setPriceImpact,
-        tokenPair,
         isLiq,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
@@ -122,19 +118,10 @@ function CurrencyConverter(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const {
-        tokenAAddress,
-        tokenBAddress,
-        tokenASymbol,
-        tokenBSymbol,
-        isTokenAPrimary,
-        primaryQuantity,
-    } = useAppSelector(
+    const { tokenA, tokenB, isTokenAPrimary, primaryQuantity } = useAppSelector(
         (state) => ({
-            tokenAAddress: state.tradeData.tokenA.address,
-            tokenBAddress: state.tradeData.tokenB.address,
-            tokenASymbol: state.tradeData.tokenA.symbol,
-            tokenBSymbol: state.tradeData.tokenB.symbol,
+            tokenA: state.tradeData.tokenA,
+            tokenB: state.tradeData.tokenB,
             isTokenAPrimary: state.tradeData.isTokenAPrimary,
             primaryQuantity: state.tradeData.primaryQuantity,
         }),
@@ -143,27 +130,29 @@ function CurrencyConverter(props: propsIF) {
 
     const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const [tokenALocal, setTokenALocal] = useState<string>(tokenAAddress);
-    const [tokenBLocal, setTokenBLocal] = useState<string>(tokenBAddress);
-    const [tokenASymbolLocal, setTokenASymbolLocal] =
-        useState<string>(tokenASymbol);
-    const [tokenBSymbolLocal, setTokenBSymbolLocal] =
-        useState<string>(tokenBSymbol);
+    const [tokenALocal, setTokenALocal] = useState<string>(tokenA.address);
+    const [tokenBLocal, setTokenBLocal] = useState<string>(tokenB.address);
+    const [tokenASymbolLocal, setTokenASymbolLocal] = useState<string>(
+        tokenA.symbol,
+    );
+    const [tokenBSymbolLocal, setTokenBSymbolLocal] = useState<string>(
+        tokenB.symbol,
+    );
 
     const [isSellLoading, setIsSellLoading] = useState(false);
     const [isBuyLoading, setIsBuyLoading] = useState(false);
 
-    const isSellTokenEth = tokenAAddress === ZERO_ADDRESS;
+    const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
-        setTokenALocal(tokenAAddress);
-        setTokenASymbolLocal(tokenASymbol);
-    }, [tokenAAddress, tokenASymbol, chainId]);
+        setTokenALocal(tokenA.address);
+        setTokenASymbolLocal(tokenA.symbol);
+    }, [tokenA.address, tokenA.symbol, chainId]);
 
     useEffect(() => {
-        setTokenBLocal(tokenBAddress);
-        setTokenBSymbolLocal(tokenBSymbol);
-    }, [tokenBAddress, tokenBSymbol, chainId]);
+        setTokenBLocal(tokenB.address);
+        setTokenBSymbolLocal(tokenB.symbol);
+    }, [tokenB.address, tokenB.symbol, chainId]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
@@ -285,12 +274,12 @@ function CurrencyConverter(props: propsIF) {
         return (
             locationSlug +
             formSlugForPairParams(
-                tokenPair.dataTokenA.chainId,
-                tokenPair.dataTokenB.address,
-                tokenPair.dataTokenA.address,
+                tokenA.chainId,
+                tokenB.address,
+                tokenA.address,
             )
         );
-    }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
+    }, [pathname, tokenB.address, tokenA.address]);
 
     const [switchBoxes, setSwitchBoxes] = useState(false);
 
@@ -730,11 +719,7 @@ function CurrencyConverter(props: propsIF) {
                 dispatch(setIsTokenAPrimary(false));
                 dispatch(setPrimaryQuantity(input));
 
-                if (
-                    tokenPair.dataTokenA.address ===
-                    tokenPair.dataTokenB.address
-                )
-                    return;
+                if (tokenA.address === tokenB.address) return;
 
                 const parsedInput = parseFloat(input);
 
@@ -864,13 +849,11 @@ function CurrencyConverter(props: propsIF) {
             }`}
         >
             <CurrencySelector
-                provider={provider}
                 disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
                 setBuyQtyString={setBuyQtyString}
-                tokenPair={tokenPair}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 isLoading={isSellLoading}
@@ -931,14 +914,12 @@ function CurrencyConverter(props: propsIF) {
             </div>
             <div id='swap_currency_converter'>
                 <CurrencySelector
-                    provider={provider}
                     disableReverseTokens={disableReverseTokens}
                     sellQtyString={sellQtyString}
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
                     buyQtyString={buyQtyString}
                     tokenBQtyLocal={tokenBQtyLocal}
-                    tokenPair={tokenPair}
                     direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
                     isLoading={isBuyLoading}

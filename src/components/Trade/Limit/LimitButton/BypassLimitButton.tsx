@@ -21,7 +21,6 @@ interface propsIF {
     txErrorCode: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    tokenPair: TokenPairIF;
     resetConfirmation: () => void;
     showBypassConfirmButton: boolean;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
@@ -29,18 +28,19 @@ interface propsIF {
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
 }
 function BypassLimitButton(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
     const {
         newLimitOrderTransactionHash,
         txErrorCode,
         tokenAInputQty,
         tokenBInputQty,
-        tokenPair,
         resetConfirmation,
         sendLimitOrder,
         setShowBypassConfirmButton,
         setNewLimitOrderTransactionHash,
     } = props;
+
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const transactionApproved = newLimitOrderTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -53,9 +53,8 @@ function BypassLimitButton(props: propsIF) {
         document.getElementById('buy-limit-quantity') as HTMLInputElement
     )?.value;
 
-    const sellTokenData = tokenPair?.dataTokenA;
-
-    const buyTokenData = tokenPair?.dataTokenB;
+    const sellTokenData = tokenA;
+    const buyTokenData = tokenB;
 
     const confirmSendMessage = (
         <WaitingConfirmation

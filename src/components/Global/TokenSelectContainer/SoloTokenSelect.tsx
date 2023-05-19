@@ -9,7 +9,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
@@ -19,12 +22,12 @@ import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { useProvider } from 'wagmi';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
     modalCloseCustom: () => void;
-    provider: ethers.providers.Provider | undefined;
     importedTokensPlus: TokenIF[];
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -43,13 +46,11 @@ interface propsIF {
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
-    tokenPair?: TokenPairIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
         modalCloseCustom,
-        provider,
         closeModal,
         verifyToken,
         setShowSoloSelectTokenButtons,
@@ -61,7 +62,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
-        tokenPair,
     } = props;
 
     const { addRecentToken, getRecentTokens } = useContext(UserDataContext);
@@ -69,6 +69,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { ackTokens } = useContext(UserPreferenceContext);
+
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     // add an event listener for custom functionalities on modal close
     // this needs to be coordinated with data in Modal.tsx
@@ -87,6 +89,8 @@ export const SoloTokenSelect = (props: propsIF) => {
     // fn to navigate the App to a new URL via react router
     // this will navigate the app while preserving state
     const navigate = useNavigate();
+
+    const provider = useProvider();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
@@ -109,11 +113,8 @@ export const SoloTokenSelect = (props: propsIF) => {
                 recentToken.chainId === tkn.chainId,
         ) || addRecentToken(tkn);
 
-        if (tokenAorB === 'A' && tokenPair) {
-            if (
-                tokenPair.dataTokenB.address.toLowerCase() ===
-                tkn.address.toLowerCase()
-            ) {
+        if (tokenAorB === 'A') {
+            if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
                 closeModal();
                 return;
@@ -122,17 +123,13 @@ export const SoloTokenSelect = (props: propsIF) => {
                 locationSlug,
                 chainId,
                 tkn.address,
-                tokenPair.dataTokenB.address.toLowerCase() ===
-                    tkn.address.toLowerCase()
-                    ? tokenPair.dataTokenA.address
-                    : tokenPair.dataTokenB.address,
+                tokenB.address.toLowerCase() === tkn.address.toLowerCase()
+                    ? tokenA.address
+                    : tokenB.address,
             );
             // user is updating token B
-        } else if (tokenAorB === 'B' && tokenPair) {
-            if (
-                tokenPair.dataTokenA.address.toLowerCase() ===
-                tkn.address.toLowerCase()
-            ) {
+        } else if (tokenAorB === 'B') {
+            if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
                 closeModal();
                 return;
@@ -140,10 +137,9 @@ export const SoloTokenSelect = (props: propsIF) => {
             goToNewUrlParams(
                 locationSlug,
                 chainId,
-                tokenPair.dataTokenA.address.toLowerCase() ===
-                    tkn.address.toLowerCase()
-                    ? tokenPair.dataTokenB.address
-                    : tokenPair.dataTokenA.address,
+                tokenA.address.toLowerCase() === tkn.address.toLowerCase()
+                    ? tokenB.address
+                    : tokenA.address,
                 tkn.address,
             );
         }

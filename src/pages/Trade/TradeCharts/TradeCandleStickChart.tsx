@@ -71,7 +71,6 @@ interface propsIF {
     >;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
     rescale: boolean | undefined;
@@ -106,7 +105,6 @@ type chartItemStates = {
 function TradeCandleStickChart(props: propsIF) {
     const {
         baseTokenAddress,
-        poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
         isMarketOrLimitModule,
@@ -143,6 +141,7 @@ function TradeCandleStickChart(props: propsIF) {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+    const { poolPriceNonDisplay } = tradeData;
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;

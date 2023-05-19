@@ -50,7 +50,6 @@ interface IRepositionPriceInfoProps {
     newQuoteQtyDisplay: string;
     rangeGasPriceinDollars: string | undefined;
     isPairStable: boolean;
-    isDenomBase: boolean;
     currentMinPrice: string;
     currentMaxPrice: string;
 }

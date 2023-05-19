@@ -41,14 +41,11 @@ const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface propsIF {
-    tradeData: tradeData;
-    isDenomBase: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
-    tokenPair: TokenPairIF;
 }
 
 function Sidebar(props: propsIF) {
-    const { tradeData, isDenomBase, verifyToken, tokenPair } = props;
+    const { verifyToken } = props;
 
     const { sidebar, poolList } = useContext(SidebarContext);
     const {
@@ -91,12 +88,7 @@ function Sidebar(props: propsIF) {
             name: 'Recent Pools',
             icon: recentPoolsImage,
 
-            data: (
-                <RecentPools
-                    tradeData={tradeData}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                />
-            ),
+            data: <RecentPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
     const topPoolsSection = [
@@ -104,12 +96,7 @@ function Sidebar(props: propsIF) {
             name: 'Top Pools',
             icon: topPoolsImage,
 
-            data: (
-                <TopPools
-                    tradeData={tradeData}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                />
-            ),
+            data: <TopPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
 
@@ -117,12 +104,7 @@ function Sidebar(props: propsIF) {
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
-            data: (
-                <SidebarRangePositions
-                    userPositions={mostRecentPositions}
-                    isDenomBase={isDenomBase}
-                />
-            ),
+            data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
     ];
 
@@ -131,10 +113,7 @@ function Sidebar(props: propsIF) {
             name: 'Limit Orders',
             icon: openOrdersImage,
             data: (
-                <SidebarLimitOrders
-                    isDenomBase={isDenomBase}
-                    limitOrderByUser={mostRecentLimitOrders}
-                />
+                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
         },
     ];
@@ -428,8 +407,6 @@ function Sidebar(props: propsIF) {
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
                             searchData={searchData}
-                            tokenPair={tokenPair}
-                            isDenomBase={isDenomBase}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
                         />
                     ) : (

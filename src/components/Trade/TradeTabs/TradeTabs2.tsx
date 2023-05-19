@@ -46,7 +46,6 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 interface propsIF {
     isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
     tokenList: TokenIF[];
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -83,7 +82,6 @@ function TradeTabs2(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        provider,
         isCandleSelected,
         setIsCandleSelected,
         filter,
@@ -352,7 +350,6 @@ function TradeTabs2(props: propsIF) {
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         searchableTokens: searchableTokens,
-        provider: provider,
         notOnTradeRoute: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,

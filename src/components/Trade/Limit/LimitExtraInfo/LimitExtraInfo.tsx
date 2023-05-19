@@ -17,11 +17,8 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
     orderGasPriceInDollars: string | undefined;
-    didUserFlipDenom: boolean;
     isTokenABase: boolean;
-    isDenomBase: boolean;
     limitRate: string;
     startDisplayPrice: number;
     middleDisplayPrice: number;

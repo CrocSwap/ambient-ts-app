@@ -37,16 +37,12 @@ interface currentPoolInfo {
 }
 
 interface propsIF {
-    onClose: () => void;
-    currentPool: currentPoolInfo;
     isFullScreen: boolean;
-    fullScreen?: boolean;
     appPage?: boolean;
-    username?: string | null;
 }
 
 function ChatPanel(props: propsIF) {
-    const { isFullScreen, currentPool } = props;
+    const { isFullScreen } = props;
     const {
         chat: {
             isEnabled: isChatEnabled,
@@ -55,6 +51,8 @@ function ChatPanel(props: propsIF) {
         },
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
+
+    const currentPool = useAppSelector((state) => state.tradeData);
 
     if (!isChatEnabled) return <NotFound />;
 
@@ -492,7 +490,6 @@ function ChatPanel(props: propsIF) {
                     <Room
                         selectedRoom={room}
                         setRoom={setRoom}
-                        currentPool={currentPool}
                         isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}

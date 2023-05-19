@@ -40,7 +40,6 @@ interface propsIF {
     isAdvancedModeActive: boolean | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
 }
@@ -384,7 +383,6 @@ function TradeCharts(props: propsIF) {
                         setCurrentVolumeData={setCurrentVolumeData}
                         baseTokenAddress={props.baseTokenAddress}
                         quoteTokenAddress={props.quoteTokenAddress}
-                        poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                         rescale={rescale}

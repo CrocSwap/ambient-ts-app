@@ -50,7 +50,6 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    provider: ethers.providers.Provider | undefined;
     notOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -69,7 +68,6 @@ function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
-        provider,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -517,7 +515,6 @@ function Ranges(props: propsIF) {
             position={position}
             ipadView={ipadView}
             showColumns={showColumns}
-            provider={provider}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}
@@ -535,7 +532,6 @@ function Ranges(props: propsIF) {
             position={position}
             ipadView={ipadView}
             showColumns={showColumns}
-            provider={provider}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}

@@ -11,7 +11,10 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
@@ -22,22 +25,22 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
     mintSlippage: SlippageMethodsIF;
     isPairStable: boolean;
-    isDenomBase: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
 function RangeHeader(props: propsIF) {
-    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } =
-        props;
+    const { mintSlippage, isPairStable, isTokenABase } = props;
 
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
     const {
         globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -60,13 +63,8 @@ function RangeHeader(props: propsIF) {
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
-                {reverseDisplay
-                    ? tokenPair.dataTokenA.symbol
-                    : tokenPair.dataTokenB.symbol}{' '}
-                /{' '}
-                {reverseDisplay
-                    ? tokenPair.dataTokenB.symbol
-                    : tokenPair.dataTokenA.symbol}
+                {reverseDisplay ? tokenA.symbol : tokenB.symbol} /{' '}
+                {reverseDisplay ? tokenB.symbol : tokenA.symbol}
             </div>
             <IconWithTooltip title='Settings' placement='left'>
                 <div

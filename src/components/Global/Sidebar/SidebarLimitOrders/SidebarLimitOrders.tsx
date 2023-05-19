@@ -10,11 +10,10 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
 }
 export default function SidebarLimitOrders(props: propsIF) {
-    const { limitOrderByUser, isDenomBase } = props;
+    const { limitOrderByUser } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -82,7 +81,6 @@ export default function SidebarLimitOrders(props: propsIF) {
                                 'Sidebar-Limit-Orders-Card-' +
                                 JSON.stringify(order)
                             }
-                            isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
                         />

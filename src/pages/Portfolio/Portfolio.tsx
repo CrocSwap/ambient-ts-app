@@ -56,7 +56,6 @@ interface propsIF {
     ) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -85,7 +84,6 @@ function Portfolio(props: propsIF) {
         getTokenByAddress,
         verifyToken,
         isTokenABase,
-        provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
@@ -494,7 +492,6 @@ function Portfolio(props: propsIF) {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
-        provider: provider,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
@@ -589,7 +586,6 @@ function Portfolio(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
                         importedTokensPlus={outputTokens}
                         getTokensByName={getTokensByName}

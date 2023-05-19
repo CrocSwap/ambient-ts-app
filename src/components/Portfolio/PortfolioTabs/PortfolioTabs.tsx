@@ -51,7 +51,6 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 // interface for React functional component props
 interface propsIF {
     isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
@@ -330,7 +329,6 @@ export default function PortfolioTabs(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         activeAccountPositionData: activeAccountPositionData,
         connectedAccountActive: connectedAccountActive,
-        provider: props.provider,
         searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,

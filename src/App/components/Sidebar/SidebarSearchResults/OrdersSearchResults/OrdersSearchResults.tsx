@@ -7,19 +7,19 @@ import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
-    isDenomBase: boolean;
 }
 interface limitOrderPropsIF {
     limitOrder: LimitOrderIF;
-    isDenomBase: boolean;
     handleClick: (limitOrder: LimitOrderIF) => void;
 }
 
 function LimitOrderLI(props: limitOrderPropsIF) {
-    const { limitOrder, isDenomBase, handleClick } = props;
+    const { limitOrder, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     const symbols = {
         base: limitOrder.baseSymbol
@@ -54,7 +54,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 }
 
 export default function OrdersSearchResults(props: propsIF) {
-    const { searchedLimitOrders, isDenomBase } = props;
+    const { searchedLimitOrders } = props;
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -102,7 +102,6 @@ export default function OrdersSearchResults(props: propsIF) {
                                         limitOrder,
                                     )}`}
                                     limitOrder={limitOrder}
-                                    isDenomBase={isDenomBase}
                                     handleClick={handleClick}
                                 />
                             ))}

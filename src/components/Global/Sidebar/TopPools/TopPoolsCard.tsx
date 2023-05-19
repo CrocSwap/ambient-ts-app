@@ -7,20 +7,21 @@ import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    tradeData: tradeData;
     pool: topPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, cachedPoolStatsFetch } = props;
+    const { pool, cachedPoolStatsFetch } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
+    const tradeData = useAppSelector((state) => state.tradeData);
     const { pathname } = useLocation();
 
     const locationSlug = useMemo(() => {

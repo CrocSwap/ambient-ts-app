@@ -29,10 +29,8 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    provider?: ethers.providers.Provider;
     resetTokenQuantities: () => void;
     fieldId: string;
-    tokenPair: TokenPairIF;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -82,8 +80,6 @@ interface propsIF {
 
 function RangeCurrencySelector(props: propsIF) {
     const {
-        provider,
-        tokenPair,
         isTokenAEth,
         isTokenBEth,
         isWithdrawTokenAFromDexChecked,
@@ -125,11 +121,11 @@ function RangeCurrencySelector(props: propsIF) {
         (state) => state.userData,
     );
 
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+
     const isTokenASelector = fieldId === 'A';
 
-    const thisToken = isTokenASelector
-        ? tokenPair.dataTokenA
-        : tokenPair.dataTokenB;
+    const thisToken = isTokenASelector ? tokenA : tokenB;
 
     const walletAndSurplusBalanceNonLocaleString = isTokenASelector
         ? tokenADexBalance && gasPriceInGwei
@@ -445,7 +441,6 @@ function RangeCurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
                         importedTokensPlus={importedTokensPlus}
                         getTokensByName={getTokensByName}
@@ -462,7 +457,6 @@ function RangeCurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
                     />
                 </Modal>
             )}

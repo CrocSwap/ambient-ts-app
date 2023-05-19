@@ -34,7 +34,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // interface for props
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     notOnTradeRoute?: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -50,7 +49,6 @@ interface propsIF {
 // react functional component
 function Leaderboard(props: propsIF) {
     const {
-        provider,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -328,7 +326,6 @@ function Leaderboard(props: propsIF) {
             }
             ipadView={ipadView}
             showColumns={showColumns}
-            provider={provider}
             baseTokenBalance={baseTokenBalance}
             quoteTokenBalance={quoteTokenBalance}
             baseTokenDexBalance={baseTokenDexBalance}

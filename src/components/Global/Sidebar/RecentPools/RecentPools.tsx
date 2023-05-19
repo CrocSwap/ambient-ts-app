@@ -7,12 +7,11 @@ import { memo, useContext } from 'react';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
-    tradeData: tradeData;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 function RecentPools(props: propsIF) {
-    const { tradeData, cachedPoolStatsFetch } = props;
+    const { cachedPoolStatsFetch } = props;
 
     const { recentPools } = useContext(SidebarContext);
 
@@ -26,7 +25,6 @@ function RecentPools(props: propsIF) {
             <div className={styles.content}>
                 {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
-                        tradeData={tradeData}
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
