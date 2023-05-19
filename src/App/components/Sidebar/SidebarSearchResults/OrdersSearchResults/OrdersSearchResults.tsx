@@ -5,7 +5,6 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlParams } from '../../../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     chainId: string;
@@ -69,24 +68,21 @@ export default function OrdersSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    // const navigate = useNavigate();
-
-    const navToLimitPage = useUrlParams('limit');
+    const navigate = useNavigate();
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        // navigate(
-        //     '/trade/limit/chain=' +
-        //         chainId +
-        //         '&tokenA=' +
-        //         limitOrder.base +
-        //         '&tokenB=' +
-        //         limitOrder.quote,
-        // );
-        navToLimitPage.navigate();
+        navigate(
+            '/trade/limit/chain=' +
+                chainId +
+                '&tokenA=' +
+                limitOrder.base +
+                '&tokenB=' +
+                limitOrder.quote,
+        );
     };
 
     return (
