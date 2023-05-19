@@ -58,15 +58,24 @@ export const useUrlPath = (chainId: string) => {
     type pageNames = keyof typeof BASE_URL_PATHS;
 
     // fn to return a base URL slug for a given page
-    function buildURL(page: pageNames, paramsObj: anyParamIFs): string {
+    function buildURL(
+        page: pageNames,
+        paramsObj?: anyParamIFs
+    ): string {
         const baseUrl: string = BASE_URL_PATHS[page];
-        const paramsSlug: string = Object.entries(paramsObj)
+        let paramsSlug = '';
+        if (paramsObj) {
+            paramsSlug = '/' + Object.entries(paramsObj)
             .map((tup: string[]) => tup.join('='))
             .join('&');
-        return baseUrl + '/' + paramsSlug;
+        }
+        return baseUrl + paramsSlug;
     }
 
     return {
+        // non-parameterized link gen functions
+        toIndex: () => buildURL('index'),
+        // parameterized link gen functions
         toSwap: (params: swapParamsIF) => buildURL('swap', params),
         toMarket: (params: marketParamsIF) => buildURL('market', params),
         toLimit: (params: limitParamsIF) => buildURL('limit', params),
