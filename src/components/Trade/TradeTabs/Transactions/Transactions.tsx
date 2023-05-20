@@ -5,7 +5,7 @@ import {
     CandleData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
@@ -39,7 +39,6 @@ interface propsIF {
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -201,7 +200,6 @@ function Transactions(props: propsIF) {
                         }),
                     );
                 }
-                // setIsDataLoading(false);
             } else if (isShowAllEnabled) {
                 handlePoolSelected();
             } else {

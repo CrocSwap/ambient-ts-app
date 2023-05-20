@@ -22,10 +22,7 @@ import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/Trad
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
-    shouldDisplayAccountTab: boolean | undefined;
-    chainId: string;
     isChainSupported: boolean;
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
@@ -33,13 +30,11 @@ interface HeaderPropsIF {
     poolPriceDisplay: number | undefined;
     recentPools: recentPoolsMethodsIF;
     chainData: ChainSpec;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
     const {
         ethMainnetUsdPrice,
-        chainId,
         isChainSupported,
         openWagmiModalWallet,
         lastBlockNumber,
@@ -115,7 +110,7 @@ const PageHeader = function (props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        chainId: chainId,
+        chainId: chainData.chainId,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
@@ -395,7 +390,7 @@ const PageHeader = function (props: HeaderPropsIF) {
                             ) : null}
                         </div>
                         <NetworkSelector
-                            chainId={chainId}
+                            chainId={chainData.chainId}
                             switchNetwork={switchNetwork}
                         />
                         {!isConnected && connectWagmiButton}
@@ -404,7 +399,7 @@ const PageHeader = function (props: HeaderPropsIF) {
                             showNotificationTable={showNotificationTable}
                             setShowNotificationTable={setShowNotificationTable}
                             lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
+                            chainId={chainData.chainId}
                         />
                     </div>
                 </div>

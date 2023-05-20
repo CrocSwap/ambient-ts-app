@@ -111,6 +111,7 @@ function Ranges(props: propsIF) {
         cachedPositionUpdateQuery,
         isAccountView,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
