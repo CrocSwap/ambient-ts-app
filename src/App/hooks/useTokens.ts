@@ -76,7 +76,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
-            .forEach((t) => retMap.set(t.address, t));
+            .forEach((t) => retMap.set(t.address.toLowerCase(), t));
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
@@ -126,7 +126,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     // fn to verify a token is on a known list or user-acknowledged
     const verifyToken = useCallback(
         (addr: string): boolean => {
-            return tokenMap.has(addr);
+            return tokenMap.has(addr.toLowerCase());
         },
         [chainId, tokenMap],
     );
@@ -159,7 +159,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     );
 
     const getTokenByAddress = useCallback(
-        (addr: string): TokenIF | undefined => tokenMap.get(addr),
+        (addr: string): TokenIF | undefined => tokenMap.get(addr.toLowerCase()),
         [chainId, tokenUniv],
     );
 
