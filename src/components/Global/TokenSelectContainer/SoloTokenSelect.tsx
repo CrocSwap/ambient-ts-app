@@ -199,8 +199,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 console.error(`Failed to get token metadata: ${err.message}`);
                 setCustomToken(null);
             });
-
-        console.log('running');
     }, [searchType, validatedInput, provider, cachedFetchContractDetails]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
