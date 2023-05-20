@@ -34,10 +34,11 @@ export const GRAPHCACHE_WSS_URL =
     GRAPHCACHE_URL.replace('http', 'ws');
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}/chat`;
+    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
 
 export const CHAT_BACKEND_WSS_URL =
-    process.env.REACT_APP_CHAT_WSS_URL || GRAPHCACHE_URL.replace('http', 'ws');
+    process.env.REACT_APP_CHAT_WSS_URL ||
+    CHAT_BACKEND_URL.replace('http', 'ws');
 
 export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined

@@ -147,7 +147,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }, []);
 
     async function updateUser() {
-        const response = await fetch(host + '/api/auth/updateUser', {
+        const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
