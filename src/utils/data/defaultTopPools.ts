@@ -15,6 +15,7 @@ import { TokenIF } from '../interfaces/exports';
 import sortTokens from '../functions/sortTokens';
 import { ChainIdType } from './chains';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import chainNumToString from '../../App/functions/chainNumToString';
 
 class TopPool implements topPoolIF {
     name: string;
@@ -37,7 +38,7 @@ class TopPool implements topPoolIF {
         this.quote = quoteToken;
         this.chainId =
             baseToken.chainId === quoteToken.chainId
-                ? '0x' + baseToken.chainId.toString(16)
+                ? chainNumToString(baseToken.chainId)
                 : '';
         this.poolId = poolId;
         this.speed = speed;

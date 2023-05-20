@@ -12,16 +12,18 @@ export default function fetchTokenList(
     // uri for the fetch request
     uri: string,
     // whether this list is requested by the Ambient app or by the user
-    isUserImported: boolean,
+    isUserImported = false,
 ): Promise<TokenListIF> {
-    return fetch(uriToHttp(uri))
-        // process response as a JSOM
-        .then((response) => response.json())
-        // middleware to add internal-use data to each list
-        .then((response) => ({
-            ...response,
-            uri,
-            dateRetrieved: new Date().toISOString(),
-            isUserImported: isUserImported,
-        }));
-};
+    return (
+        fetch(uriToHttp(uri))
+            // process response as a JSOM
+            .then((response) => response.json())
+            // middleware to add internal-use data to each list
+            .then((response) => ({
+                ...response,
+                uri,
+                dateRetrieved: new Date().toISOString(),
+                isUserImported: isUserImported,
+            }))
+    );
+}
