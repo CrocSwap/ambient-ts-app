@@ -490,7 +490,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqBaseDisplay });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
                 const liqQuoteDisplay = liqQuoteNum
@@ -504,7 +503,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);

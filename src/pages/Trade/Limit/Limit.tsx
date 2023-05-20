@@ -361,43 +361,35 @@ export default function Limit(props: propsIF) {
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickBelow);
                     });

@@ -554,7 +554,6 @@ function Range(props: propsIF) {
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
     useEffect(() => {
-        // console.log({ poolExists });
         if (poolExists === undefined || poolPriceNonDisplay === undefined) {
             setRangeButtonErrorMessage('…');
         } else if (!poolExists) {
@@ -1185,7 +1184,6 @@ function Range(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -1530,7 +1528,6 @@ function Range(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
                     receipt = error.receipt;
                 }
             }

@@ -182,7 +182,6 @@ export const SoloTokenSelect = (props: propsIF) => {
             searchType === 'address' &&
             tokens.getTokenByAddress(validatedInput)
         ) {
-            console.log('non custom');
             setCustomToken(null);
             return;
         }

@@ -23,7 +23,6 @@ const localStorageKeys = {
 
 // fn to retrieve and parse token lists from local storage
 function getTokenEntryFromLS(key: string) {
-    console.log('Load LS', key);
     const entry: string | null = localStorage.getItem(key);
     // process data retrieved from local storage
     if (entry) {
