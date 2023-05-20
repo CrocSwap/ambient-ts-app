@@ -46,7 +46,6 @@ import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
@@ -112,7 +111,6 @@ export default function PortfolioTabs(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         tokens,
-        chainData,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -166,7 +164,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                tokens.getByChain(chainData.chainId),
+                                tokens.tokenUniv,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
@@ -211,7 +209,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                             return getLimitOrderData(
                                 limitOrder,
-                                tokens.getByChain(chainData.chainId),
+                                tokens.tokenUniv,
                             );
                         }),
                     ).then((updatedLimitOrderStates) => {
@@ -236,7 +234,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            tokenList: tokens.getByChain(chainData.chainId),
+            tokenList: tokens.tokenUniv,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,
@@ -301,11 +299,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [
-        resolvedAddress,
-        connectedAccountActive,
-        diffHashSig(tokens.getByChain(chainData.chainId)),
-    ]);
+    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -353,7 +347,6 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
-        chainId: chainId,
         openTokenModal: openTokenModal,
         tokens: tokens,
     };

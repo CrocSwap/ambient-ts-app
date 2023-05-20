@@ -30,8 +30,6 @@ export const useUrlParams = (
 
     const { switchNetwork } = useSwitchNetwork();
 
-
-
     const urlParamMap = useMemo<Map<string, string>>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
@@ -54,9 +52,7 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
-    const tokensOnChain: TokenIF[] = tokens.getByChain(
-        urlParamMap.get('chain') ?? dfltChainId
-    );
+    const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 
     /* Given an address and chain ID retrieves full token context data from the useTokenMap
      * hook. */
@@ -69,7 +65,7 @@ export const useUrlParams = (
         if (tokensOnChain.length === 0) {
             return;
         }
-        const lookup = tokens.getByAddress(addr, chainId);
+        const lookup = tokens.getTokenByAddress(addr);
         if (lookup) {
             return lookup;
         } else {

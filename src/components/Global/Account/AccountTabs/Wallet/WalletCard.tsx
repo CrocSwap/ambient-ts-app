@@ -20,7 +20,7 @@ export default function WalletCard(props: propsIF) {
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getByAddress(token.address, chainId)
+        ? tokens.getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{

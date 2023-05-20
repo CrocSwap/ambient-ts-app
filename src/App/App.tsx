@@ -128,7 +128,7 @@ import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import { useTokens, tokenMethodsIF } from './hooks/useTokens';
+import { tokenMethodsIF, useTokens } from './hooks/useTokens';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
@@ -714,9 +714,8 @@ export default function App() {
     );
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
-        const oldToken: TokenIF | undefined = tokens.getByAddress(
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
             token.address,
-            token.chainId,
         );
         const newToken = { ...token };
         newToken.name = oldToken ? oldToken.name : '';
@@ -786,7 +785,7 @@ export default function App() {
         httpGraphCacheServerDomain,
         pathname: location.pathname,
         chainData,
-        searchableTokens: tokens.getByChain(chainData.chainId),
+        searchableTokens: tokens.tokenUniv,
         receiptCount: receiptData.sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
@@ -807,7 +806,6 @@ export default function App() {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        searchableTokens: tokens.getByChain(chainData.chainId),
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
         isUserLoggedIn,
@@ -1152,7 +1150,7 @@ export default function App() {
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
-                                        tokens.getByChain(chainData.chainId),
+                                        tokens.tokenUniv,
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
@@ -1199,7 +1197,7 @@ export default function App() {
                                 (limitOrder: LimitOrderIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
-                                        tokens.getByChain(chainData.chainId),
+                                        tokens.tokenUniv,
                                     );
                                 },
                             ),
@@ -1217,7 +1215,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    tokenList: tokens.getByChain(chainData.chainId),
+                    tokenList: tokens.tokenUniv,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -1246,14 +1244,16 @@ export default function App() {
                             for (const item of updatedTransactions as TransactionIF[]) {
                                 if (!tokenMap.has(item.base)) {
                                     const isFoundInAmbientList =
-                                        tokens.default.some((ambientToken) => {
-                                            if (
-                                                ambientToken.address.toLowerCase() ===
-                                                item.base.toLowerCase()
-                                            )
-                                                return true;
-                                            return false;
-                                        });
+                                        tokens.defaultTokens.some(
+                                            (ambientToken) => {
+                                                if (
+                                                    ambientToken.address.toLowerCase() ===
+                                                    item.base.toLowerCase()
+                                                )
+                                                    return true;
+                                                return false;
+                                            },
+                                        );
                                     if (!isFoundInAmbientList) {
                                         tokenMap.set(item.base, true); // set any value to Map
                                         result.push({
@@ -1268,14 +1268,16 @@ export default function App() {
                                 }
                                 if (!tokenMap.has(item.quote)) {
                                     const isFoundInAmbientList =
-                                        tokens.default.some((ambientToken) => {
-                                            if (
-                                                ambientToken.address.toLowerCase() ===
-                                                item.quote.toLowerCase()
-                                            )
-                                                return true;
-                                            return false;
-                                        });
+                                        tokens.defaultTokens.some(
+                                            (ambientToken) => {
+                                                if (
+                                                    ambientToken.address.toLowerCase() ===
+                                                    item.quote.toLowerCase()
+                                                )
+                                                    return true;
+                                                return false;
+                                            },
+                                        );
                                     if (!isFoundInAmbientList) {
                                         tokenMap.set(item.quote, true); // set any value to Map
                                         result.push({
@@ -1299,7 +1301,7 @@ export default function App() {
         }
     }, [
         isServerEnabled,
-        tokens.getByChain(chainData.chainId),
+        tokens.tokenUniv,
         isUserLoggedIn,
         account,
         chainData.chainId,
@@ -1440,11 +1442,11 @@ export default function App() {
     );
 
     const importedTokensPlus = useMemo<TokenIF[]>(() => {
-        const ambientAddresses: string[] = tokens.default.map((tkn: TokenIF) =>
-            tkn.address.toLowerCase(),
+        const ambientAddresses: string[] = tokens.defaultTokens.map(
+            (tkn: TokenIF) => tkn.address.toLowerCase(),
         );
 
-        const output = tokens.default;
+        const output = tokens.defaultTokens;
         let tokensAdded = 0;
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
@@ -1453,7 +1455,7 @@ export default function App() {
             // ... that the limiter has not been reached
             if (
                 !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-                tokens.verify(tkn.address, chainData.chainId) &&
+                tokens.verifyToken(tkn.address) &&
                 parseInt(tkn.combinedBalance as string) > 0 &&
                 tokensAdded < 4
             ) {
@@ -1486,7 +1488,7 @@ export default function App() {
         });
         return output;
     }, [
-        tokens.default,
+        tokens.defaultTokens,
         chainData.chainId,
         getRecentTokens,
         connectedUserErc20Tokens,
@@ -1691,7 +1693,7 @@ export default function App() {
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
-        verifyToken: tokens.verify,
+        verifyToken: tokens.verifyToken,
         tokenPair: tokenPair,
         recentPools: recentPools,
         isConnected: isConnected,
@@ -2008,7 +2010,7 @@ export default function App() {
         isServerEnabled,
         shouldNonCandleSubscriptionsReconnect,
         areSubscriptionsEnabled,
-        tokenUniv: tokens.getByChain(chainData.chainId),
+        tokenUniv: tokens.tokenUniv,
         chainData,
         lastBlockNumber,
         candleData,

@@ -299,7 +299,7 @@ function TradeTabs2(props: propsIF) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    tokenList: tokens.getByChain(chainData.chainId),
+                    tokenList: tokens.tokenUniv,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -333,7 +333,7 @@ function TradeTabs2(props: propsIF) {
     useEffect(() => {
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                tokenList: tokens.getByChain(chainData.chainId),
+                tokenList: tokens.tokenUniv,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,

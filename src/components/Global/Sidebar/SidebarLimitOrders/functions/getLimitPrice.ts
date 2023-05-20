@@ -7,8 +7,8 @@ export const getLimitPrice = (
     tokens: tokenMethodsIF,
     isDenomBase: boolean,
 ): string => {
-    const baseToken = tokens.getByAddress(limitOrder.base, limitOrder.chainId);
-    const quoteToken = tokens.getByAddress(limitOrder.quote, limitOrder.chainId);;
+    const baseToken = tokens.getTokenByAddress(limitOrder.base);
+    const quoteToken = tokens.getTokenByAddress(limitOrder.quote);
 
     const baseTokenCharacter = baseToken?.symbol
         ? getUnicodeCharacter(baseToken?.symbol)

@@ -71,10 +71,8 @@ export const useTokenSearch = (
         function searchAsAddress(): TokenIF[] {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
-            const tokenLookup: TokenIF | undefined = tokens.getByAddress(
-                validatedInput,
-                chainId,
-            );
+            const tokenLookup: TokenIF | undefined =
+                tokens.getTokenByAddress(validatedInput);
             return tokenLookup ? [tokenLookup] : [];
         }
 
@@ -84,13 +82,13 @@ export const useTokenSearch = (
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getByNameOrSymbol(validatedInput, chainId, exactOnly);
+            return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = tokens.default;
+            const outputTokens = tokens.defaultTokens;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -110,10 +108,7 @@ export const useTokenSearch = (
                     );
                     // check if token is recognized from a list (if necessary)
                     const isTokenKnown = verificationNeeded
-                        ? tokens.verify(
-                              newTokens[i].address,
-                              newTokens[i].chainId,
-                          )
+                        ? tokens.verifyToken(newTokens[i].address)
                         : true;
                     // add token to output if not already there and limiter is below max
                     if (!isInArray && isTokenKnown && limiter < maxToAdd) {
@@ -155,7 +150,7 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        tokens.getBySource('ambient').length,
+        tokens.defaultTokens,
         walletTokens.length,
         getRecentTokens().length,
         validatedInput,

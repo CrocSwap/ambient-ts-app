@@ -150,9 +150,8 @@ function Portfolio(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
-        const oldToken: TokenIF | undefined = tokens.getByAddress(
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
             token.address,
-            token.chainId,
         );
         const newToken = { ...token };
         newToken.name = oldToken ? oldToken.name : '';

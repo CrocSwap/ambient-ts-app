@@ -36,8 +36,8 @@ export const useRecentPools = (
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
         if (
-            tokens.verify(baseToken.address, baseToken.chainId) &&
-            tokens.verify(quoteToken.address, quoteToken.chainId)
+            tokens.verifyToken(baseToken.address) &&
+            tokens.verifyToken(quoteToken.address)
         ) {
             addPool(baseToken, quoteToken);
         }

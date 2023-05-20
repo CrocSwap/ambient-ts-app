@@ -10,17 +10,16 @@ import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
-    chainId: string;
     tokens: tokenMethodsIF;
 }
 
 export default function ExchangeCard(props: propsIF) {
-    const { token, chainId, tokens, cachedFetchTokenPrice } = props;
+    const { token, tokens, cachedFetchTokenPrice } = props;
 
     const tokenMapKey: string = token?.address + '_' + token?.chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getByAddress(token.address, chainId)
+        ? tokens.getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{

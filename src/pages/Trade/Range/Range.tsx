@@ -1589,14 +1589,8 @@ function Range(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verify(
-        tokenPair.dataTokenA.address,
-        tokenPair.dataTokenA.chainId,
-    );
-    const needConfirmTokenB = !tokens.verify(
-        tokenPair.dataTokenB.address,
-        tokenPair.dataTokenB.chainId,
-    );
+    const needConfirmTokenA = !tokens.verifyToken(tokenPair.dataTokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenPair.dataTokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -1633,8 +1627,8 @@ function Range(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && tokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && tokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.ackToken(tokenPair.dataTokenA);
+        needConfirmTokenB && tokens.ackToken(tokenPair.dataTokenB);
     };
 
     return (

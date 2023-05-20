@@ -13,7 +13,6 @@ interface propsIF {
     resolvedAddress: string;
     activeAccount: string;
     connectedAccountActive: boolean;
-    chainId: string;
     tokens: tokenMethodsIF;
 }
 
@@ -23,7 +22,6 @@ export default function Exchange(props: propsIF) {
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        chainId,
         tokens,
     } = props;
 
@@ -32,7 +30,6 @@ export default function Exchange(props: propsIF) {
               <ExchangeCard
                   key={idx}
                   token={item}
-                  chainId={chainId}
                   tokens={tokens}
                   cachedFetchTokenPrice={cachedFetchTokenPrice}
               />
@@ -41,7 +38,6 @@ export default function Exchange(props: propsIF) {
               <ExchangeCard
                   key={idx}
                   token={item}
-                  chainId={chainId}
                   tokens={tokens}
                   cachedFetchTokenPrice={cachedFetchTokenPrice}
               />
