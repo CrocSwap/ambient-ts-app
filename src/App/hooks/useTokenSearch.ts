@@ -91,7 +91,6 @@ export const useTokenSearch = (
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
             const outputTokens = tokens.default;
-            console.log({ outputTokens });
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -141,18 +140,14 @@ export const useTokenSearch = (
         // logic router to assign search results to output based on input type
         switch (searchAs) {
             case 'address':
-                console.log('searching by address');
                 foundTokens = searchAsAddress();
                 break;
             case 'nameOrSymbol':
-                console.log('searching by name');
                 foundTokens = searchAsNameOrSymbol();
                 break;
             default:
-                console.log('no search criteria applied!');
                 foundTokens = noSearch();
         }
-        console.log({ foundTokens });
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
         setOutputTokens(foundTokens);
