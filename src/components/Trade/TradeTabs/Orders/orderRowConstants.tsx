@@ -207,7 +207,7 @@ export const orderRowConstants = (props: Props) => {
         <img src={baseTokenLogo} alt='base token' width={logoSizes} />
     ) : (
         <NoTokenIcon
-            tokenInitial={limitOrder.baseSymbol.charAt(0)}
+            tokenInitial={limitOrder.baseSymbol?.charAt(0)}
             width={logoSizes}
         />
     );
@@ -216,7 +216,7 @@ export const orderRowConstants = (props: Props) => {
         <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
     ) : (
         <NoTokenIcon
-            tokenInitial={limitOrder.quoteSymbol.charAt(0)}
+            tokenInitial={limitOrder.quoteSymbol?.charAt(0)}
             width={logoSizes}
         />
     );

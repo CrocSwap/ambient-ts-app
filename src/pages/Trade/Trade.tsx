@@ -424,7 +424,7 @@ function Trade(props: propsIF) {
                             <img src={baseTokenLogo} alt={baseTokenSymbol} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={baseTokenSymbol.charAt(0)}
+                                tokenInitial={baseTokenSymbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -432,7 +432,7 @@ function Trade(props: propsIF) {
                             <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={quoteTokenSymbol.charAt(0)}
+                                tokenInitial={quoteTokenSymbol?.charAt(0)}
                                 width='20px'
                             />
                         )}

@@ -112,7 +112,7 @@ export default function PortfolioTabs(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         tokens,
-        chainData
+        chainData,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -301,7 +301,11 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, diffHashSig(tokens.getByChain(chainData.chainId))]);
+    }, [
+        resolvedAddress,
+        connectedAccountActive,
+        diffHashSig(tokens.getByChain(chainData.chainId)),
+    ]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -380,6 +384,7 @@ export default function PortfolioTabs(props: propsIF) {
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     // props for <Transactions/> React Element

@@ -54,8 +54,7 @@ interface NavbarDropdownMenuPropsIF {
 }
 
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
-    const { isUserLoggedIn, clickLogout, closeMenu, setIsNavbarMenuOpen } =
-        props;
+    const { closeMenu, setIsNavbarMenuOpen } = props;
 
     const {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
@@ -134,17 +133,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </>
     );
 
-    function handleLogout() {
-        clickLogout();
-        closeMenu ? closeMenu() : null;
-    }
-
-    const logoutButton = (
-        <div className={styles.button_container} onClick={handleLogout}>
-            <button className={styles.authenticate_button}>Logout</button>
-        </div>
-    );
-
     const settingsItems = (
         <>
             <NavbarDropdownItem
@@ -170,7 +158,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             >
                 Terms of Service
             </NavbarDropdownItem>
-            {isUserLoggedIn && logoutButton}
         </>
     );
 

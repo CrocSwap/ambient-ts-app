@@ -162,7 +162,7 @@ function LimitCurrencySelector(props: propsIF) {
                 />
             ) : (
                 <NoTokenIcon
-                    tokenInitial={thisToken.symbol.charAt(0)}
+                    tokenInitial={thisToken.symbol?.charAt(0)}
                     width='30px'
                 />
             )}

@@ -70,6 +70,8 @@ function TradeChartsTokenInfo(props: propsIF) {
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
+            : poolPriceDisplay < 0.0001
+            ? poolPriceDisplay.toExponential(2)
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -269,7 +271,7 @@ function TradeChartsTokenInfo(props: propsIF) {
                         <img src={topTokenLogo} alt={topTokenSymbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={topTokenSymbol.charAt(0)}
+                            tokenInitial={topTokenSymbol?.charAt(0)}
                             width={logoSizes}
                         />
                     )}
@@ -277,7 +279,7 @@ function TradeChartsTokenInfo(props: propsIF) {
                         <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={bottomTokenSymbol.charAt(0)}
+                            tokenInitial={bottomTokenSymbol?.charAt(0)}
                             width={logoSizes}
                         />
                     )}

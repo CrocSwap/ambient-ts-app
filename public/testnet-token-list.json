@@ -25,6 +25,14 @@
             "decimals": 18,
             "chainId": 5,
             "logoURI": "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png"
+        },
+        {
+            "name": "PEPE Croc Token",
+            "address": "0x630f8b9d8f517af8f5b8670e6a167b6c0240d583",
+            "symbol": "PEPE",
+            "decimals": 18,
+            "chainId": 5,
+            "logoURI": "https://assets.coingecko.com/coins/images/29850/thumb/pepe-token.jpeg"
         }
     ]
 }

@@ -402,6 +402,7 @@ function TradeTabs2(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
+        isAccountView: false,
     };
 
     // Props for <Transactions/> React Element

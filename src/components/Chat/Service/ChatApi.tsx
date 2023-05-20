@@ -1,13 +1,7 @@
 import { useAccount } from 'wagmi';
 import { CHAT_BACKEND_URL } from '../../../constants';
 
-export const host = CHAT_BACKEND_URL;
-
-export const sendMessageRoute = `${host}/api/messages/addmsg`;
-export const recieveMessageRoute = `${host}/api/messages/getall`;
-export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
-export const receiveUsername = `${host}/api/auth/getUserByUsername`;
-export const accountName = `${host}/api/auth/getUserByAccount`;
+const host = CHAT_BACKEND_URL;
 
 const useChatApi = () => {
     const { address } = useAccount();

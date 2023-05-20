@@ -80,6 +80,7 @@ import {
 import { isStablePair } from '../utils/data/stablePairs';
 import {
     APP_ENVIRONMENT,
+    CHAT_ENABLED,
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
@@ -197,11 +198,7 @@ export default function App() {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
-    );
+    const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -1244,56 +1241,56 @@ export default function App() {
                                     changes: updatedTransactions,
                                 }),
                             );
-                        }
-                        const result: TokenIF[] = [];
-                        const tokenMap = new Map();
-                        for (const item of updatedTransactions as TransactionIF[]) {
-                            if (!tokenMap.has(item.base)) {
-                                const isFoundInAmbientList =
-                                    tokens.default.some((ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.base.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    });
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.base, true); // set any value to Map
-                                    result.push({
-                                        name: item.baseName,
-                                        address: item.base,
-                                        symbol: item.baseSymbol,
-                                        decimals: item.baseDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.baseTokenLogoURI,
-                                    });
+                            const result: TokenIF[] = [];
+                            const tokenMap = new Map();
+                            for (const item of updatedTransactions as TransactionIF[]) {
+                                if (!tokenMap.has(item.base)) {
+                                    const isFoundInAmbientList =
+                                        tokens.default.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.base.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.base, true); // set any value to Map
+                                        result.push({
+                                            name: item.baseName,
+                                            address: item.base,
+                                            symbol: item.baseSymbol,
+                                            decimals: item.baseDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.baseTokenLogoURI,
+                                        });
+                                    }
+                                }
+                                if (!tokenMap.has(item.quote)) {
+                                    const isFoundInAmbientList =
+                                        tokens.default.some((ambientToken) => {
+                                            if (
+                                                ambientToken.address.toLowerCase() ===
+                                                item.quote.toLowerCase()
+                                            )
+                                                return true;
+                                            return false;
+                                        });
+                                    if (!isFoundInAmbientList) {
+                                        tokenMap.set(item.quote, true); // set any value to Map
+                                        result.push({
+                                            name: item.quoteName,
+                                            address: item.quote,
+                                            symbol: item.quoteSymbol,
+                                            decimals: item.quoteDecimals,
+                                            chainId: parseInt(item.chainId),
+                                            logoURI: item.quoteTokenLogoURI,
+                                        });
+                                    }
                                 }
                             }
-                            if (!tokenMap.has(item.quote)) {
-                                const isFoundInAmbientList =
-                                    tokens.default.some((ambientToken) => {
-                                        if (
-                                            ambientToken.address.toLowerCase() ===
-                                            item.quote.toLowerCase()
-                                        )
-                                            return true;
-                                        return false;
-                                    });
-                                if (!isFoundInAmbientList) {
-                                    tokenMap.set(item.quote, true); // set any value to Map
-                                    result.push({
-                                        name: item.quoteName,
-                                        address: item.quote,
-                                        symbol: item.quoteSymbol,
-                                        decimals: item.quoteDecimals,
-                                        chainId: parseInt(item.chainId),
-                                        logoURI: item.quoteTokenLogoURI,
-                                    });
-                                }
-                            }
+                            dispatch(setRecentTokens(result));
                         }
-                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.error);
             } catch (error) {
@@ -1771,11 +1768,7 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (
-            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-                : true
-        ) {
+        if (CHAT_ENABLED) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
                     appState.chat.setIsEnabled(isChatUp);
@@ -1783,7 +1776,7 @@ export default function App() {
             }, 60000);
             return () => clearInterval(interval);
         }
-    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, CHAT_ENABLED]);
 
     useEffect(() => {
         if (!currentLocation.startsWith('/trade')) {

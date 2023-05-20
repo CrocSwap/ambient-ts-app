@@ -409,41 +409,12 @@ function Transactions(props: propsIF) {
     };
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
 
-    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
-        useState(false);
     const listRef = useRef<HTMLUListElement>(null);
-    const element = listRef.current;
-    useEffect(() => {
-        if (element) {
-            const resizeObserver = new ResizeObserver((entries) => {
-                const firstEntry = entries[0];
-                const elementHeight = firstEntry.contentRect.height;
-                const screenHeight = window.innerHeight;
-                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
-
-                setIsHeightGreaterThanHalf(isGreaterThanHalf);
-            });
-
-            resizeObserver.observe(element);
-
-            return () => {
-                resizeObserver.unobserve(element);
-            };
-        }
-    }, [element]);
-
+    const sPagination = useMediaQuery('(max-width: 800px)');
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && transactionData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div
-                className={styles.footer}
-                style={{
-                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
-                }}
-            >
-                <p
-                    className={styles.showing_text}
-                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+            <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
                         value={rowsPerPage}
@@ -454,14 +425,17 @@ function Transactions(props: propsIF) {
                     />
                     <Pagination
                         count={count}
-                        size='large'
                         page={page}
                         shape='circular'
                         color='secondary'
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
                 </div>
             </div>
         );
@@ -571,10 +545,18 @@ function Transactions(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage
@@ -582,22 +564,24 @@ function Transactions(props: propsIF) {
         : expandStyle;
 
     return (
-        <>
-            <section
-                className={styles.main_list_container}
-                style={{ height: portfolioPageStyle }}
-            >
-                {headerColumnsDisplay}
+        <section
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
+            style={{ height: portfolioPageStyle }}
+        >
+            <div>{headerColumnsDisplay}</div>
 
+            <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
                     <TransactionsSkeletons />
                 ) : (
                     transactionDataOrNull
                 )}
+            </div>
 
-                {footerDisplay}
-            </section>
-        </>
+            <div>{footerDisplay}</div>
+        </section>
     );
 }
 
