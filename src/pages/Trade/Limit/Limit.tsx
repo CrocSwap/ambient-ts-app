@@ -238,7 +238,6 @@ export default function Limit(props: propsIF) {
                 );
 
                 const gridSize = lookupChain(chainId).gridSize;
-
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
 
@@ -400,6 +399,7 @@ export default function Limit(props: propsIF) {
             }
         })();
     }, [
+        pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
@@ -528,7 +528,6 @@ export default function Limit(props: propsIF) {
         const order = isTokenAPrimary
             ? crocEnv.sell(sellToken, qty)
             : crocEnv.buy(buyToken, qty);
-
         const ko = order.atLimit(
             isTokenAPrimary ? buyToken : sellToken,
             limitTick,
@@ -628,7 +627,6 @@ export default function Limit(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.error({ error });
                 receipt = error.receipt;
             }
         }
