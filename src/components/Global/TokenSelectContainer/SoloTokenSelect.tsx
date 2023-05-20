@@ -158,7 +158,9 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // hook to hold data for a token pulled from on-chain
     // null value is allowed to clear the hook when needed or on error
-    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    const [customToken, setCustomToken] = useState<TokenIF | null | 'querying'>(
+        null,
+    );
     // Memoize the fetch contract details function
     const cachedFetchContractDetails = useMemo(
         () => memoizeFetchContractDetails(),
@@ -167,19 +169,26 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // Gatekeeping to pull token data from on-chain query
     // Runs hook when validated input or type of search changes
-
     useEffect(() => {
-        if (
-            provider &&
-            searchType === 'address' &&
-            !tokens.verifyToken(validatedInput)
-        ) {
-            // Clear token data if conditions do not indicate necessity
+        // Ignore for modes outside address search
+        if (searchType !== 'address') {
             setCustomToken(null);
             return;
         }
 
-        // Query to get token metadata from on-chain
+        // If token address is on list, fill in immediately
+        if (
+            provider &&
+            searchType === 'address' &&
+            tokens.getTokenByAddress(validatedInput)
+        ) {
+            console.log('non custom');
+            setCustomToken(null);
+            return;
+        }
+
+        // Otherwise, query to get token metadata from on-chain
+        setCustomToken('querying');
         cachedFetchContractDetails(
             provider as ethers.providers.Provider,
             validatedInput,
@@ -191,7 +200,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                     setCustomToken(res);
                 } else {
                     // Handle error in a more meaningful way
-                    throw new Error('Token metadata is invalid');
+                    throw new Error(
+                        'Token metadata is invalid: ' + validatedInput,
+                    );
                 }
             })
             .catch((err) => {
