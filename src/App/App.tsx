@@ -1461,8 +1461,6 @@ export default function App() {
             ) {
                 tokensAdded++;
                 output.push({ ...tkn, fromList: 'wallet' });
-                tokensAdded++;
-                output.push({ ...tkn, fromList: 'wallet' });
             }
         });
 
