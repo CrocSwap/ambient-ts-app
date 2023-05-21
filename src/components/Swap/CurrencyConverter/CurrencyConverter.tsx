@@ -365,15 +365,19 @@ function CurrencyConverter(props: propsIF) {
         useState<boolean>(false);
 
     useEffect(() => {
-        if (!props.poolExists) {
-            props.setSwapAllowed(false);
-            props.setSwapButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(Number(tokenAQtyLocal))) {
-            props.setSwapAllowed(false);
-            props.setSwapButtonErrorMessage('Enter an Amount');
-        } else if (isBuyLoading) {
+        const hurdle = props.isWithdrawFromDexChecked
+            ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+            : parseFloat(tokenABalance);
+
+        if (isSellLoading || isBuyLoading) {
             props.setSwapAllowed(false);
             props.setSwapButtonErrorMessage('...');
+        } else if (!props.poolExists) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (isNaN(parseFloat(tokenAQtyLocal))) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Enter an Amount');
         } else if (props.isLiquidityInsufficient) {
             props.setSwapAllowed(false);
             props.setSwapButtonErrorMessage('Liquidity Insufficient');
@@ -381,9 +385,6 @@ function CurrencyConverter(props: propsIF) {
             props.setSwapAllowed(false);
             props.setSwapButtonErrorMessage('Enter an Amount');
         } else {
-            const hurdle = props.isWithdrawFromDexChecked
-                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                : parseFloat(tokenABalance);
             const balanceLabel = props.isWithdrawFromDexChecked
                 ? 'Exchange'
                 : 'Wallet';
@@ -391,9 +392,12 @@ function CurrencyConverter(props: propsIF) {
             props.setSwapAllowed(parseFloat(tokenAQtyLocal) <= hurdle);
 
             if (parseFloat(tokenAQtyLocal) > hurdle) {
+                props.setSwapAllowed(false);
                 props.setSwapButtonErrorMessage(
                     `${tokenASymbolLocal} Exceeds ${balanceLabel} Balance`,
                 );
+            } else {
+                props.setSwapAllowed(true);
             }
         }
     }, [
@@ -417,7 +421,11 @@ function CurrencyConverter(props: propsIF) {
         input: string,
         sellToken: boolean,
     ): Promise<number | undefined> {
-        if (input === '' || !props.crocEnv) {
+        if (
+            isNaN(parseFloat(input)) ||
+            parseFloat(input) === 0 ||
+            !props.crocEnv
+        ) {
             return undefined;
         }
 
@@ -460,24 +468,10 @@ function CurrencyConverter(props: propsIF) {
                     ? '0' + targetValue
                     : targetValue;
 
-                const parsedInput = parseFloat(input);
-
                 setTokenAQtyLocal(input);
                 setIsTokenAPrimaryLocal(true);
                 dispatch(setIsTokenAPrimary(true));
                 dispatch(setPrimaryQuantity(input));
-                if (!props.poolPriceDisplay) return;
-
-                if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                    props.setSwapAllowed(false);
-                    props.setSwapButtonErrorMessage('Enter an Amount');
-                    props.setPriceImpact(undefined);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    if (isNaN(parsedInput) || parsedInput === 0) return;
-                }
 
                 rawTokenBQty = await refreshImpact(input, true);
             } else {
@@ -535,10 +529,8 @@ function CurrencyConverter(props: propsIF) {
                     : truncateDecimals(rawTokenBQty, 2)
                 : '';
 
-            if (truncatedTokenBQty !== tokenBQtyLocal)
-                setTokenBQtyLocal(truncatedTokenBQty);
-            if (truncatedTokenBQty !== props.buyQtyString)
-                props.setBuyQtyString(truncatedTokenBQty);
+            setTokenBQtyLocal(truncatedTokenBQty);
+            props.setBuyQtyString(truncatedTokenBQty);
         },
         [
             props.crocEnv,
@@ -570,24 +562,6 @@ function CurrencyConverter(props: propsIF) {
                 dispatch(setIsTokenAPrimary(false));
                 dispatch(setPrimaryQuantity(input));
 
-                if (
-                    props.tokenPair.dataTokenA.address ===
-                    props.tokenPair.dataTokenB.address
-                ) {
-                    return;
-                }
-                const parsedInput = parseFloat(input);
-
-                if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                    props.setSwapAllowed(false);
-                    props.setSwapButtonErrorMessage('Enter an Amount');
-                    props.setPriceImpact(undefined);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-                    if (isNaN(parsedInput) || parsedInput === 0) return;
-                }
-
                 rawTokenAQty = await refreshImpact(input, false);
             } else {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
@@ -598,12 +572,8 @@ function CurrencyConverter(props: propsIF) {
                     ? rawTokenAQty.toPrecision(3)
                     : truncateDecimals(rawTokenAQty, 2)
                 : '';
-
-            if (truncatedTokenAQty !== tokenAQtyLocal)
-                setTokenAQtyLocal(truncatedTokenAQty);
-
-            if (truncatedTokenAQty !== props.sellQtyString)
-                props.setSellQtyString(truncatedTokenAQty);
+            setTokenAQtyLocal(truncatedTokenAQty);
+            props.setSellQtyString(truncatedTokenAQty);
         },
         [
             props.crocEnv,
