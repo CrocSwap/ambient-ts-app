@@ -365,10 +365,6 @@ function CurrencyConverter(props: propsIF) {
         useState<boolean>(false);
 
     useEffect(() => {
-        const hurdle = props.isWithdrawFromDexChecked
-            ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-            : parseFloat(tokenABalance);
-
         if (isSellLoading || isBuyLoading) {
             props.setSwapAllowed(false);
             props.setSwapButtonErrorMessage('...');
@@ -385,6 +381,9 @@ function CurrencyConverter(props: propsIF) {
             props.setSwapAllowed(false);
             props.setSwapButtonErrorMessage('Enter an Amount');
         } else {
+            const hurdle = props.isWithdrawFromDexChecked
+                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : parseFloat(tokenABalance);
             const balanceLabel = props.isWithdrawFromDexChecked
                 ? 'Exchange'
                 : 'Wallet';
