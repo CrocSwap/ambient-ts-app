@@ -24,7 +24,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocEnv, CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
+import { ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
@@ -474,12 +474,43 @@ function CurrencyConverter(props: propsIF) {
         ],
     );
 
+    async function refreshImpact(
+        input: string,
+        isBuy: boolean,
+    ): Promise<number | undefined> {
+        if (input === '' || !crocEnv) {
+            return undefined;
+        }
+
+        const impact = await calcImpact(
+            isBuy,
+            crocEnv,
+            tokenALocal,
+            tokenBLocal,
+            slippageTolerancePercentage / 100,
+            input,
+        );
+
+        setPriceImpact(impact);
+
+        isTokenAPrimaryLocal ? setIsBuyLoading(false) : setIsSellLoading(false);
+
+        if (impact) {
+            setIsLiquidityInsufficient(false);
+            return parseFloat(impact.buyQty);
+        } else {
+            setIsLiquidityInsufficient(true);
+            setSwapAllowed(false);
+            return undefined;
+        }
+    }
+
     const handleTokenAChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
             if (!crocEnv) {
                 return;
             }
-            let rawTokenBQty;
+            let rawTokenBQty = undefined;
             if (evt) {
                 setUserClickedCombinedMax(false);
 
@@ -508,36 +539,8 @@ function CurrencyConverter(props: propsIF) {
 
                     if (isNaN(parsedInput) || parsedInput === 0) return;
                 }
-                try {
-                    const impact =
-                        input !== ''
-                            ? await calcImpact(
-                                  true,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  input,
-                              )
-                            : undefined;
 
-                    setPriceImpact(impact);
-
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenBQty = impact
-                        ? parseFloat(impact.buyQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                    setSwapAllowed(false);
-                }
+                rawTokenBQty = await refreshImpact(input, true);
             } else {
                 if (!poolExists) {
                     setSwapAllowed(false);
@@ -556,36 +559,11 @@ function CurrencyConverter(props: propsIF) {
 
                     return;
                 }
+
                 handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-
-                try {
-                    const impact =
-                        tokenAQtyLocal !== ''
-                            ? await calcImpact(
-                                  true,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  tokenAQtyLocal,
-                              )
-                            : undefined;
-                    setPriceImpact(impact);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenBQty = impact
-                        ? parseFloat(impact.buyQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                }
+                rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
+
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
                     ? rawTokenBQty.toPrecision(3)
@@ -628,34 +606,7 @@ function CurrencyConverter(props: propsIF) {
                 handleSwapButtonMessage(parseFloat(input));
 
                 if (!poolPriceDisplay) return;
-
-                try {
-                    const impact =
-                        input !== ''
-                            ? await calcImpact(
-                                  true,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  input,
-                              )
-                            : undefined;
-                    setPriceImpact(impact);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenBQty = impact
-                        ? parseFloat(impact.buyQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                }
+                rawTokenBQty = await refreshImpact(input, true);
             } else {
                 if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
                     setSwapAllowed(false);
@@ -663,35 +614,9 @@ function CurrencyConverter(props: propsIF) {
                     return;
                 }
                 handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-                try {
-                    const impact =
-                        tokenAQtyLocal !== ''
-                            ? await calcImpact(
-                                  true,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  tokenAQtyLocal,
-                              )
-                            : undefined;
-
-                    setPriceImpact(impact);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenBQty = impact
-                        ? parseFloat(impact.buyQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                }
+                rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
+
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
                     ? rawTokenBQty.toPrecision(3)
@@ -736,9 +661,9 @@ function CurrencyConverter(props: propsIF) {
                 if (
                     tokenPair.dataTokenA.address ===
                     tokenPair.dataTokenB.address
-                )
+                ) {
                     return;
-
+                }
                 const parsedInput = parseFloat(input);
 
                 if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
@@ -750,41 +675,10 @@ function CurrencyConverter(props: propsIF) {
                         : setIsSellLoading(false);
                     if (isNaN(parsedInput) || parsedInput === 0) return;
                 }
-                try {
-                    const impact =
-                        input !== ''
-                            ? await calcImpact(
-                                  false,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  input,
-                              )
-                            : undefined;
 
-                    setPriceImpact(impact);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenAQty = impact
-                        ? parseFloat(impact.sellQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                    setSwapAllowed(false);
-                }
+                rawTokenAQty = await refreshImpact(input, false);
                 rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
             } else {
-                IS_LOCAL_ENV &&
-                    console.debug(
-                        'token B change event triggered - no keyboard event',
-                    );
                 if (!poolExists) {
                     setSwapAllowed(false);
 
@@ -803,35 +697,7 @@ function CurrencyConverter(props: propsIF) {
                     return;
                 }
 
-                try {
-                    const impact =
-                        tokenBQtyLocal !== ''
-                            ? await calcImpact(
-                                  false,
-                                  crocEnv,
-                                  tokenALocal,
-                                  tokenBLocal,
-                                  slippageTolerancePercentage / 100,
-                                  tokenBQtyLocal,
-                              )
-                            : undefined;
-
-                    setPriceImpact(impact);
-                    isTokenAPrimaryLocal
-                        ? setIsBuyLoading(false)
-                        : setIsSellLoading(false);
-
-                    rawTokenAQty = impact
-                        ? parseFloat(impact.sellQty)
-                        : undefined;
-                    setIsLiquidityInsufficient(false);
-                } catch (error) {
-                    console.error({ error });
-                    if (error.errorName === 'Panic') {
-                        setIsLiquidityInsufficient(true);
-                    }
-                }
-
+                rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
                 handleSwapButtonMessage(rawTokenAQty ?? 0);
             }
 
