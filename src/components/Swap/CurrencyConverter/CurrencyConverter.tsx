@@ -379,45 +379,32 @@ function CurrencyConverter(props: propsIF) {
 
     const handleSwapButtonMessage = useMemo(
         () => (tokenAAmount: number) => {
-            if (!props.poolExists) {
-                props.setSwapAllowed(false);
-                if (props.poolExists === undefined) {
-                    props.setSwapButtonErrorMessage('...');
-                } else if (props.poolExists === false) {
-                    props.setSwapButtonErrorMessage('Pool Not Initialized');
-                }
-            } else if (props.isLiquidityInsufficient) {
+            if (!props.poolExists || isNaN(tokenAAmount)) {
+                return undefined;
+            }
+
+            if (props.isLiquidityInsufficient) {
                 props.setSwapAllowed(false);
                 props.setSwapButtonErrorMessage('Liquidity Insufficient');
-            } else if (isNaN(tokenAAmount)) {
-                return;
             } else if (tokenAAmount <= 0) {
                 props.setSwapAllowed(false);
                 props.setSwapButtonErrorMessage('Enter an Amount');
             } else if (tokenAQtyLocal === '') {
                 props.setSwapButtonErrorMessage('...');
             } else {
-                if (props.isWithdrawFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        props.setSwapAllowed(false);
-                        props.setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Exceeds Combined Wallet and Exchange Balance`,
-                        );
-                    } else {
-                        props.setSwapAllowed(true);
-                    }
-                } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        props.setSwapAllowed(false);
-                        props.setSwapButtonErrorMessage(
-                            `${tokenASymbolLocal} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        props.setSwapAllowed(true);
-                    }
+                const hurdle = props.isWithdrawFromDexChecked
+                    ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    : parseFloat(tokenABalance);
+                const balanceLabel = props.isWithdrawFromDexChecked
+                    ? 'Exchange'
+                    : 'Wallet';
+
+                props.setSwapAllowed(tokenAAmount <= hurdle);
+
+                if (tokenAAmount > hurdle) {
+                    props.setSwapButtonErrorMessage(
+                        `${tokenASymbolLocal} Exceeds ${balanceLabel} Balance`,
+                    );
                 }
             }
         },
@@ -431,19 +418,20 @@ function CurrencyConverter(props: propsIF) {
             isTokenAPrimaryLocal,
             tokenAQtyLocal,
             tokenBQtyLocal,
+            props.isWithdrawFromDexChecked,
         ],
     );
 
     async function refreshImpact(
         input: string,
-        isBuy: boolean,
+        sellToken: boolean,
     ): Promise<number | undefined> {
         if (input === '' || !props.crocEnv) {
             return undefined;
         }
 
         const impact = await calcImpact(
-            isBuy,
+            sellToken,
             props.crocEnv,
             tokenALocal,
             tokenBLocal,
@@ -457,7 +445,7 @@ function CurrencyConverter(props: propsIF) {
 
         if (impact) {
             props.setIsLiquidityInsufficient(false);
-            return parseFloat(impact.buyQty);
+            return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
         } else {
             props.setIsLiquidityInsufficient(true);
             props.setSwapAllowed(false);
