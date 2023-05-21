@@ -335,10 +335,6 @@ function CurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
-        handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
-    }, [tokenAQtyLocal, props.buyQtyString, props.isWithdrawFromDexChecked]);
-
-    useEffect(() => {
         handleBlockUpdate();
     }, [props.lastBlockNumber]);
 
@@ -365,62 +361,57 @@ function CurrencyConverter(props: propsIF) {
         }
     }, [account]);
 
+    const [isImpactCalculating, setImpactCalculating] =
+        useState<boolean>(false);
+
     useEffect(() => {
         if (!props.poolExists) {
             props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (isNaN(Number(tokenAQtyLocal))) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Enter an Amount');
+        } else if (isBuyLoading) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('...');
+        } else if (props.isLiquidityInsufficient) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Liquidity Insufficient');
+        } else if (parseFloat(tokenAQtyLocal) <= 0) {
+            props.setSwapAllowed(false);
+            props.setSwapButtonErrorMessage('Enter an Amount');
+        } else {
+            const hurdle = props.isWithdrawFromDexChecked
+                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : parseFloat(tokenABalance);
+            const balanceLabel = props.isWithdrawFromDexChecked
+                ? 'Exchange'
+                : 'Wallet';
 
-            if (props.poolExists === undefined) {
-                props.setSwapButtonErrorMessage('...');
-            } else if (props.poolExists === false) {
-                props.setSwapButtonErrorMessage('Pool Not Initialized');
+            props.setSwapAllowed(parseFloat(tokenAQtyLocal) <= hurdle);
+
+            if (parseFloat(tokenAQtyLocal) > hurdle) {
+                props.setSwapButtonErrorMessage(
+                    `${tokenASymbolLocal} Exceeds ${balanceLabel} Balance`,
+                );
             }
         }
-    }, [props.poolExists === undefined, props.poolExists]);
-
-    const handleSwapButtonMessage = useMemo(
-        () => (tokenAAmount: number) => {
-            if (!props.poolExists || isNaN(tokenAAmount)) {
-                return undefined;
-            }
-
-            if (props.isLiquidityInsufficient) {
-                props.setSwapAllowed(false);
-                props.setSwapButtonErrorMessage('Liquidity Insufficient');
-            } else if (tokenAAmount <= 0) {
-                props.setSwapAllowed(false);
-                props.setSwapButtonErrorMessage('Enter an Amount');
-            } else if (tokenAQtyLocal === '') {
-                props.setSwapButtonErrorMessage('...');
-            } else {
-                const hurdle = props.isWithdrawFromDexChecked
-                    ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    : parseFloat(tokenABalance);
-                const balanceLabel = props.isWithdrawFromDexChecked
-                    ? 'Exchange'
-                    : 'Wallet';
-
-                props.setSwapAllowed(tokenAAmount <= hurdle);
-
-                if (tokenAAmount > hurdle) {
-                    props.setSwapButtonErrorMessage(
-                        `${tokenASymbolLocal} Exceeds ${balanceLabel} Balance`,
-                    );
-                }
-            }
-        },
-        [
-            props.crocEnv,
-            props.poolExists,
-            props.poolPriceDisplay,
-            tokenALocal,
-            tokenBLocal,
-            props.slippageTolerancePercentage,
-            isTokenAPrimaryLocal,
-            tokenAQtyLocal,
-            tokenBQtyLocal,
-            props.isWithdrawFromDexChecked,
-        ],
-    );
+    }, [
+        props.crocEnv,
+        props.poolExists,
+        props.poolExists === undefined, // Needed to distinguish false from undefined
+        props.poolPriceDisplay,
+        tokenALocal,
+        tokenBLocal,
+        props.slippageTolerancePercentage,
+        isTokenAPrimaryLocal,
+        tokenAQtyLocal,
+        tokenBQtyLocal,
+        props.isWithdrawFromDexChecked,
+        isImpactCalculating,
+        isBuyLoading,
+        isSellLoading,
+    ]);
 
     async function refreshImpact(
         input: string,
@@ -430,6 +421,7 @@ function CurrencyConverter(props: propsIF) {
             return undefined;
         }
 
+        setImpactCalculating(true);
         const impact = await calcImpact(
             sellToken,
             props.crocEnv,
@@ -438,6 +430,7 @@ function CurrencyConverter(props: propsIF) {
             props.slippageTolerancePercentage / 100,
             input,
         );
+        setImpactCalculating(false);
         props.setPriceImpact(impact);
 
         isTokenAPrimaryLocal ? setIsBuyLoading(false) : setIsSellLoading(false);
@@ -473,7 +466,6 @@ function CurrencyConverter(props: propsIF) {
                 setIsTokenAPrimaryLocal(true);
                 dispatch(setIsTokenAPrimary(true));
                 dispatch(setPrimaryQuantity(input));
-                handleSwapButtonMessage(parseFloat(input));
                 if (!props.poolPriceDisplay) return;
 
                 if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
@@ -489,25 +481,6 @@ function CurrencyConverter(props: propsIF) {
 
                 rawTokenBQty = await refreshImpact(input, true);
             } else {
-                if (!props.poolExists) {
-                    props.setSwapAllowed(false);
-
-                    if (props.poolExists === undefined) {
-                        props.setSwapButtonErrorMessage('...');
-                    } else if (props.poolExists === false) {
-                        props.setSwapButtonErrorMessage('Pool Not Initialized');
-                    }
-                    return;
-                }
-                if (!(parseFloat(tokenAQtyLocal) > 0)) {
-                    props.setSwapAllowed(false);
-                    props.setSwapButtonErrorMessage('Enter an Amount');
-                    setTokenBQtyLocal('');
-
-                    return;
-                }
-
-                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
@@ -550,17 +523,9 @@ function CurrencyConverter(props: propsIF) {
                 setIsTokenAPrimaryLocal(true);
                 dispatch(setIsTokenAPrimary(true));
                 dispatch(setPrimaryQuantity(input));
-                handleSwapButtonMessage(parseFloat(input));
 
-                if (!props.poolPriceDisplay) return;
                 rawTokenBQty = await refreshImpact(input, true);
             } else {
-                if (tokenAQtyLocal === '' && tokenBQtyLocal === '') {
-                    props.setSwapAllowed(false);
-                    props.setSwapButtonErrorMessage('Enter an Amount');
-                    return;
-                }
-                handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
@@ -624,28 +589,8 @@ function CurrencyConverter(props: propsIF) {
                 }
 
                 rawTokenAQty = await refreshImpact(input, false);
-                rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
             } else {
-                if (!props.poolExists) {
-                    props.setSwapAllowed(false);
-
-                    if (props.poolExists === undefined) {
-                        props.setSwapButtonErrorMessage('...');
-                    } else if (props.poolExists === false) {
-                        props.setSwapButtonErrorMessage('Pool Not Initialized');
-                    }
-                    return;
-                }
-                if (!(parseFloat(tokenBQtyLocal) > 0)) {
-                    props.setSwapAllowed(false);
-                    props.setSwapButtonErrorMessage('Enter an Amount');
-                    setTokenAQtyLocal('');
-
-                    return;
-                }
-
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
-                handleSwapButtonMessage(rawTokenAQty ?? 0);
             }
 
             const truncatedTokenAQty = rawTokenAQty
