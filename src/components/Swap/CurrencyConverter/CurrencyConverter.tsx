@@ -438,7 +438,6 @@ function CurrencyConverter(props: propsIF) {
             props.slippageTolerancePercentage / 100,
             input,
         );
-
         props.setPriceImpact(impact);
 
         isTokenAPrimaryLocal ? setIsBuyLoading(false) : setIsSellLoading(false);

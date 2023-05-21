@@ -13,7 +13,7 @@ export const calcImpact = async (
         const swapPlan = isQtySell
             ? env.sell(sellTokenAddress, qty).for(buyTokenAddress, args)
             : env.buy(buyTokenAddress, qty).with(sellTokenAddress, args);
-        return swapPlan.impact;
+        return await swapPlan.impact;
 
         // For valid pools, the impact calculation will fail only if liquidity
         // in the pool is insufficient
