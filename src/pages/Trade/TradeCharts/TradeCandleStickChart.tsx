@@ -715,8 +715,14 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0) {
-            if (scaleData && prevPeriod && prevFirsCandle && period) {
+        if (
+            unparsedCandleData &&
+            unparsedCandleData.length > 0 &&
+            period &&
+            (prevPeriod === undefined || period !== prevPeriod)
+        ) {
+            let firtCandleTimeState = unparsedCandleData[0].time;
+            if (scaleData && prevPeriod && prevFirsCandle) {
                 const domain = scaleData.xScale.domain();
 
                 const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
@@ -733,11 +739,18 @@ function TradeCandleStickChart(props: propsIF) {
                 const newDiffDomain = period * 1000 * factorDomain;
                 const newDiffCandle = direction * period * 1000 * factorCanle;
 
-                let firsShownDomain =
-                    unparsedCandleData[0].time * 1000 - newDiffCandle;
+                const firtCandleTime = d3.max(
+                    unparsedCandleData,
+                    (data: any) => data.time,
+                );
+
+                firtCandleTimeState = firtCandleTime;
+
+                const firsShownDomain = firtCandleTime * 1000 - newDiffCandle;
+
                 const lastShownCandle = firsShownDomain - newDiffDomain;
 
-                firsShownDomain =
+                const fethcingCandles =
                     firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
 
                 scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
@@ -767,12 +780,11 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const minDate = 1657868400; // 15 July 2022
 
-                const firstTime = Math.floor(firsShownDomain / 1000);
-                console.log(firstTime, minDate, firstTime > minDate);
+                const firstTime = Math.floor(fethcingCandles / 1000);
 
-                if (firstTime > minDate && firsShownDomain > lastShownCandle) {
+                if (firstTime > minDate && fethcingCandles > lastShownCandle) {
                     const nCandle = Math.floor(
-                        (firsShownDomain - lastShownCandle) / (period * 1000),
+                        (fethcingCandles - lastShownCandle) / (period * 1000),
                     );
 
                     setCandleScale((prev: candleScale) => {
@@ -798,10 +810,10 @@ function TradeCandleStickChart(props: propsIF) {
                 }
             }
 
+            setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
-            setPrevFirsCandle(() => unparsedCandleData[0].time);
         }
-    }, [period]);
+    }, [period, diffHashSig(unparsedCandleData)]);
 
     // resetting Chart
     useEffect(() => {
