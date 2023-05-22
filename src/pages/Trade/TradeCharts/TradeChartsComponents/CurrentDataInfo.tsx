@@ -1,23 +1,12 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction } from 'react';
-
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleChartData | undefined;
+    currentData: CandleData | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;
@@ -38,6 +27,7 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         rescale,
         reset,
     } = props;
+
     function formattedCurrentData(data: number | undefined): string {
         if (data) {
             if (data > 2) {
@@ -53,20 +43,40 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         return '-';
     }
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const denominationsInBase = tradeData.isDenomBase;
+
     return (
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
                 <div className={styles.current_data_info}>
-                    {'O: ' +
-                        formattedCurrentData(currentData?.open) +
-                        ' H: ' +
-                        formattedCurrentData(currentData?.high) +
-                        ' L: ' +
-                        formattedCurrentData(currentData?.low) +
-                        ' C: ' +
-                        formattedCurrentData(currentData?.close) +
-                        ' V: ' +
-                        formatDollarAmountAxis(currentVolumeData)}
+                    {currentData &&
+                        'O: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invPriceOpenExclMEVDecimalCorrected
+                                    : currentData.priceOpenExclMEVDecimalCorrected,
+                            ) +
+                            ' H: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invMinPriceExclMEVDecimalCorrected
+                                    : currentData.maxPriceExclMEVDecimalCorrected,
+                            ) +
+                            ' L: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invMaxPriceExclMEVDecimalCorrected
+                                    : currentData.minPriceExclMEVDecimalCorrected,
+                            ) +
+                            ' C: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invPriceCloseExclMEVDecimalCorrected
+                                    : currentData.priceCloseExclMEVDecimalCorrected,
+                            ) +
+                            ' V: ' +
+                            formatDollarAmountAxis(currentVolumeData)}
                 </div>
             ) : (
                 <div className={styles.current_data_info} />

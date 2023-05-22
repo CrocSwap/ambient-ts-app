@@ -58,6 +58,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     candleDomain,
+    candleScale,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import {
@@ -851,14 +852,20 @@ export default function App() {
         location.pathname,
     ]);
 
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
+        isFetchForTimeframe: false,
+    });
+
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
-        candleTimeLocal,
         isUserIdle,
+        candleScale?.isFetchForTimeframe,
     ]);
 
     const fetchCandles = () => {
@@ -870,35 +877,35 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            const reqOptions = new URLSearchParams({
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                period: candleTimeLocal.toString(),
+                // time: '', // optional
+                n: candleScale?.nCandle.toString(), // positive integer
+                // page: '0', // nonnegative integer
+                chainId: mktDataChainId(chainData.chainId),
+                dex: 'all',
+                poolStats: 'true',
+                concise: 'true',
+                poolStatsChainIdOverride: chainData.chainId,
+                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+            });
+
+            if (candleScale?.lastCandleDate) {
+                reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
+            }
+
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: mainnetBaseTokenAddress.toLowerCase(),
-                                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                period: candleTimeLocal.toString(),
-                                // time: '1657833300', // optional
-                                n: '200', // positive integer
-                                // page: '0', // nonnegative integer
-                                chainId: mktDataChainId(chainData.chainId),
-                                dex: 'all',
-                                poolStats: 'true',
-                                concise: 'true',
-                                poolStatsChainIdOverride: chainData.chainId,
-                                poolStatsBaseOverride:
-                                    baseTokenAddress.toLowerCase(),
-                                poolStatsQuoteOverride:
-                                    quoteTokenAddress.toLowerCase(),
-                                poolStatsPoolIdxOverride:
-                                    chainData.poolIndex.toString(),
-                            }),
-                    )
+                    fetch(candleSeriesCacheEndpoint + reqOptions)
                         .then((response) => response?.json())
                         .then((json) => {
                             const candles = json?.data;
@@ -920,6 +927,12 @@ export default function App() {
                                 });
                                 setIsCandleDataNull(false);
                                 setExpandTradeTable(false);
+                            }
+                            return candles?.length;
+                        })
+                        .then((result) => {
+                            if (result !== 0) {
+                                setFetchingCandle(false);
                             }
                         })
                         .catch(console.error);
@@ -947,14 +960,26 @@ export default function App() {
         500,
     );
 
+    const lastCandleDateInSeconds = Math.floor(
+        (candleDomains?.lastCandleDate || 0) / 1000,
+    );
+
+    const lastCandleDateInSecondsDebounced = useDebounce(
+        lastCandleDateInSeconds,
+        500,
+    );
+
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
-        IS_LOCAL_ENV && console.debug({ candleDataLength });
-        return candleData.candles.reduce((prev, curr) =>
-            prev.time < curr.time ? prev : curr,
-        )?.time;
-    }, [candleData?.candles?.length]);
+        // IS_LOCAL_ENV && console.debug({ candleDataLength });
+
+        const lastDate = new Date(
+            (candleDomains?.lastCandleDate as number) / 1000,
+        ).getTime();
+
+        return lastDate;
+    }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
@@ -1018,11 +1043,15 @@ export default function App() {
                                 messageCandle;
                         }
                     }
+
                     const newCandleData: CandlesByPoolAndDuration = {
                         pool: candleData.pool,
+
                         duration: candleData.duration,
+
                         candles: newCandles.concat(updatedCandles),
                     };
+
                     setCandleData(newCandleData);
                 }
             })
@@ -2038,6 +2067,10 @@ export default function App() {
         candleDomains: {
             value: candleDomains,
             setValue: setCandleDomains,
+        },
+        candleScale: {
+            value: candleScale,
+            setValue: setCandleScale,
         },
     };
 

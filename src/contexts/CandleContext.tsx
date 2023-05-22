@@ -1,6 +1,6 @@
 import { createContext, SetStateAction, Dispatch } from 'react';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
-import { candleDomain } from '../utils/state/tradeDataSlice';
+import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 
 interface CandleStateIF {
     candleData: {
@@ -24,6 +24,11 @@ interface CandleStateIF {
     candleDomains: {
         value: candleDomain;
         setValue: Dispatch<SetStateAction<candleDomain>>;
+    };
+
+    candleScale: {
+        value: candleScale;
+        setValue: Dispatch<SetStateAction<candleScale>>;
     };
 }
 
