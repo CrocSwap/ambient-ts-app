@@ -7,17 +7,14 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import {
-    // reverseTokensInRTK,
     setIsTokenAPrimary,
     setLimitTick,
-    // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -36,8 +33,8 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 // interface for component props
 interface propsIF {
@@ -223,7 +220,7 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
-    const navigate = useNavigate();
+    const linkGenLimit = useUrlPath('limit');
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
@@ -231,14 +228,11 @@ function LimitCurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
-            navigate(
-                '/trade/limit/' +
-                    formSlugForPairParams(
-                        tokenPair.dataTokenA.chainId,
-                        tokenPair.dataTokenB,
-                        tokenPair.dataTokenA,
-                    ),
-            );
+            linkGenLimit.navigate({
+                chain: chainId,
+                tokenA: tokenPair.dataTokenA.address,
+                tokenB: tokenPair.dataTokenB.address,
+            });
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
