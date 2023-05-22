@@ -6,6 +6,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string;
     searchedTxs: TransactionIF[];
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -13,6 +14,7 @@ interface propsIF {
 
 export default function TxSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedTxs,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
@@ -30,7 +32,11 @@ export default function TxSearchResults(props: propsIF) {
         setOutsideTabSelected(0);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        linkGenMarket.navigate();
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote
+        });
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element

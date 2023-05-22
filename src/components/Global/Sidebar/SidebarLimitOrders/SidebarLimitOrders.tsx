@@ -52,7 +52,11 @@ export default function SidebarLimitOrders(props: propsIF) {
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        linkGenLimit.navigate();
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote
+        });
     };
 
     const handleViewMoreClick = () => {

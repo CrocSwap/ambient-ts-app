@@ -45,6 +45,7 @@ export default function SidebarSearchResults(props: propsIF) {
             {isConnected && (
                 <>
                     <TxSearchResults
+                        chainId={chainId}
                         searchedTxs={searchData.txs}
                         setCurrentTxActiveInTransactions={
                             setCurrentTxActiveInTransactions
