@@ -130,6 +130,7 @@ function TradeCandleStickChart(props: propsIF) {
     const {
         candleData: { value: candleData },
         fetchingCandle: { value: fetchingCandle },
+        isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
 
     const period = chartSettings.candleTime.market.time;
@@ -714,8 +715,14 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0) {
-            if (scaleData && prevPeriod && prevFirsCandle && period) {
+        if (
+            unparsedCandleData &&
+            unparsedCandleData.length > 0 &&
+            period &&
+            (prevPeriod === undefined || period !== prevPeriod)
+        ) {
+            let firtCandleTimeState = unparsedCandleData[0].time;
+            if (scaleData && prevPeriod && prevFirsCandle) {
                 const domain = scaleData.xScale.domain();
 
                 const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
@@ -732,14 +739,18 @@ function TradeCandleStickChart(props: propsIF) {
                 const newDiffDomain = period * 1000 * factorDomain;
                 const newDiffCandle = direction * period * 1000 * factorCanle;
 
-                let firsShownDomain =
-                    unparsedCandleData[0].time * 1000 - newDiffCandle;
-                let lastShownCandle = firsShownDomain - newDiffDomain;
-                const minDate = 1657868400; // 15 July 2022
+                const firtCandleTime = d3.max(
+                    unparsedCandleData,
+                    (data: any) => data.time,
+                );
 
-                lastShownCandle =
-                    lastShownCandle < minDate ? minDate : lastShownCandle;
-                firsShownDomain =
+                firtCandleTimeState = firtCandleTime;
+
+                const firsShownDomain = firtCandleTime * 1000 - newDiffCandle;
+
+                const lastShownCandle = firsShownDomain - newDiffDomain;
+
+                const fethcingCandles =
                     firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
 
                 scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
@@ -767,23 +778,57 @@ function TradeCandleStickChart(props: propsIF) {
                     xScaleCopyRightDomain,
                 ]);
 
-                const nCandle = Math.floor(
-                    (firsShownDomain - lastShownCandle) / (period * 1000),
-                );
+                const minDate = 1657868400; // 15 July 2022
 
-                setCandleScale((prev: candleScale) => {
-                    return {
-                        isFetchForTimeframe: !prev.isFetchForTimeframe,
-                        lastCandleDate: Math.floor(firsShownDomain / 1000),
-                        nCandle: nCandle,
-                    };
-                });
+                const firstTime = Math.floor(fethcingCandles / 1000);
+
+                if (firstTime > minDate && fethcingCandles > lastShownCandle) {
+                    const nCandle = Math.floor(
+                        (fethcingCandles - lastShownCandle) / (period * 1000),
+                    );
+
+                    setCandleScale((prev: candleScale) => {
+                        return {
+                            isFetchForTimeframe: !prev.isFetchForTimeframe,
+                            lastCandleDate: firstTime,
+                            nCandle: nCandle,
+                        };
+                    });
+                } else {
+                    scaleData.xScale.domain([
+                        xScaleCopyLeftDomain,
+                        xScaleCopyRightDomain,
+                    ]);
+
+                    setCandleScale((prev: candleScale) => {
+                        return {
+                            isFetchForTimeframe: !prev.isFetchForTimeframe,
+                            lastCandleDate: undefined,
+                            nCandle: 200,
+                        };
+                    });
+                }
             }
 
+            setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
-            setPrevFirsCandle(() => unparsedCandleData[0].time);
         }
-    }, [period]);
+    }, [period, diffHashSig(unparsedCandleData)]);
+
+    // resetting Chart
+    useEffect(() => {
+        if (isCandleDataNull && scaleData && scaleData?.xScaleCopy) {
+            scaleData.xScale.domain(scaleData?.xScaleCopy.domain());
+
+            setCandleScale((prev: candleScale) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: undefined,
+                    nCandle: 200,
+                };
+            });
+        }
+    }, [isCandleDataNull]);
 
     const loading = (
         <div
