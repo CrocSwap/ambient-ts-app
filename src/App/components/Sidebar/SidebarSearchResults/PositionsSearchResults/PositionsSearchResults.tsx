@@ -6,6 +6,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string,
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -44,6 +45,7 @@ function PositionLI(props: PositionLiPropsIF) {
 
 export default function PositionsSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedPositions,
         isDenomBase,
         setCurrentPositionActive,
@@ -62,7 +64,11 @@ export default function PositionsSearchResults(props: propsIF) {
         setOutsideTabSelected(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
-        linkGenRange.navigate();
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: position.base,
+            tokenB: position.quote
+        });
     };
 
     return (

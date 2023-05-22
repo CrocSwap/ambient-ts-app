@@ -59,6 +59,7 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <PositionsSearchResults
+                        chainId={chainId}
                         searchedPositions={searchData.positions}
                         isDenomBase={isDenomBase}
                         setCurrentPositionActive={setCurrentPositionActive}
