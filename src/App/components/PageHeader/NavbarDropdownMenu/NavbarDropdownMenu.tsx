@@ -7,7 +7,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -32,6 +31,7 @@ import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -60,7 +60,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    const linkGenTOS = useUrlPath('tos');
 
     const { i18n } = useTranslation();
 
@@ -151,7 +151,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 onClick={() => {
-                    navigate('/tos');
+                    linkGenTOS.navigate();
                     closeMenu && closeMenu();
                 }}
                 leftIcon={<HiOutlineDocumentText size={20} />}
