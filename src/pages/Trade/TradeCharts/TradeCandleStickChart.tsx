@@ -30,6 +30,7 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
+import { candleScale } from '../../../utils/state/tradeDataSlice';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -128,10 +129,10 @@ function TradeCandleStickChart(props: propsIF) {
 
     const {
         candleData: { value: candleData },
-        fetchingCandle: { setValue: setFetchingCandle },
+        fetchingCandle: { value: fetchingCandle },
     } = useContext(CandleContext);
 
-    const period = candleData?.duration;
+    const period = chartSettings.candleTime.market.time;
     const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -713,7 +714,7 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (unparsedCandleData) {
+        if (unparsedCandleData && unparsedCandleData.length > 0) {
             if (scaleData && prevPeriod && prevFirsCandle && period) {
                 const domain = scaleData.xScale.domain();
 
@@ -731,9 +732,15 @@ function TradeCandleStickChart(props: propsIF) {
                 const newDiffDomain = period * 1000 * factorDomain;
                 const newDiffCandle = direction * period * 1000 * factorCanle;
 
-                const firsShownDomain =
+                let firsShownDomain =
                     unparsedCandleData[0].time * 1000 - newDiffCandle;
-                const lastShownCandle = firsShownDomain - newDiffDomain;
+                let lastShownCandle = firsShownDomain - newDiffDomain;
+                const minDate = 1657868400; // 15 July 2022
+
+                lastShownCandle =
+                    lastShownCandle < minDate ? minDate : lastShownCandle;
+                firsShownDomain =
+                    firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
 
                 scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
 
@@ -764,13 +771,13 @@ function TradeCandleStickChart(props: propsIF) {
                     (firsShownDomain - lastShownCandle) / (period * 1000),
                 );
 
-                const candleScale = {
-                    lastCandleDate: Math.floor(firsShownDomain / 1000),
-                    nCandle: nCandle,
-                    isFetchForTimeframe: true,
-                };
-
-                setCandleScale(candleScale);
+                setCandleScale((prev: candleScale) => {
+                    return {
+                        isFetchForTimeframe: !prev.isFetchForTimeframe,
+                        lastCandleDate: Math.floor(firsShownDomain / 1000),
+                        nCandle: nCandle,
+                    };
+                });
             }
 
             setPrevPeriod(() => period);
@@ -803,7 +810,6 @@ function TradeCandleStickChart(props: propsIF) {
                 IS_LOCAL_ENV &&
                     console.debug('setting isLoading to ' + shouldReload);
                 setIsLoading(shouldReload);
-                setFetchingCandle(shouldReload);
             }
         }, 500);
         return () => clearTimeout(timer);
@@ -825,7 +831,8 @@ function TradeCandleStickChart(props: propsIF) {
                 {!isLoading &&
                 candleData !== undefined &&
                 prevPeriod === period &&
-                candleTimeInSeconds === period ? (
+                candleTimeInSeconds === period &&
+                !fetchingCandle ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
                         chainData={chainData}

@@ -30,6 +30,7 @@ import {
     setIsLinesSwitched,
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
+    candleScale,
 } from '../../utils/state/tradeDataSlice';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -926,20 +927,25 @@ export default function Chart(props: propsIF) {
             const isFutureDay =
                 new Date(xDomain[1]).getTime() > new Date().getTime();
 
-            const domainMax = isFutureDay
+            let domainMax = isFutureDay
                 ? new Date().getTime()
                 : new Date(xDomain[1]).getTime();
 
             const nCandle = Math.floor(
                 (xDomain[1] - xDomain[0]) / (period * 1000),
             );
-            const candleScale = {
-                lastCandleDate: Math.floor(domainMax / 1000),
-                nCandle: nCandle,
-                isFetchForTimeframe: false,
-            };
 
-            setCandleScale(candleScale);
+            const minDate = 1657868400; // 15 July 2022
+
+            domainMax = domainMax < minDate ? minDate : domainMax;
+
+            setCandleScale((prev: candleScale) => {
+                return {
+                    isFetchForTimeframe: prev.isFetchForTimeframe,
+                    lastCandleDate: Math.floor(domainMax / 1000),
+                    nCandle: nCandle,
+                };
+            });
         }
     }, [diffHashSig(scaleData?.xScale.domain())]);
 
