@@ -5,9 +5,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
-    chainId: string;
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
     isShowAllEnabled: boolean;
@@ -21,7 +21,6 @@ interface propsIF {
 export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
-        chainId,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
@@ -37,6 +36,7 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const linkGenLimit = useUrlPath('limit');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -52,14 +52,7 @@ export default function SidebarLimitOrders(props: propsIF) {
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        linkGenLimit.navigate();
     };
 
     const handleViewMoreClick = () => {

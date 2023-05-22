@@ -185,7 +185,6 @@ function Sidebar(props: propsIF) {
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
                     tokens={tokens}
-                    chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     isShowAllEnabled={isShowAllEnabled}
                     setCurrentPositionActive={setCurrentPositionActive}
