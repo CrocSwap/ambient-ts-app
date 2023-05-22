@@ -7,6 +7,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string;
     searchedLimitOrders: LimitOrderIF[];
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -55,6 +56,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 
 export default function OrdersSearchResults(props: propsIF) {
     const {
+        chainId,
         searchedLimitOrders,
         isDenomBase,
         setCurrentPositionActive,
@@ -73,7 +75,11 @@ export default function OrdersSearchResults(props: propsIF) {
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        linkGenLimit.navigate();
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote
+        });
     };
 
     return (
