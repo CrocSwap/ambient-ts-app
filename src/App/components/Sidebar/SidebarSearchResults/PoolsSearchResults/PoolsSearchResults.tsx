@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import {
     TokenPairIF,
@@ -6,6 +5,7 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
+import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
@@ -17,7 +17,8 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
-    const navigate = useNavigate();
+    const linkGen = useUrlPath('market');
+
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;
         const tokenAString: string =
@@ -28,14 +29,7 @@ export default function PoolsSearchResults(props: propsIF) {
             baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tokenAString +
-                '&tokenB=' +
-                tokenBString,
-        );
+        linkGen.navigate({chain: chainId, tokenA: tokenAString, tokenB: tokenBString});
     };
 
     return (

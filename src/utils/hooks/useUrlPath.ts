@@ -5,7 +5,7 @@ interface swapParamsIF {
     tokenA: string,
     tokenB: string,
 }
-interface marketParamsIF {
+export interface marketParamsIF {
     chain: string,
     tokenA: string,
     tokenB: string,
