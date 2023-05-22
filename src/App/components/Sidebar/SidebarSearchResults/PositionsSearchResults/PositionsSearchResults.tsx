@@ -1,12 +1,11 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
-    chainId: string;
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -45,33 +44,25 @@ function PositionLI(props: PositionLiPropsIF) {
 
 export default function PositionsSearchResults(props: propsIF) {
     const {
-        chainId,
         searchedPositions,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
     } = props;
 
-    const navigate = useNavigate();
-
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+
+    const linkGenRange = useUrlPath('range');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote,
-        );
+        linkGenRange.navigate();
     };
 
     return (
