@@ -17,7 +17,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
-    const linkGen = useUrlPath('market');
+    const linkGenMarket = useUrlPath('market');
 
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;
@@ -29,7 +29,7 @@ export default function PoolsSearchResults(props: propsIF) {
             baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
-        linkGen.navigate({chain: chainId, tokenA: tokenAString, tokenB: tokenBString});
+        linkGenMarket.navigate({chain: chainId, tokenA: tokenAString, tokenB: tokenBString});
     };
 
     return (

@@ -219,6 +219,7 @@ function Sidebar(props: propsIF) {
             icon: recentTransactionsImage,
             data: (
                 <SidebarRecentTransactions
+                    chainId={chainId}
                     mostRecentTransactions={mostRecentTxs}
                     setCurrentTxActiveInTransactions={
                         setCurrentTxActiveInTransactions

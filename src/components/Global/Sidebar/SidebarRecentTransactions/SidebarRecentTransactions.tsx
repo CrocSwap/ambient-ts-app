@@ -12,6 +12,7 @@ import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string;
     mostRecentTransactions: TransactionIF[];
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -20,6 +21,7 @@ interface propsIF {
 
 export default function SidebarRecentTransactions(props: propsIF) {
     const {
+        chainId,
         mostRecentTransactions,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
@@ -52,7 +54,11 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        linkGenMarket.navigate();
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote
+        });
     };
 
     const handleViewMoreClick = (): void => {
