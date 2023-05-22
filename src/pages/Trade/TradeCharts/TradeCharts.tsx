@@ -333,7 +333,6 @@ function TradeCharts(props: propsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div

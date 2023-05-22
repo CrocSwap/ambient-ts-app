@@ -26,6 +26,7 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import chainNumToString from '../../App/functions/chainNumToString';
 
 // interface for props
 interface propsIF {
@@ -256,8 +257,7 @@ export default function InitPool(props: propsIF) {
                         dispatch(removePendingTx(receipt.transactionHash));
                         navigate(
                             '/trade/range/chain=' +
-                                '0x' +
-                                baseToken.chainId.toString(16) +
+                                chainNumToString(baseToken.chainId) +
                                 '&tokenA=' +
                                 baseToken.address +
                                 '&tokenB=' +
@@ -318,8 +318,7 @@ export default function InitPool(props: propsIF) {
                 <Navigate
                     to={
                         '/trade/market/chain=' +
-                        '0x' +
-                        baseToken.chainId.toString(16) +
+                        chainNumToString(baseToken.chainId) +
                         '&tokenA=' +
                         baseToken.address +
                         '&tokenB=' +

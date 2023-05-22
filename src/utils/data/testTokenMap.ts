@@ -20,6 +20,10 @@ export const testTokenMap = new Map([
         '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599_0x1', // 'WBTC' on Mainnet
     ],
     [
+        '0x630f8b9d8f517af8f5b8670e6a167b6c0240d583_0x5', // 'PEPE' by Ben on Goerli
+        '0x6982508145454ce325ddbe47a25d4ec3d2311933_0x1', // 'PEPE' on Mainnet
+    ],
+    [
         '0x0000000000000000000000000000000000000000_0x66eed', // ETH on Arb Goerli
         '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
     ],

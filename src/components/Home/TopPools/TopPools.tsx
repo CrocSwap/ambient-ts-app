@@ -2,7 +2,6 @@ import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
@@ -13,7 +12,6 @@ interface propsIF {
     tradeData: tradeData;
     userData: userData;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
     topPools: topPoolIF[];
