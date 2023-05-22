@@ -59,10 +59,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     analyticsSearchInput: string;
     setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
     openModalWallet: () => void;
     poolList: TempPoolIF[];
@@ -82,10 +79,7 @@ function Sidebar(props: propsIF) {
         poolId,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
-        isShowAllEnabled,
         setIsShowAllEnabled,
-        expandTradeTable,
-        setExpandTradeTable,
         lastBlockNumber,
         setAnalyticsSearchInput,
         openModalWallet,
@@ -183,14 +177,12 @@ function Sidebar(props: propsIF) {
             icon: openOrdersImage,
             data: (
                 <SidebarLimitOrders
+                    chainId={chainId}
                     isDenomBase={isDenomBase}
                     tokens={tokens}
                     limitOrderByUser={mostRecentLimitOrders}
-                    isShowAllEnabled={isShowAllEnabled}
                     setCurrentPositionActive={setCurrentPositionActive}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
                     isUserLoggedIn={isConnected}
                 />
             ),

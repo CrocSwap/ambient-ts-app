@@ -8,18 +8,17 @@ import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string,
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     tokens: tokenMethodsIF;
 }
 export default function SidebarLimitOrders(props: propsIF) {
     const {
+        chainId,
         limitOrderByUser,
         isDenomBase,
         setCurrentPositionActive,
