@@ -28,12 +28,11 @@ import {
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 // interface for component props
 interface propsIF {
@@ -304,8 +303,6 @@ function RangeCurrencyConverter(props: propsIF) {
                 : truncateDecimals(qtyTokenB, 2)
             : '';
 
-        // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -376,19 +373,18 @@ function RangeCurrencyConverter(props: propsIF) {
             setTokenAInputQty('');
         }
     };
-    const navigate = useNavigate();
+
+    // generate nav functionality to the range page
+    const linkGenRange = useUrlPath('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
-        navigate(
-            '/trade/range/' +
-                formSlugForPairParams(
-                    tokenPair.dataTokenA.chainId,
-                    tokenPair.dataTokenB,
-                    tokenPair.dataTokenA,
-                ),
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: tokenPair.dataTokenB.address,
+            tokenB: tokenPair.dataTokenA.address,
+        });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
