@@ -2,7 +2,6 @@ import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
-import { TokenIF } from '../../utils/interfaces/exports';
 import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -12,7 +11,6 @@ import { PoolStatsFn } from '../../App/functions/getPoolStats';
 
 interface propsIF {
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
     topPools: topPoolIF[];
@@ -20,7 +18,6 @@ interface propsIF {
 }
 export default function Home(props: propsIF) {
     const {
-        tokenMap,
         lastBlockNumber,
         chainId,
         cachedQuerySpotPrice,
@@ -39,7 +36,6 @@ export default function Home(props: propsIF) {
                     tradeData={tradeData}
                     userData={userData}
                     cachedQuerySpotPrice={cachedQuerySpotPrice}
-                    tokenMap={tokenMap}
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
                     topPools={topPools}

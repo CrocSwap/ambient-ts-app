@@ -28,9 +28,9 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -65,13 +65,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -82,8 +75,8 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -107,9 +100,6 @@ function LimitCurrencySelector(props: propsIF) {
         gasPriceInGwei,
         handleChangeClick,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -118,8 +108,8 @@ function LimitCurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
+        tokens,
     } = props;
 
     const { dexBalLimit } = useContext(UserPreferenceContext);
@@ -416,9 +406,6 @@ function LimitCurrencySelector(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainId}
                         importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -433,7 +420,7 @@ function LimitCurrencySelector(props: propsIF) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
-                        ackTokens={ackTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

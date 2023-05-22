@@ -1,9 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const correctStyleForData = (
-    startDate: Date,
-    endDate: Date,
-    data: any,
+    startDateTime: number,
+    endDateTime: number,
+    dataTime: any,
 ) => {
+    const startDate = new Date(startDateTime);
+    const endDate = new Date(endDateTime);
+
+    let data: any[] = [];
+
+    dataTime.map((d: any) => {
+        data.push(new Date(d));
+    });
+
     data = addFirstDayMonth(data);
     if (!filterYears(startDate, endDate, data)) {
         data = data.map((item: any) => {
@@ -68,9 +77,14 @@ const addFirstDayMonth = (data: any[]) => {
         const tempfirstDayMonth = new Date(element);
         tempfirstDayMonth.setDate(1);
         tempfirstDayMonth.setHours(0);
+        tempfirstDayMonth.setMinutes(0);
+        tempfirstDayMonth.setMilliseconds(0);
+
         if (
             data.find(
-                (item: any) => item.getTime() === tempfirstDayMonth.getTime(),
+                (item: any) =>
+                    item.getMonth() === tempfirstDayMonth.getMonth() &&
+                    item.getDate() === tempfirstDayMonth.getDate(),
             ) === undefined
         ) {
             tempArray.push(tempfirstDayMonth);

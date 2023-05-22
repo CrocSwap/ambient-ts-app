@@ -5,7 +5,7 @@ import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
-import useSocket from './Service/useSocket';
+import useChatSocket from './Service/useChatSocket';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -80,7 +80,7 @@ function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+    const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
