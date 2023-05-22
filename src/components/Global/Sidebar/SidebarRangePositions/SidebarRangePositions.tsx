@@ -4,9 +4,9 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
-    chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -16,7 +16,6 @@ interface propsIF {
 
 export default function SidebarRangePositions(props: propsIF) {
     const {
-        chainId,
         isDenomBase,
         userPositions,
         setCurrentPositionActive,
@@ -32,6 +31,7 @@ export default function SidebarRangePositions(props: propsIF) {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const linkGenRange = useUrlPath('range');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -48,14 +48,7 @@ export default function SidebarRangePositions(props: propsIF) {
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                pos.base +
-                '&tokenB=' +
-                pos.quote,
-        );
+        linkGenRange.navigate();
     };
 
     const handleViewMoreClick = () => {
