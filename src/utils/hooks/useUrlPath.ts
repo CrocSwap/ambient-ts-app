@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface swapParamsIF {
