@@ -927,7 +927,7 @@ export default function Chart(props: propsIF) {
             const isFutureDay =
                 new Date(xDomain[1]).getTime() > new Date().getTime();
 
-            const domainMax = isFutureDay
+            let domainMax = isFutureDay
                 ? new Date().getTime()
                 : new Date(xDomain[1]).getTime();
 
@@ -935,9 +935,11 @@ export default function Chart(props: propsIF) {
                 (xDomain[1] - xDomain[0]) / (period * 1000),
             );
 
-            setCandleScale((prev: candleScale) => {
-                console.log({ prev });
+            const minDate = 1657868400; // 15 July 2022
 
+            domainMax = domainMax < minDate ? minDate : domainMax;
+
+            setCandleScale((prev: candleScale) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),

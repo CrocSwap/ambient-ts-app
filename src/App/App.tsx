@@ -885,12 +885,6 @@ export default function App() {
         lastBlockNumber,
     });
 
-    const [candleScale, setCandleScale] = useState<candleScale>({
-        lastCandleDate: undefined,
-        nCandle: 200,
-        isFetchForTimeframe: false,
-    });
-
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
@@ -908,13 +902,18 @@ export default function App() {
         location.pathname,
     ]);
 
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
+        isFetchForTimeframe: false,
+    });
+
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
-        // candleTimeLocal,
         isUserIdle,
         candleScale?.isFetchForTimeframe,
     ]);
@@ -928,8 +927,27 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
-            const currentTime = Math.floor(Date.now() / 1000);
-            console.log({ candleScale });
+            const reqOptions = new URLSearchParams({
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                period: candleTimeLocal.toString(),
+                // time: '', // optional
+                n: candleScale?.nCandle.toString(), // positive integer
+                // page: '0', // nonnegative integer
+                chainId: mktDataChainId(chainData.chainId),
+                dex: 'all',
+                poolStats: 'true',
+                concise: 'true',
+                poolStatsChainIdOverride: chainData.chainId,
+                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+            });
+
+            if (candleScale?.lastCandleDate) {
+                reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
+            }
 
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
@@ -937,31 +955,7 @@ export default function App() {
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: mainnetBaseTokenAddress.toLowerCase(),
-                                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                period: candleTimeLocal.toString(),
-                                time: candleScale?.lastCandleDate
-                                    ? candleScale?.lastCandleDate.toString()
-                                    : currentTime.toString(), // optional
-                                n: candleScale?.nCandle.toString(), // positive integer
-                                // page: '0', // nonnegative integer
-                                chainId: mktDataChainId(chainData.chainId),
-                                dex: 'all',
-                                poolStats: 'true',
-                                concise: 'true',
-                                poolStatsChainIdOverride: chainData.chainId,
-                                poolStatsBaseOverride:
-                                    baseTokenAddress.toLowerCase(),
-                                poolStatsQuoteOverride:
-                                    quoteTokenAddress.toLowerCase(),
-                                poolStatsPoolIdxOverride:
-                                    chainData.poolIndex.toString(),
-                            }),
-                    )
+                    fetch(candleSeriesCacheEndpoint + reqOptions)
                         .then((response) => response?.json())
                         .then((json) => {
                             const candles = json?.data;
@@ -983,6 +977,12 @@ export default function App() {
                                 });
                                 setIsCandleDataNull(false);
                                 setExpandTradeTable(false);
+                            }
+                            return candles?.length;
+                        })
+                        .then((result) => {
+                            if (result !== 0) {
+                                setFetchingCandle(false);
                             }
                         })
                         .catch(console.error);
