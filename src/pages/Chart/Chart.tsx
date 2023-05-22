@@ -3585,6 +3585,10 @@ export default function Chart(props: propsIF) {
             d3.select(d3Yaxis.current)
                 .call(zoomUtils?.yAxisZoom)
                 .on('dblclick.zoom', null);
+            if (location.pathname.includes('market')) {
+                d3.select(d3Yaxis.current).on('.drag', null);
+            }
+
             if (
                 location.pathname.includes('range') ||
                 location.pathname.includes('reposition')
