@@ -133,7 +133,21 @@ function TradeCandleStickChart(props: propsIF) {
         isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
 
-    const period = chartSettings.candleTime.market.time;
+    const period = useMemo(() => {
+        if (
+            location.pathname.startsWith('/trade/range') ||
+            location.pathname.startsWith('/trade/reposition')
+        ) {
+            return chartSettings.candleTime.range.time;
+        } else {
+            return chartSettings.candleTime.market.time;
+        }
+    }, [
+        chartSettings.candleTime.range.time,
+        chartSettings.candleTime.market.time,
+        location.pathname,
+    ]);
+
     const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<any>();
