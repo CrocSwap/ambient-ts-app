@@ -1,12 +1,11 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
-    chainId: string;
     searchedTxs: TransactionIF[];
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
@@ -14,7 +13,6 @@ interface propsIF {
 
 export default function TxSearchResults(props: propsIF) {
     const {
-        chainId,
         searchedTxs,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
@@ -25,21 +23,14 @@ export default function TxSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    const linkGenMarket = useUrlPath('market');
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(0);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate();
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
