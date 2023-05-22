@@ -141,18 +141,35 @@ aside.emoji-picker-react {
     border-radius: 4px;
 }
 
+/* .MuiPagination-root{
+
+    background: red !important;
+} */
+.MuiPagination-ul{
+    background: var(--dark2);
+    border-radius: 4px !important;
+}
 
 .MuiPaginationItem-root{
     color: var(--text2) !important;
-    outline: 1px solid transparent !important
+    outline: 1px solid transparent !important;
 }
 
 .Mui-selected.MuiPaginationItem-root {
     color: var(--text1) !important;
-    background: var(--dark3) !important
+    background: transparent !important;
    
 }
 
 .MuiDrawer-paper{
    z-index: 9999999999 !important;
+}
+.MuiPaginationItem-root {
+    display: inline-flex !important;
+}
+
+.css-1160xiw-MuiPaper-root-MuiDrawer-paper{
+    /* display: none !important;  */
+    background: var(--dark1) !important;
+    margin-top: 50px !important;
 }

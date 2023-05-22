@@ -1,10 +1,13 @@
 import styles from './SidebarFooter.module.css';
 
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome } from 'react-icons/fa';
-import { MdAccountBox } from 'react-icons/md';
+
 // import { IoMdAnalytics } from 'react-icons/io';
-import { RiSwapBoxFill } from 'react-icons/ri';
+import {
+    RiSwapBoxFill,
+    RiLayoutLeftFill,
+    RiLayoutRightFill,
+} from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -49,7 +52,7 @@ function SidebarFooter(props: PropsIF) {
     );
 
     const linksData = [
-        { title: 'Home', destination: '/', icon: FaHome },
+        // { title: 'Home', destination: '/', icon: FaHome },
         {
             title: 'Swap',
             destination: '/swap/' + paramsSlug,
@@ -60,13 +63,20 @@ function SidebarFooter(props: PropsIF) {
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
         },
-        { title: 'Account', destination: '/account/', icon: MdAccountBox },
+        // { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
 
     return (
         <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
-            <button onClick={toggleSidebarDrawer(true)}>Draw1</button>
+            {location.pathname.includes('trade') && (
+                <div className={styles.column}>
+                    <button onClick={toggleSidebarDrawer(true)}>
+                        <RiLayoutLeftFill size={20} />
+                    </button>
+                    <p>Sidebar</p>
+                </div>
+            )}
             {linksData.map((link) => (
                 <Link to={link.destination} key={link.destination}>
                     <link.icon
@@ -80,7 +90,14 @@ function SidebarFooter(props: PropsIF) {
                     <p> {link.title}</p>
                 </Link>
             ))}
-            <button onClick={toggleTradeDrawer(true)}>draw2</button>
+            {location.pathname.includes('trade') && (
+                <div className={styles.column}>
+                    <button onClick={toggleTradeDrawer(true)}>
+                        <RiLayoutRightFill size={18} />
+                    </button>
+                    <p>Trade</p>
+                </div>
+            )}
         </div>
     );
 }

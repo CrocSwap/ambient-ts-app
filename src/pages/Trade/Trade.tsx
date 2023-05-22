@@ -8,6 +8,7 @@ import {
     useContext,
     useCallback,
     memo,
+    useRef,
 } from 'react';
 import {
     useParams,
@@ -43,7 +44,10 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
-import { Drawer } from '@mui/material';
+import { Drawer, buttonBaseClasses } from '@mui/material';
+import { AiOutlineDoubleLeft } from 'react-icons/ai';
+import { FaAngleDoubleLeft } from 'react-icons/fa';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props
@@ -95,6 +99,7 @@ interface propsIF {
     toggleTradeDrawer: (
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    setIsTradeDrawerOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -138,7 +143,8 @@ function Trade(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         isTradeDrawerOpen,
-        toggleTradeDrawer,
+
+        setIsTradeDrawerOpen,
     } = props;
 
     const { params } = useParams();
@@ -234,12 +240,9 @@ function Trade(props: propsIF) {
         </div>
     );
 
-    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
-
     const mainContent = (
         <div
-            className={`${styles.right_col} ${
-                activeMobileComponent !== 'trade' ? styles.hide : ''
+            className={`${styles.right_col} 
             }`}
         >
             <Outlet
@@ -324,77 +327,6 @@ function Trade(props: propsIF) {
         handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
-    // const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
-
-    const [showMobileDropdown, setMobileDropdown] = useState(false);
-
-    const handleMobileDropdownClick = (component: string) => {
-        setActiveMobileComponent(component);
-        setMobileDropdown(false);
-    };
-
-    const mobileTradeDropdown = (
-        <section
-            style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'flex-end',
-                padding: '0 2rem',
-            }}
-        >
-            <div className={styles.mobile_trades_dropdown}>
-                <button
-                    className={styles.active_mobile_trade_dropdown}
-                    style={{ textTransform: 'capitalize' }}
-                    onClick={() => setMobileDropdown(!showMobileDropdown)}
-                >
-                    {activeMobileComponent}
-
-                    <BsCaretDownFill />
-                </button>
-                {showMobileDropdown && (
-                    <div
-                        className={
-                            showMobileDropdown
-                                ? styles.active_mobile_trade_dropdown_items_containers
-                                : styles.mobile_trade_dropdown_items_containers
-                        }
-                    >
-                        {activeMobileComponent !== 'trade' && (
-                            <button
-                                onClick={() =>
-                                    handleMobileDropdownClick('trade')
-                                }
-                            >
-                                Trade
-                            </button>
-                        )}
-
-                        {!isCandleDataNull &&
-                            activeMobileComponent !== 'chart' && (
-                                <button
-                                    onClick={() =>
-                                        handleMobileDropdownClick('chart')
-                                    }
-                                >
-                                    Chart
-                                </button>
-                            )}
-                        {activeMobileComponent !== 'transactions' && (
-                            <button
-                                onClick={() =>
-                                    handleMobileDropdownClick('transactions')
-                                }
-                            >
-                                Transactions
-                            </button>
-                        )}
-                    </div>
-                )}
-            </div>
-        </section>
-    );
-
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
         changeState(false, undefined);
@@ -457,9 +389,6 @@ function Trade(props: propsIF) {
                 </div>
             </div>
         ) : null;
-
-    // const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
-    const showActiveMobileComponent = false;
 
     const tradeChartsProps = {
         isPoolPriceChangePositive: isPoolPriceChangePositive,
@@ -546,52 +475,7 @@ function Trade(props: propsIF) {
             : chartSettings.candleTime.range,
     };
 
-    const mobileTrade = (
-        <section
-            className={styles.main_layout_mobile}
-            style={{
-                height: 'calc(100vh - 8rem)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                padding: '0 8px',
-            }}
-        >
-            {poolNotInitializedContent}
-            {mobileTradeDropdown}
-            {activeMobileComponent === 'chart' && (
-                <div
-                    className={` ${fullScreenStyle}`}
-                    style={{ marginLeft: '2rem' }}
-                >
-                    {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
-                </div>
-            )}
-
-            {activeMobileComponent === 'transactions' && (
-                <div
-                    className={styles.full_table_height}
-                    style={{ marginLeft: '2rem' }}
-                >
-                    <TradeTabs2 {...tradeTabsProps} />
-                </div>
-            )}
-
-            {activeMobileComponent === 'trade' && (
-                <Outlet
-                    context={{
-                        tradeData: tradeData,
-                        navigationMenu: navigationMenu,
-                        limitTick: limitTick,
-                    }}
-                />
-            )}
-        </section>
-    );
-
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
-
-    if (showActiveMobileComponent) return mobileTrade;
 
     return (
         <section className={styles.main_layout}>
@@ -621,24 +505,42 @@ function Trade(props: propsIF) {
                             : styles.min_table_height
                     }
                 >
-                    <div
-                    // className={
-                    //     activeMobileComponent !== 'transactions'
-                    //         ? styles.hide
-                    //         : ''
-                    // }
-                    >
+                    <div>
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>
                 </motion.div>
             </div>
             {!bottomTabs && mainContent}
+
             <Drawer
                 anchor='right'
                 open={isTradeDrawerOpen}
-                onClose={toggleTradeDrawer(false)}
+                onClose={() => setIsTradeDrawerOpen(false)}
             >
-                {mainContent}
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <div
+                        style={{
+                            width: '100%',
+                            background: 'var(--dark2)',
+                            zIndex: '3',
+                        }}
+                        onClick={() => setIsTradeDrawerOpen(false)}
+                    >
+                        <FaAngleDoubleLeft size={30} color='white' />
+                    </div>
+
+                    <Outlet
+                        context={{
+                            tradeData: tradeData,
+                            navigationMenu: navigationMenu,
+                        }}
+                    />
+                </div>
             </Drawer>
         </section>
     );
