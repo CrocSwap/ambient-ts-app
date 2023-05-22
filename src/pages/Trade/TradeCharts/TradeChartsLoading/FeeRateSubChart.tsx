@@ -2,11 +2,11 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { FeeChartData } from '../TradeCharts';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
+import { CandleData } from '../../../../utils/state/graphDataSlice';
 interface FreeRateData {
-    feeData: FeeChartData[] | undefined;
+    feeData: Array<CandleData>;
     period: number | undefined;
     subChartValues: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
@@ -112,7 +112,7 @@ function FeeRateSubChart(props: FreeRateData) {
                 .scaleExtent([1, 10])
                 .on('start', () => {
                     if (date === undefined) {
-                        date = feeData[feeData.length - 1].time;
+                        date = feeData[feeData.length - 1].time * 1000;
                     }
                 })
                 .on('zoom', (event: any) => {
@@ -123,14 +123,8 @@ function FeeRateSubChart(props: FreeRateData) {
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
-                    getNewCandleData(
-                        new Date(domainX[0].getTime() + deltaX),
-                        date,
-                    );
-                    xScale.domain([
-                        new Date(domainX[0].getTime() + deltaX),
-                        new Date(domainX[1].getTime() + deltaX),
-                    ]);
+                    getNewCandleData(domainX[0] + deltaX, date);
+                    xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
 
                     setZoomAndYdragControl(event);
                 }) as any;
@@ -147,8 +141,8 @@ function FeeRateSubChart(props: FreeRateData) {
                 .seriesCanvasLine()
                 .xScale(xScale)
                 .yScale(feeRateyScale)
-                .mainValue((d: any) => d.value)
-                .crossValue((d: any) => d.time)
+                .mainValue((d: any) => d.averageLiquidityFee)
+                .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
                     selection.strokeStyle = '#7371FC';
                     selection.strokeWidth = 1;

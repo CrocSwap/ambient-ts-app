@@ -79,13 +79,13 @@ import {
 import { formatAmountOld } from '../../../utils/numbers';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -113,13 +113,6 @@ interface propsIF {
     dailyVol: number | undefined;
     poolExists: boolean | undefined;
     isRangeCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -131,9 +124,9 @@ interface propsIF {
     searchType: string;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
-    ackTokens: ackTokensMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
     chainData: ChainSpec;
+    tokens: tokenMethodsIF;
 }
 
 function Range(props: propsIF) {
@@ -162,9 +155,6 @@ function Range(props: propsIF) {
         dailyVol,
         poolExists,
         isRangeCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -175,8 +165,8 @@ function Range(props: propsIF) {
         setSimpleRangeWidth,
         simpleRangeWidth,
         cachedFetchTokenPrice,
-        ackTokens,
         chainData,
+        tokens,
     } = props;
 
     const {
@@ -218,7 +208,7 @@ function Range(props: propsIF) {
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -564,7 +554,6 @@ function Range(props: propsIF) {
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
     useEffect(() => {
-        // console.log({ poolExists });
         if (poolExists === undefined || poolPriceNonDisplay === undefined) {
             setRangeButtonErrorMessage('…');
         } else if (!poolExists) {
@@ -1195,7 +1184,6 @@ function Range(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -1377,9 +1365,6 @@ function Range(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -1387,9 +1372,9 @@ function Range(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
 
     // props for <RangeWidth/> React element
@@ -1449,8 +1434,6 @@ function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode
             />
-            {/* <DividerDark addMarginTop /> */}
-
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1545,7 +1528,6 @@ function Range(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
                     receipt = error.receipt;
                 }
             }
@@ -1603,16 +1585,9 @@ function Range(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA = !tokens.verifyToken(tokenPair.dataTokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenPair.dataTokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -1649,8 +1624,8 @@ function Range(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.ackToken(tokenPair.dataTokenA);
+        needConfirmTokenB && tokens.ackToken(tokenPair.dataTokenB);
     };
 
     return (

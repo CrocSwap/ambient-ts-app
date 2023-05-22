@@ -1,5 +1,5 @@
 import { useAccount } from 'wagmi';
-import useSocket from '../../Service/useSocket';
+import useChatSocket from '../../Service/useChatSocket';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
@@ -68,7 +68,7 @@ export default function MessageInput(
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
 
-    const { sendMsg } = useSocket(
+    const { sendMsg } = useChatSocket(
         props.room.toUpperCase(),
         isSubscriptionsEnabled,
         isChatOpen,

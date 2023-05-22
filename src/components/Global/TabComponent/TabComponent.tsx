@@ -16,6 +16,7 @@ import styles from './TabComponent.module.css';
 import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 type tabData = {
     label: string;
@@ -134,6 +135,7 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
+    const mobileView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
@@ -162,16 +164,18 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        <button
-                            onClick={() => handleSelectedTab(item)}
-                            className={styles.label_button}
-                            role='tab'
-                            aria-selected={item.label === selectedTab.label}
-                            tabIndex={0}
-                        >
-                            {' '}
-                            {item.label}
-                        </button>
+                        {mobileView && (
+                            <button
+                                onClick={() => handleSelectedTab(item)}
+                                className={styles.label_button}
+                                role='tab'
+                                aria-selected={item.label === selectedTab.label}
+                                tabIndex={0}
+                            >
+                                {' '}
+                                {item.label}
+                            </button>
+                        )}
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
@@ -217,21 +221,23 @@ export default function TabComponent(props: TabPropsIF) {
                         {item.icon
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
-                        <button
-                            className={`${styles.item_label} ${
-                                item.label === selectedTab.label
-                                    ? styles.selected
-                                    : ''
-                            }`}
-                            onClick={() => handleSelectedTab(item)}
-                            role='tab'
-                            aria-selected={item.label === selectedTab.label}
+                        {mobileView && (
+                            <button
+                                className={`${styles.item_label} ${
+                                    item.label === selectedTab.label
+                                        ? styles.selected
+                                        : ''
+                                }`}
+                                onClick={() => handleSelectedTab(item)}
+                                role='tab'
+                                aria-selected={item.label === selectedTab.label}
 
-                            // tabIndex={item.label === selectedTab.label ? 0 : -1}
-                        >
-                            {' '}
-                            {item.label}
-                        </button>
+                                // tabIndex={item.label === selectedTab.label ? 0 : -1}
+                            >
+                                {' '}
+                                {item.label}
+                            </button>
+                        )}
 
                         {item.label === selectedTab.label && (
                             <motion.div

@@ -61,6 +61,7 @@ import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -77,6 +78,7 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     chainData: ChainSpec;
+    tokens: tokenMethodsIF;
 }
 
 function Reposition(props: propsIF) {
@@ -95,6 +97,7 @@ function Reposition(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
+        tokens,
     } = props;
 
     // current URL parameter string
@@ -126,7 +129,7 @@ function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -487,7 +490,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqBaseDisplay });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
                 const liqQuoteDisplay = liqQuoteNum
@@ -501,7 +503,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);

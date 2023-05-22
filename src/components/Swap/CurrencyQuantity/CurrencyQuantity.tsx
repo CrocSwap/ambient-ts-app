@@ -54,7 +54,8 @@ function CurrencyQuantity(props: propsIF) {
         setDisplayValue(valueWithLeadingZero);
     }, [value]);
 
-    const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
+    // Let input rest 3/4 of a second before triggering an update
+    const debouncedLastEvent = useDebounce(lastEvent, 750);
 
     useEffect(() => {
         if (debouncedLastEvent) handleChangeEvent(debouncedLastEvent);
