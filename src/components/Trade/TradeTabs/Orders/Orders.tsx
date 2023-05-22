@@ -22,7 +22,7 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
@@ -36,7 +36,6 @@ import { Pagination } from '@mui/material';
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
-    searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     expandTradeTable: boolean;
     chainData: ChainSpec;
@@ -75,6 +74,7 @@ function Orders(props: propsIF) {
         isAccountView,
         setExpandTradeTable,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
@@ -358,41 +358,13 @@ function Orders(props: propsIF) {
 
     const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
-    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
-        useState(false);
     const listRef = useRef<HTMLUListElement>(null);
-    const element = listRef.current;
-    useEffect(() => {
-        if (element) {
-            const resizeObserver = new ResizeObserver((entries) => {
-                const firstEntry = entries[0];
-                const elementHeight = firstEntry.contentRect.height;
-                const screenHeight = window.innerHeight;
-                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
-
-                setIsHeightGreaterThanHalf(isGreaterThanHalf);
-            });
-
-            resizeObserver.observe(element);
-
-            return () => {
-                resizeObserver.unobserve(element);
-            };
-        }
-    }, [element]);
+    const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && limitOrderData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div
-                className={styles.footer}
-                style={{
-                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
-                }}
-            >
-                <p
-                    className={styles.showing_text}
-                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+            <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
                         value={rowsPerPage}
@@ -403,14 +375,17 @@ function Orders(props: propsIF) {
                     />
                     <Pagination
                         count={count}
-                        size='large'
                         page={page}
                         shape='circular'
                         color='secondary'
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
                 </div>
             </div>
         );
@@ -536,10 +511,18 @@ function Orders(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage
@@ -548,16 +531,22 @@ function Orders(props: propsIF) {
 
     return (
         <section
-            className={styles.main_list_container}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
             style={{ height: portfolioPageStyle }}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                orderDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TableSkeletons />
+                ) : (
+                    orderDataOrNull
+                )}
+            </div>
+
+            <div>{footerDisplay}</div>
         </section>
     );
 }

@@ -34,33 +34,11 @@ export const useProcessTransaction = (
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
-    // const baseAddressLowerCase = baseAddress.toLowerCase();
-    // const quoteAddressLowerCase = quoteAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
         getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
             getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
         0;
-
-    // const isBaseTokenMoneynessGreaterOrEqual = useMemo(
-    //     () =>
-    //         getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-    //             getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-    //         0,
-    //     [tx.base, tx.base, tx.chainId],
-    // );
-
-    // useEffect(() => {
-    //     console.log({ isBaseTokenMoneynessGreaterOrEqual });
-    // }, [isBaseTokenMoneynessGreaterOrEqual]);
-    // const baseMoneyness = getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId);
-    // useEffect(() => {
-    //     console.log({ baseMoneyness });
-    // }, [baseMoneyness]);
-    // const quoteMoneyness = getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId);
-    // useEffect(() => {
-    //     console.log({ quoteMoneyness });
-    // }, [quoteMoneyness]);
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;

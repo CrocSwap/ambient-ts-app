@@ -36,8 +36,8 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -77,13 +77,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -93,9 +86,9 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -133,9 +126,6 @@ function LimitCurrencyConverter(props: propsIF) {
         poolExists,
         gasPriceInGwei,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -144,9 +134,9 @@ function LimitCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        ackTokens,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -543,9 +533,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
                 importedTokensPlus={importedTokensPlus}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
@@ -554,10 +541,10 @@ function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                tokens={tokens}
             />
             <div
                 className={
@@ -615,9 +602,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     gasPriceInGwei={gasPriceInGwei}
                     isOrderCopied={isOrderCopied}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
                     importedTokensPlus={importedTokensPlus}
                     getRecentTokens={getRecentTokens}
                     addRecentToken={addRecentToken}
@@ -626,10 +610,10 @@ function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    tokens={tokens}
                 />
             </div>
             <LimitRate

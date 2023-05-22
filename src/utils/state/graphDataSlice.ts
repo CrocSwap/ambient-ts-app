@@ -421,8 +421,6 @@ export const graphDataSlice = createSlice({
             state,
             action: PayloadAction<Array<TransactionIF>>,
         ) => {
-            // const payload = action.payload;
-            // console.log({ payload });
             const newChangesArray: Array<TransactionIF> = [];
 
             for (let index = 0; index < action.payload.length; index++) {
@@ -577,7 +575,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, check if duration exists
             } else {
-                // console.log('pool found in RTK for new candle data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -600,7 +597,6 @@ export const graphDataSlice = createSlice({
                         },
                     ]);
                 } else {
-                    // console.log('duration found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration[indexOfDuration] = {
@@ -609,7 +605,6 @@ export const graphDataSlice = createSlice({
                         candles: action.payload.candles,
                     };
                 }
-                // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
         addCandles: (
@@ -676,7 +671,6 @@ export const graphDataSlice = createSlice({
 
                     // if new candle data not already in RTK, add
                     if (indexOfDuplicate === -1) {
-                        // console.log('no duplicate found, adding');
                         state.candlesForAllPools.pools[
                             indexOfPool
                         ].candlesByPoolAndDuration[indexOfDuration].candles =
@@ -745,13 +739,6 @@ export const graphDataSlice = createSlice({
             state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
             state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
             state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserTxDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isPoolTxDataLoading = true;
-            // state.dataLoadingStatus.isPoolOrderDataLoading = true;
-            // state.dataLoadingStatus.isPoolRangeDataLoading = true;
-            // state.dataLoadingStatus.isCandleDataLoading = true;
         },
         resetLookupUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isLookupUserTxDataLoading = true;

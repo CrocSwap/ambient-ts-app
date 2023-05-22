@@ -1,14 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
+import { CHAT_BACKEND_WSS_URL } from '../../../constants';
 import { Message } from '../Model/MessageModel';
-export const host = 'https://ambichat.link:5000';
-export const sendMessageRoute = `${host}/api/messages/addmsg`;
-export const recieveMessageRoute = `${host}/api/messages/getall`;
-export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
-export const receiveUsername = `${host}/api/auth/getUserByUsername`;
-export const accountName = `${host}/api/auth/getUserByAccount`;
 
-const useSocket = (
+const useChatSocket = (
     room: string,
     areSubscriptionsEnabled = true,
     isChatOpen = true,
@@ -24,7 +19,10 @@ const useSocket = (
         if (!areSubscriptionsEnabled || !isChatOpen) return;
 
         const roomId = room;
-        socketRef.current = io(host, { query: { roomId } });
+        socketRef.current = io(CHAT_BACKEND_WSS_URL, {
+            path: '/chat/api/subscribe/',
+            query: { roomId },
+        });
         socketRef.current.on('connection');
 
         socketRef.current.on('send-msg', () => {
@@ -83,4 +81,4 @@ const useSocket = (
     };
 };
 
-export default useSocket;
+export default useChatSocket;

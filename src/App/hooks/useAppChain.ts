@@ -6,6 +6,7 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useNavigate } from 'react-router-dom';
+import chainNumToString from '../functions/chainNumToString';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -25,9 +26,7 @@ export const useAppChain = (
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
-        return chainNetwork
-            ? '0x' + chainNetwork.id.toString(16)
-            : defaultChain;
+        return chainNetwork ? chainNumToString(chainNetwork.id) : defaultChain;
     }
 
     const defaultChain = getDefaultChainId();

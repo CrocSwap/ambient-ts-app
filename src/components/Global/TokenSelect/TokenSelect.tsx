@@ -92,7 +92,6 @@ export default function TokenSelect(props: propsIF) {
                     <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
             </button>
-            {/* <p className={styles.token_list_data}>{fromListsText}</p> */}
         </>
     );
 }
