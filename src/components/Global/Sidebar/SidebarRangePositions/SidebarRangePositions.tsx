@@ -7,6 +7,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
+    chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -16,6 +17,7 @@ interface propsIF {
 
 export default function SidebarRangePositions(props: propsIF) {
     const {
+        chainId,
         isDenomBase,
         userPositions,
         setCurrentPositionActive,
@@ -48,7 +50,11 @@ export default function SidebarRangePositions(props: propsIF) {
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
-        linkGenRange.navigate();
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: pos.base,
+            tokenB: pos.quote
+        });
     };
 
     const handleViewMoreClick = () => {
