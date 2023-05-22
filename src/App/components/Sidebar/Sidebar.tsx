@@ -222,7 +222,6 @@ function Sidebar(props: propsIF) {
                     setCurrentTxActiveInTransactions={
                         setCurrentTxActiveInTransactions
                     }
-                    chainId={chainId}
                     setIsShowAllEnabled={setIsShowAllEnabled}
                     isUserLoggedIn={isConnected}
                 />

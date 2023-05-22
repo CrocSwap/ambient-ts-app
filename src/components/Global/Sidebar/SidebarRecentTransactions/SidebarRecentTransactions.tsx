@@ -9,10 +9,10 @@ import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
-    chainId: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
@@ -21,7 +21,6 @@ interface propsIF {
 export default function SidebarRecentTransactions(props: propsIF) {
     const {
         mostRecentTransactions,
-        chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         isUserLoggedIn,
@@ -35,6 +34,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const location = useLocation();
     const navigate = useNavigate();
+    const linkGenMarket = useUrlPath('market');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -52,14 +52,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate();
     };
 
     const handleViewMoreClick = (): void => {
