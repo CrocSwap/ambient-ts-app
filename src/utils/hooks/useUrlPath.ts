@@ -14,6 +14,7 @@ interface limitParamsIF {
     chain: string,
     tokenA: string,
     tokenB: string,
+    limitTick?: number,
 }
 interface rangeParamsIF {
     chain: string,
