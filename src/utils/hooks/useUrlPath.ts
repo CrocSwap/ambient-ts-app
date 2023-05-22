@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface swapParamsIF {
     chain: string,
@@ -43,7 +44,6 @@ const BASE_URL_PATHS = {
     index: '',
     home: '',
     swap: '/swap',
-    trade: '/trade',
     market: '/trade/market',
     limit: '/trade/limit',
     range: '/trade/range',
@@ -57,10 +57,42 @@ const BASE_URL_PATHS = {
 // type that maps to keys (strings) in the BASE_URL_PATHS object
 type pageNames = keyof typeof BASE_URL_PATHS;
 
-export const useUrlPath = (page: pageNames) => {
+export const useUrlPath = (page?: pageNames) => {
+    const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const baseURL: string = BASE_URL_PATHS[page];
+    const baseURL: string = page
+        ? BASE_URL_PATHS[page]
+        : getPageFromLocation();
+
+    function getPageFromLocation(): pageNames {
+        let pageName: pageNames;
+            if (pathname === '/') {
+                pageName = 'index';
+            } else if (pathname.startsWith(BASE_URL_PATHS.swap)) {
+                pageName = 'swap';
+            } else if (pathname.startsWith(BASE_URL_PATHS.market)) {
+                pageName = 'market';
+            } else if (pathname.startsWith(BASE_URL_PATHS.limit)) {
+                pageName = 'limit';
+            } else if (pathname.startsWith(BASE_URL_PATHS.range)) {
+                pageName = 'range';
+            } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
+                pageName = 'reposition';
+            } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
+                pageName = 'tos';
+            } else if (pathname.startsWith(BASE_URL_PATHS.testpage)) {
+                pageName = 'testpage';
+            } else if (pathname.startsWith(BASE_URL_PATHS.account)) {
+                pageName = 'account';
+            } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
+                pageName = 'privacy';
+            } else {
+                console.warn(`Could not find page name corresponding to URL path <<${pathname}>> in fn getPageFromLocation() in useUrlPath.ts file. Returning value 'home' as backup value.`);
+                pageName = 'home';
+            };
+        return pageName;
+    }
 
     function getFullURL(paramsObj?: anyParamsIF): string {
         let paramsSlug = '';
@@ -77,7 +109,7 @@ export const useUrlPath = (page: pageNames) => {
     }
 
     return {
-        baseURL: BASE_URL_PATHS[page],
+        baseURL,
         getFullURL,
         navigate: navigateUser,
     }
