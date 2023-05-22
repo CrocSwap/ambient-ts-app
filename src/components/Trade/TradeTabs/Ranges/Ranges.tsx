@@ -21,7 +21,6 @@ import styles from './Ranges.module.css';
 import {
     addPositionsByPool,
     addPositionsByUser,
-    setPositionsByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { Pagination } from '@mui/material';
 import {
@@ -124,8 +123,6 @@ function Ranges(props: propsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const memoKeyPoolInRTK = baseTokenAddress + quoteTokenAddress;
-
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase =
         tradeData.quoteToken.address.toLowerCase();
@@ -200,7 +197,7 @@ function Ranges(props: propsIF) {
         [positionsByPool],
     );
 
-    const sumHashTop3PositionsByPool = useMemo(
+    const sumHashTop3SortedPositions = useMemo(
         () =>
             diffHashSig({
                 id0: sortedPositions[0]?.positionId,
@@ -225,16 +222,6 @@ function Ranges(props: propsIF) {
     };
 
     useEffect(() => {
-        setRangeData([]);
-        dispatch(
-            setPositionsByPool({
-                dataReceived: false,
-                positions: [],
-            }),
-        );
-    }, [memoKeyPoolInRTK]);
-
-    useEffect(() => {
         updateRangeData();
     }, [
         isOnPortfolioPage,
@@ -250,9 +237,10 @@ function Ranges(props: propsIF) {
     // prevent query from running multiple times for the same position more than once per minute
     const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
 
+    const topThreePositions = sortedPositions.slice(0, 3);
+
     useEffect(() => {
-        const topThreePositions = sortedPositions.slice(0, 3);
-        if (topThreePositions) {
+        if (topThreePositions.length) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
                     return cachedPositionUpdateQuery(
@@ -291,7 +279,7 @@ function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sumHashTop3PositionsByPool,
+        sumHashTop3SortedPositions,
         currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
