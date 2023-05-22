@@ -2,7 +2,7 @@ import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
@@ -32,8 +32,8 @@ export default function SidebarRangePositions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
     const linkGenRange = useUrlPath('range');
+    const linkGenAccount = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -42,7 +42,7 @@ export default function SidebarRangePositions(props: propsIF) {
 
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {

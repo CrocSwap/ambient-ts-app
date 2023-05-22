@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
@@ -35,8 +35,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
     const linkGenMarket = useUrlPath('market');
+    const linkGenAccount = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -46,7 +46,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleCardClick = (tx: TransactionIF): void => {

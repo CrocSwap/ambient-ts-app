@@ -1,7 +1,7 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
@@ -16,6 +16,7 @@ interface propsIF {
     isUserLoggedIn: boolean | undefined;
     tokens: tokenMethodsIF;
 }
+
 export default function SidebarLimitOrders(props: propsIF) {
     const {
         chainId,
@@ -34,8 +35,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
     const linkGenLimit = useUrlPath('limit');
+    const linkGenAccount = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -43,7 +44,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
