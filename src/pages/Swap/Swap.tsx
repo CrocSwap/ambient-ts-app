@@ -50,11 +50,11 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
-import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -134,6 +134,7 @@ function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
+
     useUrlParams(tokens, chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);

@@ -22,14 +22,14 @@
 }
 
 .order_sell {
-    color: var(--accent2);
+    color: var(--accent1);
 }
 .owned_tx_contrast {
     color: var(--accent2);
 }
 
 .order_buy {
-    color: var(--accent1);
+    color: var(--accent5);
 }
 
 /* transactions */
@@ -43,12 +43,12 @@
     border-color: var(--accent4) !important;
 }
 .buy_style {
-    color: var(--accent1);
-    border-color: var(--accent1) !important;
+    color: var(--accent5);
+    border-color: var(--accent5) !important;
 }
 .sell_style {
-    color: var(--accent2);
-    border-color: var(--accent2) !important;
+    color: var(--accent1);
+    border-color: var(--accent1) !important;
 }
 
 /* apy */
