@@ -32,7 +32,7 @@ export default function TopPoolsCard(props: propsIF) {
         } else if (pathname.startsWith('/trade/range')) {
             return '/trade/range';
         } else {
-            console.error(
+            console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
             return '/trade/market';
