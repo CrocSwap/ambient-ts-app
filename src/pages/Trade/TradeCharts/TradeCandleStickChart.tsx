@@ -735,32 +735,31 @@ function TradeCandleStickChart(props: propsIF) {
             period &&
             (prevPeriod === undefined || period !== prevPeriod)
         ) {
-            let firtCandleTimeState = unparsedCandleData[0].time;
-            if (scaleData && prevPeriod && prevFirsCandle) {
+            const firtCandleTimeState = d3.max(
+                unparsedCandleData,
+                (d) => d.time,
+            );
+            if (
+                scaleData &&
+                prevPeriod &&
+                prevFirsCandle &&
+                firtCandleTimeState
+            ) {
                 const domain = scaleData.xScale.domain();
 
-                const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
+                const prevnCandle =
+                    (domain[1] - firtCandleTimeState * 1000) /
+                    (prevPeriod * 1000);
+
+                const currentTime = Date.now();
 
                 const diffDomain = Math.abs(domain[1] - domain[0]);
                 const factorDomain = diffDomain / (prevPeriod * 1000);
 
-                const diffCandle = Math.abs(
-                    Math.max(domain[1], prevFirsCandle * 1000) -
-                        Math.min(domain[1], prevFirsCandle * 1000),
-                );
-                const factorCanle = diffCandle / (prevPeriod * 1000);
-
                 const newDiffDomain = period * 1000 * factorDomain;
-                const newDiffCandle = direction * period * 1000 * factorCanle;
 
-                const firtCandleTime = d3.max(
-                    unparsedCandleData,
-                    (data: any) => data.time,
-                );
-
-                firtCandleTimeState = firtCandleTime;
-
-                const firsShownDomain = firtCandleTime * 1000 - newDiffCandle;
+                const firsShownDomain =
+                    currentTime + prevnCandle * period * 1000;
 
                 const lastShownCandle = firsShownDomain - newDiffDomain;
 
