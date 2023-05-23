@@ -689,7 +689,6 @@ function Range(props: propsIF) {
                 defaultHighTick,
                 lookupChain(chainId).gridSize,
             );
-            IS_LOCAL_ENV && console.debug({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
