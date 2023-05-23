@@ -55,6 +55,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isPairStable: boolean;
@@ -116,6 +117,8 @@ function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
+
+    useUrlParams(tokens, chainId, provider);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
