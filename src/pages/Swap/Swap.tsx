@@ -54,8 +54,8 @@ import { useProvider } from 'wagmi';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
     isPairStable: boolean;
@@ -73,7 +73,6 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    tokens: tokenMethodsIF;
 }
 
 function Swap(props: propsIF) {
@@ -93,7 +92,6 @@ function Swap(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        tokens,
     } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -108,6 +106,7 @@ function Swap(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
+    const tokens = useContext(TokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -587,7 +586,6 @@ function Swap(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        tokens: tokens,
     };
 
     const {

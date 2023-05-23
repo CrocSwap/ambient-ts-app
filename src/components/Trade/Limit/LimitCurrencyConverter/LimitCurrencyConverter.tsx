@@ -36,7 +36,6 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -71,7 +70,6 @@ interface propsIF {
     searchType: string;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
-    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -106,7 +104,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setResetLimitTick,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
-        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -512,7 +509,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
-                tokens={tokens}
             />
             <div
                 className={
@@ -574,7 +570,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
-                    tokens={tokens}
                 />
             </div>
             <LimitRate

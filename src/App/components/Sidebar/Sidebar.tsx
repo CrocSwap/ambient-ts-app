@@ -33,22 +33,16 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { tokenMethodsIF } from '../../hooks/useTokens';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
-// interface for component props
-interface propsIF {
-    tokens: tokenMethodsIF;
-}
-
-function Sidebar(props: propsIF) {
-    const { tokens } = props;
-
+function Sidebar() {
     const { sidebar, poolList } = useContext(SidebarContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const tokens = useContext(TokenContext);
 
     const location = useLocation();
 
@@ -110,10 +104,7 @@ function Sidebar(props: propsIF) {
             name: 'Limit Orders',
             icon: openOrdersImage,
             data: (
-                <SidebarLimitOrders
-                    limitOrderByUser={mostRecentLimitOrders}
-                    tokens={tokens}
-                />
+                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
         },
     ];

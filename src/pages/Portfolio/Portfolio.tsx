@@ -45,7 +45,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -64,7 +64,6 @@ interface propsIF {
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
-    tokens: tokenMethodsIF;
 }
 
 function Portfolio(props: propsIF) {
@@ -85,7 +84,6 @@ function Portfolio(props: propsIF) {
         setInput,
         searchType,
         mainnetProvider,
-        tokens,
     } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
@@ -100,6 +98,7 @@ function Portfolio(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const tokens = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
@@ -582,7 +581,6 @@ function Portfolio(props: propsIF) {
                         searchType={searchType}
                         isSingleToken={true}
                         tokenAorB={null}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

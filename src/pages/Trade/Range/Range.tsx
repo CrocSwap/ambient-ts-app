@@ -79,7 +79,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     isPairStable: boolean;
@@ -99,7 +99,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     cachedFetchTokenPrice: TokenPriceFn;
-    tokens: tokenMethodsIF;
 }
 
 function Range(props: propsIF) {
@@ -121,7 +120,6 @@ function Range(props: propsIF) {
         setInput,
         searchType,
         cachedFetchTokenPrice,
-        tokens,
     } = props;
 
     const {
@@ -146,6 +144,7 @@ function Range(props: propsIF) {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
+    const tokens = useContext(TokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
@@ -1309,7 +1308,6 @@ function Range(props: propsIF) {
         searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
-        tokens: tokens,
     };
 
     // props for <RangeWidth/> React element

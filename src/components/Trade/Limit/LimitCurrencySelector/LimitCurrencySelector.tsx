@@ -31,7 +31,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -66,7 +65,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -91,7 +89,6 @@ function LimitCurrencySelector(props: propsIF) {
         setInput,
         searchType,
         setUserOverrodeSurplusWithdrawalDefault,
-        tokens,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -402,7 +399,6 @@ function LimitCurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

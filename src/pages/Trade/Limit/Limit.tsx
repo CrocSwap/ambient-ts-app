@@ -67,7 +67,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     isPairStable: boolean;
@@ -85,7 +85,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -105,7 +104,6 @@ export default function Limit(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        tokens,
     } = props;
 
     const {
@@ -119,6 +117,7 @@ export default function Limit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
+    const tokens = useContext(TokenContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
@@ -757,7 +756,6 @@ export default function Limit(props: propsIF) {
         setResetLimitTick: setResetLimitTick,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        tokens: tokens,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 

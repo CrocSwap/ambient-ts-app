@@ -26,7 +26,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 interface propsIF {
     resetTokenQuantities: () => void;
@@ -68,7 +67,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
 
 function RangeCurrencySelector(props: propsIF) {
@@ -100,7 +98,6 @@ function RangeCurrencySelector(props: propsIF) {
         setInput,
         searchType,
         setUserOverrodeSurplusWithdrawalDefault,
-        tokens,
     } = props;
 
     const {
@@ -446,7 +443,6 @@ function RangeCurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

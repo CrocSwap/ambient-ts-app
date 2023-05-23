@@ -21,8 +21,8 @@ import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useProvider } from 'wagmi';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { ethers } from 'ethers';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -37,7 +37,6 @@ interface propsIF {
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
-    tokens: tokenMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -53,13 +52,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
-        tokens,
     } = props;
 
     const { addRecentToken, getRecentTokens } = useContext(UserDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const tokens = useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 

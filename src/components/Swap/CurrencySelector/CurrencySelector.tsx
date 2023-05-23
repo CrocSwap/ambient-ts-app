@@ -27,7 +27,6 @@ import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceEx
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -70,7 +69,6 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
@@ -104,7 +102,6 @@ function CurrencySelector(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        tokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -561,7 +558,6 @@ function CurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

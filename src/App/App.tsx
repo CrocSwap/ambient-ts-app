@@ -142,6 +142,7 @@ import { ChartContext } from '../contexts/ChartContext';
 import { SidebarContext } from '../contexts/SidebarContext';
 import { TradeTableContext } from '../contexts/TradeTableContext';
 import { UserDataContext } from '../contexts/UserDataContext';
+import { TokenContext } from '../contexts/TokenContext';
 
 // CONTEXT: cached data context - investigate if this is necessary after context changes
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -648,8 +649,32 @@ export default function App() {
     /* ------------------------------------------ END RANGE CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ TOKEN CONTEXT ------------------------------------------ */
-    // CONTEXT: token context - helper functions? has been rewritten - to be revisited
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
+
+    // CONTEXT: ???
+    const [needTokenLists, setNeedTokenLists] = useState(true);
+    // trigger a useEffect() which needs to run when new token lists are received
+    // true vs false is an arbitrary distinction here
+    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
+    if (needTokenLists) {
+        IS_LOCAL_ENV && console.debug('fetching token lists');
+        setNeedTokenLists(false);
+        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
+    }
+
+    /* ------------------------------------------ END TOKEN CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ TRADE TOKEN CONTEXT ------------------------------------------ */
+    const {
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useTokenPairAllowance({
+        crocEnv,
+        userAddress,
+        lastBlockNumber,
+    });
 
     const {
         baseTokenAddress,
@@ -675,17 +700,84 @@ export default function App() {
         isChartEnabled,
     });
 
-    const [needTokenLists, setNeedTokenLists] = useState(true);
-    // trigger a useEffect() which needs to run when new token lists are received
-    // true vs false is an arbitrary distinction here
-    const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-    if (needTokenLists) {
-        IS_LOCAL_ENV && console.debug('fetching token lists');
-        setNeedTokenLists(false);
-        fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
-    }
+    // CONTEXT: trade token context - to be refactored for better usage
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
+    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
+        useState<string>('');
 
-    /* ------------------------------------------ END TOKEN CONTEXT ------------------------------------------ */
+    // CONTEXT: trade token context
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (
+                crocEnv &&
+                userAddress &&
+                isConnected &&
+                tradeData.baseToken.address &&
+                tradeData.quoteToken.address
+            ) {
+                crocEnv
+                    .token(tradeData.baseToken.address)
+                    .walletDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
+                            setBaseTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.baseToken.address)
+                    .balanceDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
+                            setBaseTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.quoteToken.address)
+                    .walletDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
+                            setQuoteTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(tradeData.quoteToken.address)
+                    .balanceDisplay(userAddress)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
+                            setQuoteTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })();
+    }, [
+        crocEnv,
+        isConnected,
+        userAddress,
+        tradeData.baseToken.address,
+        tradeData.quoteToken.address,
+        lastBlockNumber,
+    ]);
+
+    /* ------------------------------------------ END TRADE TOKEN CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ POOL CONTEXT ------------------------------------------ */
     const pool = useMemo(
@@ -1050,97 +1142,6 @@ export default function App() {
     }, [location.pathname]);
 
     /* ------------------------------------------ END TRADE TABLE CONTEXT ------------------------------------------ */
-
-    /* ------------------------------------------ TRADE TOKEN CONTEXT ------------------------------------------ */
-    const {
-        tokenAAllowance,
-        tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
-    } = useTokenPairAllowance({
-        crocEnv,
-        userAddress,
-        lastBlockNumber,
-    });
-
-    // CONTEXT: trade token context - to be refactored for better usage
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
-    // CONTEXT: trade token context
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (
-                crocEnv &&
-                userAddress &&
-                isConnected &&
-                tradeData.baseToken.address &&
-                tradeData.quoteToken.address
-            ) {
-                crocEnv
-                    .token(tradeData.baseToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.baseToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.quoteToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(tradeData.quoteToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        isConnected,
-        userAddress,
-        tradeData.baseToken.address,
-        tradeData.quoteToken.address,
-        lastBlockNumber,
-    ]);
-
-    /* ------------------------------------------ END TRADE TOKEN CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ USER PREFERENCES CONTEXT ------------------------------------------ */
     const userPreferencesProps = {
@@ -1642,7 +1643,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        tokens: tokens,
     };
 
     // props for <Swap/> React element on trade route
@@ -1661,7 +1661,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        tokens: tokens,
     };
 
     // props for <Limit/> React element on trade route
@@ -1681,7 +1680,6 @@ export default function App() {
         validatedInput,
         setInput,
         searchType,
-        tokens,
     };
 
     // props for <Range/> React element
@@ -1703,12 +1701,6 @@ export default function App() {
         setInput,
         searchType,
         cachedFetchTokenPrice,
-        tokens,
-    };
-
-    // props for <Sidebar/> React element
-    const sidebarProps = {
-        tokens,
     };
 
     // Take away margin from left if we are on homepage or swap
@@ -1722,7 +1714,7 @@ export default function App() {
         currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
-        isChainSupported && <Sidebar {...sidebarProps} />;
+        isChainSupported && <Sidebar />;
 
     const sidebarDislayStyle = sidebarState.sidebar.isOpen
         ? 'sidebar_content_layout'
@@ -1820,7 +1812,6 @@ export default function App() {
         quoteTokenDexBalance,
         isTokenABase,
         limitRate: '',
-        tokens,
     };
 
     const accountProps = {
@@ -1839,12 +1830,10 @@ export default function App() {
         setInput,
         searchType,
         mainnetProvider,
-        tokens,
     };
 
     const repositionProps = {
         isPairStable,
-        tokens,
     };
 
     const chatProps = {
@@ -1878,317 +1867,327 @@ export default function App() {
             <CrocEnvContext.Provider value={crocEnvState}>
                 <ChainDataContext.Provider value={chainDataState}>
                     <UserDataContext.Provider value={userDataState}>
-                        <PoolContext.Provider value={poolState}>
-                            <TradeTableContext.Provider value={tradeTableState}>
-                                <UserPreferenceContext.Provider
-                                    value={userPreferences}
+                        <TokenContext.Provider value={tokens}>
+                            <PoolContext.Provider value={poolState}>
+                                <TradeTableContext.Provider
+                                    value={tradeTableState}
                                 >
-                                    <SidebarContext.Provider
-                                        value={sidebarState}
+                                    <UserPreferenceContext.Provider
+                                        value={userPreferences}
                                     >
-                                        <div
-                                            className={containerStyle}
-                                            data-theme={appState.theme.selected}
+                                        <SidebarContext.Provider
+                                            value={sidebarState}
                                         >
-                                            <AppOverlay />
-                                            {currentLocation !== '/404' && (
-                                                <PageHeader {...headerProps} />
-                                            )}
-                                            <section
-                                                className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                                            <div
+                                                className={containerStyle}
+                                                data-theme={
+                                                    appState.theme.selected
+                                                }
                                             >
-                                                {!currentLocation.startsWith(
-                                                    '/swap',
-                                                ) && sidebarRender}
-                                                <Routes>
-                                                    <Route
-                                                        index
-                                                        element={
-                                                            <Home
-                                                                cachedQuerySpotPrice={
-                                                                    cachedQuerySpotPrice
-                                                                }
-                                                                cachedPoolStatsFetch={
-                                                                    cachedPoolStatsFetch
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='accessibility'
-                                                        element={
-                                                            <Accessibility />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='trade'
-                                                        element={
-                                                            <RangeContext.Provider
-                                                                value={
-                                                                    rangeState
-                                                                }
-                                                            >
-                                                                <CandleContext.Provider
-                                                                    value={
-                                                                        candleState
-                                                                    }
-                                                                >
-                                                                    <ChartContext.Provider
-                                                                        value={
-                                                                            chartState
-                                                                        }
-                                                                    >
-                                                                        <Trade
-                                                                            {...tradeProps}
-                                                                        />
-                                                                    </ChartContext.Provider>
-                                                                </CandleContext.Provider>
-                                                            </RangeContext.Provider>
-                                                        }
-                                                    >
-                                                        <Route
-                                                            path=''
-                                                            element={
-                                                                <Navigate
-                                                                    to='/trade/market'
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='market'
-                                                            element={
-                                                                <Navigate
-                                                                    to={
-                                                                        defaultUrlParams.market
-                                                                    }
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='market/:params'
-                                                            element={
-                                                                <Swap
-                                                                    {...swapPropsTrade}
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='limit'
-                                                            element={
-                                                                <Navigate
-                                                                    to={
-                                                                        defaultUrlParams.limit
-                                                                    }
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='limit/:params'
-                                                            element={
-                                                                <Limit
-                                                                    {...limitPropsTrade}
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='range'
-                                                            element={
-                                                                <Navigate
-                                                                    to={
-                                                                        defaultUrlParams.range
-                                                                    }
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='range/:params'
-                                                            element={
-                                                                <RangeContext.Provider
-                                                                    value={
-                                                                        rangeState
-                                                                    }
-                                                                >
-                                                                    <Range
-                                                                        {...rangeProps}
-                                                                    />
-                                                                </RangeContext.Provider>
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='reposition'
-                                                            element={
-                                                                <Navigate
-                                                                    to={
-                                                                        defaultUrlParams.range
-                                                                    }
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='reposition/:params'
-                                                            element={
-                                                                <RangeContext.Provider
-                                                                    value={
-                                                                        rangeState
-                                                                    }
-                                                                >
-                                                                    <Reposition
-                                                                        {...repositionProps}
-                                                                    />
-                                                                </RangeContext.Provider>
-                                                            }
-                                                        />
-                                                        <Route
-                                                            path='edit/'
-                                                            element={
-                                                                <Navigate
-                                                                    to='/trade/market'
-                                                                    replace
-                                                                />
-                                                            }
-                                                        />
-                                                    </Route>
-                                                    <Route
-                                                        path='chat'
-                                                        element={
-                                                            <ChatPanel
-                                                                {...chatProps}
-                                                            />
-                                                        }
-                                                    />
-
-                                                    <Route
-                                                        path='chat/:params'
-                                                        element={
-                                                            <ChatPanel
-                                                                {...chatProps}
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='initpool/:params'
-                                                        element={
-                                                            <InitPool
-                                                                isUserLoggedIn={
-                                                                    isConnected
-                                                                }
-                                                                openModalWallet={
-                                                                    openWagmiModalWallet
-                                                                }
-                                                                tokenAAllowance={
-                                                                    tokenAAllowance
-                                                                }
-                                                                tokenBAllowance={
-                                                                    tokenBAllowance
-                                                                }
-                                                                setRecheckTokenAApproval={
-                                                                    setRecheckTokenAApproval
-                                                                }
-                                                                setRecheckTokenBApproval={
-                                                                    setRecheckTokenBApproval
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='account'
-                                                        element={
-                                                            <Portfolio
-                                                                {...accountProps}
-                                                                userAccount={
-                                                                    true
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='account/:address'
-                                                        element={
-                                                            <Portfolio
-                                                                {...accountProps}
-                                                                userAccount={
-                                                                    false
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-
-                                                    <Route
-                                                        path='swap'
-                                                        element={
-                                                            <Navigate
-                                                                replace
-                                                                to={
-                                                                    defaultUrlParams.swap
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='swap/:params'
-                                                        element={
-                                                            <Swap
-                                                                {...swapProps}
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='tos'
-                                                        element={
-                                                            <TermsOfService />
-                                                        }
-                                                    />
-                                                    {IS_LOCAL_ENV && (
-                                                        <Route
-                                                            path='testpage'
-                                                            element={
-                                                                <TestPage />
-                                                            }
-                                                        />
-                                                    )}
-                                                    <Route
-                                                        path='/:address'
-                                                        element={
-                                                            <Portfolio
-                                                                {...accountProps}
-                                                                userAccount={
-                                                                    false
-                                                                }
-                                                            />
-                                                        }
-                                                    />
-                                                    <Route
-                                                        path='/404'
-                                                        element={<NotFound />}
-                                                    />
-                                                </Routes>
-                                            </section>
-                                        </div>
-                                        <div className='footer_container'>
-                                            {currentLocation !== '/' &&
-                                                !currentLocation.includes(
-                                                    '/chat',
-                                                ) &&
-                                                appState.chat.isEnabled && (
-                                                    <ChatPanel
-                                                        isFullScreen={false}
+                                                <AppOverlay />
+                                                {currentLocation !== '/404' && (
+                                                    <PageHeader
+                                                        {...headerProps}
                                                     />
                                                 )}
-                                        </div>
-                                        <SidebarFooter />
-                                        <GlobalModal />
-                                        <GlobalPopup />
-                                        <SnackbarComponent />
-                                        <WalletModalWagmi />
-                                    </SidebarContext.Provider>
-                                </UserPreferenceContext.Provider>
-                            </TradeTableContext.Provider>
-                        </PoolContext.Provider>
+                                                <section
+                                                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
+                                                >
+                                                    {!currentLocation.startsWith(
+                                                        '/swap',
+                                                    ) && sidebarRender}
+                                                    <Routes>
+                                                        <Route
+                                                            index
+                                                            element={
+                                                                <Home
+                                                                    cachedQuerySpotPrice={
+                                                                        cachedQuerySpotPrice
+                                                                    }
+                                                                    cachedPoolStatsFetch={
+                                                                        cachedPoolStatsFetch
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='accessibility'
+                                                            element={
+                                                                <Accessibility />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='trade'
+                                                            element={
+                                                                <RangeContext.Provider
+                                                                    value={
+                                                                        rangeState
+                                                                    }
+                                                                >
+                                                                    <CandleContext.Provider
+                                                                        value={
+                                                                            candleState
+                                                                        }
+                                                                    >
+                                                                        <ChartContext.Provider
+                                                                            value={
+                                                                                chartState
+                                                                            }
+                                                                        >
+                                                                            <Trade
+                                                                                {...tradeProps}
+                                                                            />
+                                                                        </ChartContext.Provider>
+                                                                    </CandleContext.Provider>
+                                                                </RangeContext.Provider>
+                                                            }
+                                                        >
+                                                            <Route
+                                                                path=''
+                                                                element={
+                                                                    <Navigate
+                                                                        to='/trade/market'
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='market'
+                                                                element={
+                                                                    <Navigate
+                                                                        to={
+                                                                            defaultUrlParams.market
+                                                                        }
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='market/:params'
+                                                                element={
+                                                                    <Swap
+                                                                        {...swapPropsTrade}
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='limit'
+                                                                element={
+                                                                    <Navigate
+                                                                        to={
+                                                                            defaultUrlParams.limit
+                                                                        }
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='limit/:params'
+                                                                element={
+                                                                    <Limit
+                                                                        {...limitPropsTrade}
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='range'
+                                                                element={
+                                                                    <Navigate
+                                                                        to={
+                                                                            defaultUrlParams.range
+                                                                        }
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='range/:params'
+                                                                element={
+                                                                    <RangeContext.Provider
+                                                                        value={
+                                                                            rangeState
+                                                                        }
+                                                                    >
+                                                                        <Range
+                                                                            {...rangeProps}
+                                                                        />
+                                                                    </RangeContext.Provider>
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='reposition'
+                                                                element={
+                                                                    <Navigate
+                                                                        to={
+                                                                            defaultUrlParams.range
+                                                                        }
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='reposition/:params'
+                                                                element={
+                                                                    <RangeContext.Provider
+                                                                        value={
+                                                                            rangeState
+                                                                        }
+                                                                    >
+                                                                        <Reposition
+                                                                            {...repositionProps}
+                                                                        />
+                                                                    </RangeContext.Provider>
+                                                                }
+                                                            />
+                                                            <Route
+                                                                path='edit/'
+                                                                element={
+                                                                    <Navigate
+                                                                        to='/trade/market'
+                                                                        replace
+                                                                    />
+                                                                }
+                                                            />
+                                                        </Route>
+                                                        <Route
+                                                            path='chat'
+                                                            element={
+                                                                <ChatPanel
+                                                                    {...chatProps}
+                                                                />
+                                                            }
+                                                        />
+
+                                                        <Route
+                                                            path='chat/:params'
+                                                            element={
+                                                                <ChatPanel
+                                                                    {...chatProps}
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='initpool/:params'
+                                                            element={
+                                                                <InitPool
+                                                                    isUserLoggedIn={
+                                                                        isConnected
+                                                                    }
+                                                                    openModalWallet={
+                                                                        openWagmiModalWallet
+                                                                    }
+                                                                    tokenAAllowance={
+                                                                        tokenAAllowance
+                                                                    }
+                                                                    tokenBAllowance={
+                                                                        tokenBAllowance
+                                                                    }
+                                                                    setRecheckTokenAApproval={
+                                                                        setRecheckTokenAApproval
+                                                                    }
+                                                                    setRecheckTokenBApproval={
+                                                                        setRecheckTokenBApproval
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='account'
+                                                            element={
+                                                                <Portfolio
+                                                                    {...accountProps}
+                                                                    userAccount={
+                                                                        true
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='account/:address'
+                                                            element={
+                                                                <Portfolio
+                                                                    {...accountProps}
+                                                                    userAccount={
+                                                                        false
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+
+                                                        <Route
+                                                            path='swap'
+                                                            element={
+                                                                <Navigate
+                                                                    replace
+                                                                    to={
+                                                                        defaultUrlParams.swap
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='swap/:params'
+                                                            element={
+                                                                <Swap
+                                                                    {...swapProps}
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='tos'
+                                                            element={
+                                                                <TermsOfService />
+                                                            }
+                                                        />
+                                                        {IS_LOCAL_ENV && (
+                                                            <Route
+                                                                path='testpage'
+                                                                element={
+                                                                    <TestPage />
+                                                                }
+                                                            />
+                                                        )}
+                                                        <Route
+                                                            path='/:address'
+                                                            element={
+                                                                <Portfolio
+                                                                    {...accountProps}
+                                                                    userAccount={
+                                                                        false
+                                                                    }
+                                                                />
+                                                            }
+                                                        />
+                                                        <Route
+                                                            path='/404'
+                                                            element={
+                                                                <NotFound />
+                                                            }
+                                                        />
+                                                    </Routes>
+                                                </section>
+                                            </div>
+                                            <div className='footer_container'>
+                                                {currentLocation !== '/' &&
+                                                    !currentLocation.includes(
+                                                        '/chat',
+                                                    ) &&
+                                                    appState.chat.isEnabled && (
+                                                        <ChatPanel
+                                                            isFullScreen={false}
+                                                        />
+                                                    )}
+                                            </div>
+                                            <SidebarFooter />
+                                            <GlobalModal />
+                                            <GlobalPopup />
+                                            <SnackbarComponent />
+                                            <WalletModalWagmi />
+                                        </SidebarContext.Provider>
+                                    </UserPreferenceContext.Provider>
+                                </TradeTableContext.Provider>
+                            </PoolContext.Provider>
+                        </TokenContext.Provider>
                     </UserDataContext.Provider>
                 </ChainDataContext.Provider>
             </CrocEnvContext.Provider>

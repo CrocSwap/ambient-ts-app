@@ -35,9 +35,9 @@ import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 // import { useCandleTime } from './useCandleTime';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
+import { TokenContext } from '../../contexts/TokenContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,7 +51,6 @@ interface propsIF {
     limitRate: string;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
-    tokens: tokenMethodsIF;
 }
 
 // React functional component
@@ -66,7 +65,6 @@ function Trade(props: propsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isTokenABase,
-        tokens,
     } = props;
 
     const {
@@ -87,6 +85,7 @@ function Trade(props: propsIF) {
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
+    const tokens = useContext(TokenContext);
     const { expandTradeTable } = useContext(TradeTableContext);
 
     // CONTEXT: state exists just to pass onto trade tabs, setState is used here, could move to PositionsOnlyToggle, or common trade context
