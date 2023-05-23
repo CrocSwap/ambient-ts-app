@@ -56,7 +56,6 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -86,8 +85,6 @@ function Reposition(props: propsIF) {
         isDenomBase,
         ambientApy,
         dailyVol,
-        provider,
-        chainId,
         isPairStable,
         tokenPair,
         poolPriceDisplay,
@@ -97,7 +94,6 @@ function Reposition(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         chainData,
-        tokens,
     } = props;
 
     // current URL parameter string
@@ -129,7 +125,6 @@ function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    useUrlParams(tokens, chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise

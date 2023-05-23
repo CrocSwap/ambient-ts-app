@@ -159,31 +159,35 @@ export const useUrlParams = (
     }
 
     useEffect(() => {
-        const chainToUse = urlParamMap.get('chain') || dfltChainId;
+        try {
+            const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
-        if (urlParamMap.has('chain')) {
-            switchNetwork && switchNetwork(parseInt(chainToUse));
-            dispatch(setChainId(chainToUse));
+            if (urlParamMap.has('chain')) {
+                switchNetwork && switchNetwork(parseInt(chainToUse));
+                dispatch(setChainId(chainToUse));
+            }
+
+            const tokenA = urlParamMap.get('tokenA');
+            const tokenB = urlParamMap.get('tokenB');
+            if (tokenA && tokenB) {
+                processTokenAddr(tokenA, tokenB, chainToUse);
+            } else {
+                processDefaultTokens(chainToUse);
+            }
+
+            processOptParam('lowTick', async (tick: string) => {
+                dispatch(setAdvancedLowTick(parseInt(tick)));
+            });
+
+            processOptParam('highTick', async (tick: string) => {
+                dispatch(setAdvancedHighTick(parseInt(tick)));
+            });
+
+            processOptParam('limitTick', async (tick: string) => {
+                dispatch(setLimitTick(parseInt(tick)));
+            });
+        } catch (error) {
+            console.log({ error });
         }
-
-        const tokenA = urlParamMap.get('tokenA');
-        const tokenB = urlParamMap.get('tokenB');
-        if (tokenA && tokenB) {
-            processTokenAddr(tokenA, tokenB, chainToUse);
-        } else {
-            processDefaultTokens(chainToUse);
-        }
-
-        processOptParam('lowTick', async (tick: string) => {
-            dispatch(setAdvancedLowTick(parseInt(tick)));
-        });
-
-        processOptParam('highTick', async (tick: string) => {
-            dispatch(setAdvancedHighTick(parseInt(tick)));
-        });
-
-        processOptParam('limitTick', async (tick: string) => {
-            dispatch(setLimitTick(parseInt(tick)));
-        });
     }, [tokensOnChain.length, ...dependencies.map((x) => urlParamMap.get(x))]);
 };
