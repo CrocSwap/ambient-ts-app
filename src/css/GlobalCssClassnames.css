@@ -148,6 +148,7 @@ aside.emoji-picker-react {
 .MuiPagination-ul{
     background: var(--dark2);
     border-radius: 4px !important;
+    flex-wrap: nowrap !important;
 }
 
 .MuiPaginationItem-root{

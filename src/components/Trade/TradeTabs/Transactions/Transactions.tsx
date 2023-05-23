@@ -219,8 +219,8 @@ function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1400px)');
-    const max1700px = useMediaQuery('(max-width: 1700px)');
+    const max1400px = useMediaQuery('(max-width: 1600px)');
+    const max1700px = useMediaQuery('(max-width: 1800px)');
 
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);

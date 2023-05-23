@@ -7,7 +7,6 @@ import {
     useEffect,
     memo,
 } from 'react';
-import { ethers } from 'ethers';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -36,7 +35,6 @@ import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 // interface for component props
 interface propsIF {
-    provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;

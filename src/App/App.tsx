@@ -436,14 +436,10 @@ export default function App() {
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(true);
     // eslint-disable-next-line
-    const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
-
-    window.ononline = () => setUserIsOnline(true);
-    window.onoffline = () => setUserIsOnline(false);
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
