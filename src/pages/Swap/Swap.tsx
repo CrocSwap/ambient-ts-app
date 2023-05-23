@@ -50,7 +50,6 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
-import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -134,7 +133,6 @@ function Swap(props: propsIF) {
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-    useUrlParams(tokens, chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(

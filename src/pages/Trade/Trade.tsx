@@ -44,6 +44,7 @@ import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 // interface for React functional component props
 interface propsIF {
@@ -131,6 +132,9 @@ function Trade(props: propsIF) {
     } = props;
 
     const { params } = useParams();
+
+    useUrlParams(tokens, chainId, provider);
+
     const {
         chart: { isFullScreen: isChartFullScreen },
         outsideControl: { setIsActive: setOutsideControlActive },
