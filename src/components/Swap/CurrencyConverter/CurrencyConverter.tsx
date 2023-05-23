@@ -3,6 +3,7 @@ import {
     Dispatch,
     memo,
     SetStateAction,
+    useCallback,
     useEffect,
     useMemo,
     useState,
@@ -272,8 +273,8 @@ function CurrencyConverter(props: propsIF) {
         return () => clearInterval(timerId);
     }, []);
 
-    const reverseTokens = useMemo(
-        () => (): void => {
+    const reverseTokens = useCallback(
+        (): void => {
             if (disableReverseTokens || !props.poolExists) {
                 return;
             } else {
@@ -301,7 +302,6 @@ function CurrencyConverter(props: propsIF) {
                 if (!isTokenAPrimaryLocal) {
                     setTokenAQtyLocal(tokenBQtyLocal);
                     props.setBuyQtyString('');
-
                     props.setSellQtyString(
                         tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
                     );
@@ -317,8 +317,7 @@ function CurrencyConverter(props: propsIF) {
                 dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
                 setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
             }
-        },
-        [
+        }, [
             props.crocEnv,
             props.poolPriceDisplay,
             tokenALocal,
