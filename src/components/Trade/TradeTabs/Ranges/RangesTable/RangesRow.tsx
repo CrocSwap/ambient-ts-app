@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
 

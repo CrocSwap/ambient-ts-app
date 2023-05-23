@@ -1,5 +1,4 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './RecentPools.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';

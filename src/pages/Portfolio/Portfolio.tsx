@@ -8,7 +8,7 @@ import {
     memo,
 } from 'react';
 import { useEnsName } from 'wagmi';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components

@@ -7,7 +7,6 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 
 // START: Import Local Files
 import styles from './RangeHeader.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';

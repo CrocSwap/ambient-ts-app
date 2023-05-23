@@ -9,7 +9,6 @@ import {
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';

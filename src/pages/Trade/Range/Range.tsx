@@ -9,7 +9,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';

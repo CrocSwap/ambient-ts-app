@@ -6,7 +6,7 @@ import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
+import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -17,24 +17,6 @@ import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
-
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitTick: number | undefined;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-}
 
 interface propsIF {
     isFullScreen: boolean;

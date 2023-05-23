@@ -9,7 +9,6 @@ import {
     memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { CrocImpact } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
@@ -34,7 +33,7 @@ import {
 } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import {

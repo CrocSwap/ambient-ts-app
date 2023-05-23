@@ -1,5 +1,4 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
 import { useContext } from 'react';

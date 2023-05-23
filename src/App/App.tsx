@@ -1734,8 +1734,6 @@ export default function App() {
         cachedFetchTokenPrice,
     };
 
-    // CONTEXT: move into sidebar
-
     // props for <Sidebar/> React element
     const sidebarProps = {
         verifyToken: verifyToken,

@@ -3,7 +3,6 @@ import styles from './TopPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';

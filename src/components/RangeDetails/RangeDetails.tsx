@@ -1,6 +1,5 @@
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import { ethers } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { formatAmountOld } from '../../utils/numbers';

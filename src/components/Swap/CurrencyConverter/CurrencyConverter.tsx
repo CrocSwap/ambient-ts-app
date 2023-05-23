@@ -11,7 +11,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import {
     setIsTokenAPrimary,
     setPrimaryQuantity,
@@ -23,7 +23,6 @@ import {
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';

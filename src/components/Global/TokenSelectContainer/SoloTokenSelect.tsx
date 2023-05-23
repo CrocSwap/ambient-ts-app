@@ -7,7 +7,7 @@ import {
     useContext,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import {
     useAppDispatch,
@@ -15,7 +15,6 @@ import {
 } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
-import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';

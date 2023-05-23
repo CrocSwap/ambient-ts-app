@@ -13,7 +13,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { ethers } from 'ethers';
 import {
     // reverseTokensInRTK,
     setIsTokenAPrimary,
@@ -31,7 +30,7 @@ import LimitRate from '../LimitRate/LimitRate';
 
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';

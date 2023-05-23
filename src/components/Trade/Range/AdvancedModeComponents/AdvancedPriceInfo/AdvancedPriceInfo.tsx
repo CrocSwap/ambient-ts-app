@@ -1,5 +1,4 @@
 import styles from './AdvancedPriceInfo.module.css';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 import { memo } from 'react';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 

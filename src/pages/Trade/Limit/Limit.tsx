@@ -7,7 +7,6 @@ import {
     useMemo,
     useContext,
 } from 'react';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import FocusTrap from 'focus-trap-react';
 
@@ -38,7 +37,7 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import {
     setLimitTick,
     setLimitTickCopied,

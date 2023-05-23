@@ -17,7 +17,6 @@ import {
 
 // START: Import Other Local Files
 import styles from './BypassConfirmRepositionButton.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 

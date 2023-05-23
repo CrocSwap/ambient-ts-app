@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-    useContext,
-    useCallback,
-    memo,
-} from 'react';
+import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import {
     useParams,
     Outlet,
@@ -18,7 +10,6 @@ import {
     useNavigate,
     useLocation,
 } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
@@ -31,7 +22,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';

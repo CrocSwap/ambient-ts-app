@@ -6,11 +6,10 @@ import {
     useContext,
     useState,
 } from 'react';
-import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';

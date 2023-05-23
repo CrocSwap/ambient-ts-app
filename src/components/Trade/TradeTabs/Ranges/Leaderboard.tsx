@@ -10,7 +10,6 @@ import {
     useState,
     memo,
 } from 'react';
-import { ethers } from 'ethers';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';

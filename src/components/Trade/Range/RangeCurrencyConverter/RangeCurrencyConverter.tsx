@@ -8,7 +8,6 @@ import {
     memo,
     useContext,
 } from 'react';
-import { ethers } from 'ethers';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -18,7 +17,7 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // START: Import Local Files
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,

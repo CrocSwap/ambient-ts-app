@@ -14,7 +14,6 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 
 // START: Import Local Files
 import styles from './ConfirmRangeModal.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';

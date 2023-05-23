@@ -7,7 +7,6 @@ import {
     useContext,
     useState,
 } from 'react';
-import { ethers } from 'ethers';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -15,7 +14,7 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';

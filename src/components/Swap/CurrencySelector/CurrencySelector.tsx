@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -12,7 +11,7 @@ import {
     useContext,
     memo,
 } from 'react';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';

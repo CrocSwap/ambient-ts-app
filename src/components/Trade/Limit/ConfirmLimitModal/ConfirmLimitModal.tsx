@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';

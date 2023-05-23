@@ -2,7 +2,6 @@
 import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,

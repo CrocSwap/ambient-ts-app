@@ -1,12 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
-import {
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../../../utils/interfaces/exports';
+import { TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 

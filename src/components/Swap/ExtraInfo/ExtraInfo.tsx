@@ -7,7 +7,6 @@ import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import styles from './ExtraInfo.module.css';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import makePriceDisplay from './makePriceDisplay';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import {
     useAppDispatch,

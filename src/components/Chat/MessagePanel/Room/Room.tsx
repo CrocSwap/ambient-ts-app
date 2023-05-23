@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -8,24 +8,6 @@ import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitTick: number | undefined;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-}
 
 interface propsIF {
     selectedRoom: any;

@@ -12,7 +12,6 @@ import {
     memo,
     useRef,
 } from 'react';
-import { ethers } from 'ethers';
 
 // START: Import JSX Components
 

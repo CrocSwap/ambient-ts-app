@@ -1,6 +1,5 @@
 import styles from './SelectedRange.module.css';
 import { memo, useContext, useState } from 'react';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
