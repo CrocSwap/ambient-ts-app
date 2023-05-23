@@ -60,9 +60,7 @@ export const useUrlPath = (page?: pageNames) => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const baseURL: string = page
-        ? BASE_URL_PATHS[page]
-        : BASE_URL_PATHS[getPageFromLocation()];
+    const baseURL: string = BASE_URL_PATHS[page ?? getPageFromLocation()];
 
     function getPageFromLocation(): pageNames {
         let pageName: pageNames;
