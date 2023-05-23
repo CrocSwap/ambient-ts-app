@@ -40,40 +40,8 @@ interface propsIF {
     isAdvancedModeActive: boolean | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
-}
-
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
-
-export interface TvlChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-}
-
-export interface VolumeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-    volume: number;
-    color: string;
-}
-export interface FeeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -234,7 +202,6 @@ function TradeCharts(props: propsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div
@@ -288,9 +255,7 @@ function TradeCharts(props: propsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<
-        CandleChartData | undefined
-    >();
+    const [currentData, setCurrentData] = useState<CandleData | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();

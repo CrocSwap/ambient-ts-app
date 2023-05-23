@@ -27,6 +27,7 @@ import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceEx
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -63,19 +64,13 @@ interface propsIF {
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
@@ -104,14 +99,12 @@ function CurrencySelector(props: propsIF) {
         isSwapCopied,
         isSellTokenEth,
         reverseTokens,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
+        tokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -557,9 +550,6 @@ function CurrencySelector(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
                         importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -571,6 +561,7 @@ function CurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

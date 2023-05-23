@@ -209,7 +209,6 @@ export const txRowConstants = (props: Props) => {
             <p
                 data-label='wallet'
                 className={usernameStyle}
-                onClick={(event) => event.stopPropagation()}
                 style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}

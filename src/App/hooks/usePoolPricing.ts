@@ -1,7 +1,6 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
     setDidUserFlipDenom,
     setLimitTick,
@@ -18,7 +17,6 @@ interface PoolPricingPropsIF {
     quoteTokenAddress: string;
     baseTokenDecimals: number;
     quoteTokenDecimals: number;
-    searchableTokens: TokenIF[];
     chainData: ChainSpec;
     receiptCount: number;
     isUserLoggedIn: boolean;

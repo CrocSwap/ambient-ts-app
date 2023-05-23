@@ -72,7 +72,6 @@ import {
 import { formatAmountOld } from '../../../utils/numbers';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -80,7 +79,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { useProvider } from 'wagmi';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isPairStable: boolean;
@@ -94,19 +93,13 @@ interface propsIF {
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     cachedFetchTokenPrice: TokenPriceFn;
+    tokens: tokenMethodsIF;
 }
 
 function Range(props: propsIF) {
@@ -122,15 +115,13 @@ function Range(props: propsIF) {
         setRecheckTokenAApproval,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
         cachedFetchTokenPrice,
+        tokens,
     } = props;
 
     const {
@@ -155,8 +146,9 @@ function Range(props: propsIF) {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
-    const { mintSlippage, dexBalRange, bypassConfirmRange, ackTokens } =
-        useContext(UserPreferenceContext);
+    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
+        UserPreferenceContext,
+    );
 
     const [
         isConfirmationModalOpen,
@@ -180,9 +172,6 @@ function Range(props: propsIF) {
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
-    const provider = useProvider();
-
-    useUrlParams(chainId, provider);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -1148,7 +1137,6 @@ function Range(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -1315,9 +1303,6 @@ function Range(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
@@ -1325,6 +1310,7 @@ function Range(props: propsIF) {
         searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
 
     // props for <RangeWidth/> React element
@@ -1382,8 +1368,6 @@ function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode
             />
-            {/* <DividerDark addMarginTop /> */}
-
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1471,7 +1455,6 @@ function Range(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
                     receipt = error.receipt;
                 }
             }
@@ -1523,16 +1506,9 @@ function Range(props: propsIF) {
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenB);
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -1567,8 +1543,8 @@ function Range(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenB);
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
     return (

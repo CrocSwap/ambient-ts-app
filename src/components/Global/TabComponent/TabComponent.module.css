@@ -142,6 +142,13 @@
 .item_label:focus-visible{
     border-bottom: 1px solid var(--text1);
 }
+@media (min-width: 800px) {
+
+    .tab_icon {
+        display: none;
+    }
+
+}
 
 @media (min-width: 500px) {
     .item_label {
@@ -159,10 +166,7 @@
         color: var(--accent1);
     }
 
-    .tab_icon {
-        display: none;
-    }
-
+   
     .tab_ul li,
     .menu_content li,
     .tab_ul_left li {

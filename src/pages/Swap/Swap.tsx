@@ -48,13 +48,13 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
-import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 interface propsIF {
     isPairStable: boolean;
@@ -66,20 +66,13 @@ interface propsIF {
     isSellTokenBase: boolean;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
     isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    tokens: tokenMethodsIF;
 }
 
 function Swap(props: propsIF) {
@@ -94,14 +87,12 @@ function Swap(props: propsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         isSwapCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
+        tokens,
     } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -116,15 +107,15 @@ function Swap(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap, ackTokens } =
-        useContext(UserPreferenceContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
 
     const provider = useProvider();
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -587,15 +578,13 @@ function Swap(props: propsIF) {
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
         isSwapCopied: isSwapCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
 
     const {
@@ -664,16 +653,9 @@ function Swap(props: propsIF) {
             </div>
         ) : null;
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenB);
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -708,8 +690,8 @@ function Swap(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenB);
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
     const liquidityProviderFeeString = (

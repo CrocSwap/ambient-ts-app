@@ -45,24 +45,15 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 interface propsIF {
-    ambientTokens: TokenIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
-    searchableTokens: TokenIF[];
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -73,21 +64,17 @@ interface propsIF {
     searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
+    tokens: tokenMethodsIF;
 }
 
 function Portfolio(props: propsIF) {
     const {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        getTokensByName,
-        getTokenByAddress,
-        verifyToken,
         isTokenABase,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        tokensOnActiveLists,
         userAccount,
         baseTokenBalance,
         quoteTokenBalance,
@@ -98,6 +85,7 @@ function Portfolio(props: propsIF) {
         setInput,
         searchType,
         mainnetProvider,
+        tokens,
     } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
@@ -133,14 +121,12 @@ function Portfolio(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
+            token.address,
+        );
         const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
 
@@ -487,8 +473,6 @@ function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        tokenList: searchableTokens,
-        searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
@@ -497,13 +481,13 @@ function Portfolio(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
-        tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
         fullLayoutToggle: fullLayerToggle,
+        tokens: tokens,
     };
 
     const portfolioBannerProps = {
@@ -588,9 +572,6 @@ function Portfolio(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
                         importedTokensPlus={outputTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -601,6 +582,7 @@ function Portfolio(props: propsIF) {
                         searchType={searchType}
                         isSingleToken={true}
                         tokenAorB={null}
+                        tokens={tokens}
                     />
                 </Modal>
             )}

@@ -33,6 +33,7 @@ import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput'
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -65,13 +66,6 @@ interface propsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -79,6 +73,7 @@ interface propsIF {
     searchType: string;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central React functional component
@@ -111,9 +106,6 @@ function RangeCurrencyConverter(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
@@ -121,6 +113,7 @@ function RangeCurrencyConverter(props: propsIF) {
         searchType,
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const { isPoolInitialized } = useContext(PoolContext);
@@ -722,9 +715,6 @@ function RangeCurrencyConverter(props: propsIF) {
             tokenBSurplusMinusTokenBRemainderNum,
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
@@ -732,6 +722,7 @@ function RangeCurrencyConverter(props: propsIF) {
         searchType: searchType,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
+        tokens: tokens,
     };
 
     return (

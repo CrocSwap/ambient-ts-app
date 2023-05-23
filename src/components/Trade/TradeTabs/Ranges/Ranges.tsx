@@ -129,6 +129,13 @@ function Ranges(props: propsIF) {
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
+    const [rangeData, setRangeData] = useState(
+        isAccountView ? activeAccountPositionData || [] : positionsByPool,
+    );
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+        useSortedPositions('time', rangeData);
+
     const positionsByUserMatchingSelectedTokens =
         graphData?.positionsByUser?.positions.filter((position) => {
             if (
@@ -150,10 +157,6 @@ function Ranges(props: propsIF) {
             }
         });
 
-    const [rangeData, setRangeData] = useState(
-        isAccountView ? activeAccountPositionData || [] : positionsByPool,
-    );
-
     const sumHashActiveAccountPositionData = useMemo(
         () => diffHashSig(activeAccountPositionData),
         [activeAccountPositionData],
@@ -169,6 +172,16 @@ function Ranges(props: propsIF) {
     const sumHashPositionsByPool = useMemo(
         () => diffHashSig(positionsByPool),
         [positionsByPool],
+    );
+
+    const sumHashTop3SortedPositions = useMemo(
+        () =>
+            diffHashSig({
+                id0: sortedPositions[0]?.positionId,
+                id1: sortedPositions[1]?.positionId,
+                id2: sortedPositions[2]?.positionId,
+            }),
+        [sortedPositions],
     );
 
     const updateRangeData = () => {
@@ -194,21 +207,17 @@ function Ranges(props: propsIF) {
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
-        sumHashRangeData,
     ]);
-
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('time', rangeData);
 
     const dispatch = useAppDispatch();
 
     // prevent query from running multiple times for the same position more than once per minute
     const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
 
-    useEffect(() => {
-        const topThreePositions = sortedPositions.slice(0, 3);
+    const topThreePositions = sortedPositions.slice(0, 3);
 
-        if (topThreePositions) {
+    useEffect(() => {
+        if (topThreePositions.length) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
                     return cachedPositionUpdateQuery(
@@ -220,8 +229,9 @@ function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isAccountView) {
                         if (showAllData) {
-                            if (updatedPositions)
+                            if (updatedPositions) {
                                 dispatch(addPositionsByPool(updatedPositions));
+                            }
                         } else {
                             const updatedPositionsMatchingUser =
                                 updatedPositions.filter(
@@ -246,11 +256,7 @@ function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        diffHashSig({
-            id0: sortedPositions[0]?.positionId,
-            id1: sortedPositions[1]?.positionId,
-            id2: sortedPositions[2]?.positionId,
-        }),
+        sumHashTop3SortedPositions,
         currentTimeForPositionUpdateCaching,
         showAllData,
         isAccountView,
@@ -265,8 +271,6 @@ function Ranges(props: propsIF) {
     useEffect(() => {
         setCurrentPage(1);
     }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
-
-    // Get current tranges
 
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
@@ -290,41 +294,14 @@ function Ranges(props: propsIF) {
         setRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
-    const [isHeightGreaterThanHalf, setIsHeightGreaterThanHalf] =
-        useState(false);
+
     const listRef = useRef<HTMLUListElement>(null);
-    const element = listRef.current;
-    useEffect(() => {
-        if (element) {
-            const resizeObserver = new ResizeObserver((entries) => {
-                const firstEntry = entries[0];
-                const elementHeight = firstEntry.contentRect.height;
-                const screenHeight = window.innerHeight;
-                const isGreaterThanHalf = elementHeight > screenHeight * 0.5;
-
-                setIsHeightGreaterThanHalf(isGreaterThanHalf);
-            });
-
-            resizeObserver.observe(element);
-
-            return () => {
-                resizeObserver.unobserve(element);
-            };
-        }
-    }, [element]);
+    const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div
-                className={styles.footer}
-                style={{
-                    position: isHeightGreaterThanHalf ? 'sticky' : 'absolute',
-                }}
-            >
-                <p
-                    className={styles.showing_text}
-                >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+            <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
                         value={rowsPerPage}
@@ -335,14 +312,17 @@ function Ranges(props: propsIF) {
                     />
                     <Pagination
                         count={count}
-                        size='large'
                         page={page}
                         shape='circular'
                         color='secondary'
                         onChange={handleChange}
                         showFirstButton
                         showLastButton
+                        size={sPagination ? 'small' : 'medium'}
                     />
+                    <p
+                        className={styles.showing_text}
+                    >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
                 </div>
             </div>
         );
@@ -540,13 +520,20 @@ function Ranges(props: propsIF) {
             showPair={showPair}
         />
     ));
-
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
     const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
@@ -579,16 +566,22 @@ function Ranges(props: propsIF) {
 
     return (
         <section
-            className={`${styles.main_list_container} `}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
             style={{ height: portfolioPageStyle }}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                rangeDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TableSkeletons />
+                ) : (
+                    rangeDataOrNull
+                )}
+            </div>
+
+            <div>{footerDisplay}</div>
         </section>
     );
 }

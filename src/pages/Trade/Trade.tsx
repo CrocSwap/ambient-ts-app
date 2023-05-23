@@ -22,7 +22,6 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -36,6 +35,9 @@ import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 // import { useCandleTime } from './useCandleTime';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { useProvider } from 'wagmi';
 
 // interface for React functional component props
 interface propsIF {
@@ -47,16 +49,14 @@ interface propsIF {
     quoteTokenDexBalance: string;
     isTokenABase: boolean;
     limitRate: string;
-    searchableTokens: TokenIF[];
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenList: TokenIF[];
     cachedPositionUpdateQuery: PositionUpdateFn;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
 function Trade(props: propsIF) {
     const {
-        tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         baseTokenAddress,
@@ -65,11 +65,10 @@ function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        searchableTokens,
         isTokenABase,
+        tokens,
     } = props;
 
-    const { params } = useParams();
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
@@ -113,6 +112,9 @@ function Trade(props: propsIF) {
     ];
 
     const { pathname } = useLocation();
+    const provider = useProvider();
+    const { params } = useParams();
+    useUrlParams(tokens, chainId, provider);
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -129,7 +131,7 @@ function Trade(props: propsIF) {
     }, [candleData]);
 
     // CONTEXT: passed down from here to many components, setter is used in unselectCandle, which is dependent on trade data
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick, advancedMode } = tradeData;
@@ -348,7 +350,6 @@ function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
-        tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isTokenABase: isTokenABase,
@@ -360,7 +361,6 @@ function Trade(props: propsIF) {
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
-        searchableTokens: searchableTokens,
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
@@ -373,6 +373,8 @@ function Trade(props: propsIF) {
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
+        tokens,
+        showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const mobileTrade = (

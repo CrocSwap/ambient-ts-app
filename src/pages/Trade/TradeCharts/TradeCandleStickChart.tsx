@@ -12,13 +12,7 @@ import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import {
-    CandleChartData,
-    FeeChartData,
-    LiquidityDataLocal,
-    TvlChartData,
-    VolumeChartData,
-} from './TradeCharts';
+import { LiquidityDataLocal } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -28,6 +22,7 @@ import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { IS_LOCAL_ENV } from '../../../constants';
 import {
+    diffHashSig,
     diffHashSigCandles,
     diffHashSigLiquidity,
 } from '../../../utils/functions/diffHashSig';
@@ -35,6 +30,7 @@ import { CandleContext } from '../../../contexts/CandleContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { candleScale } from '../../../utils/state/tradeDataSlice';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -64,15 +60,15 @@ interface propsIF {
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleChartData | undefined>
+        React.SetStateAction<CandleData | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    selectedDate: Date | undefined;
-    setSelectedDate: React.Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: React.Dispatch<number | undefined>;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -83,16 +79,6 @@ interface propsIF {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     isMarketOrLimitModule: boolean;
-}
-
-export interface ChartUtils {
-    period: any;
-    bandwidth: any;
-    chartData: CandleChartData[];
-    tvlChartData: TvlChartData[];
-    feeChartData: FeeChartData[];
-    volumeChartData: VolumeChartData[];
-    poolAdressComb: string;
 }
 
 type chartItemStates = {
@@ -113,34 +99,56 @@ function TradeCandleStickChart(props: propsIF) {
     const { chainData } = useContext(CrocEnvContext);
     const {
         candleData: { value: candleData },
-        fetchingCandle: { setValue: setFetchingCandle },
+        fetchingCandle: { value: fetchingCandle },
+        isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
     const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
     const { chartSettings } = useContext(ChartContext);
 
+    const period = useMemo(() => {
+        if (
+            location.pathname.startsWith('/trade/range') ||
+            location.pathname.startsWith('/trade/reposition')
+        ) {
+            return chartSettings.candleTime.range.time;
+        } else {
+            return chartSettings.candleTime.market.time;
+        }
+    }, [
+        chartSettings.candleTime.range.time,
+        chartSettings.candleTime.market.time,
+        location.pathname,
+    ]);
+
+    const unparsedCandleData = candleData?.candles;
+
     const [scaleData, setScaleData] = useState<any>();
-    const [liquidityScale, setLiquidityScale] = useState<any>();
+    const [liquidityScale, setLiquidityScale] = useState<any>(undefined);
     const [liquidityDepthScale, setLiquidityDepthScale] = useState<any>();
+    const [prevPeriod, setPrevPeriod] = useState<any>();
+    const [prevFirsCandle, setPrevFirsCandle] = useState<any>();
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
-    const [parsedChartData, setParsedChartData] = useState<
-        ChartUtils | undefined
-    >(undefined);
+
+    const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
+        undefined,
+    );
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const upBodyColor = '#CDC1FF';
-    const upBorderColor = '#CDC1FF';
-    const downBodyColor = '#24243e';
-    const downBorderColor = '#7371FC';
-    const upVolumeColor = 'rgba(205,193,255, 0.5)';
-    const downVolumeColor = 'rgba(115,113,252, 0.5)';
-
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
+    const tokenPair = useMemo(
+        () => ({
+            dataTokenA: tradeData.tokenA,
+            dataTokenB: tradeData.tokenB,
+        }),
+        [
+            tradeData.tokenB.address,
+            tradeData.tokenB.chainId,
+            tradeData.tokenA.address,
+            tradeData.tokenA.chainId,
+        ],
+    );
     const { poolPriceNonDisplay } = tradeData;
 
     const denominationsInBase = tradeData.isDenomBase;
@@ -172,117 +180,93 @@ function TradeCandleStickChart(props: propsIF) {
         ? chartSettings.candleTime.market.time
         : chartSettings.candleTime.range.time;
 
+    const {
+        candleScale: { setValue: setCandleScale },
+    } = useContext(CandleContext);
+
     useEffect(() => {
         setIsLoading(true);
-        setParsedChartData(() => {
-            return undefined;
-        });
     }, [candleTimeInSeconds, denominationsInBase]);
 
-    // Parse price data
-    const parseData = () => {
-        IS_LOCAL_ENV && console.debug('parsing candle data');
+    useEffect(() => {
+        if (props.liquidityData !== undefined) {
+            const barThreshold =
+                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
-        const chartData: CandleChartData[] = [];
-        const tvlChartData: TvlChartData[] = [];
-        const volumeChartData: VolumeChartData[] = [];
-        const feeChartData: FeeChartData[] = [];
+            const liqBoundaryData = props.liquidityData.ranges.find(
+                (liq: any) => {
+                    return denominationsInBase
+                        ? liq.upperBoundInvPriceDecimalCorrected <
+                              barThreshold &&
+                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                              liq.upperBoundPriceDecimalCorrected !== '+inf';
+                },
+            );
 
-        if (candleData !== undefined) {
-            candleData.candles.map((data) => {
-                const close = denominationsInBase
-                    ? data.invPriceCloseExclMEVDecimalCorrected
-                    : data.priceCloseExclMEVDecimalCorrected;
+            const liqBoundaryArg =
+                liqBoundaryData !== undefined
+                    ? denominationsInBase
+                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
+                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                    : barThreshold;
+            const liqBoundary =
+                typeof liqBoundaryArg === 'number'
+                    ? liqBoundaryArg
+                    : parseFloat(liqBoundaryArg);
 
-                const open = denominationsInBase
-                    ? data.invPriceOpenExclMEVDecimalCorrected
-                    : data.priceOpenExclMEVDecimalCorrected;
-
-                chartData.push({
-                    date: new Date(data.time * 1000),
-                    open: open,
-                    close: close,
-                    high: denominationsInBase
-                        ? data.invMinPriceExclMEVDecimalCorrected
-                        : data.maxPriceExclMEVDecimalCorrected,
-                    low: denominationsInBase
-                        ? data.invMaxPriceExclMEVDecimalCorrected
-                        : data.minPriceExclMEVDecimalCorrected,
-                    time: data.time,
-                    allSwaps: [],
-                    color: close > open ? upBodyColor : downBodyColor,
-                    stroke: close > open ? upBorderColor : downBorderColor,
-                });
-
-                tvlChartData.push({
-                    time: new Date(data.tvlData.time * 1000),
-                    value: data.tvlData.tvl,
-                });
-
-                volumeChartData.push({
-                    time: new Date(data.time * 1000),
-                    value: data.volumeUSD,
-                    volume: data.volumeUSD,
-                    color: close > open ? upVolumeColor : downVolumeColor,
-                });
-
-                feeChartData.push({
-                    time: new Date(data.time * 1000),
-                    value: data.averageLiquidityFee,
-                });
-            });
-
-            chartData.sort((a: any, b: any) => b.time - a.time);
-            tvlChartData.sort((a: any, b: any) => b.time - a.time);
-            volumeChartData.sort((a: any, b: any) => b.time - a.time);
-            feeChartData.sort((a: any, b: any) => b.time - a.time);
-
-            const chartUtils: ChartUtils = {
-                period: candleData?.duration,
-                bandwidth: 0,
-                chartData: chartData,
-                tvlChartData: tvlChartData,
-                volumeChartData: volumeChartData,
-                feeChartData: feeChartData,
-                poolAdressComb: candleData?.pool.baseAddress
-                    ? candleData?.pool.baseAddress
-                    : '' + candleData?.pool.quoteAddress,
-            };
-
-            setParsedChartData(() => {
-                return chartUtils;
-            });
+            setLiqBoundary(() => liqBoundary);
         }
-    };
+    }, [
+        diffHashSigLiquidity(liquidityPullData),
+        denominationsInBase,
+        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
+    ]);
 
     useEffect(() => {
-        parseData();
+        if (props.liquidityData !== undefined) {
+            const barThreshold =
+                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+
+            const liqBoundaryData = props.liquidityData.ranges.find(
+                (liq: any) => {
+                    return denominationsInBase
+                        ? liq.upperBoundInvPriceDecimalCorrected <
+                              barThreshold &&
+                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                              liq.upperBoundPriceDecimalCorrected !== '+inf';
+                },
+            );
+
+            const liqBoundaryArg =
+                liqBoundaryData !== undefined
+                    ? denominationsInBase
+                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
+                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                    : barThreshold;
+            const liqBoundary =
+                typeof liqBoundaryArg === 'number'
+                    ? liqBoundaryArg
+                    : parseFloat(liqBoundaryArg);
+
+            setLiqBoundary(() => liqBoundary);
+        }
+    }, [
+        diffHashSigLiquidity(liquidityPullData),
+        denominationsInBase,
+        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
+    ]);
+
+    useEffect(() => {
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
     }, [diffHashSigCandles(candleData), denominationsInBase]);
 
-    // volume data
-
-    const volumeData = useMemo(() => {
-        const volumeData = parsedChartData?.volumeChartData;
-        const volumeTempData: any = [];
-        if (volumeData) {
-            volumeData.map((data: any) => {
-                volumeTempData.push({
-                    time: data.time,
-                    value: data.value ? data.value : 0,
-                    volume: data.value ? data.value : 0,
-                    color: data.color,
-                });
-            });
-        }
-
-        return volumeTempData;
-    }, [parsedChartData?.volumeChartData, parsedChartData?.period]);
-
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
         if (
+            liqBoundary &&
             props.liquidityData &&
             poolPriceDisplay !== undefined &&
             poolPriceDisplay > 0 &&
@@ -388,27 +372,6 @@ function TradeCandleStickChart(props: propsIF) {
                 ])
                 .range([30, 550]);
 
-            const liqBoundaryData = props.liquidityData.ranges.find(
-                (liq: any) => {
-                    return denominationsInBase
-                        ? liq.upperBoundInvPriceDecimalCorrected <
-                              barThreshold &&
-                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
-                              liq.upperBoundPriceDecimalCorrected !== '+inf';
-                },
-            );
-
-            const liqBoundaryArg =
-                liqBoundaryData !== undefined
-                    ? denominationsInBase
-                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
-                    : barThreshold;
-            const liqBoundary =
-                typeof liqBoundaryArg === 'number'
-                    ? liqBoundaryArg
-                    : parseFloat(liqBoundaryArg);
             let liqBoundaryDepth = liqBoundary;
 
             props.liquidityData.ranges.map((data: any) => {
@@ -608,46 +571,34 @@ function TradeCandleStickChart(props: propsIF) {
             setIsLoading(true);
             return undefined;
         }
-    }, [
-        diffHashSigLiquidity(liquidityPullData),
-        denominationsInBase,
-        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
-    ]);
+    }, [liqBoundary]);
 
     useEffect(() => {
-        IS_LOCAL_ENV &&
-            console.debug(
-                'resetting scale for chart because timeframe changed',
-                parsedChartData?.period,
-            );
-        if (
-            !(
-                parsedChartData?.chartData?.length &&
-                parsedChartData.chartData.length > 0
-            )
-        ) {
+        if (!(unparsedCandleData?.length && unparsedCandleData.length > 0)) {
             setScaleData(() => {
                 return undefined;
             });
         } else {
-            setScaleForChart(parsedChartData);
+            setScaleForChart(unparsedCandleData, true);
         }
-    }, [
-        parsedChartData?.period,
-        parsedChartData?.chartData?.length &&
-            parsedChartData.chartData.length > 0,
-    ]);
+    }, [unparsedCandleData?.length && unparsedCandleData.length > 0]);
+
+    useEffect(() => {
+        setScaleForChart(unparsedCandleData, false);
+    }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
 
     // Liq Scale
     useEffect(() => {
-        if (liquidityData === undefined) {
+        if (liquidityData !== undefined) {
+            if (liquidityScale === undefined) {
+                setScaleForChartLiquidity(liquidityData);
+            }
+        } else {
             setLiquidityScale(() => {
                 return undefined;
             });
-        } else {
-            setScaleForChartLiquidity(liquidityData);
         }
-    }, [liquidityData]);
+    }, [liquidityData, liquidityScale]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         IS_LOCAL_ENV && console.debug('parse Liq Scale');
@@ -679,64 +630,72 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     // Scale
-    const setScaleForChart = (parsedChartData: any) => {
-        if (parsedChartData !== undefined) {
-            const temp = [...parsedChartData.chartData];
+    const setScaleForChart = (
+        unparsedCandleData: any,
+        isChangeYscale: boolean,
+    ) => {
+        if (
+            unparsedCandleData !== undefined &&
+            unparsedCandleData.length > 0 &&
+            period
+        ) {
+            const temp = [...unparsedCandleData];
             const boundaryCandles = temp.splice(0, 99);
 
             const priceRange = d3fc
                 .extentLinear()
-                .accessors([(d: any) => d.high, (d: any) => d.low])
+                .accessors([
+                    (d: any) => {
+                        return (
+                            denominationsInBase
+                                ? d.invMinPriceExclMEVDecimalCorrected
+                                : d.maxPriceExclMEVDecimalCorrected,
+                            denominationsInBase
+                                ? d.invMaxPriceExclMEVDecimalCorrected
+                                : d.minPriceExclMEVDecimalCorrected
+                        );
+                    },
+                ])
                 .pad([0.05, 0.05]);
 
             const xExtent = d3fc
-                .extentDate()
-                .accessors([(d: any) => d.date])
+                .extentLinear()
+                .accessors([(d: any) => d.time * 1000])
                 .padUnit('domain')
-                // ensure that the scale is padded by one day in either direction
-                .pad([
-                    parsedChartData.period * 1000,
-                    (parsedChartData.period / 2) * 80000,
-                ]);
+                .pad([period * 1000, (period / 2) * 80 * 1000]);
 
-            const subChartxExtent = d3fc
-                .extentDate()
-                .accessors([(d: any) => d.date])
-                .padUnit('domain')
-                // ensure that the scale is padded by one day in either direction
-                .pad([
-                    parsedChartData.period * 3000,
-                    (parsedChartData.period / 2) * 100000,
-                ]);
+            let xScale: any = undefined;
+            let xScaleCopy: any = undefined;
 
-            const xScale = d3.scaleTime();
-            const subChartxScale = d3.scaleTime();
+            const xScaleTime = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(boundaryCandles));
-            subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
+            if (isChangeYscale || scaleData === undefined) {
+                xScale = d3.scaleLinear();
+                xScale.domain(xExtent(boundaryCandles));
+                xScaleCopy = xScale.copy();
+            } else {
+                xScale = scaleData?.xScale;
+                xScaleCopy = scaleData?.xScaleCopy;
+            }
+
             yScale.domain(priceRange(boundaryCandles));
-
-            const xScaleCopy = xScale.copy();
-
-            // const ghostScale = d3.scaleLinear();
 
             const volumeScale = d3.scaleLinear();
 
             const yExtentVolume = d3fc
-                .extentLinear(volumeData)
-                .accessors([(d: any) => d.value]);
+                .extentLinear(candleData?.candles)
+                .accessors([(d: any) => d.volumeUSD]);
 
-            volumeScale.domain(yExtentVolume(volumeData));
+            volumeScale.domain(yExtentVolume(candleData?.candles));
 
-            // bar chart
             setScaleData(() => {
                 return {
                     xScale: xScale,
+                    xScaleTime: xScaleTime,
                     yScale: yScale,
                     xScaleCopy: xScaleCopy,
                     // ghostScale: ghostScale,
-                    subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastDragedY: 0,
                     xExtent: xExtent,
@@ -744,6 +703,122 @@ function TradeCandleStickChart(props: propsIF) {
             });
         }
     };
+
+    useEffect(() => {
+        if (
+            unparsedCandleData &&
+            unparsedCandleData.length > 0 &&
+            period &&
+            (prevPeriod === undefined || period !== prevPeriod)
+        ) {
+            let firtCandleTimeState = unparsedCandleData[0].time;
+            if (scaleData && prevPeriod && prevFirsCandle) {
+                const domain = scaleData.xScale.domain();
+
+                const direction = domain[1] > prevFirsCandle * 1000 ? -1 : 1;
+
+                const diffDomain = Math.abs(domain[1] - domain[0]);
+                const factorDomain = diffDomain / (prevPeriod * 1000);
+
+                const diffCandle = Math.abs(
+                    Math.max(domain[1], prevFirsCandle * 1000) -
+                        Math.min(domain[1], prevFirsCandle * 1000),
+                );
+                const factorCanle = diffCandle / (prevPeriod * 1000);
+
+                const newDiffDomain = period * 1000 * factorDomain;
+                const newDiffCandle = direction * period * 1000 * factorCanle;
+
+                const firtCandleTime = d3.max(
+                    unparsedCandleData,
+                    (data: any) => data.time,
+                );
+
+                firtCandleTimeState = firtCandleTime;
+
+                const firsShownDomain = firtCandleTime * 1000 - newDiffCandle;
+
+                const lastShownCandle = firsShownDomain - newDiffDomain;
+
+                const fethcingCandles =
+                    firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
+
+                scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
+
+                const diffResetLeft = Math.abs(
+                    Date.now() - scaleData.xScaleCopy.domain()[0],
+                );
+                const factorResetLeft = diffResetLeft / (prevPeriod * 1000);
+                const newPeriodxScaleCopyFactor =
+                    period * 1000 * factorResetLeft;
+                const xScaleCopyLeftDomain =
+                    Date.now() - newPeriodxScaleCopyFactor;
+
+                const diffResetRight = Math.abs(
+                    scaleData.xScaleCopy.domain()[1] - Date.now(),
+                );
+                const factorResetRigh = diffResetRight / (prevPeriod * 1000);
+                const newPeriodxScaleCopyFactorRight =
+                    period * 1000 * factorResetRigh;
+                const xScaleCopyRightDomain =
+                    Date.now() + newPeriodxScaleCopyFactorRight;
+
+                scaleData.xScaleCopy.domain([
+                    xScaleCopyLeftDomain,
+                    xScaleCopyRightDomain,
+                ]);
+
+                const minDate = 1657868400; // 15 July 2022
+
+                const firstTime = Math.floor(fethcingCandles / 1000);
+
+                if (firstTime > minDate && fethcingCandles > lastShownCandle) {
+                    const nCandle = Math.floor(
+                        (fethcingCandles - lastShownCandle) / (period * 1000),
+                    );
+
+                    setCandleScale((prev: candleScale) => {
+                        return {
+                            isFetchForTimeframe: !prev.isFetchForTimeframe,
+                            lastCandleDate: firstTime,
+                            nCandle: nCandle,
+                        };
+                    });
+                } else {
+                    scaleData.xScale.domain([
+                        xScaleCopyLeftDomain,
+                        xScaleCopyRightDomain,
+                    ]);
+
+                    setCandleScale((prev: candleScale) => {
+                        return {
+                            isFetchForTimeframe: !prev.isFetchForTimeframe,
+                            lastCandleDate: undefined,
+                            nCandle: 200,
+                        };
+                    });
+                }
+            }
+
+            setPrevFirsCandle(() => firtCandleTimeState);
+            setPrevPeriod(() => period);
+        }
+    }, [period, diffHashSig(unparsedCandleData)]);
+
+    // resetting Chart
+    useEffect(() => {
+        if (isCandleDataNull && scaleData && scaleData?.xScaleCopy) {
+            scaleData.xScale.domain(scaleData?.xScaleCopy.domain());
+
+            setCandleScale((prev: candleScale) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: undefined,
+                    nCandle: 200,
+                };
+            });
+        }
+    }, [isCandleDataNull]);
 
     const loading = (
         <div
@@ -761,7 +836,7 @@ function TradeCandleStickChart(props: propsIF) {
                 scaleData === undefined ||
                 liquidityScale === undefined ||
                 liquidityDepthScale === undefined ||
-                parsedChartData?.chartData.length === 0 ||
+                unparsedCandleData?.length === 0 ||
                 poolPriceDisplay === 0 ||
                 poolPriceNonDisplay === 0 ||
                 liquidityData === undefined;
@@ -770,13 +845,12 @@ function TradeCandleStickChart(props: propsIF) {
                 IS_LOCAL_ENV &&
                     console.debug('setting isLoading to ' + shouldReload);
                 setIsLoading(shouldReload);
-                setFetchingCandle(shouldReload);
             }
         }, 500);
         return () => clearTimeout(timer);
     }, [
-        parsedChartData === undefined,
-        parsedChartData?.chartData.length,
+        unparsedCandleData === undefined,
+        unparsedCandleData?.length,
         poolPriceDisplay,
         poolPriceNonDisplay,
         scaleData === undefined,
@@ -789,12 +863,14 @@ function TradeCandleStickChart(props: propsIF) {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!isLoading && parsedChartData !== undefined ? (
+                {!isLoading &&
+                candleData !== undefined &&
+                prevPeriod === period &&
+                candleTimeInSeconds === period &&
+                !fetchingCandle ? (
                     <Chart
                         isTokenABase={isTokenABase}
-                        candleData={parsedChartData}
                         liquidityData={liquidityData}
-                        volumeData={volumeData}
                         changeState={props.changeState}
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
@@ -805,6 +881,8 @@ function TradeCandleStickChart(props: propsIF) {
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
+                        prevPeriod={prevPeriod}
+                        candleTimeInSeconds={candleTimeInSeconds}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
@@ -824,6 +902,7 @@ function TradeCandleStickChart(props: propsIF) {
                                 ? chartSettings.candleTime.market
                                 : chartSettings.candleTime.range
                         }
+                        unparsedData={candleData}
                     />
                 ) : (
                     <>{loading}</>

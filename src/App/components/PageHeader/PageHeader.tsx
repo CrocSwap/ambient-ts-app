@@ -26,7 +26,6 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 interface HeaderPropsIF {
     clickLogout: () => void;
     shouldDisplayAccountTab: boolean | undefined;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
@@ -151,6 +150,8 @@ const PageHeader = function (props: HeaderPropsIF) {
         poolPriceDisplayWithDenom === Infinity ||
         poolPriceDisplayWithDenom === 0
             ? ''
+            : poolPriceDisplayWithDenom < 0.0001
+            ? poolPriceDisplayWithDenom.toExponential(2)
             : poolPriceDisplayWithDenom < 2
             ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

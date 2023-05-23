@@ -1,7 +1,7 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 const dropdownStyles = {
-    background: 'var(--dark2)',
+    background: 'transparent',
     outline: 'none',
     border: 'none',
     padding: '4px',

@@ -60,6 +60,8 @@ function ExtraInfo(props: propsIF) {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
+            : displayPriceWithDenom < 0.0001
+            ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

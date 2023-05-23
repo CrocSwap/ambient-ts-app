@@ -8,12 +8,14 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
+    tokens: tokenMethodsIF;
 }
 export default function SidebarLimitOrders(props: propsIF) {
-    const { limitOrderByUser } = props;
+    const { limitOrderByUser, tokens } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -83,6 +85,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                             }
                             order={order}
                             handleClick={handleLimitOrderClick}
+                            tokens={tokens}
                         />
                     ))}
             </div>

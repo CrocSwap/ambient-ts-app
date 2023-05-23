@@ -21,8 +21,8 @@ interface PositionsOnlyToggleProps {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    selectedDate: Date | undefined;
-    setSelectedDate: React.Dispatch<Date | undefined>;
+    selectedDate: number | undefined;
+    setSelectedDate: React.Dispatch<number | undefined>;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;

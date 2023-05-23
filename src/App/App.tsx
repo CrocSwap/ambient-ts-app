@@ -18,13 +18,10 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
 } from '../utils/state/graphDataSlice';
-
 import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
-
 import useWebSocket from 'react-use-websocket';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
-
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -47,11 +44,7 @@ import { PoolContext } from '../contexts/PoolContext';
 /** * **** Import Local Files *******/
 import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
-import {
-    defaultTokens,
-    getDefaultPairForChain,
-} from '../utils/data/defaultTokens';
-import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
+import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import {
     LimitOrderIF,
     TokenIF,
@@ -64,6 +57,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     candleDomain,
+    candleScale,
 } from '../utils/state/tradeDataSlice';
 import { memoizeQuerySpotPrice } from './functions/querySpotPrice';
 import {
@@ -83,9 +77,9 @@ import {
     setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { isStablePair } from '../utils/data/stablePairs';
-import { useTokenMap } from '../utils/hooks/useTokenMap';
 import {
     APP_ENVIRONMENT,
+    CHAT_ENABLED,
     GRAPHCACHE_URL,
     GRAPHCACHE_WSS_URL,
     IS_LOCAL_ENV,
@@ -102,7 +96,6 @@ import {
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
@@ -126,12 +119,12 @@ import { useSkipConfirm } from './hooks/useSkipConfirm';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { mktDataChainId } from '../utils/data/chains';
 import useKeyPress from './hooks/useKeyPress';
-import { ackTokensMethodsIF, useAckTokens } from './hooks/useAckTokens';
 import { topPoolIF, useTopPools } from './hooks/useTopPools';
 import { formSlugForPairParams } from './functions/urlSlugs';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import Accessibility from '../pages/Accessibility/Accessibility';
+import { tokenMethodsIF, useTokens } from './hooks/useTokens';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useFavePools } from './hooks/useFavePools';
 import { UserPreferenceContext } from '../contexts/UserPreferenceContext';
@@ -214,11 +207,7 @@ export default function App() {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [isChatEnabled, setIsChatEnabled] = useState(
-        process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-            : true,
-    );
+    const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const { address: userAddress, isConnected } = useAccount();
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -310,21 +299,15 @@ export default function App() {
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
-        if (
-            process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-                ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
-                : true
-        ) {
+        if (CHAT_ENABLED) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    if (isChatUp !== appState.chat.isEnabled) {
-                        appState.chat.setIsEnabled(isChatUp);
-                    }
+                    appState.chat.setIsEnabled(isChatUp);
                 });
             }, 60000);
             return () => clearInterval(interval);
         }
-    }, [appState.chat.isEnabled, process.env.REACT_APP_CHAT_IS_ENABLED]);
+    }, [appState.chat.isEnabled, CHAT_ENABLED]);
 
     /* ------------------------------------------ END APP STATE CONTEXT ------------------------------------------ */
 
@@ -333,11 +316,7 @@ export default function App() {
     const [chainData, isChainSupported] = useAppChain(isConnected);
     // hook to manage top pools data
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
-    // Used in Portfolio/Account related pages for defining token universe.
-    // Ideally this is inefficient, because we're also using useToken() hook
-    // in parrallel which internally uses this hook. So there's some duplicated
-    // effort
-    const tokensOnActiveLists = useTokenMap();
+
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
@@ -348,7 +327,6 @@ export default function App() {
         chainData,
         isChainSupported,
         topPools,
-        tokensOnActiveLists,
         ethMainnetUsdPrice,
         setEthMainnetUsdPrice,
     };
@@ -552,16 +530,14 @@ export default function App() {
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
     );
-    // check for token balances every eight blocks
     const addTokenInfo = (token: TokenIF): TokenIF => {
+        // CONTEXT: should be a helper function
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
+            token.address,
+        );
         const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
     useEffect(() => {
@@ -642,48 +618,6 @@ export default function App() {
     }, [currentLocation]);
     /* ------------------------------------------ END CHART CONTEXT ------------------------------------------ */
 
-    /* ------------------------------------------ CANDLE CONTEXT ------------------------------------------ */
-    const [candleData, setCandleData] = useState<
-        CandlesByPoolAndDuration | undefined
-    >();
-    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
-    const [isCandleSelected, setIsCandleSelected] = useState<
-        boolean | undefined
-    >();
-    const [fetchingCandle, setFetchingCandle] = useState(false);
-    const [candleDomains, setCandleDomains] = useState<candleDomain>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    });
-    const domainBoundaryInSeconds = Math.floor(
-        (candleDomains?.domainBoundry || 0) / 1000,
-    );
-
-    const candleState = {
-        candleData: {
-            value: candleData,
-            setValue: setCandleData,
-        },
-        isCandleDataNull: {
-            value: isCandleDataNull,
-            setValue: setIsCandleDataNull,
-        },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        fetchingCandle: {
-            value: fetchingCandle,
-            setValue: setFetchingCandle,
-        },
-        candleDomains: {
-            value: candleDomains,
-            setValue: setCandleDomains,
-        },
-    };
-
-    /* ------------------------------------------ END CANDLE CONTEXT ------------------------------------------ */
-
     /* ------------------------------------------ RANGE CONTEXT ------------------------------------------ */
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
@@ -715,16 +649,8 @@ export default function App() {
 
     /* ------------------------------------------ TOKEN CONTEXT ------------------------------------------ */
     // CONTEXT: token context - helper functions? has been rewritten - to be revisited
-    const {
-        verifyToken,
-        ambientTokens,
-        onChainTokens,
-        getTokenByAddress,
-        getTokensByName,
-    } = useToken(chainData.chainId);
-    // all tokens from active token lists
-    const [searchableTokens, setSearchableTokens] =
-        useState<TokenIF[]>(defaultTokens);
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId);
+
     const {
         baseTokenAddress,
         quoteTokenAddress,
@@ -740,7 +666,7 @@ export default function App() {
         httpGraphCacheServerDomain,
         pathname: location.pathname,
         chainData,
-        searchableTokens,
+        searchableTokens: tokens.tokenUniv,
         receiptCount: receiptData.sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
@@ -749,9 +675,6 @@ export default function App() {
         isChartEnabled,
     });
 
-    useEffect(() => {
-        setSearchableTokens(onChainTokens);
-    }, [chainData.chainId, onChainTokens]);
     const [needTokenLists, setNeedTokenLists] = useState(true);
     // trigger a useEffect() which needs to run when new token lists are received
     // true vs false is an arbitrary distinction here
@@ -761,10 +684,6 @@ export default function App() {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('initializing local storage');
-        initializeUserLocalStorage();
-    }, [tokenListsReceived]);
 
     /* ------------------------------------------ END TOKEN CONTEXT ------------------------------------------ */
 
@@ -790,7 +709,6 @@ export default function App() {
         quoteTokenAddress,
         baseTokenDecimals,
         quoteTokenDecimals,
-        searchableTokens,
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
         isUserLoggedIn: isConnected,
@@ -811,6 +729,268 @@ export default function App() {
     };
 
     /* ------------------------------------------ END POOL CONTEXT ------------------------------------------ */
+
+    /* ------------------------------------------ CANDLE CONTEXT ------------------------------------------ */
+    const [candleData, setCandleData] = useState<
+        CandlesByPoolAndDuration | undefined
+    >();
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
+    const [isCandleSelected, setIsCandleSelected] = useState<
+        boolean | undefined
+    >();
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+    const [candleDomains, setCandleDomains] = useState<candleDomain>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    });
+    const domainBoundaryInSeconds = Math.floor(
+        (candleDomains?.domainBoundry || 0) / 1000,
+    );
+
+    const [candleScale, setCandleScale] = useState<candleScale>({
+        lastCandleDate: undefined,
+        nCandle: 200,
+        isFetchForTimeframe: false,
+    });
+
+    const candleState = {
+        candleData: {
+            value: candleData,
+            setValue: setCandleData,
+        },
+        isCandleDataNull: {
+            value: isCandleDataNull,
+            setValue: setIsCandleDataNull,
+        },
+        isCandleSelected: {
+            value: isCandleSelected,
+            setValue: setIsCandleSelected,
+        },
+        fetchingCandle: {
+            value: fetchingCandle,
+            setValue: setFetchingCandle,
+        },
+        candleDomains: {
+            value: candleDomains,
+            setValue: setCandleDomains,
+        },
+        candleScale: {
+            value: candleScale,
+            setValue: setCandleScale,
+        },
+    };
+
+    // CONTEXT: move to a chart/candle component - does not need to be a context
+    // local logic to determine current chart period
+    // this is situation-dependant but used in this file
+    const candleTimeLocal = useMemo(() => {
+        if (
+            location.pathname.startsWith('/trade/range') ||
+            location.pathname.startsWith('/trade/reposition')
+        ) {
+            return chartSettings.candleTime.range.time;
+        } else {
+            return chartSettings.candleTime.market.time;
+        }
+    }, [
+        chartSettings.candleTime.range.time,
+        chartSettings.candleTime.market.time,
+        location.pathname,
+    ]);
+
+    useEffect(() => {
+        isChartEnabled && !isUserIdle && fetchCandles();
+    }, [
+        isChartEnabled,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        isUserIdle,
+        candleScale?.isFetchForTimeframe,
+    ]);
+    const fetchCandles = () => {
+        if (
+            isServerEnabled &&
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            mainnetBaseTokenAddress &&
+            mainnetQuoteTokenAddress &&
+            candleTimeLocal
+        ) {
+            const reqOptions = new URLSearchParams({
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                period: candleTimeLocal.toString(),
+                // time: '', // optional
+                n: candleScale?.nCandle.toString(), // positive integer
+                // page: '0', // nonnegative integer
+                chainId: mktDataChainId(chainData.chainId),
+                dex: 'all',
+                poolStats: 'true',
+                concise: 'true',
+                poolStatsChainIdOverride: chainData.chainId,
+                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+            });
+
+            if (candleScale?.lastCandleDate) {
+                reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
+            }
+
+            IS_LOCAL_ENV && console.debug('fetching new candles');
+            try {
+                if (httpGraphCacheServerDomain) {
+                    const candleSeriesCacheEndpoint =
+                        httpGraphCacheServerDomain + '/candle_series?';
+                    setFetchingCandle(true);
+                    fetch(candleSeriesCacheEndpoint + reqOptions)
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const candles = json?.data;
+                            if (candles?.length === 0) {
+                                setIsCandleDataNull(true);
+                                setExpandTradeTable(true);
+                            } else if (candles) {
+                                setCandleData({
+                                    pool: {
+                                        baseAddress:
+                                            baseTokenAddress.toLowerCase(),
+                                        quoteAddress:
+                                            quoteTokenAddress.toLowerCase(),
+                                        poolIdx: chainData.poolIndex,
+                                        network: chainData.chainId,
+                                    },
+                                    duration: candleTimeLocal,
+                                    candles: candles,
+                                });
+                                setIsCandleDataNull(false);
+                                setExpandTradeTable(false);
+                            }
+                            return candles?.length;
+                        })
+                        .then((result) => {
+                            if (result !== 0) {
+                                setFetchingCandle(false);
+                            }
+                        })
+                        .catch(console.error);
+                }
+            } catch (error) {
+                console.error({ error });
+            }
+        } else {
+            setIsCandleDataNull(true);
+            // setExpandTradeTable(true);
+        }
+    };
+    const domainBoundaryInSecondsDebounced = useDebounce(
+        domainBoundaryInSeconds,
+        500,
+    );
+
+    const lastCandleDateInSeconds = Math.floor(
+        (candleDomains?.lastCandleDate || 0) / 1000,
+    );
+
+    const lastCandleDateInSecondsDebounced = useDebounce(
+        lastCandleDateInSeconds,
+        500,
+    );
+
+    const minTimeMemo = useMemo(() => {
+        const candleDataLength = candleData?.candles?.length;
+        if (!candleDataLength) return;
+        // IS_LOCAL_ENV && console.debug({ candleDataLength });
+
+        const lastDate = new Date(
+            (candleDomains?.lastCandleDate as number) / 1000,
+        ).getTime();
+
+        return lastDate;
+    }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
+
+    const numDurationsNeeded = useMemo(() => {
+        if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
+        return Math.floor(
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
+        );
+    }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
+    const candleSeriesCacheEndpoint =
+        httpGraphCacheServerDomain + '/candle_series?';
+    const fetchCandlesByNumDurations = (numDurations: number) =>
+        fetch(
+            candleSeriesCacheEndpoint +
+                new URLSearchParams({
+                    base: mainnetBaseTokenAddress.toLowerCase(),
+                    quote: mainnetQuoteTokenAddress.toLowerCase(),
+                    poolIdx: chainData.poolIndex.toString(),
+                    period: candleTimeLocal.toString(),
+                    time: minTimeMemo ? minTimeMemo.toString() : '0',
+                    // time: debouncedBoundary.toString(),
+                    n: numDurations.toString(), // positive integer
+                    // page: '0', // nonnegative integer
+                    chainId: mktDataChainId(chainData.chainId),
+                    dex: 'all',
+                    poolStats: 'true',
+                    concise: 'true',
+                    poolStatsChainIdOverride: chainData.chainId,
+                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                }),
+        )
+            .then((response) => response?.json())
+            .then((json) => {
+                const fetchedCandles = json?.data;
+                if (fetchedCandles && candleData) {
+                    const newCandles: CandleData[] = [];
+                    const updatedCandles: CandleData[] = candleData.candles;
+
+                    for (
+                        let index = 0;
+                        index < fetchedCandles.length;
+                        index++
+                    ) {
+                        const messageCandle = fetchedCandles[index];
+                        const indexOfExistingCandle =
+                            candleData.candles.findIndex(
+                                (savedCandle) =>
+                                    savedCandle.time === messageCandle.time,
+                            );
+
+                        if (indexOfExistingCandle === -1) {
+                            newCandles.push(messageCandle);
+                        } else if (
+                            diffHashSig(
+                                candleData.candles[indexOfExistingCandle],
+                            ) !== diffHashSig(messageCandle)
+                        ) {
+                            updatedCandles[indexOfExistingCandle] =
+                                messageCandle;
+                        }
+                    }
+
+                    const newCandleData: CandlesByPoolAndDuration = {
+                        pool: candleData.pool,
+
+                        duration: candleData.duration,
+
+                        candles: newCandles.concat(updatedCandles),
+                    };
+
+                    setCandleData(newCandleData);
+                }
+            })
+            .catch(console.error);
+    useEffect(() => {
+        if (!numDurationsNeeded) return;
+        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
+            fetchCandlesByNumDurations(numDurationsNeeded);
+        }
+    }, [numDurationsNeeded]);
+
+    /* ------------------------------------------ END CANDLE CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ TRADE TABLE CONTEXT ------------------------------------------ */
     const [showAllData, setShowAllData] = useState(true);
@@ -963,13 +1143,6 @@ export default function App() {
     /* ------------------------------------------ END TRADE TOKEN CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ USER PREFERENCES CONTEXT ------------------------------------------ */
-    // hook to manage acknowledged tokens
-    const ackTokensHooks: ackTokensMethodsIF = useAckTokens();
-    const ackTokens = useMemo(
-        () => ackTokensHooks,
-        [diffHashSig(ackTokensHooks.tokens)],
-    );
-
     const userPreferencesProps = {
         favePools: useFavePools(),
         swapSlippage: useSlippage('swap', slippage.swap),
@@ -982,7 +1155,6 @@ export default function App() {
         bypassConfirmLimit: useSkipConfirm('limit'),
         bypassConfirmRange: useSkipConfirm('range'),
         bypassConfirmRepo: useSkipConfirm('repo'),
-        ackTokens,
     };
 
     // Memoize the object being passed to context. This assumes that all of the individual top-level values
@@ -1045,8 +1217,7 @@ export default function App() {
         chainData.chainId,
         tradeData.tokenA,
         tradeData.tokenB,
-        verifyToken,
-        ackTokens,
+        tokens,
     );
 
     // CONTEXT: move into sidebar component
@@ -1168,191 +1339,6 @@ export default function App() {
         }
     }, [resetLimitTick]);
 
-    // CONTEXT: move to a chart/candle component - does not need to be a context
-    // local logic to determine current chart period
-    // this is situation-dependant but used in this file
-    const candleTimeLocal = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
-    useEffect(() => {
-        isChartEnabled && !isUserIdle && fetchCandles();
-    }, [
-        isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        candleTimeLocal,
-        isUserIdle,
-    ]);
-    const fetchCandles = () => {
-        if (
-            isServerEnabled &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
-            candleTimeLocal
-        ) {
-            IS_LOCAL_ENV && console.debug('fetching new candles');
-            try {
-                if (httpGraphCacheServerDomain) {
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
-                    setFetchingCandle(true);
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: mainnetBaseTokenAddress.toLowerCase(),
-                                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                period: candleTimeLocal.toString(),
-                                // time: '1657833300', // optional
-                                n: '200', // positive integer
-                                // page: '0', // nonnegative integer
-                                chainId: mktDataChainId(chainData.chainId),
-                                dex: 'all',
-                                poolStats: 'true',
-                                concise: 'true',
-                                poolStatsChainIdOverride: chainData.chainId,
-                                poolStatsBaseOverride:
-                                    baseTokenAddress.toLowerCase(),
-                                poolStatsQuoteOverride:
-                                    quoteTokenAddress.toLowerCase(),
-                                poolStatsPoolIdxOverride:
-                                    chainData.poolIndex.toString(),
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-                            if (candles?.length === 0) {
-                                setIsCandleDataNull(true);
-                                setExpandTradeTable(true);
-                            } else if (candles) {
-                                setCandleData({
-                                    pool: {
-                                        baseAddress:
-                                            baseTokenAddress.toLowerCase(),
-                                        quoteAddress:
-                                            quoteTokenAddress.toLowerCase(),
-                                        poolIdx: chainData.poolIndex,
-                                        network: chainData.chainId,
-                                    },
-                                    duration: candleTimeLocal,
-                                    candles: candles,
-                                });
-                                setIsCandleDataNull(false);
-                                setExpandTradeTable(false);
-                            }
-                        })
-                        .catch(console.error);
-                }
-            } catch (error) {
-                console.error({ error });
-            }
-        } else {
-            setIsCandleDataNull(true);
-            // setExpandTradeTable(true);
-        }
-    };
-    const domainBoundaryInSecondsDebounced = useDebounce(
-        domainBoundaryInSeconds,
-        500,
-    );
-    const minTimeMemo = useMemo(() => {
-        const candleDataLength = candleData?.candles?.length;
-        if (!candleDataLength) return;
-        IS_LOCAL_ENV && console.debug({ candleDataLength });
-        return candleData.candles.reduce((prev, curr) =>
-            prev.time < curr.time ? prev : curr,
-        )?.time;
-    }, [candleData?.candles?.length]);
-    const numDurationsNeeded = useMemo(() => {
-        if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
-        return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
-        );
-    }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
-    const candleSeriesCacheEndpoint =
-        httpGraphCacheServerDomain + '/candle_series?';
-    const fetchCandlesByNumDurations = (numDurations: number) =>
-        fetch(
-            candleSeriesCacheEndpoint +
-                new URLSearchParams({
-                    base: mainnetBaseTokenAddress.toLowerCase(),
-                    quote: mainnetQuoteTokenAddress.toLowerCase(),
-                    poolIdx: chainData.poolIndex.toString(),
-                    period: candleTimeLocal.toString(),
-                    time: minTimeMemo ? minTimeMemo.toString() : '0',
-                    // time: debouncedBoundary.toString(),
-                    n: numDurations.toString(), // positive integer
-                    // page: '0', // nonnegative integer
-                    chainId: mktDataChainId(chainData.chainId),
-                    dex: 'all',
-                    poolStats: 'true',
-                    concise: 'true',
-                    poolStatsChainIdOverride: chainData.chainId,
-                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const fetchedCandles = json?.data;
-                if (fetchedCandles && candleData) {
-                    const newCandles: CandleData[] = [];
-                    const updatedCandles: CandleData[] = candleData.candles;
-
-                    for (
-                        let index = 0;
-                        index < fetchedCandles.length;
-                        index++
-                    ) {
-                        const messageCandle = fetchedCandles[index];
-                        const indexOfExistingCandle =
-                            candleData.candles.findIndex(
-                                (savedCandle) =>
-                                    savedCandle.time === messageCandle.time,
-                            );
-
-                        if (indexOfExistingCandle === -1) {
-                            newCandles.push(messageCandle);
-                        } else if (
-                            diffHashSig(
-                                candleData.candles[indexOfExistingCandle],
-                            ) !== diffHashSig(messageCandle)
-                        ) {
-                            updatedCandles[indexOfExistingCandle] =
-                                messageCandle;
-                        }
-                    }
-                    const newCandleData: CandlesByPoolAndDuration = {
-                        pool: candleData.pool,
-                        duration: candleData.duration,
-                        candles: newCandles.concat(updatedCandles),
-                    };
-                    setCandleData(newCandleData);
-                }
-            })
-            .catch(console.error);
-    useEffect(() => {
-        if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
-            fetchCandlesByNumDurations(numDurationsNeeded);
-        }
-    }, [numDurationsNeeded]);
-
     // CONTEXT: user data context -- ask Ben whether this should really be in user data context - lots of inner dependencies that don't make sense... trade context?
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
@@ -1393,7 +1379,7 @@ export default function App() {
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
-                                        searchableTokens,
+                                        tokens.tokenUniv,
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
@@ -1440,7 +1426,7 @@ export default function App() {
                                 (limitOrder: LimitOrderIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
-                                        searchableTokens,
+                                        tokens.tokenUniv,
                                     );
                                 },
                             ),
@@ -1458,7 +1444,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    tokenList: searchableTokens,
+                    tokenList: tokens.tokenUniv,
                     user: userAddress,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -1482,20 +1468,21 @@ export default function App() {
                                     changes: updatedTransactions,
                                 }),
                             );
-
                             const result: TokenIF[] = [];
                             const tokenMap = new Map();
                             for (const item of updatedTransactions as TransactionIF[]) {
                                 if (!tokenMap.has(item.base)) {
                                     const isFoundInAmbientList =
-                                        ambientTokens.some((ambientToken) => {
-                                            if (
-                                                ambientToken.address.toLowerCase() ===
-                                                item.base.toLowerCase()
-                                            )
-                                                return true;
-                                            return false;
-                                        });
+                                        tokens.defaultTokens.some(
+                                            (ambientToken) => {
+                                                if (
+                                                    ambientToken.address.toLowerCase() ===
+                                                    item.base.toLowerCase()
+                                                )
+                                                    return true;
+                                                return false;
+                                            },
+                                        );
                                     if (!isFoundInAmbientList) {
                                         tokenMap.set(item.base, true); // set any value to Map
                                         result.push({
@@ -1510,14 +1497,16 @@ export default function App() {
                                 }
                                 if (!tokenMap.has(item.quote)) {
                                     const isFoundInAmbientList =
-                                        ambientTokens.some((ambientToken) => {
-                                            if (
-                                                ambientToken.address.toLowerCase() ===
-                                                item.quote.toLowerCase()
-                                            )
-                                                return true;
-                                            return false;
-                                        });
+                                        tokens.defaultTokens.some(
+                                            (ambientToken) => {
+                                                if (
+                                                    ambientToken.address.toLowerCase() ===
+                                                    item.quote.toLowerCase()
+                                                )
+                                                    return true;
+                                                return false;
+                                            },
+                                        );
                                     if (!isFoundInAmbientList) {
                                         tokenMap.set(item.quote, true); // set any value to Map
                                         result.push({
@@ -1540,9 +1529,8 @@ export default function App() {
             }
         }
     }, [
-        searchableTokens.length,
         isServerEnabled,
-        tokensOnActiveLists,
+        tokens.tokenUniv,
         isConnected,
         userAddress,
         chainData.chainId,
@@ -1574,12 +1562,12 @@ export default function App() {
     );
 
     // CONTEXT: helper function
-    const importedTokensPlus = useMemo(() => {
-        const ambientAddresses = ambientTokens.map((tkn) =>
-            tkn.address.toLowerCase(),
+    const importedTokensPlus = useMemo<TokenIF[]>(() => {
+        const ambientAddresses: string[] = tokens.defaultTokens.map(
+            (tkn: TokenIF) => tkn.address.toLowerCase(),
         );
 
-        const output = [...ambientTokens];
+        const output = tokens.defaultTokens;
         let tokensAdded = 0;
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
@@ -1588,14 +1576,10 @@ export default function App() {
             // ... that the limiter has not been reached
             if (
                 !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-                tokensOnActiveLists.get(
-                    tkn.address + '_' + chainData.chainId,
-                ) &&
+                tokens.verifyToken(tkn.address) &&
                 parseInt(tkn.combinedBalance as string) > 0 &&
                 tokensAdded < 4
             ) {
-                tokensAdded++;
-                output.push({ ...tkn, fromList: 'wallet' });
                 tokensAdded++;
                 output.push({ ...tkn, fromList: 'wallet' });
             }
@@ -1623,7 +1607,7 @@ export default function App() {
         });
         return output;
     }, [
-        ambientTokens,
+        tokens.defaultTokens,
         chainData.chainId,
         getRecentTokens,
         connectedUserErc20Tokens,
@@ -1633,16 +1617,12 @@ export default function App() {
     const headerProps = {
         clickLogout,
         shouldDisplayAccountTab,
-        getTokenByAddress,
     };
 
     // CONTEXT: tbd
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-        ambientTokens,
+        tokens,
         connectedUserErc20Tokens ?? [],
         getRecentTokens,
     );
@@ -1657,14 +1637,12 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
+        tokens: tokens,
     };
 
     // props for <Swap/> React element on trade route
@@ -1678,14 +1656,12 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
+        tokens: tokens,
     };
 
     // props for <Limit/> React element on trade route
@@ -1700,14 +1676,12 @@ export default function App() {
         setResetLimitTick,
         setRecheckTokenAApproval,
         tokenAAllowance,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
+        tokens,
     };
 
     // props for <Range/> React element
@@ -1723,20 +1697,18 @@ export default function App() {
         quoteTokenDexBalance,
         tokenBAllowance,
         setRecheckTokenBApproval,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
         cachedFetchTokenPrice,
+        tokens,
     };
 
     // props for <Sidebar/> React element
     const sidebarProps = {
-        verifyToken: verifyToken,
+        tokens,
     };
 
     // Take away margin from left if we are on homepage or swap
@@ -1838,7 +1810,6 @@ export default function App() {
     }, [isEscapePressed]);
 
     const tradeProps = {
-        tokenList: searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         baseTokenAddress,
@@ -1849,22 +1820,16 @@ export default function App() {
         quoteTokenDexBalance,
         isTokenABase,
         limitRate: '',
-        searchableTokens: searchableTokens,
+        tokens,
     };
 
     const accountProps = {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        ambientTokens,
-        getTokensByName,
-        verifyToken: verifyToken,
-        getTokenByAddress,
         isTokenABase,
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
-        tokensOnActiveLists,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -1874,10 +1839,12 @@ export default function App() {
         setInput,
         searchType,
         mainnetProvider,
+        tokens,
     };
 
     const repositionProps = {
         isPairStable,
+        tokens,
     };
 
     const chatProps = {
@@ -1896,7 +1863,7 @@ export default function App() {
         isServerEnabled,
         shouldNonCandleSubscriptionsReconnect,
         areSubscriptionsEnabled,
-        tokenUniv: searchableTokens,
+        tokenUniv: tokens.tokenUniv,
         chainData,
         lastBlockNumber,
         candleData,

@@ -37,9 +37,9 @@ export const fetchContractDetails = async (
         name = undefined;
 
     try {
-        decimals = await contract.decimals();
-        symbol = await contract.symbol();
-        name = await contract.name();
+        decimals = contract.decimals();
+        symbol = contract.symbol();
+        name = contract.name();
     } catch (error) {
         console.warn({ error });
     }
@@ -47,9 +47,9 @@ export const fetchContractDetails = async (
     return {
         address: address,
         chainId: parseInt(_chainId),
-        decimals: decimals,
-        symbol: symbol,
-        name: name,
+        decimals: await decimals,
+        symbol: await symbol,
+        name: await name,
         fromList: 'custom_token',
         logoURI: '',
     };

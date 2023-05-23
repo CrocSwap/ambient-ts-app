@@ -67,6 +67,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isPairStable: boolean;
@@ -78,19 +79,13 @@ interface propsIF {
     isSellTokenBase: boolean;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -104,15 +99,13 @@ export default function Limit(props: propsIF) {
         quoteTokenDexBalance,
         tokenAAllowance,
         setRecheckTokenAApproval,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
         setInput,
         searchType,
         setResetLimitTick,
+        tokens,
     } = props;
 
     const {
@@ -126,7 +119,7 @@ export default function Limit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
-    const { dexBalLimit, bypassConfirmLimit, ackTokens } = useContext(
+    const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
 
@@ -137,7 +130,7 @@ export default function Limit(props: propsIF) {
 
     const dispatch = useAppDispatch();
     const provider = useProvider();
-    useUrlParams(chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -237,7 +230,9 @@ export default function Limit(props: propsIF) {
                     setEndDisplayPrice(displayPriceWithDenom);
 
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -311,7 +306,9 @@ export default function Limit(props: propsIF) {
 
                     setEndDisplayPrice(displayPriceWithDenom);
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -339,43 +336,35 @@ export default function Limit(props: propsIF) {
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickBelow);
                     });
@@ -386,6 +375,7 @@ export default function Limit(props: propsIF) {
             }
         })();
     }, [
+        pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
@@ -512,7 +502,6 @@ export default function Limit(props: propsIF) {
         const order = isTokenAPrimary
             ? crocEnv.sell(sellToken, qty)
             : crocEnv.buy(buyToken, qty);
-
         const ko = order.atLimit(
             isTokenAPrimary ? buyToken : sellToken,
             limitTick,
@@ -611,7 +600,6 @@ export default function Limit(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.error({ error });
                 receipt = error.receipt;
             }
         }
@@ -761,9 +749,6 @@ export default function Limit(props: propsIF) {
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         outputTokens: outputTokens,
         validatedInput: validatedInput,
@@ -772,19 +757,14 @@ export default function Limit(props: propsIF) {
         setResetLimitTick: setResetLimitTick,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
+    // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenB);
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -819,8 +799,8 @@ export default function Limit(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenB);
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
     const liquidityProviderFeeString = (

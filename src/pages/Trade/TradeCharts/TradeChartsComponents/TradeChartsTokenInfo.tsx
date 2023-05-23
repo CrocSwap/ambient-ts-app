@@ -73,6 +73,8 @@ function TradeChartsTokenInfo(props: propsIF) {
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
+            : poolPriceDisplayWithDenom < 0.0001
+            ? poolPriceDisplayWithDenom.toExponential(2)
             : poolPriceDisplayWithDenom < 2
             ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

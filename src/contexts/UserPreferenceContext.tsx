@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import { ackTokensMethodsIF } from '../App/hooks/useAckTokens';
 import { dexBalanceMethodsIF } from '../App/hooks/useExchangePrefs';
 import { favePoolsMethodsIF } from '../App/hooks/useFavePools';
 import { skipConfirmIF } from '../App/hooks/useSkipConfirm';
@@ -17,7 +16,6 @@ interface UserPreferenceIF {
     bypassConfirmLimit: skipConfirmIF;
     bypassConfirmRange: skipConfirmIF;
     bypassConfirmRepo: skipConfirmIF;
-    ackTokens: ackTokensMethodsIF;
 }
 
 export const UserPreferenceContext = createContext<UserPreferenceIF>(

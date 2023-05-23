@@ -335,23 +335,24 @@ function Leaderboard(props: propsIF) {
             showPair={showPair}
         />
     ));
-
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     return (
         <section
-            className={`${styles.main_list_container} ${styles.leaderboard}`}
+            className={` ${styles.leaderboard}`}
             style={{ height: expandStyle }}
         >
-            {headerColumnsDisplay}
-            {rowItemContent}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+            <div>{rowItemContent}</div>
+            <div>{footerDisplay}</div>
         </section>
     );
 }

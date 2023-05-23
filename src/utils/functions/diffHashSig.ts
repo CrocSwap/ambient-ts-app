@@ -1,8 +1,8 @@
 // import sum from 'hash-sum';
 
-import { ChartUtils } from '../../pages/Trade/TradeCharts/TradeCandleStickChart';
 import { TransactionIF } from '../interfaces/TransactionIF';
 import {
+    CandleData,
     CandlesByPoolAndDuration,
     LiquidityData,
 } from '../state/graphDataSlice';
@@ -36,21 +36,15 @@ export function diffHashSigCandles(candles?: CandlesByPoolAndDuration) {
     });
 }
 
-export function diffHashSigChart(chart?: ChartUtils) {
-    if (!chart) {
+export function diffHashSigChart(chartData?: CandleData[]) {
+    if (!chartData) {
         return 'null';
     }
-    if (chart.chartData.length === 0) {
+    if (chartData.length === 0) {
         return 'empty';
     }
     return diffHashSig({
-        period: chart.period,
-        length: chart.chartData.length,
-        chart: chart.chartData[0],
-        tvl: chart.tvlChartData[0],
-        volume: chart.volumeChartData[0],
-        fee: chart.feeChartData[0],
-        pool: chart.poolAdressComb,
+        chartData,
     });
 }
 

@@ -2,16 +2,16 @@ import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 
 export const getLimitOrderData = async (
     order: LimitOrderIF,
-    searchableTokens: TokenIF[],
+    tokensOnChain: TokenIF[],
 ): Promise<LimitOrderIF> => {
     const baseTokenAddress = order.base;
     const quoteTokenAddress = order.quote;
 
-    const baseTokenLogoURI = searchableTokens.find(
+    const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
-    const quoteTokenLogoURI = searchableTokens.find(
+    const quoteTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;

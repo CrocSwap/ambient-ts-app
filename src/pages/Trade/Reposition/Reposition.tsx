@@ -47,12 +47,10 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { useProvider } from 'wagmi';
 
 interface propsIF {
     isPairStable: boolean;
@@ -66,7 +64,7 @@ function Reposition(props: propsIF) {
 
     const {
         crocEnv,
-        chainData: { chainId, blockExplorer },
+        chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -99,9 +97,6 @@ function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    const provider = useProvider();
-
-    useUrlParams(chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -465,7 +460,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqBaseDisplay });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
                 const liqQuoteDisplay = liqQuoteNum
@@ -479,7 +473,6 @@ function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);

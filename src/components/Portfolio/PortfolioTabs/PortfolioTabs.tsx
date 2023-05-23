@@ -42,10 +42,10 @@ import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
@@ -56,8 +56,6 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    tokenList: TokenIF[];
-    searchableTokens: TokenIF[];
     openTokenModal: () => void;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -65,12 +63,12 @@ interface propsIF {
     quoteTokenDexBalance: string;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isTokenABase,
@@ -79,12 +77,12 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddressTokens,
         resolvedAddress,
         connectedAccountActive,
-        tokenList,
         openTokenModal,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -142,7 +140,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                searchableTokens,
+                                tokens.tokenUniv,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
@@ -187,7 +185,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                             return getLimitOrderData(
                                 limitOrder,
-                                searchableTokens,
+                                tokens.tokenUniv,
                             );
                         }),
                     ).then((updatedLimitOrderStates) => {
@@ -212,7 +210,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            tokenList: tokenList,
+            tokenList: tokens.tokenUniv,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,
@@ -277,7 +275,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, diffHashSig(tokenList)]);
+    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -310,6 +308,7 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
+        tokens: tokens,
     };
 
     // props for <Exchange/> React Element
@@ -320,6 +319,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
+        tokens: tokens,
     };
 
     // props for <Range/> React Element
@@ -328,7 +328,6 @@ export default function PortfolioTabs(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         activeAccountPositionData: activeAccountPositionData,
         connectedAccountActive: connectedAccountActive,
-        searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
@@ -338,19 +337,16 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,
-        tokenList: tokenList,
         isCandleSelected: false,
         isAccountView: true,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         isAccountView: true,

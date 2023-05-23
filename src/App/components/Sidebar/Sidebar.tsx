@@ -30,26 +30,25 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { tokenMethodsIF } from '../../hooks/useTokens';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface propsIF {
-    verifyToken: (addr: string, chn: string) => boolean;
+    tokens: tokenMethodsIF;
 }
 
 function Sidebar(props: propsIF) {
-    const { verifyToken } = props;
+    const { tokens } = props;
 
     const { sidebar, poolList } = useContext(SidebarContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { ackTokens } = useContext(UserPreferenceContext);
 
     const location = useLocation();
 
@@ -111,7 +110,10 @@ function Sidebar(props: propsIF) {
             name: 'Limit Orders',
             icon: openOrdersImage,
             data: (
-                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
+                <SidebarLimitOrders
+                    limitOrderByUser={mostRecentLimitOrders}
+                    tokens={tokens}
+                />
             ),
         },
     ];
@@ -129,7 +131,6 @@ function Sidebar(props: propsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
-
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
@@ -143,8 +144,7 @@ function Sidebar(props: propsIF) {
         positionsByUser,
         txsByUser,
         limitsByUser,
-        verifyToken,
-        ackTokens,
+        tokens,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');

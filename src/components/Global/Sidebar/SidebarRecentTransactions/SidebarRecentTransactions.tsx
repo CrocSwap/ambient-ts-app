@@ -46,6 +46,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 0 : 0;
 
+    // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
         navigate('/account');

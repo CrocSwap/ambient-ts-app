@@ -16,8 +16,7 @@ import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
-interface AccountPropsIF {
-    isUserLoggedIn: boolean | undefined;
+interface propsIF {
     nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
@@ -34,7 +33,7 @@ interface AccountPropsIF {
         | null;
 }
 
-export default function Account(props: AccountPropsIF) {
+export default function Account(props: propsIF) {
     const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
         props;
 

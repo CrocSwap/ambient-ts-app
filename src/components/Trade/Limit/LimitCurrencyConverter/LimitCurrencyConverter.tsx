@@ -34,8 +34,9 @@ import { TokenIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -63,13 +64,6 @@ interface propsIF {
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -77,6 +71,7 @@ interface propsIF {
     searchType: string;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -103,9 +98,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         outputTokens,
         validatedInput,
@@ -114,6 +106,7 @@ function LimitCurrencyConverter(props: propsIF) {
         setResetLimitTick,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -510,9 +503,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
                 importedTokensPlus={importedTokensPlus}
                 tokenAorB={'A'}
                 outputTokens={outputTokens}
@@ -522,6 +512,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                tokens={tokens}
             />
             <div
                 className={
@@ -574,9 +565,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
                     importedTokensPlus={importedTokensPlus}
                     tokenAorB={'B'}
                     outputTokens={outputTokens}
@@ -586,6 +574,7 @@ function LimitCurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    tokens={tokens}
                 />
             </div>
             <LimitRate

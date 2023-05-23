@@ -31,6 +31,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 
 // interface for component props
 interface propsIF {
@@ -58,13 +59,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     tokenAorB: string;
     outputTokens: TokenIF[];
@@ -72,6 +66,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -89,9 +84,6 @@ function LimitCurrencySelector(props: propsIF) {
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
         handleChangeClick,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         tokenAorB,
         outputTokens,
@@ -99,6 +91,7 @@ function LimitCurrencySelector(props: propsIF) {
         setInput,
         searchType,
         setUserOverrodeSurplusWithdrawalDefault,
+        tokens,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -398,9 +391,6 @@ function LimitCurrencySelector(props: propsIF) {
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
                         importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -412,6 +402,7 @@ function LimitCurrencySelector(props: propsIF) {
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}
