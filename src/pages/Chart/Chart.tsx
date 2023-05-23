@@ -3282,7 +3282,11 @@ export default function Chart(props: propsIF) {
                                         newLimitValue = displayPriceWithDenom;
                                     } else {
                                         const limitRateTruncated =
-                                            displayPriceWithDenom < 2
+                                            displayPriceWithDenom < 0.0001
+                                                ? displayPriceWithDenom.toExponential(
+                                                      2,
+                                                  )
+                                                : displayPriceWithDenom < 2
                                                 ? displayPriceWithDenom.toLocaleString(
                                                       undefined,
                                                       {
