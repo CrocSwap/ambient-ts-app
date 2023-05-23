@@ -254,7 +254,9 @@ export default function Limit(props: propsIF) {
                     setEndDisplayPrice(displayPriceWithDenom);
 
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -330,7 +332,9 @@ export default function Limit(props: propsIF) {
 
                     setEndDisplayPrice(displayPriceWithDenom);
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
