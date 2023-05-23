@@ -90,6 +90,7 @@ interface propsIF {
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
     tokens: tokenMethodsIF;
+    showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
@@ -137,6 +138,7 @@ function TradeTabs2(props: propsIF) {
         ethMainnetUsdPrice,
         candleTime,
         tokens,
+        showActiveMobileComponent,
     } = props;
 
     const {
@@ -593,7 +595,7 @@ function TradeTabs2(props: propsIF) {
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {isCandleSelected ? selectedMessageContent : null}
-            {expandTradeTable && (
+            {(expandTradeTable || showActiveMobileComponent) && (
                 <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
             )}
             <TabComponent

@@ -534,6 +534,7 @@ function Trade(props: propsIF) {
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
         tokens,
+        showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const mobileTrade = (
