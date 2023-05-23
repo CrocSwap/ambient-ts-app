@@ -62,7 +62,7 @@ export const useUrlPath = (page?: pageNames) => {
 
     const baseURL: string = page
         ? BASE_URL_PATHS[page]
-        : getPageFromLocation();
+        : BASE_URL_PATHS[getPageFromLocation()];
 
     function getPageFromLocation(): pageNames {
         let pageName: pageNames;

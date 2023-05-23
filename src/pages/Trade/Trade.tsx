@@ -131,6 +131,8 @@ function Trade(props: propsIF) {
     } = props;
 
     const { params } = useParams();
+    console.log(params)
+
     const {
         chart: { isFullScreen: isChartFullScreen },
         outsideControl: { setIsActive: setOutsideControlActive },

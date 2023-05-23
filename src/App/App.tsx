@@ -6,6 +6,7 @@ import {
     useLocation,
     Navigate,
     useNavigate,
+    useParams,
 } from 'react-router-dom';
 import { useIdleTimer } from 'react-idle-timer';
 import {
