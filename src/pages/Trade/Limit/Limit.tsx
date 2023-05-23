@@ -66,7 +66,6 @@ import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/Bypas
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -147,7 +146,6 @@ export default function Limit(props: propsIF) {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
-    useUrlParams(tokens, chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
