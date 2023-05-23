@@ -246,7 +246,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     ) as HTMLInputElement;
     const clearInputField = () => {
         if (input) input.value = '';
-
         setInput('');
         document.getElementById('token_select_input_field')?.focus();
     };

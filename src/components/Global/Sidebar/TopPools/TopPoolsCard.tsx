@@ -23,7 +23,8 @@ export default function TopPoolsCard(props: propsIF) {
     const locationSlug = useMemo(() => {
         if (
             pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
+            pathname.startsWith('/account') ||
+            pathname === '/'
         ) {
             return '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
