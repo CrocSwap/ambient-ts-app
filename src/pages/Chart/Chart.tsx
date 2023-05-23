@@ -3273,28 +3273,38 @@ export default function Chart(props: propsIF) {
                                     const displayPriceWithDenom = denomInBase
                                         ? tp
                                         : 1 / tp;
-                                    const limitRateTruncated =
-                                        displayPriceWithDenom < 2
-                                            ? displayPriceWithDenom.toLocaleString(
-                                                  undefined,
-                                                  {
-                                                      minimumFractionDigits: 2,
-                                                      maximumFractionDigits: 6,
-                                                  },
-                                              )
-                                            : displayPriceWithDenom.toLocaleString(
-                                                  undefined,
-                                                  {
-                                                      minimumFractionDigits: 2,
-                                                      maximumFractionDigits: 2,
-                                                  },
-                                              );
 
-                                    const limitValue = parseFloat(
-                                        limitRateTruncated.replace(',', ''),
-                                    );
+                                    if (
+                                        displayPriceWithDenom
+                                            .toString()
+                                            .includes('e')
+                                    ) {
+                                        newLimitValue = displayPriceWithDenom;
+                                    } else {
+                                        const limitRateTruncated =
+                                            displayPriceWithDenom < 2
+                                                ? displayPriceWithDenom.toLocaleString(
+                                                      undefined,
+                                                      {
+                                                          minimumFractionDigits: 2,
+                                                          maximumFractionDigits: 6,
+                                                      },
+                                                  )
+                                                : displayPriceWithDenom.toLocaleString(
+                                                      undefined,
+                                                      {
+                                                          minimumFractionDigits: 2,
+                                                          maximumFractionDigits: 2,
+                                                      },
+                                                  );
 
-                                    newLimitValue = limitValue;
+                                        const limitValue = parseFloat(
+                                            limitRateTruncated.replace(',', ''),
+                                        );
+
+                                        newLimitValue = limitValue;
+                                    }
+
                                     if (
                                         !(
                                             newLimitValue >= noGoZoneMin &&
@@ -3305,7 +3315,7 @@ export default function Chart(props: propsIF) {
                                             return [
                                                 {
                                                     name: 'Limit',
-                                                    value: limitValue,
+                                                    value: newLimitValue,
                                                 },
                                             ];
                                         });
