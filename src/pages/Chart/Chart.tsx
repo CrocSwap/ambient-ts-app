@@ -7090,27 +7090,40 @@ export default function Chart(props: propsIF) {
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
 
-                    const limitValue = parseFloat(
-                        limitRateTruncated.replace(',', ''),
-                    );
+                    if (displayPriceWithDenom.toString().includes('e')) {
+                        newLimitValue = displayPriceWithDenom;
+                    } else {
+                        const limitRateTruncated =
+                            displayPriceWithDenom < 2
+                                ? displayPriceWithDenom.toLocaleString(
+                                      undefined,
+                                      {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 6,
+                                      },
+                                  )
+                                : displayPriceWithDenom.toLocaleString(
+                                      undefined,
+                                      {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2,
+                                      },
+                                  );
 
-                    reverseTokenForChart(limitPreviousData, limitValue);
+                        const limitValue = parseFloat(
+                            limitRateTruncated.replace(',', ''),
+                        );
+
+                        newLimitValue = limitValue;
+                    }
+
+                    reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return [
                             {
                                 name: 'Limit',
-                                value: limitValue,
+                                value: newLimitValue,
                             },
                         ];
                     });
