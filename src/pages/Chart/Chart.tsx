@@ -82,7 +82,7 @@ declare global {
 
 type crosshair = {
     x: number | Date;
-    y: number;
+    y: number | string;
 };
 type chartItemStates = {
     showTvl: boolean;
@@ -3126,12 +3126,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: Number(
-                                formatAmountChartData(
-                                    scaleData?.yScale.invert(
-                                        event.sourceEvent.layerY,
-                                    ),
-                                ),
+                            y: scaleData?.yScale.invert(
+                                event.sourceEvent.layerY,
                             ),
                         },
                     ]);
@@ -3338,12 +3334,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: Number(
-                                formatAmountChartData(
-                                    scaleData?.yScale.invert(
-                                        event.sourceEvent.layerY,
-                                    ),
-                                ),
+                            y: scaleData?.yScale.invert(
+                                event.sourceEvent.layerY,
                             ),
                         },
                     ]);
@@ -3603,6 +3595,20 @@ export default function Chart(props: propsIF) {
         }
     }, [yAxis, location]);
 
+    function toSubscript(number: number) {
+        let subscriptString = '';
+        const baseCodePoint = 8320; // Unicode code point for subscript 0
+
+        const numberString = number.toString();
+        for (let i = 0; i < numberString.length; i++) {
+            const digit = parseInt(numberString[i]);
+            const subscriptCodePoint = baseCodePoint + digit;
+            subscriptString += String.fromCharCode(subscriptCodePoint);
+        }
+
+        return subscriptString;
+    }
+
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
@@ -3634,13 +3640,48 @@ export default function Chart(props: propsIF) {
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
 
-                    context.beginPath();
-                    context.fillText(
-                        formatAmountChartData(d, digit ? digit : 2),
-                        X - tickSize,
-                        yScale(d),
+                    const isScientific = d.toString().includes('e');
+
+                    let axisTick: number | string = formatAmountChartData(
+                        d,
+                        digit ? digit : 2,
                     );
+
+                    if (isScientific) {
+                        const splitNumber = d.toString().split('e');
+                        const factor = Math.abs(Number(splitNumber[1]));
+
+                        axisTick =
+                            '0.0' +
+                            toSubscript(factor) +
+                            splitNumber[0].toString();
+                    }
+
+                    context.beginPath();
+                    context.fillText(axisTick, X - tickSize, yScale(d));
                 });
+
+                const isScientificMarketTick = market[0].value
+                    .toString()
+                    .includes('e');
+
+                let marketTick: number | string = formatAmountChartData(
+                    market[0].value,
+                    undefined,
+                );
+
+                if (isScientificMarketTick) {
+                    const splitNumber = market[0].value.toString().split('e');
+                    const factor = Math.abs(Number(splitNumber[1]));
+
+                    marketTick =
+                        '0.0' +
+                        toSubscript(factor) +
+                        formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
+                }
 
                 createRectLabel(
                     context,
@@ -3648,7 +3689,7 @@ export default function Chart(props: propsIF) {
                     X - tickSize,
                     'white',
                     'black',
-                    formatAmountChartData(market[0].value, undefined),
+                    marketTick,
                     undefined,
                     yAxisCanvasWidth,
                 );
@@ -3670,6 +3711,28 @@ export default function Chart(props: propsIF) {
                             : liquidityData?.liqBoundaryDepth;
 
                     if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                        const isScientificlowTick = low
+                            .toString()
+                            .includes('e');
+
+                        let lowTick: number | string = formatAmountChartData(
+                            low,
+                            undefined,
+                        );
+
+                        if (isScientificlowTick) {
+                            const splitNumber = low.toString().split('e');
+                            const factor = Math.abs(Number(splitNumber[1]));
+
+                            lowTick =
+                                '0.0' +
+                                toSubscript(factor) +
+                                formatAmountChartData(
+                                    Number(splitNumber[0]),
+                                    undefined,
+                                ).toString();
+                        }
+
                         createRectLabel(
                             context,
                             isSameLocationMin
@@ -3678,7 +3741,7 @@ export default function Chart(props: propsIF) {
                             X - tickSize,
                             low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
                             low > passValue ? 'white' : 'black',
-                            formatAmountChartData(low, undefined),
+                            lowTick,
                             undefined,
                             yAxisCanvasWidth,
                         );
@@ -3687,6 +3750,28 @@ export default function Chart(props: propsIF) {
                                 ? sameLocationDataMin
                                 : yScale(low),
                         );
+
+                        const isScientificHighTick = high
+                            .toString()
+                            .includes('e');
+
+                        let highTick: number | string = formatAmountChartData(
+                            high,
+                            undefined,
+                        );
+
+                        if (isScientificHighTick) {
+                            const splitNumber = high.toString().split('e');
+                            const factor = Math.abs(Number(splitNumber[1]));
+
+                            highTick =
+                                '0.0' +
+                                toSubscript(factor) +
+                                formatAmountChartData(
+                                    Number(splitNumber[0]),
+                                    undefined,
+                                ).toString();
+                        }
 
                         createRectLabel(
                             context,
@@ -3698,7 +3783,7 @@ export default function Chart(props: propsIF) {
                                 ? '#7371fc'
                                 : 'rgba(205, 193, 255)',
                             high > passValue ? 'white' : 'black',
-                            formatAmountChartData(high, undefined),
+                            highTick,
                             undefined,
                             yAxisCanvasWidth,
                         );
@@ -3713,40 +3798,46 @@ export default function Chart(props: propsIF) {
                 if (location.pathname.includes('/limit')) {
                     const { isSameLocation, sameLocationData } =
                         sameLocationLimit();
+
+                    const isScientificLimitTick = limit[0].value
+                        .toString()
+                        .includes('e');
+
+                    let limitTick: number | string = formatAmountChartData(
+                        limit[0].value,
+                        undefined,
+                    );
+
+                    if (isScientificLimitTick) {
+                        const splitNumber = limit[0].value
+                            .toString()
+                            .split('e');
+                        const factor = Math.abs(Number(splitNumber[1]));
+
+                        limitTick =
+                            '0.0' +
+                            toSubscript(factor) +
+                            formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
+                    }
+
                     if (checkLimitOrder) {
-                        if (sellOrderStyle === 'order_sell') {
-                            createRectLabel(
-                                context,
-                                isSameLocation
-                                    ? sameLocationData
-                                    : yScale(limit[0].value),
-                                X - tickSize,
-                                '#e480ff',
-                                'black',
-                                formatAmountChartData(
-                                    limit[0].value,
-                                    undefined,
-                                ),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
-                        } else {
-                            createRectLabel(
-                                context,
-                                isSameLocation
-                                    ? sameLocationData
-                                    : yScale(limit[0].value),
-                                X - tickSize,
-                                '#7371fc',
-                                'white',
-                                formatAmountChartData(
-                                    limit[0].value,
-                                    undefined,
-                                ),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
-                        }
+                        createRectLabel(
+                            context,
+                            isSameLocation
+                                ? sameLocationData
+                                : yScale(limit[0].value),
+                            X - tickSize,
+                            sellOrderStyle === 'order_sell'
+                                ? '#e480ff'
+                                : '#7371fc',
+                            sellOrderStyle === 'order_sell' ? 'black' : 'white',
+                            limitTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                        );
                     } else {
                         createRectLabel(
                             context,
@@ -3756,7 +3847,7 @@ export default function Chart(props: propsIF) {
                             X - tickSize,
                             '#7772FE',
                             'white',
-                            formatAmountChartData(limit[0].value, undefined),
+                            limitTick,
                             undefined,
                             yAxisCanvasWidth,
                         );
@@ -3769,13 +3860,37 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (isMouseMoveCrosshair && crosshairActive === 'chart') {
+                    const isScientificCrTick = crosshairData[0].y
+                        .toString()
+                        .includes('e');
+
+                    let crTick: number | string = formatAmountChartData(
+                        Number(crosshairData[0].y),
+                        undefined,
+                    );
+
+                    if (isScientificCrTick) {
+                        const splitNumber = crosshairData[0].y
+                            .toString()
+                            .split('e');
+                        const factor = Math.abs(Number(splitNumber[1]));
+
+                        crTick =
+                            '0.0' +
+                            toSubscript(factor) +
+                            formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
+                    }
+
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
                         X - tickSize,
                         '#242F3F',
                         'white',
-                        formatAmountChartData(crosshairData[0].y, undefined),
+                        crTick,
                         undefined,
                         yAxisCanvasWidth,
                     );
@@ -6516,12 +6631,8 @@ export default function Chart(props: propsIF) {
                     {
                         x: crosshairData[0].x,
                         y: !showHr
-                            ? 0
-                            : Number(
-                                  formatAmountChartData(
-                                      scaleData?.yScale.invert(event.layerY),
-                                  ),
-                              ),
+                            ? NaN
+                            : scaleData?.yScale.invert(event.layerY),
                     },
                 ]);
             }

@@ -226,8 +226,6 @@ function Transactions(props: propsIF) {
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
-    console.log({ showColumns });
-
     // Get current transactions
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
