@@ -9,7 +9,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import {
     concDepositSkew,
@@ -79,7 +78,6 @@ import {
 import { formatAmountOld } from '../../../utils/numbers';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -91,7 +89,6 @@ interface propsIF {
     account: string | undefined;
     isUserLoggedIn: boolean | undefined;
     isPairStable: boolean;
-    provider?: ethers.providers.Provider;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
     lastBlockNumber: number;
@@ -134,7 +131,6 @@ function Range(props: propsIF) {
         account,
         isUserLoggedIn,
         isPairStable,
-        provider,
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceDisplay,
@@ -208,7 +204,6 @@ function Range(props: propsIF) {
     const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
-    useUrlParams(tokens, chainId, provider);
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -694,7 +689,6 @@ function Range(props: propsIF) {
                 defaultHighTick,
                 lookupChain(chainId).gridSize,
             );
-            IS_LOCAL_ENV && console.debug({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
@@ -1332,7 +1326,6 @@ function Range(props: propsIF) {
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
         poolExists: poolExists,
-        provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId,
