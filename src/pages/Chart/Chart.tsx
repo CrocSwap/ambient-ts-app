@@ -2881,6 +2881,10 @@ export default function Chart(props: propsIF) {
                                         rangeWidthPercentage,
                                     );
 
+                                    setTriangleRangeValues(
+                                        liquidityData?.topBoundary,
+                                        minValue,
+                                    );
                                     return newTargets;
                                 });
                             } else {
@@ -3137,6 +3141,10 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
+                            setTriangleRangeValues(
+                                oldRangeMaxValue,
+                                oldRangeMinValue,
+                            );
 
                             setHorizontalBandData([
                                 [
@@ -3213,6 +3221,11 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
+
+                            setTriangleRangeValues(
+                                oldRangeMaxValue,
+                                oldRangeMinValue,
+                            );
 
                             setHorizontalBandData([
                                 [
