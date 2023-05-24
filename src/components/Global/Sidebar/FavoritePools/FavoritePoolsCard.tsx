@@ -25,6 +25,7 @@ export default function FavoritePoolsCard(props: propsIF) {
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const [addrTokenA, addrTokenB] =

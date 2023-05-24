@@ -76,6 +76,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const crocEnv = useContext(CrocEnvContext);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     // ---------------------MODAL FUNCTIONALITY----------------

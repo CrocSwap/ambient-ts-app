@@ -57,6 +57,7 @@ export default function PositionsSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const handleClick = (position: PositionIF): void => {

@@ -4,6 +4,8 @@ import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath
 
 export const useRepoExitPath = (): string => {
     const { params } = useParams();
+
+    // hook to generate navigation actions with pre-loaded path
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     // generate a nav path for clicking the exit button

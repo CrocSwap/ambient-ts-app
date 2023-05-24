@@ -210,6 +210,7 @@ export default function InitPool(props: propsIF) {
         }
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 

@@ -316,6 +316,7 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${

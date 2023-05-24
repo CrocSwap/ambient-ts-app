@@ -220,6 +220,7 @@ export default function rangeRowConstants(props: Props) {
     // eslint-disable-next-line
     const tip = pair.join('\n');
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const tokenPair = (

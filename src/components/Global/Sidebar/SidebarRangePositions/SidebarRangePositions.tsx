@@ -32,6 +32,8 @@ export default function SidebarRangePositions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
+
+    // hooks to generate navigation actions with pre-loaded paths
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
     const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 

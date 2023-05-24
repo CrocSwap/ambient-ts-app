@@ -35,6 +35,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
+
+    // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
     const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 

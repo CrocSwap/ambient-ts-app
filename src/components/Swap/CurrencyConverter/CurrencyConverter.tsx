@@ -150,6 +150,7 @@ function CurrencyConverter(props: propsIF) {
         }
     }, []);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useUrlPath();
 
     const { pathname } = useLocation();

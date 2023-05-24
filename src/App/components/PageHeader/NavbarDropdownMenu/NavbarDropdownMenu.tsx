@@ -59,7 +59,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
     } = useContext(AppStateContext);
 
-    // hook to generate link to the terms of service page
+    // hook to generate navigation actions with pre-loaded path
     const linkGenTOS: linkGenMethodsIF = useUrlPath('tos');
 
     const { i18n } = useTranslation();

@@ -17,6 +17,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const handleClick = (baseAddr: string, quoteAddr: string): void => {

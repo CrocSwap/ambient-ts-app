@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
-import { useUrlPath } from '../../../utils/hooks/useUrlPath';
+import { linkGenMethodsIF, useUrlPath } from '../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     modalCloseCustom: () => void;

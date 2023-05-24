@@ -68,6 +68,7 @@ export default function OrdersSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {

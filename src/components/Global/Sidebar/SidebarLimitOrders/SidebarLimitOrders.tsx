@@ -35,6 +35,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
+
+    // hooks to generate navigation actions with pre-loaded paths
     const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
     const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 

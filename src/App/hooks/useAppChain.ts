@@ -31,6 +31,8 @@ export const useAppChain = (
 
     const defaultChain = getDefaultChainId();
     const dispatch = useAppDispatch();
+
+    // hook to generate navigation actions with pre-loaded path
     const linkGenIndex: linkGenMethodsIF = useUrlPath('index');
 
     // value tracking the current chain the app is set to use

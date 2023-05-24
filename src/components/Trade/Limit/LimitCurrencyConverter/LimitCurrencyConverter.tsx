@@ -220,6 +220,7 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     const reverseTokens = (): void => {

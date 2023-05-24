@@ -25,6 +25,7 @@ export default function TxSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const handleClick = (tx: TransactionIF): void => {

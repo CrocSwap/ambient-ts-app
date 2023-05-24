@@ -371,7 +371,7 @@ function RangeCurrencyConverter(props: propsIF) {
         }
     };
 
-    // generate nav functionality to the range page
+    // hook to generate navigation actions with pre-loaded path
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const reverseTokens = (): void => {

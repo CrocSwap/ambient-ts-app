@@ -136,6 +136,7 @@ export default function RangesMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
     const linkGenRange: linkGenMethodsIF = useUrlPath('range');
     const linkGenRepo: linkGenMethodsIF = useUrlPath('reposition');
 

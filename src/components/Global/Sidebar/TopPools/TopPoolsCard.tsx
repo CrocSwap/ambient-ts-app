@@ -42,6 +42,7 @@ export default function TopPoolsCard(props: propsIF) {
         return output as pageNames;
     }, [pathname]);
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenDynamic: linkGenMethodsIF = useUrlPath(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
