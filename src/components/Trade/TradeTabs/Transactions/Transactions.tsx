@@ -389,7 +389,17 @@ function Transactions(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
 
     const count = Math.ceil(sortedTransactions.length / rowsPerPage);
     const _DATA = usePagination(sortedTransactions, rowsPerPage);
