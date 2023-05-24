@@ -3970,10 +3970,7 @@ export default function Chart(props: propsIF) {
 
         const filteredData = data.reduce((acc: any, d: any) => {
             const sameTime = acc.find((d1: any) => {
-                return (
-                    d1.date === d.date &&
-                    d1.date.getMinutes() === d.date.getMinutes()
-                );
+                return d1.date.getTime() === d.date.getTime();
             });
             if (!sameTime) {
                 acc.push(d);
@@ -4039,8 +4036,8 @@ export default function Chart(props: propsIF) {
                         const beforeData = filteredData[indexValue - 1];
 
                         if (
-                            (beforeData.style || lastData.style,
-                            xScale(d.date.getTime()))
+                            beforeData.style ||
+                            (lastData.style && xScale(d.date.getTime()))
                         ) {
                             if (
                                 Math.abs(
