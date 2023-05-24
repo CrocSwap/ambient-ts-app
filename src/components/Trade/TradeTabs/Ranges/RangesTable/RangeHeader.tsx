@@ -75,11 +75,11 @@ function RangeHeader(props: RangeHeaderPropsIF) {
                     ${activeSortStyle}
                     ${alignRight && styles.align_right}
                     ${alignCenter && styles.align_center}
-
-
                     `}
                 >
-                    {name} {arrow}
+                    <p style={{ height: 24 }}>
+                        {name} {arrow}
+                    </p>
                 </li>
             )}
         </>
