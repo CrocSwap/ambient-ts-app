@@ -3559,6 +3559,7 @@ export default function Chart(props: propsIF) {
         text: string,
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
+        subString: number | undefined = undefined,
     ) {
         const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
@@ -3568,7 +3569,24 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'left';
         context.textBaseline = 'middle';
-        context.fillText(text, x, y + 2);
+
+        if (subString) {
+            const textXAxisLength = x + context.measureText('0.0').width;
+
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
+
+            context.fillText('0.0', x, y);
+            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                text,
+                textXAxisLength + context.measureText(subString).width,
+                y,
+            );
+        } else {
+            context.fillText(text, x, y + 2);
+        }
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
@@ -3656,23 +3674,37 @@ export default function Chart(props: propsIF) {
 
                     const isScientific = d.toString().includes('e');
 
-                    let axisTick: number | string = formatAmountChartData(
-                        d,
-                        digit ? digit : 2,
-                    );
-
                     if (isScientific) {
                         const splitNumber = d.toString().split('e');
                         const factor = Math.abs(Number(splitNumber[1]));
 
-                        axisTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            splitNumber[0].toString();
-                    }
+                        const textXAxisLength =
+                            X - tickSize + context.measureText('0.0').width;
 
-                    context.beginPath();
-                    context.fillText(axisTick, X - tickSize, yScale(d));
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            factor,
+                            textXAxisLength,
+                            yScale(d) + textHeight / 3,
+                        );
+                        context.fillText(
+                            splitNumber[0].toString(),
+                            textXAxisLength + context.measureText(factor).width,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatAmountChartData(d, digit ? digit : 2),
+                            X - tickSize,
+                            yScale(d),
+                        );
+                    }
                 });
 
                 const isScientificMarketTick = market[0].value
@@ -3684,17 +3716,16 @@ export default function Chart(props: propsIF) {
                     undefined,
                 );
 
+                let marketFactor = undefined;
+
                 if (isScientificMarketTick) {
                     const splitNumber = market[0].value.toString().split('e');
-                    const factor = Math.abs(Number(splitNumber[1]));
+                    marketFactor = Math.abs(Number(splitNumber[1]));
 
-                    marketTick =
-                        '0.0' +
-                        toSubscript(factor) +
-                        formatAmountChartData(
-                            Number(splitNumber[0]),
-                            undefined,
-                        ).toString();
+                    marketTick = formatAmountChartData(
+                        Number(splitNumber[0]),
+                        undefined,
+                    ).toString();
                 }
 
                 createRectLabel(
@@ -3706,6 +3737,7 @@ export default function Chart(props: propsIF) {
                     marketTick,
                     undefined,
                     yAxisCanvasWidth,
+                    marketFactor,
                 );
 
                 if (
@@ -3734,17 +3766,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let lowTickFactor = undefined;
+
                         if (isScientificlowTick) {
                             const splitNumber = low.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            lowTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            lowTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            lowTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3758,6 +3789,7 @@ export default function Chart(props: propsIF) {
                             lowTick,
                             undefined,
                             yAxisCanvasWidth,
+                            lowTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMin
@@ -3774,17 +3806,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let highTickFactor = undefined;
+
                         if (isScientificHighTick) {
                             const splitNumber = high.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            highTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            highTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            highTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3800,6 +3831,7 @@ export default function Chart(props: propsIF) {
                             highTick,
                             undefined,
                             yAxisCanvasWidth,
+                            highTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMax
@@ -3822,19 +3854,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let limitTickFactor = undefined;
+
                     if (isScientificLimitTick) {
                         const splitNumber = limit[0].value
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        limitTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        limitTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        limitTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     if (checkLimitOrder) {
@@ -3851,6 +3882,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     } else {
                         createRectLabel(
@@ -3864,6 +3896,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     }
                     addYaxisLabel(
@@ -3883,19 +3916,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let crTickFactor = undefined;
+
                     if (isScientificCrTick) {
                         const splitNumber = crosshairData[0].y
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        crTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        crTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        crTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     createRectLabel(
@@ -3907,6 +3939,7 @@ export default function Chart(props: propsIF) {
                         crTick,
                         undefined,
                         yAxisCanvasWidth,
+                        crTickFactor,
                     );
                 }
 
