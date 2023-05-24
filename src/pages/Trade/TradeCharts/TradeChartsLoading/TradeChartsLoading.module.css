@@ -1,101 +1,12 @@
 .container {
-    display: block;
     width: 100%;
     height: 100%;
-    /* margin: 100px auto; */
-    position: relative;
-    overflow: hidden;
-}
 
-.container img {
-    object-fit: contain;
-    display: block;
-    width: 100%;
-    height: 100%;
-    transform: scale(1.4);
-    opacity: 0;
-    animation: reveal 1.5s;
-    animation-fill-mode: forwards;
-    opacity: 0;
-    filter: blur(8px);
-}
 
-@keyframes reveal {
-    50% {
-        transform: scale(1.4);
-        opacity: 0;
-    }
-    51% {
-        transform: scale(1.4);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-.overlay_container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.overlay_container .overlay {
-    background: white;
-    flex: 1;
-    animation-fill-mode: forwards;
-}
-.overlay_container .overlay:nth-child(1) {
-    transform: scaleX(0);
-    transform-origin: 100% 50%;
-    animation: overlay_1 1.5s ease-in-out;
-    background: var(--dark2);
-}
-.overlay_container .overlay:nth-child(2) {
-    transform: scaleX(0);
-    transform-origin: 0% 50%;
-    animation: overlay_2 1.5s ease-in-out;
-    background: var(--dark2);
-}
 
-@keyframes overlay_1 {
-    0% {
-        transform: scaleX(0);
-        transform-origin: 100% 50%;
-    }
-    50% {
-        transform: scaleX(1);
-        transform-origin: 100% 50%;
-    }
-    51% {
-        transform: scaleX(1);
-        transform-origin: 0% 50%;
-    }
-    100% {
-        transform: scaleX(0);
-        transform-origin: 0% 50%;
-    }
-}
-@keyframes overlay_2 {
-    0% {
-        transform: scaleX(0);
-        transform-origin: 0% 50%;
-    }
-    50% {
-        transform: scaleX(1);
-        transform-origin: 0% 50%;
-    }
-    51% {
-        transform: scaleX(1);
-        transform-origin: 100% 50%;
-    }
-    100% {
-        transform: scaleX(0);
-        transform-origin: 100% 50%;
-    }
-}
+

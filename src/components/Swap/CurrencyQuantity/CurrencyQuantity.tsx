@@ -9,6 +9,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
+import { CircularProgress } from '@mui/material';
 
 interface propsIF {
     disable?: boolean;
@@ -128,33 +129,39 @@ function CurrencyQuantity(props: propsIF) {
     };
 
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
+
+    const progressDisplay = (
+        <div className={styles.circular_progress}>
+            <CircularProgress size={24} />
+        </div>
+    );
     return (
-        <div
-            className={`${styles.token_amount} ${
-                isLoading && styles.shimmer_wrapper
-            }`}
-        >
-            <input
-                id={`${fieldId}-quantity`}
-                autoFocus={fieldId === 'sell'}
-                className={styles.currency_quantity}
-                placeholder={isLoading ? '' : '0.0'}
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                value={isLoading ? '' : displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9]*\.?[0-9]*$'
-                disabled={disable}
-            />
+        <div className={`${styles.token_amount} `}>
+            {isLoading ? (
+                progressDisplay
+            ) : (
+                <input
+                    id={`${fieldId}-quantity`}
+                    autoFocus={fieldId === 'sell'}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='text'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern='^[0-9]*\.?[0-9]*$'
+                    disabled={disable}
+                />
+            )}
         </div>
     );
 }

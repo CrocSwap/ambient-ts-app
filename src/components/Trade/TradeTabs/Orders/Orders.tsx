@@ -20,7 +20,6 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
-import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -29,7 +28,7 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import usePagination from '../../../Global/Pagination/usePagination';
-import { Pagination } from '@mui/material';
+import { CircularProgress, Pagination } from '@mui/material';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -552,7 +551,17 @@ function Orders(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TableSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CircularProgress />
+                    </div>
                 ) : (
                     orderDataOrNull
                 )}

@@ -22,7 +22,7 @@ import {
     addPositionsByPool,
     addPositionsByUser,
 } from '../../../../utils/state/graphDataSlice';
-import { Pagination } from '@mui/material';
+import { CircularProgress, Pagination } from '@mui/material';
 import {
     useAppDispatch,
     useAppSelector,
@@ -34,7 +34,6 @@ import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
@@ -642,7 +641,17 @@ function Ranges(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TableSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CircularProgress />
+                    </div>
                 ) : (
                     rangeDataOrNull
                 )}

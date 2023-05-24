@@ -20,8 +20,7 @@ import {
     memo,
 } from 'react';
 
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import { Pagination } from '@mui/material';
+import { CircularProgress, Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
@@ -585,7 +584,17 @@ function Transactions(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TransactionsSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CircularProgress />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}
