@@ -547,11 +547,11 @@ function Transactions(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    useEffect(() => {
-        if (mobileView) {
-            setExpandTradeTable(true);
-        }
-    }, [mobileView]);
+    // useEffect(() => {
+    //     if (mobileView) {
+    //         setExpandTradeTable(true);
+    //     }
+    // }, [mobileView]);
 
     const mobileViewHeight = mobileView ? '' : '260px';
 
@@ -559,7 +559,7 @@ function Transactions(props: propsIF) {
         ? mobileView
             ? 'calc(100vh - 15rem) '
             : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
+        : '260px';
 
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'

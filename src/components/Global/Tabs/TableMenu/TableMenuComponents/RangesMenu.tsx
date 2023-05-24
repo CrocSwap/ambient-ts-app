@@ -235,11 +235,11 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {showRepositionButton && repositionButton}
+            {showRepositionButton && view1 && repositionButton}
             {!showRepositionButton && userMatchesConnectedAccount && addButton}
             {view2 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && copyButton}
+            {!userMatchesConnectedAccount && view1 && copyButton}
         </div>
     );
 

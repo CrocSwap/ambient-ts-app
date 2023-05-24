@@ -380,7 +380,7 @@ function Leaderboard(props: propsIF) {
         ? mobileView
             ? 'calc(100vh - 15rem) '
             : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
+        : '260px';
 
     return (
         <section
@@ -388,7 +388,7 @@ function Leaderboard(props: propsIF) {
             style={{ height: expandStyle }}
         >
             <div>{headerColumnsDisplay}</div>
-            <div>{rowItemContent}</div>
+            <div className={styles.table_content}>{rowItemContent}</div>
             <div>{footerDisplay}</div>
         </section>
     );

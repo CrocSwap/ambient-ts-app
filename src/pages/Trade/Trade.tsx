@@ -8,7 +8,6 @@ import {
     useContext,
     useCallback,
     memo,
-    useRef,
 } from 'react';
 import {
     useParams,
@@ -23,7 +22,6 @@ import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
-import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -44,10 +42,8 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
-import { Drawer, buttonBaseClasses } from '@mui/material';
-import { AiOutlineDoubleLeft } from 'react-icons/ai';
+import { Drawer } from '@mui/material';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
-import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 // import { useCandleTime } from './useCandleTime';
 
 // interface for React functional component props

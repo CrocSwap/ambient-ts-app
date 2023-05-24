@@ -51,6 +51,7 @@ overflow-y: hidden;
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
     overflow: auto; /* Enable scrolling for the content */
 
+
   
 }
 

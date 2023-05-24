@@ -4,7 +4,6 @@
     border-radius: 4px;
     background: var(--dark1);
     overflow: hidden;
-    margin: 0 -5px;
     display: flex;
     flex-direction: column;
 }

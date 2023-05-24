@@ -315,10 +315,10 @@ export default function OrdersMenu(props: propsIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {(view3 || view2WithNoSidebar) && detailsButton}
+            {(view3 || view2WithNoSidebar) && minView && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {!isOwnerActiveAccount && copyButton}
+            {!isOwnerActiveAccount && minView && copyButton}
         </div>
     );
 

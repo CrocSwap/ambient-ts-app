@@ -151,7 +151,7 @@ import { useTokenPairAllowance } from './hooks/useTokenPairAllowance';
 import { RangeStateContext } from '../contexts/RangeStateContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { useBlacklist } from './hooks/useBlacklist';
-import { Box, Drawer, styled, SwipeableDrawer } from '@mui/material';
+import { Drawer } from '@mui/material';
 
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
@@ -1955,6 +1955,7 @@ export default function App() {
     const [isTradeDrawerOpen, setIsTradeDrawerOpen] = useState(false);
 
     const toggleTradeDrawer =
+        // eslint-disable-next-line
         (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
             if (
                 event.type === 'keydown' &&
@@ -2154,19 +2155,7 @@ export default function App() {
     };
 
     const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
-    const drawerBleeding = 25;
-    const Puller = styled(Box)(({ theme }) => ({
-        width: 30,
-        height: 6,
-        backgroundColor: 'red',
-        borderRadius: 3,
-        position: 'absolute',
-        top: 8,
-        left: 'calc(50% - 15px)',
-    }));
-    const StyledBox = styled(Box)(({ theme }) => ({
-        backgroundColor: theme.palette.mode === 'light' ? '#fff' : 'red',
-    }));
+
     const toggleSidebarDrawer =
         (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
             if (
@@ -2189,14 +2178,6 @@ export default function App() {
         };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
-
-    // useEffect(() => {
-    //     if (bottomTabs) {
-    //         appState.sidebar.open();
-    //     }
-    // }, [bottomTabs])
-
-    console.log({ isTradeDrawerOpen });
 
     return (
         <AppStateContext.Provider value={appState}>

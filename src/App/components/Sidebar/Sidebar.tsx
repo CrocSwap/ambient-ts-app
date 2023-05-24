@@ -49,7 +49,6 @@ import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { Drawer } from '@mui/material';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -511,32 +510,6 @@ function Sidebar(props: propsIF) {
             {bottomElementsDisplay}
         </>
     );
-
-    const [drawer, setDrawer] = useState(false);
-    const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
-    const toggleDrawer =
-        (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-            if (
-                event.type === 'keydown' &&
-                ((event as React.KeyboardEvent).key === 'Tab' ||
-                    (event as React.KeyboardEvent).key === 'Shift')
-            ) {
-                return;
-            }
-
-            setIsSidebarDrawerOpen(open);
-        };
-
-    if (drawer)
-        return (
-            <Drawer
-                anchor='left'
-                open={isSidebarDrawerOpen}
-                onClose={toggleDrawer(false)}
-            >
-                <button>Sidebar drawer</button>
-            </Drawer>
-        );
 
     return (
         <div ref={sidebarRef}>
