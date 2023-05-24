@@ -337,7 +337,9 @@ function Orders(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(isOnPortfolioPage ? 7 : 10);
+    const isScreenShort = useMediaQuery('(max-height: 700px)');
+
+    const [rowsPerPage, setRowsPerPage] = useState(isScreenShort ? 5 : 10);
 
     const count = Math.ceil(sortedLimits.length / rowsPerPage);
     const _DATA = usePagination(sortedLimits, rowsPerPage);
