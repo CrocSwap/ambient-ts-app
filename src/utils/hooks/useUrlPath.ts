@@ -62,6 +62,9 @@ export interface linkGenMethodsIF {
     navigate: (paramsObj?: anyParamsIF) => void,
 }
 
+// TODO:    @Emily: it probably makes sense to expand this hook to
+// TODO:    .... centralize URLs to link external resources
+
 export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
