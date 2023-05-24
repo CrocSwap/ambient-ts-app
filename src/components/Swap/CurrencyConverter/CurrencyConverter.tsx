@@ -31,7 +31,7 @@ import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { shallowEqual } from 'react-redux';
-import { useUrlPath } from '../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -150,7 +150,7 @@ function CurrencyConverter(props: propsIF) {
         }
     }, []);
 
-    const linkGenAny = useUrlPath();
+    const linkGenAny: linkGenMethodsIF = useUrlPath();
 
     const { pathname } = useLocation();
 

@@ -4,7 +4,7 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string;
@@ -32,8 +32,8 @@ export default function SidebarRangePositions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const linkGenRange = useUrlPath('range');
-    const linkGenAccount = useUrlPath('account');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');

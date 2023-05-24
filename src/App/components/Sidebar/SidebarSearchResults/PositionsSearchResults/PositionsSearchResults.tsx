@@ -3,7 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string,
@@ -57,7 +57,7 @@ export default function PositionsSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const linkGenRange = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);

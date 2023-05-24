@@ -26,7 +26,7 @@ import {
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 
 // interface for React functional component props
 interface propsIF {
@@ -76,7 +76,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const crocEnv = useContext(CrocEnvContext);
 
-    const linkGenLimit = useUrlPath('limit');
+    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;

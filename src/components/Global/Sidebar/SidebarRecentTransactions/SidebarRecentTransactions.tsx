@@ -9,7 +9,7 @@ import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string;
@@ -35,8 +35,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const linkGenMarket = useUrlPath('market');
-    const linkGenAccount = useUrlPath('account');
+    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
+    const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');

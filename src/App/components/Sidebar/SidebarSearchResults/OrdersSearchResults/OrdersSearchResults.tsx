@@ -4,7 +4,7 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string;
@@ -68,7 +68,7 @@ export default function OrdersSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const linkGenLimit = useUrlPath('limit');
+    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControlActive(true);

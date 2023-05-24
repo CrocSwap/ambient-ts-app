@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 export const useRepoExitPath = (): string => {
     const { params } = useParams();
-    const linkGenRange = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     // generate a nav path for clicking the exit button
     // regenerate value every time the URL params change (virtually never)

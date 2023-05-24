@@ -5,7 +5,7 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
@@ -17,7 +17,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
-    const linkGenMarket = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;

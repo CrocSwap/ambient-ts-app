@@ -31,7 +31,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 // interface for component props
 interface propsIF {
@@ -65,7 +65,6 @@ interface propsIF {
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
     gasPriceInGwei: number | undefined;
-
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -373,7 +372,7 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     // generate nav functionality to the range page
-    const linkGenRange = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());

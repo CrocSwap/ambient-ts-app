@@ -34,7 +34,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 // interface for component props
 interface propsIF {
@@ -220,7 +220,7 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
-    const linkGenLimit = useUrlPath('limit');
+    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {

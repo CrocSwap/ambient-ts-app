@@ -8,69 +8,49 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 interface Props {
     posHashTruncated: string;
-    // sideTypeStyle: string;
     usdValue: string;
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    // baseQuantityDisplayShort: string;
     quoteTokenLogo: string;
-    // quoteQuantityDisplayShort: string;
-    // elapsedTimeString: string;
-    // sideType: string;
     sideCharacter: string;
-    // ensName: string | null;
     posHash: string;
     elapsedTimeString: string;
-
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
-    // negativeArrow: string;
-
-    // type: string;
-    // truncatedLowDisplayPrice: string | undefined;
-    // truncatedHighDisplayPrice: string | undefined;
-    // priceCharacter: string;
-    // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
     maxRangeDenomByMoneyness: string | undefined;
-    // truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
     isOnPortfolioPage: boolean;
     isAmbient: boolean;
     ipadView: boolean;
     isPositionInRange: boolean;
-    // valueArrows: boolean;
     isLeaderboard: boolean | undefined;
     showColumns: boolean;
     rank: number | undefined;
-
     handleCopyPosHash: () => void;
-    // handleOpenExplorer: () => void;
     openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
-
     position: PositionIF;
 }
+
 export default function rangeRowConstants(props: Props) {
     const {
         handleCopyPosHash,
         posHash,
         posHashTruncated,
         usdValue,
-
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
@@ -86,11 +66,9 @@ export default function rangeRowConstants(props: Props) {
         showColumns,
         rank,
         elapsedTimeString,
-
         maxRangeDenomByMoneyness,
         isOnPortfolioPage,
         isAmbient,
-
         minRangeDenomByMoneyness,
         ambientOrMin,
         ambientOrMax,
@@ -99,7 +77,6 @@ export default function rangeRowConstants(props: Props) {
         apyClassname,
         apyString,
         isPositionInRange,
-
         handleRowMouseDown,
         handleRowMouseOut,
     } = props;
@@ -243,7 +220,7 @@ export default function rangeRowConstants(props: Props) {
     // eslint-disable-next-line
     const tip = pair.join('\n');
 
-    const linkGenRange = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
 
     const tokenPair = (
         <li

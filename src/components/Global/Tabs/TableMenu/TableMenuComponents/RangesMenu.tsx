@@ -34,7 +34,7 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -136,8 +136,8 @@ export default function RangesMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
-    const linkGenRange = useUrlPath('range');
-    const linkGenRepo = useUrlPath('reposition');
+    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenRepo: linkGenMethodsIF = useUrlPath('reposition');
 
     const repositionButton = (
         <Link

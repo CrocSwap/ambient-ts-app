@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string,
@@ -35,8 +35,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const linkGenLimit = useUrlPath('limit');
-    const linkGenAccount = useUrlPath('account');
+    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
+    const linkGenAccount: linkGenMethodsIF = useUrlPath('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');

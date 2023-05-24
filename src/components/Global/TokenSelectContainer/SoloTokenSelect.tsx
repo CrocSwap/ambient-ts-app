@@ -68,7 +68,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path 
-    const linkGenAny = useUrlPath();
+    const linkGenAny: linkGenMethodsIF = useUrlPath();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {

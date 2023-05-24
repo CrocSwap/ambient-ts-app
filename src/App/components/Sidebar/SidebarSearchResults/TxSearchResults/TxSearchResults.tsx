@@ -3,7 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     chainId: string;
@@ -25,7 +25,7 @@ export default function TxSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const linkGenMarket = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);

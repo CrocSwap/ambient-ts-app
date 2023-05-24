@@ -12,7 +12,7 @@ import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     isUserIdle: boolean;
@@ -316,7 +316,7 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    const linkGenMarket = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol

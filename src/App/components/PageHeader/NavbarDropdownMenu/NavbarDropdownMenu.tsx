@@ -31,7 +31,7 @@ import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -40,7 +40,6 @@ interface NavbarDropdownItemPropsIF {
     goBackItem?: boolean;
     imageIcon?: string;
     onClick?: () => void;
-
     children: ReactNode;
     rightIcon?: ReactNode;
 }
@@ -60,7 +59,8 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
     } = useContext(AppStateContext);
 
-    const linkGenTOS = useUrlPath('tos');
+    // hook to generate link to the terms of service page
+    const linkGenTOS: linkGenMethodsIF = useUrlPath('tos');
 
     const { i18n } = useTranslation();
 

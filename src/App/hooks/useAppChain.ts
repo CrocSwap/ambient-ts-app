@@ -6,7 +6,7 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
-import { useUrlPath } from '../../utils/hooks/useUrlPath';
+import { useUrlPath, linkGenMethodsIF } from '../../utils/hooks/useUrlPath';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -31,7 +31,7 @@ export const useAppChain = (
 
     const defaultChain = getDefaultChainId();
     const dispatch = useAppDispatch();
-    const linkGenIndex = useUrlPath('index');
+    const linkGenIndex: linkGenMethodsIF = useUrlPath('index');
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
