@@ -4188,7 +4188,7 @@ export default function Chart(props: propsIF) {
                     return scaleData?.xScale.domain()[0];
                 })
                 .mainValue((d: any) => d.value)
-                .size(270)
+                .size(180)
                 .type(d3.symbolTriangle)
                 .decorate((context: any) => {
                     const rotateDegree = 90;
