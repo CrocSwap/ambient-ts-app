@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // START: Import React and Dongles
 import { useEffect, useMemo, useState } from 'react';
 import { useConnect, useAccount, useEnsName, useDisconnect } from 'wagmi';
@@ -202,6 +204,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed />
             <p>Ambient is not available in the United States.</p>
+            <p>If you think this is an error, contact the host.</p>
             <Button
                 title='Close'
                 flat={true}
@@ -212,39 +215,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         </div>
     );
 
-    const activeContent = useMemo(() => {
-        switch (page) {
-            case 'wallets':
-                return walletsPage;
-            case 'notAvailable':
-                return notAvailablePage;
-            case 'metamaskPending':
-                return metamaskPendingPage;
-            case 'coinbaseWalletPending':
-                return coinbaseWalletPendingPage;
-            case 'metamaskError':
-                return metamaskErrorPage;
-
-            default:
-                walletsPage;
-        }
-    }, [page, delayForHelpTextElapsed]);
-
-    const activeTitle = useMemo(() => {
-        switch (page) {
-            case 'wallets':
-                return 'Choose a Wallet';
-            case 'metamaskPending':
-                return 'Waiting for MetaMask';
-            case 'metamaskError':
-                return 'MetaMask Error';
-            case 'magicLogin':
-            case 'magicLoginPending':
-                return 'Log In With Email';
-            default:
-                'Choose a Wallet';
-        }
-    }, [page]);
+    const activeContent = notAvailablePage;
 
     const showBackArrow = useMemo(() => {
         switch (page) {
@@ -270,25 +241,16 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         }
     }, [page]);
 
-    const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
-
     return (
         <div className={styles.wallet_modal} style={{ width: '500px' }}>
             <Modal
                 onClose={closeModalWallet}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={!hasAgreedTerms ? 'Welcome' : activeTitle}
-                centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
+                title={'Not available'}
+                centeredTitle={true}
             >
-                {!hasAgreedTerms ? (
-                    <GateWallet
-                        recordAgreed={recordAgreed}
-                        termUrls={termUrls}
-                    />
-                ) : (
-                    activeContent
-                )}
+                {activeContent}
             </Modal>
         </div>
     );
