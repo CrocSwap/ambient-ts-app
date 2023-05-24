@@ -4,6 +4,7 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from './hooks/usePoolStats';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 
 interface propsIF {
     pool: PoolIF;
@@ -24,21 +25,22 @@ export default function FavoritePoolsCard(props: propsIF) {
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
+    const linkGenMarket = useUrlPath('market');
+
     const [addrTokenA, addrTokenB] =
         tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.quote.address, pool.base.address]
             : [pool.base.address, pool.quote.address];
 
-    const linkPath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        addrTokenA +
-        '&tokenB=' +
-        addrTokenB;
-
     return (
-        <Link className={styles.container} to={linkPath}>
+        <Link
+            className={styles.container}
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: addrTokenA,
+                tokenB: addrTokenB,
+            })}
+        >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
             </div>

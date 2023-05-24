@@ -26,10 +26,11 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import chainNumToString from '../../App/functions/chainNumToString';
+import { useUrlPath } from '../../utils/hooks/useUrlPath';
 
 // interface for props
 interface propsIF {
+    chainId: string;
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     tokenAAllowance: string;
@@ -44,6 +45,7 @@ interface propsIF {
 // react functional component
 export default function InitPool(props: propsIF) {
     const {
+        chainId,
         openModalWallet,
         isUserLoggedIn,
         crocEnv,
@@ -208,6 +210,9 @@ export default function InitPool(props: propsIF) {
         }
     };
 
+    const linkGenMarket = useUrlPath('market');
+    const linkGenRange = useUrlPath('range');
+
     const sendInit = () => {
         IS_LOCAL_ENV &&
             console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
@@ -255,17 +260,11 @@ export default function InitPool(props: propsIF) {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        navigate(
-                            '/trade/range/chain=' +
-                                chainNumToString(baseToken.chainId) +
-                                '&tokenA=' +
-                                baseToken.address +
-                                '&tokenB=' +
-                                quoteToken.address,
-                            {
-                                replace: true,
-                            },
-                        );
+                        linkGenRange.navigate({
+                            chain: chainId,
+                            tokenA: baseToken.address,
+                            tokenB: quoteToken.address,
+                        });
                     }
                 } catch (error) {
                     if (
@@ -317,12 +316,11 @@ export default function InitPool(props: propsIF) {
             {poolExists && (
                 <Navigate
                     to={
-                        '/trade/market/chain=' +
-                        chainNumToString(baseToken.chainId) +
-                        '&tokenA=' +
-                        baseToken.address +
-                        '&tokenB=' +
-                        quoteToken.address
+                        linkGenMarket.getFullURL({
+                            chain: chainId,
+                            tokenA: baseToken.address,
+                            tokenB: quoteToken.address,
+                        })
                     }
                     replace={true}
                 />

@@ -54,7 +54,7 @@ const BASE_URL_PATHS = {
 };
 
 // type that maps to keys (strings) in the BASE_URL_PATHS object
-type pageNames = keyof typeof BASE_URL_PATHS;
+export type pageNames = keyof typeof BASE_URL_PATHS;
 
 export const useUrlPath = (page?: pageNames) => {
     const { pathname } = useLocation();

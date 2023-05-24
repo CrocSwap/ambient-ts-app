@@ -2221,6 +2221,7 @@ export default function App() {
                                     path='initpool/:params'
                                     element={
                                         <InitPool
+                                            chainId={chainData.chainId}
                                             isUserLoggedIn={isUserLoggedIn}
                                             crocEnv={crocEnv}
                                             gasPriceInGwei={gasPriceInGwei}
