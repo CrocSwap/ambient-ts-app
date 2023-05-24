@@ -456,11 +456,14 @@ export default function Chart(props: propsIF) {
 
     const [yAxisLabels] = useState<yLabel[]>([]);
 
-    // Subcharts
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const isScientific = poolPriceNonDisplay
+        ? poolPriceNonDisplay.toString().includes('e')
+        : false;
 
     useEffect(() => {
         useHandleSwipeBack(d3Container);
@@ -2368,13 +2371,19 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2482,17 +2491,23 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                          ) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                          ) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2513,6 +2528,7 @@ export default function Chart(props: propsIF) {
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
+            // to:do fix for scientific AdvancedPepe
             setRanges(() => {
                 const newTargets = [
                     {
@@ -2921,11 +2937,19 @@ export default function Chart(props: propsIF) {
                                 const rangesF = [
                                     {
                                         name: 'Min',
-                                        value: pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                     },
                                     {
                                         name: 'Max',
-                                        value: pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                     },
                                 ];
 
@@ -2942,16 +2966,24 @@ export default function Chart(props: propsIF) {
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Min',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                              );
 
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Max',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                              );
 
                                         newRangeValue = newTargets;
 
@@ -3016,7 +3048,7 @@ export default function Chart(props: propsIF) {
                                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 );
                             }
-
+                            // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
@@ -3626,20 +3658,6 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [yAxis, location]);
-
-    function toSubscript(number: number) {
-        let subscriptString = '';
-        const baseCodePoint = 8320; // Unicode code point for subscript 0
-
-        const numberString = number.toString();
-        for (let i = 0; i < numberString.length; i++) {
-            const digit = parseInt(numberString[i]);
-            const subscriptCodePoint = baseCodePoint + digit;
-            subscriptString += String.fromCharCode(subscriptCodePoint);
-        }
-
-        return subscriptString;
-    }
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -4733,7 +4751,6 @@ export default function Chart(props: propsIF) {
                 clickedValue < liquidityData?.lowBoundary
             ) {
                 rangeWidthPercentage = 100;
-
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -4817,15 +4834,23 @@ export default function Chart(props: propsIF) {
 
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                              );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                              );
 
                         newRangeValue = newTargets;
 
@@ -4854,7 +4879,16 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale.invert(event.offsetY) < 0
                     ? 0.1
                     : scaleData?.yScale.invert(event.offsetY);
-            let pinnedDisplayPrices;
+            let pinnedDisplayPrices: {
+                pinnedMinPriceDisplay: string;
+                pinnedMaxPriceDisplay: string;
+                pinnedMinPriceDisplayTruncated: string;
+                pinnedMaxPriceDisplayTruncated: string;
+                pinnedLowTick: number;
+                pinnedHighTick: number;
+                pinnedMinPriceNonDisplay: number;
+                pinnedMaxPriceNonDisplay: number;
+            };
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denomInBase,
@@ -4889,11 +4923,15 @@ export default function Chart(props: propsIF) {
                     if (lineToBeSet === 'Max') {
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = pinnedMaxPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMaxPriceDisplay)
+                            : pinnedMaxPriceDisplayTruncated;
                     } else {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = pinnedMinPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMinPriceDisplay)
+                            : pinnedMinPriceDisplayTruncated;
                     }
 
                     render();
