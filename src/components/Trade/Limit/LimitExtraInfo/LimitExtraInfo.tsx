@@ -18,7 +18,6 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 interface propsIF {
     orderGasPriceInDollars: string | undefined;
     isTokenABase: boolean;
-    limitRate: string;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;

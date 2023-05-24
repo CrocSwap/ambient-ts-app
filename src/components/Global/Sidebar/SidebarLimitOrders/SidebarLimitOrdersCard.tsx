@@ -11,7 +11,7 @@ interface propsIF {
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
     const { order, handleClick } = props;
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // human-readable limit price to display in the DOM

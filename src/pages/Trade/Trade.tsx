@@ -42,7 +42,6 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 // interface for React functional component props
 interface propsIF {
-    limitRate: string;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
 }
@@ -69,7 +68,7 @@ function Trade(props: propsIF) {
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
     const { expandTradeTable } = useContext(TradeTableContext);
     const {
         baseToken: { address: baseTokenAddress },

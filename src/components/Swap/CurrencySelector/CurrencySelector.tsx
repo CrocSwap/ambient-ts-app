@@ -11,7 +11,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
@@ -27,6 +26,8 @@ import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceEx
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -62,12 +63,6 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    isSwapCopied?: boolean;
-    importedTokensPlus: TokenIF[];
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
@@ -94,14 +89,8 @@ function CurrencySelector(props: propsIF) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        isSwapCopied,
         isSellTokenEth,
         reverseTokens,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -110,10 +99,13 @@ function CurrencySelector(props: propsIF) {
         isLoading,
     } = props;
 
-    const { dexBalSwap } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { setInput } = useContext(TokenContext);
+    const { showSwapPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalSwap } = useContext(UserPreferenceContext);
+
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -508,7 +500,7 @@ function CurrencySelector(props: propsIF) {
                 </div>
                 <button
                     className={`${styles.token_select} ${
-                        isSwapCopied && styles.pulse_animation
+                        showSwapPulseAnimation && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
                     tabIndex={0}
@@ -546,15 +538,10 @@ function CurrencySelector(props: propsIF) {
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
-                        importedTokensPlus={importedTokensPlus}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}

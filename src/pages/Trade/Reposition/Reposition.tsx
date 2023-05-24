@@ -52,13 +52,7 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
-interface propsIF {
-    isPairStable: boolean;
-}
-
-function Reposition(props: propsIF) {
-    const { isPairStable } = props;
-
+function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
@@ -738,7 +732,6 @@ function Reposition(props: propsIF) {
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
                 positionHash={position.positionStorageSlot}
-                isPairStable={isPairStable}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>
@@ -762,7 +755,6 @@ function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    isPairStable={isPairStable}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}
                 />

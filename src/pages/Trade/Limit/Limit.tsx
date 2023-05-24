@@ -37,7 +37,6 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import {
     setLimitTick,
     setLimitTickCopied,
@@ -71,28 +70,13 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 interface propsIF {
-    isPairStable: boolean;
-    isOnTradeRoute?: boolean;
-    importedTokensPlus: TokenIF[];
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: propsIF) {
-    const {
-        isPairStable,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        setResetLimitTick,
-    } = props;
+    const { setResetLimitTick } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -105,7 +89,7 @@ export default function Limit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
     const { tokenAAllowance, setRecheckTokenAApproval } =
         useContext(TradeTokenContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
@@ -734,11 +718,6 @@ export default function Limit(props: propsIF) {
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
-        importedTokensPlus: importedTokensPlus,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
         setResetLimitTick: setResetLimitTick,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
@@ -812,7 +791,7 @@ export default function Limit(props: propsIF) {
                     </div>
                 )}{' '}
                 <ContentContainer isOnTradeRoute>
-                    <LimitHeader isPairStable={isPairStable} />
+                    <LimitHeader />
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -829,7 +808,6 @@ export default function Limit(props: propsIF) {
                         orderGasPriceInDollars={orderGasPriceInDollars}
                         liquidityProviderFeeString={liquidityProviderFeeString}
                         isTokenABase={isSellTokenBase}
-                        limitRate={endDisplayPrice.toString()}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}

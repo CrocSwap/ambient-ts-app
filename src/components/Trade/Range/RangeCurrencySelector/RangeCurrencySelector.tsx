@@ -9,7 +9,6 @@ import {
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
@@ -26,6 +25,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
     resetTokenQuantities: () => void;
@@ -60,12 +60,7 @@ interface propsIF {
     isAdvancedMode: boolean;
     disable?: boolean;
     handleChangeClick: (input: string) => void;
-    importedTokensPlus: TokenIF[];
     tokenAorB: string;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -91,12 +86,7 @@ function RangeCurrencySelector(props: propsIF) {
         isTokenBDisabled,
         isAdvancedMode,
         handleChangeClick,
-        importedTokensPlus,
         tokenAorB,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
@@ -104,6 +94,7 @@ function RangeCurrencySelector(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { setInput } = useContext(TokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -431,15 +422,10 @@ function RangeCurrencySelector(props: propsIF) {
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
-                        importedTokensPlus={importedTokensPlus}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}

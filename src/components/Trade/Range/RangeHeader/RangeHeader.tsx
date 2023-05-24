@@ -25,13 +25,12 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 // interface for component props
 interface propsIF {
     mintSlippage: SlippageMethodsIF;
-    isPairStable: boolean;
     isTokenABase: boolean;
 }
 
 // central react functional component
 function RangeHeader(props: propsIF) {
-    const { mintSlippage, isPairStable, isTokenABase } = props;
+    const { mintSlippage, isTokenABase } = props;
 
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
     const {
@@ -88,7 +87,6 @@ function RangeHeader(props: propsIF) {
                     <TransactionSettings
                         module='Pool'
                         slippage={mintSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
                         bypassConfirm={bypassConfirmRange}
                     />

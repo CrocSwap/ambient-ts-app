@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import {
-    useState,
-    useEffect,
-    useMemo,
-    Dispatch,
-    SetStateAction,
-    useContext,
-    memo,
-} from 'react';
+import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
@@ -48,7 +40,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PositionIF } from '../../../utils/interfaces/exports';
 import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
@@ -81,27 +73,14 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { isStablePair } from '../../../utils/data/stablePairs';
 
 interface propsIF {
-    isPairStable: boolean;
-    importedTokensPlus: TokenIF[];
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
 function Range(props: propsIF) {
-    const {
-        isPairStable,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        cachedFetchTokenPrice,
-    } = props;
+    const { cachedFetchTokenPrice } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -125,7 +104,7 @@ function Range(props: propsIF) {
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -210,7 +189,11 @@ function Range(props: propsIF) {
 
     const isTokenABase = tokenA.address === baseTokenAddress;
 
-    const slippageTolerancePercentage = isPairStable
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
         ? mintSlippage.stable
         : mintSlippage.volatile;
 
@@ -1286,11 +1269,6 @@ function Range(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        importedTokensPlus: importedTokensPlus,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };
@@ -1553,7 +1531,6 @@ function Range(props: propsIF) {
                 <ContentContainer isOnTradeRoute>
                     <RangeHeader
                         mintSlippage={mintSlippage}
-                        isPairStable={isPairStable}
                         isTokenABase={isTokenABase}
                     />
                     {navigationMenu}

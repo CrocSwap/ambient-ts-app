@@ -76,7 +76,6 @@ import {
     setNativeToken,
     setRecentTokens,
 } from '../utils/state/userDataSlice';
-import { isStablePair } from '../utils/data/stablePairs';
 import {
     APP_ENVIRONMENT,
     CHAT_ENABLED,
@@ -188,6 +187,10 @@ export default function App() {
     const lastReceiptHash = useMemo(
         () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
         [lastReceipt],
+    );
+    // CONTEXT: remove and reference as necessary
+    const connectedUserErc20Tokens = useAppSelector(
+        (state) => state.userData.tokens.erc20Tokens,
     );
 
     // CONTEXT: remove and reference as necessary
@@ -399,6 +402,23 @@ export default function App() {
         }
     }, [provider]);
 
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
+        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
+        return {
+            swap: `/swap/${pairSlug}`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
+        };
+    }
+    const initUrl = createDefaultUrlParams(chainData.chainId);
+    const [defaultUrlParams, setDefaultUrlParams] =
+        useState<UrlRoutesTemplate>(initUrl);
+    useEffect(() => {
+        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
+    }, [chainData.chainId]);
+
     /* ------------------------------------------ END CROC ENV CONTEXT ------------------------------------------ */
 
     /* ------------------------------------------ CHAIN DATA CONTEXT ------------------------------------------ */
@@ -527,21 +547,11 @@ export default function App() {
             .catch(console.error);
     }, [lastBlockNumber]);
 
-    // const everySecondBlock = useMemo(() => Math.floor(lastBlockNumber / 2), [lastBlockNumber]);
+    // prevents useEffect below from triggering every block update
     const everyEigthBlock = useMemo(
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
     );
-    const addTokenInfo = (token: TokenIF): TokenIF => {
-        // CONTEXT: should be a helper function
-        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
-            token.address,
-        );
-        const newToken = { ...token };
-        newToken.name = oldToken ? oldToken.name : '';
-        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-        return newToken;
-    };
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
@@ -568,9 +578,14 @@ export default function App() {
                             everyEigthBlock,
                             crocEnv,
                         );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
-                        addTokenInfo(token),
-                    );
+                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                        const oldToken: TokenIF | undefined =
+                            tokens.getTokenByAddress(token.address);
+                        const newToken = { ...token };
+                        newToken.name = oldToken ? oldToken.name : '';
+                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+                        return newToken;
+                    });
 
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
@@ -662,6 +677,21 @@ export default function App() {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
+
+    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
+        chainData.chainId,
+        tokens,
+        connectedUserErc20Tokens ?? [],
+        getRecentTokens,
+    );
+
+    const tokenState = {
+        tokens,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+    };
 
     /* ------------------------------------------ END TOKEN CONTEXT ------------------------------------------ */
 
@@ -1341,17 +1371,6 @@ export default function App() {
         setMainnetProvider(mainnetProvider);
     }, []);
 
-    // CONTEXT: helper function
-    const isPairStable = useMemo(
-        () =>
-            isStablePair(
-                tradeData.tokenA.address,
-                tradeData.tokenB.address,
-                chainData.chainId,
-            ),
-        [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
-    );
-
     // CONTEXT: remove and setPoolPriceNonDisplay and setLimitTick where it needs to be set
     const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
@@ -1578,118 +1597,19 @@ export default function App() {
     // CONTEXT: move this into the header component
     const shouldDisplayAccountTab = isConnected && userAddress !== undefined;
 
-    // CONTEXT: remove and reference as necessary
-    const connectedUserErc20Tokens = useAppSelector(
-        (state) => state.userData.tokens.erc20Tokens,
-    );
-
-    // CONTEXT: helper function
-    const importedTokensPlus = useMemo<TokenIF[]>(() => {
-        const ambientAddresses: string[] = tokens.defaultTokens.map(
-            (tkn: TokenIF) => tkn.address.toLowerCase(),
-        );
-
-        const output = tokens.defaultTokens;
-        let tokensAdded = 0;
-        connectedUserErc20Tokens?.forEach((tkn) => {
-            // gatekeep to make sure token is not already in the array,
-            // ... that the token can be verified against a known list,
-            // ... that user has a positive balance of the token, and
-            // ... that the limiter has not been reached
-            if (
-                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-                tokens.verifyToken(tkn.address) &&
-                parseInt(tkn.combinedBalance as string) > 0 &&
-                tokensAdded < 4
-            ) {
-                tokensAdded++;
-                output.push({ ...tkn, fromList: 'wallet' });
-            }
-        });
-
-        // limiter for tokens to add from in-session recent tokens list
-        let recentTokensAdded = 0;
-        getRecentTokens().forEach((tkn) => {
-            // gatekeep to make sure the token isn't already in the list,
-            // ... is on the current chain, and that the limiter has not
-            // ... yet been reached
-            if (
-                !output.some(
-                    (tk) =>
-                        tk.address.toLowerCase() ===
-                            tkn.address.toLowerCase() &&
-                        tk.chainId === tkn.chainId,
-                ) &&
-                tkn.chainId === parseInt(chainData.chainId) &&
-                recentTokensAdded < 2
-            ) {
-                recentTokensAdded++;
-                output.push(tkn);
-            }
-        });
-        return output;
-    }, [
-        tokens.defaultTokens,
-        chainData.chainId,
-        getRecentTokens,
-        connectedUserErc20Tokens,
-    ]);
-
     // props for <PageHeader/> React element
     const headerProps = {
         clickLogout,
         shouldDisplayAccountTab,
     };
 
-    // CONTEXT: tbd
-    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
-        chainData.chainId,
-        tokens,
-        connectedUserErc20Tokens ?? [],
-        getRecentTokens,
-    );
-
-    // props for <Swap/> React element
-    const swapProps = {
-        isPairStable,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-    };
-
-    // props for <Swap/> React element on trade route
-    const swapPropsTrade = {
-        isPairStable: isPairStable,
-        isOnTradeRoute: true,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-    };
-
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
-        isPairStable,
-        isOnTradeRoute: true,
         setResetLimitTick,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
     };
 
     // props for <Range/> React element
     const rangeProps = {
-        isPairStable,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         cachedFetchTokenPrice,
     };
 
@@ -1729,24 +1649,6 @@ export default function App() {
         limit: string;
         range: string;
     }
-
-    // CONTEXT: helper function that accepts chainId and returns route
-    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
-        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
-        return {
-            swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}`,
-            range: `/trade/range/${pairSlug}`,
-            limit: `/trade/limit/${pairSlug}`,
-        };
-    }
-    const initUrl = createDefaultUrlParams(chainData.chainId);
-    const [defaultUrlParams, setDefaultUrlParams] =
-        useState<UrlRoutesTemplate>(initUrl);
-    useEffect(() => {
-        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
-    }, [chainData.chainId]);
 
     // CONTEXT: investigate
     // KEYBOARD SHORTCUTS ROUTES
@@ -1794,7 +1696,6 @@ export default function App() {
     const tradeProps = {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        limitRate: '',
     };
 
     const accountProps = {
@@ -1803,15 +1704,7 @@ export default function App() {
         cachedFetchErc20TokenBalances,
         cachedFetchNativeTokenBalance,
         cachedFetchTokenPrice,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         mainnetProvider,
-    };
-
-    const repositionProps = {
-        isPairStable,
     };
 
     const chatProps = {
@@ -1845,7 +1738,7 @@ export default function App() {
             <CrocEnvContext.Provider value={crocEnvState}>
                 <ChainDataContext.Provider value={chainDataState}>
                     <UserDataContext.Provider value={userDataState}>
-                        <TokenContext.Provider value={tokens}>
+                        <TokenContext.Provider value={tokenState}>
                             <TradeTokenContext.Provider value={tradeTokenState}>
                                 <PoolContext.Provider value={poolState}>
                                     <TradeTableContext.Provider
@@ -1946,7 +1839,9 @@ export default function App() {
                                                                     path='market/:params'
                                                                     element={
                                                                         <Swap
-                                                                            {...swapPropsTrade}
+                                                                            isOnTradeRoute={
+                                                                                true
+                                                                            }
                                                                         />
                                                                     }
                                                                 />
@@ -2013,9 +1908,7 @@ export default function App() {
                                                                                 rangeState
                                                                             }
                                                                         >
-                                                                            <Reposition
-                                                                                {...repositionProps}
-                                                                            />
+                                                                            <Reposition />
                                                                         </RangeContext.Provider>
                                                                     }
                                                                 />
@@ -2108,9 +2001,7 @@ export default function App() {
                                                             <Route
                                                                 path='swap/:params'
                                                                 element={
-                                                                    <Swap
-                                                                        {...swapProps}
-                                                                    />
+                                                                    <Swap />
                                                                 }
                                                             />
                                                             <Route

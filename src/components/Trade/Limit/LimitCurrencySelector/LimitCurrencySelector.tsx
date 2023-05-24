@@ -14,7 +14,6 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import { TokenIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
@@ -31,6 +30,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 // interface for component props
 interface propsIF {
@@ -58,12 +58,7 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    importedTokensPlus: TokenIF[];
     tokenAorB: string;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -82,12 +77,7 @@ function LimitCurrencySelector(props: propsIF) {
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
         handleChangeClick,
-        importedTokensPlus,
         tokenAorB,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setUserOverrodeSurplusWithdrawalDefault,
     } = props;
 
@@ -95,12 +85,13 @@ function LimitCurrencySelector(props: propsIF) {
         (state) => state.userData,
     );
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-    const { dexBalLimit } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { setInput } = useContext(TokenContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalLimit } = useContext(UserPreferenceContext);
 
     const thisToken = fieldId === 'sell' ? tokenA : tokenB;
 
@@ -387,15 +378,10 @@ function LimitCurrencySelector(props: propsIF) {
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
-                        importedTokensPlus={importedTokensPlus}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}

@@ -49,7 +49,6 @@ interface IRepositionPriceInfoProps {
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
     rangeGasPriceinDollars: string | undefined;
-    isPairStable: boolean;
     currentMinPrice: string;
     currentMaxPrice: string;
 }
@@ -72,7 +71,6 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         rangeGasPriceinDollars,
         currentMinPrice,
         currentMaxPrice,
-        // isPairStable
     } = props;
 
     const {

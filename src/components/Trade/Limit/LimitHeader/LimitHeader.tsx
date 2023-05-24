@@ -21,14 +21,8 @@ import { memo, useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
-// interface for component props
-interface propsIF {
-    isPairStable: boolean;
-}
-
 // central react functional component
-function LimitHeader(props: propsIF) {
-    const { isPairStable } = props;
+function LimitHeader() {
     const { mintSlippage, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
@@ -85,7 +79,6 @@ function LimitHeader(props: propsIF) {
                     <TransactionSettings
                         module='Limit Order'
                         slippage={mintSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
                         bypassConfirm={bypassConfirmLimit}
                     />

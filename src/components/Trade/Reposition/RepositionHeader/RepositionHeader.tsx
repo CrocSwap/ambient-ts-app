@@ -21,14 +21,12 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     positionHash: string;
-    isPairStable: boolean;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     resetTxHash: () => void;
 }
 
 function RepositionHeader(props: propsIF) {
-    const { setRangeWidthPercentage, positionHash, isPairStable, resetTxHash } =
-        props;
+    const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
 
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
@@ -64,7 +62,6 @@ function RepositionHeader(props: propsIF) {
                     <TransactionSettings
                         module='Reposition'
                         slippage={repoSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
                         bypassConfirm={bypassConfirmRepo}
                     />

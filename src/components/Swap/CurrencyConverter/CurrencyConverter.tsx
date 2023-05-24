@@ -11,7 +11,6 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import {
     setIsTokenAPrimary,
     setPrimaryQuantity,
@@ -48,12 +47,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
-    isSwapCopied?: boolean;
-    importedTokensPlus: TokenIF[];
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     priceImpact: CrocImpact | undefined;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     isLiquidityInsufficient: boolean;
@@ -77,12 +70,6 @@ function CurrencyConverter(props: propsIF) {
         buyQtyString,
         setSellQtyString,
         setBuyQtyString,
-        isSwapCopied,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setTokenAQtyCoveredByWalletBalance,
     } = props;
 
@@ -641,12 +628,6 @@ function CurrencyConverter(props: propsIF) {
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 reverseTokens={reverseTokens}
-                isSwapCopied={isSwapCopied}
-                importedTokensPlus={importedTokensPlus}
-                outputTokens={outputTokens}
-                validatedInput={validatedInput}
-                setInput={setInput}
-                searchType={searchType}
                 setDisableReverseTokens={setDisableReverseTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
@@ -698,12 +679,6 @@ function CurrencyConverter(props: propsIF) {
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     reverseTokens={reverseTokens}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    isSwapCopied={isSwapCopied}
-                    importedTokensPlus={importedTokensPlus}
-                    outputTokens={outputTokens}
-                    validatedInput={validatedInput}
-                    setInput={setInput}
-                    searchType={searchType}
                     setDisableReverseTokens={setDisableReverseTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault

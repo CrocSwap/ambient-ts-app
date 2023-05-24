@@ -42,7 +42,7 @@ function Sidebar() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
 
     const location = useLocation();
 

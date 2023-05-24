@@ -1,13 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useContext,
-    memo,
-} from 'react';
+import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CrocImpact } from '@crocswap-libs/sdk';
@@ -33,7 +25,6 @@ import {
 } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import {
@@ -57,29 +48,14 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { isStablePair } from '../../utils/data/stablePairs';
 
 interface propsIF {
-    isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    isSwapCopied?: boolean;
-    importedTokensPlus: TokenIF[];
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
 }
 
 function Swap(props: propsIF) {
-    const {
-        isPairStable,
-        isOnTradeRoute,
-        isSwapCopied,
-        importedTokensPlus,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-    } = props;
+    const { isOnTradeRoute } = props;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
 
@@ -93,7 +69,7 @@ function Swap(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
-    const tokens = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
     const {
         isTokenABase: isSellTokenBase,
         setRecheckTokenAApproval,
@@ -155,7 +131,11 @@ function Swap(props: propsIF) {
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
-    const slippageTolerancePercentage = isPairStable
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
         ? swapSlippage.stable
         : swapSlippage.volatile;
 
@@ -566,12 +546,6 @@ function Swap(props: propsIF) {
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        isSwapCopied: isSwapCopied,
-        importedTokensPlus: importedTokensPlus,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
 
@@ -713,10 +687,7 @@ function Swap(props: propsIF) {
                         isOnTradeRoute={isOnTradeRoute}
                         padding={isOnTradeRoute ? '0 1rem' : '1rem'}
                     >
-                        <SwapHeader
-                            isPairStable={isPairStable}
-                            isOnTradeRoute={isOnTradeRoute}
-                        />
+                        <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                         {navigationMenu}
                         <motion.div
                             initial={{ opacity: 0 }}

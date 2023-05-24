@@ -26,14 +26,9 @@ import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     modalCloseCustom: () => void;
-    importedTokensPlus: TokenIF[];
     closeModal: () => void;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
@@ -45,10 +40,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         isSingleToken,
         tokenAorB,
         reverseTokens,
@@ -58,7 +49,8 @@ export const SoloTokenSelect = (props: propsIF) => {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const tokens = useContext(TokenContext);
+    const { tokens, outputTokens, validatedInput, setInput, searchType } =
+        useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 

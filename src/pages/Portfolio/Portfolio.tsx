@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    useContext,
-    memo,
-} from 'react';
+import { useEffect, useState, useContext, memo } from 'react';
 import { useEnsName } from 'wagmi';
 import { BigNumber } from 'ethers';
 import { Provider } from '@ethersproject/providers';
@@ -53,10 +46,6 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
     userAccount?: boolean;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     cachedQuerySpotPrice: SpotPriceFn;
     mainnetProvider: Provider | undefined;
 }
@@ -69,10 +58,6 @@ function Portfolio(props: propsIF) {
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         userAccount,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         mainnetProvider,
     } = props;
 
@@ -88,7 +73,7 @@ function Portfolio(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const tokens = useContext(TokenContext);
+    const { tokens, setInput } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
@@ -555,15 +540,10 @@ function Portfolio(props: propsIF) {
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
                         closeModal={closeTokenModal}
-                        importedTokensPlus={outputTokens}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
                         isSingleToken={true}
                         tokenAorB={null}
                     />
