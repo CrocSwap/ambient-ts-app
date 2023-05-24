@@ -56,9 +56,7 @@ interface propsIF {
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
-
     handleAccountClick: () => void;
-
     isShowAllEnabled: boolean;
 }
 

@@ -56,7 +56,13 @@ const BASE_URL_PATHS = {
 // type that maps to keys (strings) in the BASE_URL_PATHS object
 export type pageNames = keyof typeof BASE_URL_PATHS;
 
-export const useUrlPath = (page?: pageNames) => {
+export interface linkGenMethodsIF {
+    baseURL: string,
+    getFullURL: (paramsObj?: anyParamsIF) => string,
+    navigate: (paramsObj?: anyParamsIF) => void,
+}
+
+export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
 
