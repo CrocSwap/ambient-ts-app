@@ -66,11 +66,17 @@ export interface linkGenMethodsIF {
 // TODO:    .... centralize URLs to link external resources
 
 export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
+    // current URL path of the app relative to index page
     const { pathname } = useLocation();
+
+    // callable fn to navigate the user to a given URL path in the app
     const navigate = useNavigate();
 
+    // base URL of the user's location in the app, primarily uses provided
+    // ... argument but will read the current URL pathname as a backup check
     const baseURL: string = BASE_URL_PATHS[page ?? getPageFromLocation()];
 
+    // fn to infer the current page in the app based on the URL path
     function getPageFromLocation(): pageNames {
         let pageName: pageNames;
             if (pathname === '/') {
@@ -100,6 +106,7 @@ export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
         return pageName;
     }
 
+    // fn to build a URL for a given page including parameters
     function getFullURL(paramsObj?: anyParamsIF): string {
         let paramsSlug = '';
         if (paramsObj) {
@@ -110,6 +117,7 @@ export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
         return baseURL + paramsSlug;
     }
 
+    // fn to build a full URL including params AND navigate the user
     function navigateUser(paramsObj?: anyParamsIF): void {
         navigate(getFullURL(paramsObj));
     }
