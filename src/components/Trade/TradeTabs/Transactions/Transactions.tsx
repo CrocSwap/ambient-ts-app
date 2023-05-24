@@ -389,7 +389,9 @@ function Transactions(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const isScreenShort = useMediaQuery('(max-height: 700px)');
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
 
     const [rowsPerPage, setRowsPerPage] = useState(isScreenShort ? 5 : 10);
 
