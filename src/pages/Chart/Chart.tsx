@@ -497,11 +497,14 @@ export default function Chart(props: propsIF) {
 
     const [yAxisLabels] = useState<yLabel[]>([]);
 
-    // Subcharts
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const isScientific = poolPriceNonDisplay
+        ? poolPriceNonDisplay.toString().includes('e')
+        : false;
 
     useEffect(() => {
         useHandleSwipeBack(d3Container);
@@ -2409,13 +2412,19 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2523,17 +2532,23 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                          ) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                          ) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2554,6 +2569,7 @@ export default function Chart(props: propsIF) {
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
+            // to:do fix for scientific AdvancedPepe
             setRanges(() => {
                 const newTargets = [
                     {
@@ -2962,11 +2978,19 @@ export default function Chart(props: propsIF) {
                                 const rangesF = [
                                     {
                                         name: 'Min',
-                                        value: pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                     },
                                     {
                                         name: 'Max',
-                                        value: pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                     },
                                 ];
 
@@ -2983,16 +3007,24 @@ export default function Chart(props: propsIF) {
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Min',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                              );
 
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Max',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                              );
 
                                         newRangeValue = newTargets;
 
@@ -3057,7 +3089,7 @@ export default function Chart(props: propsIF) {
                                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 );
                             }
-
+                            // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
@@ -3602,6 +3634,7 @@ export default function Chart(props: propsIF) {
         text: string,
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
+        subString: number | undefined = undefined,
     ) {
         const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
@@ -3611,7 +3644,24 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'left';
         context.textBaseline = 'middle';
-        context.fillText(text, x, y + 2);
+
+        if (subString) {
+            const textXAxisLength = x + context.measureText('0.0').width;
+
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
+
+            context.fillText('0.0', x, y);
+            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                text,
+                textXAxisLength + context.measureText(subString).width,
+                y,
+            );
+        } else {
+            context.fillText(text, x, y + 2);
+        }
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
@@ -3652,20 +3702,6 @@ export default function Chart(props: propsIF) {
         }
     }, [yAxis, location]);
 
-    function toSubscript(number: number) {
-        let subscriptString = '';
-        const baseCodePoint = 8320; // Unicode code point for subscript 0
-
-        const numberString = number.toString();
-        for (let i = 0; i < numberString.length; i++) {
-            const digit = parseInt(numberString[i]);
-            const subscriptCodePoint = baseCodePoint + digit;
-            subscriptString += String.fromCharCode(subscriptCodePoint);
-        }
-
-        return subscriptString;
-    }
-
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
@@ -3699,23 +3735,37 @@ export default function Chart(props: propsIF) {
 
                     const isScientific = d.toString().includes('e');
 
-                    let axisTick: number | string = formatAmountChartData(
-                        d,
-                        digit ? digit : 2,
-                    );
-
                     if (isScientific) {
                         const splitNumber = d.toString().split('e');
                         const factor = Math.abs(Number(splitNumber[1]));
 
-                        axisTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            splitNumber[0].toString();
-                    }
+                        const textXAxisLength =
+                            X - tickSize + context.measureText('0.0').width;
 
-                    context.beginPath();
-                    context.fillText(axisTick, X - tickSize, yScale(d));
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            factor,
+                            textXAxisLength,
+                            yScale(d) + textHeight / 3,
+                        );
+                        context.fillText(
+                            splitNumber[0].toString(),
+                            textXAxisLength + context.measureText(factor).width,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatAmountChartData(d, digit ? digit : 2),
+                            X - tickSize,
+                            yScale(d),
+                        );
+                    }
                 });
 
                 const isScientificMarketTick = market[0].value
@@ -3727,17 +3777,16 @@ export default function Chart(props: propsIF) {
                     undefined,
                 );
 
+                let marketFactor = undefined;
+
                 if (isScientificMarketTick) {
                     const splitNumber = market[0].value.toString().split('e');
-                    const factor = Math.abs(Number(splitNumber[1]));
+                    marketFactor = Math.abs(Number(splitNumber[1]));
 
-                    marketTick =
-                        '0.0' +
-                        toSubscript(factor) +
-                        formatAmountChartData(
-                            Number(splitNumber[0]),
-                            undefined,
-                        ).toString();
+                    marketTick = formatAmountChartData(
+                        Number(splitNumber[0]),
+                        undefined,
+                    ).toString();
                 }
 
                 createRectLabel(
@@ -3749,6 +3798,7 @@ export default function Chart(props: propsIF) {
                     marketTick,
                     undefined,
                     yAxisCanvasWidth,
+                    marketFactor,
                 );
 
                 if (
@@ -3777,17 +3827,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let lowTickFactor = undefined;
+
                         if (isScientificlowTick) {
                             const splitNumber = low.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            lowTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            lowTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            lowTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3801,6 +3850,7 @@ export default function Chart(props: propsIF) {
                             lowTick,
                             undefined,
                             yAxisCanvasWidth,
+                            lowTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMin
@@ -3817,17 +3867,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let highTickFactor = undefined;
+
                         if (isScientificHighTick) {
                             const splitNumber = high.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            highTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            highTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            highTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3841,6 +3890,7 @@ export default function Chart(props: propsIF) {
                             highTick,
                             undefined,
                             yAxisCanvasWidth,
+                            highTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMax
@@ -3863,19 +3913,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let limitTickFactor = undefined;
+
                     if (isScientificLimitTick) {
                         const splitNumber = limit[0].value
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        limitTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        limitTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        limitTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     if (checkLimitOrder) {
@@ -3892,6 +3941,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     } else {
                         createRectLabel(
@@ -3905,6 +3955,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     }
                     addYaxisLabel(
@@ -3924,19 +3975,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let crTickFactor = undefined;
+
                     if (isScientificCrTick) {
                         const splitNumber = crosshairData[0].y
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        crTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        crTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        crTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     createRectLabel(
@@ -3948,6 +3998,7 @@ export default function Chart(props: propsIF) {
                         crTick,
                         undefined,
                         yAxisCanvasWidth,
+                        crTickFactor,
                     );
                 }
 
@@ -4739,7 +4790,6 @@ export default function Chart(props: propsIF) {
                 clickedValue < liquidityData?.lowBoundary
             ) {
                 rangeWidthPercentage = 100;
-
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -4823,15 +4873,23 @@ export default function Chart(props: propsIF) {
 
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                              );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                              );
 
                         newRangeValue = newTargets;
 
@@ -4860,7 +4918,16 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale.invert(event.offsetY) < 0
                     ? 0.1
                     : scaleData?.yScale.invert(event.offsetY);
-            let pinnedDisplayPrices;
+            let pinnedDisplayPrices: {
+                pinnedMinPriceDisplay: string;
+                pinnedMaxPriceDisplay: string;
+                pinnedMinPriceDisplayTruncated: string;
+                pinnedMaxPriceDisplayTruncated: string;
+                pinnedLowTick: number;
+                pinnedHighTick: number;
+                pinnedMinPriceNonDisplay: number;
+                pinnedMaxPriceNonDisplay: number;
+            };
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denomInBase,
@@ -4895,11 +4962,15 @@ export default function Chart(props: propsIF) {
                     if (lineToBeSet === 'Max') {
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = pinnedMaxPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMaxPriceDisplay)
+                            : pinnedMaxPriceDisplayTruncated;
                     } else {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = pinnedMinPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMinPriceDisplay)
+                            : pinnedMinPriceDisplayTruncated;
                     }
 
                     render();
