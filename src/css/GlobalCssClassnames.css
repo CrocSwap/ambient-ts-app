@@ -17,7 +17,7 @@
 }
 
 .username_base_color {
-    color: var(--text2);
+    color: var(--text1);
     font-family: monospace;
 }
 
@@ -54,11 +54,11 @@
 /* apy */
 
 .apy_positive {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .apy_negative {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 /* sort */
