@@ -28,14 +28,15 @@
 
 
 display: grid;
-grid-template-rows: 40px 1fr ;
 overflow-y: hidden;
+grid-template-rows: auto 1fr ;
 }
+
 
 
 .main_list_expanded{
     display: grid;
-    grid-template-rows: 40px 1fr 70px;
+    grid-template-rows: auto 1fr 70px;
     overflow-y: hidden;
 
 }
