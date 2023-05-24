@@ -8,6 +8,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import { useUrlPath } from '../../../../utils/hooks/useUrlPath';
 interface Props {
     posHashTruncated: string;
     // sideTypeStyle: string;
@@ -198,8 +199,6 @@ export default function rangeRowConstants(props: Props) {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
-
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -244,13 +243,7 @@ export default function rangeRowConstants(props: Props) {
     // eslint-disable-next-line
     const tip = pair.join('\n');
 
-    const tradeLinkPath =
-        '/trade/range/chain=' +
-        position.chainId +
-        '&tokenA=' +
-        position.quote +
-        '&tokenB=' +
-        position.base;
+    const linkGenRange = useUrlPath('range');
 
     const tokenPair = (
         <li
@@ -259,7 +252,13 @@ export default function rangeRowConstants(props: Props) {
             onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
+            <NavLink to={
+                linkGenRange.getFullURL({
+                    chain: position.chainId,
+                    tokenA: position.quote,
+                    tokenB: position.base,
+                })
+            }>
                 <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>
@@ -483,7 +482,6 @@ export default function rangeRowConstants(props: Props) {
     return {
         valueWithTooltip,
         walletWithTooltip,
-
         tokenPair,
         idOrNull,
         rankingOrNull,
