@@ -261,6 +261,12 @@ export default function Chart(props: propsIF) {
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
+    const liqAskColor = 'rgba(205, 193, 255, 0.3)';
+    const liqBidColor = 'rgba(115, 113, 252, 0.3)';
+
+    const lineSellColor = 'rgba(115, 113, 252)';
+    const lineBuyColor = 'rgba(205, 193, 255)';
+
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
@@ -302,6 +308,41 @@ export default function Chart(props: propsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const [limitTriangleData, setLimitTriangleData] = useState([
+        {
+            value: 0,
+        },
+    ]);
+
+    const [rangeTriangleData, setRangeTriangleData] = useState([
+        {
+            value: 0,
+        },
+        {
+            value: 0,
+        },
+    ]);
+
+    const setTriangleRangeValues = (max: number, min: number) => {
+        setRangeTriangleData((prevState) => {
+            const newData = [...prevState];
+            const maxPrice = max !== undefined ? max : 0;
+            const minPrice = min !== undefined ? min : 0;
+            newData[0].value = maxPrice;
+            newData[1].value = minPrice;
+            return newData;
+        });
+    };
+
+    const setTriangleLimitValues = (limit: any) => {
+        setLimitTriangleData((prevState) => {
+            const newData = [...prevState];
+            newData[0].value = limit;
+            return newData;
+        });
+    };
+
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -456,11 +497,14 @@ export default function Chart(props: propsIF) {
 
     const [yAxisLabels] = useState<yLabel[]>([]);
 
-    // Subcharts
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const isScientific = poolPriceNonDisplay
+        ? poolPriceNonDisplay.toString().includes('e')
+        : false;
 
     useEffect(() => {
         useHandleSwipeBack(d3Container);
@@ -491,7 +535,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, minPrice);
+            setTriangleRangeValues(maxPrice, minPrice);
         }
     }, [minPrice, maxPrice, isAdvancedModeActive]);
 
@@ -622,7 +666,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, 0);
+            setTriangleRangeValues(maxPrice, 0);
 
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
@@ -2311,7 +2355,7 @@ export default function Chart(props: propsIF) {
                     value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
-            // setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
+            setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
         });
     };
 
@@ -2330,7 +2374,7 @@ export default function Chart(props: propsIF) {
             return newTargets;
         });
 
-        // setTriangleRangeValues(maxPrice, minPrice);
+        setTriangleRangeValues(maxPrice, minPrice);
     }, [denomInBase]);
 
     useEffect(() => {
@@ -2368,23 +2412,29 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     parseFloat(pinnedMaxPriceDisplayTruncated),
-                //     parseFloat(pinnedMinPriceDisplayTruncated),
-                // );
+                setTriangleRangeValues(
+                    parseFloat(pinnedMaxPriceDisplayTruncated),
+                    parseFloat(pinnedMinPriceDisplayTruncated),
+                );
             } else if (
                 simpleRangeWidth === 100 ||
                 rescaleRangeBoundariesWithSlider
@@ -2405,7 +2455,7 @@ export default function Chart(props: propsIF) {
 
                         setLiqHighlightedLinesAndArea(newTargets);
 
-                        // setTriangleRangeValues(maxPrice, minPrice);
+                        setTriangleRangeValues(maxPrice, minPrice);
 
                         if (
                             poolPriceDisplay !== undefined &&
@@ -2482,37 +2532,44 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                          ) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                          ) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     parseFloat(
-                //         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                //     ),
-                //     parseFloat(
-                //         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                //     ),
-                // );
+                setTriangleRangeValues(
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    ),
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    ),
+                );
             }
         }
     };
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
+            // to:do fix for scientific AdvancedPepe
             setRanges(() => {
                 const newTargets = [
                     {
@@ -2530,7 +2587,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, minPrice);
+            setTriangleRangeValues(maxPrice, minPrice);
 
             setChartTriggeredBy('none');
         }
@@ -2921,11 +2978,19 @@ export default function Chart(props: propsIF) {
                                 const rangesF = [
                                     {
                                         name: 'Min',
-                                        value: pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                     },
                                     {
                                         name: 'Max',
-                                        value: pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                     },
                                 ];
 
@@ -2942,26 +3007,34 @@ export default function Chart(props: propsIF) {
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Min',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                              );
 
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Max',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                              );
 
                                         newRangeValue = newTargets;
 
                                         return newTargets;
                                     });
 
-                                    // setTriangleRangeValues(
-                                    //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                    //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                    // );
+                                    setTriangleRangeValues(
+                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                    );
                                 }
                             }
                         } else {
@@ -3016,7 +3089,7 @@ export default function Chart(props: propsIF) {
                                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 );
                             }
-
+                            // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
@@ -3070,14 +3143,14 @@ export default function Chart(props: propsIF) {
 
                                 setLiqHighlightedLinesAndArea(newTargets);
 
-                                // const minPrice = newTargets.filter(
-                                //     (target: any) => target.name === 'Min',
-                                // )[0].value;
-                                // const maxPrice = newTargets.filter(
-                                //     (target: any) => target.name === 'Max',
-                                // )[0].value;
+                                const minPrice = newTargets.filter(
+                                    (target: any) => target.name === 'Min',
+                                )[0].value;
+                                const maxPrice = newTargets.filter(
+                                    (target: any) => target.name === 'Max',
+                                )[0].value;
 
-                                // setTriangleRangeValues(maxPrice, minPrice);
+                                setTriangleRangeValues(maxPrice, minPrice);
                                 return newTargets;
                             });
                         }
@@ -3323,7 +3396,7 @@ export default function Chart(props: propsIF) {
                                                 },
                                             ];
                                         });
-                                        // setTriangleLimitValues(limitValue);
+                                        setTriangleLimitValues(newLimitValue);
                                     }
                                 });
                             }
@@ -3338,6 +3411,7 @@ export default function Chart(props: propsIF) {
                                     },
                                 ];
                             });
+                            setTriangleLimitValues(oldLimitValue);
                         }
                     }
                 })
@@ -3430,6 +3504,7 @@ export default function Chart(props: propsIF) {
                                 ];
                             });
                         }
+                        setTriangleLimitValues(oldLimitValue);
                     }
 
                     d3.select(d3CanvasLimitLine.current).style(
@@ -3559,6 +3634,7 @@ export default function Chart(props: propsIF) {
         text: string,
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
+        subString: number | undefined = undefined,
     ) {
         const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
@@ -3568,7 +3644,24 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'left';
         context.textBaseline = 'middle';
-        context.fillText(text, x, y + 2);
+
+        if (subString) {
+            const textXAxisLength = x + context.measureText('0.0').width;
+
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
+
+            context.fillText('0.0', x, y);
+            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                text,
+                textXAxisLength + context.measureText(subString).width,
+                y,
+            );
+        } else {
+            context.fillText(text, x, y + 2);
+        }
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
@@ -3609,20 +3702,6 @@ export default function Chart(props: propsIF) {
         }
     }, [yAxis, location]);
 
-    function toSubscript(number: number) {
-        let subscriptString = '';
-        const baseCodePoint = 8320; // Unicode code point for subscript 0
-
-        const numberString = number.toString();
-        for (let i = 0; i < numberString.length; i++) {
-            const digit = parseInt(numberString[i]);
-            const subscriptCodePoint = baseCodePoint + digit;
-            subscriptString += String.fromCharCode(subscriptCodePoint);
-        }
-
-        return subscriptString;
-    }
-
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
@@ -3656,23 +3735,37 @@ export default function Chart(props: propsIF) {
 
                     const isScientific = d.toString().includes('e');
 
-                    let axisTick: number | string = formatAmountChartData(
-                        d,
-                        digit ? digit : 2,
-                    );
-
                     if (isScientific) {
                         const splitNumber = d.toString().split('e');
                         const factor = Math.abs(Number(splitNumber[1]));
 
-                        axisTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            splitNumber[0].toString();
-                    }
+                        const textXAxisLength =
+                            X - tickSize + context.measureText('0.0').width;
 
-                    context.beginPath();
-                    context.fillText(axisTick, X - tickSize, yScale(d));
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            factor,
+                            textXAxisLength,
+                            yScale(d) + textHeight / 3,
+                        );
+                        context.fillText(
+                            splitNumber[0].toString(),
+                            textXAxisLength + context.measureText(factor).width,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatAmountChartData(d, digit ? digit : 2),
+                            X - tickSize,
+                            yScale(d),
+                        );
+                    }
                 });
 
                 const isScientificMarketTick = market[0].value
@@ -3684,17 +3777,16 @@ export default function Chart(props: propsIF) {
                     undefined,
                 );
 
+                let marketFactor = undefined;
+
                 if (isScientificMarketTick) {
                     const splitNumber = market[0].value.toString().split('e');
-                    const factor = Math.abs(Number(splitNumber[1]));
+                    marketFactor = Math.abs(Number(splitNumber[1]));
 
-                    marketTick =
-                        '0.0' +
-                        toSubscript(factor) +
-                        formatAmountChartData(
-                            Number(splitNumber[0]),
-                            undefined,
-                        ).toString();
+                    marketTick = formatAmountChartData(
+                        Number(splitNumber[0]),
+                        undefined,
+                    ).toString();
                 }
 
                 createRectLabel(
@@ -3706,6 +3798,7 @@ export default function Chart(props: propsIF) {
                     marketTick,
                     undefined,
                     yAxisCanvasWidth,
+                    marketFactor,
                 );
 
                 if (
@@ -3734,17 +3827,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let lowTickFactor = undefined;
+
                         if (isScientificlowTick) {
                             const splitNumber = low.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            lowTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            lowTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            lowTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3753,11 +3845,12 @@ export default function Chart(props: propsIF) {
                                 ? sameLocationDataMin
                                 : yScale(low),
                             X - tickSize,
-                            low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
+                            low > passValue ? lineSellColor : lineBuyColor,
                             low > passValue ? 'white' : 'black',
                             lowTick,
                             undefined,
                             yAxisCanvasWidth,
+                            lowTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMin
@@ -3774,17 +3867,16 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
+                        let highTickFactor = undefined;
+
                         if (isScientificHighTick) {
                             const splitNumber = high.toString().split('e');
-                            const factor = Math.abs(Number(splitNumber[1]));
+                            highTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            highTick =
-                                '0.0' +
-                                toSubscript(factor) +
-                                formatAmountChartData(
-                                    Number(splitNumber[0]),
-                                    undefined,
-                                ).toString();
+                            highTick = formatAmountChartData(
+                                Number(splitNumber[0]),
+                                undefined,
+                            ).toString();
                         }
 
                         createRectLabel(
@@ -3793,13 +3885,12 @@ export default function Chart(props: propsIF) {
                                 ? sameLocationDataMax
                                 : yScale(high),
                             X - tickSize,
-                            high > passValue
-                                ? '#7371fc'
-                                : 'rgba(205, 193, 255)',
+                            high > passValue ? lineSellColor : lineBuyColor,
                             high > passValue ? 'white' : 'black',
                             highTick,
                             undefined,
                             yAxisCanvasWidth,
+                            highTickFactor,
                         );
                         addYaxisLabel(
                             isSameLocationMax
@@ -3822,19 +3913,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let limitTickFactor = undefined;
+
                     if (isScientificLimitTick) {
                         const splitNumber = limit[0].value
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        limitTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        limitTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        limitTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     if (checkLimitOrder) {
@@ -3845,12 +3935,13 @@ export default function Chart(props: propsIF) {
                                 : yScale(limit[0].value),
                             X - tickSize,
                             sellOrderStyle === 'order_sell'
-                                ? '#e480ff'
-                                : '#7371fc',
-                            sellOrderStyle === 'order_sell' ? 'black' : 'white',
+                                ? lineSellColor
+                                : lineBuyColor,
+                            sellOrderStyle === 'order_sell' ? 'white' : 'black',
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     } else {
                         createRectLabel(
@@ -3864,6 +3955,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitTickFactor,
                         );
                     }
                     addYaxisLabel(
@@ -3883,19 +3975,18 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
+                    let crTickFactor = undefined;
+
                     if (isScientificCrTick) {
                         const splitNumber = crosshairData[0].y
                             .toString()
                             .split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        crTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        crTick =
-                            '0.0' +
-                            toSubscript(factor) +
-                            formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                        crTick = formatAmountChartData(
+                            Number(splitNumber[0]),
+                            undefined,
+                        ).toString();
                     }
 
                     createRectLabel(
@@ -3907,6 +3998,7 @@ export default function Chart(props: propsIF) {
                         crTick,
                         undefined,
                         yAxisCanvasWidth,
+                        crTickFactor,
                     );
                 }
 
@@ -4143,16 +4235,14 @@ export default function Chart(props: propsIF) {
                 .seriesCanvasPoint()
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale)
-                .crossValue((d: any, index: any) => {
-                    return !(index % 2)
-                        ? scaleData?.xScale.domain()[0]
-                        : scaleData?.xScale.domain()[1];
+                .crossValue(() => {
+                    return scaleData?.xScale.domain()[0];
                 })
                 .mainValue((d: any) => d.value)
-                .size(270)
+                .size(180)
                 .type(d3.symbolTriangle)
-                .decorate((context: any, datum: any, index: any) => {
-                    const rotateDegree = !(index % 2) ? 90 : -90;
+                .decorate((context: any) => {
+                    const rotateDegree = 90;
                     context.rotate((rotateDegree * Math.PI) / 180);
                     context.strokeStyle = 'rgba(235, 235, 255)';
                     context.fillStyle = 'rgba(235, 235, 255)';
@@ -4187,7 +4277,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = 'rgba(205, 193, 255)';
+                    selection.strokeStyle = lineBuyColor;
                     selection.strokeWidth = 4;
                 });
 
@@ -4204,7 +4294,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityDepthScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = 'rgba(205, 193, 255)';
+                    selection.strokeStyle = lineBuyColor;
                     selection.strokeWidth = 4;
                 });
 
@@ -4221,7 +4311,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = lineSellColor;
                 });
 
             setLineBidSeries(() => {
@@ -4237,7 +4327,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityDepthScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = lineSellColor;
                 });
 
             setLineBidDepthSeries(() => {
@@ -4260,22 +4350,22 @@ export default function Chart(props: propsIF) {
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
 
-            triangle.decorate((context: any, datum: any, index: any) => {
+            triangle.decorate((context: any, datum: any) => {
                 if (location.pathname.includes('/limit')) {
                     if (checkLimitOrder) {
                         color =
                             sellOrderStyle === 'order_sell'
-                                ? '#e480ff'
-                                : '#7371FC';
+                                ? lineSellColor
+                                : lineBuyColor;
                     }
                 } else {
                     color =
                         datum.value > passValue
-                            ? '#7371fc'
-                            : 'rgba(205, 193, 255)';
+                            ? lineSellColor // lineSellColor
+                            : lineBuyColor;
                 }
 
-                const rotateDegree = !(index % 2) ? 90 : -90;
+                const rotateDegree = 90;
                 context.rotate((rotateDegree * Math.PI) / 180);
                 context.strokeStyle = color;
                 context.fillStyle = color;
@@ -4286,8 +4376,8 @@ export default function Chart(props: propsIF) {
             limitLine.decorate((context: any) => {
                 context.strokeStyle = checkLimitOrder
                     ? sellOrderStyle === 'order_sell'
-                        ? '#e480ff'
-                        : '#7371FC'
+                        ? lineSellColor
+                        : lineBuyColor
                     : 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 1.5;
@@ -4307,7 +4397,7 @@ export default function Chart(props: propsIF) {
                         ? 'visible'
                         : 'hidden';
                 context.strokeStyle =
-                    datum.value > passValue ? '#7371fc' : 'rgba(205, 193, 255)';
+                    datum.value > passValue ? lineSellColor : lineBuyColor;
                 context.pointerEvents = 'none';
                 context.lineWidth = 1.5;
                 context.fillStyle = 'transparent';
@@ -4700,7 +4790,6 @@ export default function Chart(props: propsIF) {
                 clickedValue < liquidityData?.lowBoundary
             ) {
                 rangeWidthPercentage = 100;
-
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -4718,7 +4807,7 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(liquidityData?.topBoundary, 0);
+                setTriangleRangeValues(liquidityData?.topBoundary, 0);
             } else {
                 if (lineToBeSet === 'Max') {
                     tickValue = getPinnedTickFromDisplayPrice(
@@ -4784,15 +4873,23 @@ export default function Chart(props: propsIF) {
 
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                              );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                              );
 
                         newRangeValue = newTargets;
 
@@ -4800,10 +4897,10 @@ export default function Chart(props: propsIF) {
                         return newTargets;
                     });
 
-                    // setTriangleRangeValues(
-                    //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                    //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    // );
+                    setTriangleRangeValues(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    );
                 }
             }
 
@@ -4821,7 +4918,16 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale.invert(event.offsetY) < 0
                     ? 0.1
                     : scaleData?.yScale.invert(event.offsetY);
-            let pinnedDisplayPrices;
+            let pinnedDisplayPrices: {
+                pinnedMinPriceDisplay: string;
+                pinnedMaxPriceDisplay: string;
+                pinnedMinPriceDisplayTruncated: string;
+                pinnedMaxPriceDisplayTruncated: string;
+                pinnedLowTick: number;
+                pinnedHighTick: number;
+                pinnedMinPriceNonDisplay: number;
+                pinnedMaxPriceNonDisplay: number;
+            };
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denomInBase,
@@ -4856,11 +4962,15 @@ export default function Chart(props: propsIF) {
                     if (lineToBeSet === 'Max') {
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = pinnedMaxPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMaxPriceDisplay)
+                            : pinnedMaxPriceDisplayTruncated;
                     } else {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = pinnedMinPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMinPriceDisplay)
+                            : pinnedMinPriceDisplayTruncated;
                     }
 
                     render();
@@ -4872,10 +4982,10 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     pinnedMaxPriceDisplayTruncated,
-                //     pinnedMinPriceDisplayTruncated,
-                // );
+                setTriangleRangeValues(
+                    pinnedMaxPriceDisplayTruncated,
+                    pinnedMinPriceDisplayTruncated,
+                );
             })().then(() => {
                 onBlurRange(
                     newRangeValue,
@@ -5117,13 +5227,13 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             limitLine(limit);
-                            // triangle(limitTriangleData);
+                            triangle(limitTriangleData);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         limitLine.context(ctx);
-                        // triangle.context(ctx);
+                        triangle.context(ctx);
                     });
             }
         }
@@ -5150,13 +5260,13 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             horizontalLine(ranges);
-                            // triangle(rangeTriangleData);
+                            triangle(rangeTriangleData);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         horizontalLine.context(ctx);
-                        // triangle.context(ctx);
+                        triangle.context(ctx);
                     });
             }
         }
@@ -5564,7 +5674,7 @@ export default function Chart(props: propsIF) {
         ).getContext('2d');
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
-        gradient.addColorStop(1, 'rgba(205, 193, 255, 0.3)');
+        gradient.addColorStop(1, liqAskColor);
         setGradientForAsk(gradient);
     }
 
@@ -5574,7 +5684,7 @@ export default function Chart(props: propsIF) {
         ).getContext('2d');
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
-        gradient.addColorStop(1, 'rgba(115, 113, 252, 0.3)');
+        gradient.addColorStop(1, liqBidColor);
         setGradientForBid(gradient);
     }
 
@@ -6409,7 +6519,7 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale(minBoudnary),
             );
 
-            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.3)');
+            gradient.addColorStop(1 - ratioBid, liqBidColor);
 
             gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.6)');
 
@@ -6503,7 +6613,7 @@ export default function Chart(props: propsIF) {
             if (ratioAsk >= 0 && ratioAsk <= 1) {
                 gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.6)');
 
-                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.3)');
+                gradient.addColorStop(ratioAsk, liqAskColor);
 
                 setGradientForAsk(gradient);
             }
@@ -7090,7 +7200,7 @@ export default function Chart(props: propsIF) {
                         },
                     ];
                 });
-                // setTriangleLimitValues(newLimitValue);
+                setTriangleLimitValues(newLimitValue);
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
@@ -7131,7 +7241,7 @@ export default function Chart(props: propsIF) {
                             },
                         ];
                     });
-                    // setTriangleLimitValues(limitValue);
+                    setTriangleLimitValues(newLimitValue);
                 });
             }
         });
