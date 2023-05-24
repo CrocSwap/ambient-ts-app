@@ -337,7 +337,7 @@ function Orders(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+    const [rowsPerPage, setRowsPerPage] = useState(isOnPortfolioPage ? 7 : 10);
 
     const count = Math.ceil(sortedLimits.length / rowsPerPage);
     const _DATA = usePagination(sortedLimits, rowsPerPage);
