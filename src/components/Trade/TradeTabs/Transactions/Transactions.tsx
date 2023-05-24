@@ -562,6 +562,7 @@ function Transactions(props: propsIF) {
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
 
     return (
         <section
@@ -580,7 +581,7 @@ function Transactions(props: propsIF) {
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
