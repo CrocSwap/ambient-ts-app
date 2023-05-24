@@ -302,7 +302,13 @@ function Ranges(props: propsIF) {
         (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
         (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
 
-    const [rowsPerPage, setRowsPerPage] = useState(isScreenShort ? 5 : 10);
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
 
     const count = Math.ceil(sortedPositions.length / rowsPerPage);
     const _DATA = usePagination(sortedPositions, rowsPerPage);
