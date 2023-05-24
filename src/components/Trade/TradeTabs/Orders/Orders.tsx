@@ -529,6 +529,8 @@ function Orders(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
             className={`${styles.main_list_container} ${
@@ -546,7 +548,7 @@ function Orders(props: propsIF) {
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }

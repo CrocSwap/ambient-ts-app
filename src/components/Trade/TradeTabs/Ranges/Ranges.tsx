@@ -619,6 +619,8 @@ function Ranges(props: propsIF) {
         />
     );
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
             className={`${styles.main_list_container} ${
@@ -636,7 +638,7 @@ function Ranges(props: propsIF) {
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
