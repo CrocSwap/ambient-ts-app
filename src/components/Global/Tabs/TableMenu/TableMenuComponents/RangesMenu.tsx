@@ -34,7 +34,7 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -137,8 +137,8 @@ export default function RangesMenu(props: propsIF) {
     };
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
-    const linkGenRepo: linkGenMethodsIF = useUrlPath('reposition');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
     const repositionButton = (
         <Link

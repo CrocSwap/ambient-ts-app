@@ -5,7 +5,7 @@ import {
 } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
@@ -18,7 +18,7 @@ export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;

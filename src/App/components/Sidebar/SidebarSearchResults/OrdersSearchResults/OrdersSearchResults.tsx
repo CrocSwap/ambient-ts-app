@@ -4,7 +4,7 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string;
@@ -69,7 +69,7 @@ export default function OrdersSearchResults(props: propsIF) {
     } = useContext(AppStateContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControlActive(true);

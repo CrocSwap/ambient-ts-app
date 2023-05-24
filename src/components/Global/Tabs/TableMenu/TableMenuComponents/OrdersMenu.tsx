@@ -26,7 +26,7 @@ import {
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 // interface for React functional component props
 interface propsIF {
@@ -77,7 +77,7 @@ export default function OrdersMenu(props: propsIF) {
     const crocEnv = useContext(CrocEnvContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;

@@ -31,7 +31,7 @@ import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -60,7 +60,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     } = useContext(AppStateContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenTOS: linkGenMethodsIF = useUrlPath('tos');
+    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
 
     const { i18n } = useTranslation();
 

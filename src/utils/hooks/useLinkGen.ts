@@ -65,7 +65,7 @@ export interface linkGenMethodsIF {
 // TODO:    @Emily: it probably makes sense to expand this hook to
 // TODO:    .... centralize URLs to link external resources
 
-export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
+export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     // current URL path of the app relative to index page
     const { pathname } = useLocation();
 
@@ -100,7 +100,7 @@ export const useUrlPath = (page?: pageNames): linkGenMethodsIF => {
             } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
                 pageName = 'privacy';
             } else {
-                console.warn(`Could not find page name corresponding to URL path <<${pathname}>> in fn getPageFromLocation() in useUrlPath.ts file. Returning value 'home' as backup value.`);
+                console.warn(`Could not find page name corresponding to URL path <<${pathname}>> in fn getPageFromLocation() in useLinkGen.ts file. Returning value 'home' as backup value.`);
                 pageName = 'home';
             };
         return pageName;

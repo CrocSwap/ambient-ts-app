@@ -31,7 +31,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 
 // interface for component props
 interface propsIF {
@@ -372,7 +372,7 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());

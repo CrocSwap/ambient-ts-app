@@ -26,7 +26,7 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { useUrlPath, linkGenMethodsIF } from '../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
 // interface for props
 interface propsIF {
@@ -211,8 +211,8 @@ export default function InitPool(props: propsIF) {
     };
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const sendInit = () => {
         IS_LOCAL_ENV &&

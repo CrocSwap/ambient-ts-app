@@ -6,7 +6,7 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
-import { useUrlPath, linkGenMethodsIF } from '../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -33,7 +33,7 @@ export const useAppChain = (
     const dispatch = useAppDispatch();
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenIndex: linkGenMethodsIF = useUrlPath('index');
+    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter

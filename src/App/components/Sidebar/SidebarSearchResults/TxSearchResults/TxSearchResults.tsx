@@ -3,7 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string;
@@ -26,7 +26,7 @@ export default function TxSearchResults(props: propsIF) {
     } = useContext(AppStateContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);

@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
-import { pageNames, linkGenMethodsIF, useUrlPath } from '../../../../utils/hooks/useUrlPath';
+import { pageNames, linkGenMethodsIF, useLinkGen } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     tradeData: tradeData;
@@ -43,7 +43,7 @@ export default function TopPoolsCard(props: propsIF) {
     }, [pathname]);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenDynamic: linkGenMethodsIF = useUrlPath(navTarget);
+    const linkGenDynamic: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();

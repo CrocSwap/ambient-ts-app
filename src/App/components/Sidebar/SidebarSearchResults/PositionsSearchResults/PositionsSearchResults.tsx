@@ -3,7 +3,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string,
@@ -58,7 +58,7 @@ export default function PositionsSearchResults(props: propsIF) {
     } = useContext(AppStateContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);

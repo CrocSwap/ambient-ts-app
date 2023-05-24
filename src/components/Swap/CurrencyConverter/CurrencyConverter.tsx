@@ -31,7 +31,7 @@ import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { shallowEqual } from 'react-redux';
-import { useUrlPath, linkGenMethodsIF } from '../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -151,7 +151,7 @@ function CurrencyConverter(props: propsIF) {
     }, []);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenAny: linkGenMethodsIF = useUrlPath();
+    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const { pathname } = useLocation();
 

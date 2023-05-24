@@ -31,7 +31,7 @@ import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useUrlPath, linkGenMethodsIF } from '../../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 
 // interface for React functional component props
 interface propsIF {
@@ -73,9 +73,9 @@ export default function TransactionsMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
-    const linkGenLimit: linkGenMethodsIF = useUrlPath('limit');
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const handleCopyClick = () => {
         if (handlePulseAnimation) {

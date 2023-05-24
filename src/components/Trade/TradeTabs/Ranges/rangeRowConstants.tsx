@@ -8,7 +8,7 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 interface Props {
     posHashTruncated: string;
     usdValue: string;
@@ -221,7 +221,7 @@ export default function rangeRowConstants(props: Props) {
     const tip = pair.join('\n');
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useUrlPath('range');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const tokenPair = (
         <li

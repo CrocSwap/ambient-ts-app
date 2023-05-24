@@ -4,7 +4,7 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from './hooks/usePoolStats';
-import { useUrlPath, linkGenMethodsIF } from '../../../../utils/hooks/useUrlPath';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     pool: PoolIF;
@@ -26,7 +26,7 @@ export default function FavoritePoolsCard(props: propsIF) {
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenMarket: linkGenMethodsIF = useUrlPath('market');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const [addrTokenA, addrTokenB] =
         tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
