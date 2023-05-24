@@ -33,6 +33,7 @@ import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput'
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 
 // interface for component props
 interface propsIF {
@@ -46,10 +47,6 @@ interface propsIF {
     isAmbient: boolean;
     depositSkew: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -85,10 +82,6 @@ function RangeCurrencyConverter(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         tokenAInputQty,
         tokenBInputQty,
         setTokenAInputQty,
@@ -114,6 +107,16 @@ function RangeCurrencyConverter(props: propsIF) {
     } = props;
 
     const { isPoolInitialized } = useContext(PoolContext);
+    const {
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
 

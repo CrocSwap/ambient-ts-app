@@ -49,7 +49,6 @@ import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
-    isTokenABase: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
@@ -57,10 +56,6 @@ interface propsIF {
     resolvedAddress: string;
     connectedAccountActive: boolean;
     openTokenModal: () => void;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     fullLayoutToggle: JSX.Element;
     cachedQuerySpotPrice: SpotPriceFn;
     tokens: tokenMethodsIF;
@@ -71,17 +66,12 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isTokenABase,
         cachedFetchTokenPrice,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
         connectedAccountActive,
         openTokenModal,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         tokens,
     } = props;
 
@@ -328,16 +318,11 @@ export default function PortfolioTabs(props: propsIF) {
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         activeAccountPositionData: activeAccountPositionData,
         connectedAccountActive: connectedAccountActive,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         isAccountView: true,
     };
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,

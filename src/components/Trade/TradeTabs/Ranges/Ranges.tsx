@@ -50,10 +50,6 @@ interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     notOnTradeRoute?: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     portfolio?: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -67,10 +63,6 @@ function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isAccountView,
@@ -494,10 +486,6 @@ function Ranges(props: propsIF) {
             position={position}
             ipadView={ipadView}
             showColumns={showColumns}
-            baseTokenBalance={baseTokenBalance}
-            quoteTokenBalance={quoteTokenBalance}
-            baseTokenDexBalance={baseTokenDexBalance}
-            quoteTokenDexBalance={quoteTokenDexBalance}
             isAccountView={isAccountView}
             idx={idx}
             showPair={showPair}
@@ -511,10 +499,6 @@ function Ranges(props: propsIF) {
             position={position}
             ipadView={ipadView}
             showColumns={showColumns}
-            baseTokenBalance={baseTokenBalance}
-            quoteTokenBalance={quoteTokenBalance}
-            baseTokenDexBalance={baseTokenDexBalance}
-            quoteTokenDexBalance={quoteTokenDexBalance}
             isAccountView={isAccountView}
             idx={idx}
             showPair={showPair}

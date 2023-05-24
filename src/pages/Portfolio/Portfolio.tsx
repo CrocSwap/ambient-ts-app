@@ -48,16 +48,11 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
-    isTokenABase: boolean;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
     userAccount?: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     outputTokens: TokenIF[];
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
@@ -70,15 +65,10 @@ function Portfolio(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isTokenABase,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         userAccount,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         outputTokens,
         validatedInput,
         setInput,
@@ -474,17 +464,12 @@ function Portfolio(props: propsIF) {
     const portfolioTabsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        isTokenABase: isTokenABase,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
         openTokenModal: openTokenModal,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         fullLayoutToggle: fullLayerToggle,
         tokens: tokens,
     };

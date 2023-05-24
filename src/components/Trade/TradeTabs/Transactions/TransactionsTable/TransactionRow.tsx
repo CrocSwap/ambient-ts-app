@@ -22,7 +22,6 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 interface propsIF {
     tx: TransactionIF;
     tradeData: tradeData;
-    isTokenABase: boolean;
     ipadView: boolean;
     showPair: boolean;
     view2: boolean;
@@ -30,15 +29,8 @@ interface propsIF {
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        showColumns,
-        tradeData,
-        ipadView,
-        isTokenABase,
-        tx,
-        isAccountView,
-        showPair,
-    } = props;
+    const { showColumns, tradeData, ipadView, tx, isAccountView, showPair } =
+        props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -305,7 +297,6 @@ function TransactionRow(props: propsIF) {
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     tradeData={tradeData}
-                    isTokenABase={isTokenABase}
                     isAccountView={props.isAccountView}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual

@@ -30,7 +30,6 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    isTokenABase: boolean;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -38,8 +37,6 @@ interface propsIF {
     limitTick: number | undefined;
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
 }
@@ -346,8 +343,6 @@ function TradeCharts(props: propsIF) {
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
-                        baseTokenAddress={props.baseTokenAddress}
-                        quoteTokenAddress={props.quoteTokenAddress}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                         rescale={rescale}

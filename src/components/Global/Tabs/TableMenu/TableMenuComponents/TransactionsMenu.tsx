@@ -37,7 +37,6 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 interface propsIF {
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
-    isTokenABase: boolean;
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;

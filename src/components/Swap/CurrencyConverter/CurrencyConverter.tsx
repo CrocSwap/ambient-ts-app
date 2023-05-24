@@ -31,17 +31,13 @@ import { shallowEqual } from 'react-redux';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 interface propsIF {
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
-    isSellTokenBase: boolean;
     isLiq: boolean;
     isTokenAPrimary: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     sellQtyString: string;
     buyQtyString: string;
     setSellQtyString: Dispatch<SetStateAction<string>>;
@@ -76,10 +72,6 @@ function CurrencyConverter(props: propsIF) {
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
         setSwapAllowed,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         setSwapButtonErrorMessage,
         sellQtyString,
         buyQtyString,
@@ -103,6 +95,16 @@ function CurrencyConverter(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
+    const {
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
 

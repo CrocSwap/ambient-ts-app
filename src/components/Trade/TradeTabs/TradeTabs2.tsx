@@ -45,11 +45,6 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
-    isTokenABase: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
@@ -77,11 +72,6 @@ function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
-        isTokenABase,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         isCandleSelected,
         setIsCandleSelected,
         filter,
@@ -346,10 +336,6 @@ function TradeTabs2(props: propsIF) {
     const rangesProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         notOnTradeRoute: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
@@ -358,7 +344,6 @@ function TradeTabs2(props: propsIF) {
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
-        isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,

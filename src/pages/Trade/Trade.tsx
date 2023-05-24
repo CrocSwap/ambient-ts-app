@@ -38,16 +38,10 @@ import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 // interface for React functional component props
 interface propsIF {
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    isTokenABase: boolean;
     limitRate: string;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
@@ -55,17 +49,7 @@ interface propsIF {
 
 // React functional component
 function Trade(props: propsIF) {
-    const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        isTokenABase,
-    } = props;
+    const { cachedQuerySpotPrice, cachedPositionUpdateQuery } = props;
 
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -87,6 +71,10 @@ function Trade(props: propsIF) {
     const { isPoolInitialized } = useContext(PoolContext);
     const tokens = useContext(TokenContext);
     const { expandTradeTable } = useContext(TradeTableContext);
+    const {
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
+    } = useContext(TradeTokenContext);
 
     // CONTEXT: state exists just to pass onto trade tabs, setState is used here, could move to PositionsOnlyToggle, or common trade context
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -337,13 +325,10 @@ function Trade(props: propsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
-        isTokenABase: isTokenABase,
         changeState: changeState,
         liquidityData: liquidityData,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
-        baseTokenAddress: baseTokenAddress,
-        quoteTokenAddress: quoteTokenAddress,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
     };
@@ -351,11 +336,6 @@ function Trade(props: propsIF) {
     const tradeTabsProps = {
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        isTokenABase: isTokenABase,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,

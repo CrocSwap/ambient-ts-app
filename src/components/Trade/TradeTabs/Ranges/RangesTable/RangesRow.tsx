@@ -21,10 +21,6 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
@@ -104,10 +100,6 @@ function RangesRow(props: propsIF) {
         baseTokenDecimals: position.baseDecimals,
         quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteDecimals,
-        baseTokenBalance: props.baseTokenBalance,
-        quoteTokenBalance: props.quoteTokenBalance,
-        baseTokenDexBalance: props.baseTokenDexBalance,
-        quoteTokenDexBalance: props.quoteTokenDexBalance,
         lowRangeDisplay: ambientOrMin,
         highRangeDisplay: ambientOrMax,
         baseTokenLogoURI: position.baseTokenLogoURI,
@@ -126,10 +118,6 @@ function RangesRow(props: propsIF) {
         isPositionEmpty: isPositionEmpty,
         positionData: position,
         position: position,
-        baseTokenBalance: props.baseTokenBalance,
-        quoteTokenBalance: props.quoteTokenBalance,
-        baseTokenDexBalance: props.baseTokenDexBalance,
-        quoteTokenDexBalance: props.quoteTokenDexBalance,
         isAccountView: props.isAccountView,
         isPositionInRange: isPositionInRange,
     };

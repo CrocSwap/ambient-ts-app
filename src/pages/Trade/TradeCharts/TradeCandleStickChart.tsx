@@ -31,6 +31,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -65,8 +66,6 @@ interface propsIF {
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
     rescale: boolean | undefined;
@@ -89,21 +88,20 @@ type chartItemStates = {
 };
 
 function TradeCandleStickChart(props: propsIF) {
-    const {
-        baseTokenAddress,
-        selectedDate,
-        setSelectedDate,
-        isMarketOrLimitModule,
-    } = props;
+    const { selectedDate, setSelectedDate, isMarketOrLimitModule } = props;
 
-    const { chainData } = useContext(CrocEnvContext);
     const {
         candleData: { value: candleData },
         fetchingCandle: { value: fetchingCandle },
         isCandleDataNull: { value: isCandleDataNull },
     } = useContext(CandleContext);
-    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
     const { chartSettings } = useContext(ChartContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
+    const {
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
+    } = useContext(TradeTokenContext);
 
     const period = useMemo(() => {
         if (
@@ -271,9 +269,9 @@ function TradeCandleStickChart(props: propsIF) {
             poolPriceDisplay !== undefined &&
             poolPriceDisplay > 0 &&
             props.liquidityData.curveState.base ===
-                props.baseTokenAddress.toLowerCase() &&
+                baseTokenAddress.toLowerCase() &&
             props.liquidityData.curveState.quote ===
-                props.quoteTokenAddress.toLowerCase() &&
+                quoteTokenAddress.toLowerCase() &&
             props.liquidityData.curveState.poolIdx === chainData.poolIndex &&
             props.liquidityData.curveState.chainId === chainData.chainId
         ) {

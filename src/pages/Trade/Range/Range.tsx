@@ -80,19 +80,10 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 interface propsIF {
     isPairStable: boolean;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -104,16 +95,6 @@ interface propsIF {
 function Range(props: propsIF) {
     const {
         isPairStable,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        tokenAAllowance,
-        setRecheckTokenAApproval,
-        tokenBAllowance,
-        setRecheckTokenBApproval,
         importedTokensPlus,
         outputTokens,
         validatedInput,
@@ -145,6 +126,14 @@ function Range(props: propsIF) {
         setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
     const tokens = useContext(TokenContext);
+    const {
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
@@ -1278,10 +1267,6 @@ function Range(props: propsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,

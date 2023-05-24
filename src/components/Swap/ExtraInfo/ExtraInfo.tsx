@@ -24,7 +24,6 @@ interface propsIF {
     liquidityProviderFeeString: string;
     quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
-    isTokenABase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
 }

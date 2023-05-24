@@ -30,10 +30,6 @@ import { handlePulseAnimation } from '../../../../../utils/functions/handlePulse
 import { RangeContext } from '../../../../../contexts/RangeContext';
 // interface for React functional component props
 interface propsIF {
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line

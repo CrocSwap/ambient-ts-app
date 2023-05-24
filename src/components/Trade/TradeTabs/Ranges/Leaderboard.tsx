@@ -34,10 +34,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 // interface for props
 interface propsIF {
     notOnTradeRoute?: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     portfolio?: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
@@ -47,14 +43,7 @@ interface propsIF {
 
 // react functional component
 function Leaderboard(props: propsIF) {
-    const {
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-    } = props;
+    const { cachedQuerySpotPrice, cachedPositionUpdateQuery } = props;
 
     const { expandTradeTable, showAllData } = useContext(TradeTableContext);
     const {
@@ -325,10 +314,6 @@ function Leaderboard(props: propsIF) {
             }
             ipadView={ipadView}
             showColumns={showColumns}
-            baseTokenBalance={baseTokenBalance}
-            quoteTokenBalance={quoteTokenBalance}
-            baseTokenDexBalance={baseTokenDexBalance}
-            quoteTokenDexBalance={quoteTokenDexBalance}
             isAccountView={false}
             isLeaderboard={true}
             idx={idx + 1}

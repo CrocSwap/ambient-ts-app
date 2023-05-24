@@ -34,7 +34,6 @@ import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 interface propsIF {
-    isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     portfolio?: boolean;
@@ -50,7 +49,6 @@ interface propsIF {
 }
 function Transactions(props: propsIF) {
     const {
-        isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
         changesInSelectedCandle,
@@ -430,7 +428,6 @@ function Transactions(props: propsIF) {
             key={idx}
             tx={tx}
             tradeData={tradeData}
-            isTokenABase={isTokenABase}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
@@ -443,7 +440,6 @@ function Transactions(props: propsIF) {
             key={idx}
             tx={tx}
             tradeData={tradeData}
-            isTokenABase={isTokenABase}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}

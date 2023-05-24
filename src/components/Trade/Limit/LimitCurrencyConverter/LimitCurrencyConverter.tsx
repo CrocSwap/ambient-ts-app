@@ -36,6 +36,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 
 // interface for component props
 interface propsIF {
@@ -48,13 +49,8 @@ interface propsIF {
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -83,10 +79,6 @@ function LimitCurrencyConverter(props: propsIF) {
         limitTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         tokenAInputQty,
         tokenBInputQty,
         setTokenAInputQty,
@@ -109,6 +101,16 @@ function LimitCurrencyConverter(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const { isPoolInitialized } = useContext(PoolContext);
+    const {
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,

@@ -56,17 +56,11 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    isSellTokenBase: boolean;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     isSwapCopied?: boolean;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
@@ -79,13 +73,6 @@ function Swap(props: propsIF) {
     const {
         isPairStable,
         isOnTradeRoute,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        isSellTokenBase,
-        tokenAAllowance,
-        setRecheckTokenAApproval,
         isSwapCopied,
         importedTokensPlus,
         outputTokens,
@@ -107,6 +94,11 @@ function Swap(props: propsIF) {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const tokens = useContext(TokenContext);
+    const {
+        isTokenABase: isSellTokenBase,
+        setRecheckTokenAApproval,
+        tokenAAllowance,
+    } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -564,11 +556,6 @@ function Swap(props: propsIF) {
         priceImpact: priceImpact,
         isLiq: false,
         isTokenAPrimary: isTokenAPrimary,
-        isSellTokenBase: isSellTokenBase,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setSellQtyString: setSellQtyString,
@@ -740,7 +727,6 @@ function Swap(props: propsIF) {
                         </motion.div>
                         <ExtraInfo
                             priceImpact={priceImpact}
-                            isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
                                 displayEffectivePriceString
                             }

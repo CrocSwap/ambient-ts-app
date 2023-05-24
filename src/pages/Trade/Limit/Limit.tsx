@@ -68,17 +68,11 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 interface propsIF {
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    isSellTokenBase: boolean;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     importedTokensPlus: TokenIF[];
     outputTokens: TokenIF[];
     validatedInput: string;
@@ -92,12 +86,6 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 export default function Limit(props: propsIF) {
     const {
         isPairStable,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        tokenAAllowance,
-        setRecheckTokenAApproval,
         importedTokensPlus,
         outputTokens,
         validatedInput,
@@ -118,6 +106,8 @@ export default function Limit(props: propsIF) {
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool } = useContext(PoolContext);
     const tokens = useContext(TokenContext);
+    const { tokenAAllowance, setRecheckTokenAApproval } =
+        useContext(TradeTokenContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
@@ -734,10 +724,6 @@ export default function Limit(props: propsIF) {
         setPriceInputFieldBlurred: setPriceInputFieldBlurred,
         isSellTokenBase: isSellTokenBase,
         setLimitAllowed: setLimitAllowed,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
         setTokenAInputQty: setTokenAInputQty,
