@@ -5,7 +5,8 @@ import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetc
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+
+// Rest of your code
 
 import './TransactionDetailsGraph.css';
 import { ChainSpec } from '@crocswap-libs/sdk';
@@ -98,8 +99,30 @@ export default function TransactionDetailsGraph(
         mainnetQuoteTokenAddress
     );
 
+    const [isDataEmpty, setIsDataEmpty] = useState(false);
+    const [isDataLoading, setIsDataLoading] = useState(false);
+    const [isDataTakingTooLongToFetch, setIsDataTakingTooLongToFetch] =
+        useState(false);
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        if (isDataLoading) {
+            timeoutId = setTimeout(() => {
+                setIsDataTakingTooLongToFetch(true);
+            }, 2000); // Set the timeout threshold in milliseconds (e.g., 10 seconds)
+        }
+
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [isDataLoading]);
+
+    console.log({ isDataTakingTooLongToFetch });
+
     useEffect(() => {
         (async () => {
+            setIsDataLoading(true);
             if (graphData === undefined) {
                 const time = () => {
                     switch (transactionType) {
@@ -155,6 +178,8 @@ export default function TransactionDetailsGraph(
                         );
 
                         if (graphData) {
+                            setIsDataLoading(false);
+                            setIsDataEmpty(false);
                             setGraphData(() => {
                                 return graphData.candles;
                             });
@@ -162,6 +187,8 @@ export default function TransactionDetailsGraph(
                             setGraphData(() => {
                                 return undefined;
                             });
+                            setIsDataLoading(false);
+                            setIsDataEmpty(true);
                         }
                     } catch (error) {
                         console.error(error);
@@ -801,38 +828,27 @@ export default function TransactionDetailsGraph(
         [tx],
     );
 
-    // After 10 seconds of loading, result to showing a background image
-    const [isDataEmpty, setIsDataEmpty] = useState(false);
-    useEffect(() => {
-        if (!graphData) {
-            const timeoutId = setTimeout(() => {
-                setIsDataEmpty(true);
-            }, 1000);
+    const loadingSpinner = (
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Spinner size={100} bg='var(--dark1)' />
+        </div>
+    );
 
-            return () => {
-                clearTimeout(timeoutId);
-            };
-        }
-    }, [graphData]);
+    const placeholderImage = (
+        <div className='transaction_details_graph_placeholder'>
+            Chart taking too long
+        </div>
+    );
 
-    if (!graphData)
-        return (
-            <div
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <Spinner size={100} bg='var(--dark1)' />
-            </div>
-        );
-
-    if (isDataEmpty)
-        return <div className='transaction_details_graph_placeholder' />;
-    return (
+    const chartRender = (
         <div
             className='main_layout_chart'
             ref={graphMainDiv}
@@ -868,4 +884,17 @@ export default function TransactionDetailsGraph(
             ></d3fc-svg>
         </div>
     );
+    let dataToRender;
+
+    switch (true) {
+        case isDataLoading:
+            dataToRender = loadingSpinner;
+            break;
+        case isDataTakingTooLongToFetch || isDataEmpty:
+            dataToRender = placeholderImage;
+            break;
+        default:
+            dataToRender = chartRender;
+    }
+    return dataToRender;
 }
