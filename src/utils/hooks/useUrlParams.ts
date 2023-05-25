@@ -187,7 +187,7 @@ export const useUrlParams = (
                 dispatch(setLimitTick(parseInt(tick)));
             });
         } catch (error) {
-            console.log({ error });
+            console.error({ error });
         }
     }, [tokensOnChain.length, ...dependencies.map((x) => urlParamMap.get(x))]);
 };
