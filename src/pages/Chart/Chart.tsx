@@ -3755,7 +3755,15 @@ export default function Chart(props: propsIF) {
 
                     if (isScientific) {
                         const splitNumber = d.toString().split('e');
-                        const factor = Math.abs(Number(splitNumber[1]));
+                        const subString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        const factor = Math.pow(10, 3 - precision.length);
 
                         const textXAxisLength =
                             X - tickSize + context.measureText('0.0').width;
@@ -3767,13 +3775,14 @@ export default function Chart(props: propsIF) {
                         context.beginPath();
                         context.fillText('0.0', X - tickSize, yScale(d));
                         context.fillText(
-                            factor,
+                            subString,
                             textXAxisLength,
                             yScale(d) + textHeight / 3,
                         );
                         context.fillText(
-                            splitNumber[0].toString(),
-                            textXAxisLength + context.measureText(factor).width,
+                            factor * Number(precision),
+                            textXAxisLength +
+                                context.measureText(subString).width,
                             yScale(d),
                         );
                     } else {
@@ -3795,16 +3804,25 @@ export default function Chart(props: propsIF) {
                     undefined,
                 );
 
-                let marketFactor = undefined;
+                let marketSubString = undefined;
 
                 if (isScientificMarketTick) {
                     const splitNumber = market[0].value.toString().split('e');
-                    marketFactor = Math.abs(Number(splitNumber[1]));
+                    marketSubString =
+                        Math.abs(Number(splitNumber[1])) -
+                        (splitNumber.includes('.') ? 2 : 1);
 
-                    marketTick = formatAmountChartData(
-                        Number(splitNumber[0]),
-                        undefined,
-                    ).toString();
+                    const precision = splitNumber[0]
+                        .toString()
+                        .replace('.', '');
+
+                    if (precision.length > 3) {
+                        marketTick = precision.slice(0, 3);
+                    } else {
+                        const factor = Math.pow(10, 3 - precision.length);
+
+                        marketTick = (factor * Number(precision)).toString();
+                    }
                 }
 
                 createRectLabel(
@@ -3816,7 +3834,7 @@ export default function Chart(props: propsIF) {
                     marketTick,
                     undefined,
                     yAxisCanvasWidth,
-                    marketFactor,
+                    marketSubString,
                 );
 
                 if (
@@ -3845,16 +3863,30 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
-                        let lowTickFactor = undefined;
+                        let lowSubString = undefined;
 
                         if (isScientificlowTick) {
                             const splitNumber = low.toString().split('e');
-                            lowTickFactor = Math.abs(Number(splitNumber[1]));
+                            lowSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
 
-                            lowTick = formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                            const precision = splitNumber[0]
+                                .toString()
+                                .replace('.', '');
+
+                            if (precision.length > 3) {
+                                lowTick = precision.slice(0, 3);
+                            } else {
+                                const factor = Math.pow(
+                                    10,
+                                    3 - precision.length,
+                                );
+
+                                lowTick = (
+                                    factor * Number(precision)
+                                ).toString();
+                            }
                         }
 
                         createRectLabel(
@@ -3868,7 +3900,7 @@ export default function Chart(props: propsIF) {
                             lowTick,
                             undefined,
                             yAxisCanvasWidth,
-                            lowTickFactor,
+                            lowSubString,
                         );
                         addYaxisLabel(
                             isSameLocationMin
@@ -3885,16 +3917,31 @@ export default function Chart(props: propsIF) {
                             undefined,
                         );
 
-                        let highTickFactor = undefined;
+                        let highSubString = undefined;
 
                         if (isScientificHighTick) {
                             const splitNumber = high.toString().split('e');
-                            highTickFactor = Math.abs(Number(splitNumber[1]));
 
-                            highTick = formatAmountChartData(
-                                Number(splitNumber[0]),
-                                undefined,
-                            ).toString();
+                            highSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const precision = splitNumber[0]
+                                .toString()
+                                .replace('.', '');
+
+                            if (precision.length > 3) {
+                                highTick = precision.slice(0, 3);
+                            } else {
+                                const factor = Math.pow(
+                                    10,
+                                    3 - precision.length,
+                                );
+
+                                highTick = (
+                                    factor * Number(precision)
+                                ).toString();
+                            }
                         }
 
                         createRectLabel(
@@ -3908,7 +3955,7 @@ export default function Chart(props: propsIF) {
                             highTick,
                             undefined,
                             yAxisCanvasWidth,
-                            highTickFactor,
+                            highSubString,
                         );
                         addYaxisLabel(
                             isSameLocationMax
@@ -3931,18 +3978,28 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
-                    let limitTickFactor = undefined;
+                    let limitSubString = undefined;
 
                     if (isScientificLimitTick) {
                         const splitNumber = limit[0].value
                             .toString()
                             .split('e');
-                        limitTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        limitTick = formatAmountChartData(
-                            Number(splitNumber[0]),
-                            undefined,
-                        ).toString();
+                        limitSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        if (precision.length > 3) {
+                            limitTick = precision.slice(0, 3);
+                        } else {
+                            const factor = Math.pow(10, 3 - precision.length);
+
+                            limitTick = (factor * Number(precision)).toString();
+                        }
                     }
 
                     if (checkLimitOrder) {
@@ -3959,7 +4016,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
-                            limitTickFactor,
+                            limitSubString,
                         );
                     } else {
                         createRectLabel(
@@ -3973,7 +4030,7 @@ export default function Chart(props: propsIF) {
                             limitTick,
                             undefined,
                             yAxisCanvasWidth,
-                            limitTickFactor,
+                            limitSubString,
                         );
                     }
                     addYaxisLabel(
@@ -3993,18 +4050,28 @@ export default function Chart(props: propsIF) {
                         undefined,
                     );
 
-                    let crTickFactor = undefined;
+                    let crSubString = undefined;
 
                     if (isScientificCrTick) {
                         const splitNumber = crosshairData[0].y
                             .toString()
                             .split('e');
-                        crTickFactor = Math.abs(Number(splitNumber[1]));
 
-                        crTick = formatAmountChartData(
-                            Number(splitNumber[0]),
-                            undefined,
-                        ).toString();
+                        crSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        if (precision.length > 3) {
+                            crTick = precision.slice(0, 3);
+                        } else {
+                            const factor = Math.pow(10, 3 - precision.length);
+
+                            crTick = (factor * Number(precision)).toString();
+                        }
                     }
 
                     createRectLabel(
@@ -4016,7 +4083,7 @@ export default function Chart(props: propsIF) {
                         crTick,
                         undefined,
                         yAxisCanvasWidth,
-                        crTickFactor,
+                        crSubString,
                     );
                 }
 
