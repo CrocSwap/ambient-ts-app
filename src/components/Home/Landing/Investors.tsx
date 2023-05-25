@@ -7,12 +7,6 @@ import yunt from '../../../assets/images/investors/yunt.svg';
 import susa from '../../../assets/images/investors/susa.svg';
 import quantstamp from '../../../assets/images/investors/quantstamp.svg';
 import hypotenuse from '../../../assets/images/investors/hypotenuse.svg';
-import julian from '../../../assets/images/investors/julian.svg';
-import L from '../../../assets/images/investors/L.svg';
-import dogetoshii from '../../../assets/images/investors/dogetoshii.svg';
-import afk from '../../../assets/images/investors/afk.svg';
-import jai from '../../../assets/images/investors/jai.svg';
-import Don from '../../../assets/images/investors/Don.svg';
 import PreSeed from '../../../assets/images/investors/Pre-Seed.svg';
 import PositiveSum from '../../../assets/images/investors/positivesum.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
@@ -48,12 +42,12 @@ export default function Investors() {
     );
     const row5 = (
         <div className={styles.row5}>
-            <img src={julian} alt='julian Koh' />
-            <img src={L} alt='Lllvvuu ' />
-            <img src={dogetoshii} alt='dogetoshii ' />
-            <img src={afk} alt='afkbyte ' />
-            <img src={jai} alt='jai prasad ' />
-            <img src={Don} alt='don sun ' />
+            <span>Julian Koh</span>
+            <span>llllvvuu</span>
+            <span>Dogetoshi</span>
+            <span>afkbyte</span>
+            <span>Jai Prasad</span>
+            <span>Don Sun</span>
         </div>
     );
     const row6 = (

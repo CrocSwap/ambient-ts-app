@@ -23,11 +23,19 @@ export const RowsPerPageDropdown = ({
     setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
     const generateOptions = (count: number) => {
+        if (count < 1) {
+            return [5, 10, 25, 50, 100];
+        }
+
         const maxOptions = 10;
         const increment = Math.ceil(count / maxOptions / 5) * 5;
         const options = [];
 
-        for (let i = increment; i <= count; i += increment) {
+        for (
+            let i = increment;
+            i <= count && options.length < maxOptions;
+            i += increment
+        ) {
             options.push(i);
         }
 

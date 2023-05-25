@@ -28,18 +28,20 @@
 .main_list_container{
 
 
-display: grid;
-grid-template-rows: 40px 1fr ;
-overflow-y: hidden;
-}
-
-
-.main_list_expanded{
     display: grid;
-    grid-template-rows: 40px 1fr 70px;
     overflow-y: hidden;
-
-}
+    grid-template-rows: auto 1fr ;
+    }
+    
+    
+    
+    .main_list_expanded{
+        display: grid;
+        grid-template-rows: auto 1fr 70px;
+        overflow-y: hidden;
+    
+    }
+    
 
 .header {
     position: sticky;
@@ -146,7 +148,7 @@ overflow-y: hidden;
     padding: 0.2em 0.5em;
 }
 .base_color {
-    color: var(--text2);
+    color: var(--text1);
 }
 .mono_font {
     font-family: var(--roboto);
