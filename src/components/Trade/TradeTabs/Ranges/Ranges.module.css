@@ -150,10 +150,6 @@
     vertical-align: middle;
     padding: 0.2em 0.5em;
 }
-
-.base_color {
-    color: var(--text2);
-}
 .mono_font {
     font-family: var(--roboto);
 }
