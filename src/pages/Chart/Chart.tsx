@@ -1703,6 +1703,11 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent &&
                             event.sourceEvent.type != 'wheel'
                         ) {
+                            d3.select(d3CanvasMarketLine.current).style(
+                                'cursor',
+                                'pointer',
+                            );
+
                             d3.select(d3Container.current).style(
                                 'cursor',
                                 'default',
