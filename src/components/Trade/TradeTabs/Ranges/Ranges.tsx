@@ -276,7 +276,6 @@ function Ranges(props: propsIF) {
         }
     }, [
         sumHashTopPositions,
-        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
         lastBlockNumber,
