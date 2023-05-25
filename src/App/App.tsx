@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     Routes,
     Route,
@@ -18,10 +18,9 @@ import {
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
 } from '../utils/state/graphDataSlice';
-import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 import useWebSocket from 'react-use-websocket';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { resetReceiptData } from '../utils/state/receiptDataSlice';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -54,8 +53,6 @@ import {
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     setDenomInBase,
-    setLimitTick,
-    setPoolPriceNonDisplay,
     candleDomain,
     candleScale,
 } from '../utils/state/tradeDataSlice';
@@ -107,8 +104,6 @@ import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import { memoizePoolLiquidity } from './functions/getPoolLiquidity';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
-import { Provider } from '@ethersproject/providers';
-import { ethers } from 'ethers';
 import { useSlippage } from './hooks/useSlippage';
 import { slippage } from '../utils/data/slippage';
 import { useChartSettings } from './hooks/useChartSettings';

@@ -322,12 +322,12 @@ function Orders(props: propsIF) {
     const resetPageToFirst = () => setPage(1);
 
     const isScreenShort =
-        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
-        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+        (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
     const isScreenTall =
-        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
-        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
     const [rowsPerPage, setRowsPerPage] = useState(
         isScreenShort ? 5 : isScreenTall ? 20 : 10,
@@ -505,7 +505,7 @@ function Orders(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
 
-    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <section
