@@ -230,11 +230,6 @@ function Ranges(props: propsIF) {
     );
     const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
 
-    const sumHashTopPositions = useMemo(
-        () => diffHashSig(topPositions),
-        [sortedPositions],
-    );
-
     useEffect(() => {
         if (topPositions.length) {
             Promise.all(
@@ -289,12 +284,7 @@ function Ranges(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [
-        sumHashTopPositions,
-        isShowAllEnabled,
-        isOnPortfolioPage,
-        lastBlockNumber,
-    ]);
+    }, [isShowAllEnabled, isOnPortfolioPage, lastBlockNumber]);
 
     // ---------------------
     // transactions per page media queries
