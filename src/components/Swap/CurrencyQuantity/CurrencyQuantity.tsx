@@ -9,7 +9,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
-import { CircularProgress } from '@mui/material';
+import Spinner from '../../Global/Spinner/Spinner';
 
 interface propsIF {
     disable?: boolean;
@@ -132,7 +132,7 @@ function CurrencyQuantity(props: propsIF) {
 
     const progressDisplay = (
         <div className={styles.circular_progress}>
-            <CircularProgress size={24} />
+            <Spinner size={24} bg='var(--dark2)' weight={2} />
         </div>
     );
     return (

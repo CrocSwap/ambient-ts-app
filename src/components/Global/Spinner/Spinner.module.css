@@ -1,0 +1,46 @@
+.loader {
+    position: relative;
+ 
+    border-radius: 50%;
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
+
+    animation: animate 1s linear infinite;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.background {
+ 
+    position: absolute;
+
+    border-radius: 50%;
+    z-index: 2;
+}
+
+
+
+.overlay  {
+    background: conic-gradient(from 90deg at 50% 50%, rgba(90, 88, 204, 0) 0deg, rgba(115, 113, 252, 0) 0.04deg, var(--accent1) 360deg);
+
+
+    position: absolute;
+
+    border-radius: 50%;
+    z-index: 1;
+    filter: blur(30px);
+
+   
+}
+
+@keyframes animate {
+    0% {
+        transform: rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+        filter: hue-rotate(10deg);
+    }
+}

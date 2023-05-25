@@ -28,7 +28,8 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import usePagination from '../../../Global/Pagination/usePagination';
-import { CircularProgress, Pagination } from '@mui/material';
+import { Pagination } from '@mui/material';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -560,7 +561,7 @@ function Orders(props: propsIF) {
                             alignItems: 'center',
                         }}
                     >
-                        <CircularProgress />
+                        <Spinner size={100} bg='var(--dark1)' />
                     </div>
                 ) : (
                     orderDataOrNull

@@ -9,6 +9,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import Spinner from '../../Spinner/Spinner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -576,7 +577,7 @@ export default function TransactionDetailsGraph(
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotGraph').node() as any;
-        nd.requestRedraw();
+        nd?.requestRedraw();
     }, []);
 
     useEffect(() => {
@@ -800,6 +801,37 @@ export default function TransactionDetailsGraph(
         [tx],
     );
 
+    // After 10 seconds of loading, result to showing a background image
+    const [isDataEmpty, setIsDataEmpty] = useState(false);
+    useEffect(() => {
+        if (!graphData) {
+            const timeoutId = setTimeout(() => {
+                setIsDataEmpty(true);
+            }, 10000);
+
+            return () => {
+                clearTimeout(timeoutId);
+            };
+        }
+    }, [graphData]);
+
+    if (!graphData)
+        return (
+            <div
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Spinner size={100} bg='var(--dark1)' />
+            </div>
+        );
+
+    if (isDataEmpty)
+        return <div className='transaction_details_graph_placeholder' />;
     return (
         <div
             className='main_layout_chart'

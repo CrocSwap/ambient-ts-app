@@ -20,7 +20,7 @@ import {
     memo,
 } from 'react';
 
-import { CircularProgress, Pagination } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
@@ -31,6 +31,7 @@ import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -593,7 +594,7 @@ function Transactions(props: propsIF) {
                             alignItems: 'center',
                         }}
                     >
-                        <CircularProgress />
+                        <Spinner size={100} bg='var(--dark1)' />
                     </div>
                 ) : (
                     transactionDataOrNull

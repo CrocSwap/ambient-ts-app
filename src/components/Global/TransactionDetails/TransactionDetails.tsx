@@ -76,6 +76,8 @@ export default function TransactionDetails(props: propsIF) {
     //     </div>
     // ) : null;
 
+    console.log({ chainData });
+
     const shareComponent = (
         <div ref={detailsRef}>
             <div className={styles.main_content}>

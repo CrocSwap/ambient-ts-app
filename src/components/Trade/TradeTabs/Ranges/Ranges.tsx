@@ -22,7 +22,7 @@ import {
     addPositionsByPool,
     addPositionsByUser,
 } from '../../../../utils/state/graphDataSlice';
-import { CircularProgress, Pagination } from '@mui/material';
+import { Pagination } from '@mui/material';
 import {
     useAppDispatch,
     useAppSelector,
@@ -41,6 +41,7 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -650,7 +651,7 @@ function Ranges(props: propsIF) {
                             alignItems: 'center',
                         }}
                     >
-                        <CircularProgress />
+                        <Spinner size={100} bg='var(--dark1)' />
                     </div>
                 ) : (
                     rangeDataOrNull

@@ -30,7 +30,7 @@ import {
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
-import { CircularProgress } from '@mui/material';
+import Spinner from '../../../components/Global/Spinner/Spinner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -853,7 +853,7 @@ function TradeCandleStickChart(props: propsIF) {
                 alignItems: 'center',
             }}
         >
-            <CircularProgress />
+            <Spinner size={100} bg='var(--dark2)' />
         </div>
     );
 
