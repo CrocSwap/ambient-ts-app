@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import './Subcharts.css';
@@ -24,7 +24,7 @@ interface FreeRateData {
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function FeeRateSubChart(props: FreeRateData) {
+function FeeRateSubChart(props: FreeRateData) {
     const {
         feeData,
         period,
@@ -258,9 +258,13 @@ export default function FeeRateSubChart(props: FreeRateData) {
         }
 
         if (d3CanvasCrosshair) {
-            const container = d3.select(d3CanvasArea.current).node() as any;
+            const container = d3
+                .select(d3CanvasCrosshair.current)
+                .node() as any;
             if (container) container.requestRedraw();
         }
+
+        console.log(d3CanvasCrosshair);
     };
 
     // Fee Rate Chart
@@ -297,6 +301,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
+                        renderCanvas();
                     },
                 );
 
@@ -315,12 +320,13 @@ export default function FeeRateSubChart(props: FreeRateData) {
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
-                className='fee-rate-canvas'
+                className='d3CanvasArea'
             ></d3fc-canvas>
 
             <d3fc-canvas
+                id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
-                className='fee-rate-canvas'
+                className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>
@@ -347,3 +353,5 @@ export default function FeeRateSubChart(props: FreeRateData) {
         </div>
     );
 }
+
+export default memo(FeeRateSubChart);

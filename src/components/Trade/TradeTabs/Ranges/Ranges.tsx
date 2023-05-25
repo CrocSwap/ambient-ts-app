@@ -9,6 +9,8 @@ import {
     useState,
     useMemo,
     useContext,
+    memo,
+    useRef,
 } from 'react';
 import { ethers } from 'ethers';
 
@@ -20,7 +22,7 @@ import {
     addPositionsByPool,
     addPositionsByUser,
 } from '../../../../utils/state/graphDataSlice';
-import Pagination from '../../../Global/Pagination/Pagination';
+import { Pagination } from '@mui/material';
 import {
     useAppDispatch,
     useAppSelector,
@@ -36,9 +38,10 @@ import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -74,10 +77,11 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    isAccountView: boolean;
 }
 
 // react functional component
-export default function Ranges(props: propsIF) {
+function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
@@ -104,7 +108,9 @@ export default function Ranges(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         cachedPositionUpdateQuery,
+        isAccountView,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
@@ -146,6 +152,13 @@ export default function Ranges(props: propsIF) {
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
+    const [rangeData, setRangeData] = useState(
+        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
+    );
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+        useSortedPositions('time', rangeData);
+
     const positionsByUserMatchingSelectedTokens =
         graphData?.positionsByUser?.positions.filter((position) => {
             if (
@@ -159,17 +172,9 @@ export default function Ranges(props: propsIF) {
         });
 
     const userPositionsToDisplayOnTrade =
-        positionsByUserMatchingSelectedTokens.filter((position) => {
-            if (position.positionLiq !== '0' || position.source === 'manual') {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-    const [rangeData, setRangeData] = useState(
-        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
-    );
+        positionsByUserMatchingSelectedTokens.filter(
+            (position) => position.positionLiq !== '0',
+        );
 
     const sumHashActiveAccountPositionData = useMemo(
         () => diffHashSig(activeAccountPositionData),
@@ -211,23 +216,29 @@ export default function Ranges(props: propsIF) {
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
-        sumHashRangeData,
     ]);
-
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('time', rangeData);
 
     const dispatch = useAppDispatch();
 
-    // prevent query from running multiple times for the same position more than once per minute
-    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+    const NUM_ROWS_TO_SYNC = 5;
+    const CACHE_WINDOW_MS = 10000;
+
+    // synchronously query top positions periodically but prevent fetching more than
+    // once every CACHE_WINDOW_MS
+    const currentTimeForPositionUpdateCaching = Math.floor(
+        Date.now() / CACHE_WINDOW_MS,
+    );
+    const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
+
+    const sumHashTopPositions = useMemo(
+        () => diffHashSig(topPositions),
+        [sortedPositions],
+    );
 
     useEffect(() => {
-        const topThreePositions = sortedPositions.slice(0, 3);
-
-        if (topThreePositions) {
+        if (topPositions.length) {
             Promise.all(
-                topThreePositions.map((position: PositionIF) => {
+                topPositions.map((position: PositionIF) => {
                     return cachedPositionUpdateQuery(
                         position,
                         currentTimeForPositionUpdateCaching,
@@ -237,8 +248,9 @@ export default function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            if (updatedPositions)
+                            if (updatedPositions) {
                                 dispatch(addPositionsByPool(updatedPositions));
+                            }
                         } else {
                             const updatedPositionsMatchingUser =
                                 updatedPositions.filter(
@@ -255,7 +267,7 @@ export default function Ranges(props: propsIF) {
                         }
                     } else {
                         const newArray = updatedPositions.concat(
-                            sortedPositions.slice(3),
+                            sortedPositions.slice(NUM_ROWS_TO_SYNC),
                         );
                         setRangeData(newArray);
                     }
@@ -263,69 +275,87 @@ export default function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        diffHashSig({
-            id0: sortedPositions[0]?.positionId,
-            id1: sortedPositions[1]?.positionId,
-            id2: sortedPositions[2]?.positionId,
-        }),
+        sumHashTopPositions,
         currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
+        lastBlockNumber,
     ]);
 
     // ---------------------
-    const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
     const showColumns = useMediaQuery('(max-width: 1900px)');
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
-    const { height } = useWindowDimensions();
-    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    const regularRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 450 : 350)) / 36,
-    );
-    const showColumnRangesItems = Math.round(
-        (height - (isOnPortfolioPage ? 400 : 300)) / 60,
-    );
-    const rangesPerPage = showColumns
-        ? showColumnRangesItems
-        : regularRangesItems;
-
     useEffect(() => {
         setCurrentPage(1);
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
-    // Get current tranges
-    const indexOfLastRanges = currentPage * rangesPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRanges = sortedPositions?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
     );
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+
+    const count = Math.ceil(sortedPositions.length / rowsPerPage);
+    const _DATA = usePagination(sortedPositions, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {rangesPerPage > 0 &&
-                ((isOnPortfolioPage && rangeData.length > 7) ||
-                    (!isOnPortfolioPage && tradePageCheck)) && (
-                    <Pagination
-                        itemsPerPage={rangesPerPage}
-                        totalItems={rangeData.length}
-                        paginate={paginate}
-                        currentPage={currentPage}
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && rangeData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedPositions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
                     />
-                )}
-        </div>
-    );
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
@@ -517,7 +547,7 @@ export default function Ranges(props: propsIF) {
         />
     ));
 
-    const currentRowItemContent = currentRanges.map((position, idx) => (
+    const currentRowItemContent = _DATA.currentData.map((position, idx) => (
         <RangesRow
             cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
@@ -546,20 +576,28 @@ export default function Ranges(props: propsIF) {
             ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
-
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
+
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         <div>
-            {currentRowItemContent}
+            <ul ref={listRef}>{currentRowItemContent}</ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
@@ -588,18 +626,28 @@ export default function Ranges(props: propsIF) {
         />
     );
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
-            className={`${styles.main_list_container} `}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
             style={{ height: portfolioPageStyle }}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                rangeDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TableSkeletons />
+                ) : (
+                    rangeDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
+
+export default memo(Ranges);

@@ -13,23 +13,23 @@
 }
 
 .base_color {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .username_base_color {
-    color: var(--text2);
+    color: var(--text1);
     font-family: monospace;
 }
 
 .order_sell {
-    color: var(--accent2);
+    color: var(--accent1);
 }
 .owned_tx_contrast {
     color: var(--accent2);
 }
 
 .order_buy {
-    color: var(--accent1);
+    color: var(--accent5);
 }
 
 /* transactions */
@@ -43,22 +43,22 @@
     border-color: var(--accent4) !important;
 }
 .buy_style {
-    color: var(--accent1);
-    border-color: var(--accent1) !important;
+    color: var(--accent5);
+    border-color: var(--accent5) !important;
 }
 .sell_style {
-    color: var(--accent2);
-    border-color: var(--accent2) !important;
+    color: var(--accent1);
+    border-color: var(--accent1) !important;
 }
 
 /* apy */
 
 .apy_positive {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .apy_negative {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 /* sort */
@@ -139,4 +139,29 @@ aside.emoji-picker-react {
         0px 0px 6px rgba(205, 193, 255, 0.3),
         0px 0px 3px rgba(205, 193, 255, 0.3);
     border-radius: 4px;
+}
+
+/* .MuiPagination-root{
+
+    background: red !important;
+} */
+.MuiPagination-ul{
+    background: var(--dark2);
+    border-radius: 4px !important;
+    flex-wrap: nowrap !important;
+}
+
+.MuiPaginationItem-root{
+    color: var(--text2) !important;
+    outline: 1px solid transparent !important;
+}
+
+.Mui-selected.MuiPaginationItem-root {
+    color: var(--text1) !important;
+    background: transparent !important;
+   
+}
+
+.MuiPaginationItem-root {
+    display: inline-flex !important;
 }

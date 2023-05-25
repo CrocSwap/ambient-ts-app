@@ -1,8 +1,8 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { ackTokensMethodsIF } from './useAckTokens';
+import { tokenMethodsIF } from './useTokens';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;
@@ -22,8 +22,7 @@ export const useRecentPools = (
     chainId: string,
     tokenA: TokenIF,
     tokenB: TokenIF,
-    verifyToken: (addr: string, chn: string) => boolean,
-    ackTokens: ackTokensMethodsIF,
+    tokens: tokenMethodsIF,
 ): recentPoolsMethodsIF => {
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
@@ -34,18 +33,12 @@ export const useRecentPools = (
     useEffect(() => {
         // sort current token pair as base and quote
         const [baseToken, quoteToken]: TokenIF[] = sortTokens(tokenA, tokenB);
-        // logic to determine if a token is on a known list or acknowledged
-        const checkToken = (tkn: TokenIF): boolean => {
-            const isListed = verifyToken(tkn.address.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens.check(
-                tkn.address.toLowerCase(),
-                chainId,
-            );
-            return isListed || isAcknowledged;
-        };
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
-        if (checkToken(baseToken) && checkToken(quoteToken)) {
+        if (
+            tokens.verifyToken(baseToken.address) &&
+            tokens.verifyToken(quoteToken.address)
+        ) {
             addPool(baseToken, quoteToken);
         }
     }, [tokenA.address, tokenB.address]);
@@ -110,9 +103,12 @@ export const useRecentPools = (
         setRecentPools([]);
     }
 
-    return {
-        addPool,
-        getPools,
-        resetPools,
-    };
+    return useMemo(
+        () => ({
+            addPool,
+            getPools,
+            resetPools,
+        }),
+        [recentPools],
+    );
 };

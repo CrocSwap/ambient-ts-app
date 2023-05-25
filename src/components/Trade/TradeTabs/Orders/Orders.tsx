@@ -7,6 +7,7 @@ import {
     useEffect,
     useRef,
     useState,
+    memo,
 } from 'react';
 
 // START: Import JSX Elements
@@ -21,20 +22,20 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import Pagination from '../../../Global/Pagination/Pagination';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { Pagination } from '@mui/material';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
-    searchableTokens: TokenIF[];
     connectedAccountActive?: boolean;
     expandTradeTable: boolean;
     chainData: ChainSpec;
@@ -55,7 +56,7 @@ interface propsIF {
 }
 
 // main react functional component
-export default function Orders(props: propsIF) {
+function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
@@ -73,6 +74,7 @@ export default function Orders(props: propsIF) {
         isAccountView,
         setExpandTradeTable,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
@@ -323,62 +325,80 @@ export default function Orders(props: propsIF) {
         : styles.trade_header;
 
     // ---------------------
-    const [currentPage, setCurrentPage] = useState(1);
     // orders per page media queries
     const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
-
-    const { height } = useWindowDimensions();
-
-    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    const regularOrdersItems = Math.round(
-        (height - (isAccountView ? 500 : 350)) / 30,
-    );
-    const showColumnOrdersItems = Math.round(
-        (height - (isAccountView ? 500 : 300)) / 50,
-    );
-    const limitsPerPage = showColumns
-        ? showColumnOrdersItems
-        : regularOrdersItems;
 
     useEffect(() => {
         setCurrentPage(1);
     }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
-    const indexOfLastLimits = currentPage * limitsPerPage;
-    const indexOfFirstLimits = indexOfLastLimits - limitsPerPage;
-    const currentLimits = sortedLimits?.slice(
-        indexOfFirstLimits,
-        indexOfLastLimits,
+
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
     );
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+
+    const count = Math.ceil(sortedLimits.length / rowsPerPage);
+    const _DATA = usePagination(sortedLimits, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
     };
 
     const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {limitsPerPage > 0 &&
-                ((isAccountView && limitOrderData.length > 7) ||
-                    (!isAccountView && tradePageCheck)) && (
-                    <Pagination
-                        itemsPerPage={limitsPerPage}
-                        totalItems={
-                            limitOrderData.filter(
-                                (limitOrder) => limitOrder.totalValueUSD !== 0,
-                            ).length
-                        }
-                        paginate={paginate}
-                        currentPage={currentPage}
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && limitOrderData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedLimits.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
                     />
-                )}
-        </div>
-    );
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
 
     // ----------------------
 
@@ -397,7 +417,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const currentRowItemContent = currentLimits.map((order, idx) => (
+    const currentRowItemContent = _DATA.currentData.map((order, idx) => (
         <OrderRow
             chainData={chainData}
             tradeData={tradeData}
@@ -439,7 +459,6 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewOrder = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -502,28 +521,46 @@ export default function Orders(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
-            className={styles.main_list_container}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
             style={{ height: portfolioPageStyle }}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                orderDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TableSkeletons />
+                ) : (
+                    orderDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
+
+export default memo(Orders);

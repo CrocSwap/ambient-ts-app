@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 export interface getRecentTokensParamsIF {
@@ -19,32 +19,39 @@ export const useRecentTokens = (
     useEffect(() => resetRecentTokens(), [chainId]);
 
     // fn to add a token to the recentTokens array
-    function addRecentToken(tkn: TokenIF): void {
-        setRecentTokens([tkn, ...recentTokens]);
-    }
+    const addRecentToken = useCallback(
+        (tkn: TokenIF): void => {
+            setRecentTokens([tkn, ...recentTokens]);
+        },
+        [chainId],
+    );
 
     // fn to return recent tokens from local state
-    function getRecentTokens(
-        options: getRecentTokensParamsIF = {
-            onCurrentChain: false,
-            count: null,
-        },
-    ): TokenIF[] {
-        const relevantTokens = options.onCurrentChain
-            ? recentTokens.filter(
-                  (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
-              )
-            : recentTokens;
-        return relevantTokens.slice(
-            0,
-            options.count ?? relevantTokens.length + 1,
-        );
-    }
+    const getRecentTokens = useMemo(
+        () =>
+            (
+                options: getRecentTokensParamsIF = {
+                    onCurrentChain: false,
+                    count: null,
+                },
+            ): TokenIF[] => {
+                const relevantTokens = options.onCurrentChain
+                    ? recentTokens.filter(
+                          (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
+                      )
+                    : recentTokens;
+                return relevantTokens.slice(
+                    0,
+                    options.count ?? relevantTokens.length + 1,
+                );
+            },
+        [chainId],
+    );
 
     // fn to clear list of recent tokens
-    function resetRecentTokens(): void {
+    const resetRecentTokens = useCallback(() => {
         setRecentTokens([]);
-    }
+    }, [chainId]);
 
     return {
         addRecentToken,

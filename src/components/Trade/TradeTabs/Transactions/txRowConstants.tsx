@@ -209,7 +209,6 @@ export const txRowConstants = (props: Props) => {
             <p
                 data-label='wallet'
                 className={usernameStyle}
-                onClick={(event) => event.stopPropagation()}
                 style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
@@ -256,7 +255,7 @@ export const txRowConstants = (props: Props) => {
                 placement='bottom'
             >
                 <NoTokenIcon
-                    tokenInitial={tx.baseSymbol.charAt(0)}
+                    tokenInitial={tx.baseSymbol?.charAt(0)}
                     width={logoSizes}
                 />
             </IconWithTooltip>
@@ -285,7 +284,7 @@ export const txRowConstants = (props: Props) => {
                 placement='right'
             >
                 <NoTokenIcon
-                    tokenInitial={tx.quoteSymbol.charAt(0)}
+                    tokenInitial={tx.quoteSymbol?.charAt(0)}
                     width={logoSizes}
                 />
             </IconWithTooltip>
@@ -309,6 +308,7 @@ export const txRowConstants = (props: Props) => {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {tx.baseSymbol} / {tx.quoteSymbol}

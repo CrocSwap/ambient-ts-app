@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
@@ -28,11 +29,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import {
-    TokenIF,
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../utils/interfaces/exports';
+import { TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
@@ -44,10 +41,10 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
 import { topPoolIF } from '../../hooks/useTopPools';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../hooks/useTokens';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -57,7 +54,6 @@ interface propsIF {
     isDenomBase: boolean;
     chainId: string;
     poolId: number;
-    currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -67,7 +63,6 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     openModalWallet: () => void;
     poolList: TempPoolIF[];
@@ -75,34 +70,31 @@ interface propsIF {
     tokenPair: TokenPairIF;
     recentPools: recentPoolsMethodsIF;
     isConnected: boolean;
-    ackTokens: ackTokensMethodsIF;
     topPools: topPoolIF[];
+    tokens: tokenMethodsIF;
 }
 
-export default function Sidebar(props: propsIF) {
+function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
         chainId,
         poolId,
-        currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         setCurrentPositionActive,
         isShowAllEnabled,
         setIsShowAllEnabled,
         expandTradeTable,
         setExpandTradeTable,
-        tokenMap,
         lastBlockNumber,
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
-        verifyToken,
         tokenPair,
         recentPools,
         isConnected,
-        ackTokens,
         topPools,
+        tokens,
     } = props;
 
     const { sidebar } = useContext(AppStateContext);
@@ -192,7 +184,7 @@ export default function Sidebar(props: propsIF) {
             data: (
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
-                    tokenMap={tokenMap}
+                    tokens={tokens}
                     chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     isShowAllEnabled={isShowAllEnabled}
@@ -226,22 +218,14 @@ export default function Sidebar(props: propsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
-
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
-                    coinGeckoTokenMap={tokenMap}
-                    currentTxActiveInTransactions={
-                        currentTxActiveInTransactions
-                    }
                     setCurrentTxActiveInTransactions={
                         setCurrentTxActiveInTransactions
                     }
                     chainId={chainId}
-                    isShowAllEnabled={isShowAllEnabled}
                     setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
                     isUserLoggedIn={isConnected}
                 />
             ),
@@ -253,8 +237,7 @@ export default function Sidebar(props: propsIF) {
         positionsByUser,
         txsByUser,
         limitsByUser,
-        verifyToken,
-        ackTokens,
+        tokens,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');
@@ -353,7 +336,7 @@ export default function Sidebar(props: propsIF) {
         <button
             onClick={() => {
                 setIsDefaultOverridden(true);
-                if (sidebar.status === 'closed') {
+                if (!sidebar.isOpen) {
                     sidebar.open();
                 }
                 setOpenAllDefault(true);
@@ -361,7 +344,7 @@ export default function Sidebar(props: propsIF) {
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {!sidebar.isOpen || !openAllDefault ? 'Expand All' : 'Collapse All'}
+            {openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -404,20 +387,11 @@ export default function Sidebar(props: propsIF) {
                     </div>
                 </DefaultTooltip>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    placement={sidebar.isOpen ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <BiSearch
-                        size={18}
-                        color='#CDC1FF'
-                        onClick={() => sidebar.open(true)}
-                    />
-                </DefaultTooltip>
+                <BiSearch
+                    size={18}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
@@ -549,3 +523,5 @@ export default function Sidebar(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Sidebar);

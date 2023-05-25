@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    memo,
 } from 'react';
 import { useAccount, useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
@@ -40,10 +41,10 @@ import {
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ackTokensMethodsIF } from '../../App/hooks/useAckTokens';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
 
 interface propsIF {
     addRecentToken: (tkn: TokenIF) => void;
@@ -51,28 +52,17 @@ interface propsIF {
         onCurrentChain?: boolean;
         count?: number | null;
     }) => TokenIF[];
-    getAmbientTokens: () => TokenIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedPositionUpdateQuery: PositionUpdateFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
     chainId: string;
-    tokensOnActiveLists: Map<string, TokenIF>;
     userAccount?: boolean;
     openModalWallet: () => void;
-    searchableTokens: TokenIF[];
     chainData: ChainSpec;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -94,27 +84,22 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
-    ackTokens: ackTokensMethodsIF;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
-export default function Portfolio(props: propsIF) {
+function Portfolio(props: propsIF) {
     const {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         addRecentToken,
         getRecentTokens,
-        getTokensByName,
-        getTokenByAddress,
-        verifyToken,
         isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         lastBlockNumber,
-        tokensOnActiveLists,
         userAccount,
         baseTokenBalance,
         quoteTokenBalance,
@@ -133,8 +118,8 @@ export default function Portfolio(props: propsIF) {
         setSimpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
-        ackTokens,
         setExpandTradeTable,
+        tokens,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -165,14 +150,12 @@ export default function Portfolio(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
+            token.address,
+        );
         const newToken = { ...token };
-        const tokenAddress = token.address;
-        const key =
-            tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        const tokenName = tokensOnActiveLists.get(key)?.name;
-        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        newToken.name = tokenName ?? '';
-        newToken.logoURI = tokenLogoURI ?? '';
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
 
@@ -524,8 +507,6 @@ export default function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        tokenList: searchableTokens,
-        searchableTokens: searchableTokens,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         crocEnv: crocEnv,
@@ -539,7 +520,6 @@ export default function Portfolio(props: propsIF) {
         activeAccount: address ?? connectedAccount ?? '',
         connectedAccountActive: connectedAccountActive,
         chainId: chainData.chainId,
-        tokenMap: tokensOnActiveLists,
         openTokenModal: openTokenModal,
         account: props.account,
         chainData: chainData,
@@ -558,6 +538,7 @@ export default function Portfolio(props: propsIF) {
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
+        tokens: tokens,
     };
 
     const portfolioBannerProps = {
@@ -646,9 +627,6 @@ export default function Portfolio(props: propsIF) {
                         closeModal={closeTokenModal}
                         chainId={chainData.chainId}
                         importedTokensPlus={outputTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
@@ -661,10 +639,12 @@ export default function Portfolio(props: propsIF) {
                         getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
-                        ackTokens={ackTokens}
+                        tokens={tokens}
                     />
                 </Modal>
             )}
         </main>
     );
 }
+
+export default memo(Portfolio);

@@ -6,6 +6,7 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 import {
     AiOutlineCamera,
@@ -55,7 +56,7 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     limitTick: number | undefined;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     upBodyColor: string;
@@ -65,6 +66,7 @@ interface propsIF {
     upVolumeColor: string;
     downVolumeColor: string;
     baseTokenAddress: string;
+    quoteTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
@@ -80,7 +82,6 @@ interface propsIF {
     setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
     repositionRangeWidth: number;
 }
-
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeLiq: any;
@@ -106,7 +107,7 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: propsIF) {
+function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
         chainData,
@@ -332,7 +333,6 @@ export default function TradeCharts(props: propsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div
@@ -498,6 +498,7 @@ export default function TradeCharts(props: propsIF) {
                         upVolumeColor={props.upVolumeColor}
                         downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
+                        quoteTokenAddress={props.quoteTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
@@ -529,3 +530,5 @@ export default function TradeCharts(props: propsIF) {
         // </FocusTrap>
     );
 }
+
+export default memo(TradeCharts);

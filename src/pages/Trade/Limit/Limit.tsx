@@ -58,8 +58,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
-import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
@@ -67,11 +66,10 @@ import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/Bypas
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     account: string | undefined;
@@ -97,13 +95,6 @@ interface propsIF {
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -114,7 +105,7 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    ackTokens: ackTokensMethodsIF;
+    tokens: tokenMethodsIF;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -142,9 +133,6 @@ export default function Limit(props: propsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -153,12 +141,11 @@ export default function Limit(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        ackTokens,
+        tokens,
     } = props;
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
 
     const crocEnv = useContext(CrocEnvContext);
     const { dexBalLimit, bypassConfirmLimit } = useContext(
@@ -249,7 +236,6 @@ export default function Limit(props: propsIF) {
                 );
 
                 const gridSize = lookupChain(chainId).gridSize;
-
                 const initialLimitRateNonDisplay =
                     spotPrice * (isSellTokenBase ? 0.985 : 1.015);
 
@@ -268,7 +254,9 @@ export default function Limit(props: propsIF) {
                     setEndDisplayPrice(displayPriceWithDenom);
 
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -344,7 +332,9 @@ export default function Limit(props: propsIF) {
 
                     setEndDisplayPrice(displayPriceWithDenom);
                     const limitRateTruncated =
-                        displayPriceWithDenom < 2
+                        displayPriceWithDenom < 0.0001
+                            ? displayPriceWithDenom.toExponential(2)
+                            : displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 6,
@@ -372,43 +362,35 @@ export default function Limit(props: propsIF) {
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
                         if (isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        // console.log({ priceFullTickAbove });
                         if (isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickAbove);
                     });
                     priceHalfBelow.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
                         if (!isSellTokenBase)
                             setMiddleDisplayPrice(1 / priceHalfBelow);
                     });
                     priceFullTickBelow.then((priceFullTickBelow) => {
-                        // console.log({ priceFullTickBelow });
                         if (!isSellTokenBase)
                             setStartDisplayPrice(1 / priceFullTickBelow);
                     });
@@ -419,6 +401,7 @@ export default function Limit(props: propsIF) {
             }
         })();
     }, [
+        pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
@@ -547,7 +530,6 @@ export default function Limit(props: propsIF) {
         const order = isTokenAPrimary
             ? crocEnv.sell(sellToken, qty)
             : crocEnv.buy(buyToken, qty);
-
         const ko = order.atLimit(
             isTokenAPrimary ? buyToken : sellToken,
             limitTick,
@@ -647,7 +629,6 @@ export default function Limit(props: propsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.error({ error });
                 receipt = error.receipt;
             }
         }
@@ -782,51 +763,6 @@ export default function Limit(props: propsIF) {
         />
     );
 
-    // -------------------------Limit SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Limit 1', checked: false },
-        { slug: 'second', name: 'Include Limit 2', checked: false },
-        { slug: 'third', name: 'Include Limit 3', checked: false },
-        { slug: 'fourth', name: 'Include Limit 4', checked: false },
-    ]);
-
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <LimitShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
     const currencyConverterProps = {
         displayPrice: displayPrice,
         previousDisplayPrice: previousDisplayPrice,
@@ -860,9 +796,6 @@ export default function Limit(props: propsIF) {
         poolExists: poolExists,
         gasPriceInGwei: gasPriceInGwei,
         isOrderCopied: isOrderCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -871,22 +804,16 @@ export default function Limit(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         setResetLimitTick: setResetLimitTick,
-        ackTokens: ackTokens,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        tokens: tokens,
     };
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    // logic to determine if a given token is acknowledged or on a list
-    const isTokenUnknown = (tkn: TokenIF): boolean => {
-        const isAckd: boolean = ackTokens.check(tkn.address, chainId);
-        const isListed: boolean = verifyToken(tkn.address, chainId);
-        return !isAckd && !isListed;
-    };
-
+    // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA: boolean = isTokenUnknown(tokenPair.dataTokenA);
-    const needConfirmTokenB: boolean = isTokenUnknown(tokenPair.dataTokenB);
+    const needConfirmTokenA = !tokens.verifyToken(tokenPair.dataTokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenPair.dataTokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -923,8 +850,8 @@ export default function Limit(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && ackTokens.acknowledge(tokenPair.dataTokenA);
-        needConfirmTokenB && ackTokens.acknowledge(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.ackToken(tokenPair.dataTokenA);
+        needConfirmTokenB && tokens.ackToken(tokenPair.dataTokenB);
     };
 
     const liquidityProviderFeeString = (
@@ -955,7 +882,6 @@ export default function Limit(props: propsIF) {
                     <LimitHeader
                         chainId={chainId}
                         isPairStable={isPairStable}
-                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     {navigationMenu}
                     <motion.div

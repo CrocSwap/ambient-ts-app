@@ -46,9 +46,9 @@ import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
@@ -63,9 +63,6 @@ interface propsIF {
     activeAccount: string;
     connectedAccountActive: boolean;
     chainId: string;
-    tokenList: TokenIF[];
-    tokenMap: Map<string, TokenIF>;
-    searchableTokens: TokenIF[];
     openTokenModal: () => void;
     chainData: ChainSpec;
     currentPositionActive: string;
@@ -85,17 +82,16 @@ interface propsIF {
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        searchableTokens,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isTokenABase,
         cachedFetchTokenPrice,
-        tokenMap,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
@@ -103,7 +99,6 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccount,
         connectedAccountActive,
         chainId,
-        tokenList,
         openTokenModal,
         baseTokenBalance,
         quoteTokenBalance,
@@ -115,6 +110,7 @@ export default function PortfolioTabs(props: propsIF) {
         setSimpleRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -168,7 +164,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                searchableTokens,
+                                tokens.tokenUniv,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
@@ -213,7 +209,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                             return getLimitOrderData(
                                 limitOrder,
-                                searchableTokens,
+                                tokens.tokenUniv,
                             );
                         }),
                     ).then((updatedLimitOrderStates) => {
@@ -238,7 +234,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            tokenList: tokenList,
+            tokenList: tokens.tokenUniv,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,
@@ -303,7 +299,7 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, diffHashSig(tokenList)]);
+    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -339,7 +335,7 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
         chainId: chainId,
-        tokenMap: tokenMap,
+        tokens: tokens,
     };
 
     // props for <Exchange/> React Element
@@ -351,9 +347,8 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
         activeAccount: activeAccount,
-        chainId: chainId,
-        tokenMap: tokenMap,
         openTokenModal: openTokenModal,
+        tokens: tokens,
     };
 
     // props for <Range/> React Element
@@ -373,7 +368,6 @@ export default function PortfolioTabs(props: propsIF) {
         chainId: chainId,
         provider: props.provider,
         isUserLoggedIn: props.isUserLoggedIn,
-        searchableTokens: searchableTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
@@ -383,17 +377,16 @@ export default function PortfolioTabs(props: propsIF) {
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
-        tokenList: tokenList,
         chainData: props.chainData,
         blockExplorer: props.chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: props.currentTxActiveInTransactions,
@@ -404,7 +397,6 @@ export default function PortfolioTabs(props: propsIF) {
         isCandleSelected: false,
         handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
-        tokenMap: tokenMap,
         setExpandTradeTable: setExpandTradeTable,
         setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
@@ -412,7 +404,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         expandTradeTable: false,

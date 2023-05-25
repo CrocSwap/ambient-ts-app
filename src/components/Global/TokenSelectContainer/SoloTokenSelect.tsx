@@ -9,9 +9,7 @@ import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
-import { ackTokensMethodsIF } from '../../../App/hooks/useAckTokens';
-// import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
-// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -19,13 +17,6 @@ interface propsIF {
     importedTokensPlus: TokenIF[];
     chainId: string;
     closeModal: () => void;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     outputTokens: TokenIF[];
@@ -41,7 +32,7 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    ackTokens: ackTokensMethodsIF;
+    tokens: tokenMethodsIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -50,7 +41,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         provider,
         chainId,
         closeModal,
-        verifyToken,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
         outputTokens,
@@ -63,7 +53,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         tokenPair,
-        ackTokens,
+        tokens,
     } = props;
 
     // add an event listener for custom functionalities on modal close
@@ -87,7 +77,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
-            ackTokens.acknowledge(tkn);
+            tokens.ackToken(tkn);
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -168,44 +158,58 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // hook to hold data for a token pulled from on-chain
     // null value is allowed to clear the hook when needed or on error
-    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    const [customToken, setCustomToken] = useState<TokenIF | null | 'querying'>(
+        null,
+    );
+    // Memoize the fetch contract details function
+    const cachedFetchContractDetails = useMemo(
+        () => memoizeFetchContractDetails(),
+        [],
+    );
+
+    // Gatekeeping to pull token data from on-chain query
+    // Runs hook when validated input or type of search changes
     useEffect(() => {
-        // gatekeeping to pull token data from on-chain query
-        // make sure a provider exists
-        // validated input must appear to be a valid contract address
-        // app must fail to find token in local data
+        // Ignore for modes outside address search
+        if (searchType !== 'address') {
+            setCustomToken(null);
+            return;
+        }
+
+        // If token address is on list, fill in immediately
         if (
             provider &&
             searchType === 'address' &&
-            !verifyToken(validatedInput, chainId)
+            tokens.getTokenByAddress(validatedInput)
         ) {
-            // local instance of function to pull back token data from chain
-            const cachedFetchContractDetails = memoizeFetchContractDetails();
-            // promise holding query to get token metadata from on-chain
-            const promise: Promise<TokenIF | undefined> =
-                cachedFetchContractDetails(provider, validatedInput, chainId);
-            // resolve the promise
-            Promise.resolve(promise)
-                // if response has a `decimals` value treat it as valid
-                .then(
-                    (res: TokenIF | undefined) =>
-                        res?.decimals && setCustomToken(res),
-                )
-                // error handling
-                .catch((err) => {
-                    // log error to console
-                    console.error(err);
-                    // set custom token as `null`
-                    setCustomToken(null);
-                });
-        } else {
-            // clear token data if conditions do not indicate necessity
             setCustomToken(null);
+            return;
         }
-        // run hook when validated input or type of search changes
-        // searchType is redundant but may be relevant in the future
-        // until then it does not hurt anything to put it there
-    }, [searchType, validatedInput]);
+
+        // Otherwise, query to get token metadata from on-chain
+        setCustomToken('querying');
+        cachedFetchContractDetails(
+            provider as ethers.providers.Provider,
+            validatedInput,
+            chainId,
+        )
+            .then((res) => {
+                // If response has a `decimals` value, treat it as valid
+                if (res?.decimals) {
+                    setCustomToken(res);
+                } else {
+                    // Handle error in a more meaningful way
+                    throw new Error(
+                        'Token metadata is invalid: ' + validatedInput,
+                    );
+                }
+            })
+            .catch((err) => {
+                // Handle error
+                console.error(`Failed to get token metadata: ${err.message}`);
+                setCustomToken(null);
+            });
+    }, [searchType, validatedInput, provider, cachedFetchContractDetails]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
@@ -222,7 +226,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (verifyToken(validatedInput, chainId)) {
+                if (tokens.verifyToken(validatedInput)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {

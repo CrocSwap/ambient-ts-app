@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useRef,
     useContext,
+    memo,
 } from 'react';
 
 import {
@@ -17,7 +18,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../utils/interfaces/exports';
 import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -40,13 +41,13 @@ import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { PositionUpdateFn } from '../../../App/functions/getPositionData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     account: string;
-    tokenList: TokenIF[];
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
@@ -54,7 +55,6 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -67,7 +67,6 @@ interface propsIF {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    searchableTokens: TokenIF[];
     handlePulseAnimation: (type: string) => void;
     changeState: (
         isOpen: boolean | undefined,
@@ -90,9 +89,11 @@ interface propsIF {
     ethMainnetUsdPrice: number | undefined;
     candleTime: candleTimeIF;
     cachedPositionUpdateQuery: PositionUpdateFn;
+    tokens: tokenMethodsIF;
+    showActiveMobileComponent?: boolean;
 }
 
-export default function TradeTabs2(props: propsIF) {
+function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
@@ -103,7 +104,6 @@ export default function TradeTabs2(props: propsIF) {
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
-        tokenMap,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -120,7 +120,6 @@ export default function TradeTabs2(props: propsIF) {
         setCurrentPositionActive,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        searchableTokens,
         handlePulseAnimation,
         changeState,
         selectedDate,
@@ -128,7 +127,6 @@ export default function TradeTabs2(props: propsIF) {
         hasInitialized,
         setHasInitialized,
         unselectCandle,
-        tokenList,
         poolPriceDisplay,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
@@ -139,7 +137,10 @@ export default function TradeTabs2(props: propsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         candleTime,
+        tokens,
+        showActiveMobileComponent,
     } = props;
+
     const {
         outsideTab: { selected: outsideTabSelected },
         outsideControl: {
@@ -300,7 +301,7 @@ export default function TradeTabs2(props: propsIF) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    tokenList: tokenList,
+                    tokenList: tokens.tokenUniv,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -334,7 +335,7 @@ export default function TradeTabs2(props: propsIF) {
     useEffect(() => {
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                tokenList: tokenList,
+                tokenList: tokens.tokenUniv,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -385,7 +386,6 @@ export default function TradeTabs2(props: propsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-        searchableTokens: searchableTokens,
         provider: provider,
         account: account,
         chainId: chainId,
@@ -404,16 +404,14 @@ export default function TradeTabs2(props: propsIF) {
         setSimpleRangeWidth: setSimpleRangeWidth,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
+        isAccountView: false,
     };
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
-        searchableTokens: searchableTokens,
         isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
-        tokenMap: tokenMap,
-        tokenList: tokenList,
         chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -435,7 +433,6 @@ export default function TradeTabs2(props: propsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        searchableTokens: searchableTokens,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
@@ -570,9 +567,7 @@ export default function TradeTabs2(props: propsIF) {
                     {isCandleSelected &&
                         candleTime.time === 86400 &&
                         selectedDate &&
-                        `Showing Transactions ${moment(
-                            new Date(selectedDate * 1000),
-                        )
+                        `Showing Transactions ${moment(new Date(selectedDate))
                             .subtract(utcDiffHours, 'hours')
                             .calendar(null, {
                                 sameDay: 'for [Today]',
@@ -600,7 +595,7 @@ export default function TradeTabs2(props: propsIF) {
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             {isCandleSelected ? selectedMessageContent : null}
-            {expandTradeTable && (
+            {(expandTradeTable || showActiveMobileComponent) && (
                 <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
             )}
             <TabComponent
@@ -615,3 +610,5 @@ export default function TradeTabs2(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeTabs2);

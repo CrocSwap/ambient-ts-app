@@ -19,6 +19,7 @@ const getPoolStatsFresh = async (
                 poolIdx: poolIdx.toString(),
                 addTotalVolume: 'true',
                 concise: 'true',
+                simpleCalc: 'true',
             }),
     )
         .then((response) => response.json())

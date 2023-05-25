@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
+import { useMediaQuery } from '@material-ui/core';
 interface RangeHeaderPropsIF {
     header: {
         name: string | JSX.Element;
@@ -18,7 +19,7 @@ interface RangeHeaderPropsIF {
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function RangeHeader(props: RangeHeaderPropsIF) {
+function RangeHeader(props: RangeHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
@@ -65,6 +66,10 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
     const activeSortStyle =
         sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
+    const fixedHeight = useMediaQuery('(max-width: 1900px)')
+        ? { height: 24 }
+        : {};
+
     return (
         <>
             {show && (
@@ -75,13 +80,15 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                     ${activeSortStyle}
                     ${alignRight && styles.align_right}
                     ${alignCenter && styles.align_center}
-
-
                     `}
                 >
-                    {name} {arrow}
+                    <p style={fixedHeight}>
+                        {name} {arrow}
+                    </p>
                 </li>
             )}
         </>
     );
 }
+
+export default memo(RangeHeader);

@@ -18,51 +18,84 @@
     border-left: 2px solid var(--text1);
 }
 
-.main_list_container {
-    /* width: 100%;
-      overflow: auto;
-      overflow-y: scroll;
-    max-height: 90%; */
+.main_list_container , .leaderboard{
     width: 100%;
-    max-height: 90%;
+  height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
-    /* padding: 0 8px; */
     position: relative;
 }
 
+.main_list_container {
+    display: grid;
+    overflow-y: hidden;
+    grid-template-rows: auto 1fr ;
+    }
+    
+    .main_list_expanded{
+        display: grid;
+        grid-template-rows: auto 1fr 70px;
+        overflow-y: hidden;
+    }
+
 .header {
-    /* background: var(--dark1); */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 1900px) {
+    .header {
+        height: 50px;
+    }
+}
+
+
+.table_content {
+    flex-grow: 1; /* Allow the content to grow and occupy remaining space */
+    overflow: auto; /* Enable scrolling for the content */
+}
+
 .footer {
+    background: var(--dark1);
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
-    position: absolute;
-    bottom: 0;
+
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
 }
+
+
+.footer_content{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+    width: 60%;
+
+  }
 /* width */
-.main_list_container::-webkit-scrollbar {
+.main_list_container::-webkit-scrollbar , .leaderboard::-webkit-scrollbar{
     width: 4px;
     height: 4px;
 }
 
 /* Track */
-.main_list_container::-webkit-scrollbar-track {
+.main_list_container::-webkit-scrollbar-track , .leaderboard::-webkit-scrollbar-track{
     border-radius: 100vh;
 }
 
 /* Handle */
-.main_list_container::-webkit-scrollbar-thumb {
+.main_list_container::-webkit-scrollbar-thumb, .leaderboard::-webkit-scrollbar-thumb {
     background: var(--title-gradient);
 }
+
 
 .header {
     position: sticky;
@@ -84,17 +117,19 @@
     background: var(--dark2);
 } */
 
-.row_container:hover {
-    background-color: var(--dark2);
-}
+
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-}
 
-.main_list_container ul {
+}
+.row_container li:not(:last-child){
+    cursor: pointer;
+}
+.main_list_container .row_container , .main_list_container .header,
+.leaderboard .row_container , .leaderboard .header{
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -102,18 +137,14 @@
     display: table;
 }
 
-.main_list_container ul > li {
+.main_list_container .row_container > li, .main_list_container .header > li,
+.leaderboard .row_container > li, .leaderboard .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
     width: 100%;
-
-    padding: 0.5em 0.4em;
     vertical-align: middle;
-}
-
-.base_color {
-    color: var(--text2);
+    padding: 0.2em 0.5em;
 }
 .mono_font {
     font-family: var(--roboto);
@@ -158,11 +189,11 @@
     border-radius: 50%;
     margin: 0 2px;
 }
-.main_list_container > ul:nth-child(1) {
+.main_list_container > ul:nth-child(1), .leaderboard > ul:nth-child(1) {
     z-index: 3;
 }
 
-.leaderboard > ul:nth-child(2) {
+.leaderboard  .row_container:nth-child(1) {
     background: linear-gradient(
         90deg,
         rgba(212, 175, 55, 0.65) 0%,
@@ -172,7 +203,7 @@
     transition: background 0.5s ease-out;
 }
 
-.leaderboard > ul:nth-child(3) {
+.leaderboard .row_container:nth-child(2) {
     background: linear-gradient(
         90deg,
         rgba(224, 224, 224, 0.35) 0%,
@@ -181,7 +212,7 @@
     );
     transition: background 0.5s ease-out;
 }
-.leaderboard > ul:nth-child(4) {
+.leaderboard  .row_container:nth-child(3) {
     background: linear-gradient(
         90deg,
         rgba(176, 141, 87, 0.35) 0%,
@@ -189,6 +220,7 @@
         rgba(255, 152, 56, 0) 100%
     );
     transition: background 0.5s ease-out;
+   
 }
 
 .align_right {
@@ -219,7 +251,11 @@
   .row_container:hover .menu{
     opacity: 1;
   } */
-
+  .showing_text{
+    font-size: 10px;
+    color: var(--text2);
+    white-space: nowrap;
+}
 .view_wallet_link {
     background: var(--dark2);
     width: 100%;
@@ -354,8 +390,26 @@
         font-size: 10px;
     }
 }
-@media only screen and (max-width: 1200px) {
-    .footer {
+@media only screen and (max-width: 800px) {
+    .main_list_expanded{
+        display: grid;
+        grid-template-rows: 40px 1fr 150px;
+        overflow-y: hidden;
+    
+    }
+
+    .leaderboard{
+        overflow-y: hidden;
+    }
+
+   
+    .footer_content {
+       width: 95%;
+       flex-direction: column;
+       gap: 4px;
+    }
+
+    .showing_text{
         display: none;
     }
 }

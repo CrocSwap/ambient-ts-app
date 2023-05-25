@@ -1,6 +1,7 @@
 .main_layout {
     transition: all var(--animation-speed) ease-in-out;
     border-top: 1px solid var(--dark2);
+
 }
 
 .middle_col,
@@ -14,12 +15,7 @@
     display: flex;
     flex-direction: column;
 }
-/* .left_col{
-    background-color: #151d27;
-    padding-bottom: 40rem;
-    display: flex;
-    justify-content: flex-end;
-} */
+
 
 .navigation_menu {
     width: 100%;
@@ -29,7 +25,6 @@
     align-items: center;
     gap: 0.5rem;
 
-    /* background: var(--dark2); */
     border-radius: var(--border-radius);
 }
 
@@ -66,16 +61,10 @@
     color: var(--text1);
 }
 
-/* .middle_col{
-    background-color:#171f2b;
-    
 
-
-} */
 .right_col {
     display: flex;
     flex-direction: column;
-    /* background-color: var(--dark1); */
     position: relative;
     background: url(../../assets/images/backgrounds/background.png) no-repeat
         center center;
@@ -107,21 +96,18 @@
 
 /* Switch buttons */
 .mobile_toggle_container {
-    /* width: 100%; */
 
-    /* display: none; */
     justify-content: center;
     align-items: center;
     flex-direction: row;
     background: var(--dark2);
     border-radius: 4px;
     outline: 1px solid var(--text3);
-    /* max-width: 200px; */
+
     margin: 10px auto;
 }
 .mobile_toggle_container button {
-    /* font-size: var(--body-size); */
-    /* line-height: var(--body-lh); */
+
     padding: 4px 1.5rem;
 
     cursor: pointer;
@@ -146,7 +132,6 @@
 .pool_not_initialialized_container {
     width: 100%;
     height: calc(100vh - 4rem);
-    /* background: var(--dark2); */
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     z-index: 999;
@@ -177,20 +162,7 @@
     justify-content: center;
     align-items: center;
 }
-/* .pool_not_initialialized_content::before {
-    content: "";
-    position: absolute;
-    border-radius: var(--border-radius);
 
-    inset: 0;
-    padding: 1px; 
-    background:var(--title-gradient); 
-    -webkit-mask: 
-       linear-gradient(white 0 0) content-box, 
-       linear-gradient(white 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude; 
-  } */
 
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
@@ -254,14 +226,7 @@
     color: var(--accent5);
 }
 
-/* .initialiaze_token_img img::before{
-    position: absolute;
-    background: black;
-    width: 100%;
-    height: 100%;
-    content: '';
 
-  } */
 
 /* trade tabs dropdown */
 .mobile_trades_dropdown {
@@ -318,7 +283,6 @@
     text-align: center;
     color: var(--text2);
     padding: 8px;
-    /* border-bottom: 1px solid var(--text3); */
     text-align: start;
 }
 .mobile_trade_dropdown_items_containers {
@@ -378,14 +342,10 @@
         overflow: auto;
     }
     .graph_style {
-        /* height: 70%; */
         width: 100%;
-        /* background: red; */
+   
     }
 
-    /* .trade_style {
-        height: 30%;
-    } */
 
     .hide_graph {
         display: none;
@@ -400,24 +360,27 @@
     .main_layout {
         display: grid;
         grid-template-columns: auto 380px;
-        /* grid-gap: 1em; */
+      
+
     }
     .middle_col {
         height: 100%;
 
-        padding: 0.5rem 0rem 0rem 0.5rem;
+        padding: 0.5rem 0 0.5rem 0.6rem;
+
+    
         background: var(--dark2);
 
         display: grid;
         grid-template-rows: auto 300px;
-        /* background: red; */
+     
         grid-gap: 8px;
         position: relative;
     }
 
     .right_col {
         background: var(--dark1);
-        /* background: transparent; */
+    
     }
 
     .middle_col,
@@ -426,10 +389,10 @@
     }
 
     .flex_column {
-        /* align-items: stretch; */
-        /* gap: 40px; */
+ 
         display: flex;
         flex-flow: column;
+      
     }
     @-moz-document url-prefix() {
         .middle_col {
@@ -458,17 +421,14 @@
         background: var(--dark2);
         position: fixed;
         width: 100%;
-        /* height: 100%; */
         height: calc(100% - 56px);
         left: 0;
         top: 56px;
         z-index: 10;
 
-        /* background-image: radial-gradient(circle,var(--dark2), var(--dark1) ); 
-        background-image: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );  */
+
         background: var(--dark2);
-        /* background:radial-gradient(circle at 3% 25%, rgb(1, 28, 56) 0%, rgba(4, 12, 24, 1) 25%); */
-        /* padding: 1rem; */
+
     }
 
     .full_table_height {
@@ -480,24 +440,7 @@
     }
 }
 
-@media only screen and (max-width: 1200px) {
-    /* COMMENTING OUT MIDDLE COL AND MAIN LAYOUT FIXES THE DISSAPEARING CHAT ISSUE BUT THIS DOESNT SOLVE THE LAYOUT ISSUE */
-    /* .middle_col {
-        width: 95%;
-        margin: 0 auto;
-    }
 
-    .main_layout {
-        display: flex;
-        flex-direction: column;
-    } */
-
-    /* .main_layout {
-        gap: 1rem;
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-    } */
-}
 
 @media only screen and (max-width: 1280px) {
     .middle_col {

@@ -7,13 +7,17 @@ export const calcImpact = async (
     buyTokenAddress: string,
     slippageTolerancePercentage: number,
     qty: string,
-): Promise<CrocImpact> => {
-    const impact = await (isQtySell
-        ? env.sell(sellTokenAddress, qty).for(buyTokenAddress, {
-              slippage: slippageTolerancePercentage,
-          }).impact
-        : env.buy(buyTokenAddress, qty).with(sellTokenAddress, {
-              slippage: slippageTolerancePercentage,
-          }).impact);
-    return impact;
+): Promise<CrocImpact | undefined> => {
+    try {
+        const args = { slippage: slippageTolerancePercentage };
+        const swapPlan = isQtySell
+            ? env.sell(sellTokenAddress, qty).for(buyTokenAddress, args)
+            : env.buy(buyTokenAddress, qty).with(sellTokenAddress, args);
+        return await swapPlan.impact;
+
+        // For valid pools, the impact calculation will fail only if liquidity
+        // in the pool is insufficient
+    } catch (e) {
+        return undefined;
+    }
 };

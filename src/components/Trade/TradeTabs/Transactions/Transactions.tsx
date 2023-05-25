@@ -5,7 +5,7 @@ import {
     CandleData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
@@ -17,19 +17,21 @@ import {
     useEffect,
     useRef,
     useContext,
+    memo,
 } from 'react';
 
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import Pagination from '../../../Global/Pagination/Pagination';
+import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -37,7 +39,6 @@ interface propsIF {
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -59,7 +60,7 @@ interface propsIF {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
-export default function Transactions(props: propsIF) {
+function Transactions(props: propsIF) {
     const {
         isTokenABase,
         activeAccountTransactionData,
@@ -82,6 +83,7 @@ export default function Transactions(props: propsIF) {
         setSimpleRangeWidth,
         isAccountView,
     } = props;
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
@@ -183,7 +185,7 @@ export default function Transactions(props: propsIF) {
         if (isOnPortfolioPage && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
         }
-    }, [isOnPortfolioPage, diffHashSig(activeAccountTransactionData)]);
+    }, [isOnPortfolioPage, diffHashSigTxs(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
@@ -198,7 +200,6 @@ export default function Transactions(props: propsIF) {
                         }),
                     );
                 }
-                // setIsDataLoading(false);
             } else if (isShowAllEnabled) {
                 handlePoolSelected();
             } else {
@@ -207,52 +208,25 @@ export default function Transactions(props: propsIF) {
         }
     }, [
         isOnPortfolioPage,
-
-        isCandleSelected
-            ? diffHashSig(changesInSelectedCandle)
-            : isShowAllEnabled
-            ? diffHashSig(changesByPoolWithoutFills)
-            : diffHashSig(changesByUserMatchingSelectedTokens),
+        isCandleSelected,
+        isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
+        changesByPoolWithoutFills.length,
+        changesByPoolWithoutFills.at(0)?.poolHash,
+        changesByUserMatchingSelectedTokens.length,
+        changesByUserMatchingSelectedTokens.at(0)?.user,
+        isShowAllEnabled,
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1400px)');
-    const max1700px = useMediaQuery('(max-width: 1700px)');
+    const max1400px = useMediaQuery('(max-width: 1600px)');
+    const max1700px = useMediaQuery('(max-width: 1800px)');
 
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
     const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
-
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { height } = useWindowDimensions();
-
-    const showColumnTransactionItems = showColumns
-        ? Math.round((height - (isAccountView ? 400 : 250)) / 50)
-        : Math.round((height - (isAccountView ? 400 : 250)) / 38);
-    const transactionsPerPage = showColumnTransactionItems;
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
-
     // Get current transactions
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction =
-        indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = sortedTransactions?.slice(
-        indexOfFirstTransaction,
-        indexOfLastTransaction,
-    );
-
-    // Change page
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -412,23 +386,71 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
-    const tradePageCheck = expandTradeTable && transactionData.length > 30;
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {transactionsPerPage > 0 &&
-                ((isAccountView && transactionData.length > 10) ||
-                    (!isAccountView && tradePageCheck)) && (
-                    <Pagination
-                        itemsPerPage={transactionsPerPage}
-                        totalItems={transactionData.length}
-                        paginate={paginate}
-                        currentPage={currentPage}
-                    />
-                )}
-        </div>
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
     );
 
-    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+    const count = Math.ceil(sortedTransactions.length / rowsPerPage);
+    const _DATA = usePagination(sortedTransactions, rowsPerPage);
+
+    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && transactionData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        value={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedTransactions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
+
+    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
             account={account}
             key={idx}
@@ -470,7 +492,6 @@ export default function Transactions(props: propsIF) {
             chainData={chainData}
         />
     ));
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -511,7 +532,9 @@ export default function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef} id='current_row_scroll'>
+                {currentRowItemContent}
+            </ul>
 
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
             {!expandTradeTable &&
@@ -532,28 +555,45 @@ export default function Transactions(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
+
+    const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
+        ? mobileView
+            ? 'calc(100vh - 15rem) '
+            : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
 
     return (
         <section
-            className={styles.main_list_container}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
             style={{ height: portfolioPageStyle }}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TransactionsSkeletons />
-            ) : (
-                transactionDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {debouncedShouldDisplayLoadingAnimation ? (
+                    <TransactionsSkeletons />
+                ) : (
+                    transactionDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
+
+export default memo(Transactions);

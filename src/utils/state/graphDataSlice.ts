@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IS_LOCAL_ENV } from '../../constants';
+import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
@@ -11,12 +12,20 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData: LiquidityData;
+    liquidityData?: LiquidityData;
+    liquidityRequest?: PoolRequestParams;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
+}
+
+export interface PoolRequestParams {
+    baseAddress: string;
+    quoteAddress: string;
+    poolIndex: number;
+    chainId: string;
 }
 
 export interface DataLoadingStatus {
@@ -107,20 +116,18 @@ export interface VolumeByTimeData {
     method: string;
 }
 
-// export interface LiquidityForAllPools {
-//     pools: Array<LiquidityByPool>;
-// }
-
 export interface LiquidityData {
     time: number;
     currentTick: number;
     ranges: Array<Range>;
+    curveState: {
+        base: string;
+        quote: string;
+        poolIdx: number;
+        chainId: string;
+        network: string; // Backend network label - NOT same as chainId
+    };
 }
-
-// export interface LiquidityByPool {
-//     pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
-//     liquidityData: liquidityData;
-// }
 
 export interface Range {
     lowerBound: number | string;
@@ -259,7 +266,8 @@ const initialState: graphData = {
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
-    liquidityData: { time: 0, currentTick: 0, ranges: [] },
+    liquidityData: undefined,
+    liquidityRequest: undefined,
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
@@ -275,6 +283,11 @@ const initialState: graphData = {
         isCandleDataLoading: true,
     },
 };
+
+function normalizeAddr(addr: string): string {
+    const caseAddr = addr.toLowerCase();
+    return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
+}
 
 export const graphDataSlice = createSlice({
     name: 'graphData',
@@ -408,8 +421,6 @@ export const graphDataSlice = createSlice({
             state,
             action: PayloadAction<Array<TransactionIF>>,
         ) => {
-            // const payload = action.payload;
-            // console.log({ payload });
             const newChangesArray: Array<TransactionIF> = [];
 
             for (let index = 0; index < action.payload.length; index++) {
@@ -503,11 +514,43 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
-            // console.log('pool found in RTK for new liquidity data');
 
-            state.liquidityData = action.payload;
+        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
+            // Sanitize the raw result from the backend
+            const curve = action.payload.curveState;
+            const base = normalizeAddr(curve.base);
+            const quote = normalizeAddr(curve.quote);
+            const chainId = backendNetworkToChainId(curve.network);
+
+            // Verify that the result matches the current request in case multiple are in-flight
+            if (
+                state.liquidityRequest?.baseAddress.toLowerCase() === base &&
+                state.liquidityRequest?.quoteAddress.toLowerCase() === quote &&
+                state.liquidityRequest?.poolIndex === curve.poolIdx &&
+                state.liquidityRequest?.chainId === chainId
+            ) {
+                state.liquidityData = action.payload;
+                state.liquidityData.curveState.base = base;
+                state.liquidityData.curveState.quote = quote;
+                state.liquidityData.curveState.chainId = chainId;
+            } else {
+                console.warn(
+                    'Discarding mismatched liquidity curve request',
+                    base,
+                    quote,
+                    chainId,
+                );
+            }
         },
+
+        setLiquidityPending: (
+            state,
+            action: PayloadAction<PoolRequestParams>,
+        ) => {
+            state.liquidityData = undefined;
+            state.liquidityRequest = action.payload;
+        },
+
         setCandles: (
             state,
             action: PayloadAction<CandlesByPoolAndDuration>,
@@ -519,8 +562,6 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (indexOfPool === -1) {
-                // console.log('pool not found in RTK for new candle data');
-
                 state.candlesForAllPools.pools =
                     state.candlesForAllPools.pools.concat({
                         pool: action.payload.pool,
@@ -534,7 +575,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, check if duration exists
             } else {
-                // console.log('pool found in RTK for new candle data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -557,7 +597,6 @@ export const graphDataSlice = createSlice({
                         },
                     ]);
                 } else {
-                    // console.log('duration found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration[indexOfDuration] = {
@@ -566,7 +605,6 @@ export const graphDataSlice = createSlice({
                         candles: action.payload.candles,
                     };
                 }
-                // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
         addCandles: (
@@ -598,7 +636,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, replace candles for pool if different
             } else {
-                // console.log('pool found in RTK for new candle subscription data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -607,7 +644,6 @@ export const graphDataSlice = createSlice({
                     .findIndex((duration) => duration === durationToFind);
 
                 if (indexOfDuration === -1) {
-                    // console.log('duration not found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration = state.candlesForAllPools.pools[
@@ -635,7 +671,6 @@ export const graphDataSlice = createSlice({
 
                     // if new candle data not already in RTK, add
                     if (indexOfDuplicate === -1) {
-                        // console.log('no duplicate found, adding');
                         state.candlesForAllPools.pools[
                             indexOfPool
                         ].candlesByPoolAndDuration[indexOfDuration].candles =
@@ -704,13 +739,6 @@ export const graphDataSlice = createSlice({
             state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
             state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
             state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserTxDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isPoolTxDataLoading = true;
-            // state.dataLoadingStatus.isPoolOrderDataLoading = true;
-            // state.dataLoadingStatus.isPoolRangeDataLoading = true;
-            // state.dataLoadingStatus.isCandleDataLoading = true;
         },
         resetLookupUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isLookupUserTxDataLoading = true;
@@ -738,6 +766,7 @@ export const {
     setPoolVolumeSeries,
     setPoolTvlSeries,
     setLiquidity,
+    setLiquidityPending,
     setCandles,
     addCandles,
     setLimitOrdersByUser,

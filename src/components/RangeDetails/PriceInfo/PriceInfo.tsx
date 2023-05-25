@@ -64,12 +64,12 @@ export default function PriceInfo(props: IPriceInfoProps) {
     const baseTokenLogoDisplay = baseTokenLogoURI ? (
         <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
     ) : (
-        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={baseTokenSymbol?.charAt(0)} width='15px' />
     );
     const quoteTokenLogoDisplay = quoteTokenLogoURI ? (
         <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
     ) : (
-        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={quoteTokenSymbol?.charAt(0)} width='15px' />
     );
 
     const totalValue = (

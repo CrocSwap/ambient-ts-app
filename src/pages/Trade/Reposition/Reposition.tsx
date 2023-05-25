@@ -6,6 +6,7 @@ import {
     useEffect,
     useMemo,
     useState,
+    memo,
 } from 'react';
 import {
     useLocation,
@@ -55,11 +56,11 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
+import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -76,15 +77,14 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
     chainData: ChainSpec;
+    tokens: tokenMethodsIF;
 }
 
-export default function Reposition(props: propsIF) {
+function Reposition(props: propsIF) {
     const {
         isDenomBase,
         ambientApy,
         dailyVol,
-        provider,
-        chainId,
         isPairStable,
         tokenPair,
         poolPriceDisplay,
@@ -125,7 +125,6 @@ export default function Reposition(props: propsIF) {
     // const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    useUrlParams(chainId, provider);
 
     // redirect path to use in this module
     // will try to preserve current params, will use default path otherwise
@@ -486,7 +485,6 @@ export default function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqBaseDisplay });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
                 const liqQuoteDisplay = liqQuoteNum
@@ -500,7 +498,6 @@ export default function Reposition(props: propsIF) {
                               maximumFractionDigits: 2,
                           })
                     : undefined;
-                // console.log({ liqQuoteDisplay });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);
@@ -845,3 +842,5 @@ export default function Reposition(props: propsIF) {
         </div>
     );
 }
+
+export default memo(Reposition);

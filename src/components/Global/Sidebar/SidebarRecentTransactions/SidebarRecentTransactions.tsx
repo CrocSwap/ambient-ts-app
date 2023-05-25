@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
@@ -12,14 +12,9 @@ import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
-    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
-    currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
 }
 
@@ -46,6 +41,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 0 : 0;
 
+    // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
         navigate('/account');

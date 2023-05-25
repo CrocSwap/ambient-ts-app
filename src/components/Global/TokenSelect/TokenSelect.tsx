@@ -53,13 +53,13 @@ export default function TokenSelect(props: propsIF) {
                             {token.logoURI ? (
                                 <img
                                     src={uriToHttp(token.logoURI)}
-                                    alt={token.symbol.charAt(0)}
+                                    alt={token.symbol?.charAt(0)}
                                     // alt={`logo for token ${token.name}`}
                                     width='27px'
                                 />
                             ) : (
                                 <NoTokenIcon
-                                    tokenInitial={token.symbol.charAt(0)}
+                                    tokenInitial={token.symbol?.charAt(0)}
                                     width='27px'
                                 />
                             )}
@@ -92,7 +92,6 @@ export default function TokenSelect(props: propsIF) {
                     <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
             </button>
-            {/* <p className={styles.token_list_data}>{fromListsText}</p> */}
         </>
     );
 }

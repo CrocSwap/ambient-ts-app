@@ -30,6 +30,7 @@ import {
     setIsLinesSwitched,
     // setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
+    candleScale,
 } from '../../utils/state/tradeDataSlice';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -52,7 +53,10 @@ import { correctStyleForData } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigChart,
+} from '../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 
@@ -78,7 +82,7 @@ declare global {
 
 type crosshair = {
     x: number | Date;
-    y: number;
+    y: number | string;
 };
 type chartItemStates = {
     showTvl: boolean;
@@ -164,6 +168,8 @@ interface propsIF {
     chartTriggeredBy: string;
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDuration;
+    prevPeriod: number;
+    candleTimeInSeconds: number;
 }
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
@@ -221,6 +227,8 @@ export default function Chart(props: propsIF) {
         setChartTriggeredBy,
         chartTriggeredBy,
         unparsedData,
+        prevPeriod,
+        candleTimeInSeconds,
         // candleTime,
     } = props;
 
@@ -239,6 +247,7 @@ export default function Chart(props: propsIF) {
 
     const {
         candleDomains: { setValue: setCandleDomains },
+        candleScale: { setValue: setCandleScale },
     } = useContext(CandleContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -251,6 +260,12 @@ export default function Chart(props: propsIF) {
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
+
+    const liqAskColor = 'rgba(205, 193, 255, 0.3)';
+    const liqBidColor = 'rgba(115, 113, 252, 0.3)';
+
+    const lineSellColor = 'rgba(115, 113, 252)';
+    const lineBuyColor = 'rgba(205, 193, 255)';
 
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
 
@@ -293,6 +308,41 @@ export default function Chart(props: propsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const [limitTriangleData, setLimitTriangleData] = useState([
+        {
+            value: 0,
+        },
+    ]);
+
+    const [rangeTriangleData, setRangeTriangleData] = useState([
+        {
+            value: 0,
+        },
+        {
+            value: 0,
+        },
+    ]);
+
+    const setTriangleRangeValues = (max: number, min: number) => {
+        setRangeTriangleData((prevState) => {
+            const newData = [...prevState];
+            const maxPrice = max !== undefined ? max : 0;
+            const minPrice = min !== undefined ? min : 0;
+            newData[0].value = maxPrice;
+            newData[1].value = minPrice;
+            return newData;
+        });
+    };
+
+    const setTriangleLimitValues = (limit: any) => {
+        setLimitTriangleData((prevState) => {
+            const newData = [...prevState];
+            newData[0].value = limit;
+            return newData;
+        });
+    };
+
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -311,60 +361,10 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // const [limitTriangleData, setLimitTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
-    // const [rangeTriangleData, setRangeTriangleData] = useState([
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    //     {
-    //         value: 0,
-    //         time: 0,
-    //     },
-    // ]);
-
     const [market, setMarket] = useState([
         {
             name: 'Market Value',
             value: 0,
-        },
-    ]);
-
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
-    const [subChartValues, setsubChartValues] = useState([
-        {
-            name: 'feeRate',
-            value: lastCandleData?.averageLiquidityFee,
-        },
-        {
-            name: 'tvl',
-            value: lastCandleData?.tvlData.tvl,
-        },
-        {
-            name: 'volume',
-            value: undefined,
         },
     ]);
 
@@ -403,6 +403,25 @@ export default function Chart(props: propsIF) {
 
     // d3
 
+    const lastCandleData = unparsedCandleData.find(
+        (item: any) =>
+            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
+    );
+
+    const [subChartValues, setsubChartValues] = useState([
+        {
+            name: 'feeRate',
+            value: lastCandleData?.averageLiquidityFee,
+        },
+        {
+            name: 'tvl',
+            value: lastCandleData?.tvlData.tvl,
+        },
+        {
+            name: 'volume',
+            value: undefined,
+        },
+    ]);
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -475,46 +494,20 @@ export default function Chart(props: propsIF) {
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
-
     const [yAxisLabels] = useState<yLabel[]>([]);
 
-    // Subcharts
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+    const isScientific = poolPriceNonDisplay
+        ? poolPriceNonDisplay.toString().includes('e')
+        : false;
+
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
-
-    // const setTriangleRangeValues = (max: number, min: number) => {
-    //     setRangeTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         const maxPrice = max !== undefined ? max : 0;
-    //         const minPrice = min !== undefined ? min : 0;
-
-    //         newData[0].value = maxPrice;
-    //         newData[1].value = maxPrice;
-    //         newData[2].value = minPrice;
-    //         newData[3].value = minPrice;
-
-    //         return newData;
-    //     });
-    // };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const setTriangleLimitValues = (limit: any) => {
-    //     setLimitTriangleData((prevState) => {
-    //         const newData = [...prevState];
-
-    //         newData[0].value = limit;
-    //         newData[1].value = limit;
-
-    //         return newData;
-    //     });
-    // };
 
     useEffect(() => {
         if (
@@ -541,7 +534,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, minPrice);
+            setTriangleRangeValues(maxPrice, minPrice);
         }
     }, [minPrice, maxPrice, isAdvancedModeActive]);
 
@@ -672,7 +665,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, 0);
+            setTriangleRangeValues(maxPrice, 0);
 
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
@@ -684,7 +677,8 @@ export default function Chart(props: propsIF) {
         setRescale(true);
     }, [denomInBase]);
 
-    const render = useCallback(() => {
+    const render = useCallback((caller: number) => {
+        console.log(caller);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
@@ -720,13 +714,12 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        render();
+        render(1);
         renderCanvas();
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        unparsedCandleData.length,
-        unparsedCandleData[0]?.time,
+        diffHashSigChart(unparsedCandleData),
         firstCandle,
     ]);
 
@@ -964,32 +957,78 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getNewCandleData = (newBoundary: any, candleDate: any) => {
-        if (newBoundary < candleDate) {
-            const filtered = unparsedCandleData.filter(
-                (data: CandleData) => data.time !== undefined,
+    useEffect(() => {
+        if (scaleData) {
+            const xDomain = scaleData?.xScale.domain();
+            const isFutureDay =
+                new Date(xDomain[1]).getTime() > new Date().getTime();
+
+            let domainMax = isFutureDay
+                ? new Date().getTime()
+                : new Date(xDomain[1]).getTime();
+
+            const nCandle = Math.floor(
+                (xDomain[1] - xDomain[0]) / (period * 1000),
             );
 
-            if (filtered) {
-                const maxBoundary: number | undefined =
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    d3.min(filtered, (d: any) => d.time) * 1000 -
-                    200 * period * 1000;
+            const minDate = 1657868400; // 15 July 2022
 
-                const newLastCandle = newBoundary - 100 * period * 1000;
+            domainMax = domainMax < minDate ? minDate : domainMax;
 
-                const finalData =
-                    maxBoundary < newLastCandle ? maxBoundary : newLastCandle;
+            setCandleScale((prev: candleScale) => {
+                return {
+                    isFetchForTimeframe: prev.isFetchForTimeframe,
+                    lastCandleDate: Math.floor(domainMax / 1000),
+                    nCandle: nCandle,
+                };
+            });
+        }
+    }, [diffHashSig(scaleData?.xScale.domain())]);
 
-                const lastCandleDate = d3.min(filtered, (d) => d.time * 1000);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getNewCandleData = (
+        newBoundary: any,
+        candleDate: any,
+        isZoomRight = true,
+    ) => {
+        const filtered = unparsedCandleData.filter(
+            (data: CandleData) => data.time !== undefined,
+        );
+        if (filtered) {
+            if (isZoomRight) {
+                if (newBoundary < candleDate) {
+                    const maxBoundary: number | undefined =
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        d3.min(filtered, (d: any) => d.time) * 1000 -
+                        200 * period * 1000;
 
+                    const newLastCandle = newBoundary - 100 * period * 1000;
+
+                    const finalData =
+                        maxBoundary < newLastCandle
+                            ? maxBoundary
+                            : newLastCandle;
+
+                    const lastCandleDate = d3.min(
+                        filtered,
+                        (d) => d.time * 1000,
+                    );
+
+                    const candleDomain = {
+                        lastCandleDate:
+                            lastCandleDate !== undefined
+                                ? lastCandleDate
+                                : filtered[0].time * 1000,
+                        domainBoundry: finalData,
+                    };
+
+                    setCandleDomains(candleDomain);
+                }
+            } else {
+                const lastCandleDate = d3.max(filtered, (d) => d.time * 1000);
                 const candleDomain = {
-                    lastCandleDate:
-                        lastCandleDate !== undefined
-                            ? lastCandleDate
-                            : filtered[0].time * 1000,
-                    domainBoundry: finalData,
+                    lastCandleDate: new Date().getTime(),
+                    domainBoundry: lastCandleDate,
                 };
 
                 setCandleDomains(candleDomain);
@@ -1019,11 +1058,14 @@ export default function Chart(props: propsIF) {
                     domainX: any,
                     deltaX: number,
                     offsetX: number,
+                    zoomCandle: undefined | number = undefined,
                 ) => {
-                    const gapTop =
-                        domainX[1] - scaleData?.xScale.invert(offsetX);
-                    const gapBot =
-                        scaleData?.xScale.invert(offsetX) - domainX[0];
+                    const point = zoomCandle
+                        ? zoomCandle
+                        : scaleData?.xScale.invert(offsetX);
+
+                    const gapTop = domainX[1] - point;
+                    const gapBot = point - domainX[0];
 
                     const minGap = Math.min(gapTop, gapBot);
                     const maxGap = Math.max(gapTop, gapBot);
@@ -1291,71 +1333,72 @@ export default function Chart(props: propsIF) {
                                 ) {
                                     const newBoundary = domainX[0] - deltaX;
 
-                                    const lastXIndex =
-                                        unparsedCandleData.findIndex(
-                                            (d: CandleData) =>
-                                                d.time ===
-                                                d3.max(
-                                                    unparsedCandleData,
-                                                    (d: CandleData) => d.time,
-                                                ),
-                                        );
+                                    const lastXIndex = d3.maxIndex(
+                                        unparsedCandleData,
+                                        (d: CandleData) => d.time,
+                                    );
 
                                     if (
                                         newBoundary >
-                                        unparsedCandleData[lastXIndex].time *
-                                            1000 -
-                                            period * 1000 * 2
-                                    ) {
-                                        const leftBoudnary =
-                                            unparsedCandleData[lastXIndex + 1]
+                                            unparsedCandleData[lastXIndex]
                                                 .time *
                                                 1000 -
-                                            period * 1000 * 5;
-                                        getNewCandleData(
-                                            leftBoudnary,
-                                            lastCandleDate,
-                                        );
-                                        scaleData?.xScale.domain([
-                                            leftBoudnary,
-                                            lastTime + deltaX,
-                                        ]);
+                                                period * 1000 * 2 &&
+                                        deltaX < 0
+                                    ) {
+                                        return;
                                     } else {
                                         getNewCandleData(
                                             newBoundary,
                                             lastCandleDate,
                                         );
 
-                                        if (
-                                            lastCandleTime <= lastTime &&
-                                            deltaX < 0
-                                        ) {
-                                            changeCandleSize(
-                                                domainX,
-                                                deltaX,
-                                                event.sourceEvent.offsetX,
-                                            );
-                                        } else {
-                                            if (deltaX > 0) {
+                                        if (deltaX > 0) {
+                                            if (
+                                                lastTime >
+                                                lastCandleTime * 1000
+                                            ) {
+                                                changeCandleSize(
+                                                    domainX,
+                                                    deltaX,
+                                                    event.sourceEvent.offsetX,
+                                                    lastCandleTime * 1000,
+                                                );
+                                            } else {
                                                 scaleData?.xScale.domain([
                                                     newBoundary,
                                                     lastTime,
                                                 ]);
-                                            } else {
+                                            }
+                                        } else {
+                                            if (
+                                                firstCandleTime * 1000 <
+                                                lastTime
+                                            ) {
                                                 if (
-                                                    firstCandleTime < lastTime
+                                                    lastCandleTime * 1000 <=
+                                                        lastTime &&
+                                                    deltaX < 0
                                                 ) {
+                                                    changeCandleSize(
+                                                        domainX,
+                                                        deltaX,
+                                                        event.sourceEvent
+                                                            .offsetX,
+                                                        lastCandleTime * 1000,
+                                                    );
+                                                } else {
                                                     scaleData?.xScale.domain([
                                                         firstTime -
                                                             deltaX * 1.3,
                                                         lastTime,
                                                     ]);
-                                                } else {
-                                                    scaleData?.xScale.domain([
-                                                        firstTime,
-                                                        lastTime - deltaX,
-                                                    ]);
                                                 }
+                                            } else {
+                                                scaleData?.xScale.domain([
+                                                    firstTime,
+                                                    lastTime - deltaX,
+                                                ]);
                                             }
                                         }
                                     }
@@ -1501,10 +1544,24 @@ export default function Chart(props: propsIF) {
                                     }
 
                                     if (deltaX) {
-                                        getNewCandleData(
-                                            domainX[0] + deltaX,
-                                            lastCandleDate,
-                                        );
+                                        if (deltaX < 0) {
+                                            getNewCandleData(
+                                                domainX[0] + deltaX,
+                                                lastCandleDate,
+                                            );
+                                        } else {
+                                            const maxCandleDate = d3.max(
+                                                filteredTime,
+                                                (d) => d.time * 1000,
+                                            );
+                                            if (maxCandleDate) {
+                                                getNewCandleData(
+                                                    maxCandleDate + deltaX,
+                                                    maxCandleDate,
+                                                    false,
+                                                );
+                                            }
+                                        }
                                         scaleData?.xScale.domain([
                                             domainX[0] + deltaX,
                                             domainX[1] + deltaX,
@@ -1609,7 +1666,7 @@ export default function Chart(props: propsIF) {
                                 if (candlestick) {
                                     setBandwidth(candlestick.bandwidth());
                                 }
-                                render();
+                                render(2);
                                 renderCanvas();
 
                                 setZoomAndYdragControl(event);
@@ -1638,6 +1695,11 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent &&
                             event.sourceEvent.type != 'wheel'
                         ) {
+                            d3.select(d3CanvasMarketLine.current).style(
+                                'cursor',
+                                'pointer',
+                            );
+
                             d3.select(d3Container.current).style(
                                 'cursor',
                                 'default',
@@ -1880,7 +1942,7 @@ export default function Chart(props: propsIF) {
                         });
 
                         setMarketLineValue();
-                        render();
+                        render(3);
                     })
                     .filter((event) => {
                         const isWheel = event.type === 'wheel';
@@ -1985,7 +2047,7 @@ export default function Chart(props: propsIF) {
                         rescaleYAxis();
 
                         setBandwidth(candlestick.bandwidth());
-                        render();
+                        render(4);
                         renderCanvas();
 
                         setZoomAndYdragControl(event);
@@ -2039,7 +2101,7 @@ export default function Chart(props: propsIF) {
         candlestick,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
-        diffHashSig(showLatest),
+        showLatest,
         liquidityData?.liqBidData,
         simpleRangeWidth,
         ranges,
@@ -2185,8 +2247,8 @@ export default function Chart(props: propsIF) {
 
     const setMarketLineValue = () => {
         const lastCandlePrice = denomInBase
-            ? unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected
-            : unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected;
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
 
         setMarket(() => {
             return [
@@ -2200,7 +2262,7 @@ export default function Chart(props: propsIF) {
 
     const findLiqNearest = (liqDataAll: any[]) => {
         if (scaleData !== undefined) {
-            const point = scaleData?.yScale(scaleData?.yScale.domain()[0]);
+            const point = scaleData?.yScale.domain()[0];
 
             if (point == undefined) return 0;
             if (liqDataAll) {
@@ -2290,7 +2352,7 @@ export default function Chart(props: propsIF) {
                     value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
-            // setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
+            setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
         });
     };
 
@@ -2309,7 +2371,7 @@ export default function Chart(props: propsIF) {
             return newTargets;
         });
 
-        // setTriangleRangeValues(maxPrice, minPrice);
+        setTriangleRangeValues(maxPrice, minPrice);
     }, [denomInBase]);
 
     useEffect(() => {
@@ -2347,23 +2409,29 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     parseFloat(pinnedMaxPriceDisplayTruncated),
-                //     parseFloat(pinnedMinPriceDisplayTruncated),
-                // );
+                setTriangleRangeValues(
+                    parseFloat(pinnedMaxPriceDisplayTruncated),
+                    parseFloat(pinnedMinPriceDisplayTruncated),
+                );
             } else if (
                 simpleRangeWidth === 100 ||
                 rescaleRangeBoundariesWithSlider
@@ -2384,7 +2452,7 @@ export default function Chart(props: propsIF) {
 
                         setLiqHighlightedLinesAndArea(newTargets);
 
-                        // setTriangleRangeValues(maxPrice, minPrice);
+                        setTriangleRangeValues(maxPrice, minPrice);
 
                         if (
                             poolPriceDisplay !== undefined &&
@@ -2461,37 +2529,44 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                          ) || 0.0;
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value =
-                        parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        ) || 0.0;
+                    )[0].value = isScientific
+                        ? Number(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                          )
+                        : parseFloat(
+                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                          ) || 0.0;
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     parseFloat(
-                //         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                //     ),
-                //     parseFloat(
-                //         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                //     ),
-                // );
+                setTriangleRangeValues(
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    ),
+                    parseFloat(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    ),
+                );
             }
         }
     };
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
+            // to:do fix for scientific AdvancedPepe
             setRanges(() => {
                 const newTargets = [
                     {
@@ -2509,7 +2584,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
 
-            // setTriangleRangeValues(maxPrice, minPrice);
+            setTriangleRangeValues(maxPrice, minPrice);
 
             setChartTriggeredBy('none');
         }
@@ -2819,12 +2894,12 @@ export default function Chart(props: propsIF) {
                                         rangeWidthPercentage,
                                     );
 
+                                    setTriangleRangeValues(
+                                        liquidityData?.topBoundary,
+                                        minValue,
+                                    );
                                     return newTargets;
                                 });
-                                // setTriangleRangeValues(
-                                //     liquidityData?.topBoundary,
-                                //     minValue,
-                                // );
                             } else {
                                 if (lineToBeSet === 'Max') {
                                     const pinnedTick =
@@ -2904,11 +2979,19 @@ export default function Chart(props: propsIF) {
                                 const rangesF = [
                                     {
                                         name: 'Min',
-                                        value: pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                     },
                                     {
                                         name: 'Max',
-                                        value: pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        value: isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                                     },
                                 ];
 
@@ -2925,26 +3008,34 @@ export default function Chart(props: propsIF) {
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Min',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                              );
 
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Max',
-                                        )[0].value = parseFloat(
-                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        );
+                                        )[0].value = isScientific
+                                            ? Number(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                                              )
+                                            : parseFloat(
+                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                              );
 
                                         newRangeValue = newTargets;
 
                                         return newTargets;
                                     });
 
-                                    // setTriangleRangeValues(
-                                    //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                    //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                    // );
+                                    setTriangleRangeValues(
+                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                    );
                                 }
                             }
                         } else {
@@ -2999,7 +3090,7 @@ export default function Chart(props: propsIF) {
                                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                                 );
                             }
-
+                            // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
@@ -3053,14 +3144,14 @@ export default function Chart(props: propsIF) {
 
                                 setLiqHighlightedLinesAndArea(newTargets);
 
-                                // const minPrice = newTargets.filter(
-                                //     (target: any) => target.name === 'Min',
-                                // )[0].value;
-                                // const maxPrice = newTargets.filter(
-                                //     (target: any) => target.name === 'Max',
-                                // )[0].value;
+                                const minPrice = newTargets.filter(
+                                    (target: any) => target.name === 'Min',
+                                )[0].value;
+                                const maxPrice = newTargets.filter(
+                                    (target: any) => target.name === 'Max',
+                                )[0].value;
 
-                                // setTriangleRangeValues(maxPrice, minPrice);
+                                setTriangleRangeValues(maxPrice, minPrice);
                                 return newTargets;
                             });
                         }
@@ -3079,6 +3170,10 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
+                            setTriangleRangeValues(
+                                oldRangeMaxValue,
+                                oldRangeMinValue,
+                            );
 
                             setHorizontalBandData([
                                 [
@@ -3109,12 +3204,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: Number(
-                                formatAmountChartData(
-                                    scaleData?.yScale.invert(
-                                        event.sourceEvent.layerY,
-                                    ),
-                                ),
+                            y: scaleData?.yScale.invert(
+                                event.sourceEvent.layerY,
                             ),
                         },
                     ]);
@@ -3159,6 +3250,11 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
+
+                            setTriangleRangeValues(
+                                oldRangeMaxValue,
+                                oldRangeMinValue,
+                            );
 
                             setHorizontalBandData([
                                 [
@@ -3260,28 +3356,42 @@ export default function Chart(props: propsIF) {
                                     const displayPriceWithDenom = denomInBase
                                         ? tp
                                         : 1 / tp;
-                                    const limitRateTruncated =
-                                        displayPriceWithDenom < 2
-                                            ? displayPriceWithDenom.toLocaleString(
-                                                  undefined,
-                                                  {
-                                                      minimumFractionDigits: 2,
-                                                      maximumFractionDigits: 6,
-                                                  },
-                                              )
-                                            : displayPriceWithDenom.toLocaleString(
-                                                  undefined,
-                                                  {
-                                                      minimumFractionDigits: 2,
-                                                      maximumFractionDigits: 2,
-                                                  },
-                                              );
 
-                                    const limitValue = parseFloat(
-                                        limitRateTruncated.replace(',', ''),
-                                    );
+                                    if (
+                                        displayPriceWithDenom
+                                            .toString()
+                                            .includes('e')
+                                    ) {
+                                        newLimitValue = displayPriceWithDenom;
+                                    } else {
+                                        const limitRateTruncated =
+                                            displayPriceWithDenom < 0.0001
+                                                ? displayPriceWithDenom.toExponential(
+                                                      2,
+                                                  )
+                                                : displayPriceWithDenom < 2
+                                                ? displayPriceWithDenom.toLocaleString(
+                                                      undefined,
+                                                      {
+                                                          minimumFractionDigits: 2,
+                                                          maximumFractionDigits: 6,
+                                                      },
+                                                  )
+                                                : displayPriceWithDenom.toLocaleString(
+                                                      undefined,
+                                                      {
+                                                          minimumFractionDigits: 2,
+                                                          maximumFractionDigits: 2,
+                                                      },
+                                                  );
 
-                                    newLimitValue = limitValue;
+                                        const limitValue = parseFloat(
+                                            limitRateTruncated.replace(',', ''),
+                                        );
+
+                                        newLimitValue = limitValue;
+                                    }
+
                                     if (
                                         !(
                                             newLimitValue >= noGoZoneMin &&
@@ -3292,11 +3402,11 @@ export default function Chart(props: propsIF) {
                                             return [
                                                 {
                                                     name: 'Limit',
-                                                    value: limitValue,
+                                                    value: newLimitValue,
                                                 },
                                             ];
                                         });
-                                        // setTriangleLimitValues(limitValue);
+                                        setTriangleLimitValues(newLimitValue);
                                     }
                                 });
                             }
@@ -3311,6 +3421,7 @@ export default function Chart(props: propsIF) {
                                     },
                                 ];
                             });
+                            setTriangleLimitValues(oldLimitValue);
                         }
                     }
                 })
@@ -3321,12 +3432,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: Number(
-                                formatAmountChartData(
-                                    scaleData?.yScale.invert(
-                                        event.sourceEvent.layerY,
-                                    ),
-                                ),
+                            y: scaleData?.yScale.invert(
+                                event.sourceEvent.layerY,
                             ),
                         },
                     ]);
@@ -3407,6 +3514,7 @@ export default function Chart(props: propsIF) {
                                 ];
                             });
                         }
+                        setTriangleLimitValues(oldLimitValue);
                     }
 
                     d3.select(d3CanvasLimitLine.current).style(
@@ -3444,6 +3552,10 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
+
+        if (reset) {
+            getNewCandleData(undefined, undefined, false);
+        }
     }, [reset]);
 
     // Axis's
@@ -3521,6 +3633,7 @@ export default function Chart(props: propsIF) {
         checkLimitOrder,
         location,
         d3CanvasCrosshair,
+        crosshairActive,
     ]);
 
     function createRectLabel(
@@ -3532,6 +3645,7 @@ export default function Chart(props: propsIF) {
         text: string,
         stroke: string | undefined = undefined,
         yAxisWidth: any = 70,
+        subString: number | undefined = undefined,
     ) {
         const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
@@ -3541,7 +3655,24 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'left';
         context.textBaseline = 'middle';
-        context.fillText(text, x, y + 2);
+
+        if (subString) {
+            const textXAxisLength = x + context.measureText('0.0').width;
+
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
+
+            context.fillText('0.0', x, y);
+            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                text,
+                textXAxisLength + context.measureText(subString).width,
+                y,
+            );
+        } else {
+            context.fillText(text, x, y + 2);
+        }
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
@@ -3564,6 +3695,10 @@ export default function Chart(props: propsIF) {
             d3.select(d3Yaxis.current)
                 .call(zoomUtils?.yAxisZoom)
                 .on('dblclick.zoom', null);
+            if (location.pathname.includes('market')) {
+                d3.select(d3Yaxis.current).on('.drag', null);
+            }
+
             if (
                 location.pathname.includes('range') ||
                 location.pathname.includes('reposition')
@@ -3574,9 +3709,9 @@ export default function Chart(props: propsIF) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
 
-            render();
+            render(5);
         }
-    }, [yAxis, location]);
+    }, [yAxis === undefined, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -3596,7 +3731,7 @@ export default function Chart(props: propsIF) {
             if (canvas !== null) {
                 const height = canvas.height;
 
-                const factor = height > 400 ? 7 : 4;
+                const factor = height < 500 ? 5 : height.toString().length * 2;
 
                 context.stroke();
                 context.textAlign = 'left';
@@ -3609,13 +3744,79 @@ export default function Chart(props: propsIF) {
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
 
-                    context.beginPath();
-                    context.fillText(
-                        formatAmountChartData(d, digit ? digit : 2),
-                        X - tickSize,
-                        yScale(d),
-                    );
+                    const isScientific = d.toString().includes('e');
+
+                    if (isScientific) {
+                        const splitNumber = d.toString().split('e');
+                        const subString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        const factor = Math.pow(10, 3 - precision.length);
+
+                        const textXAxisLength =
+                            X - tickSize + context.measureText('0.0').width;
+
+                        const textHeight =
+                            context.measureText('0.0').actualBoundingBoxAscent +
+                            context.measureText('0.0').actualBoundingBoxDescent;
+
+                        context.beginPath();
+                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            subString,
+                            textXAxisLength,
+                            yScale(d) + textHeight / 3,
+                        );
+                        context.fillText(
+                            factor * Number(precision),
+                            textXAxisLength +
+                                context.measureText(subString).width,
+                            yScale(d),
+                        );
+                    } else {
+                        context.beginPath();
+                        context.fillText(
+                            formatAmountChartData(d, digit ? digit : 2),
+                            X - tickSize,
+                            yScale(d),
+                        );
+                    }
                 });
+
+                const isScientificMarketTick = market[0].value
+                    .toString()
+                    .includes('e');
+
+                let marketTick: number | string = formatAmountChartData(
+                    market[0].value,
+                    undefined,
+                );
+
+                let marketSubString = undefined;
+
+                if (isScientificMarketTick) {
+                    const splitNumber = market[0].value.toString().split('e');
+                    marketSubString =
+                        Math.abs(Number(splitNumber[1])) -
+                        (splitNumber.includes('.') ? 2 : 1);
+
+                    const precision = splitNumber[0]
+                        .toString()
+                        .replace('.', '');
+
+                    if (precision.length > 3) {
+                        marketTick = precision.slice(0, 3);
+                    } else {
+                        const factor = Math.pow(10, 3 - precision.length);
+
+                        marketTick = (factor * Number(precision)).toString();
+                    }
+                }
 
                 createRectLabel(
                     context,
@@ -3623,9 +3824,10 @@ export default function Chart(props: propsIF) {
                     X - tickSize,
                     'white',
                     'black',
-                    formatAmountChartData(market[0].value, undefined),
+                    marketTick,
                     undefined,
                     yAxisCanvasWidth,
+                    marketSubString,
                 );
 
                 if (
@@ -3645,17 +3847,53 @@ export default function Chart(props: propsIF) {
                             : liquidityData?.liqBoundaryDepth;
 
                     if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                        const isScientificlowTick = low
+                            .toString()
+                            .includes('e');
+
+                        let lowTick: number | string = formatAmountChartData(
+                            low,
+                            undefined,
+                        );
+
+                        let lowSubString = undefined;
+
+                        if (isScientificlowTick) {
+                            const splitNumber = low.toString().split('e');
+                            lowSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const precision = splitNumber[0]
+                                .toString()
+                                .replace('.', '');
+
+                            if (precision.length > 3) {
+                                lowTick = precision.slice(0, 3);
+                            } else {
+                                const factor = Math.pow(
+                                    10,
+                                    3 - precision.length,
+                                );
+
+                                lowTick = (
+                                    factor * Number(precision)
+                                ).toString();
+                            }
+                        }
+
                         createRectLabel(
                             context,
                             isSameLocationMin
                                 ? sameLocationDataMin
                                 : yScale(low),
                             X - tickSize,
-                            low > passValue ? '#7371fc' : 'rgba(205, 193, 255)',
+                            low > passValue ? lineSellColor : lineBuyColor,
                             low > passValue ? 'white' : 'black',
-                            formatAmountChartData(low, undefined),
+                            lowTick,
                             undefined,
                             yAxisCanvasWidth,
+                            lowSubString,
                         );
                         addYaxisLabel(
                             isSameLocationMin
@@ -3663,19 +3901,54 @@ export default function Chart(props: propsIF) {
                                 : yScale(low),
                         );
 
+                        const isScientificHighTick = high
+                            .toString()
+                            .includes('e');
+
+                        let highTick: number | string = formatAmountChartData(
+                            high,
+                            undefined,
+                        );
+
+                        let highSubString = undefined;
+
+                        if (isScientificHighTick) {
+                            const splitNumber = high.toString().split('e');
+
+                            highSubString =
+                                Math.abs(Number(splitNumber[1])) -
+                                (splitNumber.includes('.') ? 2 : 1);
+
+                            const precision = splitNumber[0]
+                                .toString()
+                                .replace('.', '');
+
+                            if (precision.length > 3) {
+                                highTick = precision.slice(0, 3);
+                            } else {
+                                const factor = Math.pow(
+                                    10,
+                                    3 - precision.length,
+                                );
+
+                                highTick = (
+                                    factor * Number(precision)
+                                ).toString();
+                            }
+                        }
+
                         createRectLabel(
                             context,
                             isSameLocationMax
                                 ? sameLocationDataMax
                                 : yScale(high),
                             X - tickSize,
-                            high > passValue
-                                ? '#7371fc'
-                                : 'rgba(205, 193, 255)',
+                            high > passValue ? lineSellColor : lineBuyColor,
                             high > passValue ? 'white' : 'black',
-                            formatAmountChartData(high, undefined),
+                            highTick,
                             undefined,
                             yAxisCanvasWidth,
+                            highSubString,
                         );
                         addYaxisLabel(
                             isSameLocationMax
@@ -3688,40 +3961,56 @@ export default function Chart(props: propsIF) {
                 if (location.pathname.includes('/limit')) {
                     const { isSameLocation, sameLocationData } =
                         sameLocationLimit();
-                    if (checkLimitOrder) {
-                        if (sellOrderStyle === 'order_sell') {
-                            createRectLabel(
-                                context,
-                                isSameLocation
-                                    ? sameLocationData
-                                    : yScale(limit[0].value),
-                                X - tickSize,
-                                '#e480ff',
-                                'black',
-                                formatAmountChartData(
-                                    limit[0].value,
-                                    undefined,
-                                ),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
+
+                    const isScientificLimitTick = limit[0].value
+                        .toString()
+                        .includes('e');
+
+                    let limitTick: number | string = formatAmountChartData(
+                        limit[0].value,
+                        undefined,
+                    );
+
+                    let limitSubString = undefined;
+
+                    if (isScientificLimitTick) {
+                        const splitNumber = limit[0].value
+                            .toString()
+                            .split('e');
+
+                        limitSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        if (precision.length > 3) {
+                            limitTick = precision.slice(0, 3);
                         } else {
-                            createRectLabel(
-                                context,
-                                isSameLocation
-                                    ? sameLocationData
-                                    : yScale(limit[0].value),
-                                X - tickSize,
-                                '#7371fc',
-                                'white',
-                                formatAmountChartData(
-                                    limit[0].value,
-                                    undefined,
-                                ),
-                                undefined,
-                                yAxisCanvasWidth,
-                            );
+                            const factor = Math.pow(10, 3 - precision.length);
+
+                            limitTick = (factor * Number(precision)).toString();
                         }
+                    }
+
+                    if (checkLimitOrder) {
+                        createRectLabel(
+                            context,
+                            isSameLocation
+                                ? sameLocationData
+                                : yScale(limit[0].value),
+                            X - tickSize,
+                            sellOrderStyle === 'order_sell'
+                                ? lineSellColor
+                                : lineBuyColor,
+                            sellOrderStyle === 'order_sell' ? 'white' : 'black',
+                            limitTick,
+                            undefined,
+                            yAxisCanvasWidth,
+                            limitSubString,
+                        );
                     } else {
                         createRectLabel(
                             context,
@@ -3731,9 +4020,10 @@ export default function Chart(props: propsIF) {
                             X - tickSize,
                             '#7772FE',
                             'white',
-                            formatAmountChartData(limit[0].value, undefined),
+                            limitTick,
                             undefined,
                             yAxisCanvasWidth,
+                            limitSubString,
                         );
                     }
                     addYaxisLabel(
@@ -3743,16 +4033,53 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
+                console.log(
+                    isMouseMoveCrosshair && crosshairActive === 'chart',
+                );
                 if (isMouseMoveCrosshair && crosshairActive === 'chart') {
+                    const isScientificCrTick = crosshairData[0].y
+                        .toString()
+                        .includes('e');
+
+                    let crTick: number | string = formatAmountChartData(
+                        Number(crosshairData[0].y),
+                        undefined,
+                    );
+
+                    let crSubString = undefined;
+
+                    if (isScientificCrTick) {
+                        const splitNumber = crosshairData[0].y
+                            .toString()
+                            .split('e');
+
+                        crSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
+
+                        const precision = splitNumber[0]
+                            .toString()
+                            .replace('.', '');
+
+                        if (precision.length > 3) {
+                            crTick = precision.slice(0, 3);
+                        } else {
+                            const factor = Math.pow(10, 3 - precision.length);
+
+                            crTick = (factor * Number(precision)).toString();
+                        }
+                    }
+
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
                         X - tickSize,
                         '#242F3F',
                         'white',
-                        formatAmountChartData(crosshairData[0].y, undefined),
+                        crTick,
                         undefined,
                         yAxisCanvasWidth,
+                        crSubString,
                     );
                 }
 
@@ -3775,10 +4102,7 @@ export default function Chart(props: propsIF) {
 
         const filteredData = data.reduce((acc: any, d: any) => {
             const sameTime = acc.find((d1: any) => {
-                return (
-                    d1.date === d.date &&
-                    d1.date.getMinutes() === d.date.getMinutes()
-                );
+                return d1.date.getTime() === d.date.getTime();
             });
             if (!sameTime) {
                 acc.push(d);
@@ -3844,8 +4168,8 @@ export default function Chart(props: propsIF) {
                         const beforeData = filteredData[indexValue - 1];
 
                         if (
-                            (beforeData.style || lastData.style,
-                            xScale(d.date.getTime()))
+                            beforeData.style ||
+                            (lastData.style && xScale(d.date.getTime()))
                         ) {
                             if (
                                 Math.abs(
@@ -3989,16 +4313,14 @@ export default function Chart(props: propsIF) {
                 .seriesCanvasPoint()
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale)
-                .crossValue((d: any, index: any) => {
-                    return !(index % 2)
-                        ? scaleData?.xScale.domain()[0]
-                        : scaleData?.xScale.domain()[1];
+                .crossValue(() => {
+                    return scaleData?.xScale.domain()[0];
                 })
                 .mainValue((d: any) => d.value)
-                .size(270)
+                .size(180)
                 .type(d3.symbolTriangle)
-                .decorate((context: any, datum: any, index: any) => {
-                    const rotateDegree = !(index % 2) ? 90 : -90;
+                .decorate((context: any) => {
+                    const rotateDegree = 90;
                     context.rotate((rotateDegree * Math.PI) / 180);
                     context.strokeStyle = 'rgba(235, 235, 255)';
                     context.fillStyle = 'rgba(235, 235, 255)';
@@ -4033,7 +4355,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = 'rgba(205, 193, 255)';
+                    selection.strokeStyle = lineBuyColor;
                     selection.strokeWidth = 4;
                 });
 
@@ -4050,7 +4372,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityDepthScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = 'rgba(205, 193, 255)';
+                    selection.strokeStyle = lineBuyColor;
                     selection.strokeWidth = 4;
                 });
 
@@ -4067,7 +4389,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = lineSellColor;
                 });
 
             setLineBidSeries(() => {
@@ -4083,7 +4405,7 @@ export default function Chart(props: propsIF) {
                 .xScale(liquidityDepthScale)
                 .yScale(scaleData?.yScale)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = lineSellColor;
                 });
 
             setLineBidDepthSeries(() => {
@@ -4101,30 +4423,27 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const passValue =
-            liqMode === 'curve'
-                ? liquidityData?.liqBoundaryCurve
-                : liquidityData?.liqBoundaryDepth;
+        const passValue = poolPriceDisplay ?? 0;
 
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
 
-            triangle.decorate((context: any, datum: any, index: any) => {
+            triangle.decorate((context: any, datum: any) => {
                 if (location.pathname.includes('/limit')) {
                     if (checkLimitOrder) {
                         color =
                             sellOrderStyle === 'order_sell'
-                                ? '#e480ff'
-                                : '#7371FC';
+                                ? lineSellColor
+                                : lineBuyColor;
                     }
                 } else {
                     color =
                         datum.value > passValue
-                            ? '#7371fc'
-                            : 'rgba(205, 193, 255)';
+                            ? lineSellColor // lineSellColor
+                            : lineBuyColor;
                 }
 
-                const rotateDegree = !(index % 2) ? 90 : -90;
+                const rotateDegree = 90;
                 context.rotate((rotateDegree * Math.PI) / 180);
                 context.strokeStyle = color;
                 context.fillStyle = color;
@@ -4135,8 +4454,8 @@ export default function Chart(props: propsIF) {
             limitLine.decorate((context: any) => {
                 context.strokeStyle = checkLimitOrder
                     ? sellOrderStyle === 'order_sell'
-                        ? '#e480ff'
-                        : '#7371FC'
+                        ? lineSellColor
+                        : lineBuyColor
                     : 'rgba(235, 235, 255)';
                 context.pointerEvents = 'none';
                 context.lineWidth = 1.5;
@@ -4156,7 +4475,7 @@ export default function Chart(props: propsIF) {
                         ? 'visible'
                         : 'hidden';
                 context.strokeStyle =
-                    datum.value > passValue ? '#7371fc' : 'rgba(205, 193, 255)';
+                    datum.value > passValue ? lineSellColor : lineBuyColor;
                 context.pointerEvents = 'none';
                 context.lineWidth = 1.5;
                 context.fillStyle = 'transparent';
@@ -4549,7 +4868,6 @@ export default function Chart(props: propsIF) {
                 clickedValue < liquidityData?.lowBoundary
             ) {
                 rangeWidthPercentage = 100;
-
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -4567,7 +4885,7 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(liquidityData?.topBoundary, 0);
+                setTriangleRangeValues(liquidityData?.topBoundary, 0);
             } else {
                 if (lineToBeSet === 'Max') {
                     tickValue = getPinnedTickFromDisplayPrice(
@@ -4633,15 +4951,23 @@ export default function Chart(props: propsIF) {
 
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                              );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        )[0].value = isScientific
+                            ? Number(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
+                              )
+                            : parseFloat(
+                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                              );
 
                         newRangeValue = newTargets;
 
@@ -4649,10 +4975,10 @@ export default function Chart(props: propsIF) {
                         return newTargets;
                     });
 
-                    // setTriangleRangeValues(
-                    //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                    //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    // );
+                    setTriangleRangeValues(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    );
                 }
             }
 
@@ -4670,7 +4996,16 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale.invert(event.offsetY) < 0
                     ? 0.1
                     : scaleData?.yScale.invert(event.offsetY);
-            let pinnedDisplayPrices;
+            let pinnedDisplayPrices: {
+                pinnedMinPriceDisplay: string;
+                pinnedMaxPriceDisplay: string;
+                pinnedMinPriceDisplayTruncated: string;
+                pinnedMaxPriceDisplayTruncated: string;
+                pinnedLowTick: number;
+                pinnedHighTick: number;
+                pinnedMinPriceNonDisplay: number;
+                pinnedMaxPriceNonDisplay: number;
+            };
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denomInBase,
@@ -4705,14 +5040,18 @@ export default function Chart(props: propsIF) {
                     if (lineToBeSet === 'Max') {
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = pinnedMaxPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMaxPriceDisplay)
+                            : pinnedMaxPriceDisplayTruncated;
                     } else {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = pinnedMinPriceDisplayTruncated;
+                        )[0].value = isScientific
+                            ? Number(pinnedDisplayPrices.pinnedMinPriceDisplay)
+                            : pinnedMinPriceDisplayTruncated;
                     }
 
-                    render();
+                    render(5);
 
                     newRangeValue = newTargets;
 
@@ -4721,10 +5060,10 @@ export default function Chart(props: propsIF) {
                     return newTargets;
                 });
 
-                // setTriangleRangeValues(
-                //     pinnedMaxPriceDisplayTruncated,
-                //     pinnedMinPriceDisplayTruncated,
-                // );
+                setTriangleRangeValues(
+                    pinnedMaxPriceDisplayTruncated,
+                    pinnedMinPriceDisplayTruncated,
+                );
             })().then(() => {
                 onBlurRange(
                     newRangeValue,
@@ -4835,7 +5174,7 @@ export default function Chart(props: propsIF) {
 
             setCandlestick(() => canvasCandlestick);
             renderCanvas();
-            render();
+            render(6);
         }
     }, [scaleData, selectedDate]);
 
@@ -4869,7 +5208,7 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
             const resizeObserver = new ResizeObserver(() => {
-                render();
+                render(7);
                 renderCanvas();
             });
 
@@ -4966,13 +5305,13 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             limitLine(limit);
-                            // triangle(limitTriangleData);
+                            triangle(limitTriangleData);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         limitLine.context(ctx);
-                        // triangle.context(ctx);
+                        triangle.context(ctx);
                     });
             }
         }
@@ -4999,13 +5338,13 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             horizontalLine(ranges);
-                            // triangle(rangeTriangleData);
+                            triangle(rangeTriangleData);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         horizontalLine.context(ctx);
-                        // triangle.context(ctx);
+                        triangle.context(ctx);
                     });
             }
         }
@@ -5053,7 +5392,7 @@ export default function Chart(props: propsIF) {
 
             setBarSeries(() => canvasBarChart);
             renderCanvas();
-            render();
+            render(8);
         }
     }, [scaleData, selectedDate]);
 
@@ -5202,99 +5541,86 @@ export default function Chart(props: propsIF) {
     }, [liqMode, location]);
 
     function renderCanvas() {
-        if (d3CanvasCandle) {
-            const container = d3.select(d3CanvasCandle.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBar) {
-            const container = d3.select(d3CanvasBar.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAsk) {
-            const container = d3.select(d3CanvasLiqAsk.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBid) {
-            const container = d3.select(d3CanvasLiqBid.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepth) {
-            const container = d3
-                .select(d3CanvasLiqAskDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepth) {
-            const container = d3
-                .select(d3CanvasLiqBidDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskLine) {
-            const container = d3
-                .select(d3CanvasLiqAskLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidLine) {
-            const container = d3
-                .select(d3CanvasLiqBidLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqAskDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqBidDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBand) {
-            const container = d3.select(d3CanvasBand.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasCrosshair) {
-            const container = d3
-                .select(d3CanvasCrosshair.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasMarketLine) {
-            const container = d3
-                .select(d3CanvasMarketLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLimitLine) {
-            const container = d3
-                .select(d3CanvasLimitLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-        if (d3CanvasRangeLine) {
-            const container = d3
-                .select(d3CanvasRangeLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
+        // if (d3CanvasCandle) {
+        //     const container = d3.select(d3CanvasCandle.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasBar) {
+        //     const container = d3.select(d3CanvasBar.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAsk) {
+        //     const container = d3.select(d3CanvasLiqAsk.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBid) {
+        //     const container = d3.select(d3CanvasLiqBid.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskDepth) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskDepth.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidDepth) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidDepth.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskDepthLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskDepthLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidDepthLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidDepthLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasBand) {
+        //     const container = d3.select(d3CanvasBand.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasCrosshair) {
+        //     const container = d3
+        //         .select(d3CanvasCrosshair.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasMarketLine) {
+        //     const container = d3
+        //         .select(d3CanvasMarketLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLimitLine) {
+        //     const container = d3
+        //         .select(d3CanvasLimitLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasRangeLine) {
+        //     const container = d3
+        //         .select(d3CanvasRangeLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
     }
 
     useEffect(() => {
@@ -5367,7 +5693,8 @@ export default function Chart(props: propsIF) {
                 const xmax = scaleData?.xScale.domain()[1];
 
                 const filtered = unparsedCandleData.filter(
-                    (data: any) => data.date >= xmin && data.date <= xmax,
+                    (data: CandleData) =>
+                        data.time * 1000 >= xmin && data.time * 1000 <= xmax,
                 );
 
                 if (filtered !== undefined) {
@@ -5401,7 +5728,7 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            render();
+            render(9);
             renderCanvas();
         }
     };
@@ -5412,7 +5739,7 @@ export default function Chart(props: propsIF) {
         ).getContext('2d');
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
-        gradient.addColorStop(1, 'rgba(205, 193, 255, 0.3)');
+        gradient.addColorStop(1, liqAskColor);
         setGradientForAsk(gradient);
     }
 
@@ -5422,7 +5749,7 @@ export default function Chart(props: propsIF) {
         ).getContext('2d');
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
-        gradient.addColorStop(1, 'rgba(115, 113, 252, 0.3)');
+        gradient.addColorStop(1, liqBidColor);
         setGradientForBid(gradient);
     }
 
@@ -5466,63 +5793,14 @@ export default function Chart(props: propsIF) {
             setLiqAskDepthSeries(() => d3CanvasLiqAskDepthChart);
 
             renderCanvas();
-            render();
+            render(10);
         }
     }, [
         diffHashSig(scaleData),
-        gradientForAsk,
+        diffHashSig(gradientForAsk),
         liqMode,
         liquidityScale,
         liquidityDepthScale,
-    ]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasLiqAsk.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        const canvasDepth = d3
-            .select(d3CanvasLiqAskDepth.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctxDepth = canvasDepth.getContext('2d');
-
-        if (liqAskSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAsk.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    liqAskSeries(liquidityData?.liqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liqAskSeries.context(ctx);
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 6,
-                    ]);
-                });
-        }
-        if (liqAskDepthSeries && liquidityData?.liqAskData) {
-            d3.select(d3CanvasLiqAskDepth.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvasDepth);
-                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
-                })
-                .on('measure', (event: any) => {
-                    liquidityDepthScale.range([
-                        event.detail.width,
-                        event.detail.width * 0.5,
-                    ]);
-                    liqAskDepthSeries.context(ctxDepth);
-                });
-        }
-    }, [
-        liquidityData?.liqAskData,
-        liquidityData?.depthLiqAskData,
-        liqAskSeries,
-        liqAskDepthSeries,
-        liqMode,
     ]);
 
     useEffect(() => {
@@ -5558,14 +5836,63 @@ export default function Chart(props: propsIF) {
             setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
 
             renderCanvas();
-            render();
+            render(11);
         }
     }, [
         diffHashSig(scaleData),
         liqMode,
-        gradientForBid,
+        diffHashSig(gradientForAsk),
         liquidityScale,
         liquidityDepthScale,
+    ]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasLiqAsk.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        const canvasDepth = d3
+            .select(d3CanvasLiqAskDepth.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctxDepth = canvasDepth.getContext('2d');
+
+        if (liqAskSeries && liquidityData?.liqAskData) {
+            d3.select(d3CanvasLiqAsk.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    liqAskSeries(liquidityData?.liqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liqAskSeries.context(ctx);
+                    liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 6,
+                    ]);
+                });
+        }
+        if (liqAskDepthSeries && liquidityData?.depthLiqAskData) {
+            d3.select(d3CanvasLiqAskDepth.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvasDepth);
+                    liqAskDepthSeries(liquidityData?.depthLiqAskData);
+                })
+                .on('measure', (event: any) => {
+                    liquidityDepthScale.range([
+                        event.detail.width,
+                        event.detail.width * 0.5,
+                    ]);
+                    liqAskDepthSeries.context(ctxDepth);
+                });
+        }
+    }, [
+        liquidityData?.liqAskData,
+        liquidityData?.depthLiqAskData,
+        liqAskSeries,
+        liqAskDepthSeries,
+        liqMode,
     ]);
 
     useEffect(() => {
@@ -5628,7 +5955,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined) {
             renderCanvas();
-            render();
+            render(12);
         }
     }, [scaleData, liquidityData, location]);
 
@@ -5692,7 +6019,7 @@ export default function Chart(props: propsIF) {
                     });
             }
 
-            render();
+            render(13);
             renderCanvas();
         }
     }, [
@@ -5807,7 +6134,7 @@ export default function Chart(props: propsIF) {
                 });
         }
 
-        render();
+        render(14);
         renderCanvas();
     }, [
         diffHashSig(scaleData),
@@ -5928,7 +6255,12 @@ export default function Chart(props: propsIF) {
 
     // autoScaleF
     useEffect(() => {
-        if (rescale && !isLineDrag) {
+        if (
+            rescale &&
+            !isLineDrag &&
+            prevPeriod === period &&
+            candleTimeInSeconds === period
+        ) {
             changeScale();
         }
     }, [
@@ -5936,10 +6268,12 @@ export default function Chart(props: propsIF) {
         limit,
         location.pathname,
         period,
-        diffHashSig(unparsedCandleData[0]),
+        diffHashSigChart(unparsedCandleData),
         noGoZoneBoudnaries,
         maxTickForLimit,
         minTickForLimit,
+        prevPeriod === period,
+        candleTimeInSeconds === period,
     ]);
 
     // Call drawChart()
@@ -6069,7 +6403,7 @@ export default function Chart(props: propsIF) {
                 : nearest?.time * 1000;
 
         if (!isLineDrag) {
-            setIsMouseMoveCrosshair(true);
+            // setIsMouseMoveCrosshair(true);
 
             setCrosshairData([
                 {
@@ -6083,6 +6417,8 @@ export default function Chart(props: propsIF) {
                           ),
                 },
             ]);
+
+            renderCrCanvas();
         }
 
         setsubChartValues((prevState: any) => {
@@ -6302,7 +6638,7 @@ export default function Chart(props: propsIF) {
                 scaleData?.yScale(minBoudnary),
             );
 
-            gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.3)');
+            gradient.addColorStop(1 - ratioBid, liqBidColor);
 
             gradient.addColorStop(1 - ratioBid, 'rgba(115, 113, 252, 0.6)');
 
@@ -6396,7 +6732,7 @@ export default function Chart(props: propsIF) {
             if (ratioAsk >= 0 && ratioAsk <= 1) {
                 gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.6)');
 
-                gradient.addColorStop(ratioAsk, 'rgba(205, 193, 255, 0.3)');
+                gradient.addColorStop(ratioAsk, liqAskColor);
 
                 setGradientForAsk(gradient);
             }
@@ -6442,6 +6778,50 @@ export default function Chart(props: propsIF) {
             );
     };
 
+    const renderCrCanvas = () => {
+        if (d3CanvasCrosshair) {
+            const container = d3
+                .select(d3CanvasCrosshair.current)
+                .node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        const feeRateCrCanvas = d3
+            .select('#fee_rate_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (feeRateCrCanvas) {
+            const nd = feeRateCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlCrCanvas = d3
+            .select('#tvl_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (tvlCrCanvas) {
+            const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        renderXAxisCanvas();
+        renderYAxisCanvas();
+    };
+
+    const renderXAxisCanvas = () => {
+        if (d3Yaxis) {
+            const container = d3.select(d3Yaxis.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+    };
+
+    const renderYAxisCanvas = () => {
+        if (d3Xaxis) {
+            const container = d3.select(d3Xaxis.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+    };
+
     useEffect(() => {
         d3.select(d3CanvasCrosshair.current).style(
             'visibility',
@@ -6461,6 +6841,7 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
@@ -6631,7 +7012,7 @@ export default function Chart(props: propsIF) {
                     },
                 );
 
-                render();
+                render(16);
 
                 d3.select(d3Container.current).on('mouseleave', () => {
                     setCrosshairActive('none');
@@ -6673,11 +7054,10 @@ export default function Chart(props: propsIF) {
 
                 const mouseLeaveCanvas = () => {
                     setCrosshairActive('none');
-
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
-                    render();
+                    render(17);
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
@@ -6876,40 +7256,52 @@ export default function Chart(props: propsIF) {
                         },
                     ];
                 });
-                // setTriangleLimitValues(newLimitValue);
+                setTriangleLimitValues(newLimitValue);
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
 
-                    const limitValue = parseFloat(
-                        limitRateTruncated.replace(',', ''),
-                    );
+                    if (displayPriceWithDenom.toString().includes('e')) {
+                        newLimitValue = displayPriceWithDenom;
+                    } else {
+                        const limitRateTruncated =
+                            displayPriceWithDenom < 2
+                                ? displayPriceWithDenom.toLocaleString(
+                                      undefined,
+                                      {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 6,
+                                      },
+                                  )
+                                : displayPriceWithDenom.toLocaleString(
+                                      undefined,
+                                      {
+                                          minimumFractionDigits: 2,
+                                          maximumFractionDigits: 2,
+                                      },
+                                  );
 
-                    reverseTokenForChart(limitPreviousData, limitValue);
+                        const limitValue = parseFloat(
+                            limitRateTruncated.replace(',', ''),
+                        );
+
+                        newLimitValue = limitValue;
+                    }
+
+                    reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return [
                             {
                                 name: 'Limit',
-                                value: limitValue,
+                                value: newLimitValue,
                             },
                         ];
                     });
-                    // setTriangleLimitValues(limitValue);
+                    setTriangleLimitValues(newLimitValue);
                 });
             }
         });
     };
-
     return (
         <div
             ref={d3Container}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
@@ -27,7 +27,7 @@ interface TvlData {
     setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function TvlSubChart(props: TvlData) {
+function TvlSubChart(props: TvlData) {
     const {
         tvlData,
         period,
@@ -448,6 +448,7 @@ export default function TvlSubChart(props: TvlData) {
                         setCrosshairActive('tvl');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
+                        renderCanvas();
                     },
                 );
 
@@ -466,12 +467,13 @@ export default function TvlSubChart(props: TvlData) {
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
-                className='tvl-canvas'
+                className='d3CanvasArea'
             ></d3fc-canvas>
 
             <d3fc-canvas
+                id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
-                className='tvl-canvas'
+                className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>
@@ -494,3 +496,5 @@ export default function TvlSubChart(props: TvlData) {
         </div>
     );
 }
+
+export default memo(TvlSubChart);

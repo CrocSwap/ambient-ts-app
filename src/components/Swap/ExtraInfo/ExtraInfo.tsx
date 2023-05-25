@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -35,7 +35,7 @@ interface propsIF {
 }
 
 // central react functional component
-export default function ExtraInfo(props: propsIF) {
+function ExtraInfo(props: propsIF) {
     const {
         priceImpact,
         displayEffectivePriceString,
@@ -63,6 +63,8 @@ export default function ExtraInfo(props: propsIF) {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
+            : displayPriceWithDenom < 0.0001
+            ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -80,6 +82,8 @@ export default function ExtraInfo(props: propsIF) {
     const finalPriceString =
         finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
             ? '…'
+            : finalPriceWithDenom < 0.0001
+            ? finalPriceWithDenom.toExponential(2)
             : finalPriceWithDenom < 2
             ? finalPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -288,3 +292,5 @@ export default function ExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(ExtraInfo);

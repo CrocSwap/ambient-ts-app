@@ -23,19 +23,6 @@ export const calculateSecondaryDepositQty = (
         (isTokenAPrimary && isTokenABase) ||
         (!isTokenAPrimary && !isTokenABase);
 
-    // console.log({
-    //     baseDecimals,
-    //     quoteDecimals,
-    //     isAmbientPosition,
-    //     poolPriceNonDisplay,
-    //     poolDisplayPrice,
-    //     isTokenAPrimary,
-    //     isTokenABase,
-    //     depositSkew,
-    //     isPrimaryTokenBase,
-    //     primaryInputValueStr,
-    // });
-
     let secondaryQuantity;
 
     const primInputValueNum = parseFloat(primaryInputValueStr);

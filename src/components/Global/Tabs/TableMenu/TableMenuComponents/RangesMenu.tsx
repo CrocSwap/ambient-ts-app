@@ -8,8 +8,8 @@ import {
     useContext,
 } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal, FiExternalLink } from 'react-icons/fi';
-
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
 import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
@@ -284,8 +284,11 @@ export default function RangesMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownRangesMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
+            <div
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
+                <CiCircleMore size={25} color='var(--text1)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>

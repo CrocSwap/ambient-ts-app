@@ -8,7 +8,7 @@ import {
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -28,7 +28,7 @@ interface propsIF {
     chainData: ChainSpec;
 }
 
-export default function TradeChartsTokenInfo(props: propsIF) {
+function TradeChartsTokenInfo(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceDisplay,
@@ -70,6 +70,8 @@ export default function TradeChartsTokenInfo(props: propsIF) {
     const truncatedPoolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
+            : poolPriceDisplay < 0.0001
+            ? poolPriceDisplay.toExponential(2)
             : poolPriceDisplay < 2
             ? poolPriceDisplay.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -269,7 +271,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         <img src={topTokenLogo} alt={topTokenSymbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={topTokenSymbol.charAt(0)}
+                            tokenInitial={topTokenSymbol?.charAt(0)}
                             width={logoSizes}
                         />
                     )}
@@ -277,7 +279,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                         <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={bottomTokenSymbol.charAt(0)}
+                            tokenInitial={bottomTokenSymbol?.charAt(0)}
                             width={logoSizes}
                         />
                     )}
@@ -320,3 +322,5 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeChartsTokenInfo);

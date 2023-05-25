@@ -4,8 +4,8 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useContext, useEffect, useRef, useState } from 'react';
-import useSocket from './Service/useSocket';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
+import useChatSocket from './Service/useChatSocket';
 import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -47,7 +47,7 @@ interface propsIF {
     topPools: topPoolIF[];
 }
 
-export default function ChatPanel(props: propsIF) {
+function ChatPanel(props: propsIF) {
     const { isFullScreen, currentPool, topPools } = props;
     const {
         chat: {
@@ -80,7 +80,7 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(
+    const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
@@ -524,3 +524,5 @@ export default function ChatPanel(props: propsIF) {
         </div>
     );
 }
+
+export default memo(ChatPanel);

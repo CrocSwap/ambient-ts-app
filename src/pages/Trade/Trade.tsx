@@ -6,6 +6,8 @@ import {
     useEffect,
     useState,
     useContext,
+    useCallback,
+    memo,
 } from 'react';
 import {
     useParams,
@@ -30,7 +32,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
@@ -41,7 +43,8 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
-// import { useCandleTime } from './useCandleTime';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 // interface for React functional component props
 interface propsIF {
@@ -57,7 +60,6 @@ interface propsIF {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-    tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
     chainData: ChainSpec;
@@ -67,18 +69,15 @@ interface propsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setLimitRate: Dispatch<SetStateAction<string>>;
     limitRate: string;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
-    searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
@@ -89,21 +88,20 @@ interface propsIF {
     cachedPositionUpdateQuery: PositionUpdateFn;
     poolPriceChangePercent: string | undefined;
     isPoolPriceChangePositive: boolean;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
-export default function Trade(props: propsIF) {
+function Trade(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
         chartSettings,
-        tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
         chainId,
         chainData,
-        tokenMap,
         poolPriceDisplay,
         provider,
         lastBlockNumber,
@@ -113,7 +111,6 @@ export default function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
         isShowAllEnabled,
@@ -131,9 +128,13 @@ export default function Trade(props: propsIF) {
         repositionRangeWidth,
         gasPriceInGwei,
         ethMainnetUsdPrice,
+        tokens,
     } = props;
 
     const { params } = useParams();
+
+    useUrlParams(tokens, chainId, provider);
+
     const {
         chart: { isFullScreen: isChartFullScreen },
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -249,18 +250,19 @@ export default function Trade(props: propsIF) {
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    const changeState = (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => {
-        setIsCandleSelected(isOpen);
-        setHasInitialized(false);
-        setTransactionFilter(candleData);
-        if (isOpen) {
-            setOutsideControlActive(true);
-            setOutsideTabSelected(0);
-        }
-    };
+    const changeState = useCallback(
+        (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
+            setIsCandleSelected(isOpen);
+            setHasInitialized(false);
+            setTransactionFilter(candleData);
+            if (isOpen) {
+                setOutsideControlActive(true);
+                setOutsideTabSelected(0);
+            }
+        },
+        [],
+    );
+
     const [chartBg, setChartBg] = useState('transparent');
 
     const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
@@ -386,11 +388,11 @@ export default function Trade(props: propsIF) {
         </section>
     );
 
-    const unselectCandle = () => {
+    const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
         changeState(false, undefined);
         setIsCandleSelected(false);
-    };
+    }, []);
 
     const activeCandleDuration = isMarketOrLimitModule
         ? chartSettings.candleTime.market.time
@@ -426,7 +428,7 @@ export default function Trade(props: propsIF) {
                             <img src={baseTokenLogo} alt={baseTokenSymbol} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={baseTokenSymbol.charAt(0)}
+                                tokenInitial={baseTokenSymbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -434,7 +436,7 @@ export default function Trade(props: propsIF) {
                             <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
                         ) : (
                             <NoTokenIcon
-                                tokenInitial={quoteTokenSymbol.charAt(0)}
+                                tokenInitial={quoteTokenSymbol?.charAt(0)}
                                 width='20px'
                             />
                         )}
@@ -474,6 +476,7 @@ export default function Trade(props: propsIF) {
         upVolumeColor: upVolumeColor,
         downVolumeColor: downVolumeColor,
         baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
         poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
@@ -486,7 +489,6 @@ export default function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
-        tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
@@ -506,14 +508,12 @@ export default function Trade(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        searchableTokens: searchableTokens,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
@@ -533,6 +533,8 @@ export default function Trade(props: propsIF) {
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
+        tokens,
+        showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const mobileTrade = (
@@ -633,3 +635,5 @@ type ContextType = {
 export function useTradeData() {
     return useOutletContext<ContextType>();
 }
+
+export default memo(Trade);
