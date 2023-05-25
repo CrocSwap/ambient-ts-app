@@ -486,6 +486,8 @@ function Swap(props: propsIF) {
         effectivePriceWithDenom === Infinity ||
         effectivePriceWithDenom === 0
             ? '…'
+            : effectivePriceWithDenom < 0.0001
+            ? effectivePriceWithDenom.toExponential(2)
             : effectivePriceWithDenom < 2
             ? effectivePriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
