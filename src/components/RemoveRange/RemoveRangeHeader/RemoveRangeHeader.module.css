@@ -27,6 +27,6 @@
     /* align-items: center;
 text-align: center; */
     letter-spacing: -0.02em;
-
+    padding-left: 22px;
     color: var(--text1);
 }
