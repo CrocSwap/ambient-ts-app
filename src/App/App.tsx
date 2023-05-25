@@ -864,6 +864,11 @@ export default function App() {
         candleScale?.isFetchForTimeframe,
     ]);
 
+    function setEmptyCandles() {
+        setIsCandleDataNull(true);
+        setExpandTradeTable(true);
+    }
+
     const fetchCandles = () => {
         if (
             isServerEnabled &&
@@ -901,8 +906,6 @@ export default function App() {
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
                     fetch(candleSeriesCacheEndpoint + reqOptions)
                         .then((response) => response?.json())
@@ -934,14 +937,17 @@ export default function App() {
                                 setFetchingCandle(false);
                             }
                         })
-                        .catch(console.error);
+                        .catch((e) => {
+                            console.error(e);
+                            setEmptyCandles();
+                        });
                 }
             } catch (error) {
                 console.error({ error });
+                setEmptyCandles();
             }
         } else {
-            setIsCandleDataNull(true);
-            setExpandTradeTable(true);
+            setEmptyCandles();
         }
     };
 
@@ -1067,7 +1073,10 @@ export default function App() {
                     setCandleData(newCandleData);
                 }
             })
-            .catch(console.error);
+            .catch((e) => {
+                console.error(e);
+                setEmptyCandles();
+            });
 
     useEffect(() => {
         if (!numDurationsNeeded) return;
