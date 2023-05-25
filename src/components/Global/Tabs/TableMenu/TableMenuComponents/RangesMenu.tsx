@@ -223,7 +223,7 @@ export default function RangesMenu(props: propsIF) {
     // ----------------------
 
     const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = useMediaQuery('(min-width: 1380px)');
+    const view2 = useMediaQuery('(min-width: 1450px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
