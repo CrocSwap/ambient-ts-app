@@ -3713,6 +3713,10 @@ export default function Chart(props: propsIF) {
         }
     }, [yAxis === undefined, location]);
 
+    useEffect(() => {
+        renderCrCanvas();
+    }, [isMouseMoveCrosshair]);
+
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
@@ -4033,9 +4037,6 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                console.log(
-                    isMouseMoveCrosshair && crosshairActive === 'chart',
-                );
                 if (isMouseMoveCrosshair && crosshairActive === 'chart') {
                     const isScientificCrTick = crosshairData[0].y
                         .toString()
@@ -4084,6 +4085,8 @@ export default function Chart(props: propsIF) {
                 }
 
                 changeyAxisWidth();
+
+                renderYAxisCanvas();
             }
         }
     };
@@ -4234,6 +4237,8 @@ export default function Chart(props: propsIF) {
         }
 
         context.restore();
+
+        renderXAxisCanvas();
     };
 
     // Horizontal Lines
@@ -6808,14 +6813,14 @@ export default function Chart(props: propsIF) {
         renderYAxisCanvas();
     };
 
-    const renderXAxisCanvas = () => {
+    const renderYAxisCanvas = () => {
         if (d3Yaxis) {
             const container = d3.select(d3Yaxis.current).node() as any;
             if (container) container.requestRedraw();
         }
     };
 
-    const renderYAxisCanvas = () => {
+    const renderXAxisCanvas = () => {
         if (d3Xaxis) {
             const container = d3.select(d3Xaxis.current).node() as any;
             if (container) container.requestRedraw();
