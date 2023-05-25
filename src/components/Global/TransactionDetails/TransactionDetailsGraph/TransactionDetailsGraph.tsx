@@ -118,8 +118,6 @@ export default function TransactionDetailsGraph(
         };
     }, [isDataLoading]);
 
-    console.log({ isDataTakingTooLongToFetch });
-
     useEffect(() => {
         (async () => {
             setIsDataLoading(true);
