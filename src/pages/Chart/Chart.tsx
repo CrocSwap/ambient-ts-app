@@ -678,7 +678,8 @@ export default function Chart(props: propsIF) {
         setRescale(true);
     }, [denomInBase]);
 
-    const render = useCallback(() => {
+    const render = useCallback((caller: number) => {
+        console.log(caller);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
@@ -714,7 +715,7 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        render();
+        render(1);
         renderCanvas();
     }, [
         diffHashSig(props.chartItemStates),
@@ -1674,7 +1675,7 @@ export default function Chart(props: propsIF) {
                                 if (candlestick) {
                                     setBandwidth(candlestick.bandwidth());
                                 }
-                                render();
+                                render(2);
                                 renderCanvas();
 
                                 setZoomAndYdragControl(event);
@@ -1950,7 +1951,7 @@ export default function Chart(props: propsIF) {
                         });
 
                         setMarketLineValue();
-                        render();
+                        render(3);
                     })
                     .filter((event) => {
                         const isWheel = event.type === 'wheel';
@@ -2055,7 +2056,7 @@ export default function Chart(props: propsIF) {
                         rescaleYAxis();
 
                         setBandwidth(candlestick.bandwidth());
-                        render();
+                        render(4);
                         renderCanvas();
 
                         setZoomAndYdragControl(event);
@@ -3716,9 +3717,9 @@ export default function Chart(props: propsIF) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
 
-            render();
+            render(5);
         }
-    }, [yAxis, location]);
+    }, [yAxis === undefined, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -5055,7 +5056,7 @@ export default function Chart(props: propsIF) {
                             : pinnedMinPriceDisplayTruncated;
                     }
 
-                    render();
+                    render(5);
 
                     newRangeValue = newTargets;
 
@@ -5178,7 +5179,7 @@ export default function Chart(props: propsIF) {
 
             setCandlestick(() => canvasCandlestick);
             renderCanvas();
-            render();
+            render(6);
         }
     }, [scaleData, selectedDate]);
 
@@ -5212,7 +5213,7 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
             const resizeObserver = new ResizeObserver(() => {
-                render();
+                render(7);
                 renderCanvas();
             });
 
@@ -5396,7 +5397,7 @@ export default function Chart(props: propsIF) {
 
             setBarSeries(() => canvasBarChart);
             renderCanvas();
-            render();
+            render(8);
         }
     }, [scaleData, selectedDate]);
 
@@ -5545,99 +5546,86 @@ export default function Chart(props: propsIF) {
     }, [liqMode, location]);
 
     function renderCanvas() {
-        if (d3CanvasCandle) {
-            const container = d3.select(d3CanvasCandle.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBar) {
-            const container = d3.select(d3CanvasBar.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAsk) {
-            const container = d3.select(d3CanvasLiqAsk.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBid) {
-            const container = d3.select(d3CanvasLiqBid.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepth) {
-            const container = d3
-                .select(d3CanvasLiqAskDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepth) {
-            const container = d3
-                .select(d3CanvasLiqBidDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskLine) {
-            const container = d3
-                .select(d3CanvasLiqAskLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidLine) {
-            const container = d3
-                .select(d3CanvasLiqBidLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqAskDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqBidDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBand) {
-            const container = d3.select(d3CanvasBand.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasCrosshair) {
-            const container = d3
-                .select(d3CanvasCrosshair.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasMarketLine) {
-            const container = d3
-                .select(d3CanvasMarketLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLimitLine) {
-            const container = d3
-                .select(d3CanvasLimitLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-        if (d3CanvasRangeLine) {
-            const container = d3
-                .select(d3CanvasRangeLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
+        // if (d3CanvasCandle) {
+        //     const container = d3.select(d3CanvasCandle.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasBar) {
+        //     const container = d3.select(d3CanvasBar.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAsk) {
+        //     const container = d3.select(d3CanvasLiqAsk.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBid) {
+        //     const container = d3.select(d3CanvasLiqBid.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskDepth) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskDepth.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidDepth) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidDepth.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqAskDepthLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqAskDepthLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLiqBidDepthLine) {
+        //     const container = d3
+        //         .select(d3CanvasLiqBidDepthLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasBand) {
+        //     const container = d3.select(d3CanvasBand.current).node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasCrosshair) {
+        //     const container = d3
+        //         .select(d3CanvasCrosshair.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasMarketLine) {
+        //     const container = d3
+        //         .select(d3CanvasMarketLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasLimitLine) {
+        //     const container = d3
+        //         .select(d3CanvasLimitLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
+        // if (d3CanvasRangeLine) {
+        //     const container = d3
+        //         .select(d3CanvasRangeLine.current)
+        //         .node() as any;
+        //     if (container) container.requestRedraw();
+        // }
     }
 
     useEffect(() => {
@@ -5745,7 +5733,7 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            render();
+            render(9);
             renderCanvas();
         }
     };
@@ -5810,11 +5798,11 @@ export default function Chart(props: propsIF) {
             setLiqAskDepthSeries(() => d3CanvasLiqAskDepthChart);
 
             renderCanvas();
-            render();
+            render(10);
         }
     }, [
         diffHashSig(scaleData),
-        gradientForAsk,
+        diffHashSig(gradientForAsk),
         liqMode,
         liquidityScale,
         liquidityDepthScale,
@@ -5853,12 +5841,12 @@ export default function Chart(props: propsIF) {
             setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
 
             renderCanvas();
-            render();
+            render(11);
         }
     }, [
         diffHashSig(scaleData),
         liqMode,
-        gradientForBid,
+        diffHashSig(gradientForAsk),
         liquidityScale,
         liquidityDepthScale,
     ]);
@@ -5972,7 +5960,7 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined) {
             renderCanvas();
-            render();
+            render(12);
         }
     }, [scaleData, liquidityData, location]);
 
@@ -6036,7 +6024,7 @@ export default function Chart(props: propsIF) {
                     });
             }
 
-            render();
+            render(13);
             renderCanvas();
         }
     }, [
@@ -6151,7 +6139,7 @@ export default function Chart(props: propsIF) {
                 });
         }
 
-        render();
+        render(14);
         renderCanvas();
     }, [
         diffHashSig(scaleData),
@@ -6843,7 +6831,32 @@ export default function Chart(props: propsIF) {
                 ]);
             }
 
-            render();
+            renderCrCanvas();
+        }
+    };
+
+    const renderCrCanvas = () => {
+        if (d3CanvasCrosshair) {
+            const container = d3
+                .select(d3CanvasCrosshair.current)
+                .node() as any;
+            if (container) container.requestRedraw();
+        }
+        renderXAxisCanvas();
+        renderYAxisCanvas();
+    };
+
+    const renderXAxisCanvas = () => {
+        if (d3Yaxis) {
+            const container = d3.select(d3Yaxis.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+    };
+
+    const renderYAxisCanvas = () => {
+        if (d3Xaxis) {
+            const container = d3.select(d3Xaxis.current).node() as any;
+            if (container) container.requestRedraw();
         }
     };
 
@@ -7037,7 +7050,7 @@ export default function Chart(props: propsIF) {
                     },
                 );
 
-                render();
+                render(16);
 
                 d3.select(d3Container.current).on('mouseleave', () => {
                     setCrosshairActive('none');
@@ -7083,7 +7096,7 @@ export default function Chart(props: propsIF) {
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
-                    render();
+                    render(17);
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
