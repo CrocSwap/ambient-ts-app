@@ -141,7 +141,6 @@ function CurrencyQuantity(props: propsIF) {
                 {isLoading && progressDisplay}
                 <input
                     id={`${fieldId}-quantity`}
-                    autoFocus={fieldId === 'sell'}
                     className={styles.currency_quantity}
                     placeholder={isLoading ? '' : '0.0'}
                     tabIndex={0}
