@@ -24,7 +24,6 @@ function RangeHeader(props: RangeHeaderPropsIF) {
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
     function handleClick(slug: string) {
-        console.clear();
         IS_LOCAL_ENV && console.debug(slug);
         // prevent action when user clicks a column which is not sortable
         if (!header.sortable) return;

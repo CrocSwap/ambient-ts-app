@@ -230,6 +230,14 @@ function Ranges(props: propsIF) {
     );
     const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
 
+    // Debounce the heavy weight networking operation of refreshing the top positions
+    // so users clicking like a maniac on the column header don't spam the network
+    const REFRESH_TOP_DELAY = 1000;
+    const sumHashTopPositions = useDebounce(
+        diffHashSig(topPositions.map((p) => p.positionId)),
+        REFRESH_TOP_DELAY,
+    );
+
     useEffect(() => {
         if (topPositions.length) {
             Promise.all(
@@ -284,7 +292,12 @@ function Ranges(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [isShowAllEnabled, isOnPortfolioPage, lastBlockNumber]);
+    }, [
+        sumHashTopPositions,
+        isShowAllEnabled,
+        isOnPortfolioPage,
+        lastBlockNumber,
+    ]);
 
     // ---------------------
     // transactions per page media queries
