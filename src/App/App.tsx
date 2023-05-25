@@ -967,7 +967,10 @@ export default function App() {
                 poolIdx: chainData.poolIndex.toString(),
                 period: candleTimeLocal.toString(),
                 // time: '', // optional
-                n: candleScale?.nCandle.toString(), // positive integer
+                n: (candleScale?.nCandle > 1000
+                    ? 1000
+                    : candleScale?.nCandle
+                ).toString(), // positive integer: max 1000
                 // page: '0', // nonnegative integer
                 chainId: mktDataChainId(chainData.chainId),
                 dex: 'all',
