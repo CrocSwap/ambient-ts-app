@@ -137,9 +137,8 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            {isLoading ? (
-                progressDisplay
-            ) : (
+            <>
+                {isLoading && progressDisplay}
                 <input
                     id={`${fieldId}-quantity`}
                     autoFocus={fieldId === 'sell'}
@@ -161,7 +160,7 @@ function CurrencyQuantity(props: propsIF) {
                     pattern='^[0-9]*\.?[0-9]*$'
                     disabled={disable}
                 />
-            )}
+            </>
         </div>
     );
 }
