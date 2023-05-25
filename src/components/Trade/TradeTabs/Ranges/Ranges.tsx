@@ -172,13 +172,9 @@ function Ranges(props: propsIF) {
         });
 
     const userPositionsToDisplayOnTrade =
-        positionsByUserMatchingSelectedTokens.filter((position) => {
-            if (position.positionLiq !== '0' || position.source === 'manual') {
-                return true;
-            } else {
-                return false;
-            }
-        });
+        positionsByUserMatchingSelectedTokens.filter(
+            (position) => position.positionLiq !== '0',
+        );
 
     const sumHashActiveAccountPositionData = useMemo(
         () => diffHashSig(activeAccountPositionData),
@@ -195,16 +191,6 @@ function Ranges(props: propsIF) {
     const sumHashPositionsByPool = useMemo(
         () => diffHashSig(positionsByPool),
         [positionsByPool],
-    );
-
-    const sumHashTop3SortedPositions = useMemo(
-        () =>
-            diffHashSig({
-                id0: sortedPositions[0]?.positionId,
-                id1: sortedPositions[1]?.positionId,
-                id2: sortedPositions[2]?.positionId,
-            }),
-        [sortedPositions],
     );
 
     const updateRangeData = () => {
@@ -234,15 +220,25 @@ function Ranges(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    // prevent query from running multiple times for the same position more than once per minute
-    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
+    const NUM_ROWS_TO_SYNC = 5;
+    const CACHE_WINDOW_MS = 10000;
 
-    const topThreePositions = sortedPositions.slice(0, 3);
+    // synchronously query top positions periodically but prevent fetching more than
+    // once every CACHE_WINDOW_MS
+    const currentTimeForPositionUpdateCaching = Math.floor(
+        Date.now() / CACHE_WINDOW_MS,
+    );
+    const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
+
+    const sumHashTopPositions = useMemo(
+        () => diffHashSig(topPositions),
+        [sortedPositions],
+    );
 
     useEffect(() => {
-        if (topThreePositions.length) {
+        if (topPositions.length) {
             Promise.all(
-                topThreePositions.map((position: PositionIF) => {
+                topPositions.map((position: PositionIF) => {
                     return cachedPositionUpdateQuery(
                         position,
                         currentTimeForPositionUpdateCaching,
@@ -271,7 +267,7 @@ function Ranges(props: propsIF) {
                         }
                     } else {
                         const newArray = updatedPositions.concat(
-                            sortedPositions.slice(3),
+                            sortedPositions.slice(NUM_ROWS_TO_SYNC),
                         );
                         setRangeData(newArray);
                     }
@@ -279,10 +275,11 @@ function Ranges(props: propsIF) {
                 .catch(console.error);
         }
     }, [
-        sumHashTop3SortedPositions,
+        sumHashTopPositions,
         currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
+        lastBlockNumber,
     ]);
 
     // ---------------------
@@ -298,7 +295,17 @@ function Ranges(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
 
     const count = Math.ceil(sortedPositions.length / rowsPerPage);
     const _DATA = usePagination(sortedPositions, rowsPerPage);
@@ -619,6 +626,8 @@ function Ranges(props: propsIF) {
         />
     );
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
             className={`${styles.main_list_container} ${
@@ -636,7 +645,7 @@ function Ranges(props: propsIF) {
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }

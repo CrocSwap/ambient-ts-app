@@ -20,3 +20,7 @@
     font-weight: 300;
     color: var(--text1);
 }
+
+.title {
+    color: var(--text1);
+}
