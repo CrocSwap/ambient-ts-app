@@ -248,8 +248,23 @@ function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            if (updatedPositions) {
-                                dispatch(addPositionsByPool(updatedPositions));
+                            const updatedPositionsMatchingPool =
+                                updatedPositions.filter(
+                                    (position) =>
+                                        position.base.toLowerCase() ===
+                                            baseTokenAddress.toLowerCase() &&
+                                        position.quote.toLowerCase() ===
+                                            quoteTokenAddress.toLowerCase() &&
+                                        position.poolIdx ===
+                                            chainData.poolIndex &&
+                                        position.chainId === chainData.chainId,
+                                );
+                            if (updatedPositionsMatchingPool.length) {
+                                dispatch(
+                                    addPositionsByPool(
+                                        updatedPositionsMatchingPool,
+                                    ),
+                                );
                             }
                         } else {
                             const updatedPositionsMatchingUser =
