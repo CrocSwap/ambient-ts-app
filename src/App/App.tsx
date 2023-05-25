@@ -165,8 +165,6 @@ export default function App() {
     const location = useLocation();
     const currentLocation = location.pathname;
 
-    const { disconnect } = useDisconnect();
-
     // CONTEXT: to be removed, have components that require it reference it directly
     const tradeData = useAppSelector((state) => state.tradeData);
     const tokenPair = useMemo(() => {
@@ -742,14 +740,18 @@ export default function App() {
             address: baseTokenAddress,
             mainnetAddress: mainnetBaseTokenAddress,
             balance: baseTokenBalance,
+            setBalance: setBaseTokenBalance,
             dexBalance: baseTokenDexBalance,
+            setDexBalance: setBaseTokenDexBalance,
             decimals: baseTokenDecimals,
         },
         quoteToken: {
             address: quoteTokenAddress,
             mainnetAddress: mainnetQuoteTokenAddress,
             balance: quoteTokenBalance,
+            setBalance: setQuoteTokenBalance,
             dexBalance: quoteTokenDexBalance,
+            setDexBalance: setQuoteTokenDexBalance,
             decimals: quoteTokenDecimals,
         },
         tokenAAllowance,
@@ -1355,31 +1357,6 @@ export default function App() {
         }
     }, [isConnected, userAddress]);
 
-    // CONTEXT: move inside Portolio
-    const [mainnetProvider, setMainnetProvider] = useState<
-        Provider | undefined
-    >();
-    useEffect(() => {
-        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
-            ? process.env.REACT_APP_INFURA_KEY_2
-            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
-
-        const mainnetProvider = new ethers.providers.JsonRpcProvider(
-            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
-        );
-        IS_LOCAL_ENV && console.debug({ mainnetProvider });
-        setMainnetProvider(mainnetProvider);
-    }, []);
-
-    // CONTEXT: remove and setPoolPriceNonDisplay and setLimitTick where it needs to be set
-    const [resetLimitTick, setResetLimitTick] = useState(false);
-    useEffect(() => {
-        if (resetLimitTick) {
-            dispatch(setPoolPriceNonDisplay(0));
-            dispatch(setLimitTick(undefined));
-        }
-    }, [resetLimitTick]);
-
     // CONTEXT: user data context -- ask Ben whether this should really be in user data context - lots of inner dependencies that don't make sense... trade context?
     const userLimitOrderStatesCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
@@ -1578,40 +1555,44 @@ export default function App() {
         crocEnv,
     ]);
 
-    // CONTEXT: move into header component - have contexts listen to logged out and reset
-    // function to sever connection between user wallet and the app
-    const clickLogout = useCallback(async () => {
-        setCrocEnv(undefined);
-        setBaseTokenBalance('');
-        setQuoteTokenBalance('');
-        setBaseTokenDexBalance('');
-        setQuoteTokenDexBalance('');
-        dispatch(resetUserGraphData());
-        dispatch(resetReceiptData());
-        dispatch(resetTokenData());
-        dispatch(resetUserAddresses());
-        setShowAllData(true);
-        disconnect();
-    }, []);
-
-    // CONTEXT: move this into the header component
-    const shouldDisplayAccountTab = isConnected && userAddress !== undefined;
-
-    // props for <PageHeader/> React element
-    const headerProps = {
-        clickLogout,
-        shouldDisplayAccountTab,
-    };
-
-    // props for <Limit/> React element on trade route
-    const limitPropsTrade = {
-        setResetLimitTick,
-    };
-
     // props for <Range/> React element
     const rangeProps = {
         cachedFetchTokenPrice,
     };
+
+    const tradeProps = {
+        cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
+    };
+
+    const accountProps = {
+        cachedQuerySpotPrice,
+        cachedPositionUpdateQuery,
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedFetchTokenPrice,
+    };
+
+    // CONTEXT: likely want to split these guys up to live in their respective contexts
+    useWebSocketSubs({
+        crocEnv,
+        wssGraphCacheServerDomain,
+        baseTokenAddress,
+        quoteTokenAddress,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        isServerEnabled,
+        shouldNonCandleSubscriptionsReconnect,
+        areSubscriptionsEnabled,
+        tokenUniv: tokens.tokenUniv,
+        chainData,
+        lastBlockNumber,
+        candleData,
+        setCandleData,
+        candleTimeLocal,
+        userAddress,
+        shouldCandleSubscriptionsReconnect,
+    });
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
@@ -1693,46 +1674,6 @@ export default function App() {
         }
     }, [isEscapePressed]);
 
-    const tradeProps = {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-    };
-
-    const accountProps = {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedFetchTokenPrice,
-        mainnetProvider,
-    };
-
-    const chatProps = {
-        isFullScreen: true,
-        appPage: true,
-    };
-
-    // CONTEXT: likely want to split these guys up to live in their respective contexts
-    useWebSocketSubs({
-        crocEnv,
-        wssGraphCacheServerDomain,
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        isServerEnabled,
-        shouldNonCandleSubscriptionsReconnect,
-        areSubscriptionsEnabled,
-        tokenUniv: tokens.tokenUniv,
-        chainData,
-        lastBlockNumber,
-        candleData,
-        setCandleData,
-        candleTimeLocal,
-        userAddress,
-        shouldCandleSubscriptionsReconnect,
-    });
-
     return (
         <AppStateContext.Provider value={appState}>
             <CrocEnvContext.Provider value={crocEnvState}>
@@ -1759,9 +1700,7 @@ export default function App() {
                                                     <AppOverlay />
                                                     {currentLocation !==
                                                         '/404' && (
-                                                        <PageHeader
-                                                            {...headerProps}
-                                                        />
+                                                        <PageHeader />
                                                     )}
                                                     <section
                                                         className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
@@ -1859,9 +1798,7 @@ export default function App() {
                                                                 <Route
                                                                     path='limit/:params'
                                                                     element={
-                                                                        <Limit
-                                                                            {...limitPropsTrade}
-                                                                        />
+                                                                        <Limit />
                                                                     }
                                                                 />
                                                                 <Route
@@ -1926,7 +1863,12 @@ export default function App() {
                                                                 path='chat'
                                                                 element={
                                                                     <ChatPanel
-                                                                        {...chatProps}
+                                                                        isFullScreen={
+                                                                            true
+                                                                        }
+                                                                        appPage={
+                                                                            true
+                                                                        }
                                                                     />
                                                                 }
                                                             />
@@ -1935,7 +1877,12 @@ export default function App() {
                                                                 path='chat/:params'
                                                                 element={
                                                                     <ChatPanel
-                                                                        {...chatProps}
+                                                                        isFullScreen={
+                                                                            true
+                                                                        }
+                                                                        appPage={
+                                                                            true
+                                                                        }
                                                                     />
                                                                 }
                                                             />

@@ -4,7 +4,7 @@ import { topPoolIF } from '../App/hooks/useTopPools';
 
 interface CrocEnvIF {
     crocEnv: CrocEnv | undefined;
-    setCrocEnv: (val: CrocEnv) => void;
+    setCrocEnv: (val: CrocEnv | undefined) => void;
     chainData: ChainSpec;
     isChainSupported: boolean;
     topPools: topPoolIF[];

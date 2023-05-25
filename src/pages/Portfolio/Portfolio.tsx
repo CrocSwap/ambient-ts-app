@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo } from 'react';
 import { useEnsName } from 'wagmi';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components
@@ -39,6 +39,7 @@ import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
+import { IS_LOCAL_ENV } from '../../constants';
 
 interface propsIF {
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
@@ -47,7 +48,6 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     userAccount?: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
-    mainnetProvider: Provider | undefined;
 }
 
 function Portfolio(props: propsIF) {
@@ -58,7 +58,6 @@ function Portfolio(props: propsIF) {
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
         userAccount,
-        mainnetProvider,
     } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
@@ -103,6 +102,21 @@ function Portfolio(props: propsIF) {
         newToken.logoURI = oldToken ? oldToken.logoURI : '';
         return newToken;
     };
+
+    const [mainnetProvider, setMainnetProvider] = useState<
+        Provider | undefined
+    >();
+    useEffect(() => {
+        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
+            ? process.env.REACT_APP_INFURA_KEY_2
+            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
+
+        const mainnetProvider = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
+        );
+        IS_LOCAL_ENV && console.debug({ mainnetProvider });
+        setMainnetProvider(mainnetProvider);
+    }, []);
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {

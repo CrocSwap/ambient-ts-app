@@ -57,7 +57,6 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
@@ -82,7 +81,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        setResetLimitTick,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
     } = props;
@@ -148,6 +146,8 @@ function LimitCurrencyConverter(props: propsIF) {
         userOverrodeSurplusWithdrawalDefault,
         setUserOverrodeSurplusWithdrawalDefault,
     ] = useState<boolean>(false);
+
+    const [resetLimitTick, setResetLimitTick] = useState(true);
 
     useEffect(() => {
         if (
@@ -504,7 +504,11 @@ function LimitCurrencyConverter(props: propsIF) {
                 }
                 onClick={() => {
                     if (!disableReverseTokens) {
-                        setResetLimitTick((value) => !value);
+                        if (resetLimitTick) {
+                            dispatch(setPoolPriceNonDisplay(0));
+                            dispatch(setLimitTick(undefined));
+                            setResetLimitTick(false);
+                        }
                         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
                         reverseTokens();
                     }

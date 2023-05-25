@@ -5,14 +5,18 @@ interface TradeTokenIF {
         address: string;
         mainnetAddress: string;
         balance: string;
+        setBalance: (val: string) => void;
         dexBalance: string;
+        setDexBalance: (val: string) => void;
         decimals: number;
     };
     quoteToken: {
         address: string;
         mainnetAddress: string;
         balance: string;
+        setBalance: (val: string) => void;
         dexBalance: string;
+        setDexBalance: (val: string) => void;
         decimals: number;
     };
     tokenAAllowance: string;

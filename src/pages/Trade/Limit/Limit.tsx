@@ -69,15 +69,9 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
-interface propsIF {
-    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-}
-
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
-export default function Limit(props: propsIF) {
-    const { setResetLimitTick } = props;
-
+export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
@@ -718,7 +712,6 @@ export default function Limit(props: propsIF) {
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
         limitTickDisplayPrice: endDisplayPrice,
-        setResetLimitTick: setResetLimitTick,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
