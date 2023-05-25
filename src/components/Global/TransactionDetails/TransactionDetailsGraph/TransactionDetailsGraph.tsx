@@ -807,7 +807,7 @@ export default function TransactionDetailsGraph(
         if (!graphData) {
             const timeoutId = setTimeout(() => {
                 setIsDataEmpty(true);
-            }, 10000);
+            }, 1000);
 
             return () => {
                 clearTimeout(timeoutId);
