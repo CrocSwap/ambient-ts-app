@@ -226,7 +226,7 @@ export default function RangesMenu(props: propsIF) {
     const view1 = useMediaQuery('(min-width: 720px)');
     const view2 = sidebar.isOpen
         ? useMediaQuery('(min-width: 1750px)')
-        : useMediaQuery('(min-width: 1500px)');
+        : useMediaQuery('(min-width: 1550px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
