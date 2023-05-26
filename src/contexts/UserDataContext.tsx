@@ -49,27 +49,8 @@ export const UserDataContextProvider = (props: {
 
     // TODO: Wagmi isConnected === userData.isLoggedIn - can consolidate and use either as source of truth && Wagmi address === useData.userAddress
     useEffect(() => {
-        if (isConnected) {
-            if (isLoggedIn === false && userAddress) {
-                IS_LOCAL_ENV && console.debug('settting to logged in');
-                dispatch(setIsLoggedIn(true));
-                dispatch(setAddressCurrent(userAddress));
-            } else if (isLoggedIn === false) {
-                IS_LOCAL_ENV &&
-                    console.debug('settting to logged in - no address');
-                dispatch(setIsLoggedIn(true));
-            } else if (isLoggedIn === undefined) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        } else {
-            if (isLoggedIn === true) {
-                IS_LOCAL_ENV && console.debug('settting to logged out');
-                dispatch(setIsLoggedIn(false));
-                dispatch(resetUserAddresses());
-            }
-        }
+        dispatch(setIsLoggedIn(isConnected));
+        dispatch(setAddressCurrent(userAddress));
         dispatch(resetTokenData());
         dispatch(resetUserGraphData());
     }, [isConnected, isLoggedIn, userAddress]);
