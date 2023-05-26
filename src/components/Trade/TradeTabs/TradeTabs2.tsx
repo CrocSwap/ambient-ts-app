@@ -93,11 +93,9 @@ function TradeTabs2(props: propsIF) {
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
-        outsideTab: { selected: outsideTabSelected },
-        outsideControl: {
-            isActive: outsideControlActive,
-            setIsActive: setOutsideControlActive,
-        },
+        outsideControl,
+        setOutsideControl,
+        selectedOutsideTab,
     } = useContext(TradeTableContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -175,8 +173,8 @@ function TradeTabs2(props: propsIF) {
             userPositionsDataReceived
         ) {
             if (
-                (outsideControlActive && outsideTabSelected === 0) ||
-                (!outsideControlActive && selectedInsideTab === 0)
+                (outsideControl && selectedOutsideTab === 0) ||
+                (!outsideControl && selectedInsideTab === 0)
             ) {
                 if (isCandleSelected) {
                     setShowAllData(false);
@@ -193,8 +191,8 @@ function TradeTabs2(props: propsIF) {
                     setShowAllData(false);
                 }
             } else if (
-                (outsideControlActive && outsideTabSelected === 1) ||
-                (!outsideControlActive && selectedInsideTab === 1)
+                (outsideControl && selectedOutsideTab === 1) ||
+                (!outsideControl && selectedInsideTab === 1)
             ) {
                 if (
                     !isUserConnected ||
@@ -209,8 +207,8 @@ function TradeTabs2(props: propsIF) {
                     setShowAllData(false);
                 }
             } else if (
-                (outsideControlActive && outsideTabSelected === 2) ||
-                (!outsideControlActive && selectedInsideTab === 2)
+                (outsideControl && selectedOutsideTab === 2) ||
+                (!outsideControl && selectedInsideTab === 2)
             ) {
                 if (
                     !isUserConnected ||
@@ -233,9 +231,9 @@ function TradeTabs2(props: propsIF) {
         isUserConnected,
         hasInitialized,
         isCandleSelected,
-        outsideControlActive,
+        outsideControl,
         selectedInsideTab,
-        outsideTabSelected,
+        selectedOutsideTab,
         showAllData,
         matchingUserPositionsLength,
         matchingUserChangesLength,
@@ -312,7 +310,7 @@ function TradeTabs2(props: propsIF) {
                             selectedCandleChangesWithoutFills,
                         );
                     }
-                    setOutsideControlActive(true);
+                    setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
                 .catch(console.error);

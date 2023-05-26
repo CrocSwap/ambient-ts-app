@@ -40,7 +40,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         getRecentTokens,
     );
 
-    const tokenState = {
+    const tokenContext = {
         tokens,
         outputTokens,
         validatedInput,
@@ -55,7 +55,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     }, []);
 
     return (
-        <TokenContext.Provider value={tokenState}>
+        <TokenContext.Provider value={tokenContext}>
             {props.children}
         </TokenContext.Provider>
     );

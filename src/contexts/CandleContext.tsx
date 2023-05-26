@@ -23,38 +23,27 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTableContext } from './TradeTableContext';
 import { TradeTokenContext } from './TradeTokenContext';
 
-interface CandleStateIF {
-    candleData: {
-        value: CandlesByPoolAndDuration | undefined;
-        setValue: Dispatch<
-            SetStateAction<CandlesByPoolAndDuration | undefined>
-        >;
-    };
-    isCandleDataNull: {
-        value: boolean;
-        setValue: Dispatch<SetStateAction<boolean>>;
-    };
-    isCandleSelected: {
-        value: boolean | undefined;
-        setValue: Dispatch<SetStateAction<boolean | undefined>>;
-    };
-    fetchingCandle: {
-        value: boolean;
-        setValue: Dispatch<SetStateAction<boolean>>;
-    };
-    candleDomains: {
-        value: candleDomain;
-        setValue: Dispatch<SetStateAction<candleDomain>>;
-    };
-
-    candleScale: {
-        value: candleScale;
-        setValue: Dispatch<SetStateAction<candleScale>>;
-    };
+interface CandleContextIF {
+    candleData: CandlesByPoolAndDuration | undefined;
+    setCandleData: Dispatch<
+        SetStateAction<CandlesByPoolAndDuration | undefined>
+    >;
+    isCandleDataNull: boolean;
+    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+    isFetchingCandle: boolean;
+    setIsFetchingCandle: Dispatch<SetStateAction<boolean>>;
+    candleDomains: candleDomain;
+    setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
+    candleScale: candleScale;
+    setCandleScale: Dispatch<SetStateAction<candleScale>>;
     candleTimeLocal: number;
 }
 
-export const CandleContext = createContext<CandleStateIF>({} as CandleStateIF);
+export const CandleContext = createContext<CandleContextIF>(
+    {} as CandleContextIF,
+);
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
@@ -84,7 +73,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
-    const [fetchingCandle, setFetchingCandle] = useState(false);
+    const [isFetchingCandle, setIsFetchingCandle] = useState(false);
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -116,31 +105,19 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         location.pathname,
     ]);
 
-    const candleState = {
-        candleData: {
-            value: candleData,
-            setValue: setCandleData,
-        },
-        isCandleDataNull: {
-            value: isCandleDataNull,
-            setValue: setIsCandleDataNull,
-        },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        fetchingCandle: {
-            value: fetchingCandle,
-            setValue: setFetchingCandle,
-        },
-        candleDomains: {
-            value: candleDomains,
-            setValue: setCandleDomains,
-        },
-        candleScale: {
-            value: candleScale,
-            setValue: setCandleScale,
-        },
+    const candleContext = {
+        candleData,
+        setCandleData,
+        isCandleDataNull,
+        setIsCandleDataNull,
+        isCandleSelected,
+        setIsCandleSelected,
+        isFetchingCandle,
+        setIsFetchingCandle,
+        candleDomains,
+        setCandleDomains,
+        candleScale,
+        setCandleScale,
         candleTimeLocal,
     };
 
@@ -192,7 +169,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 if (GRAPHCACHE_URL) {
                     const candleSeriesCacheEndpoint =
                         GRAPHCACHE_URL + '/candle_series?';
-                    setFetchingCandle(true);
+                    setIsFetchingCandle(true);
                     fetch(candleSeriesCacheEndpoint + reqOptions)
                         .then((response) => response?.json())
                         .then((json) => {
@@ -220,7 +197,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         })
                         .then((result) => {
                             if (result !== 0) {
-                                setFetchingCandle(false);
+                                setIsFetchingCandle(false);
                             }
                         })
                         .catch(console.error);
@@ -339,7 +316,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [numDurationsNeeded]);
 
     return (
-        <CandleContext.Provider value={candleState}>
+        <CandleContext.Provider value={candleContext}>
             {props.children}
         </CandleContext.Provider>
     );

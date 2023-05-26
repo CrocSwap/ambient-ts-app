@@ -21,8 +21,8 @@ export default function SidebarRangePositions(props: propsIF) {
     const {
         setCurrentPositionActive,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
@@ -45,8 +45,8 @@ export default function SidebarRangePositions(props: propsIF) {
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setShowAllData(false);
         navigate(
@@ -61,8 +61,8 @@ export default function SidebarRangePositions(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

@@ -52,13 +52,13 @@ export default function PositionsSearchResults(props: propsIF) {
     const {
         setCurrentPositionActive,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
     const handleClick = (position: PositionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(2);
+        setOutsideControl(true);
+        setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setShowAllData(false);
         navigate(

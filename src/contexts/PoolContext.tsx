@@ -16,7 +16,7 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 
-interface PoolIF {
+interface PoolContextIF {
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -26,7 +26,7 @@ interface PoolIF {
     dailyVol: number | undefined;
 }
 
-export const PoolContext = createContext<PoolIF>({} as PoolIF);
+export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const {
@@ -82,7 +82,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         cachedQuerySpotPrice,
     });
 
-    const poolState = {
+    const poolContext = {
         pool,
         isPoolInitialized,
         poolPriceDisplay,
@@ -133,7 +133,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     return (
-        <PoolContext.Provider value={poolState}>
+        <PoolContext.Provider value={poolContext}>
             {props.children}
         </PoolContext.Provider>
     );

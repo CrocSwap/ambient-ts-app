@@ -24,8 +24,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         setCurrentPositionActive,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
@@ -44,8 +44,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(1);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setShowAllData(false);
         navigate(
@@ -60,8 +60,8 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

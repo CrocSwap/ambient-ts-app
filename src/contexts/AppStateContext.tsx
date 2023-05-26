@@ -16,7 +16,7 @@ import {
 } from '../components/Global/SnackbarComponent/useSnackbar';
 import { CHAT_ENABLED } from '../constants';
 
-interface AppStateIF {
+interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     globalModal: globalModalMethodsIF;
     globalPopup: globalPopupMethodsIF;
@@ -42,7 +42,9 @@ interface AppStateIF {
     };
 }
 
-export const AppStateContext = createContext<AppStateIF>({} as AppStateIF);
+export const AppStateContext = createContext<AppStateContextIF>(
+    {} as AppStateContextIF,
+);
 
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
@@ -80,7 +82,7 @@ export const AppStateContextProvider = (props: {
         closeWagmiModalWallet,
     ] = useModal();
 
-    const appState = useMemo(
+    const appStateContext = useMemo(
         () => ({
             appOverlay: {
                 isActive: isAppOverlayActive,
@@ -133,15 +135,15 @@ export const AppStateContextProvider = (props: {
         if (CHAT_ENABLED) {
             const interval = setInterval(() => {
                 getStatus().then((isChatUp) => {
-                    appState.chat.setIsEnabled(isChatUp);
+                    setIsChatEnabled(isChatUp);
                 });
             }, 60000);
             return () => clearInterval(interval);
         }
-    }, [appState.chat.isEnabled, CHAT_ENABLED]);
+    }, [isChatEnabled, CHAT_ENABLED]);
 
     return (
-        <AppStateContext.Provider value={appState}>
+        <AppStateContext.Provider value={appStateContext}>
             {props.children}
         </AppStateContext.Provider>
     );

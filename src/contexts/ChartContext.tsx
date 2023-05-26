@@ -5,14 +5,14 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 
-interface ChartIF {
+interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
     isFullScreen: boolean;
     setIsFullScreen: (val: boolean) => void;
     isEnabled: boolean;
 }
 
-export const ChartContext = createContext<ChartIF>({} as ChartIF);
+export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const { pathname: currentLocation } = useLocation();
@@ -25,7 +25,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             : true;
     const chartSettings = useChartSettings();
 
-    const chartState = {
+    const chartContext = {
         chartSettings,
         isFullScreen: fullScreenChart,
         setIsFullScreen: setFullScreenChart,
@@ -39,7 +39,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     }, [currentLocation]);
 
     return (
-        <ChartContext.Provider value={chartState}>
+        <ChartContext.Provider value={chartContext}>
             {props.children}
         </ChartContext.Provider>
     );

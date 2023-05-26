@@ -90,11 +90,8 @@ type chartItemStates = {
 function TradeCandleStickChart(props: propsIF) {
     const { selectedDate, setSelectedDate, isMarketOrLimitModule } = props;
 
-    const {
-        candleData: { value: candleData },
-        fetchingCandle: { value: fetchingCandle },
-        isCandleDataNull: { value: isCandleDataNull },
-    } = useContext(CandleContext);
+    const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
+        useContext(CandleContext);
     const { chartSettings } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
@@ -177,10 +174,6 @@ function TradeCandleStickChart(props: propsIF) {
     const candleTimeInSeconds: number = isMarketOrLimitModule
         ? chartSettings.candleTime.market.time
         : chartSettings.candleTime.range.time;
-
-    const {
-        candleScale: { setValue: setCandleScale },
-    } = useContext(CandleContext);
 
     useEffect(() => {
         setIsLoading(true);
@@ -864,7 +857,7 @@ function TradeCandleStickChart(props: propsIF) {
                 candleData !== undefined &&
                 prevPeriod === period &&
                 candleTimeInSeconds === period &&
-                !fetchingCandle ? (
+                !isFetchingCandle ? (
                     <Chart
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}

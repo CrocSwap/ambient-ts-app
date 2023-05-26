@@ -30,8 +30,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const {
         setCurrentTxActiveInTransactions,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
@@ -52,8 +52,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(
@@ -68,8 +68,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const handleViewMoreClick = (): void => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 

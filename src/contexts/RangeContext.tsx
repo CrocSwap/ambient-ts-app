@@ -5,7 +5,7 @@ import React, {
     useState,
 } from 'react';
 
-interface RangeStateIF {
+interface RangeContextIF {
     maxRangePrice: number;
     setMaxRangePrice: Dispatch<SetStateAction<number>>;
     minRangePrice: number;
@@ -20,7 +20,7 @@ interface RangeStateIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
 }
 
-export const RangeContext = createContext<RangeStateIF>({} as RangeStateIF);
+export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
 
 export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
@@ -34,7 +34,7 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     ] = useState<boolean>(false);
     const [chartTriggeredBy, setChartTriggeredBy] = useState<string>('');
 
-    const rangeState = {
+    const rangeContext = {
         maxRangePrice,
         setMaxRangePrice,
         minRangePrice,
@@ -50,7 +50,7 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     return (
-        <RangeContext.Provider value={rangeState}>
+        <RangeContext.Provider value={rangeContext}>
             {props.children}
         </RangeContext.Provider>
     );

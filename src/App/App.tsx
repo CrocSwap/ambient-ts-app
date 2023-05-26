@@ -70,10 +70,8 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
     } = useContext(AppStateContext);
-    const {
-        candleData: { value: candleData, setValue: setCandleData },
-        candleTimeLocal,
-    } = useContext(CandleContext);
+    const { candleData, setCandleData, candleTimeLocal } =
+        useContext(CandleContext);
     const { crocEnv, chainData, isChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);

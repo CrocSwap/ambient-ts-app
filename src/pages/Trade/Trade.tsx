@@ -43,22 +43,17 @@ function Trade() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const {
-        candleData: { value: candleData },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        isCandleDataNull: { value: isCandleDataNull },
+        candleData,
+        isCandleSelected,
+        setIsCandleSelected,
+        isCandleDataNull,
     } = useContext(CandleContext);
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const {
-        expandTradeTable,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(TradeTableContext);
+    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -167,8 +162,8 @@ function Trade() {
             setHasInitialized(false);
             setTransactionFilter(candleData);
             if (isOpen) {
-                setOutsideControlActive(true);
-                setOutsideTabSelected(0);
+                setOutsideControl(true);
+                setSelectedOutsideTab(0);
             }
         },
         [],

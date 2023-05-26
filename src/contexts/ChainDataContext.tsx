@@ -25,14 +25,16 @@ import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 
-interface ChainDataIF {
+interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
 }
 
-export const ChainDataContext = createContext<ChainDataIF>({} as ChainDataIF);
+export const ChainDataContext = createContext<ChainDataContextIF>(
+    {} as ChainDataContextIF,
+);
 
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
@@ -49,7 +51,7 @@ export const ChainDataContextProvider = (props: {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
-    const chainDataState = {
+    const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
         gasPriceInGwei,
@@ -208,7 +210,7 @@ export const ChainDataContextProvider = (props: {
     }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
 
     return (
-        <ChainDataContext.Provider value={chainDataState}>
+        <ChainDataContext.Provider value={chainDataContext}>
             {props.children}
         </ChainDataContext.Provider>
     );

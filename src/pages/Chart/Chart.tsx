@@ -191,10 +191,7 @@ export default function Chart(props: propsIF) {
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
-    const {
-        candleDomains: { setValue: setCandleDomains },
-        candleScale: { setValue: setCandleScale },
-    } = useContext(CandleContext);
+    const { setCandleDomains, setCandleScale } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
     const {

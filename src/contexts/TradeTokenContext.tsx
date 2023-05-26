@@ -12,7 +12,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { RangeContext } from './RangeContext';
 import { TokenContext } from './TokenContext';
 
-interface TradeTokenIF {
+interface TradeTokenContextIF {
     baseToken: {
         address: string;
         mainnetAddress: string;
@@ -38,8 +38,8 @@ interface TradeTokenIF {
     isTokenABase: boolean;
 }
 
-export const TradeTokenContext = createContext<TradeTokenIF>(
-    {} as TradeTokenIF,
+export const TradeTokenContext = createContext<TradeTokenContextIF>(
+    {} as TradeTokenContextIF,
 );
 
 export const TradeTokenContextProvider = (props: {
@@ -98,7 +98,7 @@ export const TradeTokenContextProvider = (props: {
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
 
-    const tradeTokenState = {
+    const tradeTokenContext = {
         baseToken: {
             address: baseTokenAddress,
             mainnetAddress: mainnetBaseTokenAddress,
@@ -194,7 +194,7 @@ export const TradeTokenContextProvider = (props: {
     ]);
 
     return (
-        <TradeTokenContext.Provider value={tradeTokenState}>
+        <TradeTokenContext.Provider value={tradeTokenContext}>
             {props.children}
         </TradeTokenContext.Provider>
     );

@@ -61,15 +61,15 @@ export default function OrdersSearchResults(props: propsIF) {
     const {
         setCurrentPositionActive,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
     const navigate = useNavigate();
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(1);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setShowAllData(false);
         navigate(

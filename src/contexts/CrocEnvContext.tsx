@@ -1,5 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
 import { memoizeTokenPrice } from '../App/functions/fetchTokenPrice';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
@@ -15,7 +15,7 @@ interface UrlRoutesTemplate {
     limit: string;
     range: string;
 }
-interface CrocEnvIF {
+interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
     chainData: ChainSpec;
@@ -26,7 +26,9 @@ interface CrocEnvIF {
     defaultUrlParams: UrlRoutesTemplate;
 }
 
-export const CrocEnvContext = createContext<CrocEnvIF>({} as CrocEnvIF);
+export const CrocEnvContext = createContext<CrocEnvContextIF>(
+    {} as CrocEnvContextIF,
+);
 
 export const CrocEnvContextProvider = (props: {
     children: React.ReactNode;
@@ -58,7 +60,7 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const crocEnvState = {
+    const crocEnvContext = {
         crocEnv,
         setCrocEnv,
         chainData,
@@ -139,7 +141,7 @@ export const CrocEnvContextProvider = (props: {
     }, [chainData.chainId]);
 
     return (
-        <CrocEnvContext.Provider value={crocEnvState}>
+        <CrocEnvContext.Provider value={crocEnvContext}>
             {props.children}
         </CrocEnvContext.Provider>
     );

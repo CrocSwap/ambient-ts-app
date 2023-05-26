@@ -74,7 +74,6 @@ export const UserDataContextProvider = (props: {
         dispatch(resetUserGraphData());
     }, [isConnected, isLoggedIn, userAddress]);
 
-    // CONTEXT: user data context
     const userLimitOrderStatesCacheEndpoint =
         GRAPHCACHE_URL + '/user_limit_order_states?';
     useEffect(() => {

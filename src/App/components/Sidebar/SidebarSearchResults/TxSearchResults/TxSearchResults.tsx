@@ -19,15 +19,15 @@ export default function TxSearchResults(props: propsIF) {
     const {
         setCurrentTxActiveInTransactions,
         setShowAllData,
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        setOutsideControl,
+        setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
     const navigate = useNavigate();
 
     const handleClick = (tx: TransactionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(0);
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         navigate(

@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CandleContext } from './CandleContext';
 
-interface TradeTableIF {
+interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
     setShowOrderPulseAnimation: (val: boolean) => void;
     showRangePulseAnimation: boolean;
@@ -17,18 +16,20 @@ interface TradeTableIF {
     setExpandTradeTable: (val: boolean) => void;
     showAllData: boolean;
     setShowAllData: (val: boolean) => void;
-    outsideTab: { selected: number; setSelected: (val: number) => void };
-    outsideControl: { isActive: boolean; setIsActive: (val: boolean) => void };
+    selectedOutsideTab: number;
+    setSelectedOutsideTab: (val: number) => void;
+    outsideControl: boolean;
+    setOutsideControl: (val: boolean) => void;
 }
 
-export const TradeTableContext = createContext<TradeTableIF>(
-    {} as TradeTableIF,
+export const TradeTableContext = createContext<TradeTableContextIF>(
+    {} as TradeTableContextIF,
 );
 
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    // const { isCandleSelected: { value: isCandleSelected }} = useContext(CandleContext);
+    // const { isCandleSelected } = useContext(CandleContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -46,7 +47,7 @@ export const TradeTableContextProvider = (props: {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
 
-    const tradeTableState = {
+    const tradeTableContext = {
         showAllData,
         setShowAllData,
         currentTxActiveInTransactions,
@@ -61,14 +62,10 @@ export const TradeTableContextProvider = (props: {
         setShowOrderPulseAnimation,
         showRangePulseAnimation,
         setShowRangePulseAnimation,
-        outsideTab: {
-            selected: selectedOutsideTab,
-            setSelected: setSelectedOutsideTab,
-        },
-        outsideControl: {
-            isActive: outsideControl,
-            setIsActive: setOutsideControl,
-        },
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        outsideControl,
+        setOutsideControl,
     };
 
     function toggleTradeTabBasedOnRoute() {
@@ -89,12 +86,16 @@ export const TradeTableContextProvider = (props: {
     }
 
     useEffect(() => {
-        if (!currentTxActiveInTransactions && !currentPositionActive)
+        if (
+            !currentTxActiveInTransactions &&
+            !currentPositionActive &&
+            location.pathname.includes('/trade')
+        )
             toggleTradeTabBasedOnRoute();
-    }, [location.pathname.includes('/trade')]);
+    }, [location.pathname]);
 
     return (
-        <TradeTableContext.Provider value={tradeTableState}>
+        <TradeTableContext.Provider value={tradeTableContext}>
             {props.children}
         </TradeTableContext.Provider>
     );
