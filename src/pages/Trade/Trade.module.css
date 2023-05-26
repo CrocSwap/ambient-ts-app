@@ -323,9 +323,7 @@
     }
     .main_layout {
         display: grid;
-        /* height: 100%; */
-        /* background: brown; */
-        /* overflow-y: hidden; */
+
     }
 
     .main__chart {
