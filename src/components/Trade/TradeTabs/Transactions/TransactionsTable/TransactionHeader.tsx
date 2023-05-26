@@ -24,7 +24,6 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
 
     function handleClick(slug: string) {
         if (sortable) {
-            console.clear();
             if (sortBy !== slug) {
                 IS_LOCAL_ENV && console.debug('first click');
                 setSortBy(slug);

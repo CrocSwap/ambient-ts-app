@@ -864,6 +864,11 @@ export default function App() {
         candleScale?.isFetchForTimeframe,
     ]);
 
+    function setEmptyCandles() {
+        setIsCandleDataNull(true);
+        setExpandTradeTable(true);
+    }
+
     const fetchCandles = () => {
         if (
             isServerEnabled &&
@@ -901,8 +906,6 @@ export default function App() {
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
                     setFetchingCandle(true);
                     fetch(candleSeriesCacheEndpoint + reqOptions)
                         .then((response) => response?.json())
@@ -934,14 +937,17 @@ export default function App() {
                                 setFetchingCandle(false);
                             }
                         })
-                        .catch(console.error);
+                        .catch((e) => {
+                            console.error(e);
+                            setEmptyCandles();
+                        });
                 }
             } catch (error) {
                 console.error({ error });
+                setEmptyCandles();
             }
         } else {
-            setIsCandleDataNull(true);
-            setExpandTradeTable(true);
+            setEmptyCandles();
         }
     };
 
@@ -990,6 +996,19 @@ export default function App() {
     const candleSeriesCacheEndpoint =
         httpGraphCacheServerDomain + '/candle_series?';
 
+    function capNumDurations(numDurations: number): string {
+        const MAX_NUM_DURATIONS = 5000;
+        const MIN_NUM_DURATIONS = 1;
+        if (numDurations > MAX_NUM_DURATIONS) {
+            console.warn(`Candle fetch n=${numDurations} exceeds max cap.`);
+            return MAX_NUM_DURATIONS.toString();
+        } else if (numDurations < MIN_NUM_DURATIONS) {
+            console.warn(`Candle fetch n=${numDurations} non-positive.`);
+            return MIN_NUM_DURATIONS.toString();
+        }
+        return numDurations.toString();
+    }
+
     const fetchCandlesByNumDurations = (numDurations: number) =>
         fetch(
             candleSeriesCacheEndpoint +
@@ -1000,7 +1019,7 @@ export default function App() {
                     period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
-                    n: numDurations.toString(), // positive integer
+                    n: capNumDurations(numDurations),
                     // page: '0', // nonnegative integer
                     chainId: mktDataChainId(chainData.chainId),
                     dex: 'all',
@@ -1054,7 +1073,10 @@ export default function App() {
                     setCandleData(newCandleData);
                 }
             })
-            .catch(console.error);
+            .catch((e) => {
+                console.error(e);
+                setEmptyCandles();
+            });
 
     useEffect(() => {
         if (!numDurationsNeeded) return;

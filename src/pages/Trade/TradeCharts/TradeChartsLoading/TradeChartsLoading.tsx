@@ -1,15 +1,10 @@
-import candleStickImage from '../../../../assets/images/charts/candlestick.png';
-import Shimmer from '../../../../components/Global/Skeletons/Shimmer';
 import styles from './TradeChartsLoading.module.css';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
 export default function TradeChartsLoading() {
     return (
         <div className={styles.container}>
-            <img src={candleStickImage} alt='' />
-            <div className={styles.overlay_container}>
-                <div className={styles.overlay}> </div>
-                <div className={styles.overlay}> </div>
-            </div>
-            <Shimmer />
+            {/* <CircularProgress /> */}
+            <Spinner size={100} bg='var(--dark2)' />
         </div>
     );
 }
