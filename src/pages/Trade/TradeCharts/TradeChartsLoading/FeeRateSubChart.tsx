@@ -263,8 +263,6 @@ function FeeRateSubChart(props: FreeRateData) {
                 .node() as any;
             if (container) container.requestRedraw();
         }
-
-        console.log(d3CanvasCrosshair);
     };
 
     // Fee Rate Chart
