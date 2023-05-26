@@ -34,7 +34,10 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 // interface for component props
 interface propsIF {
@@ -231,8 +234,8 @@ function LimitCurrencyConverter(props: propsIF) {
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             linkGenLimit.navigate({
                 chain: chainId,
-                tokenA: tokenPair.dataTokenA.address,
-                tokenB: tokenPair.dataTokenB.address,
+                tokenA: tokenPair.dataTokenB.address,
+                tokenB: tokenPair.dataTokenA.address,
             });
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
