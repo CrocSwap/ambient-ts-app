@@ -1730,10 +1730,7 @@ export default function App() {
         chainId: chainData.chainId,
         poolId: chainData.poolIndex,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
-        isShowAllEnabled: isShowAllEnabled,
         setIsShowAllEnabled: setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
         lastBlockNumber: lastBlockNumber,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
@@ -2249,6 +2246,7 @@ export default function App() {
                                     path='initpool/:params'
                                     element={
                                         <InitPool
+                                            chainId={chainData.chainId}
                                             isUserLoggedIn={isUserLoggedIn}
                                             crocEnv={crocEnv}
                                             gasPriceInGwei={gasPriceInGwei}

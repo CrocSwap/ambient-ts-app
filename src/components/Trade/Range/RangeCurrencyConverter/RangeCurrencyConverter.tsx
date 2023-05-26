@@ -27,12 +27,11 @@ import {
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 
 // interface for component props
 interface propsIF {
@@ -66,7 +65,6 @@ interface propsIF {
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
     gasPriceInGwei: number | undefined;
-
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
@@ -302,8 +300,6 @@ function RangeCurrencyConverter(props: propsIF) {
                 : truncateDecimals(qtyTokenB, 2)
             : '';
 
-        // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -374,19 +370,18 @@ function RangeCurrencyConverter(props: propsIF) {
             setTokenAInputQty('');
         }
     };
-    const navigate = useNavigate();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
-        navigate(
-            '/trade/range/' +
-                formSlugForPairParams(
-                    tokenPair.dataTokenA.chainId,
-                    tokenPair.dataTokenB,
-                    tokenPair.dataTokenA,
-                ),
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: tokenPair.dataTokenB.address,
+            tokenB: tokenPair.dataTokenA.address,
+        });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 

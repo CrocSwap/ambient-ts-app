@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -7,9 +6,9 @@ import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
-import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -67,12 +66,9 @@ export const SoloTokenSelect = (props: propsIF) => {
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
-    // hook to produce current slug in URL prior to params
-    const locationSlug = useLocationSlug();
-
-    // fn to navigate the App to a new URL via react router
-    // this will navigate the app while preserving state
-    const navigate = useNavigate();
+    // hook to generate a navigation action for when modal is closed
+    // no arg ➡ hook will infer destination from current URL path 
+    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
@@ -105,7 +101,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 return;
             }
             goToNewUrlParams(
-                locationSlug,
                 chainId,
                 tkn.address,
                 tokenPair.dataTokenB.address.toLowerCase() ===
@@ -124,7 +119,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 return;
             }
             goToNewUrlParams(
-                locationSlug,
                 chainId,
                 tokenPair.dataTokenA.address.toLowerCase() ===
                     tkn.address.toLowerCase()
@@ -135,22 +129,16 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
 
         function goToNewUrlParams(
-            pathSlug: string,
             chain: string,
             addrTokenA: string,
             addrTokenB: string,
         ): void {
-            navigate(
-                pathSlug +
-                    '/chain=' +
-                    chain +
-                    '&tokenA=' +
-                    addrTokenA +
-                    '&tokenB=' +
-                    addrTokenB,
-            );
+            linkGenAny.navigate({
+                chain: chain,
+                tokenA: addrTokenA,
+                tokenB: addrTokenB,
+            });
         }
-
         setInput('');
         // close the token modal
         closeModal();
@@ -258,7 +246,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     ) as HTMLInputElement;
     const clearInputField = () => {
         if (input) input.value = '';
-
         setInput('');
         document.getElementById('token_select_input_field')?.focus();
     };

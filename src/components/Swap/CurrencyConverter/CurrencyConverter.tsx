@@ -3,11 +3,12 @@ import {
     Dispatch,
     memo,
     SetStateAction,
+    useCallback,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -30,6 +31,7 @@ import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { useAccount } from 'wagmi';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { shallowEqual } from 'react-redux';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     crocEnv: CrocEnv | undefined;
@@ -78,6 +80,8 @@ interface propsIF {
 }
 
 function CurrencyConverter(props: propsIF) {
+    const { chainId, tokenPair } = props;
+
     const dispatch = useAppDispatch();
 
     const {
@@ -114,12 +118,12 @@ function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         setTokenALocal(tokenAAddress);
         setTokenASymbolLocal(tokenASymbol);
-    }, [tokenAAddress, tokenASymbol, props.chainId]);
+    }, [tokenAAddress, tokenASymbol, chainId]);
 
     useEffect(() => {
         setTokenBLocal(tokenBAddress);
         setTokenBSymbolLocal(tokenBSymbol);
-    }, [tokenBAddress, tokenBSymbol, props.chainId]);
+    }, [tokenBAddress, tokenBSymbol, chainId]);
 
     const sortedTokens = sortBaseQuoteTokens(tokenALocal, tokenBLocal);
     const isSellTokenBase = tokenALocal === sortedTokens[0];
@@ -146,7 +150,8 @@ function CurrencyConverter(props: propsIF) {
         }
     }, []);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const { pathname } = useLocation();
 
@@ -244,15 +249,15 @@ function CurrencyConverter(props: propsIF) {
         return (
             locationSlug +
             formSlugForPairParams(
-                props.tokenPair.dataTokenA.chainId,
-                props.tokenPair.dataTokenB.address,
-                props.tokenPair.dataTokenA.address,
+                tokenPair.dataTokenA.chainId,
+                tokenPair.dataTokenB.address,
+                tokenPair.dataTokenA.address,
             )
         );
     }, [
         pathname,
-        props.tokenPair.dataTokenB.address,
-        props.tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
+        tokenPair.dataTokenA.address,
     ]);
 
     const [switchBoxes, setSwitchBoxes] = useState(false);
@@ -269,8 +274,8 @@ function CurrencyConverter(props: propsIF) {
         return () => clearInterval(timerId);
     }, []);
 
-    const reverseTokens = useMemo(
-        () => (): void => {
+    const reverseTokens = useCallback(
+        (): void => {
             if (disableReverseTokens || !props.poolExists) {
                 return;
             } else {
@@ -290,12 +295,14 @@ function CurrencyConverter(props: propsIF) {
                 setTokenBLocal(tokenALocal);
                 setTokenASymbolLocal(tokenBSymbolLocal);
                 setTokenBSymbolLocal(tokenASymbolLocal);
-
-                navigate(linkPathReversed);
+                linkGenAny.navigate({
+                    chain: chainId,
+                    tokenA: tokenPair.dataTokenB.address,
+                    tokenB: tokenPair.dataTokenA.address,
+                });
                 if (!isTokenAPrimaryLocal) {
                     setTokenAQtyLocal(tokenBQtyLocal);
                     props.setBuyQtyString('');
-
                     props.setSellQtyString(
                         tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
                     );
@@ -311,8 +318,7 @@ function CurrencyConverter(props: propsIF) {
                 dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
                 setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
             }
-        },
-        [
+        }, [
             props.crocEnv,
             props.poolPriceDisplay,
             tokenALocal,
@@ -601,8 +607,8 @@ function CurrencyConverter(props: propsIF) {
                 buyQtyString={props.buyQtyString}
                 setBuyQtyString={props.setBuyQtyString}
                 isUserLoggedIn={props.isUserLoggedIn}
-                tokenPair={props.tokenPair}
-                chainId={props.chainId}
+                tokenPair={tokenPair}
+                chainId={chainId}
                 direction={props.isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 isLoading={isSellLoading}
@@ -675,8 +681,8 @@ function CurrencyConverter(props: propsIF) {
                     buyQtyString={props.buyQtyString}
                     isUserLoggedIn={props.isUserLoggedIn}
                     tokenBQtyLocal={tokenBQtyLocal}
-                    tokenPair={props.tokenPair}
-                    chainId={props.chainId}
+                    tokenPair={tokenPair}
+                    chainId={chainId}
                     direction={props.isLiq ? '' : 'To:'}
                     fieldId='buy'
                     isLoading={isBuyLoading}

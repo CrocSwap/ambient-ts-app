@@ -34,6 +34,7 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -55,9 +56,7 @@ interface propsIF {
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
-
     handleAccountClick: () => void;
-
     isShowAllEnabled: boolean;
 }
 
@@ -138,20 +137,21 @@ export default function RangesMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
+
     const repositionButton = (
         <Link
             className={styles.reposition_button}
             to={
-                '/trade/reposition/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
+                linkGenRepo.getFullURL({
+                    chain: chainData.chainId,
+                    tokenA: position.base,
+                    tokenB: position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                })
             }
             state={{ position: position }}
         >
@@ -170,16 +170,13 @@ export default function RangesMenu(props: propsIF) {
             style={{ opacity: '1' }}
             className={styles.option_button}
             to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
+                linkGenRange.getFullURL({
+                    chain: chainData.chainId,
+                    tokenA: position.base,
+                    tokenB: position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                })
             }
             onClick={handleCopyClick}
         >
@@ -192,16 +189,13 @@ export default function RangesMenu(props: propsIF) {
             style={{ opacity: '1' }}
             className={styles.option_button}
             to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
+                linkGenRange.getFullURL({
+                    chain: chainData.chainId,
+                    tokenA: position.base,
+                    tokenB: position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                })
             }
             onClick={handleCopyClick}
         >

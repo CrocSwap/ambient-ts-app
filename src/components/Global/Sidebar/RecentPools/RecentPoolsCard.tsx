@@ -6,6 +6,7 @@ import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { pageNames, linkGenMethodsIF, useLinkGen } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     tradeData: tradeData;
@@ -21,28 +22,31 @@ export default function RecentPoolsCard(props: propsIF) {
 
     const { pathname } = useLocation();
 
-    const locationSlug = useMemo<string>(() => {
-        let slug: string;
+    const navTarget = useMemo<pageNames>(() => {
+        let page: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
             pathname.startsWith('/account')
         ) {
-            slug = '/trade/market';
+            page = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
-            slug = '/trade/limit';
+            page = 'limit';
         } else if (
             pathname.startsWith('/trade/range') ||
             pathname.startsWith('/trade/reposition')
         ) {
-            slug = '/trade/range';
+            page = 'range';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
             );
-            slug = '/trade/market';
+            page = 'market';
         }
-        return slug + '/chain=';
+        return page as pageNames;
     }, [pathname]);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenDynamic: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -88,12 +92,11 @@ export default function RecentPoolsCard(props: propsIF) {
         <Link
             className={styles.container}
             to={
-                locationSlug +
-                chainId +
-                '&tokenA=' +
-                tokenAString +
-                '&tokenB=' +
-                tokenBString
+                linkGenDynamic.getFullURL({
+                    chain: chainId,
+                    tokenA: tokenAString,
+                    tokenB: tokenBString,
+                })
             }
         >
             <div>

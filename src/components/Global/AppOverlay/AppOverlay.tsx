@@ -9,13 +9,13 @@ import { VscClose } from 'react-icons/vsc';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 function AppOverlay() {
-    // const navigate = useNavigate();
     const {
         appOverlay: {
             isActive: isAppOverlayActive,
             setIsActive: setIsAppOverlayActive,
         },
     } = useContext(AppStateContext);
+
     const [page, setPage] = useState(0);
 
     const page1Overlays = (

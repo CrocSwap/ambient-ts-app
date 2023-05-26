@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
@@ -9,10 +9,11 @@ import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    mostRecentTransactions: TransactionIF[];
     chainId: string;
+    mostRecentTransactions: TransactionIF[];
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
@@ -20,8 +21,8 @@ interface propsIF {
 
 export default function SidebarRecentTransactions(props: propsIF) {
     const {
-        mostRecentTransactions,
         chainId,
+        mostRecentTransactions,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         isUserLoggedIn,
@@ -34,7 +35,10 @@ export default function SidebarRecentTransactions(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -44,7 +48,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
@@ -52,14 +56,11 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setOutsideTabSelected(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote
+        });
     };
 
     const handleViewMoreClick = (): void => {
