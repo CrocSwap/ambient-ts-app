@@ -34,7 +34,6 @@ import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
@@ -42,6 +41,7 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -230,9 +230,12 @@ function Ranges(props: propsIF) {
     );
     const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
 
-    const sumHashTopPositions = useMemo(
-        () => diffHashSig(topPositions),
-        [sortedPositions],
+    // Debounce the heavy weight networking operation of refreshing the top positions
+    // so users clicking like a maniac on the column header don't spam the network
+    const REFRESH_TOP_DELAY = 1000;
+    const sumHashTopPositions = useDebounce(
+        diffHashSig(topPositions.map((p) => p.positionId)),
+        REFRESH_TOP_DELAY,
     );
 
     useEffect(() => {
@@ -248,8 +251,23 @@ function Ranges(props: propsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            if (updatedPositions) {
-                                dispatch(addPositionsByPool(updatedPositions));
+                            const updatedPositionsMatchingPool =
+                                updatedPositions.filter(
+                                    (position) =>
+                                        position.base.toLowerCase() ===
+                                            baseTokenAddress.toLowerCase() &&
+                                        position.quote.toLowerCase() ===
+                                            quoteTokenAddress.toLowerCase() &&
+                                        position.poolIdx ===
+                                            chainData.poolIndex &&
+                                        position.chainId === chainData.chainId,
+                                );
+                            if (updatedPositionsMatchingPool.length) {
+                                dispatch(
+                                    addPositionsByPool(
+                                        updatedPositionsMatchingPool,
+                                    ),
+                                );
                             }
                         } else {
                             const updatedPositionsMatchingUser =
@@ -276,7 +294,6 @@ function Ranges(props: propsIF) {
         }
     }, [
         sumHashTopPositions,
-        currentTimeForPositionUpdateCaching,
         isShowAllEnabled,
         isOnPortfolioPage,
         lastBlockNumber,
@@ -639,7 +656,17 @@ function Ranges(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TableSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Spinner size={100} bg='var(--dark1)' />
+                    </div>
                 ) : (
                     rangeDataOrNull
                 )}

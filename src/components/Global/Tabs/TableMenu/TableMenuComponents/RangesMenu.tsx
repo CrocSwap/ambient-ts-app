@@ -63,6 +63,7 @@ interface propsIF {
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
+    const { sidebar } = useContext(AppStateContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -223,7 +224,9 @@ export default function RangesMenu(props: propsIF) {
     // ----------------------
 
     const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = useMediaQuery('(min-width: 1380px)');
+    const view2 = sidebar.isOpen
+        ? useMediaQuery('(min-width: 1750px)')
+        : useMediaQuery('(min-width: 1550px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
@@ -236,7 +239,10 @@ export default function RangesMenu(props: propsIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {showRepositionButton && repositionButton}
-            {!showRepositionButton && userMatchesConnectedAccount && addButton}
+            {view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
             {view2 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
             {!userMatchesConnectedAccount && copyButton}

@@ -20,7 +20,6 @@ import {
     memo,
 } from 'react';
 
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -32,6 +31,7 @@ import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -585,7 +585,17 @@ function Transactions(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TransactionsSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Spinner size={100} bg='var(--dark1)' />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}
