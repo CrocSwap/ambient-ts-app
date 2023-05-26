@@ -19,7 +19,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -31,6 +30,7 @@ import {
 import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
+import Spinner from '../../../components/Global/Spinner/Spinner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -845,11 +845,15 @@ function TradeCandleStickChart(props: propsIF) {
 
     const loading = (
         <div
-            style={{ height: '100%', width: '100%' }}
-            className='animatedImg_container'
+            style={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
         >
-            <ChartSkeleton />
-            <div className='fetching_text'>Fetching chart data...</div>
+            <Spinner size={100} bg='var(--dark2)' />
         </div>
     );
 
