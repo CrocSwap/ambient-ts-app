@@ -2353,11 +2353,6 @@ export default function Chart(props: propsIF) {
                     lookupChain(position.chainId).gridSize,
                 );
 
-                const pinnedMinPriceDisplayTruncated =
-                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-                const pinnedMaxPriceDisplayTruncated =
-                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
-
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -3044,13 +3039,6 @@ export default function Chart(props: propsIF) {
                                 newRangeValue = newTargets;
 
                                 setLiqHighlightedLinesAndArea(newTargets);
-
-                                const minPrice = newTargets.filter(
-                                    (target: any) => target.name === 'Min',
-                                )[0].value;
-                                const maxPrice = newTargets.filter(
-                                    (target: any) => target.name === 'Max',
-                                )[0].value;
 
                                 return newTargets;
                             });
