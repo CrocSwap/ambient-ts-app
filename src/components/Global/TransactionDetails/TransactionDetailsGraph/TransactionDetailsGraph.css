@@ -6,8 +6,8 @@
 }
 
 .transaction_details_graph_placeholder {
-    background: url(../../../../assets/images/home/shot4Low.jpg) no-repeat
-        center center fixed;
+    background: url(../../../../assets/images/home/shot4Low.jpg) no-repeat;
+    background-position: center 90%;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
