@@ -714,8 +714,7 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        render(1);
-        renderCanvas();
+        renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
@@ -1667,8 +1666,6 @@ export default function Chart(props: propsIF) {
                                     setBandwidth(candlestick.bandwidth());
                                 }
                                 render(2);
-                                renderCanvas();
-
                                 setZoomAndYdragControl(event);
                             }
                         }
@@ -2048,7 +2045,6 @@ export default function Chart(props: propsIF) {
 
                         setBandwidth(candlestick.bandwidth());
                         render(4);
-                        renderCanvas();
 
                         setZoomAndYdragControl(event);
                     })
@@ -3708,13 +3704,13 @@ export default function Chart(props: propsIF) {
             if (location.pathname.includes('/limit')) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
-
-            render(5);
+            renderCanvasArray([d3Yaxis]);
         }
     }, [yAxis === undefined, location]);
 
     useEffect(() => {
-        renderCrCanvas();
+        renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+        renderSubchartCrCanvas;
     }, [isMouseMoveCrosshair]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
@@ -4086,7 +4082,7 @@ export default function Chart(props: propsIF) {
 
                 changeyAxisWidth();
 
-                renderYAxisCanvas();
+                renderCanvasArray([d3Yaxis]);
             }
         }
     };
@@ -4238,7 +4234,7 @@ export default function Chart(props: propsIF) {
 
         context.restore();
 
-        renderXAxisCanvas();
+        renderCanvasArray([d3Xaxis]);
     };
 
     // Horizontal Lines
@@ -4467,7 +4463,7 @@ export default function Chart(props: propsIF) {
                 context.fillStyle = 'transparent';
             });
 
-            renderCanvas();
+            renderCanvasArray([d3CanvasLimitLine]);
         } else if (
             horizontalLine !== undefined &&
             (location.pathname.includes('range') ||
@@ -5056,7 +5052,13 @@ export default function Chart(props: propsIF) {
                             : pinnedMinPriceDisplayTruncated;
                     }
 
-                    render(5);
+                    renderCanvasArray([
+                        d3CanvasRangeLine,
+                        d3CanvasLiqAskDepthLine,
+                        d3CanvasLiqAskLine,
+                        d3CanvasLiqBidLine,
+                        d3CanvasLiqBidDepthLine,
+                    ]);
 
                     newRangeValue = newTargets;
 
@@ -5178,8 +5180,7 @@ export default function Chart(props: propsIF) {
                 );
 
             setCandlestick(() => canvasCandlestick);
-            renderCanvas();
-            render(6);
+            renderCanvasArray([d3CanvasCandle]);
         }
     }, [scaleData, selectedDate]);
 
@@ -5214,7 +5215,6 @@ export default function Chart(props: propsIF) {
 
             const resizeObserver = new ResizeObserver(() => {
                 render(7);
-                renderCanvas();
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -5396,8 +5396,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => (d.volumeUSD ? d.volumeUSD : 0));
 
             setBarSeries(() => canvasBarChart);
-            renderCanvas();
-            render(8);
+            renderCanvasArray([d3CanvasBar]);
         }
     }, [scaleData, selectedDate]);
 
@@ -5545,88 +5544,34 @@ export default function Chart(props: propsIF) {
         }
     }, [liqMode, location]);
 
-    function renderCanvas() {
-        // if (d3CanvasCandle) {
-        //     const container = d3.select(d3CanvasCandle.current).node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasBar) {
-        //     const container = d3.select(d3CanvasBar.current).node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqAsk) {
-        //     const container = d3.select(d3CanvasLiqAsk.current).node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqBid) {
-        //     const container = d3.select(d3CanvasLiqBid.current).node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqAskDepth) {
-        //     const container = d3
-        //         .select(d3CanvasLiqAskDepth.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqBidDepth) {
-        //     const container = d3
-        //         .select(d3CanvasLiqBidDepth.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqAskLine) {
-        //     const container = d3
-        //         .select(d3CanvasLiqAskLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqBidLine) {
-        //     const container = d3
-        //         .select(d3CanvasLiqBidLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqAskDepthLine) {
-        //     const container = d3
-        //         .select(d3CanvasLiqAskDepthLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLiqBidDepthLine) {
-        //     const container = d3
-        //         .select(d3CanvasLiqBidDepthLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasBand) {
-        //     const container = d3.select(d3CanvasBand.current).node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasCrosshair) {
-        //     const container = d3
-        //         .select(d3CanvasCrosshair.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasMarketLine) {
-        //     const container = d3
-        //         .select(d3CanvasMarketLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasLimitLine) {
-        //     const container = d3
-        //         .select(d3CanvasLimitLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
-        // if (d3CanvasRangeLine) {
-        //     const container = d3
-        //         .select(d3CanvasRangeLine.current)
-        //         .node() as any;
-        //     if (container) container.requestRedraw();
-        // }
+    function renderCanvasArray(canvasArray: any[]) {
+        canvasArray.forEach((canvas) => {
+            if (canvas) {
+                const container = d3.select(canvas.current).node() as any;
+                if (container) container.requestRedraw();
+            }
+        });
     }
+
+    const renderSubchartCrCanvas = () => {
+        const feeRateCrCanvas = d3
+            .select('#fee_rate_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (feeRateCrCanvas) {
+            const nd = feeRateCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlCrCanvas = d3
+            .select('#tvl_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (tvlCrCanvas) {
+            const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+    };
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
@@ -5733,8 +5678,15 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            render(9);
-            renderCanvas();
+            renderCanvasArray([
+                d3CanvasBand,
+                d3CanvasRangeLine,
+                d3Yaxis,
+                d3CanvasLiqAskDepthLine,
+                d3CanvasLiqAskLine,
+                d3CanvasLiqBidLine,
+                d3CanvasLiqBidDepthLine,
+            ]);
         }
     };
 
@@ -5797,12 +5749,11 @@ export default function Chart(props: propsIF) {
 
             setLiqAskDepthSeries(() => d3CanvasLiqAskDepthChart);
 
-            renderCanvas();
-            render(10);
+            renderCanvasArray([d3CanvasLiqAsk, d3CanvasLiqAskDepth]);
         }
     }, [
         diffHashSig(scaleData),
-        diffHashSig(gradientForAsk),
+        gradientForAsk,
         liqMode,
         liquidityScale,
         liquidityDepthScale,
@@ -5840,13 +5791,12 @@ export default function Chart(props: propsIF) {
 
             setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
 
-            renderCanvas();
-            render(11);
+            renderCanvasArray([d3CanvasLiqBid, d3CanvasLiqBidDepth]);
         }
     }, [
         diffHashSig(scaleData),
         liqMode,
-        diffHashSig(gradientForAsk),
+        gradientForBid,
         liquidityScale,
         liquidityDepthScale,
     ]);
@@ -5959,8 +5909,16 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            renderCanvas();
-            render(12);
+            renderCanvasArray([
+                d3CanvasLiqAsk,
+                d3CanvasLiqAskDepth,
+                d3CanvasLiqAskLine,
+                d3CanvasLiqAskDepthLine,
+                d3CanvasLiqBid,
+                d3CanvasLiqBidDepth,
+                d3CanvasLiqBidLine,
+                d3CanvasLiqBidDepthLine,
+            ]);
         }
     }, [scaleData, liquidityData, location]);
 
@@ -6024,8 +5982,7 @@ export default function Chart(props: propsIF) {
                     });
             }
 
-            render(13);
-            renderCanvas();
+            renderCanvasArray([d3CanvasLiqBidLine, d3CanvasLiqBidDepthLine]);
         }
     }, [
         diffHashSig(scaleData),
@@ -6139,8 +6096,7 @@ export default function Chart(props: propsIF) {
                 });
         }
 
-        render(14);
-        renderCanvas();
+        renderCanvasArray([d3CanvasLiqAskLine, d3CanvasLiqAskDepthLine]);
     }, [
         diffHashSig(scaleData),
         liquidityData?.liqAskData,
@@ -6422,8 +6378,8 @@ export default function Chart(props: propsIF) {
                           ),
                 },
             ]);
-
-            renderCrCanvas();
+            renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+            renderSubchartCrCanvas();
         }
 
         setsubChartValues((prevState: any) => {
@@ -6650,7 +6606,12 @@ export default function Chart(props: propsIF) {
             setGradientForBid(gradient);
         }
 
-        renderCanvas();
+        renderCanvasArray([
+            d3CanvasLiqBid,
+            d3CanvasLiqBidDepth,
+            d3CanvasLiqBidLine,
+            d3CanvasLiqBidDepthLine,
+        ]);
     };
 
     const askAreaFunc = (
@@ -6743,7 +6704,12 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        renderCanvas();
+        renderCanvasArray([
+            d3CanvasLiqAsk,
+            d3CanvasLiqAskDepth,
+            d3CanvasLiqAskLine,
+            d3CanvasLiqAskDepthLine,
+        ]);
     };
 
     const selectedDateEvent = (
@@ -6783,55 +6749,12 @@ export default function Chart(props: propsIF) {
             );
     };
 
-    const renderCrCanvas = () => {
-        if (d3CanvasCrosshair) {
-            const container = d3
-                .select(d3CanvasCrosshair.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        const feeRateCrCanvas = d3
-            .select('#fee_rate_chart')
-            .select('#d3CanvasCrosshair');
-
-        if (feeRateCrCanvas) {
-            const nd = feeRateCrCanvas.node() as any;
-            if (nd) nd.requestRedraw();
-        }
-
-        const tvlCrCanvas = d3
-            .select('#tvl_chart')
-            .select('#d3CanvasCrosshair');
-
-        if (tvlCrCanvas) {
-            const nd = tvlCrCanvas.node() as any;
-            if (nd) nd.requestRedraw();
-        }
-
-        renderXAxisCanvas();
-        renderYAxisCanvas();
-    };
-
-    const renderYAxisCanvas = () => {
-        if (d3Yaxis) {
-            const container = d3.select(d3Yaxis.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-    };
-
-    const renderXAxisCanvas = () => {
-        if (d3Xaxis) {
-            const container = d3.select(d3Xaxis.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-    };
-
     useEffect(() => {
         d3.select(d3CanvasCrosshair.current).style(
             'visibility',
             crosshairActive !== 'none' ? 'visible' : 'hidden',
         );
+        renderSubchartCrCanvas();
     }, [crosshairActive]);
 
     // Draw Chart
@@ -7062,7 +6985,8 @@ export default function Chart(props: propsIF) {
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
-                    render(17);
+                    renderCanvasArray([d3CanvasCrosshair]);
+                    renderSubchartCrCanvas();
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
