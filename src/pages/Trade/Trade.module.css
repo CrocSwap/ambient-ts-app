@@ -18,7 +18,6 @@
 
 
 .navigation_menu {
-    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -29,8 +28,6 @@
 }
 
 .nav_container {
-    padding: 1px;
-
     color: var(--text1);
     width: 116.67px;
     height: 25px;
@@ -40,6 +37,7 @@
 }
 
 .navigation_menu a {
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
