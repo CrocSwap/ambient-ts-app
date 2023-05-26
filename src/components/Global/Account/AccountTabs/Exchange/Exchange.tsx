@@ -2,7 +2,6 @@ import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {

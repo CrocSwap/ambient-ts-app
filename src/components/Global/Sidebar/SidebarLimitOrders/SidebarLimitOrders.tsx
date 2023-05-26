@@ -3,7 +3,6 @@ import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -20,14 +19,14 @@ export default function SidebarLimitOrders(props: propsIF) {
     );
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-    const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setCurrentPositionActive, setShowAllData } =
-        useContext(TradeTableContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);

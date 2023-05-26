@@ -2,14 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-    memo,
-} from 'react';
+import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
@@ -25,24 +18,13 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-
-// interface for props
-interface propsIF {
-    notOnTradeRoute?: boolean;
-    portfolio?: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-}
+import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 
 // react functional component
-function Leaderboard(props: propsIF) {
-    const { cachedPositionUpdateQuery } = useContext(CachedDataContext);
+function Leaderboard() {
     const { expandTradeTable, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -53,6 +35,8 @@ function Leaderboard(props: propsIF) {
     );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;

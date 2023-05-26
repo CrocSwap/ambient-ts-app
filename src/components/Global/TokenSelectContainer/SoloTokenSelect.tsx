@@ -19,7 +19,6 @@ import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -45,12 +44,18 @@ export const SoloTokenSelect = (props: propsIF) => {
         reverseTokens,
     } = props;
 
-    const { addRecentToken, getRecentTokens } = useContext(UserDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { tokens, outputTokens, validatedInput, setInput, searchType } =
-        useContext(TokenContext);
+    const {
+        tokens,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        addRecentToken,
+        getRecentTokens,
+    } = useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 

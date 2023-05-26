@@ -8,7 +8,6 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -17,7 +16,7 @@ import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { memoizeTokenPrice } from '../../../../App/functions/fetchTokenPrice';
 
 // interface for component props
 interface propsIF {
@@ -58,13 +57,14 @@ function RangePriceInfo(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
+
+    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const dispatch = useAppDispatch();
 

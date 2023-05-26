@@ -16,10 +16,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import {
-    PositionUpdateFn,
-    getPositionData,
-} from '../../../App/functions/getPositionData';
+import { getPositionData } from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
     PositionIF,
@@ -36,12 +33,10 @@ import {
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';

@@ -1,12 +1,14 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { fetchTokenLists } from '../App/functions/fetchTokenLists';
+import {
+    getRecentTokensParamsIF,
+    useRecentTokens,
+} from '../App/hooks/useRecentTokens';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
-import { IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { CrocEnvContext } from './CrocEnvContext';
-import { UserDataContext } from './UserDataContext';
 
 interface TokenContextIF {
     tokens: tokenMethodsIF;
@@ -14,18 +16,22 @@ interface TokenContextIF {
     validatedInput: string;
     setInput: (val: string) => void;
     searchType: string;
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: getRecentTokensParamsIF) => TokenIF[];
 }
 
 export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const { getRecentTokens } = useContext(UserDataContext);
     const connectedUserErc20Tokens = useAppSelector(
         (state) => state.userData.tokens.erc20Tokens,
     );
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
+    const { addRecentToken, getRecentTokens } = useRecentTokens(
+        chainData.chainId,
+    );
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
@@ -40,6 +46,8 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         validatedInput,
         setInput,
         searchType,
+        addRecentToken,
+        getRecentTokens,
     };
 
     useEffect(() => {

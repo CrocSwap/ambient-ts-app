@@ -3,7 +3,6 @@ import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -17,14 +16,14 @@ export default function SidebarRangePositions(props: propsIF) {
     const { userPositions } = props;
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-    const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setCurrentPositionActive, setShowAllData } =
-        useContext(TradeTableContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(TradeTableContext);
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);

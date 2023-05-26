@@ -1,6 +1,6 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { GRAPHCACHE_URL, ZERO_ADDRESS } from '../../constants';
+import { ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';

@@ -1,15 +1,20 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { error } from 'ajv/dist/vocabularies/applicator/dependencies';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
+import { memoizeTokenPrice } from '../App/functions/fetchTokenPrice';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
-import { CachedDataContext } from './CachedDataContext';
 
+interface UrlRoutesTemplate {
+    swap: string;
+    market: string;
+    limit: string;
+    range: string;
+}
 interface CrocEnvIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
@@ -18,6 +23,7 @@ interface CrocEnvIF {
     topPools: topPoolIF[];
     ethMainnetUsdPrice: number | undefined;
     setEthMainnetUsdPrice: (val: number) => void;
+    defaultUrlParams: UrlRoutesTemplate;
 }
 
 export const CrocEnvContext = createContext<CrocEnvIF>({} as CrocEnvIF);
@@ -25,7 +31,7 @@ export const CrocEnvContext = createContext<CrocEnvIF>({} as CrocEnvIF);
 export const CrocEnvContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const { address: userAddress, isConnected } = useAccount();
     const provider = useProvider();
@@ -38,6 +44,20 @@ export const CrocEnvContextProvider = (props: {
         number | undefined
     >();
 
+    function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
+        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
+        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
+        return {
+            swap: `/swap/${pairSlug}`,
+            market: `/trade/market/${pairSlug}`,
+            range: `/trade/range/${pairSlug}`,
+            limit: `/trade/limit/${pairSlug}`,
+        };
+    }
+    const initUrl = createDefaultUrlParams(chainData.chainId);
+    const [defaultUrlParams, setDefaultUrlParams] =
+        useState<UrlRoutesTemplate>(initUrl);
+
     const crocEnvState = {
         crocEnv,
         setCrocEnv,
@@ -46,6 +66,7 @@ export const CrocEnvContextProvider = (props: {
         topPools,
         ethMainnetUsdPrice,
         setEthMainnetUsdPrice,
+        defaultUrlParams,
     };
 
     useBlacklist(userAddress);
@@ -113,6 +134,9 @@ export const CrocEnvContextProvider = (props: {
             })();
         }
     }, [provider]);
+    useEffect(() => {
+        setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
+    }, [chainData.chainId]);
 
     return (
         <CrocEnvContext.Provider value={crocEnvState}>

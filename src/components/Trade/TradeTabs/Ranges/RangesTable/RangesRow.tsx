@@ -13,7 +13,6 @@ import {
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';

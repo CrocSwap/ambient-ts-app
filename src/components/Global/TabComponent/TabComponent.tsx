@@ -15,8 +15,8 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 import styles from './TabComponent.module.css';
 import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 type tabData = {
     label: string;
@@ -49,7 +49,7 @@ export default function TabComponent(props: TabPropsIF) {
             setIsActive: setOutsideControlActive,
         },
         outsideTab: { selected: outsideTabSelected },
-    } = useContext(AppStateContext);
+    } = useContext(TradeTableContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 

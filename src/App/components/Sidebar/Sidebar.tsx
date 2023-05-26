@@ -34,10 +34,9 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { memoizePoolStats } from '../../functions/getPoolStats';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -47,6 +46,7 @@ function Sidebar() {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+    const cachedPoolStatsFetch = memoizePoolStats();
 
     const poolList = usePoolList(chainId, poolIndex);
 

@@ -4,7 +4,6 @@ import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -57,14 +56,14 @@ export default function OrdersSearchResults(props: propsIF) {
     const { searchedLimitOrders } = props;
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-    const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setCurrentPositionActive, setShowAllData } =
-        useContext(TradeTableContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(TradeTableContext);
 
     const navigate = useNavigate();
 

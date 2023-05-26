@@ -3,10 +3,9 @@ import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
@@ -16,7 +15,7 @@ interface propsIF {
 export default function ExchangeCard(props: propsIF) {
     const { token, tokens } = props;
 
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const tokenMapKey: string = token?.address + '_' + token?.chainId;
 

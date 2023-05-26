@@ -34,11 +34,8 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
-import { PositionUpdateFn } from '../../../App/functions/getPositionData';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -87,13 +84,6 @@ function TradeTabs2(props: propsIF) {
     } = props;
 
     const {
-        outsideTab: { selected: outsideTabSelected },
-        outsideControl: {
-            isActive: outsideControlActive,
-            setIsActive: setOutsideControlActive,
-        },
-    } = useContext(AppStateContext);
-    const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -103,6 +93,11 @@ function TradeTabs2(props: propsIF) {
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         expandTradeTable,
+        outsideTab: { selected: outsideTabSelected },
+        outsideControl: {
+            isActive: outsideControlActive,
+            setIsActive: setOutsideControlActive,
+        },
     } = useContext(TradeTableContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -411,7 +406,7 @@ function TradeTabs2(props: propsIF) {
               },
               {
                   label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
+                  content: <Leaderboard />,
                   icon: leaderboard,
                   showRightSideOption: false,
               },

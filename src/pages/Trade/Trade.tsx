@@ -23,12 +23,9 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
-import { PositionUpdateFn } from '../../App/functions/getPositionData';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -42,10 +39,6 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 // React functional component
 function Trade() {
-    const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -61,7 +54,11 @@ function Trade() {
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const { expandTradeTable } = useContext(TradeTableContext);
+    const {
+        expandTradeTable,
+        outsideControl: { setIsActive: setOutsideControlActive },
+        outsideTab: { setSelected: setOutsideTabSelected },
+    } = useContext(TradeTableContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },

@@ -6,7 +6,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatAmountOld } from '../../../utils/numbers';
-import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
 
 interface StatCardProps {

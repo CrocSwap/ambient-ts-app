@@ -1,5 +1,6 @@
 import { useMediaQuery } from '@material-ui/core';
 import React, { createContext, useEffect, useMemo, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     recentPoolsMethodsIF,
     useRecentPools,
@@ -43,6 +44,8 @@ export const SidebarContextProvider = (props: {
         [lastReceipt],
     );
 
+    const { pathname: currentLocation } = useLocation();
+
     const sidebar = useSidebar(location.pathname);
     // hook to manage recent pool data in-session
     const recentPools: recentPoolsMethodsIF = useRecentPools(
@@ -56,6 +59,24 @@ export const SidebarContextProvider = (props: {
         sidebar,
         recentPools,
     };
+
+    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
+    function toggleSidebarBasedOnRoute() {
+        if (
+            currentLocation === '/' ||
+            currentLocation === '/swap' ||
+            currentLocation.includes('/account')
+        ) {
+            sidebar.close();
+        } else if (showSidebarByDefault) {
+            sidebar.open();
+        } else {
+            sidebar.close();
+        }
+    }
+    useEffect(() => {
+        toggleSidebarBasedOnRoute();
+    }, [location.pathname.includes('/trade')]);
 
     useEffect(() => {
         if (lastReceiptHash) {

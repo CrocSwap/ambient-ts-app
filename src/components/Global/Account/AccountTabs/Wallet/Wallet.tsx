@@ -2,7 +2,6 @@ import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {

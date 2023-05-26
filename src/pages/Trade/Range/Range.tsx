@@ -62,7 +62,6 @@ import {
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
 import { formatAmountOld } from '../../../utils/numbers';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';

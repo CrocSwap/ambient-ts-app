@@ -2,10 +2,6 @@ import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { userData } from '../../../utils/state/userDataSlice';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
-import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 

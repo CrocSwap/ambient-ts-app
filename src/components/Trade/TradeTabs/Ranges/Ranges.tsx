@@ -28,20 +28,18 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -62,7 +60,6 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const { cachedPositionUpdateQuery } = useContext(CachedDataContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -71,6 +68,8 @@ function Ranges(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;

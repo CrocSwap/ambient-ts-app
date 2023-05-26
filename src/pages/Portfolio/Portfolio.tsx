@@ -20,27 +20,23 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
-import {
-    Erc20TokenBalanceFn,
-    nativeTokenBalanceFn,
-} from '../../App/functions/fetchTokenBalances';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { IS_LOCAL_ENV } from '../../constants';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
+import {
+    memoizeFetchNativeTokenBalance,
+    memoizeFetchErc20TokenBalances,
+} from '../../App/functions/fetchTokenBalances';
 
 interface propsIF {
     userAccount?: boolean;
@@ -56,14 +52,15 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
-        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens, setInput } = useContext(TokenContext);
+
+    const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
+    const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 
     const dispatch = useAppDispatch();
 

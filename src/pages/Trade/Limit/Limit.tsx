@@ -60,14 +60,13 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex, gridSize, blockExplorer },
@@ -86,6 +85,8 @@ export default function Limit() {
     const { tokenA, tokenB } = tradeData;
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
+
+    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const dispatch = useAppDispatch();
     const provider = useProvider();

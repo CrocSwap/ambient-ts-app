@@ -27,8 +27,6 @@ interface AppStateIF {
         selected: 'dark' | 'light';
         setSelected: (val: 'dark' | 'light') => void;
     };
-    outsideTab: { selected: number; setSelected: (val: number) => void };
-    outsideControl: { isActive: boolean; setIsActive: (val: boolean) => void };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -52,8 +50,6 @@ export const AppStateContextProvider = (props: {
     const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
-    const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
-    const [outsideControl, setOutsideControl] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
 
@@ -99,16 +95,6 @@ export const AppStateContextProvider = (props: {
             },
             skin,
             theme: { selected: theme, setSelected: setTheme },
-            // TODO: investigate what this actually does... move into trade tab context?
-            outsideTab: {
-                selected: selectedOutsideTab,
-                setSelected: setSelectedOutsideTab,
-            },
-            outsideControl: {
-                isActive: outsideControl,
-                setIsActive: setOutsideControl,
-            },
-            // TODO: move into chat context
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -137,8 +123,6 @@ export const AppStateContextProvider = (props: {
             isAppOverlayActive,
             isTutorialMode,
             theme,
-            selectedOutsideTab,
-            outsideControl,
             isWagmiModalOpenWallet,
         ],
     );

@@ -2,12 +2,11 @@ import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
@@ -16,10 +15,11 @@ interface propsIF {
 
 export default function WalletCard(props: propsIF) {
     const { token, tokens } = props;
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 

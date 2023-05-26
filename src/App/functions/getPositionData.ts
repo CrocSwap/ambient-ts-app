@@ -3,8 +3,9 @@ import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
-import { useContext } from 'react';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
+
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export const getPositionData = async (
     position: PositionIF,
@@ -13,7 +14,6 @@ export const getPositionData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const newPosition = { ...position };
 
     const baseTokenAddress =

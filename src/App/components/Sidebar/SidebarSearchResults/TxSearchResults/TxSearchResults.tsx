@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
@@ -18,11 +17,11 @@ export default function TxSearchResults(props: propsIF) {
     } = useContext(CrocEnvContext);
 
     const {
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-    const { setCurrentTxActiveInTransactions, setShowAllData } =
-        useContext(TradeTableContext);
+    } = useContext(TradeTableContext);
 
     const navigate = useNavigate();
 
