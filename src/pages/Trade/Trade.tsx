@@ -410,7 +410,7 @@ function Trade(props: propsIF) {
         '/initpool/' +
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
-    const showPoolNotInitializedContent = poolExists === false;
+    const showPoolNotInitializedContent = !poolExists === false;
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
