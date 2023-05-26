@@ -2,7 +2,6 @@
     background: var(--dark1);
     padding: 10px 20px;
     border-radius: var(--border-radius);
-  
 
     display: flex;
     flex-direction: row;
@@ -27,7 +26,7 @@
     /* align-items: center;
 text-align: center; */
     letter-spacing: -0.02em;
-
+    padding-left: 22px;
     color: var(--text1);
 }
 

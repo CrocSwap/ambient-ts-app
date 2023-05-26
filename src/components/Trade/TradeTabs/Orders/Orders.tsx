@@ -20,7 +20,6 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
-import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -30,6 +29,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -337,7 +337,17 @@ function Orders(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
 
     const count = Math.ceil(sortedLimits.length / rowsPerPage);
     const _DATA = usePagination(sortedLimits, rowsPerPage);
@@ -529,6 +539,8 @@ function Orders(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
 
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+
     return (
         <section
             className={`${styles.main_list_container} ${
@@ -540,13 +552,23 @@ function Orders(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TableSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Spinner size={100} bg='var(--dark1)' />
+                    </div>
                 ) : (
                     orderDataOrNull
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
