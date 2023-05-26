@@ -109,14 +109,17 @@ export default function TransactionDetailsGraph(
 
         if (isDataLoading) {
             timeoutId = setTimeout(() => {
-                setIsDataTakingTooLongToFetch(true);
-            }, 2000); // Set the timeout threshold in milliseconds (e.g., 10 seconds)
+                if (graphData === undefined)
+                    setIsDataTakingTooLongToFetch(true);
+            }, 10000); // Set the timeout threshold in milliseconds (e.g., 10 seconds)
+        } else {
+            setIsDataTakingTooLongToFetch(false);
         }
 
         return () => {
             clearTimeout(timeoutId);
         };
-    }, [isDataLoading]);
+    }, [isDataLoading, graphData]);
 
     useEffect(() => {
         (async () => {
@@ -841,9 +844,7 @@ export default function TransactionDetailsGraph(
     );
 
     const placeholderImage = (
-        <div className='transaction_details_graph_placeholder'>
-            Chart taking too long
-        </div>
+        <div className='transaction_details_graph_placeholder'></div>
     );
 
     const chartRender = (
@@ -885,11 +886,11 @@ export default function TransactionDetailsGraph(
     let dataToRender;
 
     switch (true) {
-        case isDataLoading:
-            dataToRender = loadingSpinner;
-            break;
         case isDataTakingTooLongToFetch || isDataEmpty:
             dataToRender = placeholderImage;
+            break;
+        case isDataLoading:
+            dataToRender = loadingSpinner;
             break;
         default:
             dataToRender = chartRender;
