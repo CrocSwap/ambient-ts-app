@@ -258,7 +258,9 @@ function FeeRateSubChart(props: FreeRateData) {
         }
 
         if (d3CanvasCrosshair) {
-            const container = d3.select(d3CanvasArea.current).node() as any;
+            const container = d3
+                .select(d3CanvasCrosshair.current)
+                .node() as any;
             if (container) container.requestRedraw();
         }
     };
@@ -297,6 +299,7 @@ function FeeRateSubChart(props: FreeRateData) {
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
+                        renderCanvas();
                     },
                 );
 
@@ -315,12 +318,13 @@ function FeeRateSubChart(props: FreeRateData) {
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
-                className='fee-rate-canvas'
+                className='d3CanvasArea'
             ></d3fc-canvas>
 
             <d3fc-canvas
+                id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
-                className='fee-rate-canvas'
+                className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>
