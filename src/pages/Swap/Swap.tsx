@@ -8,7 +8,7 @@ import {
     useContext,
     memo,
 } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { ChainSpec, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
@@ -761,7 +761,7 @@ function Swap(props: propsIF) {
             tokenPair.dataTokenB.address,
         );
 
-    const showPoolNotInitializedContent = !poolExists === false;
+    const showPoolNotInitializedContent = poolExists === false;
 
     const navigate = useNavigate();
 
