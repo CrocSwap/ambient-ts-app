@@ -677,8 +677,7 @@ export default function Chart(props: propsIF) {
         setRescale(true);
     }, [denomInBase]);
 
-    const render = useCallback((caller: number) => {
-        console.log(caller);
+    const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
@@ -1665,7 +1664,7 @@ export default function Chart(props: propsIF) {
                                 if (candlestick) {
                                     setBandwidth(candlestick.bandwidth());
                                 }
-                                render(2);
+                                render();
                                 setZoomAndYdragControl(event);
                             }
                         }
@@ -1939,7 +1938,7 @@ export default function Chart(props: propsIF) {
                         });
 
                         setMarketLineValue();
-                        render(3);
+                        render();
                     })
                     .filter((event) => {
                         const isWheel = event.type === 'wheel';
@@ -2044,7 +2043,7 @@ export default function Chart(props: propsIF) {
                         rescaleYAxis();
 
                         setBandwidth(candlestick.bandwidth());
-                        render(4);
+                        render();
 
                         setZoomAndYdragControl(event);
                     })
@@ -5214,7 +5213,7 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
             const resizeObserver = new ResizeObserver(() => {
-                render(7);
+                render();
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -6940,7 +6939,7 @@ export default function Chart(props: propsIF) {
                     },
                 );
 
-                render(16);
+                render();
 
                 d3.select(d3Container.current).on('mouseleave', () => {
                     setCrosshairActive('none');
