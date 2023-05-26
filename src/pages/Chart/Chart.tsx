@@ -2549,7 +2549,6 @@ export default function Chart(props: propsIF) {
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
-            // to:do fix for scientific AdvancedPepe
             setRanges(() => {
                 const newTargets = [
                     {
@@ -3053,11 +3052,11 @@ export default function Chart(props: propsIF) {
                                         );
                                 }
 
-                                pinnedMaxPriceDisplayTruncated = parseFloat(
-                                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                pinnedMaxPriceDisplayTruncated = Number(
+                                    pinnedDisplayPrices.pinnedMaxPriceDisplay,
                                 );
-                                pinnedMinPriceDisplayTruncated = parseFloat(
-                                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                pinnedMinPriceDisplayTruncated = Number(
+                                    pinnedDisplayPrices.pinnedMinPriceDisplay,
                                 );
                             }
                             // to:do fix when advanced is fixed AdvancedPepe
@@ -3586,6 +3585,9 @@ export default function Chart(props: propsIF) {
                     drawXaxis(context, scaleData?.xScale, 3);
                 }
             });
+
+            renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+            renderSubchartCrCanvas();
         }
     }, [
         diffHashSig(scaleData),
@@ -3602,7 +3604,6 @@ export default function Chart(props: propsIF) {
         sellOrderStyle,
         checkLimitOrder,
         location,
-        d3CanvasCrosshair,
         crosshairActive,
     ]);
 
@@ -3681,11 +3682,6 @@ export default function Chart(props: propsIF) {
             renderCanvasArray([d3Yaxis]);
         }
     }, [yAxis === undefined, location]);
-
-    useEffect(() => {
-        renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
-        renderSubchartCrCanvas;
-    }, [isMouseMoveCrosshair]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -4055,8 +4051,6 @@ export default function Chart(props: propsIF) {
                 }
 
                 changeyAxisWidth();
-
-                renderCanvasArray([d3Yaxis]);
             }
         }
     };
@@ -6335,17 +6329,9 @@ export default function Chart(props: propsIF) {
             setCrosshairData([
                 {
                     x: returnXdata,
-                    y: !showHr
-                        ? 0
-                        : Number(
-                              formatAmountChartData(
-                                  scaleData?.yScale.invert(event.layerY),
-                              ),
-                          ),
+                    y: !showHr ? 0 : scaleData?.yScale.invert(event.layerY),
                 },
             ]);
-            renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
-            renderSubchartCrCanvas();
         }
 
         setsubChartValues((prevState: any) => {
@@ -6723,6 +6709,57 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
+    const mousemove = (event: any) => {
+        const { isHoverCandleOrVolumeData } =
+            candleOrVolumeDataHoverStatus(event);
+
+        if (liqMode !== 'none') {
+            liqDataHover(event);
+        }
+
+        const mousePlacement = scaleData?.yScale.invert(event.offsetY);
+        const limitLineValue = limit[0].value;
+
+        const rangeLowLineValue = ranges.filter(
+            (target: any) => target.name === 'Min',
+        )[0].value;
+        const rangeHighLineValue = ranges.filter(
+            (target: any) => target.name === 'Max',
+        )[0].value;
+
+        const lineBuffer =
+            (scaleData?.yScale.domain()[1] - scaleData?.yScale.domain()[0]) /
+            30;
+
+        const canUserDragLimit =
+            mousePlacement < limitLineValue + lineBuffer &&
+            mousePlacement > limitLineValue - lineBuffer;
+
+        const canUserDragRange =
+            (mousePlacement < rangeLowLineValue + lineBuffer &&
+                mousePlacement > rangeLowLineValue - lineBuffer) ||
+            (mousePlacement < rangeHighLineValue + lineBuffer &&
+                mousePlacement > rangeHighLineValue - lineBuffer);
+
+        if (
+            (location.pathname.includes('/limit') && canUserDragLimit) ||
+            ((location.pathname.includes('range') ||
+                location.pathname.includes('reposition')) &&
+                canUserDragRange)
+        ) {
+            d3.select(event.currentTarget).style('cursor', 'row-resize');
+
+            setDragEvent('drag');
+        } else {
+            setDragEvent('zoom');
+
+            d3.select(event.currentTarget).style(
+                'cursor',
+                isHoverCandleOrVolumeData ? 'pointer' : 'default',
+            );
+        }
+    };
+
     // Draw Chart
     const drawChart = useCallback(
         (
@@ -6801,64 +6838,6 @@ export default function Chart(props: propsIF) {
                         onClickCanvas(event);
                     },
                 );
-
-                const mousemove = (event: any) => {
-                    const { isHoverCandleOrVolumeData } =
-                        candleOrVolumeDataHoverStatus(event);
-
-                    if (liqMode !== 'none') {
-                        liqDataHover(event);
-                    }
-
-                    const mousePlacement = scaleData?.yScale.invert(
-                        event.offsetY,
-                    );
-                    const limitLineValue = limit[0].value;
-
-                    const rangeLowLineValue = ranges.filter(
-                        (target: any) => target.name === 'Min',
-                    )[0].value;
-                    const rangeHighLineValue = ranges.filter(
-                        (target: any) => target.name === 'Max',
-                    )[0].value;
-
-                    const lineBuffer =
-                        (scaleData?.yScale.domain()[1] -
-                            scaleData?.yScale.domain()[0]) /
-                        30;
-
-                    const canUserDragLimit =
-                        mousePlacement < limitLineValue + lineBuffer &&
-                        mousePlacement > limitLineValue - lineBuffer;
-
-                    const canUserDragRange =
-                        (mousePlacement < rangeLowLineValue + lineBuffer &&
-                            mousePlacement > rangeLowLineValue - lineBuffer) ||
-                        (mousePlacement < rangeHighLineValue + lineBuffer &&
-                            mousePlacement > rangeHighLineValue - lineBuffer);
-
-                    if (
-                        (location.pathname.includes('/limit') &&
-                            canUserDragLimit) ||
-                        ((location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')) &&
-                            canUserDragRange)
-                    ) {
-                        d3.select(event.currentTarget).style(
-                            'cursor',
-                            'row-resize',
-                        );
-
-                        setDragEvent('drag');
-                    } else {
-                        setDragEvent('zoom');
-
-                        d3.select(event.currentTarget).style(
-                            'cursor',
-                            isHoverCandleOrVolumeData ? 'pointer' : 'default',
-                        );
-                    }
-                };
 
                 d3.select(d3CanvasMarketLine.current).on(
                     'mousemove',
@@ -6950,9 +6929,6 @@ export default function Chart(props: propsIF) {
                     setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
-
-                    renderCanvasArray([d3CanvasCrosshair]);
-                    renderSubchartCrCanvas();
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
