@@ -5,10 +5,12 @@ import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetc
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+
+// Rest of your code
 
 import './TransactionDetailsGraph.css';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import Spinner from '../../Spinner/Spinner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -97,8 +99,31 @@ export default function TransactionDetailsGraph(
         mainnetQuoteTokenAddress
     );
 
+    const [isDataEmpty, setIsDataEmpty] = useState(false);
+    const [isDataLoading, setIsDataLoading] = useState(false);
+    const [isDataTakingTooLongToFetch, setIsDataTakingTooLongToFetch] =
+        useState(false);
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        if (isDataLoading) {
+            timeoutId = setTimeout(() => {
+                if (graphData === undefined)
+                    setIsDataTakingTooLongToFetch(true);
+            }, 10000); // Set the timeout threshold in milliseconds (e.g., 10 seconds)
+        } else {
+            setIsDataTakingTooLongToFetch(false);
+        }
+
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, [isDataLoading, graphData]);
+
     useEffect(() => {
         (async () => {
+            setIsDataLoading(true);
             if (graphData === undefined) {
                 const time = () => {
                     switch (transactionType) {
@@ -154,6 +179,8 @@ export default function TransactionDetailsGraph(
                         );
 
                         if (graphData) {
+                            setIsDataLoading(false);
+                            setIsDataEmpty(false);
                             setGraphData(() => {
                                 return graphData.candles;
                             });
@@ -161,6 +188,8 @@ export default function TransactionDetailsGraph(
                             setGraphData(() => {
                                 return undefined;
                             });
+                            setIsDataLoading(false);
+                            setIsDataEmpty(true);
                         }
                     } catch (error) {
                         console.error(error);
@@ -576,7 +605,7 @@ export default function TransactionDetailsGraph(
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotGraph').node() as any;
-        nd.requestRedraw();
+        nd?.requestRedraw();
     }, []);
 
     useEffect(() => {
@@ -800,7 +829,25 @@ export default function TransactionDetailsGraph(
         [tx],
     );
 
-    return (
+    const loadingSpinner = (
+        <div
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Spinner size={100} bg='var(--dark1)' />
+        </div>
+    );
+
+    const placeholderImage = (
+        <div className='transaction_details_graph_placeholder'></div>
+    );
+
+    const chartRender = (
         <div
             className='main_layout_chart'
             ref={graphMainDiv}
@@ -836,4 +883,17 @@ export default function TransactionDetailsGraph(
             ></d3fc-svg>
         </div>
     );
+    let dataToRender;
+
+    switch (true) {
+        case isDataTakingTooLongToFetch || isDataEmpty:
+            dataToRender = placeholderImage;
+            break;
+        case isDataLoading:
+            dataToRender = loadingSpinner;
+            break;
+        default:
+            dataToRender = chartRender;
+    }
+    return dataToRender;
 }
