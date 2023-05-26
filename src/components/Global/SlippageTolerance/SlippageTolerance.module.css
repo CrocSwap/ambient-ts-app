@@ -76,7 +76,8 @@
     transition: box-shadow var(--animation-speed) ease-in-out; */
 }
 
-.slippage_content button:hover, .slippage_content button:focus-visible {
+.slippage_content button:hover,
+.slippage_content button:focus-visible {
     box-shadow: none;
     cursor: pointer;
     color: var(--text1);

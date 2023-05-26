@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { mktDataChainId } from '../../utils/data/chains';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import isJsonString from '../../utils/functions/isJsonString';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
@@ -49,15 +50,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
     const crocEnv = props.crocEnv;
 
     const dispatch = useAppDispatch();
-
-    function isJsonString(str: string) {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>

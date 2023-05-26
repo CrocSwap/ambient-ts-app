@@ -47,7 +47,6 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import { FiExternalLink } from 'react-icons/fi';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
@@ -61,14 +60,14 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex, gridSize, blockExplorer },

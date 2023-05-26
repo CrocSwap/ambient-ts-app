@@ -29,12 +29,10 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     idx: number;
-    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 function RangesRow(props: propsIF) {
     const {
-        cachedQuerySpotPrice,
         ipadView,
         showColumns,
         showPair,
@@ -89,7 +87,6 @@ function RangesRow(props: propsIF) {
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,

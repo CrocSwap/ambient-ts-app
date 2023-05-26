@@ -53,10 +53,10 @@
     background-position: 1% 50%;
     background-size: 400% 300%;
     text-decoration: none;
-
 }
 
-.topLevelContainer:hover, .topLevelContainer:focus-visible {
+.topLevelContainer:hover,
+.topLevelContainer:focus-visible {
     color: var(--text1);
     background: var(--title-gradient);
     background-position: 99% 50%;
@@ -77,18 +77,22 @@
     filter: none;
 }
 
-.nonTopLevelContainer:hover, .nonTopLevelContainer:focus-visible {
+.nonTopLevelContainer:hover,
+.nonTopLevelContainer:focus-visible {
     background: var(--dark2);
 }
-.goBackStyle:hover, .goBackStyle:focus-visible {
+.goBackStyle:hover,
+.goBackStyle:focus-visible {
     background: var(--dark2);
 }
 
-.goBackStyle:hover .icon_button, .goBackStyle:focus-visible .icon_button {
+.goBackStyle:hover .icon_button,
+.goBackStyle:focus-visible .icon_button {
     background: var(--title-gradient);
 }
 
-.goBackStyle:hover .icon_button svg, .goBackStyle:focus-visible .icon_button svg  {
+.goBackStyle:hover .icon_button svg,
+.goBackStyle:focus-visible .icon_button svg {
     color: black;
     transition: all var(--animation-speed) ease;
 }
@@ -120,7 +124,8 @@
     border: 1px solid var(--accent1);
 }
 
-.authenticate_button:hover, .authenticate_button:focus-visible {
+.authenticate_button:hover,
+.authenticate_button:focus-visible {
     color: var(--text1);
     border: 1px solid rgba(223, 190, 106, 0);
     color: white;

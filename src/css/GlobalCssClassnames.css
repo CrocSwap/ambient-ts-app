@@ -145,13 +145,13 @@ aside.emoji-picker-react {
 
     background: red !important;
 } */
-.MuiPagination-ul{
+.MuiPagination-ul {
     background: var(--dark2);
     border-radius: 4px !important;
     flex-wrap: nowrap !important;
 }
 
-.MuiPaginationItem-root{
+.MuiPaginationItem-root {
     color: var(--text2) !important;
     outline: 1px solid transparent !important;
 }
@@ -159,7 +159,6 @@ aside.emoji-picker-react {
 .Mui-selected.MuiPaginationItem-root {
     color: var(--text1) !important;
     background: transparent !important;
-   
 }
 
 .MuiPaginationItem-root {

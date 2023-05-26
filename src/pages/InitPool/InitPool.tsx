@@ -34,34 +34,27 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import chainNumToString from '../../App/functions/chainNumToString';
-
-// interface for props
-interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    ethMainnetUsdPrice?: number;
-}
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { useAccount } from 'wagmi';
 
 // react functional component
-export default function InitPool(props: propsIF) {
+export default function InitPool() {
     const {
-        openModalWallet,
-        isUserLoggedIn,
+        wagmiModal: { open: openWagmiModalWallet },
+    } = useContext(AppStateContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-        ethMainnetUsdPrice,
-    } = props;
-
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
+
+    const { isConnected } = useAccount();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
@@ -475,7 +468,7 @@ export default function InitPool(props: propsIF) {
                                         }}
                                         flat={true}
                                     />
-                                ) : isUserLoggedIn ||
+                                ) : isConnected ||
                                   !connectButtonDelayElapsed ? (
                                     !isTokenAAllowanceSufficient ? (
                                         tokenAApprovalButton
@@ -512,7 +505,7 @@ export default function InitPool(props: propsIF) {
                                 ) : (
                                     <Button
                                         title='Connect Wallet'
-                                        action={openModalWallet}
+                                        action={openWagmiModalWallet}
                                         flat={true}
                                     />
                                 )}

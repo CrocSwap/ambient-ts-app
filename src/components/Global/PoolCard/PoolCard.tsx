@@ -2,38 +2,36 @@ import styles from './PoolCard.module.css';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { PoolStatsFn, get24hChange } from '../../../App/functions/getPoolStats';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    isUserIdle: boolean;
-    tradeData: tradeData;
-    cachedQuerySpotPrice: SpotPriceFn;
     pool: topPoolIF;
-    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolCard(props: propsIF) {
-    const { isUserIdle, cachedQuerySpotPrice, pool, cachedPoolStatsFetch } =
-        props;
-
+    const { pool } = props;
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice, cachedPoolStatsFetch } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const userData = useAppSelector((state) => state.userData);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -52,7 +50,7 @@ export default function PoolCard(props: propsIF) {
     useEffect(() => {
         if (
             isServerEnabled &&
-            !isUserIdle &&
+            !userData.isUserIdle &&
             crocEnv &&
             lastBlockNumber !== 0
         ) {
@@ -120,7 +118,13 @@ export default function PoolCard(props: propsIF) {
                 }
             })();
         }
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, chainId, crocEnv]);
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        chainId,
+        crocEnv,
+    ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -215,9 +219,14 @@ export default function PoolCard(props: propsIF) {
     };
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle) fetchPoolStats();
+        if (isServerEnabled && !userData.isUserIdle) fetchPoolStats();
         // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        shouldInvertDisplay,
+    ]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

@@ -58,20 +58,16 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    cachedQuerySpotPrice: SpotPriceFn;
     isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     candleTime: candleTimeIF;
-    cachedPositionUpdateQuery: PositionUpdateFn;
     tokens: tokenMethodsIF;
     showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
     const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
         isCandleSelected,
         setIsCandleSelected,
         filter,
@@ -334,8 +330,6 @@ function TradeTabs2(props: propsIF) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         notOnTradeRoute: false,
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,

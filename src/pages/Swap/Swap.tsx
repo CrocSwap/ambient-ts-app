@@ -526,7 +526,6 @@ function Swap(props: propsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
-    // CONTEXT: revisit after token refactor and see what isn't used in CurrencySelector
     const currencyConverterProps = {
         isLiquidityInsufficient: isLiquidityInsufficient,
         setIsLiquidityInsufficient: setIsLiquidityInsufficient,

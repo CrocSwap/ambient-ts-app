@@ -30,6 +30,7 @@ import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 // interface for props
 interface propsIF {
@@ -37,14 +38,11 @@ interface propsIF {
     portfolio?: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
 }
 
 // react functional component
 function Leaderboard(props: propsIF) {
-    const { cachedQuerySpotPrice, cachedPositionUpdateQuery } = props;
-
+    const { cachedPositionUpdateQuery } = useContext(CachedDataContext);
     const { expandTradeTable, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -304,7 +302,6 @@ function Leaderboard(props: propsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
-            cachedQuerySpotPrice={cachedQuerySpotPrice}
             key={idx}
             position={position}
             rank={

@@ -7,29 +7,17 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Home1 from '../../components/Home/Landing/Home1';
 import { PoolStatsFn } from '../../App/functions/getPoolStats';
+import { useContext } from 'react';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-interface propsIF {
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPoolStatsFetch: PoolStatsFn;
-}
-export default function Home(props: propsIF) {
-    const { cachedQuerySpotPrice, cachedPoolStatsFetch } = props;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const userData = useAppSelector((state) => state.userData);
-
+export default function Home() {
     return (
         <section data-testid={'home'} className={styles.home_container}>
             <HomeSlider />
             <div className={styles.pools_container}>
-                <TopPools
-                    tradeData={tradeData}
-                    userData={userData}
-                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                />
+                <TopPools />
                 <DividerDark />
-                <Stats userData={userData} />
+                <Stats />
             </div>
             <DividerDark />
             <Home1 />

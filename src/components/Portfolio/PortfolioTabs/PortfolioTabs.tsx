@@ -49,24 +49,18 @@ import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
     openTokenModal: () => void;
     fullLayoutToggle: JSX.Element;
-    cachedQuerySpotPrice: SpotPriceFn;
     tokens: tokenMethodsIF;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        cachedFetchTokenPrice,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
@@ -293,7 +287,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
@@ -303,7 +296,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
@@ -314,8 +306,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Range/> React Element
     const rangeProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         activeAccountPositionData: activeAccountPositionData,
         connectedAccountActive: connectedAccountActive,
         isAccountView: true,

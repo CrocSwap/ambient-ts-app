@@ -17,6 +17,7 @@ import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 // interface for component props
 interface propsIF {
@@ -26,7 +27,6 @@ interface propsIF {
     aprPercentage: number | undefined;
     daysInRange: number | undefined;
     poolPriceCharacter: string;
-    cachedFetchTokenPrice: TokenPriceFn;
     isTokenABase: boolean;
     pinnedDisplayPrices:
         | {
@@ -52,13 +52,13 @@ function RangePriceInfo(props: propsIF) {
         poolPriceCharacter,
         aprPercentage,
         pinnedDisplayPrices,
-        cachedFetchTokenPrice,
         isTokenABase,
         isAmbient,
     } = props;
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);

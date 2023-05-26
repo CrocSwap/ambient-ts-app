@@ -41,6 +41,7 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -53,21 +54,15 @@ interface propsIF {
     portfolio?: boolean;
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
     isAccountView: boolean;
 }
 
 // react functional component
 function Ranges(props: propsIF) {
-    const {
-        activeAccountPositionData,
-        connectedAccountActive,
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        isAccountView,
-    } = props;
+    const { activeAccountPositionData, connectedAccountActive, isAccountView } =
+        props;
 
+    const { cachedPositionUpdateQuery } = useContext(CachedDataContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -491,7 +486,6 @@ function Ranges(props: propsIF) {
     );
     const sortedRowItemContent = sortedPositions.map((position, idx) => (
         <RangesRow
-            cachedQuerySpotPrice={cachedQuerySpotPrice}
             key={idx}
             position={position}
             ipadView={ipadView}
@@ -504,7 +498,6 @@ function Ranges(props: propsIF) {
 
     const currentRowItemContent = _DATA.currentData.map((position, idx) => (
         <RangesRow
-            cachedQuerySpotPrice={cachedQuerySpotPrice}
             key={idx}
             position={position}
             ipadView={ipadView}

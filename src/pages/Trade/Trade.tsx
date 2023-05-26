@@ -40,16 +40,8 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
-// interface for React functional component props
-interface propsIF {
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-}
-
 // React functional component
-function Trade(props: propsIF) {
-    const { cachedQuerySpotPrice, cachedPositionUpdateQuery } = props;
-
+function Trade() {
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
@@ -75,9 +67,7 @@ function Trade(props: propsIF) {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    // CONTEXT: state exists just to pass onto trade tabs, setState is used here, could move to PositionsOnlyToggle, or common trade context
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    // CONTEXT: state exists just to pass onto trade tabs, setState is used here but is reliant on Context, move to PositionsOnlyToggle
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
@@ -116,7 +106,6 @@ function Trade(props: propsIF) {
         }
     }, [candleData]);
 
-    // CONTEXT: passed down from here to many components, setter is used in unselectCandle, which is dependent on trade data
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
@@ -257,7 +246,6 @@ function Trade(props: propsIF) {
         </section>
     );
 
-    // CONTEXT: move to common trade context
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
         changeState(false, undefined);
@@ -333,8 +321,6 @@ function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,

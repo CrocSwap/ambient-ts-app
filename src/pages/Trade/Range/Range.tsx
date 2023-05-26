@@ -75,13 +75,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 
-interface propsIF {
-    cachedFetchTokenPrice: TokenPriceFn;
-}
-
-function Range(props: propsIF) {
-    const { cachedFetchTokenPrice } = props;
-
+function Range() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
@@ -1149,7 +1143,6 @@ function Range(props: propsIF) {
         daysInRange: daysInRange,
         isTokenABase: isTokenABase,
         poolPriceCharacter: poolPriceCharacter,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         isAmbient: isAmbient,
     };
 

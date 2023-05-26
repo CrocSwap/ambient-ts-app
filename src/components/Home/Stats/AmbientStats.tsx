@@ -4,6 +4,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatAmountOld } from '../../../utils/numbers';
 import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
@@ -11,10 +12,6 @@ import styles from './Stats.module.css';
 interface StatCardProps {
     title: string;
     value: string | number;
-}
-
-interface StatsProps {
-    userData: userData;
 }
 
 function StatCard(props: StatCardProps) {
@@ -32,8 +29,7 @@ function StatCard(props: StatCardProps) {
     );
 }
 
-export default function Stats(props: StatsProps) {
-    const { userData } = props;
+export default function Stats() {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
@@ -42,7 +38,7 @@ export default function Stats(props: StatsProps) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const isUserIdle = userData.isUserIdle;
+    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const { t } = useTranslation();
 

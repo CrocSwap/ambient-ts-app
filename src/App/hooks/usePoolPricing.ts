@@ -73,7 +73,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         );
     };
 
-    // CONTEXT: pool context?
     // Reset pricing states that require asynchronous updates when pool changes
     useEffect(() => {
         setPoolPriceDisplay(0);

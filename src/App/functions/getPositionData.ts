@@ -1,11 +1,10 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
-
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+import { useContext } from 'react';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 export const getPositionData = async (
     position: PositionIF,
@@ -14,6 +13,7 @@ export const getPositionData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const newPosition = { ...position };
 
     const baseTokenAddress =

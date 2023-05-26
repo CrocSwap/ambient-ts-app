@@ -6,7 +6,6 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {
-    cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
@@ -16,7 +15,6 @@ interface propsIF {
 
 export default function Wallet(props: propsIF) {
     const {
-        cachedFetchTokenPrice,
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
@@ -44,7 +42,6 @@ export default function Wallet(props: propsIF) {
                         key={JSON.stringify(token)}
                         token={token}
                         tokens={tokens}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
                 ))}
             </div>

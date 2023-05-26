@@ -10,7 +10,11 @@
     /* align-items: center; */
 }
 
-.container:focus-visible, .row button:focus-visible, .row a:focus-visible, .info button:focus-visible, .row svg:focus-visible{
+.container:focus-visible,
+.row button:focus-visible,
+.row a:focus-visible,
+.info button:focus-visible,
+.row svg:focus-visible {
     outline: 1px solid white;
 }
 .content {
@@ -50,7 +54,12 @@ cursor: pointer;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        var(--accent1)
+    );
 
     animation: animate 2s linear infinite;
 
@@ -81,7 +90,12 @@ cursor: pointer;
     z-index: 2;
 }
 .pending:after {
-    background: linear-gradient(45deg, transparent, transparent 40%, var(--accent1));
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        var(--accent1)
+    );
 
     content: '';
     position: absolute;

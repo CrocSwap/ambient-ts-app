@@ -2,7 +2,6 @@
     background: var(--dark1);
     padding: 10px 20px;
     border-radius: var(--border-radius);
-  
 
     display: flex;
     flex-direction: row;

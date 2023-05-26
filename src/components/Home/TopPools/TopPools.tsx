@@ -9,24 +9,13 @@ import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
-interface propsIF {
-    tradeData: tradeData;
-    userData: userData;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPoolStatsFetch: PoolStatsFn;
-}
-
-export default function TopPools(props: propsIF) {
-    const { tradeData, userData, cachedQuerySpotPrice, cachedPoolStatsFetch } =
-        props;
+export default function TopPools() {
     const { topPools } = useContext(CrocEnvContext);
 
     const { t } = useTranslation();
 
     // TODO:   @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
     // TODO:   ... so it returns a NavLink element
-
-    const isUserIdle = userData.isUserIdle;
 
     return (
         <motion.div
@@ -41,14 +30,7 @@ export default function TopPools(props: propsIF) {
             </div>
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
-                    <PoolCard
-                        isUserIdle={isUserIdle}
-                        tradeData={tradeData}
-                        cachedQuerySpotPrice={cachedQuerySpotPrice}
-                        key={idx}
-                        pool={pool}
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    />
+                    <PoolCard key={idx} pool={pool} />
                 ))}
             </div>
         </motion.div>

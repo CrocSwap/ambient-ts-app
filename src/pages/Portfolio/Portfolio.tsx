@@ -40,25 +40,14 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { IS_LOCAL_ENV } from '../../constants';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
-    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
-    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-    cachedFetchTokenPrice: TokenPriceFn;
     userAccount?: boolean;
-    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 function Portfolio(props: propsIF) {
-    const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        cachedFetchNativeTokenBalance,
-        cachedFetchErc20TokenBalances,
-        cachedFetchTokenPrice,
-        userAccount,
-    } = props;
+    const { userAccount } = props;
 
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
@@ -67,6 +56,8 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
+    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -76,7 +67,6 @@ function Portfolio(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    // CONTEXT: revisit after token changes go in
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
     );
@@ -461,9 +451,6 @@ function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,

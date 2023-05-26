@@ -16,7 +16,8 @@
     position: relative;
     transition: all var(--animation-speed) ease-in-out;
 }
-.pool_card:hover, .pool_card:focus-visible {
+.pool_card:hover,
+.pool_card:focus-visible {
     box-shadow: var(--glow-light-box-shadow);
 }
 

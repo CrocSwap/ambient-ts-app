@@ -25,7 +25,6 @@ import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { memoizePoolStats } from '../../functions/getPoolStats';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
@@ -34,19 +33,22 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
-
-const cachedPoolStatsFetch = memoizePoolStats();
+import { usePoolList } from '../../hooks/usePoolList';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Sidebar() {
-    const { sidebar, poolList } = useContext(SidebarContext);
+    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
     const {
-        chainData: { chainId },
+        chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+    const { sidebar } = useContext(SidebarContext);
 
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+
+    const poolList = usePoolList(chainId, poolIndex);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');

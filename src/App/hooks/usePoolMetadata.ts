@@ -68,9 +68,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
-    const [ambientApy, setAmbientApy] = useState<number | undefined>();
-    const [dailyVol, setDailyVol] = useState<number | undefined>();
-
     const ticksInParams =
         props.pathname.includes('lowTick') &&
         props.pathname.includes('highTick');
@@ -616,50 +613,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
     }, [props.receiptCount]);
 
-    // Asynchronously query the APY and volatility estimates from the backend
-    useEffect(() => {
-        (async () => {
-            if (
-                props.isServerEnabled &&
-                baseTokenAddress &&
-                quoteTokenAddress
-            ) {
-                const poolAmbientApyCacheEndpoint =
-                    GRAPHCACHE_URL + '/pool_ambient_apy_cached?';
-
-                fetch(
-                    poolAmbientApyCacheEndpoint +
-                        new URLSearchParams({
-                            base: baseTokenAddress.toLowerCase(),
-                            quote: quoteTokenAddress.toLowerCase(),
-                            poolIdx: props.chainData.poolIndex.toString(),
-                            chainId: props.chainData.chainId,
-                            concise: 'true',
-                            lookback: '604800',
-                            // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                            // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const ambientApy = json?.data?.apy;
-                        setAmbientApy(ambientApy);
-
-                        const tickVol = json?.data?.tickStdev;
-                        const dailyVol = tickVol ? tickVol / 10000 : undefined;
-                        setDailyVol(dailyVol);
-                    });
-            }
-        })();
-    }, [
-        props.isServerEnabled,
-        props.lastBlockNumber == 0,
-        baseTokenAddress,
-        quoteTokenAddress,
-        props.chainData.chainId,
-        props.chainData.poolIndex,
-    ]);
-
     return {
         baseTokenAddress,
         quoteTokenAddress,
@@ -667,8 +620,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         quoteTokenDecimals, // Token contract decimals
         mainnetBaseTokenAddress, // The mainnet equivalent base token (if testnet)
         mainnetQuoteTokenAddress, // The mainnet euquivalent quote token
-        dailyVol, // Daily volatility estimate from the backend
-        ambientApy, // APY estimate on an ambient LP position from the backend
         isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
     };
 }
