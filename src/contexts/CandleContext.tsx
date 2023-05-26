@@ -20,7 +20,6 @@ import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TradeTableContext } from './TradeTableContext';
 import { TradeTokenContext } from './TradeTokenContext';
 
 interface CandleContextIF {
@@ -62,7 +61,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             mainnetAddress: mainnetQuoteTokenAddress,
         },
     } = useContext(TradeTokenContext);
-    const { setExpandTradeTable } = useContext(TradeTableContext);
 
     const { isUserIdle } = useAppSelector((state) => state.userData);
 
@@ -176,7 +174,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                             const candles = json?.data;
                             if (candles?.length === 0) {
                                 setIsCandleDataNull(true);
-                                setExpandTradeTable(true);
+                                // CONTEXT: removing due to design decision to not change trade table size without user input
+                                // setExpandTradeTable(true);
                             } else if (candles) {
                                 setCandleData({
                                     pool: {
@@ -191,7 +190,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                                     candles: candles,
                                 });
                                 setIsCandleDataNull(false);
-                                setExpandTradeTable(false);
+                                // CONTEXT: removing due to design decision to not change trade table size without user input
+                                // setExpandTradeTable(false);
                             }
                             return candles?.length;
                         })

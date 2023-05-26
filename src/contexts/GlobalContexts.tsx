@@ -24,15 +24,15 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                 <RangeContextProvider>
                                     <TradeTokenContextProvider>
                                         <PoolContextProvider>
-                                            <TradeTableContextProvider>
-                                                <CandleContextProvider>
+                                            <CandleContextProvider>
+                                                <TradeTableContextProvider>
                                                     <UserPreferenceContextProvider>
                                                         <SidebarContextProvider>
                                                             {props.children}
                                                         </SidebarContextProvider>
                                                     </UserPreferenceContextProvider>
-                                                </CandleContextProvider>
-                                            </TradeTableContextProvider>
+                                                </TradeTableContextProvider>
+                                            </CandleContextProvider>
                                         </PoolContextProvider>
                                     </TradeTokenContextProvider>
                                 </RangeContextProvider>

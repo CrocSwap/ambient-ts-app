@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { CandleContext } from './CandleContext';
 
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
@@ -29,7 +30,7 @@ export const TradeTableContext = createContext<TradeTableContextIF>(
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    // const { isCandleSelected } = useContext(CandleContext);
+    const { isCandleSelected } = useContext(CandleContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -69,20 +70,20 @@ export const TradeTableContextProvider = (props: {
     };
 
     function toggleTradeTabBasedOnRoute() {
-        // if (!isCandleSelected) {
-        setOutsideControl(true);
-        if (currentLocation.includes('/market')) {
-            setSelectedOutsideTab(0);
-        } else if (currentLocation.includes('/limit')) {
-            setSelectedOutsideTab(1);
-        } else if (
-            currentLocation.includes('/range') ||
-            currentLocation.includes('reposition') ||
-            currentLocation.includes('add')
-        ) {
-            setSelectedOutsideTab(2);
+        if (!isCandleSelected) {
+            setOutsideControl(true);
+            if (currentLocation.includes('/market')) {
+                setSelectedOutsideTab(0);
+            } else if (currentLocation.includes('/limit')) {
+                setSelectedOutsideTab(1);
+            } else if (
+                currentLocation.includes('/range') ||
+                currentLocation.includes('reposition') ||
+                currentLocation.includes('add')
+            ) {
+                setSelectedOutsideTab(2);
+            }
         }
-        // }
     }
 
     useEffect(() => {
