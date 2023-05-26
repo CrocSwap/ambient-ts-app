@@ -494,7 +494,6 @@ export default function Chart(props: propsIF) {
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
-
     const [yAxisLabels] = useState<yLabel[]>([]);
 
     const currentPoolPriceTick =
@@ -714,8 +713,7 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        render();
-        renderCanvas();
+        renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
@@ -943,21 +941,13 @@ export default function Chart(props: propsIF) {
     }, [poolAdressComb]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const snapForCandle = (point: any) => {
+    const snapForCandle = (point: any, filtered: Array<CandleData>) => {
         if (point == undefined) return [];
-        const series = candlestick;
-        const data = unparsedCandleData as Array<CandleData>;
-        const xScale = series.xScale(),
-            xValue = series.crossValue();
-
-        const filtered =
-            data.length > 1
-                ? data.filter((d: CandleData) => xValue(d) != null)
-                : data;
+        const xScale = scaleData?.xScale;
 
         if (filtered.length > 1) {
             const nearest = minimum(filtered, (d: CandleData) =>
-                Math.abs(point.offsetX - xScale(xValue(d))),
+                Math.abs(point.offsetX - xScale(d.time * 1000)),
             )[1];
             return nearest;
         }
@@ -1675,8 +1665,6 @@ export default function Chart(props: propsIF) {
                                     setBandwidth(candlestick.bandwidth());
                                 }
                                 render();
-                                renderCanvas();
-
                                 setZoomAndYdragControl(event);
                             }
                         }
@@ -2056,7 +2044,6 @@ export default function Chart(props: propsIF) {
 
                         setBandwidth(candlestick.bandwidth());
                         render();
-                        renderCanvas();
 
                         setZoomAndYdragControl(event);
                     })
@@ -3641,6 +3628,7 @@ export default function Chart(props: propsIF) {
         checkLimitOrder,
         location,
         d3CanvasCrosshair,
+        crosshairActive,
     ]);
 
     function createRectLabel(
@@ -3715,10 +3703,14 @@ export default function Chart(props: propsIF) {
             if (location.pathname.includes('/limit')) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
-
-            render();
+            renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis, location]);
+    }, [yAxis === undefined, location]);
+
+    useEffect(() => {
+        renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+        renderSubchartCrCanvas;
+    }, [isMouseMoveCrosshair]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -4088,6 +4080,8 @@ export default function Chart(props: propsIF) {
                 }
 
                 changeyAxisWidth();
+
+                renderCanvasArray([d3Yaxis]);
             }
         }
     };
@@ -4238,6 +4232,8 @@ export default function Chart(props: propsIF) {
         }
 
         context.restore();
+
+        renderCanvasArray([d3Xaxis]);
     };
 
     // Horizontal Lines
@@ -4466,7 +4462,7 @@ export default function Chart(props: propsIF) {
                 context.fillStyle = 'transparent';
             });
 
-            renderCanvas();
+            renderCanvasArray([d3CanvasLimitLine]);
         } else if (
             horizontalLine !== undefined &&
             (location.pathname.includes('range') ||
@@ -5055,7 +5051,13 @@ export default function Chart(props: propsIF) {
                             : pinnedMinPriceDisplayTruncated;
                     }
 
-                    render();
+                    renderCanvasArray([
+                        d3CanvasRangeLine,
+                        d3CanvasLiqAskDepthLine,
+                        d3CanvasLiqAskLine,
+                        d3CanvasLiqBidLine,
+                        d3CanvasLiqBidDepthLine,
+                    ]);
 
                     newRangeValue = newTargets;
 
@@ -5177,8 +5179,7 @@ export default function Chart(props: propsIF) {
                 );
 
             setCandlestick(() => canvasCandlestick);
-            renderCanvas();
-            render();
+            renderCanvasArray([d3CanvasCandle]);
         }
     }, [scaleData, selectedDate]);
 
@@ -5213,7 +5214,6 @@ export default function Chart(props: propsIF) {
 
             const resizeObserver = new ResizeObserver(() => {
                 render();
-                renderCanvas();
             });
 
             resizeObserver.observe(canvasDiv.node());
@@ -5395,8 +5395,7 @@ export default function Chart(props: propsIF) {
                 .mainValue((d: any) => (d.volumeUSD ? d.volumeUSD : 0));
 
             setBarSeries(() => canvasBarChart);
-            renderCanvas();
-            render();
+            renderCanvasArray([d3CanvasBar]);
         }
     }, [scaleData, selectedDate]);
 
@@ -5544,101 +5543,34 @@ export default function Chart(props: propsIF) {
         }
     }, [liqMode, location]);
 
-    function renderCanvas() {
-        if (d3CanvasCandle) {
-            const container = d3.select(d3CanvasCandle.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBar) {
-            const container = d3.select(d3CanvasBar.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAsk) {
-            const container = d3.select(d3CanvasLiqAsk.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBid) {
-            const container = d3.select(d3CanvasLiqBid.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepth) {
-            const container = d3
-                .select(d3CanvasLiqAskDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepth) {
-            const container = d3
-                .select(d3CanvasLiqBidDepth.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskLine) {
-            const container = d3
-                .select(d3CanvasLiqAskLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidLine) {
-            const container = d3
-                .select(d3CanvasLiqBidLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqAskDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqAskDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLiqBidDepthLine) {
-            const container = d3
-                .select(d3CanvasLiqBidDepthLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasBand) {
-            const container = d3.select(d3CanvasBand.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasCrosshair) {
-            const container = d3
-                .select(d3CanvasCrosshair.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasMarketLine) {
-            const container = d3
-                .select(d3CanvasMarketLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-
-        if (d3CanvasLimitLine) {
-            const container = d3
-                .select(d3CanvasLimitLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
-        if (d3CanvasRangeLine) {
-            const container = d3
-                .select(d3CanvasRangeLine.current)
-                .node() as any;
-            if (container) container.requestRedraw();
-        }
+    function renderCanvasArray(canvasArray: any[]) {
+        canvasArray.forEach((canvas) => {
+            if (canvas) {
+                const container = d3.select(canvas.current).node() as any;
+                if (container) container.requestRedraw();
+            }
+        });
     }
+
+    const renderSubchartCrCanvas = () => {
+        const feeRateCrCanvas = d3
+            .select('#fee_rate_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (feeRateCrCanvas) {
+            const nd = feeRateCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlCrCanvas = d3
+            .select('#tvl_chart')
+            .select('#d3CanvasCrosshair');
+
+        if (tvlCrCanvas) {
+            const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+    };
 
     useEffect(() => {
         setLiqHighlightedLinesAndArea(ranges);
@@ -5745,8 +5677,15 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            render();
-            renderCanvas();
+            renderCanvasArray([
+                d3CanvasBand,
+                d3CanvasRangeLine,
+                d3Yaxis,
+                d3CanvasLiqAskDepthLine,
+                d3CanvasLiqAskLine,
+                d3CanvasLiqBidLine,
+                d3CanvasLiqBidDepthLine,
+            ]);
         }
     };
 
@@ -5809,8 +5748,7 @@ export default function Chart(props: propsIF) {
 
             setLiqAskDepthSeries(() => d3CanvasLiqAskDepthChart);
 
-            renderCanvas();
-            render();
+            renderCanvasArray([d3CanvasLiqAsk, d3CanvasLiqAskDepth]);
         }
     }, [
         diffHashSig(scaleData),
@@ -5852,8 +5790,7 @@ export default function Chart(props: propsIF) {
 
             setLiqBidDepthSeries(() => d3CanvasLiqBidDepthChart);
 
-            renderCanvas();
-            render();
+            renderCanvasArray([d3CanvasLiqBid, d3CanvasLiqBidDepth]);
         }
     }, [
         diffHashSig(scaleData),
@@ -5971,8 +5908,16 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            renderCanvas();
-            render();
+            renderCanvasArray([
+                d3CanvasLiqAsk,
+                d3CanvasLiqAskDepth,
+                d3CanvasLiqAskLine,
+                d3CanvasLiqAskDepthLine,
+                d3CanvasLiqBid,
+                d3CanvasLiqBidDepth,
+                d3CanvasLiqBidLine,
+                d3CanvasLiqBidDepthLine,
+            ]);
         }
     }, [scaleData, liquidityData, location]);
 
@@ -6036,8 +5981,7 @@ export default function Chart(props: propsIF) {
                     });
             }
 
-            render();
-            renderCanvas();
+            renderCanvasArray([d3CanvasLiqBidLine, d3CanvasLiqBidDepthLine]);
         }
     }, [
         diffHashSig(scaleData),
@@ -6151,8 +6095,7 @@ export default function Chart(props: propsIF) {
                 });
         }
 
-        render();
-        renderCanvas();
+        renderCanvasArray([d3CanvasLiqAskLine, d3CanvasLiqAskDepthLine]);
     }, [
         diffHashSig(scaleData),
         liquidityData?.liqAskData,
@@ -6313,7 +6256,7 @@ export default function Chart(props: propsIF) {
         liqMode,
     ]);
 
-    const candleOrVolumeDataHoverStatus = (event: any) => {
+    const candleOrVolumeDataHoverStatus = (event: any, showHr = true) => {
         const lastDate = scaleData?.xScale.invert(
             event.offsetX + bandwidth / 2,
         );
@@ -6321,40 +6264,45 @@ export default function Chart(props: propsIF) {
             event.offsetX - bandwidth / 2,
         );
 
-        const arr = unparsedCandleData.map((d: CandleData) =>
-            Math.abs(
-                (denomInBase
-                    ? d.invPriceCloseExclMEVDecimalCorrected
-                    : d.priceCloseExclMEVDecimalCorrected) -
-                    (denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected),
-            ),
-        );
-
-        let minHeight = 0;
-
-        if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
+        let avaregeHeight = 1;
+        const filtered: Array<CandleData> = [];
+        let longestValue = 0;
 
         const xmin = scaleData?.xScale.domain()[0];
         const xmax = scaleData?.xScale.domain()[1];
 
-        const filtered = unparsedCandleData?.filter(
-            (data: any) => data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-        );
+        unparsedCandleData.map((d: CandleData) => {
+            avaregeHeight =
+                avaregeHeight +
+                Math.abs(
+                    (denomInBase
+                        ? d.invPriceCloseExclMEVDecimalCorrected
+                        : d.priceCloseExclMEVDecimalCorrected) -
+                        (denomInBase
+                            ? d.invPriceOpenExclMEVDecimalCorrected
+                            : d.priceOpenExclMEVDecimalCorrected),
+                );
 
-        const longestValue = d3.max(filtered, (d: any) => d.volumeUSD) / 2;
+            if (d.time * 1000 >= xmin && d.time * 1000 <= xmax) {
+                if (d.volumeUSD > longestValue) {
+                    longestValue = d.volumeUSD;
+                }
 
-        const nearest = snapForCandle(event);
+                filtered.push(d);
+            }
+        });
+
+        const minHeight = avaregeHeight / unparsedCandleData.length;
+
+        longestValue = longestValue / 2;
+
+        const nearest = snapForCandle(event, filtered);
         const dateControl =
             nearest?.time * 1000 > startDate && nearest?.time * 1000 < lastDate;
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
-        const selectedVolumeData = unparsedCandleData.find(
-            (item: any) => item.time === nearest?.time,
-        );
-        const selectedVolumeDataValue = selectedVolumeData?.volumeUSD;
+        const selectedVolumeDataValue = nearest?.volumeUSD;
 
         const isSelectedVolume = selectedVolumeDataValue
             ? yValueVolume <=
@@ -6406,6 +6354,55 @@ export default function Chart(props: propsIF) {
                 limitTop = open > topBoundary ? open : topBoundary;
                 limitBot = close < botBoundary ? close : botBoundary;
             }
+        }
+
+        const returnXdata =
+            unparsedCandleData[0].time * 1000 <=
+            scaleData?.xScale.invert(event.offsetX)
+                ? scaleData?.xScale.invert(event.offsetX)
+                : nearest?.time * 1000;
+
+        if (!isLineDrag) {
+            // setIsMouseMoveCrosshair(true);
+
+            setCrosshairData([
+                {
+                    x: returnXdata,
+                    y: !showHr
+                        ? 0
+                        : Number(
+                              formatAmountChartData(
+                                  scaleData?.yScale.invert(event.layerY),
+                              ),
+                          ),
+                },
+            ]);
+            renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+            renderSubchartCrCanvas();
+        }
+
+        setsubChartValues((prevState: any) => {
+            const newData = [...prevState];
+
+            newData.filter((target: any) => target.name === 'tvl')[0].value =
+                nearest.tvlData.tvl;
+
+            newData.filter(
+                (target: any) => target.name === 'feeRate',
+            )[0].value = nearest?.averageLiquidityFee;
+
+            return newData;
+        });
+
+        if (selectedDate === undefined) {
+            props.setCurrentData(nearest);
+            props.setCurrentVolumeData(nearest?.volumeUSD);
+        } else if (selectedDate) {
+            props.setCurrentVolumeData(
+                unparsedCandleData.find(
+                    (item: any) => item.time * 1000 === selectedDate,
+                )?.volumeUSD,
+            );
         }
 
         return {
@@ -6608,7 +6605,12 @@ export default function Chart(props: propsIF) {
             setGradientForBid(gradient);
         }
 
-        renderCanvas();
+        renderCanvasArray([
+            d3CanvasLiqBid,
+            d3CanvasLiqBidDepth,
+            d3CanvasLiqBidLine,
+            d3CanvasLiqBidDepthLine,
+        ]);
     };
 
     const askAreaFunc = (
@@ -6701,7 +6703,12 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        renderCanvas();
+        renderCanvasArray([
+            d3CanvasLiqAsk,
+            d3CanvasLiqAskDepth,
+            d3CanvasLiqAskLine,
+            d3CanvasLiqAskDepthLine,
+        ]);
     };
 
     const selectedDateEvent = (
@@ -6726,30 +6733,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    const findTvlNearest = (point: any) => {
-        if (point == undefined) return 0;
-        if (unparsedCandleData) {
-            const xScale = scaleData?.xScale;
-
-            const filtered =
-                unparsedCandleData.length > 1
-                    ? unparsedCandleData.filter(
-                          (d: CandleData) => d.time != null,
-                      )
-                    : unparsedCandleData;
-
-            const nearest = minimum(filtered, (d: CandleData) =>
-                Math.abs(point.layerX - xScale(d.time * 1000)),
-            )[1];
-
-            if (nearest) {
-                return nearest.tvlData.tvl;
-            } else {
-                return 0;
-            }
-        }
-    };
-
     const minimum = (data: any, accessor: any) => {
         return data
             .map(function (dataPoint: any, index: any) {
@@ -6765,93 +6748,12 @@ export default function Chart(props: propsIF) {
             );
     };
 
-    const snap = (data: Array<CandleData>, point: any) => {
-        if (
-            point == undefined ||
-            unparsedCandleData === undefined ||
-            scaleData === undefined
-        )
-            return [];
-        const xScale = scaleData?.xScale;
-
-        const filtered =
-            data.length > 1
-                ? data.filter((d: CandleData) => d.time != null)
-                : data;
-        const nearest = minimum(filtered, (d: CandleData) =>
-            Math.abs(point.layerX - xScale(d.time * 1000)),
-        )[1];
-
-        if (selectedDate === undefined) {
-            props.setCurrentData(nearest);
-
-            props.setCurrentVolumeData(
-                unparsedCandleData.find(
-                    (item: CandleData) => item.time === nearest?.time,
-                )?.volumeUSD,
-            );
-        } else if (selectedDate) {
-            props.setCurrentVolumeData(
-                unparsedCandleData.find(
-                    (item: any) => item.time * 1000 === selectedDate,
-                )?.volumeUSD,
-            );
-        }
-
-        setsubChartValues((prevState: any) => {
-            const newData = [...prevState];
-
-            newData.filter((target: any) => target.name === 'tvl')[0].value =
-                findTvlNearest(point);
-
-            newData.filter(
-                (target: any) => target.name === 'feeRate',
-            )[0].value = unparsedCandleData.find(
-                (item: CandleData) => item.time === nearest?.time,
-            )?.averageLiquidityFee;
-
-            return newData;
-        });
-
-        const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
-            scaleData?.xScale.invert(point.offsetX)
-                ? scaleData?.xScale.invert(point.offsetX)
-                : nearest?.time * 1000;
-
-        return [
-            {
-                x: returnXdata,
-                y: scaleData?.yScale.invert(point.offsetY),
-            },
-        ];
-    };
-
-    const setCrossHairLocation = (event: any, showHr = true) => {
-        if (snap(unparsedCandleData, event)[0] !== undefined) {
-            crosshairData[0] = snap(unparsedCandleData, event)[0];
-            if (!isLineDrag) {
-                setIsMouseMoveCrosshair(true);
-
-                setCrosshairData([
-                    {
-                        x: crosshairData[0].x,
-                        y: !showHr
-                            ? NaN
-                            : scaleData?.yScale.invert(event.layerY),
-                    },
-                ]);
-            }
-
-            render();
-        }
-    };
-
     useEffect(() => {
         d3.select(d3CanvasCrosshair.current).style(
             'visibility',
             crosshairActive !== 'none' ? 'visible' : 'hidden',
         );
+        renderSubchartCrCanvas();
     }, [crosshairActive]);
 
     // Draw Chart
@@ -6866,6 +6768,7 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
+                    setCrosshairActive('none');
                     setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
@@ -6933,7 +6836,6 @@ export default function Chart(props: propsIF) {
                 );
 
                 const mousemove = (event: any) => {
-                    setCrossHairLocation(event);
                     const { isHoverCandleOrVolumeData } =
                         candleOrVolumeDataHoverStatus(event);
 
@@ -7079,11 +6981,11 @@ export default function Chart(props: propsIF) {
 
                 const mouseLeaveCanvas = () => {
                     setCrosshairActive('none');
-
                     setIsMouseMoveCrosshair(false);
                     mouseOutFuncForLiq();
 
-                    render();
+                    renderCanvasArray([d3CanvasCrosshair]);
+                    renderSubchartCrCanvas();
                 };
 
                 d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
@@ -7481,7 +7383,9 @@ export default function Chart(props: propsIF) {
                                 zoomAndYdragControl={zoomAndYdragControl}
                                 render={render}
                                 yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={setCrossHairLocation}
+                                setCrossHairLocation={
+                                    candleOrVolumeDataHoverStatus
+                                }
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
@@ -7509,7 +7413,9 @@ export default function Chart(props: propsIF) {
                                 subChartValues={subChartValues}
                                 render={render}
                                 yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={setCrossHairLocation}
+                                setCrossHairLocation={
+                                    candleOrVolumeDataHoverStatus
+                                }
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
