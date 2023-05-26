@@ -2,6 +2,7 @@ import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
+import { useMediaQuery } from '@material-ui/core';
 interface RangeHeaderPropsIF {
     header: {
         name: string | JSX.Element;
@@ -23,7 +24,6 @@ function RangeHeader(props: RangeHeaderPropsIF) {
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
     function handleClick(slug: string) {
-        console.clear();
         IS_LOCAL_ENV && console.debug(slug);
         // prevent action when user clicks a column which is not sortable
         if (!header.sortable) return;
@@ -65,6 +65,10 @@ function RangeHeader(props: RangeHeaderPropsIF) {
     const activeSortStyle =
         sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
+    const fixedHeight = useMediaQuery('(max-width: 1900px)')
+        ? { height: 24 }
+        : {};
+
     return (
         <>
             {show && (
@@ -75,11 +79,11 @@ function RangeHeader(props: RangeHeaderPropsIF) {
                     ${activeSortStyle}
                     ${alignRight && styles.align_right}
                     ${alignCenter && styles.align_center}
-
-
                     `}
                 >
-                    {name} {arrow}
+                    <p style={fixedHeight}>
+                        {name} {arrow}
+                    </p>
                 </li>
             )}
         </>

@@ -63,6 +63,7 @@
     line-height: var(--header1-lh);
     font-weight: 200;
     color: var(--text1);
+    padding-left: 27px;
 }
 
 .modal_content {
@@ -85,6 +86,6 @@
     .modal_body {
         top: 10rem;
 
-        min-width: 407px;
+        min-width: 400px;
     }
 }
