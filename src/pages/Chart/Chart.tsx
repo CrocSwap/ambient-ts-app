@@ -309,40 +309,6 @@ export default function Chart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const [limitTriangleData, setLimitTriangleData] = useState([
-        {
-            value: 0,
-        },
-    ]);
-
-    const [rangeTriangleData, setRangeTriangleData] = useState([
-        {
-            value: 0,
-        },
-        {
-            value: 0,
-        },
-    ]);
-
-    const setTriangleRangeValues = (max: number, min: number) => {
-        setRangeTriangleData((prevState) => {
-            const newData = [...prevState];
-            const maxPrice = max !== undefined ? max : 0;
-            const minPrice = min !== undefined ? min : 0;
-            newData[0].value = maxPrice;
-            newData[1].value = minPrice;
-            return newData;
-        });
-    };
-
-    const setTriangleLimitValues = (limit: any) => {
-        setLimitTriangleData((prevState) => {
-            const newData = [...prevState];
-            newData[0].value = limit;
-            return newData;
-        });
-    };
-
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -534,8 +500,6 @@ export default function Chart(props: propsIF) {
 
                 return newTargets;
             });
-
-            setTriangleRangeValues(maxPrice, minPrice);
         }
     }, [minPrice, maxPrice, isAdvancedModeActive]);
 
@@ -665,8 +629,6 @@ export default function Chart(props: propsIF) {
 
                 return newTargets;
             });
-
-            setTriangleRangeValues(maxPrice, 0);
 
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
@@ -2360,7 +2322,6 @@ export default function Chart(props: propsIF) {
                     value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
-            setTriangleLimitValues(denomInBase ? limit : 1 / limit || 0);
         });
     };
 
@@ -2378,8 +2339,6 @@ export default function Chart(props: propsIF) {
 
             return newTargets;
         });
-
-        setTriangleRangeValues(maxPrice, minPrice);
     }, [denomInBase]);
 
     useEffect(() => {
@@ -2431,11 +2390,6 @@ export default function Chart(props: propsIF) {
 
                     return newTargets;
                 });
-
-                setTriangleRangeValues(
-                    parseFloat(pinnedMaxPriceDisplayTruncated),
-                    parseFloat(pinnedMinPriceDisplayTruncated),
-                );
             } else if (
                 simpleRangeWidth === 100 ||
                 rescaleRangeBoundariesWithSlider
@@ -2455,8 +2409,6 @@ export default function Chart(props: propsIF) {
                         )[0].value = minPrice !== undefined ? minPrice : 0;
 
                         setLiqHighlightedLinesAndArea(newTargets);
-
-                        setTriangleRangeValues(maxPrice, minPrice);
 
                         if (
                             poolPriceDisplay !== undefined &&
@@ -2547,15 +2499,6 @@ export default function Chart(props: propsIF) {
 
                     return newTargets;
                 });
-
-                setTriangleRangeValues(
-                    parseFloat(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                    ),
-                    parseFloat(
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    ),
-                );
             }
         }
     };
@@ -2579,8 +2522,6 @@ export default function Chart(props: propsIF) {
 
                 return newTargets;
             });
-
-            setTriangleRangeValues(maxPrice, minPrice);
 
             setChartTriggeredBy('none');
         }
@@ -2890,10 +2831,6 @@ export default function Chart(props: propsIF) {
                                         rangeWidthPercentage,
                                     );
 
-                                    setTriangleRangeValues(
-                                        liquidityData?.topBoundary,
-                                        minValue,
-                                    );
                                     return newTargets;
                                 });
                             } else {
@@ -3014,11 +2951,6 @@ export default function Chart(props: propsIF) {
 
                                         return newTargets;
                                     });
-
-                                    setTriangleRangeValues(
-                                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                    );
                                 }
                             }
                         } else {
@@ -3134,7 +3066,6 @@ export default function Chart(props: propsIF) {
                                     (target: any) => target.name === 'Max',
                                 )[0].value;
 
-                                setTriangleRangeValues(maxPrice, minPrice);
                                 return newTargets;
                             });
                         }
@@ -3153,10 +3084,6 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
-                            setTriangleRangeValues(
-                                oldRangeMaxValue,
-                                oldRangeMinValue,
-                            );
 
                             setHorizontalBandData([
                                 [
@@ -3233,11 +3160,6 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
-
-                            setTriangleRangeValues(
-                                oldRangeMaxValue,
-                                oldRangeMinValue,
-                            );
 
                             setHorizontalBandData([
                                 [
@@ -3361,7 +3283,6 @@ export default function Chart(props: propsIF) {
                                                 },
                                             ];
                                         });
-                                        setTriangleLimitValues(newLimitValue);
                                     }
                                 });
                             }
@@ -3376,7 +3297,6 @@ export default function Chart(props: propsIF) {
                                     },
                                 ];
                             });
-                            setTriangleLimitValues(oldLimitValue);
                         }
                     }
                 })
@@ -3469,7 +3389,6 @@ export default function Chart(props: propsIF) {
                                 ];
                             });
                         }
-                        setTriangleLimitValues(oldLimitValue);
                     }
 
                     d3.select(d3CanvasLimitLine.current).style(
@@ -4835,8 +4754,6 @@ export default function Chart(props: propsIF) {
                     setLiqHighlightedLinesAndArea(newTargets);
                     return newTargets;
                 });
-
-                setTriangleRangeValues(liquidityData?.topBoundary, 0);
             } else {
                 if (lineToBeSet === 'Max') {
                     tickValue = getPinnedTickFromDisplayPrice(
@@ -4917,11 +4834,6 @@ export default function Chart(props: propsIF) {
                         setLiqHighlightedLinesAndArea(newTargets);
                         return newTargets;
                     });
-
-                    setTriangleRangeValues(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                    );
                 }
             }
 
@@ -5002,11 +4914,6 @@ export default function Chart(props: propsIF) {
 
                     return newTargets;
                 });
-
-                setTriangleRangeValues(
-                    pinnedMaxPriceDisplayTruncated,
-                    pinnedMinPriceDisplayTruncated,
-                );
             })().then(() => {
                 onBlurRange(
                     newRangeValue,
@@ -5248,7 +5155,7 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             limitLine(limit);
-                            triangle(limitTriangleData);
+                            triangle(limit);
                         }
                     })
                     .on('measure', () => {
@@ -5281,7 +5188,7 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             horizontalLine(ranges);
-                            triangle(rangeTriangleData);
+                            triangle(ranges);
                         }
                     })
                     .on('measure', () => {
@@ -7221,7 +7128,6 @@ export default function Chart(props: propsIF) {
                         },
                     ];
                 });
-                setTriangleLimitValues(newLimitValue);
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
@@ -7238,7 +7144,6 @@ export default function Chart(props: propsIF) {
                             },
                         ];
                     });
-                    setTriangleLimitValues(newLimitValue);
                 });
             }
         });
