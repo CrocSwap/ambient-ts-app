@@ -2404,19 +2404,15 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value = isScientific
-                        ? Number(
-                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
-                          )
-                        : parseFloat(pinnedMaxPriceDisplayTruncated) || 0.0;
+                    )[0].value = Number(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    );
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value = isScientific
-                        ? Number(
-                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
-                          )
-                        : parseFloat(pinnedMinPriceDisplayTruncated) || 0.0;
+                    )[0].value = Number(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    );
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2524,23 +2520,15 @@ export default function Chart(props: propsIF) {
 
                     newTargets.filter(
                         (target: any) => target.name === 'Max',
-                    )[0].value = isScientific
-                        ? Number(
-                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
-                          )
-                        : parseFloat(
-                              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                          ) || 0.0;
+                    )[0].value = Number(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    );
 
                     newTargets.filter(
                         (target: any) => target.name === 'Min',
-                    )[0].value = isScientific
-                        ? Number(
-                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
-                          )
-                        : parseFloat(
-                              pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                          ) || 0.0;
+                    )[0].value = Number(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    );
 
                     setLiqHighlightedLinesAndArea(newTargets, true);
 
@@ -2974,19 +2962,15 @@ export default function Chart(props: propsIF) {
                                 const rangesF = [
                                     {
                                         name: 'Min',
-                                        value: isScientific
-                                            ? Number(
-                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
-                                              )
-                                            : pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        value: Number(
+                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        ),
                                     },
                                     {
                                         name: 'Max',
-                                        value: isScientific
-                                            ? Number(
-                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
-                                              )
-                                            : pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        value: Number(
+                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        ),
                                     },
                                 ];
 
@@ -3003,24 +2987,15 @@ export default function Chart(props: propsIF) {
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Min',
-                                        )[0].value = isScientific
-                                            ? Number(
-                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
-                                              )
-                                            : parseFloat(
-                                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                              );
-
+                                        )[0].value = Number(
+                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        );
                                         newTargets.filter(
                                             (target: any) =>
                                                 target.name === 'Max',
-                                        )[0].value = isScientific
-                                            ? Number(
-                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
-                                              )
-                                            : parseFloat(
-                                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                              );
+                                        )[0].value = Number(
+                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        );
 
                                         newRangeValue = newTargets;
 
@@ -4951,23 +4926,15 @@ export default function Chart(props: propsIF) {
 
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
-                        )[0].value = isScientific
-                            ? Number(
-                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas,
-                              )
-                            : parseFloat(
-                                  pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                              );
+                        )[0].value = Number(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        );
 
                         newTargets.filter(
                             (target: any) => target.name === 'Max',
-                        )[0].value = isScientific
-                            ? Number(
-                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas,
-                              )
-                            : parseFloat(
-                                  pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                              );
+                        )[0].value = Number(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        );
 
                         newRangeValue = newTargets;
 
