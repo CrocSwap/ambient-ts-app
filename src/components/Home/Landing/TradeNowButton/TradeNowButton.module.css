@@ -2,7 +2,7 @@
     width: 100%;
     z-index: 2;
     border-radius: var(--border-radius);
-
+    background: #171D27;
     max-width: 16rem;
     max-height: 3rem;
     /* width: 238px; */
@@ -20,7 +20,23 @@
 
     text-decoration: none;
     border: 1px solid var(--dark3);
+
+    position: relative;
 }
+.action_button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--border-radius);
+
+    padding: 0.5px; 
+    background:linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); 
+    -webkit-mask: 
+       linear-gradient(#fff 0 0) content-box, 
+       linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude; 
+  }
 
 .nav_action_button{
 

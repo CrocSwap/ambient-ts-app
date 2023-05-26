@@ -11,7 +11,9 @@ export default function Home1() {
     // const { t } = useTranslation();
 
     const secondRow = (
-        <div className={`${styles.slide_container} ${styles.height_medium}`}>
+        <div
+            className={`${styles.slide_container} ${styles.height_medium} ${styles.home2}`}
+        >
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
                     <h1 tabIndex={0}>
@@ -51,7 +53,9 @@ export default function Home1() {
         </div>
     );
     const fourthRow = (
-        <div className={`${styles.slide_container} ${styles.height_large}`}>
+        <div
+            className={`${styles.slide_container} ${styles.height_large} ${styles.home3}`}
+        >
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
                     <h2 tabIndex={0}>
@@ -77,7 +81,9 @@ export default function Home1() {
         </div>
     );
     const fifthRow = (
-        <div className={`${styles.slide_container} ${styles.height_large}`}>
+        <div
+            className={`${styles.slide_container} ${styles.height_large} ${styles.home4}`}
+        >
             <div className={styles.row_container}>
                 <div />
                 <section className={styles.faster_section}>

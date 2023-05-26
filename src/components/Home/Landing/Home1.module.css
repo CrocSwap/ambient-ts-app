@@ -1,7 +1,6 @@
 .slide_container {
     background: linear-gradient(180deg, rgba(13, 17, 23, 0) 0%, var(--dark1) 88.54%);
     /* background: darkblue; */
-    border-bottom: 1px solid var(--border);
     padding-bottom: 1rem;
 }
 
@@ -77,7 +76,7 @@ height: 420px;
     }
 
     .height_large {
-        height: 500px;
+        min-height: 500px;
     }
 
     .height_small {
@@ -93,4 +92,38 @@ height: 420px;
     .content_container h1 {
         text-align: start;
     }
+}
+
+
+.home2{
+
+    background: url('../../../assets/images/home/home2.png') no-repeat
+        center center;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.home3{
+
+    background: url('../../../assets/images/home/home3.png') no-repeat
+        center center;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.home4{
+
+    background: url('../../../assets/images/home/home4.png') no-repeat
+        center center;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    border-bottom: 1px solid var(--border);
+
 }
