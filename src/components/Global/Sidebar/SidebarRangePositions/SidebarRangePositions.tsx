@@ -1,12 +1,16 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -32,7 +36,10 @@ export default function SidebarRangePositions(props: propsIF) {
     );
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -41,7 +48,7 @@ export default function SidebarRangePositions(props: propsIF) {
 
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {
@@ -49,14 +56,11 @@ export default function SidebarRangePositions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setShowAllData(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                pos.base +
-                '&tokenB=' +
-                pos.quote,
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: pos.base,
+            tokenB: pos.quote,
+        });
     };
 
     const handleViewMoreClick = () => {

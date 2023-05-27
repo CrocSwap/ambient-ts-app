@@ -67,6 +67,8 @@ function LimitExtraInfo(props: propsIF) {
 
     const startPriceString = !startDisplayPrice
         ? '…'
+        : startDisplayPrice < 0.0001
+        ? startDisplayPrice.toExponential(2)
         : startDisplayPrice < 2
         ? startDisplayPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -79,6 +81,8 @@ function LimitExtraInfo(props: propsIF) {
 
     const middlePriceString = !middleDisplayPrice
         ? '…'
+        : middleDisplayPrice < 0.0001
+        ? middleDisplayPrice.toExponential(2)
         : middleDisplayPrice < 2
         ? middleDisplayPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -91,6 +95,8 @@ function LimitExtraInfo(props: propsIF) {
 
     const endPriceString = !endDisplayPrice
         ? '…'
+        : endDisplayPrice < 0.0001
+        ? endDisplayPrice.toExponential(2)
         : endDisplayPrice < 2
         ? endDisplayPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,

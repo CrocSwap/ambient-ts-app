@@ -340,6 +340,8 @@ export default function HarvestPosition(props: propsIF) {
                             : '0',
                         positionType: position.positionType,
                         changeType: 'harvest',
+                        isBid: 'false',
+                        liq: '0',
                     }),
             );
         }
@@ -547,9 +549,7 @@ export default function HarvestPosition(props: propsIF) {
             <HarvestPositionHeader
                 onClose={handleModalClose}
                 title={
-                    showSettings
-                        ? 'Harvest Settings'
-                        : 'Harvest Rewards Confirmation'
+                    showSettings ? 'Harvest Settings' : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();

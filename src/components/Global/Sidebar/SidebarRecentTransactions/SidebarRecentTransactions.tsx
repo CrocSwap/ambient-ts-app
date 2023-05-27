@@ -1,10 +1,10 @@
 // START: Import React and Dongles
-import { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // START: Import Local Files
 import { TransactionIF } from '../../../../utils/interfaces/exports';
@@ -12,6 +12,10 @@ import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -38,7 +42,10 @@ export default function SidebarRecentTransactions(props: propsIF) {
     } = useContext(SidebarContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -48,7 +55,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
@@ -56,14 +63,11 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote,
+        });
     };
 
     const handleViewMoreClick = (): void => {

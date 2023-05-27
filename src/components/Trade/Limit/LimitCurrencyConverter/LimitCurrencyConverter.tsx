@@ -8,16 +8,13 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
-    // reverseTokensInRTK,
     setIsTokenAPrimary,
     setLimitTick,
-    // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -34,8 +31,12 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
@@ -87,6 +88,9 @@ function LimitCurrencyConverter(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
         baseToken: {
@@ -186,7 +190,8 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
@@ -194,14 +199,11 @@ function LimitCurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
-            navigate(
-                '/trade/limit/' +
-                    formSlugForPairParams(
-                        tradeData.tokenA.chainId,
-                        tradeData.tokenB,
-                        tradeData.tokenA,
-                    ),
-            );
+            linkGenLimit.navigate({
+                chain: chainId,
+                tokenA: tradeData.tokenB.address,
+                tokenB: tradeData.tokenA.address,
+            });
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
@@ -218,8 +220,8 @@ function LimitCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData.shouldLimitDirectionReverse) {
-            reverseTokens();
             setIsTokenAPrimaryLocal((state) => {
+                reverseTokens();
                 return !state;
             });
         }

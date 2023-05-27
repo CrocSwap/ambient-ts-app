@@ -394,7 +394,7 @@ export type PositionUpdateFn = (
     position: PositionIF,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => Promise<any>;
+) => Promise<PositionIF>;
 
 export function memoizePositionUpdate(): PositionUpdateFn {
     return memoizeCacheQueryFn(updatePositionStats) as PositionUpdateFn;

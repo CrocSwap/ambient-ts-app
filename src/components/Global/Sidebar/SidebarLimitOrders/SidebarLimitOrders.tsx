@@ -1,16 +1,21 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
 }
+
 export default function SidebarLimitOrders(props: propsIF) {
     const { limitOrderByUser } = props;
 
@@ -32,7 +37,10 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -40,7 +48,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
@@ -48,14 +56,11 @@ export default function SidebarLimitOrders(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setShowAllData(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     const handleViewMoreClick = () => {

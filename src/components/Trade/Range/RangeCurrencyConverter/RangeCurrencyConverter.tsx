@@ -28,11 +28,18 @@ import {
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
-import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
-import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
+import tokenArrow from '../../../../assets/images/icons/plus.svg';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
@@ -95,6 +102,9 @@ function RangeCurrencyConverter(props: propsIF) {
         setTokenBQtyCoveredByWalletBalance,
     } = props;
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
         baseToken: {
@@ -277,8 +287,6 @@ function RangeCurrencyConverter(props: propsIF) {
                 : truncateDecimals(qtyTokenB, 2)
             : '';
 
-        // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -349,19 +357,18 @@ function RangeCurrencyConverter(props: propsIF) {
             setTokenAInputQty('');
         }
     };
-    const navigate = useNavigate();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
-        navigate(
-            '/trade/range/' +
-                formSlugForPairParams(
-                    tradeData.tokenA.chainId,
-                    tradeData.tokenB,
-                    tradeData.tokenA,
-                ),
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: tradeData.tokenB.address,
+            tokenB: tradeData.tokenA.address,
+        });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 

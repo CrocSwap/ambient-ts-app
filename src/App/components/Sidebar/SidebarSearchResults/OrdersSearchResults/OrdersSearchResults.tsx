@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
@@ -7,6 +6,10 @@ import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -65,21 +68,19 @@ export default function OrdersSearchResults(props: propsIF) {
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setShowAllData(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     return (

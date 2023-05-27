@@ -1,13 +1,17 @@
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import styles from '../SidebarSearchResults.module.css';
+import { getRangeDisplay, getValueUSD } from './functions/exports';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
+    chainId: string;
     searchedPositions: PositionIF[];
 }
 interface PositionLiPropsIF {
@@ -44,8 +48,6 @@ function PositionLI(props: PositionLiPropsIF) {
 export default function PositionsSearchResults(props: propsIF) {
     const { searchedPositions } = props;
 
-    const navigate = useNavigate();
-
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -56,19 +58,19 @@ export default function PositionsSearchResults(props: propsIF) {
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setShowAllData(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote,
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: position.base,
+            tokenB: position.quote,
+        });
     };
 
     return (

@@ -142,9 +142,6 @@
     vertical-align: middle;
     padding: 0.2em 0.5em;
 }
-.base_color {
-    color: var(--text2);
-}
 .hover_style:hover {
     -webkit-mask-image: linear-gradient(
         -75deg,
@@ -214,7 +211,7 @@
 }
 
 .light_grey {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .mono_font {

@@ -16,6 +16,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     pool: topPoolIF;
@@ -325,13 +326,8 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    const linkpath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        quoteAddr +
-        '&tokenB=' +
-        baseAddr;
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol
@@ -344,7 +340,11 @@ export default function PoolCard(props: propsIF) {
     return (
         <Link
             className={styles.pool_card}
-            to={linkpath}
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: quoteAddr,
+                tokenB: baseAddr,
+            })}
             tabIndex={0}
             role='presentation'
             aria-label={ariaDescription}

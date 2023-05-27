@@ -50,8 +50,6 @@ export const useProcessTransaction = (
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
-    // console.log({ quoteTokenLogo });
-    // console.log({ baseTokenLogo });
 
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||

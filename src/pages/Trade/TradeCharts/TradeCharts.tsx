@@ -1,5 +1,13 @@
 // START: Import React and Dongles
-import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
+import {
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+    useMemo,
+} from 'react';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -113,14 +121,22 @@ function TradeCharts(props: propsIF) {
         chartSettings.volumeSubchart.isEnabled,
     );
 
-    const chartItemStates = {
-        showFeeRate,
+    const chartItemStates = useMemo(() => {
+        return {
+            showFeeRate,
+            showTvl,
+            showVolume,
+            liqMode: isMarketOrLimitModule
+                ? chartSettings.marketOverlay.overlay
+                : chartSettings.rangeOverlay.overlay,
+        };
+    }, [
+        chartSettings.marketOverlay,
+        chartSettings.rangeOverlay,
         showTvl,
         showVolume,
-        liqMode: isMarketOrLimitModule
-            ? chartSettings.marketOverlay.overlay
-            : chartSettings.rangeOverlay.overlay,
-    };
+        showFeeRate,
+    ]);
 
     // END OF CHART SETTINGS------------------------------------------------------------
 

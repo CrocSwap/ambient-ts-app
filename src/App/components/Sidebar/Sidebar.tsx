@@ -215,7 +215,6 @@ function Sidebar() {
                 id='search_input'
                 ref={searchInputRef}
                 placeholder='Search...'
-                maxLength={40}
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'

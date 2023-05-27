@@ -4,11 +4,12 @@ import {
     memo,
     SetStateAction,
     useContext,
+    useCallback,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import {
@@ -31,6 +32,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -72,10 +74,6 @@ function CurrencyConverter(props: propsIF) {
         setBuyQtyString,
         setTokenAQtyCoveredByWalletBalance,
     } = props;
-
-    // TODO: update name of functions with 'handle' verbiage
-    // TODO: consolidate functions into a single function
-    // TODO: refactor functions to consider which token is base
 
     const {
         crocEnv,
@@ -156,7 +154,8 @@ function CurrencyConverter(props: propsIF) {
         }
     }, []);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const { pathname } = useLocation();
 
@@ -272,60 +271,57 @@ function CurrencyConverter(props: propsIF) {
         return () => clearInterval(timerId);
     }, []);
 
-    const reverseTokens = useMemo(
-        () => (): void => {
-            if (disableReverseTokens || !isPoolInitialized) {
-                return;
+    const reverseTokens = useCallback((): void => {
+        if (disableReverseTokens || !isPoolInitialized) {
+            return;
+        } else {
+            setDisableReverseTokens(true);
+            setUserClickedCombinedMax(false);
+            setSwitchBoxes(!switchBoxes);
+
+            isTokenAPrimaryLocal
+                ? tokenAQtyLocal !== '' && parseFloat(tokenAQtyLocal) > 0
+                    ? setIsSellLoading(true)
+                    : null
+                : tokenBQtyLocal !== '' && parseFloat(tokenBQtyLocal) > 0
+                ? setIsBuyLoading(true)
+                : null;
+
+            setTokenALocal(tokenBLocal);
+            setTokenBLocal(tokenALocal);
+            setTokenASymbolLocal(tokenBSymbolLocal);
+            setTokenBSymbolLocal(tokenASymbolLocal);
+            linkGenAny.navigate({
+                chain: chainId,
+                tokenA: tokenB.address,
+                tokenB: tokenA.address,
+            });
+            if (!isTokenAPrimaryLocal) {
+                setTokenAQtyLocal(tokenBQtyLocal);
+                setBuyQtyString('');
+                setSellQtyString(
+                    tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
+                );
+                setTokenBQtyLocal('');
             } else {
-                setDisableReverseTokens(true);
-                setUserClickedCombinedMax(false);
-                setSwitchBoxes(!switchBoxes);
-
-                isTokenAPrimaryLocal
-                    ? tokenAQtyLocal !== '' && parseFloat(tokenAQtyLocal) > 0
-                        ? setIsSellLoading(true)
-                        : null
-                    : tokenBQtyLocal !== '' && parseFloat(tokenBQtyLocal) > 0
-                    ? setIsBuyLoading(true)
-                    : null;
-
-                setTokenALocal(tokenBLocal);
-                setTokenBLocal(tokenALocal);
-                setTokenASymbolLocal(tokenBSymbolLocal);
-                setTokenBSymbolLocal(tokenASymbolLocal);
-
-                navigate(linkPathReversed);
-                if (!isTokenAPrimaryLocal) {
-                    setTokenAQtyLocal(tokenBQtyLocal);
-                    setBuyQtyString('');
-
-                    setSellQtyString(
-                        tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal,
-                    );
-                    setTokenBQtyLocal('');
-                } else {
-                    setTokenBQtyLocal(tokenAQtyLocal);
-                    setSellQtyString('');
-                    setBuyQtyString(
-                        tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal,
-                    );
-                    setTokenAQtyLocal('');
-                }
-                dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
-                setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+                setTokenBQtyLocal(tokenAQtyLocal);
+                setSellQtyString('');
+                setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
+                setTokenAQtyLocal('');
             }
-        },
-        [
-            crocEnv,
-            poolPriceDisplay,
-            tokenALocal,
-            tokenBLocal,
-            slippageTolerancePercentage,
-            isTokenAPrimaryLocal,
-            linkPathReversed,
-            disableReverseTokens,
-        ],
-    );
+            dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+            setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        }
+    }, [
+        crocEnv,
+        poolPriceDisplay,
+        tokenALocal,
+        tokenBLocal,
+        slippageTolerancePercentage,
+        isTokenAPrimaryLocal,
+        linkPathReversed,
+        disableReverseTokens,
+    ]);
 
     const handleBlockUpdate = () => {
         if (!disableReverseTokens) {

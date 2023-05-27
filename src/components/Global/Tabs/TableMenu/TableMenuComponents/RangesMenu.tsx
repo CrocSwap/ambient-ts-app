@@ -28,6 +28,12 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 import { RangeContext } from '../../../../../contexts/RangeContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -59,7 +65,11 @@ export default function RangesMenu(props: propsIF) {
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
+    const { sidebar } = useContext(SidebarContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -112,21 +122,20 @@ export default function RangesMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
+
     const repositionButton = (
         <Link
             className={styles.reposition_button}
-            to={
-                '/trade/reposition/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRepo.getFullURL({
+                chain: chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             state={{ position: position }}
         >
             Reposition
@@ -143,18 +152,13 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRange.getFullURL({
+                chain: chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             onClick={handleCopyClick}
         >
             Copy Trade
@@ -165,18 +169,13 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRange.getFullURL({
+                chain: chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             onClick={handleCopyClick}
         >
             Add
@@ -198,7 +197,9 @@ export default function RangesMenu(props: propsIF) {
     // ----------------------
 
     const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = useMediaQuery('(min-width: 1380px)');
+    const view2 = sidebar.isOpen
+        ? useMediaQuery('(min-width: 1750px)')
+        : useMediaQuery('(min-width: 1550px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
@@ -211,7 +212,10 @@ export default function RangesMenu(props: propsIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {showRepositionButton && repositionButton}
-            {!showRepositionButton && userMatchesConnectedAccount && addButton}
+            {view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
             {view2 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
             {!userMatchesConnectedAccount && copyButton}

@@ -20,7 +20,6 @@ import {
     memo,
 } from 'react';
 
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
@@ -32,6 +31,7 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 interface propsIF {
     activeAccountTransactionData?: TransactionIF[];
@@ -548,7 +548,17 @@ function Transactions(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TransactionsSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Spinner size={100} bg='var(--dark1)' />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}

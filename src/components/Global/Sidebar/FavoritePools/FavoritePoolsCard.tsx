@@ -7,6 +7,10 @@ import { usePoolStats } from './hooks/usePoolStats';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     pool: PoolIF;
@@ -30,21 +34,23 @@ export default function FavoritePoolsCard(props: propsIF) {
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+
     const [addrTokenA, addrTokenB] =
         tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.quote.address, pool.base.address]
             : [pool.base.address, pool.quote.address];
 
-    const linkPath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        addrTokenA +
-        '&tokenB=' +
-        addrTokenB;
-
     return (
-        <Link className={styles.container} to={linkPath}>
+        <Link
+            className={styles.container}
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: addrTokenA,
+                tokenB: addrTokenB,
+            })}
+        >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
             </div>

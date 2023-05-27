@@ -31,13 +31,18 @@ import chainNumToString from '../../App/functions/chainNumToString';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
 // react functional component
 export default function InitPool() {
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const {
         tokenAAllowance,
@@ -201,6 +206,10 @@ export default function InitPool() {
         }
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+
     const sendInit = () => {
         IS_LOCAL_ENV &&
             console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
@@ -248,17 +257,11 @@ export default function InitPool() {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        navigate(
-                            '/trade/range/chain=' +
-                                chainNumToString(baseToken.chainId) +
-                                '&tokenA=' +
-                                baseToken.address +
-                                '&tokenB=' +
-                                quoteToken.address,
-                            {
-                                replace: true,
-                            },
-                        );
+                        linkGenRange.navigate({
+                            chain: chainId,
+                            tokenA: baseToken.address,
+                            tokenB: quoteToken.address,
+                        });
                     }
                 } catch (error) {
                     if (
@@ -309,14 +312,11 @@ export default function InitPool() {
         <section className={styles.main}>
             {poolExists && (
                 <Navigate
-                    to={
-                        '/trade/market/chain=' +
-                        chainNumToString(baseToken.chainId) +
-                        '&tokenA=' +
-                        baseToken.address +
-                        '&tokenB=' +
-                        quoteToken.address
-                    }
+                    to={linkGenMarket.getFullURL({
+                        chain: chainId,
+                        tokenA: baseToken.address,
+                        tokenB: quoteToken.address,
+                    })}
                     replace={true}
                 />
             )}
