@@ -21,7 +21,6 @@ import {
 import {
     setIsLoggedIn,
     setAddressCurrent,
-    resetUserAddresses,
     resetTokenData,
     setRecentTokens,
 } from '../utils/state/userDataSlice';
