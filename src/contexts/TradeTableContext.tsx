@@ -38,7 +38,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [expandTradeTable, setExpandTradeTable] = useState(true);
+    const [expandTradeTable, setExpandTradeTable] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
     const [showOrderPulseAnimation, setShowOrderPulseAnimation] =

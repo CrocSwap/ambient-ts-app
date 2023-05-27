@@ -27,14 +27,10 @@ import {
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { useNavigate } from 'react-router-dom';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
 import {
     useLinkGen,
     linkGenMethodsIF,

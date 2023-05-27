@@ -11,7 +11,6 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedPositions: PositionIF[];
 }
 interface PositionLiPropsIF {

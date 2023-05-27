@@ -27,7 +27,6 @@ import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import chainNumToString from '../../App/functions/chainNumToString';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';

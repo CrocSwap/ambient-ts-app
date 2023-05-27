@@ -174,7 +174,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                             const candles = json?.data;
                             if (candles?.length === 0) {
                                 setIsCandleDataNull(true);
-                                // CONTEXT: removing due to design decision to not change trade table size without user input
+                                // Removing due to design decision to not change trade table size without user input
                                 // setExpandTradeTable(true);
                             } else if (candles) {
                                 setCandleData({
@@ -190,7 +190,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                                     candles: candles,
                                 });
                                 setIsCandleDataNull(false);
-                                // CONTEXT: removing due to design decision to not change trade table size without user input
                                 // setExpandTradeTable(false);
                             }
                             return candles?.length;
@@ -243,6 +242,20 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
     const candleSeriesCacheEndpoint = GRAPHCACHE_URL + '/candle_series?';
+
+    function capNumDurations(numDurations: number): string {
+        const MAX_NUM_DURATIONS = 5000;
+        const MIN_NUM_DURATIONS = 1;
+        if (numDurations > MAX_NUM_DURATIONS) {
+            console.warn(`Candle fetch n=${numDurations} exceeds max cap.`);
+            return MAX_NUM_DURATIONS.toString();
+        } else if (numDurations < MIN_NUM_DURATIONS) {
+            console.warn(`Candle fetch n=${numDurations} non-positive.`);
+            return MIN_NUM_DURATIONS.toString();
+        }
+        return numDurations.toString();
+    }
+
     const fetchCandlesByNumDurations = (numDurations: number) =>
         fetch(
             candleSeriesCacheEndpoint +
@@ -253,7 +266,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
-                    n: numDurations.toString(), // positive integer
+                    n: capNumDurations(numDurations),
                     // page: '0', // nonnegative integer
                     chainId: mktDataChainId(chainData.chainId),
                     dex: 'all',
@@ -307,7 +320,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setCandleData(newCandleData);
                 }
             })
-            .catch(console.error);
+            .catch((e) => {
+                console.error(e);
+                setIsCandleDataNull(false);
+                // setExpandTradeTable(false);
+            });
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
