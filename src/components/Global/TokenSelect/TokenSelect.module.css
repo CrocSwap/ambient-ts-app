@@ -10,6 +10,7 @@
     background: transparent;
     outline: none;
     border: none;
+    border-radius: var(--border-radius);
 }
 
 .main_container:hover,

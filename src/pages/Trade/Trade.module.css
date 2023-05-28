@@ -122,11 +122,13 @@
 }
 
 /* pool not initialized */
+
 .pool_not_initialialized_container {
     width: 100%;
-    height: calc(100vh - 4rem);
+    height: 100vh;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    margin-top: 3rem;
     z-index: 999;
 
     display: flex;
@@ -134,6 +136,12 @@
     align-items: center;
 
     position: absolute;
+
+    position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
 }
 
 .pool_not_initialialized_content {
@@ -314,9 +322,7 @@
     }
     .main_layout {
         display: grid;
-        /* height: 100%; */
-        /* background: brown; */
-        /* overflow-y: hidden; */
+
     }
 
     .main__chart {
