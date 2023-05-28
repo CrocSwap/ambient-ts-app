@@ -6119,12 +6119,12 @@ export default function Chart(props: propsIF) {
             : false;
 
         const close = denomInBase
-            ? nearest.invPriceCloseExclMEVDecimalCorrected
-            : nearest.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invPriceCloseExclMEVDecimalCorrected
+            : nearest?.priceCloseExclMEVDecimalCorrected;
 
         const open = denomInBase
-            ? nearest.invPriceOpenExclMEVDecimalCorrected
-            : nearest.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invPriceOpenExclMEVDecimalCorrected
+            : nearest?.priceOpenExclMEVDecimalCorrected;
 
         const diff = Math.abs(close - open);
         const scale = Math.abs(
@@ -6182,7 +6182,7 @@ export default function Chart(props: propsIF) {
             const newData = [...prevState];
 
             newData.filter((target: any) => target.name === 'tvl')[0].value =
-                nearest.tvlData.tvl;
+                nearest?.tvlData.tvl;
 
             newData.filter(
                 (target: any) => target.name === 'feeRate',

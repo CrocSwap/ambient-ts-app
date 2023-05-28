@@ -176,14 +176,14 @@ export default function AreaChart(props: AreaChartProps) {
             const nearest = minimum(filtered, (d: any) =>
                 Math.abs(point.x - xScale(xValue(d))),
             )[1];
-            const newX = new Date(nearest.time.getTime());
+            const newX = new Date(nearest?.time.getTime());
             const value = new Date(newX.setTime(newX.getTime()));
             props.setValueTvl?.(nearest?.value);
             props.setValueTvlDate?.(getDate(value));
             return [
                 {
                     x: xScale(value),
-                    y: yScale(nearest.value),
+                    y: yScale(nearest?.value),
                     yAxis: yScale.invert(point.y),
                 },
             ];
