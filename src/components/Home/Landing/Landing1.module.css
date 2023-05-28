@@ -8,8 +8,8 @@
 
     border-radius: var(--border-radius);
 
-    background: url('../../../assets/images/home/home1.png') no-repeat
-        center center;
+    background: url('../../../assets/images/home/home1.png') no-repeat center
+        bottom;
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
