@@ -131,6 +131,7 @@ function TradeCharts(props: propsIF) {
                 : chartSettings.rangeOverlay.overlay,
         };
     }, [
+        isMarketOrLimitModule,
         chartSettings.marketOverlay,
         chartSettings.rangeOverlay,
         showTvl,
