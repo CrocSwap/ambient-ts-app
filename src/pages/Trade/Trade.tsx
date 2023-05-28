@@ -410,46 +410,44 @@ function Trade(props: propsIF) {
         '/initpool/' +
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
-    const poolNotInitializedContent =
-        poolExists === false ? (
-            <div className={styles.pool_not_initialialized_container}>
-                <div className={styles.pool_not_initialialized_content}>
-                    <div
-                        className={styles.close_init}
-                        onClick={() => navigate(-1)}
-                    >
-                        <VscClose size={25} />
-                    </div>
-                    <h2>This pool has not been initialized.</h2>
-                    <h3>Do you want to initialize it?</h3>
-                    <Link to={initLinkPath} className={styles.initialize_link}>
-                        Initialize Pool
-                        {baseTokenLogo ? (
-                            <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={baseTokenSymbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        {quoteTokenLogo ? (
-                            <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={quoteTokenSymbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                    </Link>
-                    <button
-                        className={styles.no_thanks}
-                        onClick={() => navigate(-1)}
-                    >
-                        No, take me back.
-                    </button>
+    const showPoolNotInitializedContent = poolExists === false;
+
+    const poolNotInitializedContent = showPoolNotInitializedContent ? (
+        <div className={styles.pool_not_initialialized_container}>
+            <div className={styles.pool_not_initialialized_content}>
+                <div className={styles.close_init} onClick={() => navigate(-1)}>
+                    <VscClose size={25} />
                 </div>
+                <h2>This pool has not been initialized.</h2>
+                <h3>Do you want to initialize it?</h3>
+                <Link to={initLinkPath} className={styles.initialize_link}>
+                    Initialize Pool
+                    {baseTokenLogo ? (
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={baseTokenSymbol?.charAt(0)}
+                            width='20px'
+                        />
+                    )}
+                    {quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={quoteTokenSymbol?.charAt(0)}
+                            width='20px'
+                        />
+                    )}
+                </Link>
+                <button
+                    className={styles.no_thanks}
+                    onClick={() => navigate(-1)}
+                >
+                    No, take me back.
+                </button>
             </div>
-        ) : null;
+        </div>
+    ) : null;
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -582,12 +580,12 @@ function Trade(props: propsIF) {
     if (showActiveMobileComponent) return mobileTrade;
 
     return (
-        <section className={styles.main_layout}>
+        <section className={`${styles.main_layout}`}>
+            {poolNotInitializedContent}
             <div
                 className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
             >
-                {poolNotInitializedContent}
                 <div
                     className={` ${expandGraphStyle} ${
                         activeMobileComponent !== 'chart' ? styles.hide : ''

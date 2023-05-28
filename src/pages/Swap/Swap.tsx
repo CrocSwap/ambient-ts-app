@@ -8,7 +8,7 @@ import {
     useContext,
     memo,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { ChainSpec, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
@@ -55,6 +55,9 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
+import { VscClose } from 'react-icons/vsc';
+import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -749,6 +752,65 @@ function Swap(props: propsIF) {
         }),
         [],
     );
+
+    const initLinkPath =
+        '/initpool/' +
+        formSlugForPairParams(
+            chainId,
+            tokenPair.dataTokenA.address,
+            tokenPair.dataTokenB.address,
+        );
+
+    const showPoolNotInitializedContent = poolExists === false;
+
+    const navigate = useNavigate();
+
+    const poolNotInitializedContent = showPoolNotInitializedContent ? (
+        <div className={styles.pool_not_initialialized_container}>
+            <div className={styles.pool_not_initialialized_content}>
+                <div className={styles.close_init} onClick={() => navigate(-1)}>
+                    <VscClose size={25} />
+                </div>
+                <h2>This pool has not been initialized.</h2>
+                <h3>Do you want to initialize it?</h3>
+                <Link to={initLinkPath} className={styles.initialize_link}>
+                    Initialize Pool
+                    {tokenPair.dataTokenA.logoURI ? (
+                        <img
+                            src={tokenPair.dataTokenA.logoURI}
+                            alt={tokenPair.dataTokenA.symbol}
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenPair.dataTokenA.symbol?.charAt(
+                                0,
+                            )}
+                            width='20px'
+                        />
+                    )}
+                    {tokenPair.dataTokenB.logoURI ? (
+                        <img
+                            src={tokenPair.dataTokenB.logoURI}
+                            alt={tokenPair.dataTokenB.symbol}
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenPair.dataTokenB.symbol?.charAt(
+                                0,
+                            )}
+                            width='20px'
+                        />
+                    )}
+                </Link>
+                <button
+                    className={styles.no_thanks}
+                    onClick={() => navigate(-1)}
+                >
+                    No, take me back.
+                </button>
+            </div>
+        </div>
+    ) : null;
     return (
         <FocusTrap focusTrapOptions={focusTrapOptions}>
             <section data-testid={'swap'} className={swapPageStyle}>
@@ -763,6 +825,7 @@ function Swap(props: propsIF) {
                     </div>
                 )}
                 <div className={`${swapContainerStyle}`}>
+                    {poolNotInitializedContent}
                     <ContentContainer
                         isOnTradeRoute={isOnTradeRoute}
                         padding={isOnTradeRoute ? '0 1rem' : '1rem'}
