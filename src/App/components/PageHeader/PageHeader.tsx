@@ -121,6 +121,7 @@ const PageHeader = function (props: HeaderPropsIF) {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
+            style={!desktopScreen ? { width: '145px' } : undefined}
             onClick={() => openWagmiModalWallet()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
