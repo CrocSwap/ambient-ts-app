@@ -790,7 +790,7 @@ function Swap(props: propsIF) {
                     )}
                     {tokenPair.dataTokenB.logoURI ? (
                         <img
-                            src={tokenPair.dataTokenB.symbol}
+                            src={tokenPair.dataTokenB.logoURI}
                             alt={tokenPair.dataTokenB.symbol}
                         />
                     ) : (
