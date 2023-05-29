@@ -5,7 +5,7 @@ export default async (request: Request, context: Context) => {
 
     const geofenceArg = Deno.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
     const geofenced = GEOFENCED.concat(
-        geofenceArg ? JSON.parse(geofenceArg) : [],
+        geofenceArg ? geofenceArg.split(',') : [],
     );
 
     // if user not in geofenced country, show website
