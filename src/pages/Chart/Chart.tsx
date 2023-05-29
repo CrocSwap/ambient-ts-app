@@ -5398,6 +5398,15 @@ export default function Chart(props: propsIF) {
             const nd = tvlCrCanvas.node() as any;
             if (nd) nd.requestRedraw();
         }
+
+        const tvlYaxisCanvas = d3
+            .select('#tvl_chart')
+            .select('#y-axis-canvas_tvl');
+
+        if (tvlYaxisCanvas) {
+            const nd = tvlYaxisCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
     };
 
     useEffect(() => {
