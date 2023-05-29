@@ -2,28 +2,21 @@ import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {
-    cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
-    lastBlockNumber: number;
     resolvedAddress: string;
-    activeAccount: string;
     connectedAccountActive: boolean;
-    chainId: string;
     tokens: tokenMethodsIF;
 }
 
 export default function Wallet(props: propsIF) {
     const {
-        cachedFetchTokenPrice,
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        chainId,
         tokens,
     } = props;
 
@@ -47,9 +40,7 @@ export default function Wallet(props: propsIF) {
                     <WalletCard
                         key={JSON.stringify(token)}
                         token={token}
-                        chainId={chainId}
                         tokens={tokens}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
                 ))}
             </div>

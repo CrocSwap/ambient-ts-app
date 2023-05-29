@@ -1,45 +1,44 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedTxs: TransactionIF[];
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TxSearchResults(props: propsIF) {
+    const { searchedTxs } = props;
     const {
-        chainId,
-        searchedTxs,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const {
         setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
 
-    const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(0);
-        setIsShowAllEnabled(false);
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
+        setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote,
+        });
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element

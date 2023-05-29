@@ -1,64 +1,40 @@
 import styles from '../Transactions.module.css';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import {
-    Dispatch,
-    memo,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
     tradeData: tradeData;
-    isTokenABase: boolean;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
     ipadView: boolean;
     showPair: boolean;
     view2: boolean;
     showColumns: boolean;
-    blockExplorer: string | undefined;
-    handlePulseAnimation?: (type: string) => void;
-    isOnPortfolioPage: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
+    isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        account,
-        showColumns,
-        tradeData,
-        ipadView,
-        isTokenABase,
-        tx,
-        blockExplorer,
-        handlePulseAnimation,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        isShowAllEnabled,
-        isOnPortfolioPage,
-        showPair,
-        setSimpleRangeWidth,
-        chainData,
-    } = props;
+    const { showColumns, tradeData, ipadView, tx, isAccountView, showPair } =
+        props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         txHash,
@@ -93,12 +69,23 @@ function TransactionRow(props: propsIF) {
         sideTypeStyle,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, account, isOnPortfolioPage);
+    } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+    const {
+        showAllData: showAllDataSelection,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tab page
+    const showAllData = !isAccountView && showAllDataSelection;
 
     const dispatch = useAppDispatch();
 
@@ -108,14 +95,12 @@ function TransactionRow(props: propsIF) {
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -126,12 +111,12 @@ function TransactionRow(props: propsIF) {
             : '';
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
+        userNameToDisplay === 'You' && showAllData
             ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const usernameStyle =
-        isOwnerActiveAccount && isShowAllEnabled
+        isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
@@ -185,7 +170,7 @@ function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        if (!isOnPortfolioPage)
+        if (!isAccountView)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
@@ -222,7 +207,7 @@ function TransactionRow(props: propsIF) {
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
-        isOnPortfolioPage,
+        isAccountView,
         tx,
         elapsedTimeString,
         baseQuantityDisplayShort,
@@ -289,9 +274,9 @@ function TransactionRow(props: propsIF) {
             onKeyDown={handleKeyPress}
         >
             {!showColumns && TxTimeWithTooltip}
-            {isOnPortfolioPage && showPair && tokenPair}
+            {isAccountView && showPair && tokenPair}
             {!showColumns && <li>{IDWithTooltip}</li>}
-            {!showColumns && !isOnPortfolioPage && <li>{walletWithTooltip}</li>}
+            {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange'
@@ -309,21 +294,14 @@ function TransactionRow(props: propsIF) {
 
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
-                    account={account}
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     tradeData={tradeData}
-                    isTokenABase={isTokenABase}
-                    blockExplorer={blockExplorer}
-                    isOnPortfolioPage={props.isOnPortfolioPage}
-                    handlePulseAnimation={handlePulseAnimation}
+                    isAccountView={props.isAccountView}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual
                     }
-                    setSimpleRangeWidth={setSimpleRangeWidth}
-                    chainData={chainData}
                     handleWalletClick={handleWalletClick}
-                    isShowAllEnabled={isShowAllEnabled}
                 />
             </li>
         </ul>

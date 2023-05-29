@@ -1,9 +1,9 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
@@ -394,7 +394,7 @@ export type PositionUpdateFn = (
     position: PositionIF,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => Promise<any>;
+) => Promise<PositionIF>;
 
 export function memoizePositionUpdate(): PositionUpdateFn {
     return memoizeCacheQueryFn(updatePositionStats) as PositionUpdateFn;

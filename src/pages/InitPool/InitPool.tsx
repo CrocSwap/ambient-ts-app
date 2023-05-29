@@ -1,8 +1,7 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
-import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -25,37 +24,35 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import chainNumToString from '../../App/functions/chainNumToString';
-
-// interface for props
-interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    ethMainnetUsdPrice?: number;
-    gasPriceInGwei: number | undefined;
-}
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { useAccount } from 'wagmi';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
 // react functional component
-export default function InitPool(props: propsIF) {
+export default function InitPool() {
     const {
-        openModalWallet,
-        isUserLoggedIn,
+        wagmiModal: { open: openWagmiModalWallet },
+    } = useContext(AppStateContext);
+    const {
         crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-        ethMainnetUsdPrice,
-        gasPriceInGwei,
-    } = props;
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
+
+    const { isConnected } = useAccount();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
@@ -208,6 +205,10 @@ export default function InitPool(props: propsIF) {
         }
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+
     const sendInit = () => {
         IS_LOCAL_ENV &&
             console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
@@ -255,17 +256,11 @@ export default function InitPool(props: propsIF) {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        navigate(
-                            '/trade/range/chain=' +
-                                chainNumToString(baseToken.chainId) +
-                                '&tokenA=' +
-                                baseToken.address +
-                                '&tokenB=' +
-                                quoteToken.address,
-                            {
-                                replace: true,
-                            },
-                        );
+                        linkGenRange.navigate({
+                            chain: chainId,
+                            tokenA: baseToken.address,
+                            tokenB: quoteToken.address,
+                        });
                     }
                 } catch (error) {
                     if (
@@ -316,14 +311,11 @@ export default function InitPool(props: propsIF) {
         <section className={styles.main}>
             {poolExists && (
                 <Navigate
-                    to={
-                        '/trade/market/chain=' +
-                        chainNumToString(baseToken.chainId) +
-                        '&tokenA=' +
-                        baseToken.address +
-                        '&tokenB=' +
-                        quoteToken.address
-                    }
+                    to={linkGenMarket.getFullURL({
+                        chain: chainId,
+                        tokenA: baseToken.address,
+                        tokenB: quoteToken.address,
+                    })}
                     replace={true}
                 />
             )}
@@ -469,7 +461,7 @@ export default function InitPool(props: propsIF) {
                                         }}
                                         flat={true}
                                     />
-                                ) : isUserLoggedIn ||
+                                ) : isConnected ||
                                   !connectButtonDelayElapsed ? (
                                     !isTokenAAllowanceSufficient ? (
                                         tokenAApprovalButton
@@ -506,7 +498,7 @@ export default function InitPool(props: propsIF) {
                                 ) : (
                                     <Button
                                         title='Connect Wallet'
-                                        action={openModalWallet}
+                                        action={openWagmiModalWallet}
                                         flat={true}
                                     />
                                 )}

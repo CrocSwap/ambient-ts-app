@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { memo, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -7,7 +7,6 @@ import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import styles from './ExtraInfo.module.css';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import makePriceDisplay from './makePriceDisplay';
-import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import {
     useAppDispatch,
@@ -16,22 +15,17 @@ import {
 import { CrocImpact } from '@crocswap-libs/sdk';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 // interface for props in this file
 interface propsIF {
-    tokenPair: TokenPairIF;
     priceImpact: CrocImpact | undefined;
-    poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
     quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
-    didUserFlipDenom: boolean;
-    isTokenABase: boolean;
-    isDenomBase: boolean;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
-    account: string | undefined;
 }
 
 // central react functional component
@@ -39,12 +33,13 @@ function ExtraInfo(props: propsIF) {
     const {
         priceImpact,
         displayEffectivePriceString,
-        poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFeeString,
         swapGasPriceinDollars,
         isOnTradeRoute,
     } = props;
+
+    const { poolPriceDisplay } = useContext(PoolContext);
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
         isOnTradeRoute ? false : false,
@@ -56,9 +51,10 @@ function ExtraInfo(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -82,6 +78,8 @@ function ExtraInfo(props: propsIF) {
     const finalPriceString =
         finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
             ? '…'
+            : finalPriceWithDenom < 0.0001
+            ? finalPriceWithDenom.toExponential(2)
             : finalPriceWithDenom < 2
             ? finalPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,

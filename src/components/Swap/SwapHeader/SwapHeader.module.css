@@ -2,7 +2,7 @@
     margin: 0 5px;
 }
 
-.share_button{
+.share_button {
     background: transparent;
     outline: none;
     border: none;
@@ -18,5 +18,9 @@
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     font-weight: 300;
+    color: var(--text1);
+}
+
+.title {
     color: var(--text1);
 }

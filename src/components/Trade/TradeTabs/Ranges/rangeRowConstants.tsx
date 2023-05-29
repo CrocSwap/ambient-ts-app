@@ -8,68 +8,52 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 interface Props {
     posHashTruncated: string;
-    // sideTypeStyle: string;
     usdValue: string;
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    // baseQuantityDisplayShort: string;
     quoteTokenLogo: string;
-    // quoteQuantityDisplayShort: string;
-    // elapsedTimeString: string;
-    // sideType: string;
     sideCharacter: string;
-    // ensName: string | null;
     posHash: string;
     elapsedTimeString: string;
-
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
-    // negativeArrow: string;
-
-    // type: string;
-    // truncatedLowDisplayPrice: string | undefined;
-    // truncatedHighDisplayPrice: string | undefined;
-    // priceCharacter: string;
-    // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
     maxRangeDenomByMoneyness: string | undefined;
-    // truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isAmbient: boolean;
     ipadView: boolean;
     isPositionInRange: boolean;
-    // valueArrows: boolean;
     isLeaderboard: boolean | undefined;
     showColumns: boolean;
     rank: number | undefined;
-
     handleCopyPosHash: () => void;
-    // handleOpenExplorer: () => void;
     openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
-
     position: PositionIF;
 }
+
 export default function rangeRowConstants(props: Props) {
     const {
         handleCopyPosHash,
         posHash,
         posHashTruncated,
         usdValue,
-
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
@@ -85,11 +69,9 @@ export default function rangeRowConstants(props: Props) {
         showColumns,
         rank,
         elapsedTimeString,
-
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
-
         minRangeDenomByMoneyness,
         ambientOrMin,
         ambientOrMax,
@@ -98,7 +80,6 @@ export default function rangeRowConstants(props: Props) {
         apyClassname,
         apyString,
         isPositionInRange,
-
         handleRowMouseDown,
         handleRowMouseOut,
     } = props;
@@ -198,8 +179,6 @@ export default function rangeRowConstants(props: Props) {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
-
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -244,13 +223,8 @@ export default function rangeRowConstants(props: Props) {
     // eslint-disable-next-line
     const tip = pair.join('\n');
 
-    const tradeLinkPath =
-        '/trade/range/chain=' +
-        position.chainId +
-        '&tokenA=' +
-        position.quote +
-        '&tokenB=' +
-        position.base;
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const tokenPair = (
         <li
@@ -259,7 +233,13 @@ export default function rangeRowConstants(props: Props) {
             onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
+            <NavLink
+                to={linkGenRange.getFullURL({
+                    chain: position.chainId,
+                    tokenA: position.quote,
+                    tokenB: position.base,
+                })}
+            >
                 <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>
@@ -337,7 +317,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage && !isAmbient
+                {isAccountView && !isAmbient
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
@@ -370,7 +350,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage
+                {isAccountView
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
@@ -388,7 +368,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage && !isAmbient
+                    {isAccountView && !isAmbient
                         ? minRangeDenomByMoneyness || '…'
                         : ambientOrMin || '…'}
                 </span>
@@ -396,7 +376,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? maxRangeDenomByMoneyness || '…'
                         : ambientOrMax || '…'}
                 </span>
@@ -483,7 +463,6 @@ export default function rangeRowConstants(props: Props) {
     return {
         valueWithTooltip,
         walletWithTooltip,
-
         tokenPair,
         idOrNull,
         rankingOrNull,

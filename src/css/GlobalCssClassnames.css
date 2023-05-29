@@ -13,11 +13,11 @@
 }
 
 .base_color {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .username_base_color {
-    color: var(--text2);
+    color: var(--text1);
     font-family: monospace;
 }
 
@@ -54,11 +54,11 @@
 /* apy */
 
 .apy_positive {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 .apy_negative {
-    color: var(--text2);
+    color: var(--text1);
 }
 
 /* sort */
@@ -145,13 +145,13 @@ aside.emoji-picker-react {
 
     background: red !important;
 } */
-.MuiPagination-ul{
+.MuiPagination-ul {
     background: var(--dark2);
     border-radius: 4px !important;
     flex-wrap: nowrap !important;
 }
 
-.MuiPaginationItem-root{
+.MuiPaginationItem-root {
     color: var(--text2) !important;
     outline: 1px solid transparent !important;
 }
@@ -159,9 +159,15 @@ aside.emoji-picker-react {
 .Mui-selected.MuiPaginationItem-root {
     color: var(--text1) !important;
     background: transparent !important;
-   
 }
 
 .MuiPaginationItem-root {
     display: inline-flex !important;
+}
+
+.css-1idz92c-MuiCircularProgress-svg{
+   
+ 
+    color: var(--title-gradient) !important 
+
 }

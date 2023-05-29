@@ -10,8 +10,8 @@ import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.m
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 export const useProcessTransaction = (
     tx: TransactionIF,
-    account: string,
-    isOnPortfolioPage = false,
+    account = '',
+    isAccountView = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(tx.chainId);
@@ -50,8 +50,6 @@ export const useProcessTransaction = (
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
-    // console.log({ quoteTokenLogo });
-    // console.log({ baseTokenLogo });
 
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -387,7 +385,7 @@ export const useProcessTransaction = (
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'
-            : isOnPortfolioPage
+            : isAccountView
             ? isBaseTokenMoneynessGreaterOrEqual
                 ? isBuy
                     ? 'buy'
@@ -580,7 +578,7 @@ export const useProcessTransaction = (
     const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
 
     // -------------------------------------------
-    const sideCharacter = isOnPortfolioPage
+    const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? quoteTokenCharacter
             : baseTokenCharacter
@@ -588,7 +586,7 @@ export const useProcessTransaction = (
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const priceCharacter = isOnPortfolioPage
+    const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter

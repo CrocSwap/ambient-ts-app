@@ -25,7 +25,12 @@ body::-webkit-scrollbar-track {
     background: transparent; /* opacity: 0; should do the thing either */
 }
 body::-webkit-scrollbar-thumb {
-    background: linear-gradient(0deg, var(--accent1) 0%, var(--accent5) 49.48%, var(--accent1) 100%);
+    background: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
 
     box-shadow: 0px 0px 0px 100000vh black;
 }
@@ -81,9 +86,7 @@ footer {
     margin-top: auto;
 }
 
-
 .swap-body {
-
     height: calc(100vh - (var(--footer-height) + 2rem));
 }
 
@@ -240,8 +243,6 @@ p:focus-visible {
 }
 
 @media only screen and (max-width: 600px) {
-
-
     .swap-body {
         /* max-height: 86.5vh; */
         overflow-y: hidden;
@@ -249,8 +250,6 @@ p:focus-visible {
         max-height: calc(100vh - 7.5rem);
     }
 }
-
-
 
 @media only screen and (min-width: 1280px) {
     .sidebar_content_layout {
@@ -272,9 +271,7 @@ p:focus-visible {
     }
     .content-container-trade {
         overflow: hidden;
-        
+
         background: var(--body-bg);
-       
     }
 }
-

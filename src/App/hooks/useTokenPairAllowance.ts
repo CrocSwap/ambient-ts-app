@@ -4,7 +4,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
-    account: `0x${string}` | undefined;
+    userAddress: `0x${string}` | undefined;
     lastBlockNumber: number;
 }
 
@@ -23,11 +23,11 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
         (async () => {
-            if (crocEnv && props.account && tradeData.tokenA.address) {
+            if (crocEnv && props.userAddress && tradeData.tokenA.address) {
                 try {
                     const allowance = await crocEnv
                         .token(tradeData.tokenA.address)
-                        .allowance(props.account);
+                        .allowance(props.userAddress);
                     const newTokenAllowance = toDisplayQty(
                         allowance,
                         tradeData.tokenA.decimals,
@@ -46,18 +46,18 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         tradeData.tokenA.address,
         tradeData.tokenA.chainId,
         props.lastBlockNumber,
-        props.account,
+        props.userAddress,
         recheckTokenAApproval,
     ]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
         (async () => {
-            if (crocEnv && props.account && tradeData.tokenB.address) {
+            if (crocEnv && props.userAddress && tradeData.tokenB.address) {
                 try {
                     const allowance = await crocEnv
                         .token(tradeData.tokenB.address)
-                        .allowance(props.account);
+                        .allowance(props.userAddress);
                     const newTokenAllowance = toDisplayQty(
                         allowance,
                         tradeData.tokenB.decimals,
@@ -76,7 +76,7 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
         tradeData.tokenB.address,
         tradeData.tokenB.chainId,
         props.lastBlockNumber,
-        props.account,
+        props.userAddress,
         recheckTokenBApproval,
     ]);
 

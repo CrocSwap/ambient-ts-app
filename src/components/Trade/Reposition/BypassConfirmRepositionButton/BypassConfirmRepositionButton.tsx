@@ -17,12 +17,10 @@ import {
 
 // START: Import Other Local Files
 import styles from './BypassConfirmRepositionButton.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 
 interface propsIF {
-    tokenPair: TokenPairIF;
     txErrorCode: string;
     resetConfirmation: () => void;
     onSend: () => void;
@@ -38,7 +36,6 @@ function BypassConfirmRepositionButton(props: propsIF) {
     const {
         newRepositionTransactionHash,
         txErrorCode,
-        tokenPair,
         onSend,
         resetConfirmation,
         showExtraInfo,
@@ -50,13 +47,14 @@ function BypassConfirmRepositionButton(props: propsIF) {
     } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const transactionApproved = newRepositionTransactionHash !== '';
     const isTransactionDenied: boolean = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const sellTokenData: TokenIF = tokenPair.dataTokenA;
-    const buyTokenData: TokenIF = tokenPair.dataTokenB;
+    const sellTokenData: TokenIF = tokenA;
+    const buyTokenData: TokenIF = tokenB;
 
     const transactionSubmitted = (
         <TransactionSubmitted
