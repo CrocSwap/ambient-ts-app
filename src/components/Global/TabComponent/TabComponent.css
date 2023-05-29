@@ -67,12 +67,13 @@
 
 .tab_ul li.selected,
 .menu_content li.selected,
-.tab_ul_left li.selected, .item_label.selected {
+.tab_ul_left li.selected,
+.item_label.selected {
     background: var(--dark2);
     color: var(--accent1);
 }
 
-.selected{
+.selected {
     color: var(--accent1);
 }
 .underline {

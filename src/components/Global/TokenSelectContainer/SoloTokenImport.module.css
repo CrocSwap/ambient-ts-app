@@ -7,13 +7,13 @@
 
     max-width: 380px;
 }
-.match_text_container{
+.match_text_container {
     width: 100%;
     padding: 4px 0;
     display: flex;
     justify-content: center;
     align-items: center;
-text-align: center;
+    text-align: center;
 }
 .main_container p {
     color: var(--text2);

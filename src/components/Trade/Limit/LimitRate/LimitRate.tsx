@@ -3,12 +3,14 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
-import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 interface propsIF {
     previousDisplayPrice: string;
@@ -16,19 +18,13 @@ interface propsIF {
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    gridSize: number;
-    pool: CrocPoolView | undefined;
-    tokenPair: TokenPairIF;
     fieldId: string;
-    chainId: string;
     sellToken?: boolean;
     isSellTokenBase: boolean;
     disable?: boolean;
     reverseTokens: () => void;
     // onBlur: () => void;
-    poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
-    isOrderCopied: boolean;
 }
 
 export default function LimitRate(props: propsIF) {
@@ -37,18 +33,19 @@ export default function LimitRate(props: propsIF) {
         setDisplayPrice,
         previousDisplayPrice,
         setPreviousDisplayPrice,
-        pool,
-        gridSize,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
         disable,
-        // poolPriceNonDisplay,
-        // limitTickDisplayPrice,
-        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        chainData: { gridSize },
+    } = useContext(CrocEnvContext);
+    const { pool } = useContext(PoolContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -163,7 +160,7 @@ export default function LimitRate(props: propsIF) {
     return (
         <div
             className={`${styles.swapbox} ${
-                isOrderCopied && styles.pulse_animation
+                showOrderPulseAnimation && styles.pulse_animation
             }`}
         >
             <span

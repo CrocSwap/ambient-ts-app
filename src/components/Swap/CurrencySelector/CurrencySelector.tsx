@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -12,7 +11,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
@@ -21,21 +19,18 @@ import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
     disableReverseTokens: boolean;
-    isUserLoggedIn: boolean | undefined;
-    tokenPair: TokenPairIF;
-    chainId: string;
     fieldId: string;
     tokenAorB: string | null;
     direction: string;
@@ -68,18 +63,7 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    isSwapCopied?: boolean;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
@@ -89,14 +73,10 @@ interface propsIF {
 function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
-        provider,
         sellQtyString,
         setSellQtyString,
         buyQtyString,
         setBuyQtyString,
-        isUserLoggedIn,
-        tokenPair,
-        chainId,
         fieldId,
         tokenAorB,
         handleChangeEvent,
@@ -109,17 +89,8 @@ function CurrencySelector(props: propsIF) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        isSwapCopied,
         isSellTokenEth,
         reverseTokens,
-        importedTokensPlus,
-        addRecentToken,
-        getRecentTokens,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        tokens,
         setUserOverrodeSurplusWithdrawalDefault,
         setUserClickedCombinedMax,
         userClickedCombinedMax,
@@ -128,15 +99,20 @@ function CurrencySelector(props: propsIF) {
         isLoading,
     } = props;
 
-    const { dexBalSwap } = useContext(UserPreferenceContext);
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { setInput } = useContext(TokenContext);
+    const { showSwapPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalSwap } = useContext(UserPreferenceContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isSellTokenSelector = fieldId === 'sell';
-    const thisToken = isSellTokenSelector
-        ? tokenPair.dataTokenA
-        : tokenPair.dataTokenB;
+    const thisToken = isSellTokenSelector ? tokenA : tokenB;
 
     const displayAmountToReduceEth = 0.2;
 
@@ -238,7 +214,7 @@ function CurrencySelector(props: propsIF) {
             : balanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn) {
+        if (handleChangeClick && isUserConnected) {
             handleChangeClick(adjustedBalanceNonLocaleString);
             setUserClickedCombinedMax(true);
         }
@@ -451,7 +427,7 @@ function CurrencySelector(props: propsIF) {
                         onClick={() => {
                             if (
                                 handleChangeClick &&
-                                isUserLoggedIn &&
+                                isUserConnected &&
                                 isCombinedBalanceNonZero
                             ) {
                                 handleChangeClick(balanceNonLocaleString);
@@ -459,7 +435,7 @@ function CurrencySelector(props: propsIF) {
                             }
                         }}
                     >
-                        <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
+                        <div>{isUserConnected ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
                 {isCombinedBalanceNonZero ? maxButton : null}
@@ -468,7 +444,7 @@ function CurrencySelector(props: propsIF) {
     );
     // End of  Wallet balance function and styles-----------------------------
 
-    const swapboxBottomOrNull = !isUserLoggedIn ? (
+    const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>{walletContent}</div>
@@ -524,7 +500,7 @@ function CurrencySelector(props: propsIF) {
                 </div>
                 <button
                     className={`${styles.token_select} ${
-                        isSwapCopied && styles.pulse_animation
+                        showSwapPulseAnimation && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
                     tabIndex={0}
@@ -561,25 +537,14 @@ function CurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
-                        importedTokensPlus={importedTokensPlus}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

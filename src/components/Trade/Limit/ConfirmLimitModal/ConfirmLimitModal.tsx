@@ -3,7 +3,6 @@ import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import Button from '../../../Global/Button/Button';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
@@ -11,12 +10,11 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
-    tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
     tokenAInputQty: string;
     tokenBInputQty: string;
     isTokenAPrimary: boolean;
@@ -34,8 +32,6 @@ interface propsIF {
 
 export default function ConfirmLimitModal(props: propsIF) {
     const {
-        tokenPair,
-        poolPriceDisplay,
         initiateLimitOrderMethod,
         insideTickDisplayPrice,
         newLimitOrderTransactionHash,
@@ -50,6 +46,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         tokenBInputQty,
     } = props;
 
+    const { poolPriceDisplay } = useContext(PoolContext);
     const {
         bypassConfirmLimit,
         bypassConfirmRange,
@@ -63,9 +60,10 @@ export default function ConfirmLimitModal(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPoolPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPoolPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPoolPriceString =
         displayPoolPriceWithDenom === Infinity ||
@@ -111,8 +109,8 @@ export default function ConfirmLimitModal(props: propsIF) {
               })
             : tokenBInputQty;
 
-    const sellTokenData = tokenPair.dataTokenA;
-    const buyTokenData = tokenPair.dataTokenB;
+    const sellTokenData = tradeData.tokenA;
+    const buyTokenData = tradeData.tokenB;
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -240,8 +238,8 @@ export default function ConfirmLimitModal(props: propsIF) {
                 </div>
             </div>
             <div className={styles.confSwap_detail_note}>
-                {`${tokenPair.dataTokenB.symbol} will be available for withdrawal after the limit order is filled. 
-                ${tokenPair.dataTokenA.symbol} can be withdrawn at any time before fill completion.`}
+                {`${tradeData.tokenB.symbol} will be available for withdrawal after the limit order is filled. 
+                ${tradeData.tokenA.symbol} can be withdrawn at any time before fill completion.`}
             </div>
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}

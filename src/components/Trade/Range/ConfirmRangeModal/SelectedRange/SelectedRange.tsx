@@ -1,15 +1,13 @@
 import styles from './SelectedRange.module.css';
-import { memo, useState } from 'react';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { memo, useContext, useState } from 'react';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
     spotPriceDisplay?: string;
-    poolPriceDisplayNum: number;
-    denominationsInBase: boolean;
     isTokenABase: boolean;
-    tokenPair: TokenPairIF;
     isAmbient: boolean;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
@@ -20,10 +18,7 @@ interface propsIF {
 }
 function SelectedRange(props: propsIF) {
     const {
-        poolPriceDisplayNum,
-        denominationsInBase,
         isTokenABase,
-        tokenPair,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
@@ -31,11 +26,15 @@ function SelectedRange(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
     } = props;
 
-    const reverseDisplayDefault =
-        (isTokenABase && denominationsInBase) ||
-        (!isTokenABase && !denominationsInBase);
+    const { poolPriceDisplay } = useContext(PoolContext);
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
-    const [denomInBase, setDenomInBase] = useState(denominationsInBase);
+    const reverseDisplayDefault =
+        (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
+
+    const [denomInBase, setDenomInBase] = useState(isDenomBase);
     const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
 
     const minPrice = denomInBase
@@ -46,9 +45,10 @@ function SelectedRange(props: propsIF) {
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
-    const displayPriceWithDenom = denomInBase
-        ? 1 / poolPriceDisplayNum
-        : poolPriceDisplayNum;
+    const displayPriceWithDenom =
+        denomInBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -99,28 +99,20 @@ function SelectedRange(props: propsIF) {
                 value={minPrice}
                 tokens={
                     reverseDisplay
-                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
-                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                        ? `${tokenB.symbol} per ${tokenA.symbol}`
+                        : `${tokenA.symbol} per ${tokenB.symbol}`
                 }
-                currentToken={
-                    reverseDisplay
-                        ? tokenPair.dataTokenA.symbol
-                        : tokenPair.dataTokenB.symbol
-                }
+                currentToken={reverseDisplay ? tokenA.symbol : tokenB.symbol}
             />
             <PriceRangeDisplay
                 title='Max Price'
                 value={maxPrice}
                 tokens={
                     reverseDisplay
-                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
-                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                        ? `${tokenB.symbol} per ${tokenA.symbol}`
+                        : `${tokenA.symbol} per ${tokenB.symbol}`
                 }
-                currentToken={
-                    reverseDisplay
-                        ? tokenPair.dataTokenB.symbol
-                        : tokenPair.dataTokenA.symbol
-                }
+                currentToken={reverseDisplay ? tokenB.symbol : tokenA.symbol}
             />
         </div>
     );

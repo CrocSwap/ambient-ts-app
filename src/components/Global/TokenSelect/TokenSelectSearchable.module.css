@@ -39,7 +39,7 @@
 .modal_tokens_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text1)
+    color: var(--text1);
     /* font-weight: 400; */
 }
 .modal_token_name {

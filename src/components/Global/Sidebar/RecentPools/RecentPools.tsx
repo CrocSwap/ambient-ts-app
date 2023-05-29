@@ -1,29 +1,18 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './RecentPools.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
-import {
-    recentPoolsMethodsIF,
-    SmallerPoolIF,
-} from '../../../../App/hooks/useRecentPools';
-import { memo } from 'react';
+import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import { memo, useContext } from 'react';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
-    tradeData: tradeData;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
-    recentPools: recentPoolsMethodsIF;
 }
 
 function RecentPools(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        recentPools,
-    } = props;
+    const { cachedPoolStatsFetch } = props;
+
+    const { recentPools } = useContext(SidebarContext);
 
     return (
         <div className={styles.container}>
@@ -35,12 +24,9 @@ function RecentPools(props: propsIF) {
             <div className={styles.content}>
                 {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
-                        tradeData={tradeData}
-                        chainId={chainId}
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>

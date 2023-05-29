@@ -20,13 +20,12 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for props
 interface propsIF {
-    isPairStable: boolean;
     isOnTradeRoute?: boolean;
 }
 
 // main react functional component
 export default function SwapHeader(props: propsIF) {
-    const { isPairStable, isOnTradeRoute } = props;
+    const { isOnTradeRoute } = props;
     const { swapSlippage, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
@@ -143,7 +142,6 @@ export default function SwapHeader(props: propsIF) {
                     <TransactionSettings
                         module={'Swap'}
                         slippage={swapSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
                         bypassConfirm={bypassConfirmSwap}
                     />

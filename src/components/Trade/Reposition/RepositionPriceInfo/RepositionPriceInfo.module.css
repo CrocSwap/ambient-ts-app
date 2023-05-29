@@ -1,18 +1,16 @@
-
-
 /* ------------------------ */
-.price_info_content{
+.price_info_content {
     /* background: rgb(19, 2, 2); */
     padding: 8px 16px;
 }
-.apr_display{
+.apr_display {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.apr_display p:first-of-type{
+.apr_display p:first-of-type {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text1);
@@ -23,7 +21,7 @@
     gap: 4px;
 }
 
-.apr_display p:nth-of-type(2){
+.apr_display p:nth-of-type(2) {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     background: var(--apr-gradient-primary);
@@ -37,7 +35,7 @@
     text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
-.row_display{
+.row_display {
     /* display: flex;
     flex-direction: row;
     align-items: center;
@@ -52,23 +50,24 @@
     gap: 4px;
 }
 
-.row_display p:first-of-type, .row_display p:nth-of-type(3){
+.row_display p:first-of-type,
+.row_display p:nth-of-type(3) {
     color: var(--text1);
     /* background: red; */
 }
 
-.row_display p:first-of-type{
+.row_display p:first-of-type {
     text-align: start;
 }
-.row_display p:nth-of-type(3){
+.row_display p:nth-of-type(3) {
     text-align: end;
 }
-.row_display p:nth-of-type(2){
+.row_display p:nth-of-type(2) {
     color: var(--text2);
     text-align: center;
 }
 
-.divider{
+.divider {
     width: 100%;
     background: var(--dark3);
     height: 1px;
@@ -78,16 +77,16 @@
     /* padding: 0 8px; */
 }
 
-.gas_pump_dropdown{
-    background: transparent;
-    outline: none;
-    border: none
-}
-.gas_pump_dropdown button{
+.gas_pump_dropdown {
     background: transparent;
     outline: none;
     border: none;
-width: 100%;
+}
+.gas_pump_dropdown button {
+    background: transparent;
+    outline: none;
+    border: none;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -99,36 +98,36 @@ width: 100%;
 
     cursor: pointer;
 }
-.gas_pump_dropdown button:hover{
+.gas_pump_dropdown button:hover {
     color: var(--text1);
     cursor: pointer;
 }
-.gas_pump_dropdown button:focus-visible{
-    border: 1px solid var(--text1)
+.gas_pump_dropdown button:focus-visible {
+    border: 1px solid var(--text1);
 }
-.dropdown_content{
+.dropdown_content {
     border: 1px solid var(--dark3);
-border-radius: 4px;
-padding: 8px;
+    border-radius: 4px;
+    padding: 8px;
 
-transition: all var(--animation-speed) ease-in-out;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.gas_pump_dropdown p{
+.gas_pump_dropdown p {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
 }
 
-.extra_row{
+.extra_row {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.align_center{
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -136,7 +135,7 @@ transition: all var(--animation-speed) ease-in-out;
     vertical-align: center;
 }
 
-.extra_row p{
+.extra_row p {
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);

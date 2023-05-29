@@ -12,6 +12,7 @@ import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 type ItemIF = {
     slug: string;
@@ -20,13 +21,16 @@ type ItemIF = {
 };
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
     controlItems: ItemIF[];
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { account, tx, controlItems } = props;
+    const { tx, controlItems } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
     // const dispatch = useAppDispatch();
     const {
         usdValue,
@@ -56,7 +60,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         // positionLiquidity,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, userAddress);
 
     const { pathname } = useLocation();
 

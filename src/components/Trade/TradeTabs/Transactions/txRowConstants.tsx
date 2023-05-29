@@ -45,7 +45,7 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBuy: boolean;
     isOrderRemove: boolean;
     valueArrows: boolean;
@@ -80,7 +80,7 @@ export const txRowConstants = (props: Props) => {
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
-        isOnPortfolioPage,
+        isAccountView,
         tx,
         elapsedTimeString,
         baseQuantityDisplayShort,
@@ -242,7 +242,7 @@ export const txRowConstants = (props: Props) => {
                     </p>
                 }
                 placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
+                disableHoverListener={!isAccountView}
                 arrow
                 enterDelay={750}
                 leaveDelay={0}
@@ -271,7 +271,7 @@ export const txRowConstants = (props: Props) => {
                     </div>
                 }
                 placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
+                disableHoverListener={!isAccountView}
                 arrow
                 enterDelay={750}
                 leaveDelay={0}
@@ -533,7 +533,7 @@ export const txRowConstants = (props: Props) => {
             <p className={`${styles.align_right} `}>
                 <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? truncatedLowDisplayPriceDenomByMoneyness
                         : truncatedLowDisplayPrice}
                 </span>
@@ -541,7 +541,7 @@ export const txRowConstants = (props: Props) => {
             <p className={`${styles.align_right} `}>
                 <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? truncatedHighDisplayPriceDenomByMoneyness
                         : truncatedHighDisplayPrice}
                 </span>
@@ -555,7 +555,7 @@ export const txRowConstants = (props: Props) => {
             onMouseLeave={handleRowMouseOut}
             onClick={() => {
                 if (IS_LOCAL_ENV) {
-                    console.debug({ isOnPortfolioPage });
+                    console.debug({ isAccountView });
                     console.debug({
                         truncatedDisplayPriceDenomByMoneyness,
                     });
@@ -570,7 +570,7 @@ export const txRowConstants = (props: Props) => {
                 <p className={`${styles.align_right} `}>
                     <span>
                         {(
-                            isOnPortfolioPage
+                            isAccountView
                                 ? truncatedDisplayPriceDenomByMoneyness
                                 : truncatedDisplayPrice
                         )
@@ -578,7 +578,7 @@ export const txRowConstants = (props: Props) => {
                             : '…'}
                     </span>
                     <span>
-                        {isOnPortfolioPage
+                        {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness
                             : truncatedDisplayPrice}
                     </span>
