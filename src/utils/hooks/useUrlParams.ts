@@ -52,6 +52,14 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
+    const areParamsValid = useMemo<boolean>(() => {
+        console.log(urlParamMap);
+        const paramTuples: Array<string[]> = [...urlParamMap.entries()];
+        console.log({ paramTuples });
+        return true;
+    }, [urlParamMap]);
+    false && areParamsValid;
+
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 
     /* Given an address and chain ID retrieves full token context data from the useTokenMap
