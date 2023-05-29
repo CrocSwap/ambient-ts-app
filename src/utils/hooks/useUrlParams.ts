@@ -16,6 +16,7 @@ import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { linkGenMethodsIF, useLinkGen } from './useLinkGen';
+import validateAddress from '../functions/validateAddress';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -69,10 +70,6 @@ export const useUrlParams = (
         const validateChain = (chn: string): boolean => {
             const chnRegEx = new RegExp('0x[0-9a-fA-F]+$');
             return chnRegEx.test(chn);
-        };
-        const validateAddress = (addr: string): boolean => {
-            const addrRegEx = new RegExp('0x[0-9a-fA-F]{40}$');
-            return addrRegEx.test(addr);
         };
         const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
         paramTuples.forEach((pt: [string, string]) => validateParam(pt));
