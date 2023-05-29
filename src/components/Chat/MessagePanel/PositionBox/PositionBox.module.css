@@ -76,20 +76,18 @@
 
 .tokens_name {
     font-family: 'Lexend Exa';
-font-style: normal;
-font-weight: 100;
-font-size: 11px;
-line-height: 12px;
+    font-style: normal;
+    font-weight: 100;
+    font-size: 11px;
+    line-height: 12px;
     display: flex;
     align-items: center;
     letter-spacing: -0.02em;
     flex-grow: 4;
     color: rgba(235, 235, 255, 0.87);
-
 }
 
 .tokens_type {
-
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -100,7 +98,6 @@ line-height: 12px;
     letter-spacing: -0.02em;
     flex-grow: 4;
     color: rgba(235, 235, 255, 0.6);
-
 }
 
 .tokens_apy {
@@ -165,18 +162,15 @@ line-height: 12px;
     text-align: -webkit-right;
     color: var(--accent1);
     font-size: 14px;
-
 }
 
 .sell_price {
     flex-grow: 4;
     font-weight: lighter;
     text-align: -webkit-right;
-    color:var(--accent2);
+    color: var(--accent2);
     font-size: 14px;
 }
-
-
 
 .range_price {
     flex-grow: 2;

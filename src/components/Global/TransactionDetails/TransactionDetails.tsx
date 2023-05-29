@@ -7,26 +7,17 @@ import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetail
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    chainData: ChainSpec;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetails(props: propsIF) {
-    const {
-        account,
-        tx,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-        chainData,
-    } = props;
+    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -81,7 +72,6 @@ export default function TransactionDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <TransactionDetailsPriceInfo
-                        account={account}
                         tx={tx}
                         controlItems={controlItems}
                     />
@@ -94,8 +84,7 @@ export default function TransactionDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -120,9 +109,8 @@ export default function TransactionDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <TransactionDetailsSimplify
-                    account={account}
                     tx={tx}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

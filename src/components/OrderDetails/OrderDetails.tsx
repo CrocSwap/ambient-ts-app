@@ -12,18 +12,14 @@ import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
-    account: string;
     limitOrder: LimitOrderIF;
-    lastBlockNumber: number;
     closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    chainData: ChainSpec;
+    isAccountView: boolean;
 }
 
 export default function OrderDetails(props: propsIF) {
@@ -32,14 +28,12 @@ export default function OrderDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const {
-        limitOrder,
-        account,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-        chainData,
-    } = props;
+    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
+        props;
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
     const {
         // usdValue,
@@ -55,7 +49,7 @@ export default function OrderDetails(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         // posHashTruncated,
         posHash,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
@@ -306,7 +300,6 @@ export default function OrderDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        account={account}
                         limitOrder={limitOrder}
                         controlItems={controlItems}
                         usdValue={usdValue}
@@ -339,8 +332,7 @@ export default function OrderDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -365,7 +357,6 @@ export default function OrderDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <OrderDetailsSimplify
-                    account={account}
                     limitOrder={limitOrder}
                     usdValue={usdValue}
                     isBid={isBid}
@@ -383,7 +374,7 @@ export default function OrderDetails(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

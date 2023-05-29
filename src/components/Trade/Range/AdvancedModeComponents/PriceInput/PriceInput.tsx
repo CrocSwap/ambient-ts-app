@@ -1,6 +1,7 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { ChangeEvent, memo } from 'react';
+import { ChangeEvent, memo, useContext } from 'react';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface priceInputProps {
     disable?: boolean;
@@ -12,7 +13,6 @@ interface priceInputProps {
     onBlur: () => void;
     increaseTick: () => void;
     decreaseTick: () => void;
-    isRangeCopied: boolean;
 }
 
 function PriceInput(props: priceInputProps) {
@@ -25,8 +25,8 @@ function PriceInput(props: priceInputProps) {
         onBlur,
         increaseTick,
         decreaseTick,
-        isRangeCopied,
     } = props;
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const priceInput = (
         <input
@@ -64,7 +64,11 @@ function PriceInput(props: priceInputProps) {
                 >
                     <FaMinus size={16} />
                 </button>
-                <span className={isRangeCopied && styles.pulse_animation}>
+                <span
+                    className={
+                        showRangePulseAnimation && styles.pulse_animation
+                    }
+                >
                     {priceInput}
                 </span>
                 <button

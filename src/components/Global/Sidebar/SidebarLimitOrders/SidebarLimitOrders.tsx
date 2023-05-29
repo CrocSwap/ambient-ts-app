@@ -1,42 +1,46 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
-import { SetStateAction, Dispatch, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
-    isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
+
 export default function SidebarLimitOrders(props: propsIF) {
-    const {
-        limitOrderByUser,
-        chainId,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-        isUserLoggedIn,
-        tokens,
-    } = props;
+    const { limitOrderByUser } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+    const {
         sidebar: { close: closeSidebar },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -44,28 +48,25 @@ export default function SidebarLimitOrders(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(1);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        setShowAllData(false);
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 
@@ -84,14 +85,12 @@ export default function SidebarLimitOrders(props: propsIF) {
                                 'Sidebar-Limit-Orders-Card-' +
                                 JSON.stringify(order)
                             }
-                            isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokens={tokens}
                         />
                     ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

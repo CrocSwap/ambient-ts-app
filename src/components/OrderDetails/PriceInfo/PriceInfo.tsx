@@ -13,7 +13,6 @@ type ItemIF = {
 };
 
 interface propsIF {
-    account: string;
     limitOrder: LimitOrderIF;
 
     baseCollateralDisplay: string | undefined;

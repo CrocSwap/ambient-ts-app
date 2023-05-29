@@ -448,6 +448,7 @@ function TvlSubChart(props: TvlData) {
                         setCrosshairActive('tvl');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
+                        renderCanvas();
                     },
                 );
 
@@ -466,12 +467,13 @@ function TvlSubChart(props: TvlData) {
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
-                className='tvl-canvas'
+                className='d3CanvasArea'
             ></d3fc-canvas>
 
             <d3fc-canvas
+                id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
-                className='tvl-canvas'
+                className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>

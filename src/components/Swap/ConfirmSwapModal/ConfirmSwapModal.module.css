@@ -2,6 +2,7 @@
     width: 400px;
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
 }
 
 /* Transaction details */

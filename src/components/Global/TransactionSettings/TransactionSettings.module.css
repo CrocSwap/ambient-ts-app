@@ -9,6 +9,7 @@
     background: var(--dark1);
 
     padding: 1rem;
+    border-radius: var(--border-radius);
 }
 .settings_title {
     display: flex;

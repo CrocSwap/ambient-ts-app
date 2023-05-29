@@ -13,19 +13,12 @@ interface NotificationTableProps {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     pendingTransactions: string[];
-    lastBlockNumber: number;
     notificationItemRef: RefObject<HTMLDivElement>;
-    chainId: string;
 }
 
 const NotificationTable = (props: NotificationTableProps) => {
-    const {
-        showNotificationTable,
-        pendingTransactions,
-        lastBlockNumber,
-        notificationItemRef,
-        chainId,
-    } = props;
+    const { showNotificationTable, pendingTransactions, notificationItemRef } =
+        props;
 
     const dispatch = useAppDispatch();
 
@@ -51,9 +44,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                 key={idx}
                 status='successful'
                 hash={tx?.transactionHash}
-                chainId={chainId}
                 txBlockNumber={tx.blockNumber}
-                lastBlockNumber={lastBlockNumber}
                 txType={
                     transactionsByType.find(
                         (e) => e.txHash === tx?.transactionHash,
@@ -67,9 +58,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='failed'
             hash={tx?.transactionHash}
-            chainId={chainId}
             txBlockNumber={tx.blockNumber}
-            lastBlockNumber={lastBlockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === tx?.transactionHash)
                     ?.txType
@@ -81,8 +70,6 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='pending'
             hash={tx}
-            chainId={chainId}
-            lastBlockNumber={lastBlockNumber}
             txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
         />
     ));

@@ -10,14 +10,16 @@
     background: transparent;
     outline: none;
     border: none;
+    border-radius: var(--border-radius);
 }
 
-.main_container:hover, .main_container:focus-visible {
+.main_container:hover,
+.main_container:focus-visible {
     background: var(--dark1);
 
     cursor: pointer;
 }
-.main_container:focus-visible{
+.main_container:focus-visible {
     border-left: 1px solid var(--text1);
 }
 
@@ -101,7 +103,7 @@
 .modal_tokens_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text1)
+    color: var(--text1);
     /* font-weight: 400; */
 }
 .modal_token_name {

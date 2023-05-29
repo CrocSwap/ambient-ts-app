@@ -81,9 +81,9 @@ function RangeHeader(props: RangeHeaderPropsIF) {
                     ${alignCenter && styles.align_center}
                     `}
                 >
-                    <p style={fixedHeight}>
+                    <div style={fixedHeight}>
                         {name} {arrow}
-                    </p>
+                    </div>
                 </li>
             )}
         </>

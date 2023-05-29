@@ -14,11 +14,11 @@
     color: var(--text1);
 }
 
-.title:focus-visible{
-text-decoration: underline;
-text-decoration-color:var(--text1) ;
-border: none;
-outline: none;
+.title:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--text1);
+    border: none;
+    outline: none;
 }
 
 .content {

@@ -17,24 +17,18 @@ import { useRepoExitPath } from './useRepoExitPath';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     positionHash: string;
-    isPairStable: boolean;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     resetTxHash: () => void;
 }
 
 function RepositionHeader(props: propsIF) {
-    const {
-        setRangeWidthPercentage,
-        positionHash,
-        isPairStable,
-        setSimpleRangeWidth,
-        resetTxHash,
-    } = props;
+    const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
 
+    const { setSimpleRangeWidth } = useContext(RangeContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -68,7 +62,6 @@ function RepositionHeader(props: propsIF) {
                     <TransactionSettings
                         module='Reposition'
                         slippage={repoSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
                         bypassConfirm={bypassConfirmRepo}
                     />

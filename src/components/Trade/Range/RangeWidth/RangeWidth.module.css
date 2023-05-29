@@ -93,15 +93,16 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.percentage_option_buttons:hover{
-    color: var(--text1)
+.percentage_option_buttons:hover {
+    color: var(--text1);
 }
-.percentage_option_buttons:focus-visible, .percentage_input:focus-visible{
+.percentage_option_buttons:focus-visible,
+.percentage_input:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-    0px 0px 2px rgba(205, 193, 255, 0.2);  
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 .percentage_input {
     /* padding: 15px 0px;  */
@@ -124,14 +125,14 @@ input[type='range'] {
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }
 
-.explanation_button{
+.explanation_button {
     background: transparent;
     outline: none;
     border: none;
 }
 
-.explanation_button:focus-visible{
-    outline: 1px solid var(--text1)
+.explanation_button:focus-visible {
+    outline: 1px solid var(--text1);
 }
 
 input[type='range']:focus {

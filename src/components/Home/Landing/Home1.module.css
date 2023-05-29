@@ -1,5 +1,9 @@
 .slide_container {
-    background: linear-gradient(180deg, rgba(13, 17, 23, 0) 0%, var(--dark1) 88.54%);
+    background: linear-gradient(
+        180deg,
+        rgba(13, 17, 23, 0) 0%,
+        var(--dark1) 88.54%
+    );
     /* background: darkblue; */
     padding-bottom: 1rem;
 }

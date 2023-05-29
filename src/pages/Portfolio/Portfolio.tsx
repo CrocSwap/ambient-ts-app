@@ -1,16 +1,8 @@
 // START: Import React and Dongles
-import {
-    useEffect,
-    useState,
-    Dispatch,
-    SetStateAction,
-    useContext,
-    memo,
-} from 'react';
-import { useAccount, useEnsName } from 'wagmi';
+import { useEffect, useState, useContext, memo } from 'react';
+import { useEnsName } from 'wagmi';
 import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { ChainSpec } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
@@ -28,110 +20,49 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
-import {
-    Erc20TokenBalanceFn,
-    nativeTokenBalanceFn,
-} from '../../App/functions/fetchTokenBalances';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import {
     setErc20Tokens,
     setNativeToken,
     setResolvedAddressRedux,
 } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { PositionUpdateFn } from '../../App/functions/getPositionData';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { TokenContext } from '../../contexts/TokenContext';
+import { IS_LOCAL_ENV } from '../../constants';
+import {
+    memoizeFetchNativeTokenBalance,
+    memoizeFetchErc20TokenBalances,
+} from '../../App/functions/fetchTokenBalances';
 
 interface propsIF {
-    addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: {
-        onCurrentChain?: boolean;
-        count?: number | null;
-    }) => TokenIF[];
-    isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
-    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
-    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-    cachedFetchTokenPrice: TokenPriceFn;
-    lastBlockNumber: number;
-    connectedAccount: string;
-    chainId: string;
     userAccount?: boolean;
-    openModalWallet: () => void;
-    chainData: ChainSpec;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    account: string;
-    isUserLoggedIn: boolean | undefined;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    handlePulseAnimation: (type: string) => void;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    cachedQuerySpotPrice: SpotPriceFn;
-    mainnetProvider: Provider | undefined;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
 
 function Portfolio(props: propsIF) {
+    const { userAccount } = props;
+
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
+    const { data: ensName } = useEnsName({ address: userAddress });
+
     const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        addRecentToken,
-        getRecentTokens,
-        isTokenABase,
-        provider,
-        cachedFetchNativeTokenBalance,
-        cachedFetchErc20TokenBalances,
-        cachedFetchTokenPrice,
-        lastBlockNumber,
-        userAccount,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        handlePulseAnimation,
-        openModalWallet,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        chainData,
-        mainnetProvider,
-        setSimpleRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-        setExpandTradeTable,
-        tokens,
-    } = props;
+        wagmiModal: { open: openModalWallet },
+    } = useContext(AppStateContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens, setInput } = useContext(TokenContext);
 
-    const { isConnected, address } = useAccount();
-    const { data: ensName } = useEnsName({ address });
-
-    const crocEnv = useContext(CrocEnvContext);
+    const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
+    const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 
     const dispatch = useAppDispatch();
-
-    const connectedAccount = address;
-
-    const isUserLoggedIn = isConnected;
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -159,16 +90,31 @@ function Portfolio(props: propsIF) {
         return newToken;
     };
 
+    const [mainnetProvider, setMainnetProvider] = useState<
+        Provider | undefined
+    >();
     useEffect(() => {
-        if (crocEnv && selectedToken.address && connectedAccount) {
+        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
+            ? process.env.REACT_APP_INFURA_KEY_2
+            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
+
+        const mainnetProvider = new ethers.providers.JsonRpcProvider(
+            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
+        );
+        IS_LOCAL_ENV && console.debug({ mainnetProvider });
+        setMainnetProvider(mainnetProvider);
+    }, []);
+
+    useEffect(() => {
+        if (crocEnv && selectedToken.address && userAddress) {
             crocEnv
                 .token(selectedToken.address)
-                .wallet(connectedAccount)
+                .wallet(userAddress)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
                 .catch(console.error);
             crocEnv
                 .token(selectedToken.address)
-                .balance(connectedAccount)
+                .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
                 })
@@ -177,11 +123,11 @@ function Portfolio(props: propsIF) {
 
         if (recheckTokenBalances) {
             (async () => {
-                if (connectedAccount) {
+                if (userAddress) {
                     const newNativeToken: TokenIF =
                         await cachedFetchNativeTokenBalance(
-                            connectedAccount,
-                            chainData.chainId,
+                            userAddress,
+                            chainId,
                             lastBlockNumber,
                             crocEnv,
                         );
@@ -190,8 +136,8 @@ function Portfolio(props: propsIF) {
 
                     const erc20Results: TokenIF[] =
                         await cachedFetchErc20TokenBalances(
-                            connectedAccount,
-                            chainData.chainId,
+                            userAddress,
+                            chainId,
                             lastBlockNumber,
                             crocEnv,
                         );
@@ -208,18 +154,18 @@ function Portfolio(props: propsIF) {
     }, [
         crocEnv,
         selectedToken.address,
-        connectedAccount,
+        userAddress,
         lastBlockNumber,
         recheckTokenBalances,
     ]);
 
     useEffect(() => {
         (async () => {
-            if (crocEnv && connectedAccount && selectedTokenAddress) {
+            if (crocEnv && userAddress && selectedTokenAddress) {
                 try {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
-                        .allowance(connectedAccount);
+                        .allowance(userAddress);
                     setTokenAllowance(allowance.toString());
                 } catch (err) {
                     console.warn(err);
@@ -231,7 +177,7 @@ function Portfolio(props: propsIF) {
         crocEnv,
         selectedTokenAddress,
         lastBlockNumber,
-        connectedAccount,
+        userAddress,
         recheckTokenAllowance,
     ]);
 
@@ -248,7 +194,7 @@ function Portfolio(props: propsIF) {
 
     const connectedAccountActive =
         !addressFromParams ||
-        resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
+        resolvedAddress.toLowerCase() === userAddress?.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -282,7 +228,7 @@ function Portfolio(props: propsIF) {
                     const ensName = await fetchAddress(
                         mainnetProvider,
                         addressFromParams,
-                        chainData.chainId,
+                        chainId,
                     );
 
                     if (ensName) setSecondaryEnsName(ensName);
@@ -306,22 +252,17 @@ function Portfolio(props: propsIF) {
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
-                crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
-                ethMainnetUsdPrice={ethMainnetUsdPrice}
-                connectedAccount={connectedAccount || ''}
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
                 tokenDexBalance={tokenDexBalance}
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
-                lastBlockNumber={lastBlockNumber}
                 openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
                 selectedTokenDecimals={selectedTokenDecimals}
-                gasPriceInGwei={gasPriceInGwei}
             />
         </div>
     );
@@ -385,14 +326,14 @@ function Portfolio(props: propsIF) {
             if (
                 crocEnv &&
                 resolvedAddress &&
-                chainData.chainId &&
+                chainId &&
                 lastBlockNumber &&
                 !connectedAccountActive
             ) {
                 try {
                     const newNativeToken = await cachedFetchNativeTokenBalance(
                         resolvedAddress,
-                        chainData.chainId,
+                        chainId,
                         lastBlockNumber,
                         crocEnv,
                     );
@@ -411,7 +352,7 @@ function Portfolio(props: propsIF) {
 
                     const erc20Results = await cachedFetchErc20TokenBalances(
                         resolvedAddress,
-                        chainData.chainId,
+                        chainId,
                         lastBlockNumber,
                         crocEnv,
                     );
@@ -444,7 +385,7 @@ function Portfolio(props: propsIF) {
     }, [
         crocEnv,
         resolvedAddress,
-        chainData.chainId,
+        chainId,
         lastBlockNumber,
         connectedAccountActive,
     ]);
@@ -462,7 +403,7 @@ function Portfolio(props: propsIF) {
         soloTokenSelectInput.value = '';
     };
 
-    const showLoggedInButton = userAccount && !isUserLoggedIn;
+    const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -507,37 +448,12 @@ function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        crocEnv: crocEnv,
-        isTokenABase: isTokenABase,
-        provider: provider,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
-        lastBlockNumber: lastBlockNumber,
-        activeAccount: address ?? connectedAccount ?? '',
         connectedAccountActive: connectedAccountActive,
-        chainId: chainData.chainId,
         openTokenModal: openTokenModal,
-        account: props.account,
-        chainData: chainData,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        isUserLoggedIn: isUserLoggedIn,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         fullLayoutToggle: fullLayerToggle,
-        handlePulseAnimation: handlePulseAnimation,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        setExpandTradeTable: setExpandTradeTable,
         tokens: tokens,
     };
 
@@ -548,10 +464,8 @@ function Portfolio(props: propsIF) {
             ? secondaryEnsName
             : '',
         resolvedAddress: resolvedAddress,
-        activeAccount: address ?? connectedAccount ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
-        chainData: chainData,
     };
 
     const profileSettingsProps = {
@@ -623,23 +537,13 @@ function Portfolio(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainData.chainId}
-                        importedTokensPlus={outputTokens}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
-                        tokens={tokens}
                     />
                 </Modal>
             )}
