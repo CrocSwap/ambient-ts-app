@@ -64,6 +64,10 @@ export const useUrlParams = (
         requiredParams.some((param: string) => {
             paramKeys.includes(param) || linkGenCurrent.redirect();
         });
+        const validateChain = (chn: string): boolean => {
+            const chnRegEx = new RegExp('0x[0-9a-fA-F]$');
+            return chnRegEx.test(chn);
+        };
         const validateAddress = (addr: string): boolean => {
             const addrRegEx = new RegExp('0x[0-9a-fA-F]{40}$');
             return addrRegEx.test(addr);
@@ -73,7 +77,7 @@ export const useUrlParams = (
         function validateParam(p: [string, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
-                console.log(val, 'type is: chain');
+                validateChain(val) || linkGenCurrent.redirect();
             } else if (key === 'tokenA' || key === 'tokenB') {
                 validateAddress(val) || linkGenCurrent.redirect();
             }
