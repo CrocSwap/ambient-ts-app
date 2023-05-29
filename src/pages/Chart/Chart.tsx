@@ -3537,7 +3537,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis === undefined, location]);
+    }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
