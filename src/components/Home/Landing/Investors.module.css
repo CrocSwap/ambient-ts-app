@@ -37,6 +37,14 @@
     place-items: center;
 }
 
+@media only screen and (max-width: 768px) {
+    
+    .content img{
+        width: 100px !important;
+    }
+
+}
+
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
     .content {
