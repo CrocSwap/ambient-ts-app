@@ -67,7 +67,7 @@ export const useUrlParams = (
             paramKeys.includes(param) || redirectUser();
         });
         const validateChain = (chn: string): boolean => {
-            const chnRegEx = new RegExp('0x[0-9a-fA-F]$');
+            const chnRegEx = new RegExp('0x[0-9a-fA-F]+$');
             return chnRegEx.test(chn);
         };
         const validateAddress = (addr: string): boolean => {
