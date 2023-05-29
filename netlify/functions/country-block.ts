@@ -26,10 +26,10 @@ export default async (request: Request, context: Context) => {
         'VE', // Venezuela
         'YE', // Yemen
         'ZW', // Zimbabwe
-        'NL',
+        'NL', // Test - remove
     ];
 
-    const blacklistArg = Deno.env.REACT_APP_BLACKLIST_COUNTRY_CODES;
+    const blacklistArg = Deno.env.NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES;
     const blacklist = OFAC_SANCTIONED.concat(
         blacklistArg ? blacklistArg.split(',') : [],
     );
