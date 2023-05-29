@@ -17,7 +17,7 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 // START: Import Other Local Files
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -188,7 +188,7 @@ function Portfolio(props: propsIF) {
         addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
     if (addressFromParams && !isAddressEns && !isAddressHex)
-        return <NotFound />;
+        return <Navigate to='/404' replace />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
