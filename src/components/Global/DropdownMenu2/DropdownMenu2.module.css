@@ -4,7 +4,6 @@
     align-items: center;
     color: var(--text1);
     width: 100%;
-    padding: 5px 12px;
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
     justify-content: center;
@@ -41,6 +40,9 @@
 
 .icon {
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .menu svg {
     cursor: pointer;

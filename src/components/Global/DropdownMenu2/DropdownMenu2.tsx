@@ -8,21 +8,34 @@ import styles from './DropdownMenu2.module.css';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { IconType } from 'react-icons';
 
 // interface for React functional components
 interface DropdownMenuPropsIF {
-    title: string;
+    // eslint-disable-next-line
+    title: string | IconType | any;
     children: ReactNode;
     marginTop?: string;
     titleWidth?: string;
     titleBackground?: string;
-    logo?: string;
+    // eslint-disable-next-line
+    logo?: string | IconType | any;
     noArrow?: boolean;
+    // eslint-disable-next-line
+    activeElement?: any;
 }
 
 // react functional component
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, logo, noArrow } = props;
+    const {
+        title,
+        children,
+        marginTop,
+        titleWidth,
+        logo,
+        noArrow,
+        activeElement,
+    } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
@@ -68,10 +81,13 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                 }}
             >
                 <div className={styles.menu_item}>
+                    <div className={styles.icon}>
+                        {activeElement && activeElement}
+                    </div>
                     {desktopScreen && (
                         <div className={styles.icon}>{title}</div>
                     )}
-                    {!desktopScreen && (
+                    {!desktopScreen && logo && (
                         <img
                             src={logo}
                             alt={title}

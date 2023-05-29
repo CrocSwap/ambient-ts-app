@@ -570,7 +570,9 @@ function Transactions(props: propsIF) {
         : '260px';
 
     const portfolioPageStyle = props.isOnPortfolioPage
-        ? 'calc(100vh - 19.5rem)'
+        ? mobileView
+            ? 'calc(100vh - 10rem)'
+            : 'calc(100vh - 19.5rem)'
         : expandStyle;
     const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
 

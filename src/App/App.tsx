@@ -1910,7 +1910,6 @@ export default function App() {
         }
     }, [isEscapePressed]);
 
-    // Inside your component
     const {
         isTradeDrawerOpen,
         isSidebarDrawerOpen,
@@ -1919,8 +1918,6 @@ export default function App() {
         toggleTradeDrawer,
         setIsTradeDrawerOpen,
     } = useLayoutHandler();
-
-    // Use the variables and functions as needed in your component
 
     const tradeProps = {
         poolPriceChangePercent,
@@ -2110,9 +2107,13 @@ export default function App() {
         toggleSidebarDrawer,
         toggleTradeDrawer,
         toggleDefaultLayout,
+        isSidebarDrawerOpen,
+        isTradeDrawerOpen,
     };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
+
+    console.log(' from app', isSidebarDrawerOpen);
 
     return (
         <AppStateContext.Provider value={appState}>

@@ -14,6 +14,7 @@ import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -180,10 +181,12 @@ export default function Account(props: propsIF) {
             </div>
         </DefaultTooltip>
     );
+
+    const displayBlockNumber = useMediaQuery('(min-width: 700px)');
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
-            {isUserLoggedIn && blockNumberDisplay}
+            {isUserLoggedIn && displayBlockNumber && blockNumberDisplay}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}

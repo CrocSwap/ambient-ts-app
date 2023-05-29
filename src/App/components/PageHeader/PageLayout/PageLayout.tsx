@@ -5,6 +5,7 @@ import {
 } from 'react-icons/ri';
 import styles from './PageLayout.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
+import useLayoutHandler from '../../../../utils/hooks/useLayoutHandler';
 
 interface PageLayoutPropsIF {
     toggleSidebarDrawer: (
@@ -14,11 +15,26 @@ interface PageLayoutPropsIF {
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
     toggleDefaultLayout: () => void;
+    isSidebarDrawerOpen: boolean;
+    isTradeDrawerOpen: boolean;
 }
 
 export default function PageLayout(props: PageLayoutPropsIF) {
-    const { toggleSidebarDrawer, toggleTradeDrawer, toggleDefaultLayout } =
-        props;
+    const {
+        toggleSidebarDrawer,
+        toggleTradeDrawer,
+        toggleDefaultLayout,
+        isSidebarDrawerOpen,
+        isTradeDrawerOpen,
+    } = props;
+
+    const activeIcon = isTradeDrawerOpen ? (
+        <RiLayoutRightFill size={25} />
+    ) : isSidebarDrawerOpen ? (
+        <RiLayoutLeftFill size={25} />
+    ) : (
+        <RiLayoutBottom2Fill size={25} />
+    );
 
     const layoutData = [
         {
@@ -73,11 +89,9 @@ export default function PageLayout(props: PageLayoutPropsIF) {
             <div className={styles.selector_select_container}>
                 <div className={styles.dropdown_menu_container}>
                     <DropdownMenu2
-                        marginTop={'50px'}
-                        titleWidth={'80px'}
-                        title={'title'}
-                        logo={'logo'}
-                        noArrow
+                        titleWidth={'40px'}
+                        title={''}
+                        activeElement={activeIcon}
                     >
                         {layoutContent}
                     </DropdownMenu2>

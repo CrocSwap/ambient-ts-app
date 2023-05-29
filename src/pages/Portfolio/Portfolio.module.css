@@ -146,7 +146,7 @@
     }
     .full_layout_container {
         display: grid;
-        grid-template-columns: auto 50px;
+        grid-template-columns: auto;
     }
 
     .tabs_exchange_balance_container {

@@ -329,7 +329,9 @@ export default function TransactionsMenu(props: propsIF) {
 
     // --------------------------------
     const transactionsMenu = (
-        <div className={styles.actions_menu}>{isTxCopiable && copyButton}</div>
+        <div className={styles.actions_menu}>
+            {isTxCopiable && view1NoSidebar && copyButton}
+        </div>
     );
 
     const menuContent = (

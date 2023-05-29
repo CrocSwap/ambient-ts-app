@@ -13,6 +13,7 @@ import { BsFillChatDotsFill } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { memo } from 'react';
+import { MdAccountBox } from 'react-icons/md';
 
 interface PropsIF {
     toggleTradeDrawer: (
@@ -64,20 +65,12 @@ function SidebarFooter(props: PropsIF) {
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
         },
-        // { title: 'Account', destination: '/account/', icon: MdAccountBox },
+        { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
 
     return (
         <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
-            {location.pathname.includes('trade') && (
-                <div className={styles.column}>
-                    <button onClick={toggleSidebarDrawer(true)}>
-                        <RiLayoutLeftFill size={20} />
-                    </button>
-                    <p>Sidebar</p>
-                </div>
-            )}
             {linksData.map((link) => (
                 <Link to={link.destination} key={link.destination}>
                     <link.icon
@@ -91,14 +84,6 @@ function SidebarFooter(props: PropsIF) {
                     <p> {link.title}</p>
                 </Link>
             ))}
-            {location.pathname.includes('trade') && (
-                <div className={styles.column}>
-                    <button onClick={toggleTradeDrawer(true)}>
-                        <RiLayoutRightFill size={18} />
-                    </button>
-                    <p>Trade</p>
-                </div>
-            )}
         </div>
     );
 }

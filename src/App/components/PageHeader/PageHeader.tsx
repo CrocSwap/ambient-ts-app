@@ -38,6 +38,8 @@ interface HeaderPropsIF {
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
     toggleDefaultLayout: () => void;
+    isSidebarDrawerOpen: boolean;
+    isTradeDrawerOpen: boolean;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
@@ -53,6 +55,8 @@ const PageHeader = function (props: HeaderPropsIF) {
         toggleSidebarDrawer,
         toggleTradeDrawer,
         toggleDefaultLayout,
+        isSidebarDrawerOpen,
+        isTradeDrawerOpen,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -400,11 +404,15 @@ const PageHeader = function (props: HeaderPropsIF) {
                                 </div>
                             ) : null}
                         </div>
-                        <PageLayout
-                            toggleSidebarDrawer={toggleSidebarDrawer}
-                            toggleTradeDrawer={toggleTradeDrawer}
-                            toggleDefaultLayout={toggleDefaultLayout}
-                        />
+                        {!desktopScreen && (
+                            <PageLayout
+                                toggleSidebarDrawer={toggleSidebarDrawer}
+                                toggleTradeDrawer={toggleTradeDrawer}
+                                toggleDefaultLayout={toggleDefaultLayout}
+                                isSidebarDrawerOpen={isSidebarDrawerOpen}
+                                isTradeDrawerOpen={isTradeDrawerOpen}
+                            />
+                        )}
                         <NetworkSelector
                             chainId={chainData.chainId}
                             switchNetwork={switchNetwork}
