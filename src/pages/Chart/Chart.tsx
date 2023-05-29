@@ -4643,14 +4643,12 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
-                isUserConnected
-                    ? sellOrderStyle === 'order_sell'
-                        ? limit[0].value > poolPriceDisplay
-                        : limit[0].value < poolPriceDisplay
-                    : false,
+                sellOrderStyle === 'order_sell'
+                    ? limit[0].value > poolPriceDisplay
+                    : limit[0].value < poolPriceDisplay,
             );
         }
-    }, [limit, sellOrderStyle, isUserConnected, poolPriceDisplay]);
+    }, [limit, sellOrderStyle, poolPriceDisplay]);
 
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
