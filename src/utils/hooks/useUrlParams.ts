@@ -59,11 +59,25 @@ export const useUrlParams = (
     // redirect user to default params if params received are malformed
     useEffect(() => {
         // array of keys deconstructed from params string
-        const paramsUsed: string[] = [...urlParamMap.keys()];
+        const paramKeys: string[] = [...urlParamMap.keys()];
         // redirect user if a required param is missing
         requiredParams.some((param: string) => {
-            paramsUsed.includes(param) || linkGenCurrent.redirect();
+            paramKeys.includes(param) || linkGenCurrent.redirect();
         });
+        const validateAddress = (addr: string): boolean => {
+            const addrRegEx = new RegExp('0x[0-9a-fA-F]{40}$');
+            return addrRegEx.test(addr);
+        };
+        const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
+        paramTuples.forEach((pt) => validateParam(pt));
+        function validateParam(p: [string, string]): void {
+            const [key, val] = p;
+            if (key === 'chain') {
+                console.log(val, 'type is: chain');
+            } else if (key === 'tokenA' || key === 'tokenB') {
+                validateAddress(val) || linkGenCurrent.redirect();
+            }
+        }
     }, [urlParamMap]);
 
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
