@@ -20,6 +20,7 @@ import { tokenMethodsIF } from '../../App/hooks/useTokens';
  * chain, tokens, and context-specific tick parameters. All action is intermediated
  * by passing parameters through to the tradeDataSlice in redux. */
 export const useUrlParams = (
+    requiredParams: string[],
     tokens: tokenMethodsIF,
     dfltChainId: string,
     provider?: ethers.providers.Provider,
@@ -53,9 +54,10 @@ export const useUrlParams = (
     }, [params]);
 
     const areParamsValid = useMemo<boolean>(() => {
-        console.log(urlParamMap);
-        const paramTuples: Array<string[]> = [...urlParamMap.entries()];
-        console.log({ paramTuples });
+        const paramsUsed: string[] = [...urlParamMap.keys()];
+        requiredParams.forEach((param: string) => {
+            paramsUsed.includes(param) || console.log('missing ' + param);
+        });
         return true;
     }, [urlParamMap]);
     false && areParamsValid;

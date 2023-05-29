@@ -90,7 +90,7 @@ export default function Limit() {
 
     const dispatch = useAppDispatch();
     const provider = useProvider();
-    useUrlParams(tokens, chainId, provider);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
