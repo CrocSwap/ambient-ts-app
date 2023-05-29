@@ -9,23 +9,19 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
     nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    chainId: string;
-    ethMainnetUsdPrice?: number;
-    chainData: ChainSpec;
-    lastBlockNumber: number;
 
     walletDropdownTokenData:
         | {
@@ -38,20 +34,14 @@ interface propsIF {
 }
 
 export default function Account(props: propsIF) {
-    const {
-        nativeBalance,
-        ethMainnetUsdPrice,
-        clickLogout,
-        ensName,
-        chainId,
-        lastBlockNumber,
-        chainData,
-        walletDropdownTokenData,
-    } = props;
+    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
+        props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const { chainData, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
@@ -147,7 +137,6 @@ export default function Account(props: propsIF) {
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
                     walletWrapperStyle={walletWrapperStyle}
-                    chainId={chainId}
                     ethAmount={
                         isUserLoggedIn
                             ? nativeBalance
@@ -192,7 +181,6 @@ export default function Account(props: propsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    chainId={chainId}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
                 />
             </NavItem>

@@ -70,16 +70,17 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.social_link_container:hover , .social_link_container:focus-visible{
+.social_link_container:hover,
+.social_link_container:focus-visible {
     color: var(--text1);
     background: var(--dark2);
 }
 
-.social_link_container:focus-visible svg{
+.social_link_container:focus-visible svg {
     color: var(--text1);
 }
 
-.copy_button{
+.copy_button {
     background: transparent;
     outline: none;
     border: none;
@@ -87,7 +88,7 @@
     padding: 2px;
 }
 
-.copy_button:hover, .copy_button:focus-visible {
-border: 1px solid var(--text1)
-
+.copy_button:hover,
+.copy_button:focus-visible {
+    border: 1px solid var(--text1);
 }

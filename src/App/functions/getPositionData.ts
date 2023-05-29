@@ -1,9 +1,9 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 

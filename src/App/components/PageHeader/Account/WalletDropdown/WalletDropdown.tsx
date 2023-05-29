@@ -5,6 +5,8 @@ import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { getChainExplorer } from '../../../../../utils/data/chains';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -14,7 +16,6 @@ interface WalletDropdownPropsIF {
     clickLogout: () => void;
     walletWrapperStyle: string;
     accountAddressFull: string;
-    chainId: string;
 
     ethAmount: string;
     ethValue: string;
@@ -48,12 +49,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickLogout,
         walletWrapperStyle,
         accountAddressFull,
-        chainId,
         ethAmount,
         ethValue,
         walletDropdownTokenData,
         // showWalletDropdown, setShowWalletDropdown
     } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const jazziconsSeed = accountAddressFull.toLowerCase();
 

@@ -21,32 +21,23 @@ import {
 } from 'react';
 
 import { Pagination } from '@mui/material';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 
 interface propsIF {
-    isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    isShowAllEnabled: boolean;
     portfolio?: boolean;
     changesInSelectedCandle: TransactionIF[] | undefined;
-    chainData: ChainSpec;
-    blockExplorer?: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    account: string;
-    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
@@ -54,39 +45,31 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    handlePulseAnimation?: (type: string) => void;
-    isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<number | undefined>;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 function Transactions(props: propsIF) {
     const {
-        isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
-        isShowAllEnabled,
-        account,
         changesInSelectedCandle,
-        chainData,
-        blockExplorer,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        expandTradeTable,
         isCandleSelected,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        setIsShowAllEnabled,
         changeState,
         setSelectedDate,
-        setExpandTradeTable,
-        setSimpleRangeWidth,
         isAccountView,
     } = props;
 
     const {
+        showAllData: showAllDataSelection,
+        expandTradeTable: expandTradeTableSelection,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
+    const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
+
+    // only show all data and expand when on trade tab page
+    const showAllData = !isAccountView && showAllDataSelection;
+    const expandTradeTable = !isAccountView && expandTradeTableSelection;
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
@@ -129,7 +112,7 @@ function Transactions(props: propsIF) {
     });
 
     const [transactionData, setTransactionData] = useState(
-        isOnPortfolioPage
+        isAccountView
             ? activeAccountTransactionData || []
             : changesByPoolWithoutFills,
     );
@@ -146,12 +129,12 @@ function Transactions(props: propsIF) {
 
     const isTxDataLoadingForTradeTable =
         !isCandleSelected &&
-        ((isShowAllEnabled && isPoolTxDataLoading) ||
-            (!isShowAllEnabled && isConnectedUserTxDataLoading));
+        ((showAllData && isPoolTxDataLoading) ||
+            (!showAllData && isConnectedUserTxDataLoading));
 
     const shouldDisplayLoadingAnimation =
-        (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
-        (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
+        (isAccountView && isTxDataLoadingForPortfolio) ||
+        (!isAccountView && isTxDataLoadingForTradeTable);
 
     const shouldDisplayNoTableData = !transactionData.length;
 
@@ -167,7 +150,7 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
             'time',
-            isShowAllEnabled && !isCandleSelected
+            showAllData && !isCandleSelected
                 ? changesByPoolWithoutFills
                 : transactionData,
         );
@@ -176,20 +159,20 @@ function Transactions(props: propsIF) {
         setTransactionData(changesByUserMatchingSelectedTokens);
     }
     function handlePoolSelected() {
-        if (!isOnPortfolioPage) {
+        if (!isAccountView) {
             setTransactionData(changesByPoolWithoutFills);
         }
     }
 
     useEffect(() => {
-        if (isOnPortfolioPage && activeAccountTransactionData) {
+        if (isAccountView && activeAccountTransactionData) {
             setTransactionData(activeAccountTransactionData);
         }
-    }, [isOnPortfolioPage, diffHashSigTxs(activeAccountTransactionData)]);
+    }, [isAccountView, diffHashSigTxs(activeAccountTransactionData)]);
 
     // update tx table content when candle selected or underlying data changes
     useEffect(() => {
-        if (!isOnPortfolioPage) {
+        if (!isAccountView) {
             if (isCandleSelected) {
                 if (changesInSelectedCandle !== undefined) {
                     setTransactionData(changesInSelectedCandle);
@@ -200,21 +183,21 @@ function Transactions(props: propsIF) {
                         }),
                     );
                 }
-            } else if (isShowAllEnabled) {
+            } else if (showAllData) {
                 handlePoolSelected();
             } else {
                 handleUserSelected();
             }
         }
     }, [
-        isOnPortfolioPage,
+        isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
         changesByPoolWithoutFills.length,
         changesByPoolWithoutFills.at(0)?.poolHash,
         changesByUserMatchingSelectedTokens.length,
         changesByUserMatchingSelectedTokens.at(0)?.user,
-        isShowAllEnabled,
+        showAllData,
     ]);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
@@ -256,7 +239,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && showPair,
+            show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
@@ -271,9 +254,9 @@ function Transactions(props: propsIF) {
         {
             name: 'Wallet',
 
-            show: !showColumns && !isOnPortfolioPage,
+            show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: isShowAllEnabled,
+            sortable: showAllData,
         },
         {
             name: walID,
@@ -324,7 +307,7 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -332,7 +315,7 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
+            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -342,7 +325,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Tokensㅤㅤ',
 
-            show: !isOnPortfolioPage && showColumns,
+            show: !isAccountView && showColumns,
 
             slug: 'tokens',
             sortable: false,
@@ -351,7 +334,7 @@ function Transactions(props: propsIF) {
         {
             name: <>Tokensㅤㅤ</>,
 
-            show: isOnPortfolioPage && showColumns,
+            show: isAccountView && showColumns,
 
             slug: 'tokens',
             sortable: false,
@@ -367,7 +350,7 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const headerStyle = isOnPortfolioPage
+    const headerStyle = isAccountView
         ? styles.portfolio_header
         : styles.trade_header;
 
@@ -390,12 +373,12 @@ function Transactions(props: propsIF) {
     const resetPageToFirst = () => setPage(1);
 
     const isScreenShort =
-        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
-        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+        (!isAccountView && useMediaQuery('(max-height: 700px)'));
 
     const isScreenTall =
-        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
-        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
     const [rowsPerPage, setRowsPerPage] = useState(
         isScreenShort ? 5 : isScreenTall ? 20 : 10,
@@ -452,44 +435,26 @@ function Transactions(props: propsIF) {
 
     const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}
-            isTokenABase={isTokenABase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            blockExplorer={blockExplorer}
-            isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handlePulseAnimation}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
+            isAccountView={isAccountView}
         />
     ));
     const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}
-            isTokenABase={isTokenABase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
             showPair={showPair}
-            blockExplorer={blockExplorer}
-            isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handlePulseAnimation}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
+            isAccountView={isAccountView}
         />
     ));
     const handleKeyDownViewTransaction = (
@@ -523,12 +488,10 @@ function Transactions(props: propsIF) {
 
     const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
         <NoTableData
-            isShowAllEnabled={isShowAllEnabled}
-            setIsShowAllEnabled={setIsShowAllEnabled}
             setSelectedDate={setSelectedDate}
             changeState={changeState}
             type='transactions'
-            isOnPortfolioPage={isOnPortfolioPage}
+            isAccountView={isAccountView}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
@@ -569,10 +532,10 @@ function Transactions(props: propsIF) {
             : 'calc(100vh - 9rem)'
         : mobileViewHeight;
 
-    const portfolioPageStyle = props.isOnPortfolioPage
+    const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
-    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
+    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <section

@@ -7,7 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -24,10 +24,11 @@ import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     initiateSwapMethod: () => void;
-    poolPriceDisplay: number | undefined;
     isDenomBase: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -45,8 +46,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    lastBlockNumber: number;
-    pool: CrocPoolView | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -66,9 +65,9 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        lastBlockNumber,
-        pool,
     } = props;
+    const { pool } = useContext(PoolContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         bypassConfirmLimit,
         bypassConfirmRange,

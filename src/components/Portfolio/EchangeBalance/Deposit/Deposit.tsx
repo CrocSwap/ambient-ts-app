@@ -2,9 +2,19 @@ import styles from './Deposit.module.css';
 import DepositButton from './DepositButton/DepositButton';
 import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     addPendingTx,
     addReceipt,
@@ -20,10 +30,10 @@ import { BigNumber } from 'ethers';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -32,15 +42,11 @@ interface propsIF {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
-    ethMainnetUsdPrice: number | undefined;
-    gasPriceInGwei: number | undefined;
 }
 
 export default function Deposit(props: propsIF) {
     const {
-        crocEnv,
         tokenAllowance,
-        connectedAccount,
         selectedToken,
         tokenWalletBalance,
         // tokenDexBalance,
@@ -48,9 +54,13 @@ export default function Deposit(props: propsIF) {
         setRecheckTokenBalances,
         openTokenModal,
         selectedTokenDecimals,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -178,7 +188,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && depositQtyNonDisplay) {
+        if (crocEnv && depositQtyNonDisplay && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
@@ -189,7 +199,7 @@ export default function Deposit(props: propsIF) {
 
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .deposit(depositQtyDisplay, connectedAccount);
+                    .deposit(depositQtyDisplay, userAddress);
 
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

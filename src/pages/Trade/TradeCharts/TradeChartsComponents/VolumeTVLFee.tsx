@@ -1,21 +1,26 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useRef,
+    memo,
+    useContext,
+} from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { chartSettingsMethodsIF } from '../../../../App/hooks/useChartSettings';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;
     setShowTvl: Dispatch<SetStateAction<boolean>>;
     setShowFeeRate: Dispatch<SetStateAction<boolean>>;
-    chartSettings: chartSettingsMethodsIF;
     showVolume: boolean;
     showTvl: boolean;
     showFeeRate: boolean;
 }
 function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const {
-        chartSettings,
         setShowVolume,
         setShowTvl,
         setShowFeeRate,
@@ -23,6 +28,7 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         showTvl,
         showFeeRate,
     } = props;
+    const { chartSettings } = useContext(ChartContext);
 
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
         useState(false);
