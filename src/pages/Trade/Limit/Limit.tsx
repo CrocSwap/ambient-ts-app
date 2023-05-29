@@ -17,7 +17,6 @@ import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
-// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
@@ -51,13 +50,11 @@ import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/Bypas
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
@@ -89,8 +86,6 @@ export default function Limit() {
     const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const dispatch = useAppDispatch();
-    const provider = useProvider();
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
