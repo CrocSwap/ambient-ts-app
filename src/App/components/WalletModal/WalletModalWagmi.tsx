@@ -254,7 +254,7 @@ export default function WalletModalWagmi() {
                 onClose={closeModal}
                 handleBack={clickBackArrow}
                 showBackButton={showBackArrow}
-                title={'Not available'}
+                title={'Not Available'}
                 centeredTitle={true}
             >
                 {activeContent}
