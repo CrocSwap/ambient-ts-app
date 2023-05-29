@@ -14,16 +14,15 @@
     letter-spacing: -0.02em;
     color: var(--text1);
 }
-.title:focus-visible{
+.title:focus-visible {
     text-decoration: underline;
-    text-decoration-color:var(--text1) ;
+    text-decoration-color: var(--text1);
     border: none;
     outline: none;
-    }
+}
 .content {
     max-width: 1200px;
     margin: 0 auto;
-
 
     list-style-type: none;
 
@@ -32,9 +31,6 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
-   
-
-    
 }
 
 .stat_card_container {
@@ -71,4 +67,3 @@
     color: var(--text1);
     font-family: var(--mono);
 }
-

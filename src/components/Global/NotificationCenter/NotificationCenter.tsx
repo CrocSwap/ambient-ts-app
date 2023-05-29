@@ -9,17 +9,10 @@ import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 interface NotificationCenterPropsIF {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
-    chainId: string;
 }
 
 const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const {
-        showNotificationTable,
-        setShowNotificationTable,
-        lastBlockNumber,
-        chainId,
-    } = props;
+    const { showNotificationTable, setShowNotificationTable } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -80,9 +73,7 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
                         pendingTransactions={currentPendingTransactionsArray}
-                        lastBlockNumber={lastBlockNumber}
                         notificationItemRef={notificationItemRef}
-                        chainId={chainId}
                     />
                 </div>
                 <div></div>

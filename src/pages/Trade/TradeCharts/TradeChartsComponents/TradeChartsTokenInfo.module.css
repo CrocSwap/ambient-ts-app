@@ -46,12 +46,12 @@
     cursor: pointer;
 }
 
- .amount:focus-visible{
+.amount:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-    0px 0px 2px rgba(205, 193, 255, 0.2);
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 .favorite_button svg {
     transition: all var(--animation-speed) ease-in-out;
@@ -61,8 +61,7 @@
     width: 18px;
 }
 
-.denom_toggle_button{
-
+.denom_toggle_button {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -71,11 +70,10 @@
     outline: none;
     border: none;
     padding: none;
-
 }
 
-.denom_toggle_button:focus-visible{
-    border: 1px solid var(--text1)
+.denom_toggle_button:focus-visible {
+    border: 1px solid var(--text1);
 }
 .tokens_name {
     letter-spacing: -0.02em;
@@ -84,11 +82,9 @@
     font-weight: 400;
     color: var(--text1);
     cursor: pointer;
-
-
 }
 
-.mono_space_tooltip{
+.mono_space_tooltip {
     color: var(--text1);
     border-radius: 4px;
     padding: 12px;
@@ -97,10 +93,10 @@
     background: var(--dark3);
 }
 
-.mono_space_tooltip p{
+.mono_space_tooltip p {
     font-family: monospace !important;
 }
-.mono_space_tooltip svg{
+.mono_space_tooltip svg {
     cursor: pointer;
 }
 .tokens_images,

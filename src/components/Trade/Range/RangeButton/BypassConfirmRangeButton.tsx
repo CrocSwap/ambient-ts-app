@@ -9,7 +9,6 @@ import {
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
@@ -20,7 +19,6 @@ import TransactionFailed from '../../../Global/TransactionFailed/TransactionFail
 interface propsIF {
     newRangeTransactionHash: string;
     txErrorCode: string;
-    tokenPair: TokenPairIF;
     resetConfirmation: () => void;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendTransaction: () => Promise<void>;
@@ -31,7 +29,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const {
         newRangeTransactionHash,
         txErrorCode,
-        tokenPair,
         resetConfirmation,
         setShowBypassConfirmButton,
         sendTransaction,
@@ -41,8 +38,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const tokenAQty = (
         document.getElementById('A-range-quantity') as HTMLInputElement

@@ -100,7 +100,8 @@
 .clear_all_button {
     color: var(--text2);
     cursor: pointer;
-    background: linear-gradient(var(--accent1) 0 0) var(--p, 0) / var(--p, 0) no-repeat;
+    background: linear-gradient(var(--accent1) 0 0) var(--p, 0) / var(--p, 0)
+        no-repeat;
     transition: all var(--animation-speed) ease-in-out;
     padding: 0 5px;
 }

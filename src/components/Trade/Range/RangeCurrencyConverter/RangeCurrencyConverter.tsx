@@ -6,6 +6,7 @@ import {
     useState,
     useEffect,
     memo,
+    useContext,
 } from 'react';
 
 // START: Import React Functional Components
@@ -16,7 +17,6 @@ import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // START: Import Local Files
 import styles from './RangeCurrencyConverter.module.css';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
@@ -27,32 +27,28 @@ import {
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isLiq?: boolean;
-    poolPriceNonDisplay: number | undefined;
     isAdvancedMode: boolean;
-    tokenPair: TokenPairIF;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -64,37 +60,18 @@ interface propsIF {
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
-    gasPriceInGwei: number | undefined;
-    isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    poolExists: boolean | undefined;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
-    tokens: tokenMethodsIF;
 }
 
 // central React functional component
 function RangeCurrencyConverter(props: propsIF) {
     const {
-        poolExists,
-        isUserLoggedIn,
-        gasPriceInGwei,
-        chainId,
         isLiq,
-        poolPriceNonDisplay,
-        tokenPair,
         isTokenABase,
         isAmbient,
         depositSkew,
@@ -102,10 +79,6 @@ function RangeCurrencyConverter(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         tokenAInputQty,
         tokenBInputQty,
         setTokenAInputQty,
@@ -117,24 +90,34 @@ function RangeCurrencyConverter(props: propsIF) {
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
-        isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
-        tokens,
     } = props;
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const {
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
+
     const dispatch = useAppDispatch();
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const [tokenAAllowed, setTokenAAllowed] = useState(false);
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
@@ -264,25 +247,25 @@ function RangeCurrencyConverter(props: propsIF) {
         const precision = precisionOfInput(value.toString());
 
         setTokenAQtyLocal(
-            parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)),
+            parseFloat(truncateDecimals(value, tradeData.tokenA.decimals)),
         );
         setTokenAInputQty(
             value === 0
                 ? ''
-                : precision <= tokenPair.dataTokenA.decimals
+                : precision <= tradeData.tokenA.decimals
                 ? value.toString()
-                : truncateDecimals(value, tokenPair.dataTokenA.decimals),
+                : truncateDecimals(value, tradeData.tokenA.decimals),
         );
 
         handleRangeButtonMessageTokenA(value);
 
-        if (poolPriceNonDisplay === undefined) return;
+        if (tradeData.poolPriceNonDisplay === undefined) return;
 
         const qtyTokenB =
             calculateSecondaryDepositQty(
-                poolPriceNonDisplay,
-                tokenPair.dataTokenA.decimals,
-                tokenPair.dataTokenB.decimals,
+                tradeData.poolPriceNonDisplay,
+                tradeData.tokenA.decimals,
+                tradeData.tokenB.decimals,
                 value.toString(),
                 true,
                 isTokenABase,
@@ -294,7 +277,7 @@ function RangeCurrencyConverter(props: propsIF) {
 
         const truncatedTokenBQty = qtyTokenB
             ? qtyTokenB < 0.00001
-                ? truncateDecimals(qtyTokenB, tokenPair.dataTokenA.decimals)
+                ? truncateDecimals(qtyTokenB, tradeData.tokenA.decimals)
                 : qtyTokenB < 2
                 ? qtyTokenB.toPrecision(3)
                 : truncateDecimals(qtyTokenB, 2)
@@ -320,25 +303,25 @@ function RangeCurrencyConverter(props: propsIF) {
     const setTokenBQtyValue = (value: number) => {
         const precision = precisionOfInput(value.toString());
         setTokenBQtyLocal(
-            parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)),
+            parseFloat(truncateDecimals(value, tradeData.tokenB.decimals)),
         );
         setTokenBInputQty(
             value === 0
                 ? ''
-                : precision <= tokenPair.dataTokenB.decimals
+                : precision <= tradeData.tokenB.decimals
                 ? value.toString()
-                : truncateDecimals(value, tokenPair.dataTokenB.decimals),
+                : truncateDecimals(value, tradeData.tokenB.decimals),
         );
 
         handleRangeButtonMessageTokenB(value);
 
-        if (poolPriceNonDisplay === undefined) return;
+        if (tradeData.poolPriceNonDisplay === undefined) return;
 
         const qtyTokenA =
             calculateSecondaryDepositQty(
-                poolPriceNonDisplay,
-                tokenPair.dataTokenA.decimals,
-                tokenPair.dataTokenB.decimals,
+                tradeData.poolPriceNonDisplay,
+                tradeData.tokenA.decimals,
+                tradeData.tokenB.decimals,
                 value.toString(),
                 false,
                 isTokenABase,
@@ -350,7 +333,7 @@ function RangeCurrencyConverter(props: propsIF) {
 
         const truncatedTokenAQty = qtyTokenA
             ? qtyTokenA < 0.00001
-                ? truncateDecimals(qtyTokenA, tokenPair.dataTokenA.decimals)
+                ? truncateDecimals(qtyTokenA, tradeData.tokenA.decimals)
                 : qtyTokenA < 2
                 ? qtyTokenA.toPrecision(3)
                 : truncateDecimals(qtyTokenA, 2)
@@ -379,14 +362,14 @@ function RangeCurrencyConverter(props: propsIF) {
         resetTokenQuantities();
         linkGenRange.navigate({
             chain: chainId,
-            tokenA: tokenPair.dataTokenB.address,
-            tokenB: tokenPair.dataTokenA.address,
+            tokenA: tradeData.tokenB.address,
+            tokenB: tradeData.tokenA.address,
         });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
-        if (poolPriceNonDisplay === 0) {
+        if (tradeData.poolPriceNonDisplay === 0) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
@@ -402,7 +385,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenAAllowed(true);
@@ -411,7 +394,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 if (tokenAAmount > parseFloat(tokenABalance)) {
                     setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
+                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setTokenAAllowed(true);
@@ -421,7 +404,7 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: number) => {
-        if (poolPriceNonDisplay === 0) {
+        if (tradeData.poolPriceNonDisplay === 0) {
             setTokenBAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenBAmount) || tokenBAmount <= 0) {
@@ -437,7 +420,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 ) {
                     setTokenBAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tradeData.tokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setTokenBAllowed(true);
@@ -446,7 +429,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 if (tokenBAmount > parseFloat(tokenBBalance)) {
                     setTokenBAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${tokenPair.dataTokenB.symbol} Amount Exceeds Wallet Balance`,
+                        `${tradeData.tokenB.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setTokenBAllowed(true);
@@ -639,14 +622,14 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     useEffect(() => {
-        if (poolExists) {
+        if (isPoolInitialized) {
             tradeData.isTokenAPrimaryRange
                 ? handleTokenAQtyFieldUpdate()
                 : handleTokenBQtyFieldUpdate();
         }
     }, [
-        poolExists,
-        poolPriceNonDisplay,
+        isPoolInitialized,
+        tradeData.poolPriceNonDisplay,
         depositSkew,
         primaryQuantityRange,
         isWithdrawTokenAFromDexChecked,
@@ -656,7 +639,7 @@ function RangeCurrencyConverter(props: propsIF) {
         tokenADexBalance,
         tokenBDexBalance,
         isAdvancedMode,
-        isUserLoggedIn,
+        isUserConnected,
     ]);
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
@@ -694,11 +677,7 @@ function RangeCurrencyConverter(props: propsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
-        gasPriceInGwei: gasPriceInGwei,
-        isUserLoggedIn: isUserLoggedIn,
         resetTokenQuantities: resetTokenQuantities,
-        chainId: chainId,
-        tokenPair: tokenPair,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,
@@ -728,17 +707,8 @@ function RangeCurrencyConverter(props: propsIF) {
             tokenBSurplusMinusTokenBRemainderNum,
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
-        isRangeCopied: isRangeCopied,
-        importedTokensPlus: importedTokensPlus,
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
-        tokens: tokens,
     };
 
     return (

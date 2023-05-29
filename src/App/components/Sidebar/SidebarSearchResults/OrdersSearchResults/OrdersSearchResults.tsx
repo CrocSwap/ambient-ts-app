@@ -1,26 +1,27 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedLimitOrders: LimitOrderIF[];
-    isDenomBase: boolean;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 interface limitOrderPropsIF {
     limitOrder: LimitOrderIF;
-    isDenomBase: boolean;
     handleClick: (limitOrder: LimitOrderIF) => void;
 }
 
 function LimitOrderLI(props: limitOrderPropsIF) {
-    const { limitOrder, isDenomBase, handleClick } = props;
+    const { limitOrder, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     const symbols = {
         base: limitOrder.baseSymbol
@@ -55,31 +56,30 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 }
 
 export default function OrdersSearchResults(props: propsIF) {
-    const {
-        chainId,
-        searchedLimitOrders,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    const { searchedLimitOrders } = props;
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(1);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         linkGenLimit.navigate({
             chain: chainId,
             tokenA: limitOrder.base,
-            tokenB: limitOrder.quote
+            tokenB: limitOrder.quote,
         });
     };
 
@@ -102,7 +102,6 @@ export default function OrdersSearchResults(props: propsIF) {
                                         limitOrder,
                                     )}`}
                                     limitOrder={limitOrder}
-                                    isDenomBase={isDenomBase}
                                     handleClick={handleClick}
                                 />
                             ))}

@@ -22,8 +22,7 @@
     border: 1px solid var(--dark3);
 }
 
-.nav_action_button{
-
+.nav_action_button {
     max-width: 10rem;
     max-height: 2rem;
     /* width: 238px; */
@@ -43,12 +42,13 @@
     background-clip: text;
     text-fill-color: transparent;
 }
-.nav_button_text{
+.nav_button_text {
     font-size: 20px;
     line-height: 28px;
 }
 
-.action_button:hover, .action_button:focus-visible {
+.action_button:hover,
+.action_button:focus-visible {
     background: var(--dark2);
     border-radius: 4px;
     box-shadow: var(--glow-box-shadow);

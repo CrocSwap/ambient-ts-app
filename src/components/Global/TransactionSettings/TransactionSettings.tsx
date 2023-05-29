@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 // START: Import JSX Components
 import Button from '../Button/Button';
@@ -11,18 +11,26 @@ import styles from './TransactionSettings.module.css';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { VscClose } from 'react-icons/vsc';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { isStablePair } from '../../../utils/data/stablePairs';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
     module: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
     slippage: SlippageMethodsIF;
-    isPairStable: boolean;
     onClose: () => void;
     bypassConfirm: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirm } = props;
+    const { module, slippage, onClose, bypassConfirm } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+
+    const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();

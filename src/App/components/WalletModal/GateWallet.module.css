@@ -1,6 +1,4 @@
-.main_container{
-
-
+.main_container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -10,51 +8,43 @@
     border-radius: var(--border-radius);
     text-align: center;
     padding-bottom: 1rem;
-    
-    
 }
 
-.main_container section{
+.main_container section {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-.first_section{
+.first_section {
     display: flex;
     justify-content: center;
 
     margin-top: 1rem;
 }
 
-
-
-.main_container p{
+.main_container p {
     color: var(--text1);
     font-size: 12;
 
     line-height: 22px;
 }
 
-.checkbox{
+.checkbox {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
 }
 
-.main_container a{
+.main_container a {
     color: var(--accent1);
     text-decoration: underline;
 }
 
 @media only screen and (min-width: 768px) {
-
-    .main_container{
+    .main_container {
         width: 510px;
-     
+
         height: 223px;
-    
-      
-        
     }
 }

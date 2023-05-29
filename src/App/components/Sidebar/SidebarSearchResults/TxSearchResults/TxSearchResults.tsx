@@ -1,42 +1,43 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedTxs: TransactionIF[];
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TxSearchResults(props: propsIF) {
+    const { searchedTxs } = props;
     const {
-        chainId,
-        searchedTxs,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(0);
-        setIsShowAllEnabled(false);
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
+        setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         linkGenMarket.navigate({
             chain: chainId,
             tokenA: tx.base,
-            tokenB: tx.quote
+            tokenB: tx.quote,
         });
     };
 

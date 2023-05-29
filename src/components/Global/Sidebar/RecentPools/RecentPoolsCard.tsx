@@ -1,24 +1,32 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { pageNames, linkGenMethodsIF, useLinkGen } from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    pageNames,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    tradeData: tradeData;
-    chainId: string;
     pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch } =
-        props;
+    const { pool, cachedPoolStatsFetch } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { pathname } = useLocation();
 
@@ -91,13 +99,11 @@ export default function RecentPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={
-                linkGenDynamic.getFullURL({
-                    chain: chainId,
-                    tokenA: tokenAString,
-                    tokenB: tokenBString,
-                })
-            }
+            to={linkGenDynamic.getFullURL({
+                chain: chainId,
+                tokenA: tokenAString,
+                tokenB: tokenBString,
+            })}
         >
             <div>
                 {pool.baseToken.symbol} / {pool.quoteToken.symbol}

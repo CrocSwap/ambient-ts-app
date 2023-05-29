@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    useRef,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useContext,
-} from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
@@ -28,45 +21,41 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 // interface for React functional component props
 interface propsIF {
-    account: string;
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
-    isTokenABase: boolean;
     tx: TransactionIF;
-    blockExplorer?: string;
-    handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
-    isShowAllEnabled: boolean;
+    isAccountView: boolean;
     handleWalletClick: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const {
-        account,
-        tradeData,
-        isBaseTokenMoneynessGreaterOrEqual,
-        tx,
-        blockExplorer,
-        handlePulseAnimation,
-        isOnPortfolioPage,
-        setSimpleRangeWidth,
-        chainData,
-    } = props;
+    const { tradeData, isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } =
+        props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
-        sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer, chainId },
+    } = useContext(CrocEnvContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
@@ -78,14 +67,12 @@ export default function TransactionsMenu(props: propsIF) {
     const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const handleCopyClick = () => {
-        if (handlePulseAnimation) {
-            if (tx.entityType === 'swap') {
-                handlePulseAnimation('swap');
-            } else if (tx.entityType === 'limitOrder') {
-                handlePulseAnimation('limitOrder');
-            } else if (tx.entityType === 'liqchange') {
-                handlePulseAnimation('range');
-            }
+        if (tx.entityType === 'swap') {
+            handlePulseAnimation('swap');
+        } else if (tx.entityType === 'limitOrder') {
+            handlePulseAnimation('limitOrder');
+        } else if (tx.entityType === 'liqchange') {
+            handlePulseAnimation('range');
         }
 
         if (tx.positionType === 'ambient') {
@@ -190,14 +177,12 @@ export default function TransactionsMenu(props: propsIF) {
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
                 closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -226,7 +211,7 @@ export default function TransactionsMenu(props: propsIF) {
                 className={styles.option_button}
                 onClick={() => {
                     linkGenRange.navigate({
-                        chain: chainData.chainId,
+                        chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
                         lowTick: tx.bidTick.toString(),
@@ -248,16 +233,17 @@ export default function TransactionsMenu(props: propsIF) {
                     linkGenLimit.navigate(
                         tx.isBid
                             ? {
-                                chain: chainData.chainId,
-                                tokenA: tx.base,
-                                tokenB: tx.quote,
-                                limitTick: tx.bidTick,
-                            } : {
-                                chain: chainData.chainId,
-                                tokenA: tx.quote,
-                                tokenB: tx.base,
-                                limitTick: tx.askTick,
-                            }
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                                  limitTick: tx.bidTick,
+                              }
+                            : {
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                                  limitTick: tx.askTick,
+                              },
                     );
                     handleCopyClick();
                 }}
@@ -273,16 +259,16 @@ export default function TransactionsMenu(props: propsIF) {
                     linkGenMarket.navigate(
                         tx.isBuy
                             ? {
-                                chain: chainData.chainId,
-                                tokenA: tx.base,
-                                tokenB: tx.quote,
-                            }
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                              }
                             : {
-                                chain: chainData.chainId,
-                                tokenA: tx.quote,
-                                tokenB: tx.base,
-                            }
-                    )
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                              },
+                    );
                     handleCopyClick();
                 }}
                 tabIndex={0}

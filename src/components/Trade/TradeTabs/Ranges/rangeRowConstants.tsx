@@ -8,7 +8,10 @@ import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 interface Props {
     posHashTruncated: string;
     usdValue: string;
@@ -29,7 +32,7 @@ interface Props {
     minRangeDenomByMoneyness: string | undefined;
     maxRangeDenomByMoneyness: string | undefined;
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isAmbient: boolean;
     ipadView: boolean;
     isPositionInRange: boolean;
@@ -67,7 +70,7 @@ export default function rangeRowConstants(props: Props) {
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
         minRangeDenomByMoneyness,
         ambientOrMin,
@@ -230,13 +233,13 @@ export default function rangeRowConstants(props: Props) {
             onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={
-                linkGenRange.getFullURL({
+            <NavLink
+                to={linkGenRange.getFullURL({
                     chain: position.chainId,
                     tokenA: position.quote,
                     tokenB: position.base,
-                })
-            }>
+                })}
+            >
                 <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>
@@ -314,7 +317,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage && !isAmbient
+                {isAccountView && !isAmbient
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
@@ -347,7 +350,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage
+                {isAccountView
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
@@ -365,7 +368,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage && !isAmbient
+                    {isAccountView && !isAmbient
                         ? minRangeDenomByMoneyness || '…'
                         : ambientOrMin || '…'}
                 </span>
@@ -373,7 +376,7 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? maxRangeDenomByMoneyness || '…'
                         : ambientOrMax || '…'}
                 </span>

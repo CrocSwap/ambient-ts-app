@@ -31,7 +31,10 @@ import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -48,7 +51,6 @@ interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     closeMenu?: () => void;
-    chainId: string;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

@@ -1,12 +1,11 @@
 import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
-import { Dispatch, memo, SetStateAction } from 'react';
+import { Dispatch, memo, useContext } from 'react';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../constants';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface NoTableDataPropsIF {
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>> | undefined;
     type: string;
     // setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     changeState?: (
@@ -14,24 +13,20 @@ interface NoTableDataPropsIF {
         candleData: CandleData | undefined,
     ) => void;
     setSelectedDate?: Dispatch<number | undefined>;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 function NoTableData(props: NoTableDataPropsIF) {
-    const {
-        isShowAllEnabled,
-        setIsShowAllEnabled,
-        type,
-        setSelectedDate,
-        isOnPortfolioPage,
-    } = props;
+    const { type, setSelectedDate, isAccountView } = props;
+
+    const { showAllData, setShowAllData } = useContext(TradeTableContext);
 
     const toggleAllEnabled = () => {
         IS_LOCAL_ENV && console.debug('setting show all to true');
-        setIsShowAllEnabled ? setIsShowAllEnabled(true) : null;
-        setSelectedDate ? setSelectedDate(undefined) : null;
+        setShowAllData(true);
+        setSelectedDate && setSelectedDate(undefined);
     };
 
-    const toggleAllEnabledContentOrNull = isOnPortfolioPage ? null : (
+    const toggleAllEnabledContentOrNull = isAccountView ? null : (
         <>
             <p>Consider turning on all {type}</p>
             <button onClick={toggleAllEnabled}>All {type}</button>
@@ -42,7 +37,7 @@ function NoTableData(props: NoTableDataPropsIF) {
         <div className={styles.container}>
             {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
             <h2>NO {type.toUpperCase()} FOUND</h2>
-            {!isShowAllEnabled && toggleAllEnabledContentOrNull}
+            {!showAllData && toggleAllEnabledContentOrNull}
         </div>
     );
 }

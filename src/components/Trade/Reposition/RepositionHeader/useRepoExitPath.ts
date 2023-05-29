@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 export const useRepoExitPath = (): string => {
     const { params } = useParams();
@@ -27,7 +30,7 @@ export const useRepoExitPath = (): string => {
             .filter((par) => par.length === 2);
         // fn to look up the value of any param
         // return empty string if param is not found
-        const findParam = (name: 'chain'|'tokenA'|'tokenB'): string => {
+        const findParam = (name: 'chain' | 'tokenA' | 'tokenB'): string => {
             // find param tuple with name provided as an arg
             const paramTuple = paramSets.find((param) => param[0] === name);
             // return value from tuple or empty string in tuple is not found

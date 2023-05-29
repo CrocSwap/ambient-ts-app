@@ -10,7 +10,7 @@ import { ethers } from 'ethers';
 import Button from '../Global/Button/Button';
 import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 
-import { ambientPosSlot, ChainSpec, concPosSlot } from '@crocswap-libs/sdk';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -36,21 +36,10 @@ import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
-    chainData: ChainSpec;
     provider: ethers.providers.Provider;
-    chainId: string;
-    poolIdx: number;
-    user: string;
-    bidTick: number;
-    askTick: number;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -59,33 +48,28 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    closeGlobalModal: () => void;
     handleModalClose: () => void;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function HarvestPosition(props: propsIF) {
-    const {
-        chainData,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
-        position,
-        handleModalClose,
-        ethMainnetUsdPrice,
-        gasPriceInGwei,
-    } = props;
+    const { baseTokenLogoURI, quoteTokenLogoURI, position, handleModalClose } =
+        props;
 
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,
         position.quote,
-        chainData.chainId,
+        chainId,
     );
 
     const persistedSlippage: number = isPairStable
@@ -275,7 +259,7 @@ export default function HarvestPosition(props: propsIF) {
                   position.user,
                   position.base,
                   position.quote,
-                  chainData.poolIndex,
+                  poolIndex,
               )
             : concPosSlot(
                   position.user,
@@ -283,7 +267,7 @@ export default function HarvestPosition(props: propsIF) {
                   position.quote,
                   position.bidTick,
                   position.askTick,
-                  chainData.poolIndex,
+                  poolIndex,
               );
 
     const isPositionPendingUpdate =
@@ -456,7 +440,6 @@ export default function HarvestPosition(props: propsIF) {
         <TxSubmittedSimplify
             hash={newHarvestTransactionHash}
             content='Harvest Transaction Successfully Submitted!'
-            chainId={chainData.chainId}
         />
     );
 

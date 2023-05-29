@@ -1,7 +1,6 @@
 .main_layout {
     transition: all var(--animation-speed) ease-in-out;
     border-top: 1px solid var(--dark2);
-
 }
 
 .middle_col,
@@ -15,7 +14,6 @@
     display: flex;
     flex-direction: column;
 }
-
 
 .navigation_menu {
     display: flex;
@@ -59,7 +57,6 @@
     color: var(--text1);
 }
 
-
 .right_col {
     display: flex;
     flex-direction: column;
@@ -94,7 +91,6 @@
 
 /* Switch buttons */
 .mobile_toggle_container {
-
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -105,7 +101,6 @@
     margin: 10px auto;
 }
 .mobile_toggle_container button {
-
     padding: 4px 1.5rem;
 
     cursor: pointer;
@@ -169,7 +164,6 @@
     align-items: center;
 }
 
-
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
@@ -231,8 +225,6 @@
     cursor: pointer;
     color: var(--accent5);
 }
-
-
 
 /* trade tabs dropdown */
 .mobile_trades_dropdown {
@@ -347,9 +339,7 @@
     }
     .graph_style {
         width: 100%;
-   
     }
-
 
     .hide_graph {
         display: none;
@@ -364,27 +354,23 @@
     .main_layout {
         display: grid;
         grid-template-columns: auto 380px;
-      
-
     }
     .middle_col {
         height: 100%;
 
         padding: 0.5rem 0 0.5rem 0.6rem;
 
-    
         background: var(--dark2);
 
         display: grid;
         grid-template-rows: auto 300px;
-     
+
         grid-gap: 8px;
         position: relative;
     }
 
     .right_col {
         background: var(--dark1);
-    
     }
 
     .middle_col,
@@ -393,10 +379,8 @@
     }
 
     .flex_column {
- 
         display: flex;
         flex-flow: column;
-      
     }
     @-moz-document url-prefix() {
         .middle_col {
@@ -430,9 +414,7 @@
         top: 56px;
         z-index: 10;
 
-
         background: var(--dark2);
-
     }
 
     .full_table_height {
@@ -443,8 +425,6 @@
         height: 30%;
     }
 }
-
-
 
 @media only screen and (max-width: 1280px) {
     .middle_col {

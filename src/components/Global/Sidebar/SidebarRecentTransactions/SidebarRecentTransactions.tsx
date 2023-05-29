@@ -1,7 +1,10 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // START: Import Local Files
 import { TransactionIF } from '../../../../utils/interfaces/exports';
@@ -9,30 +12,34 @@ import styles from './SidebarRecentTransactions.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
-import { useLinkGen, linkGenMethodsIF } from '../../../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     mostRecentTransactions: TransactionIF[];
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
-    const {
-        chainId,
-        mostRecentTransactions,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-        isUserLoggedIn,
-    } = props;
+    const { mostRecentTransactions } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+    const {
         sidebar: { close: closeSidebar },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const location = useLocation();
 
@@ -52,21 +59,21 @@ export default function SidebarRecentTransactions(props: propsIF) {
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
-        setIsShowAllEnabled(false);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.id);
         linkGenMarket.navigate({
             chain: chainId,
             tokenA: tx.base,
-            tokenB: tx.quote
+            tokenB: tx.quote,
         });
     };
 
     const handleViewMoreClick = (): void => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 
@@ -89,7 +96,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
                     />
                 ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

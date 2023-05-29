@@ -1,17 +1,9 @@
 // START: Import React and Dongles
-import {
-    useState,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useContext,
-    memo,
-} from 'react';
+import { useState, useEffect, useMemo, useContext, memo } from 'react';
+
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec, CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
@@ -24,7 +16,6 @@ import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import Button from '../../components/Global/Button/Button';
-import { getRecentTokensParamsIF } from '../../App/hooks/useRecentTokens';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -35,7 +26,6 @@ import {
 } from '../../utils/TransactionError';
 import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import {
@@ -50,100 +40,56 @@ import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOve
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { PoolContext } from '../../contexts/PoolContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { useProvider } from 'wagmi';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { TokenContext } from '../../contexts/TokenContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { isStablePair } from '../../utils/data/stablePairs';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { VscClose } from 'react-icons/vsc';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    account: string | undefined;
-    isPairStable: boolean;
-    provider?: ethers.providers.Provider;
     isOnTradeRoute?: boolean;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice?: number;
-    lastBlockNumber: number;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    isSellTokenBase: boolean;
-    tokenPair: TokenPairIF;
-    poolPriceDisplay: number | undefined;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    chainId: string;
-    openModalWallet: () => void;
-    isInitialized: boolean;
-    poolExists: boolean | undefined;
-    setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
-    isSwapCopied?: boolean;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    tokenPairLocal: string[] | null;
-    chainData: ChainSpec;
-    pool: CrocPoolView | undefined;
-    tokens: tokenMethodsIF;
 }
 
 function Swap(props: propsIF) {
+    const { isOnTradeRoute } = props;
+    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
+        useAppSelector((state) => state.userData);
+
     const {
-        pool,
-        isUserLoggedIn,
-        account,
-        isPairStable,
-        provider,
-        isOnTradeRoute,
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const {
+        crocEnv,
+        chainData: { chainId, blockExplorer },
         ethMainnetUsdPrice,
-        gasPriceInGwei,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        isSellTokenBase,
-        tokenPair,
-        poolPriceDisplay,
-        tokenAAllowance,
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const { tokens } = useContext(TokenContext);
+    const {
+        isTokenABase: isSellTokenBase,
         setRecheckTokenAApproval,
-        chainId,
-        openModalWallet,
-        poolExists,
-        isSwapCopied,
-        importedTokensPlus,
-        addRecentToken,
-        getRecentTokens,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        lastBlockNumber,
-        tokenPairLocal,
-        chainData,
-        tokens,
-    } = props;
+        tokenAAllowance,
+    } = useContext(TradeTokenContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
+
+    const provider = useProvider();
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
     useUrlParams(tokens, chainId, provider);
-
-    const crocEnv = useContext(CrocEnvContext);
-    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
-        UserPreferenceContext,
-    );
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented
@@ -189,7 +135,11 @@ function Swap(props: propsIF) {
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
-    const slippageTolerancePercentage = isPairStable
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
         ? swapSlippage.stable
         : swapSlippage.volatile;
 
@@ -312,7 +262,7 @@ function Swap(props: propsIF) {
                 newSwapCacheEndpoint +
                     new URLSearchParams({
                         tx: tx.hash,
-                        user: account ?? '',
+                        user: userAddress ?? '',
                         base: isSellTokenBase
                             ? sellTokenAddress
                             : buyTokenAddress,
@@ -357,7 +307,7 @@ function Swap(props: propsIF) {
                         newSwapCacheEndpoint +
                             new URLSearchParams({
                                 tx: newTransactionHash,
-                                user: account ?? '',
+                                user: userAddress ?? '',
                                 base: isSellTokenBase
                                     ? sellTokenAddress
                                     : buyTokenAddress,
@@ -396,7 +346,7 @@ function Swap(props: propsIF) {
 
     const loginButton = (
         <button
-            onClick={openModalWallet}
+            onClick={openWagmiModal}
             className={styles.authenticate_button}
             style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
         >
@@ -408,8 +358,8 @@ function Swap(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -510,8 +460,6 @@ function Swap(props: propsIF) {
     sessionReceipts.map((receipt) => handleParseReceipt(receipt));
 
     const confirmSwapModalProps = {
-        pool: pool,
-        poolPriceDisplay: poolPriceDisplay,
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
         baseTokenSymbol: tradeData.baseToken.symbol,
@@ -536,7 +484,6 @@ function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
-        lastBlockNumber: lastBlockNumber,
     };
 
     // TODO:  @Emily refactor this Modal and later elements such that
@@ -588,24 +535,12 @@ function Swap(props: propsIF) {
     const currencyConverterProps = {
         isLiquidityInsufficient: isLiquidityInsufficient,
         setIsLiquidityInsufficient: setIsLiquidityInsufficient,
-        tokenPairLocal: tokenPairLocal,
-        crocEnv: crocEnv,
-        poolExists: poolExists,
-        isUserLoggedIn: isUserLoggedIn,
         provider: provider,
         slippageTolerancePercentage: slippageTolerancePercentage,
         setPriceImpact: setPriceImpact,
-        tokenPair: tokenPair,
         priceImpact: priceImpact,
-        chainId: chainId,
         isLiq: false,
-        poolPriceDisplay: poolPriceDisplay,
         isTokenAPrimary: isTokenAPrimary,
-        isSellTokenBase: isSellTokenBase,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
         sellQtyString: sellQtyString,
         buyQtyString: buyQtyString,
         setSellQtyString: setSellQtyString,
@@ -616,18 +551,7 @@ function Swap(props: propsIF) {
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setSwapAllowed: setSwapAllowed,
         setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        gasPriceInGwei: gasPriceInGwei,
-        isSwapCopied: isSwapCopied,
-        importedTokensPlus: importedTokensPlus,
-        addRecentToken: addRecentToken,
-        getRecentTokens: getRecentTokens,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        lastBlockNumber: lastBlockNumber,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        tokens: tokens,
     };
 
     const {
@@ -697,8 +621,8 @@ function Swap(props: propsIF) {
         ) : null;
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verifyToken(tokenPair.dataTokenA.address);
-    const needConfirmTokenB = !tokens.verifyToken(tokenPair.dataTokenB.address);
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -707,18 +631,16 @@ function Swap(props: propsIF) {
         // !Important   ... review for a pull request on GitHub
         let text: string;
         if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
-            } and ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
+                tokenB.symbol || tokenB.name
             } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenA) {
             text = `The token ${
-                tokenPair.dataTokenA.symbol || tokenPair.dataTokenA.name
+                tokenA.symbol || tokenA.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else if (needConfirmTokenB) {
             text = `The token ${
-                tokenPair.dataTokenB.symbol || tokenPair.dataTokenB.name
+                tokenB.symbol || tokenB.name
             } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
         } else {
             text = '';
@@ -735,8 +657,8 @@ function Swap(props: propsIF) {
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && tokens.ackToken(tokenPair.dataTokenA);
-        needConfirmTokenB && tokens.ackToken(tokenPair.dataTokenB);
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
     const liquidityProviderFeeString = (
@@ -755,13 +677,9 @@ function Swap(props: propsIF) {
 
     const initLinkPath =
         '/initpool/' +
-        formSlugForPairParams(
-            chainId,
-            tokenPair.dataTokenA.address,
-            tokenPair.dataTokenB.address,
-        );
+        formSlugForPairParams(chainId, tokenA.address, tokenB.address);
 
-    const showPoolNotInitializedContent = poolExists === false;
+    const showPoolNotInitializedContent = isPoolInitialized === false;
 
     const navigate = useNavigate();
 
@@ -775,29 +693,19 @@ function Swap(props: propsIF) {
                 <h3>Do you want to initialize it?</h3>
                 <Link to={initLinkPath} className={styles.initialize_link}>
                     Initialize Pool
-                    {tokenPair.dataTokenA.logoURI ? (
-                        <img
-                            src={tokenPair.dataTokenA.logoURI}
-                            alt={tokenPair.dataTokenA.symbol}
-                        />
+                    {tokenA.logoURI ? (
+                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={tokenPair.dataTokenA.symbol?.charAt(
-                                0,
-                            )}
+                            tokenInitial={tokenA.symbol?.charAt(0)}
                             width='20px'
                         />
                     )}
-                    {tokenPair.dataTokenB.logoURI ? (
-                        <img
-                            src={tokenPair.dataTokenB.logoURI}
-                            alt={tokenPair.dataTokenB.symbol}
-                        />
+                    {tokenB.logoURI ? (
+                        <img src={tokenB.logoURI} alt={tokenB.symbol} />
                     ) : (
                         <NoTokenIcon
-                            tokenInitial={tokenPair.dataTokenB.symbol?.charAt(
-                                0,
-                            )}
+                            tokenInitial={tokenB.symbol?.charAt(0)}
                             width='20px'
                         />
                     )}
@@ -830,10 +738,7 @@ function Swap(props: propsIF) {
                         isOnTradeRoute={isOnTradeRoute}
                         padding={isOnTradeRoute ? '0 1rem' : '1rem'}
                     >
-                        <SwapHeader
-                            isPairStable={isPairStable}
-                            isOnTradeRoute={isOnTradeRoute}
-                        />
+                        <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                         {navigationMenu}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -843,27 +748,21 @@ function Swap(props: propsIF) {
                             <CurrencyConverter {...currencyConverterProps} />
                         </motion.div>
                         <ExtraInfo
-                            account={account}
-                            tokenPair={tokenPair}
                             priceImpact={priceImpact}
-                            isTokenABase={isSellTokenBase}
                             displayEffectivePriceString={
                                 displayEffectivePriceString
                             }
-                            poolPriceDisplay={poolPriceDisplay || 0}
                             slippageTolerance={slippageTolerancePercentage}
                             liquidityProviderFeeString={
                                 liquidityProviderFeeString
                             }
                             quoteTokenIsBuy={true}
                             swapGasPriceinDollars={swapGasPriceinDollars}
-                            didUserFlipDenom={tradeData.didUserFlipDenom}
-                            isDenomBase={tradeData.isDenomBase}
                             isOnTradeRoute={isOnTradeRoute}
                         />
-                        {isUserLoggedIn ===
-                        undefined ? null : isUserLoggedIn === true ? (
-                            poolExists &&
+                        {isUserConnected ===
+                        undefined ? null : isUserConnected === true ? (
+                            isPoolInitialized &&
                             !isTokenAAllowanceSufficient &&
                             parseFloat(sellQtyString) > 0 &&
                             sellQtyString !== 'Infinity' ? (
@@ -915,34 +814,30 @@ function Swap(props: propsIF) {
                                         {needConfirmTokenA && (
                                             <a
                                                 href={
-                                                    chainData.blockExplorer +
+                                                    blockExplorer +
                                                     'token/' +
-                                                    tokenPair.dataTokenA.address
+                                                    tokenA.address
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
                                                 aria-label={`approve ${tokenA.symbol}`}
                                             >
-                                                {tokenPair.dataTokenA.symbol ||
-                                                    tokenPair.dataTokenA
-                                                        .name}{' '}
+                                                {tokenA.symbol || tokenA.name}{' '}
                                                 <FiExternalLink />
                                             </a>
                                         )}
                                         {needConfirmTokenB && (
                                             <a
                                                 href={
-                                                    chainData.blockExplorer +
+                                                    blockExplorer +
                                                     'token/' +
-                                                    tokenPair.dataTokenB.address
+                                                    tokenB.address
                                                 }
                                                 rel={'noopener noreferrer'}
                                                 target='_blank'
                                                 aria-label={`approve ${tokenB.symbol}`}
                                             >
-                                                {tokenPair.dataTokenB.symbol ||
-                                                    tokenPair.dataTokenB
-                                                        .name}{' '}
+                                                {tokenB.symbol || tokenB.name}{' '}
                                                 <FiExternalLink />
                                             </a>
                                         )}
