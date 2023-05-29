@@ -7,17 +7,14 @@ import {
     useEffect,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import {
-    // reverseTokensInRTK,
     setIsTokenAPrimary,
     setLimitTick,
-    // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -36,8 +33,11 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 // interface for component props
 interface propsIF {
@@ -77,13 +77,6 @@ interface propsIF {
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -93,9 +86,9 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
-    ackTokens: ackTokensMethodsIF;
     isOrderValid: boolean;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central react functional component
@@ -133,9 +126,6 @@ function LimitCurrencyConverter(props: propsIF) {
         poolExists,
         gasPriceInGwei,
         isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -144,9 +134,9 @@ function LimitCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         setResetLimitTick,
-        ackTokens,
         isOrderValid,
         setTokenAQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -233,7 +223,8 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
@@ -241,14 +232,11 @@ function LimitCurrencyConverter(props: propsIF) {
         } else {
             setDisableReverseTokens(true);
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
-            navigate(
-                '/trade/limit/' +
-                    formSlugForPairParams(
-                        tokenPair.dataTokenA.chainId,
-                        tokenPair.dataTokenB,
-                        tokenPair.dataTokenA,
-                    ),
-            );
+            linkGenLimit.navigate({
+                chain: chainId,
+                tokenA: tokenPair.dataTokenB.address,
+                tokenB: tokenPair.dataTokenA.address,
+            });
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
@@ -265,8 +253,8 @@ function LimitCurrencyConverter(props: propsIF) {
 
     useEffect(() => {
         if (tradeData.shouldLimitDirectionReverse) {
-            reverseTokens();
             setIsTokenAPrimaryLocal((state) => {
+                reverseTokens();
                 return !state;
             });
         }
@@ -543,9 +531,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
                 importedTokensPlus={importedTokensPlus}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
@@ -554,10 +539,10 @@ function LimitCurrencyConverter(props: propsIF) {
                 validatedInput={validatedInput}
                 setInput={setInput}
                 searchType={searchType}
-                ackTokens={ackTokens}
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                tokens={tokens}
             />
             <div
                 className={
@@ -615,9 +600,6 @@ function LimitCurrencyConverter(props: propsIF) {
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                     gasPriceInGwei={gasPriceInGwei}
                     isOrderCopied={isOrderCopied}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
                     importedTokensPlus={importedTokensPlus}
                     getRecentTokens={getRecentTokens}
                     addRecentToken={addRecentToken}
@@ -626,10 +608,10 @@ function LimitCurrencyConverter(props: propsIF) {
                     validatedInput={validatedInput}
                     setInput={setInput}
                     searchType={searchType}
-                    ackTokens={ackTokens}
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    tokens={tokens}
                 />
             </div>
             <LimitRate

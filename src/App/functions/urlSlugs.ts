@@ -1,4 +1,5 @@
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import chainNumToString from './chainNumToString';
 
 export function formSlugForPairParams(
     chainId: string | number,
@@ -6,7 +7,7 @@ export function formSlugForPairParams(
     tokenB: TokenIF | string,
 ): string {
     if (typeof chainId === 'number') {
-        chainId = '0x' + chainId.toString(16);
+        chainId = chainNumToString(chainId);
     }
     if (typeof tokenA !== 'string') {
         tokenA = tokenA.address;

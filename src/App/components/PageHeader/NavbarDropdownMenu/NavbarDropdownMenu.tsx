@@ -7,7 +7,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -26,12 +25,20 @@ import {
     MdLanguage,
     MdReportProblem,
 } from 'react-icons/md';
-import { RiErrorWarningLine } from 'react-icons/ri';
+import {
+    RiErrorWarningLine,
+    RiLayoutLeftFill,
+    RiLayoutRightFill,
+} from 'react-icons/ri';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -40,7 +47,6 @@ interface NavbarDropdownItemPropsIF {
     goBackItem?: boolean;
     imageIcon?: string;
     onClick?: () => void;
-
     children: ReactNode;
     rightIcon?: ReactNode;
 }
@@ -60,7 +66,8 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
 
     const { i18n } = useTranslation();
 
@@ -151,7 +158,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 onClick={() => {
-                    navigate('/tos');
+                    linkGenTOS.navigate();
                     closeMenu && closeMenu();
                 }}
                 leftIcon={<HiOutlineDocumentText size={20} />}
@@ -235,6 +242,23 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
     // const mainAriaLabel = 'account dropdown menu container';
+
+    const layoutData = [
+        {
+            title: 'Sidebar',
+            action: console.log('sidebar'),
+            icon: RiLayoutLeftFill,
+        },
+        {
+            title: 'Trade',
+            action: console.log('trade'),
+            icon: RiLayoutRightFill,
+        },
+    ];
+
+    const pageLayoutControl = (
+        <div className={styles.page_layout_container}></div>
+    );
 
     return (
         <FocusTrap

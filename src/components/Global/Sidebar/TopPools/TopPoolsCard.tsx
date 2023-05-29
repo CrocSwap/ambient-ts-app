@@ -5,6 +5,11 @@ import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import {
+    pageNames,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     tradeData: tradeData;
@@ -20,23 +25,29 @@ export default function TopPoolsCard(props: propsIF) {
 
     const { pathname } = useLocation();
 
-    const locationSlug = useMemo(() => {
+    const navTarget = useMemo<pageNames>(() => {
+        let output: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
+            pathname.startsWith('/account') ||
+            pathname === '/'
         ) {
-            return '/trade/market';
+            output = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
-            return '/trade/limit';
+            output = 'limit';
         } else if (pathname.startsWith('/trade/range')) {
-            return '/trade/range';
+            output = 'range';
         } else {
-            console.error(
+            console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
-            return '/trade/market';
+            output = 'market';
         }
+        return output as pageNames;
     }, [pathname]);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenDynamic: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -80,15 +91,11 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={
-                locationSlug +
-                '/chain=' +
-                chainId +
-                '&tokenA=' +
-                tokenAString +
-                '&tokenB=' +
-                tokenBString
-            }
+            to={linkGenDynamic.getFullURL({
+                chain: chainId,
+                tokenA: tokenAString,
+                tokenB: tokenBString,
+            })}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

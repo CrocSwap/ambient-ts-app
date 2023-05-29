@@ -5,7 +5,7 @@ import {
     CandleData,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
@@ -20,7 +20,6 @@ import {
     memo,
 } from 'react';
 
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import { Pagination } from '@mui/material';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -32,6 +31,7 @@ import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -39,7 +39,6 @@ interface propsIF {
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
-    tokenList: TokenIF[];
     changesInSelectedCandle: TransactionIF[] | undefined;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -57,7 +56,7 @@ interface propsIF {
     ) => void;
     handlePulseAnimation?: (type: string) => void;
     isOnPortfolioPage: boolean;
-    setSelectedDate?: Dispatch<Date | undefined>;
+    setSelectedDate?: Dispatch<number | undefined>;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
@@ -201,7 +200,6 @@ function Transactions(props: propsIF) {
                         }),
                     );
                 }
-                // setIsDataLoading(false);
             } else if (isShowAllEnabled) {
                 handlePoolSelected();
             } else {
@@ -221,8 +219,8 @@ function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1400px)');
-    const max1700px = useMediaQuery('(max-width: 1700px)');
+    const max1400px = useMediaQuery('(max-width: 1600px)');
+    const max1700px = useMediaQuery('(max-width: 1800px)');
 
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
@@ -391,7 +389,17 @@ function Transactions(props: propsIF) {
     const [page, setPage] = useState(1);
     const resetPageToFirst = () => setPage(1);
 
-    const [rowsPerPage, setRowsPerPage] = useState(showColumns ? 5 : 10);
+    const isScreenShort =
+        (isOnPortfolioPage && useMediaQuery('(max-height: 900px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isOnPortfolioPage && useMediaQuery('(min-height: 1100px)')) ||
+        (!isOnPortfolioPage && useMediaQuery('(min-height: 1000px)'));
+
+    const [rowsPerPage, setRowsPerPage] = useState(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
 
     const count = Math.ceil(sortedTransactions.length / rowsPerPage);
     const _DATA = usePagination(sortedTransactions, rowsPerPage);
@@ -564,6 +572,7 @@ function Transactions(props: propsIF) {
     const portfolioPageStyle = props.isOnPortfolioPage
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
+    const portfolioPageFooter = props.isOnPortfolioPage ? '1rem 0' : '';
 
     return (
         <section
@@ -576,13 +585,23 @@ function Transactions(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <TransactionsSkeletons />
+                    <div
+                        style={{
+                            height: '100%',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Spinner size={100} bg='var(--dark1)' />
+                    </div>
                 ) : (
                     transactionDataOrNull
                 )}
             </div>
 
-            <div>{footerDisplay}</div>
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }

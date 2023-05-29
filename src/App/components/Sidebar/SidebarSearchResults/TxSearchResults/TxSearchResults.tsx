@@ -1,9 +1,12 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string;
@@ -25,21 +28,19 @@ export default function TxSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(0);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote,
+        });
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element

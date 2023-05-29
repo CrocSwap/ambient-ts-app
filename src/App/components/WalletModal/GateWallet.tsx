@@ -13,17 +13,16 @@ export default function GateWallet(props: PropsIF) {
         <div className={styles.main_container}>
             <section className={styles.first_section}>
                 <p>
-                    This website is a community maintained open source instance
-                    of{' '}
+                    This website is a public{' '}
                     <a
                         href={termUrls.openSource}
                         target='_blank'
                         rel='noreferrer'
-                        aria-label='terms of service'
+                        aria-label='open source repo'
                     >
-                        the front end
+                        open source web application
                     </a>{' '}
-                    for the Ambient protocol.
+                    to access the blockchain-based Ambient protocol.
                 </p>
                 <p>
                     By clicking Agree, you accept the{' '}

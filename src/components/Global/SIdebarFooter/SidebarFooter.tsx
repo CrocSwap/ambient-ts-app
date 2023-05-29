@@ -53,6 +53,7 @@ function SidebarFooter(props: PropsIF) {
 
     const linksData = [
         // { title: 'Home', destination: '/', icon: FaHome },
+
         {
             title: 'Swap',
             destination: '/swap/' + paramsSlug,

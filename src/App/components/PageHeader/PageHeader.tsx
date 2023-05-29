@@ -20,12 +20,10 @@ import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import PageLayout from './PageLayout/PageLayout';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
-    shouldDisplayAccountTab: boolean | undefined;
-    chainId: string;
     isChainSupported: boolean;
     openWagmiModalWallet: () => void;
     ethMainnetUsdPrice?: number;
@@ -33,13 +31,18 @@ interface HeaderPropsIF {
     poolPriceDisplay: number | undefined;
     recentPools: recentPoolsMethodsIF;
     chainData: ChainSpec;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    toggleSidebarDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleTradeDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleDefaultLayout: () => void;
 }
 
 const PageHeader = function (props: HeaderPropsIF) {
     const {
         ethMainnetUsdPrice,
-        chainId,
         isChainSupported,
         openWagmiModalWallet,
         lastBlockNumber,
@@ -47,6 +50,9 @@ const PageHeader = function (props: HeaderPropsIF) {
         poolPriceDisplay,
         chainData,
         clickLogout,
+        toggleSidebarDrawer,
+        toggleTradeDrawer,
+        toggleDefaultLayout,
     } = props;
 
     const { address, isConnected } = useAccount();
@@ -115,7 +121,7 @@ const PageHeader = function (props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        chainId: chainId,
+        chainId: chainData.chainId,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
         lastBlockNumber: lastBlockNumber,
         chainData: chainData,
@@ -394,8 +400,13 @@ const PageHeader = function (props: HeaderPropsIF) {
                                 </div>
                             ) : null}
                         </div>
+                        <PageLayout
+                            toggleSidebarDrawer={toggleSidebarDrawer}
+                            toggleTradeDrawer={toggleTradeDrawer}
+                            toggleDefaultLayout={toggleDefaultLayout}
+                        />
                         <NetworkSelector
-                            chainId={chainId}
+                            chainId={chainData.chainId}
                             switchNetwork={switchNetwork}
                         />
                         {!isConnected && connectWagmiButton}
@@ -404,7 +415,7 @@ const PageHeader = function (props: HeaderPropsIF) {
                             showNotificationTable={showNotificationTable}
                             setShowNotificationTable={setShowNotificationTable}
                             lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
+                            chainId={chainData.chainId}
                         />
                     </div>
                 </div>

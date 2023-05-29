@@ -231,7 +231,7 @@ p:focus-visible {
 
 .hide_sidebar {
     display: grid;
-    grid-template-columns: 100%;
+    /* grid-template-columns: 100%; */
 }
 
 .tutorial_navigation_container {

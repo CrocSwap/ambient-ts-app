@@ -311,6 +311,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         );
                                     })
                                     .catch(console.error);
+                            } else {
+                                dispatch(
+                                    setPositionsByPool({
+                                        dataReceived: false,
+                                        positions: [],
+                                    }),
+                                );
                             }
                         })
                         .catch(console.error);

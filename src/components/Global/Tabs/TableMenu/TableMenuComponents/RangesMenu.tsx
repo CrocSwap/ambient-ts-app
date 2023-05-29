@@ -34,6 +34,10 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 // interface for React functional component props
 interface propsIF {
     chainData: ChainSpec;
@@ -55,14 +59,13 @@ interface propsIF {
     isPositionInRange: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice: number | undefined;
-
     handleAccountClick: () => void;
-
     isShowAllEnabled: boolean;
 }
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
+    const { sidebar } = useContext(AppStateContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -137,21 +140,20 @@ export default function RangesMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
+
     const repositionButton = (
         <Link
             className={styles.reposition_button}
-            to={
-                '/trade/reposition/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRepo.getFullURL({
+                chain: chainData.chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             state={{ position: position }}
         >
             Reposition
@@ -168,18 +170,13 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRange.getFullURL({
+                chain: chainData.chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             onClick={handleCopyClick}
         >
             Copy Trade
@@ -190,18 +187,13 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={
-                '/trade/range/chain=' +
-                position.chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote +
-                '&lowTick=' +
-                position.bidTick +
-                '&highTick=' +
-                position.askTick
-            }
+            to={linkGenRange.getFullURL({
+                chain: chainData.chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
             onClick={handleCopyClick}
         >
             Add
@@ -223,7 +215,9 @@ export default function RangesMenu(props: propsIF) {
     // ----------------------
 
     const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = useMediaQuery('(min-width: 1380px)');
+    const view2 = sidebar.isOpen
+        ? useMediaQuery('(min-width: 1750px)')
+        : useMediaQuery('(min-width: 1550px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     const showRepositionButton =
@@ -235,8 +229,11 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {showRepositionButton && view1 && repositionButton}
-            {!showRepositionButton && userMatchesConnectedAccount && addButton}
+            {showRepositionButton && repositionButton}
+            {view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
             {view2 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
             {!userMatchesConnectedAccount && view1 && copyButton}

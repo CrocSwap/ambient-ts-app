@@ -14,6 +14,12 @@ export interface candleDomain {
     domainBoundry: number | undefined;
 }
 
+export interface candleScale {
+    lastCandleDate: number | undefined;
+    nCandle: number;
+    isFetchForTimeframe: boolean;
+}
+
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -87,7 +93,10 @@ const initialState: tradeData = {
         { name: 'Min', value: undefined },
         { name: 'Max', value: undefined },
     ],
-    candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
+    candleDomains: {
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    },
     pinnedMaxPriceDisplayTruncated: undefined,
     pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,

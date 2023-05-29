@@ -1,31 +1,34 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { useLocation } from 'react-router-dom';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    tokenMap: Map<string, TokenIF>;
     chainId: string;
     isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
+
 export default function SidebarLimitOrders(props: propsIF) {
     const {
-        limitOrderByUser,
-        tokenMap,
         chainId,
+        limitOrderByUser,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
+        tokens,
     } = props;
 
     const {
@@ -35,7 +38,10 @@ export default function SidebarLimitOrders(props: propsIF) {
     } = useContext(AppStateContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -43,7 +49,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
@@ -51,14 +57,11 @@ export default function SidebarLimitOrders(props: propsIF) {
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     const handleViewMoreClick = () => {
@@ -86,7 +89,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokenMap={tokenMap}
+                            tokens={tokens}
                         />
                     ))}
             </div>

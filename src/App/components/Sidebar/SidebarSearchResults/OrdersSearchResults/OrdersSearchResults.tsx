@@ -1,10 +1,13 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string;
@@ -68,21 +71,19 @@ export default function OrdersSearchResults(props: propsIF) {
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     return (

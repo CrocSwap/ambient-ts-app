@@ -2,13 +2,15 @@
 
 .sidebar_footer {
     z-index: 999;
-    width: 100vw;
+   width: 100vw !important;
     bottom: 0;
     transition: width var(--animation-speed) ease;
 
     background-color: var(--body-bg);
     height: 64px;
     display: none;
+
+   background: var(--body-bg)
 }
 .sidebar_footer button{
     background-color: transparent;

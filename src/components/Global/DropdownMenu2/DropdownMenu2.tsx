@@ -17,11 +17,12 @@ interface DropdownMenuPropsIF {
     titleWidth?: string;
     titleBackground?: string;
     logo?: string;
+    noArrow?: boolean;
 }
 
 // react functional component
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, logo } = props;
+    const { title, children, marginTop, titleWidth, logo, noArrow } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
 
@@ -80,7 +81,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         />
                     )}
                 </div>
-                <FaAngleDown />
+                {!noArrow && <FaAngleDown />}
             </div>
             {dropdownMenuContent}
         </div>

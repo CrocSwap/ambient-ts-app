@@ -1,9 +1,12 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     chainId: string;
@@ -52,26 +55,24 @@ export default function PositionsSearchResults(props: propsIF) {
         setIsShowAllEnabled,
     } = props;
 
-    const navigate = useNavigate();
-
     const {
         outsideControl: { setIsActive: setOutsideControlActive },
         outsideTab: { setSelected: setOutsideTabSelected },
     } = useContext(AppStateContext);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControlActive(true);
         setOutsideTabSelected(2);
         setCurrentPositionActive(position.positionStorageSlot);
         setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote,
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: position.base,
+            tokenB: position.quote,
+        });
     };
 
     return (

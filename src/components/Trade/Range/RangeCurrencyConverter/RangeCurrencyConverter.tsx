@@ -7,7 +7,6 @@ import {
     useEffect,
     memo,
 } from 'react';
-import { ethers } from 'ethers';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -28,16 +27,17 @@ import {
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 // interface for component props
 interface propsIF {
-    provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
@@ -68,19 +68,11 @@ interface propsIF {
     rangeSpanAboveCurrentPrice: number;
     rangeSpanBelowCurrentPrice: number;
     gasPriceInGwei: number | undefined;
-
     isRangeCopied: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     importedTokensPlus: TokenIF[];
     getRecentTokens: (
         options?: getRecentTokensParamsIF | undefined,
@@ -91,9 +83,9 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     poolExists: boolean | undefined;
-    ackTokens: ackTokensMethodsIF;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     setTokenBQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
+    tokens: tokenMethodsIF;
 }
 
 // central React functional component
@@ -133,9 +125,6 @@ function RangeCurrencyConverter(props: propsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
@@ -143,9 +132,9 @@ function RangeCurrencyConverter(props: propsIF) {
         validatedInput,
         setInput,
         searchType,
-        ackTokens,
         setTokenAQtyCoveredByWalletBalance,
         setTokenBQtyCoveredByWalletBalance,
+        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -314,8 +303,6 @@ function RangeCurrencyConverter(props: propsIF) {
                 : truncateDecimals(qtyTokenB, 2)
             : '';
 
-        // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -386,19 +373,18 @@ function RangeCurrencyConverter(props: propsIF) {
             setTokenAInputQty('');
         }
     };
-    const navigate = useNavigate();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const reverseTokens = (): void => {
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
-        navigate(
-            '/trade/range/' +
-                formSlugForPairParams(
-                    tokenPair.dataTokenA.chainId,
-                    tokenPair.dataTokenB,
-                    tokenPair.dataTokenA,
-                ),
-        );
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: tokenPair.dataTokenB.address,
+            tokenB: tokenPair.dataTokenA.address,
+        });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
@@ -746,9 +732,6 @@ function RangeCurrencyConverter(props: propsIF) {
         tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         isRangeCopied: isRangeCopied,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
@@ -756,9 +739,9 @@ function RangeCurrencyConverter(props: propsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        ackTokens: ackTokens,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
+        tokens: tokens,
     };
 
     return (

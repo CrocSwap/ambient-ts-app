@@ -1,3 +1,9 @@
+.token_amount{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .currency_quantity {
     font-weight: 200;
     font-size: 18px;
@@ -30,38 +36,13 @@
     line-height: 22px;
 }
 
-.shimmer_wrapper {
-    color: grey;
-    -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/300%
-        100%;
-    background-repeat: no-repeat;
-    background: var(--title-gradient);
-    background: var(--shimmer);
-    background: linear-gradient(
-        to right top,
-        var(--dark4),
-        var(--dark1),
-        var(--dark2)
-    );
 
-    z-index: 2;
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes loading {
-    0% {
-        transform: translateX(-150%);
-    }
-    50% {
-        transform: translateX(-60%);
-    }
-    100% {
-        transform: translateX(30%);
-    }
-}
-
-@keyframes shimmer {
-    100% {
-        -webkit-mask-position: left;
-    }
+.circular_progress{
+  
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+   margin: 8px 2rem;
+    
 }

@@ -31,7 +31,7 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
@@ -45,6 +45,8 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { Drawer } from '@mui/material';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 // import { useCandleTime } from './useCandleTime';
+import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 // interface for React functional component props
 interface propsIF {
@@ -60,7 +62,6 @@ interface propsIF {
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
-    tokenMap: Map<string, TokenIF>;
     tokenPair: TokenPairIF;
     chainId: string;
     chainData: ChainSpec;
@@ -75,12 +76,10 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
-    searchableTokens: TokenIF[];
     poolExists: boolean | undefined;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
     cachedQuerySpotPrice: SpotPriceFn;
-    tokenList: TokenIF[];
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     simpleRangeWidth: number;
     setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
@@ -96,6 +95,7 @@ interface propsIF {
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
     setIsTradeDrawerOpen: Dispatch<SetStateAction<boolean>>;
+    tokens: tokenMethodsIF;
 }
 
 // React functional component
@@ -104,13 +104,11 @@ function Trade(props: propsIF) {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
         chartSettings,
-        tokenList,
         cachedQuerySpotPrice,
         cachedPositionUpdateQuery,
         isUserLoggedIn,
         chainId,
         chainData,
-        tokenMap,
         poolPriceDisplay,
         provider,
         lastBlockNumber,
@@ -120,7 +118,6 @@ function Trade(props: propsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        searchableTokens,
         expandTradeTable,
         setExpandTradeTable,
         isShowAllEnabled,
@@ -141,9 +138,13 @@ function Trade(props: propsIF) {
         isTradeDrawerOpen,
 
         setIsTradeDrawerOpen,
+        tokens,
     } = props;
 
     const { params } = useParams();
+
+    useUrlParams(tokens, chainId, provider);
+
     const {
         chart: { isFullScreen: isChartFullScreen },
         outsideControl: { setIsActive: setOutsideControlActive },
@@ -195,7 +196,7 @@ function Trade(props: propsIF) {
         }
     }, [candleData]);
 
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+    const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick, advancedMode } = tradeData;
@@ -422,7 +423,6 @@ function Trade(props: propsIF) {
     };
 
     const tradeTabsProps = {
-        tokenList: tokenList,
         cachedQuerySpotPrice: cachedQuerySpotPrice,
         cachedPositionUpdateQuery: cachedPositionUpdateQuery,
         isUserLoggedIn: isUserLoggedIn,
@@ -442,14 +442,12 @@ function Trade(props: propsIF) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
         currentPositionActive: props.currentPositionActive,
         setCurrentPositionActive: props.setCurrentPositionActive,
-        searchableTokens: searchableTokens,
         handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
@@ -469,6 +467,8 @@ function Trade(props: propsIF) {
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
+        tokens,
+        // showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');

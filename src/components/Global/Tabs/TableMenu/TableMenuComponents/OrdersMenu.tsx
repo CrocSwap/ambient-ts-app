@@ -23,10 +23,13 @@ import {
     setShouldLimitConverterUpdate,
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 // interface for React functional component props
 interface propsIF {
@@ -47,10 +50,7 @@ interface propsIF {
 
 // React functional component
 export default function OrdersMenu(props: propsIF) {
-    const menuItemRef = useRef<HTMLDivElement>(null);
-
     const {
-        // isShowAllEnabled,
         chainData,
         tradeData,
         limitOrder,
@@ -61,7 +61,10 @@ export default function OrdersMenu(props: propsIF) {
         account,
         isBaseTokenMoneynessGreaterOrEqual,
         isOnPortfolioPage,
+        handleAccountClick,
     } = props;
+
+    const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
@@ -76,13 +79,14 @@ export default function OrdersMenu(props: propsIF) {
 
     const crocEnv = useContext(CrocEnvContext);
 
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
     let modalTitle;
 
     const dispatch = useAppDispatch();
-
-    const navigate = useNavigate();
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
@@ -138,7 +142,6 @@ export default function OrdersMenu(props: propsIF) {
                     buyQtyField.value = '';
                 }
             }
-            // }, 500);
             dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
             dispatch(setShouldLimitConverterUpdate(true));
         } else if (shouldClearNonPrimaryQty) {
@@ -148,7 +151,6 @@ export default function OrdersMenu(props: propsIF) {
                 ) as HTMLInputElement;
                 if (sellQtyField) {
                     sellQtyField.value = '';
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                 }
             } else {
                 const buyQtyField = document.getElementById(
@@ -247,7 +249,7 @@ export default function OrdersMenu(props: propsIF) {
             className={styles.option_button}
             tabIndex={0}
             aria-label='View wallet.'
-            onClick={props.handleAccountClick}
+            onClick={handleAccountClick}
         >
             Wallet
             <FiExternalLink
@@ -276,30 +278,26 @@ export default function OrdersMenu(props: propsIF) {
             </button>
         ) : null;
     const copyButton = limitOrder ? (
-        // limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
         <button
             style={{ opacity: '1' }}
-            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
                 dispatch(setLimitTick(undefined));
-                navigate(
-                    '/trade/limit/' +
-                        'chain=' +
-                        limitOrder.chainId +
-                        '&tokenA=' +
-                        (limitOrder.isBid
-                            ? limitOrder.base
-                            : limitOrder.quote) +
-                        '&tokenB=' +
-                        (limitOrder.isBid
-                            ? limitOrder.quote
-                            : limitOrder.base) +
-                        '&limitTick=' +
-                        (limitOrder.isBid
-                            ? limitOrder.bidTick
-                            : limitOrder.askTick),
+                linkGenLimit.navigate(
+                    limitOrder.isBid
+                        ? {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.base,
+                              tokenB: limitOrder.quote,
+                              limitTick: limitOrder.bidTick,
+                          }
+                        : {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.quote,
+                              tokenB: limitOrder.base,
+                              limitTick: limitOrder.askTick,
+                          },
                 );
                 handleCopyOrder();
             }}

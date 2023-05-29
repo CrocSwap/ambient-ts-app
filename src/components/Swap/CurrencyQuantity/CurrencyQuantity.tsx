@@ -9,6 +9,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
+import Spinner from '../../Global/Spinner/Spinner';
 
 interface propsIF {
     disable?: boolean;
@@ -54,7 +55,8 @@ function CurrencyQuantity(props: propsIF) {
         setDisplayValue(valueWithLeadingZero);
     }, [value]);
 
-    const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
+    // Let input rest 3/4 of a second before triggering an update
+    const debouncedLastEvent = useDebounce(lastEvent, 750);
 
     useEffect(() => {
         if (debouncedLastEvent) handleChangeEvent(debouncedLastEvent);
@@ -127,33 +129,37 @@ function CurrencyQuantity(props: propsIF) {
     };
 
     const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
+
+    const progressDisplay = (
+        <div className={styles.circular_progress}>
+            <Spinner size={24} bg='var(--dark2)' weight={2} />
+        </div>
+    );
     return (
-        <div
-            className={`${styles.token_amount} ${
-                isLoading && styles.shimmer_wrapper
-            }`}
-        >
-            <input
-                id={`${fieldId}-quantity`}
-                autoFocus={fieldId === 'sell'}
-                className={styles.currency_quantity}
-                placeholder={isLoading ? '' : '0.0'}
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                value={isLoading ? '' : displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9]*\.?[0-9]*$'
-                disabled={disable}
-            />
+        <div className={`${styles.token_amount} `}>
+            <>
+                {isLoading && progressDisplay}
+                <input
+                    id={`${fieldId}-quantity`}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='text'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern='^[0-9]*\.?[0-9]*$'
+                    disabled={disable}
+                />
+            </>
         </div>
     );
 }
