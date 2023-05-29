@@ -58,15 +58,15 @@ function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
-        room,
-        isSubscriptionsEnabled,
-        isChatOpen,
-    );
+    const { messages, getMsg, lastMessage, messageUser, sendMsg } =
+        useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
+    console.log(' .. . . ... ... . USER DATA .. . .  . . .. . . ');
+    console.log(userData);
+    console.log(' . .  . .. . .. . .. . ... .. . . .. . ..  .');
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
 
@@ -130,11 +130,12 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
-                    // eslint-disable-next-line
-                    saveUser(address, ensName).then((result: any) => {
-                        setCurrentUser(result.userData._id);
-                        return result;
-                    });
+                    // this flow moved to backend due to triggering more than one
+                    // whole of initial data fetching process will be refactored
+                    // saveUser(address, ensName).then((result: any) => {
+                    //     setCurrentUser(result.userData._id);
+                    //     return result;
+                    // });
                 } else {
                     result.userData.isModerator === true
                         ? setModerator(true)
@@ -429,6 +430,7 @@ function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            sendMsg={sendMsg}
         />
     );
 

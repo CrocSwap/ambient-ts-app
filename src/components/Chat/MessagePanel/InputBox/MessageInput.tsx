@@ -24,6 +24,13 @@ interface MessageInputProps {
     currentUser: string;
     ensName: string;
     appPage?: boolean;
+    sendMsg: (
+        currentUser: string,
+        msg: string,
+        room: string,
+        ensName: string,
+        walletID: string | null,
+    ) => void;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -67,12 +74,6 @@ export default function MessageInput(
         chat: { isOpen: isChatOpen },
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
-
-    const { sendMsg } = useChatSocket(
-        props.room.toUpperCase(),
-        isSubscriptionsEnabled,
-        isChatOpen,
-    );
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
@@ -165,7 +166,13 @@ export default function MessageInput(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMsg = async (msg: string, roomId: any) => {
         if (msg !== '' && address) {
-            sendMsg(props.currentUser, message, roomId, props.ensName, address);
+            props.sendMsg(
+                props.currentUser,
+                message,
+                roomId,
+                props.ensName,
+                address,
+            );
         }
     };
 

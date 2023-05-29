@@ -29,12 +29,14 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
+const CHAT_BACKEND = 'http://localhost:5000';
+
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
     GRAPHCACHE_URL.replace('http', 'ws');
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
+    process.env.REACT_APP_CHAT_URL || `${CHAT_BACKEND}`;
 
 export const CHAT_BACKEND_WSS_URL =
     process.env.REACT_APP_CHAT_WSS_URL ||
