@@ -17,6 +17,7 @@ import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import validateAddress from '../functions/validateAddress';
+import validateChain from '../functions/validateChain';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -67,10 +68,6 @@ export const useUrlParams = (
         requiredParams.some((param: string) => {
             paramKeys.includes(param) || redirectUser();
         });
-        const validateChain = (chn: string): boolean => {
-            const chnRegEx = new RegExp('0x[0-9a-fA-F]+$');
-            return chnRegEx.test(chn);
-        };
         const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
         paramTuples.forEach((pt: [string, string]) => validateParam(pt));
         function validateParam(p: [string, string]): void {
