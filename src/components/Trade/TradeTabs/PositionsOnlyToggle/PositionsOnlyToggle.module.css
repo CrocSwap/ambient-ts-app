@@ -100,7 +100,8 @@
     display: inline-block;
 
     background-color: white;
-    box-shadow: 0 0 1px 0.5px white, 0 0 1.5px 1px #3ca6e4, 0 0 2px 1.5px #3ca6e4;
+    box-shadow: 0 0 1px 0.5px white, 0 0 1.5px 1px #3ca6e4,
+        0 0 2px 1.5px #3ca6e4;
 
     margin: 2px 2px 0 3px;
 }

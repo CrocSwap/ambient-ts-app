@@ -59,12 +59,12 @@
     width: 100%;
 }
 
-.address_display{
-   overflow: hidden;
-   font-size: var(--body-size);
-   line-height: var(--body-lh);
-   color: var(--text2) ;
-   padding: 4px;
-   margin: 0 8px;
-   font-family: 'mono-space';
+.address_display {
+    overflow: hidden;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text2);
+    padding: 4px;
+    margin: 0 8px;
+    font-family: 'mono-space';
 }

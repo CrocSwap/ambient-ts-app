@@ -28,8 +28,8 @@
 .close_icon_container button:hover {
     color: var(--accent1);
 }
-.close_icon_container button:focus-visible{
-    outline: 1px solid var(--text1)
+.close_icon_container button:focus-visible {
+    outline: 1px solid var(--text1);
 }
 .button_container .button_content {
     width: 100%;

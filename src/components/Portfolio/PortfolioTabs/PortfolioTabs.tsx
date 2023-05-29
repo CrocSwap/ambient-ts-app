@@ -2,8 +2,6 @@ import {
     // START: Import React and Dongles
     useEffect,
     useState,
-    Dispatch,
-    SetStateAction,
     useContext,
 } from 'react';
 // START: Import JSX Functional Components
@@ -18,10 +16,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import {
-    PositionUpdateFn,
-    getPositionData,
-} from '../../../App/functions/getPositionData';
+import { getPositionData } from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
     PositionIF,
@@ -33,88 +28,48 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { ethers } from 'ethers';
 import {
     resetLookupUserDataLoadingStatus,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
-    isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
-    lastBlockNumber: number;
-    activeAccount: string;
     connectedAccountActive: boolean;
-    chainId: string;
     openTokenModal: () => void;
-    chainData: ChainSpec;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    account: string;
-    isUserLoggedIn: boolean | undefined;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation: (type: string) => void;
     fullLayoutToggle: JSX.Element;
-    cachedQuerySpotPrice: SpotPriceFn;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
     tokens: tokenMethodsIF;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        isTokenABase,
-        cachedFetchTokenPrice,
         connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
-        lastBlockNumber,
-        activeAccount,
         connectedAccountActive,
-        chainId,
         openTokenModal,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        handlePulseAnimation,
-        account,
-        setExpandTradeTable,
-        setSimpleRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
         tokens,
     } = props;
 
     const dispatch = useAppDispatch();
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -327,78 +282,36 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
-        chainId: chainId,
         tokens: tokens,
     };
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
         connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
         resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
         openTokenModal: openTokenModal,
         tokens: tokens,
     };
 
     // props for <Range/> React Element
     const rangeProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        expandTradeTable: false,
-        chainData: props.chainData,
-        isShowAllEnabled: false,
-        account: account,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
         activeAccountPositionData: activeAccountPositionData,
-        isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
-        provider: props.provider,
-        isUserLoggedIn: props.isUserLoggedIn,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        handlePulseAnimation: handlePulseAnimation,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        setExpandTradeTable: setExpandTradeTable,
         isAccountView: true,
     };
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
-        isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
-        chainData: props.chainData,
-        blockExplorer: props.chainData.blockExplorer || undefined,
-        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
-        account: account,
-        setCurrentTxActiveInTransactions:
-            props.setCurrentTxActiveInTransactions,
-        expandTradeTable: false,
         isCandleSelected: false,
-        handlePulseAnimation: handlePulseAnimation,
-        isOnPortfolioPage: true,
-        setExpandTradeTable: setExpandTradeTable,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
     };
 
@@ -406,16 +319,6 @@ export default function PortfolioTabs(props: propsIF) {
     const ordersProps = {
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
-        expandTradeTable: false,
-        chainData: props.chainData,
-        isShowAllEnabled: false,
-        account: account,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        isOnPortfolioPage: true,
-        handlePulseAnimation: handlePulseAnimation,
-        lastBlockNumber: lastBlockNumber,
-        setExpandTradeTable: setExpandTradeTable,
         isAccountView: true,
     };
 

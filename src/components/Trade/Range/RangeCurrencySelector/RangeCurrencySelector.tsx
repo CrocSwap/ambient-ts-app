@@ -6,11 +6,9 @@ import {
     useContext,
     useState,
 } from 'react';
-import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
@@ -19,22 +17,19 @@ import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
-    provider?: ethers.providers.Provider;
-    isUserLoggedIn: boolean | undefined;
-    gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
-    chainId: string;
-    tokenPair: TokenPairIF;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -64,29 +59,13 @@ interface propsIF {
     isTokenBDisabled: boolean;
     isAdvancedMode: boolean;
     disable?: boolean;
-    isRangeCopied: boolean;
     handleChangeClick: (input: string) => void;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
 }
 
 function RangeCurrencySelector(props: propsIF) {
     const {
-        provider,
-        isUserLoggedIn,
-        gasPriceInGwei,
-        tokenPair,
-        chainId,
         isTokenAEth,
         isTokenBEth,
         isWithdrawTokenAFromDexChecked,
@@ -107,28 +86,26 @@ function RangeCurrencySelector(props: propsIF) {
         isTokenBDisabled,
         isAdvancedMode,
         handleChangeClick,
-        isRangeCopied,
-        importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         tokenAorB,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
         setUserOverrodeSurplusWithdrawalDefault,
-        tokens,
     } = props;
 
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { setInput } = useContext(TokenContext);
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isTokenASelector = fieldId === 'A';
 
-    const thisToken = isTokenASelector
-        ? tokenPair.dataTokenA
-        : tokenPair.dataTokenB;
+    const thisToken = isTokenASelector ? tokenA : tokenB;
 
     const walletAndSurplusBalanceNonLocaleString = isTokenASelector
         ? tokenADexBalance && gasPriceInGwei
@@ -240,7 +217,7 @@ function RangeCurrencySelector(props: propsIF) {
         balanceLocaleString !== '0.00';
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn && shouldDisplayMaxButton) {
+        if (handleChangeClick && isUserConnected && shouldDisplayMaxButton) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
@@ -373,14 +350,14 @@ function RangeCurrencySelector(props: propsIF) {
                     className={styles.balance_column}
                     style={{ cursor: 'default' }}
                 >
-                    <div>{isUserLoggedIn ? balanceLocaleString : ''}</div>
+                    <div>{isUserConnected ? balanceLocaleString : ''}</div>
                 </div>
             </DefaultTooltip>
             {maxButton}
         </div>
     );
 
-    const swapboxBottomOrNull = !isUserLoggedIn ? (
+    const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>{walletContent}</div>
@@ -406,7 +383,7 @@ function RangeCurrencySelector(props: propsIF) {
                 </div>
                 <button
                     className={`${styles.token_select} ${
-                        isRangeCopied && styles.pulse_animation
+                        showRangePulseAnimation && styles.pulse_animation
                     }`}
                     onClick={() => openTokenModal()}
                     id='range_token_selector'
@@ -444,25 +421,14 @@ function RangeCurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
-                        importedTokensPlus={importedTokensPlus}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
-                        tokens={tokens}
                     />
                 </Modal>
             )}

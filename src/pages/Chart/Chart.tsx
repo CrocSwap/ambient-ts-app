@@ -6,9 +6,7 @@ import moment from 'moment';
 
 import {
     DetailedHTMLProps,
-    Dispatch,
     HTMLAttributes,
-    SetStateAction,
     useCallback,
     useContext,
     useEffect,
@@ -37,12 +35,7 @@ import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubC
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
-import {
-    ChainSpec,
-    pinTickLower,
-    pinTickUpper,
-    tickToPrice,
-} from '@crocswap-libs/sdk';
+import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -57,8 +50,12 @@ import {
     diffHashSig,
     diffHashSigChart,
 } from '../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../contexts/SidebarContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
+import { handlePulseAnimation } from '../../utils/functions/handlePulseAnimation';
+import { RangeContext } from '../../contexts/RangeContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -104,10 +101,7 @@ type lineValue = {
 };
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainData: ChainSpec;
     isTokenABase: boolean;
-    expandTradeTable: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityData: any;
     changeState: (
@@ -117,8 +111,6 @@ interface propsIF {
     denomInBase: boolean;
     limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
-    truncatedPoolPrice: number | undefined;
-    poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleData | undefined>
@@ -126,17 +118,10 @@ interface propsIF {
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    upBodyColor: string;
-    upBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     scaleData: any;
-    chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
@@ -149,23 +134,10 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityDepthScale: any;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
-    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    rangeSimpleRangeWidth: number | undefined;
-    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
-    repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
@@ -189,16 +161,11 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 
 export default function Chart(props: propsIF) {
     const {
-        isUserLoggedIn,
-        chainData,
         isTokenABase,
         denomInBase,
         isAdvancedModeActive,
-        poolPriceDisplay,
-        expandTradeTable,
         setIsCandleAdded,
         scaleData,
-        chainId,
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
@@ -211,26 +178,45 @@ export default function Chart(props: propsIF) {
         latest,
         setLatest,
         liquidityData,
-        handlePulseAnimation,
         liquidityScale,
         liquidityDepthScale,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setRangeSimpleRangeWidth,
-        rangeSimpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
         // candleTime,
     } = props;
+
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const chainId = chainData.chainId;
+    const { setCandleDomains, setCandleScale } = useContext(CandleContext);
+    const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
+        useContext(PoolContext);
+    const {
+        minRangePrice: minPrice,
+        setMinRangePrice: setMinPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+        simpleRangeWidth: rangeSimpleRangeWidth,
+        setSimpleRangeWidth: setRangeSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+    } = useContext(RangeContext);
+    const { expandTradeTable } = useContext(TradeTableContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [minTickForLimit, setMinTickForLimit] = useState<any>();
+    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
 
     const unparsedCandleData = unparsedData.candles;
 
@@ -239,21 +225,6 @@ export default function Chart(props: propsIF) {
     const poolAdressComb = unparsedData.pool.baseAddress
         ? unparsedData.pool.baseAddress
         : '' + unparsedData.pool.quoteAddress;
-
-    const pool = useContext(PoolContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
-
-    const {
-        candleDomains: { setValue: setCandleDomains },
-        candleScale: { setValue: setCandleScale },
-    } = useContext(CandleContext);
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const [minTickForLimit, setMinTickForLimit] = useState<any>();
-    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
 
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
@@ -268,6 +239,12 @@ export default function Chart(props: propsIF) {
     const lineBuyColor = 'rgba(205, 193, 255)';
 
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
+
+    const poolPriceDisplay = poolPriceWithoutDenom
+        ? isDenomBase && poolPriceWithoutDenom
+            ? 1 / poolPriceWithoutDenom
+            : poolPriceWithoutDenom ?? 0
+        : 0;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
     const d3CanvasCandle = useRef<HTMLInputElement | null>(null);
@@ -4266,7 +4243,7 @@ export default function Chart(props: propsIF) {
         market,
         checkLimitOrder,
         limit,
-        isUserLoggedIn,
+        isUserConnected,
         liqMode,
     ]);
 
@@ -4666,14 +4643,14 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
-                isUserLoggedIn
+                isUserConnected
                     ? sellOrderStyle === 'order_sell'
                         ? limit[0].value > poolPriceDisplay
                         : limit[0].value < poolPriceDisplay
                     : false,
             );
         }
-    }, [limit, sellOrderStyle, isUserLoggedIn, poolPriceDisplay]);
+    }, [limit, sellOrderStyle, isUserConnected, poolPriceDisplay]);
 
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
@@ -4969,16 +4946,16 @@ export default function Chart(props: propsIF) {
                         selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upBodyColor
-                            : props.downBodyColor;
+                            ? '#CDC1FF'
+                            : '#24243e';
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upBorderColor
-                            : props.downBorderColor;
+                            ? '#CDC1FF'
+                            : '#7371FC';
 
                     context.cursorStyle = 'pointer';
                 })
@@ -5202,8 +5179,8 @@ export default function Chart(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upVolumeColor
-                            : props.downVolumeColor;
+                            ? 'rgba(205,193,255, 0.5)'
+                            : 'rgba(115,113,252, 0.5)';
 
                     context.strokeStyle =
                         d.volumeUSD === null
@@ -5212,8 +5189,8 @@ export default function Chart(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upVolumeColor
-                            : props.downVolumeColor;
+                            ? 'rgba(205,193,255, 0.5)'
+                            : 'rgba(115,113,252, 0.5)';
 
                     context.cursorStyle = 'pointer';
                 })
@@ -6151,12 +6128,12 @@ export default function Chart(props: propsIF) {
             : false;
 
         const close = denomInBase
-            ? nearest.invPriceCloseExclMEVDecimalCorrected
-            : nearest.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invPriceCloseExclMEVDecimalCorrected
+            : nearest?.priceCloseExclMEVDecimalCorrected;
 
         const open = denomInBase
-            ? nearest.invPriceOpenExclMEVDecimalCorrected
-            : nearest.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invPriceOpenExclMEVDecimalCorrected
+            : nearest?.priceOpenExclMEVDecimalCorrected;
 
         const diff = Math.abs(close - open);
         const scale = Math.abs(
@@ -6214,7 +6191,7 @@ export default function Chart(props: propsIF) {
             const newData = [...prevState];
 
             newData.filter((target: any) => target.name === 'tvl')[0].value =
-                nearest.tvlData.tvl;
+                nearest?.tvlData.tvl;
 
             newData.filter(
                 (target: any) => target.name === 'feeRate',

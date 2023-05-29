@@ -1,42 +1,56 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    pageNames,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    tradeData: tradeData;
     pool: topPoolIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } =
-        props;
+    const { pool, cachedPoolStatsFetch } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
+    const tradeData = useAppSelector((state) => state.tradeData);
     const { pathname } = useLocation();
 
-    const locationSlug = useMemo(() => {
+    const navTarget = useMemo<pageNames>(() => {
+        let output: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
+            pathname.startsWith('/account') ||
+            pathname === '/'
         ) {
-            return '/trade/market';
+            output = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
-            return '/trade/limit';
+            output = 'limit';
         } else if (pathname.startsWith('/trade/range')) {
-            return '/trade/range';
+            output = 'range';
         } else {
-            console.error(
+            console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
-            return '/trade/market';
+            output = 'market';
         }
+        return output as pageNames;
     }, [pathname]);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenDynamic: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -80,15 +94,11 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={
-                locationSlug +
-                '/chain=' +
-                chainId +
-                '&tokenA=' +
-                tokenAString +
-                '&tokenB=' +
-                tokenBString
-            }
+            to={linkGenDynamic.getFullURL({
+                chain: chainId,
+                tokenA: tokenAString,
+                tokenB: tokenBString,
+            })}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

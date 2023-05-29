@@ -3,8 +3,8 @@ import { TokenIF } from '../interfaces/exports';
 
 export interface userData {
     isLoggedIn: boolean | undefined;
-    addressAtLogin: string | undefined;
-    addressCurrent: string | undefined;
+    addressAtLogin: `0x${string}` | undefined;
+    addressCurrent: `0x${string}` | undefined;
     ensNameAtLogin: string | undefined;
     ensNameCurrent: string | undefined;
     ensOrAddressTruncated: string | undefined;
@@ -44,12 +44,12 @@ export const userDataSlice = createSlice({
         setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
             state.isLoggedIn = action.payload;
         },
-        setAddressAtLogin: (state, action: PayloadAction<string>) => {
+        setAddressAtLogin: (state, action: PayloadAction<`0x${string}`>) => {
             state.addressAtLogin = action.payload;
         },
         setAddressCurrent: (
             state,
-            action: PayloadAction<string | undefined>,
+            action: PayloadAction<`0x${string}` | undefined>,
         ) => {
             state.addressCurrent = action.payload;
         },

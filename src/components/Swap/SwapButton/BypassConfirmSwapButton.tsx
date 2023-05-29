@@ -23,7 +23,6 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     initiateSwapMethod: () => void;
-    poolPriceDisplay: number | undefined;
     isDenomBase: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;

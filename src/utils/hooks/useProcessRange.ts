@@ -12,8 +12,8 @@ import moment from 'moment';
 
 export const useProcessRange = (
     position: PositionIF,
-    account: string,
-    isOnPortfolioPage?: boolean,
+    account = '',
+    isAccountView?: boolean,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -101,7 +101,7 @@ export const useProcessRange = (
 
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    if (!isOnPortfolioPage)
+    if (!isAccountView)
         isPositionInRange =
             position.positionType === 'ambient' ||
             (position.bidTick <= poolPriceInTicks &&

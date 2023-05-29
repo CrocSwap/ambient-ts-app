@@ -11,7 +11,6 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -23,50 +22,49 @@ import {
     setShouldLimitConverterUpdate,
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useNavigate } from 'react-router-dom';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
     tradeData: tradeData;
     limitOrder: LimitOrderIF;
     isOwnerActiveAccount?: boolean;
-    isShowAllEnabled: boolean;
     isOrderFilled: boolean;
-    handlePulseAnimation?: (type: string) => void;
-    account: string;
-    lastBlockNumber: number;
     showHighlightedButton: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
 }
 
 // React functional component
 export default function OrdersMenu(props: propsIF) {
-    const menuItemRef = useRef<HTMLDivElement>(null);
-
     const {
-        // isShowAllEnabled,
-        chainData,
         tradeData,
         limitOrder,
         isOrderFilled,
         isOwnerActiveAccount,
-        handlePulseAnimation,
-        lastBlockNumber,
-        account,
         isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
+        isAccountView,
+        handleAccountClick,
     } = props;
+
+    const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
-        sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const [
         isModalOpen,
@@ -74,7 +72,8 @@ export default function OrdersMenu(props: propsIF) {
         closeModal,
     ] = useModal();
 
-    const crocEnv = useContext(CrocEnvContext);
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -82,11 +81,9 @@ export default function OrdersMenu(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const navigate = useNavigate();
-
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
-        handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
+        handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
         if (IS_LOCAL_ENV) {
             console.debug({ tradeData });
@@ -138,7 +135,6 @@ export default function OrdersMenu(props: propsIF) {
                     buyQtyField.value = '';
                 }
             }
-            // }, 500);
             dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
             dispatch(setShouldLimitConverterUpdate(true));
         } else if (shouldClearNonPrimaryQty) {
@@ -148,7 +144,6 @@ export default function OrdersMenu(props: propsIF) {
                 ) as HTMLInputElement;
                 if (sellQtyField) {
                     sellQtyField.value = '';
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
                 }
             } else {
                 const buyQtyField = document.getElementById(
@@ -176,9 +171,6 @@ export default function OrdersMenu(props: propsIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -186,9 +178,6 @@ export default function OrdersMenu(props: propsIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -197,15 +186,12 @@ export default function OrdersMenu(props: propsIF) {
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
 
@@ -247,7 +233,7 @@ export default function OrdersMenu(props: propsIF) {
             className={styles.option_button}
             tabIndex={0}
             aria-label='View wallet.'
-            onClick={props.handleAccountClick}
+            onClick={handleAccountClick}
         >
             Wallet
             <FiExternalLink
@@ -276,30 +262,26 @@ export default function OrdersMenu(props: propsIF) {
             </button>
         ) : null;
     const copyButton = limitOrder ? (
-        // limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
         <button
             style={{ opacity: '1' }}
-            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
                 dispatch(setLimitTick(undefined));
-                navigate(
-                    '/trade/limit/' +
-                        'chain=' +
-                        limitOrder.chainId +
-                        '&tokenA=' +
-                        (limitOrder.isBid
-                            ? limitOrder.base
-                            : limitOrder.quote) +
-                        '&tokenB=' +
-                        (limitOrder.isBid
-                            ? limitOrder.quote
-                            : limitOrder.base) +
-                        '&limitTick=' +
-                        (limitOrder.isBid
-                            ? limitOrder.bidTick
-                            : limitOrder.askTick),
+                linkGenLimit.navigate(
+                    limitOrder.isBid
+                        ? {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.base,
+                              tokenB: limitOrder.quote,
+                              limitTick: limitOrder.bidTick,
+                          }
+                        : {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.quote,
+                              tokenB: limitOrder.base,
+                              limitTick: limitOrder.askTick,
+                          },
                 );
                 handleCopyOrder();
             }}

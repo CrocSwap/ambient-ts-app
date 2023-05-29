@@ -87,10 +87,9 @@
     border: 1px solid var(--accent1);
 }
 
-.footer button:hover, .footer button:focus-visible {
+.footer button:hover,
+.footer button:focus-visible {
     color: var(--body-bg);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
-
-

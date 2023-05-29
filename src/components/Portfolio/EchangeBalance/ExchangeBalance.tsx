@@ -12,16 +12,13 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import { motion } from 'framer-motion';
 import { SetStateAction, Dispatch, useState, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { fetchAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.Provider | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
@@ -30,31 +27,23 @@ interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     openTokenModal: () => void;
     selectedTokenDecimals: number;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
     const {
-        crocEnv,
         mainnetProvider,
-        connectedAccount,
         selectedToken,
         tokenAllowance,
         tokenWalletBalance,
         tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        lastBlockNumber,
         openTokenModal,
         fullLayoutActive,
         setFullLayoutActive,
         selectedTokenDecimals,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -133,8 +122,6 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Deposit',
             content: (
                 <Deposit
-                    crocEnv={crocEnv}
-                    connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
@@ -143,8 +130,6 @@ export default function ExchangeBalance(props: propsIF) {
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     openTokenModal={openTokenModal}
                     selectedTokenDecimals={selectedTokenDecimals}
-                    gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: depositImage,
@@ -153,20 +138,15 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Withdraw',
             content: (
                 <Withdraw
-                    crocEnv={crocEnv}
-                    connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
-                    lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
-                    gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: withdrawImage,
@@ -175,19 +155,14 @@ export default function ExchangeBalance(props: propsIF) {
             label: 'Transfer',
             content: (
                 <Transfer
-                    crocEnv={crocEnv}
-                    // connectedAccount={connectedAccount}
                     selectedToken={selectedToken}
                     tokenDexBalance={tokenDexBalance}
-                    lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
-                    gasPriceInGwei={gasPriceInGwei}
-                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                 />
             ),
             icon: transferImage,

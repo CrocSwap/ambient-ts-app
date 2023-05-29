@@ -6,6 +6,7 @@ import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface ItemRowPropsIF {
     title: string;
@@ -16,13 +17,16 @@ interface ItemRowPropsIF {
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
-    account: string;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
-    const { account, tx, isOnPortfolioPage } = props;
+    const { tx, isAccountView } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const {
         userNameToDisplay,
         txHashTruncated,
@@ -63,7 +67,7 @@ export default function TransactionDetailsSimplify(
         quoteTokenCharacter,
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, userAddress);
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -220,14 +224,14 @@ export default function TransactionDetailsSimplify(
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
             content: isSwap
-                ? isOnPortfolioPage
+                ? isAccountView
                     ? isBaseTokenMoneynessGreaterOrEqual
                         ? `${baseTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                         : `${quoteTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
                     : isDenomBase
                     ? `${quoteTokenCharacter}${truncatedDisplayPrice} / ${baseTokenSymbol}`
                     : `${baseTokenCharacter}${truncatedDisplayPrice} / ${quoteTokenSymbol}`
-                : isOnPortfolioPage
+                : isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
                     ? `${baseTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                     : `${quoteTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
@@ -260,7 +264,7 @@ export default function TransactionDetailsSimplify(
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: isOnPortfolioPage
+                content: isAccountView
                     ? isBaseTokenMoneynessGreaterOrEqual
                         ? `${baseTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
                         : `${quoteTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
