@@ -28,7 +28,9 @@ export default async (request: Request, context: Context) => {
         'ZW', // Zimbabwe
     ];
 
-    const blacklistArg = Netlify.env.NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES;
+    const blacklistArg = Netlify.env.get(
+        'NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES',
+    );
     const blacklist = OFAC_SANCTIONED.concat(
         blacklistArg ? blacklistArg.split(',') : [],
     );

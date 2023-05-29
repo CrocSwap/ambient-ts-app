@@ -3,7 +3,7 @@ import { Context } from 'https://edge.netlify.com';
 export default async (request: Request, context: Context) => {
     const GEOFENCED = [];
 
-    const geofenceArg = Netlify.env.NETLIFY_EDGE_GEOFENCED_COUNTRY_CODES;
+    const geofenceArg = Netlify.env.get('NETLIFY_EDGE_GEOFENCED_COUNTRY_CODES');
     const geofenced = GEOFENCED.concat(
         geofenceArg ? geofenceArg.split(',') : [],
     );
@@ -20,7 +20,7 @@ export default async (request: Request, context: Context) => {
 
     const path = splitArray[1] || '';
 
-    const geofencedUrl = Netlify.env.NETLIFY_EDGE_GEOFENCED_REDIRECT;
+    const geofencedUrl = Netlify.env.get('NETLIFY_EDGE_GEOFENCED_REDIRECT');
 
     if (geofencedUrl) {
         const url = new URL(geofencedUrl + path, request.url);
