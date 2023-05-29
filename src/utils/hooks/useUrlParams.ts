@@ -15,6 +15,7 @@ import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { linkGenMethodsIF, useLinkGen } from './useLinkGen';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -26,6 +27,8 @@ export const useUrlParams = (
     provider?: ethers.providers.Provider,
 ) => {
     const { params } = useParams();
+
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
     const dispatch = useAppDispatch();
 
@@ -53,14 +56,12 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
-    const areParamsValid = useMemo<boolean>(() => {
+    useEffect(() => {
         const paramsUsed: string[] = [...urlParamMap.keys()];
-        requiredParams.forEach((param: string) => {
-            paramsUsed.includes(param) || console.log('missing ' + param);
+        requiredParams.some((param: string) => {
+            paramsUsed.includes(param) || linkGenCurrent.redirect();
         });
-        return true;
     }, [urlParamMap]);
-    false && areParamsValid;
 
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 
