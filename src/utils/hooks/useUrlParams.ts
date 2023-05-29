@@ -56,8 +56,11 @@ export const useUrlParams = (
         return paramMap;
     }, [params]);
 
+    // redirect user to default params if params received are malformed
     useEffect(() => {
+        // array of keys deconstructed from params string
         const paramsUsed: string[] = [...urlParamMap.keys()];
+        // redirect user if a required param is missing
         requiredParams.some((param: string) => {
             paramsUsed.includes(param) || linkGenCurrent.redirect();
         });
