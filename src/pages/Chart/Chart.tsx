@@ -54,7 +54,6 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-import { handlePulseAnimation } from '../../utils/functions/handlePulseAnimation';
 import { RangeContext } from '../../contexts/RangeContext';
 
 declare global {
@@ -208,7 +207,8 @@ export default function Chart(props: propsIF) {
         repositionRangeWidth,
         setRepositionRangeWidth,
     } = useContext(RangeContext);
-    const { expandTradeTable } = useContext(TradeTableContext);
+    const { expandTradeTable, handlePulseAnimation } =
+        useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,

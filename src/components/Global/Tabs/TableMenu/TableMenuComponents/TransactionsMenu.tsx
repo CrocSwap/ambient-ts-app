@@ -25,12 +25,12 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
-import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -56,6 +56,8 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 

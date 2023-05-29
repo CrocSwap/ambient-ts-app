@@ -4,11 +4,8 @@ import { CandleContext } from './CandleContext';
 
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
-    setShowOrderPulseAnimation: (val: boolean) => void;
     showRangePulseAnimation: boolean;
-    setShowRangePulseAnimation: (val: boolean) => void;
     showSwapPulseAnimation: boolean;
-    setShowSwapPulseAnimation: (val: boolean) => void;
     currentPositionActive: string;
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
@@ -21,6 +18,7 @@ interface TradeTableContextIF {
     setSelectedOutsideTab: (val: number) => void;
     outsideControl: boolean;
     setOutsideControl: (val: boolean) => void;
+    handlePulseAnimation: (type: 'swap' | 'limitOrder' | 'range') => void;
 }
 
 export const TradeTableContext = createContext<TradeTableContextIF>(
@@ -58,16 +56,40 @@ export const TradeTableContextProvider = (props: {
         expandTradeTable,
         setExpandTradeTable,
         showSwapPulseAnimation,
-        setShowSwapPulseAnimation,
         showOrderPulseAnimation,
-        setShowOrderPulseAnimation,
         showRangePulseAnimation,
-        setShowRangePulseAnimation,
+        handlePulseAnimation,
         selectedOutsideTab,
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
     };
+
+    function handlePulseAnimation(type: 'swap' | 'limitOrder' | 'range') {
+        switch (type) {
+            case 'swap':
+                setShowSwapPulseAnimation(true);
+                setTimeout(() => {
+                    setShowSwapPulseAnimation(false);
+                }, 3000);
+                break;
+            case 'limitOrder':
+                setShowOrderPulseAnimation(true);
+                setTimeout(() => {
+                    setShowOrderPulseAnimation(false);
+                }, 3000);
+                break;
+            case 'range':
+                setShowRangePulseAnimation(true);
+
+                setTimeout(() => {
+                    setShowRangePulseAnimation(false);
+                }, 3000);
+                break;
+            default:
+                break;
+        }
+    }
 
     function toggleTradeTabBasedOnRoute() {
         if (!isCandleSelected) {
