@@ -26,10 +26,9 @@ export default async (request: Request, context: Context) => {
         'VE', // Venezuela
         'YE', // Yemen
         'ZW', // Zimbabwe
-        'NL', // Test - remove
     ];
 
-    const blacklistArg = Deno.env.NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES;
+    const blacklistArg = Netlify.env.NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES;
     const blacklist = OFAC_SANCTIONED.concat(
         blacklistArg ? blacklistArg.split(',') : [],
     );
