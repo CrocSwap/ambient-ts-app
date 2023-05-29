@@ -60,9 +60,11 @@ export const useUrlParams = (
     useEffect(() => {
         // array of keys deconstructed from params string
         const paramKeys: string[] = [...urlParamMap.keys()];
+        // logic to redirect a user to current URL with default params
+        const redirectUser = (): void => linkGenCurrent.redirect();
         // redirect user if a required param is missing
         requiredParams.some((param: string) => {
-            paramKeys.includes(param) || linkGenCurrent.redirect();
+            paramKeys.includes(param) || redirectUser();
         });
         const validateChain = (chn: string): boolean => {
             const chnRegEx = new RegExp('0x[0-9a-fA-F]$');
@@ -77,9 +79,9 @@ export const useUrlParams = (
         function validateParam(p: [string, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
-                validateChain(val) || linkGenCurrent.redirect();
+                validateChain(val) || redirectUser();
             } else if (key === 'tokenA' || key === 'tokenB') {
-                validateAddress(val) || linkGenCurrent.redirect();
+                validateAddress(val) || redirectUser();
             }
         }
     }, [urlParamMap]);
