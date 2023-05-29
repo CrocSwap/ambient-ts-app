@@ -9,7 +9,6 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import Modal from '../../components/Global/Modal/Modal';
-import NotFound from '../NotFound/NotFound';
 import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
