@@ -1,15 +1,12 @@
-import styles from './Home1.module.css';
-// import { Link } from 'react-router-dom';
-// import { useTranslation } from 'react-i18next';
-// import logoText from '../../../assets/images/logos/logo_text.png';
+import styles from './LandingSections.module.css';
+
 import row2Image from '../../../assets/images/newHome/row2.png';
 import row3Image from '../../../assets/images/newHome/row3.png';
 import Investors from './Investors';
 import Footer from '../../Footer/Footer';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
-export default function Home1() {
-    // const { t } = useTranslation();
 
+export default function LandingSections() {
     const secondRow = (
         <div
             className={`${styles.slide_container} ${styles.height_medium} ${styles.home2}`}
@@ -53,9 +50,7 @@ export default function Home1() {
         </div>
     );
     const fourthRow = (
-        <div
-            className={`${styles.slide_container} ${styles.height_large} ${styles.home3}`}
-        >
+        <div className={`${styles.slide_container} ${styles.height_large} `}>
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
                     <h2 tabIndex={0}>
@@ -103,8 +98,10 @@ export default function Home1() {
     return (
         <div className={styles.main_container}>
             {secondRow}
-            {thirdRow}
-            {fourthRow}
+            <div className={styles.home3}>
+                {thirdRow}
+                {fourthRow}
+            </div>
             {fifthRow}
             <Investors />
             <Footer />

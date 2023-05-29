@@ -1,0 +1,195 @@
+/* hero */
+.hero_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    height: 100%;
+
+    border-radius: var(--border-radius);
+
+    background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
+        center center;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.hero_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.hero_container img {
+    width: 250px;
+    transition: all var(--animation-speed) ease-in-out;
+}
+.ambient_background {
+    display: none;
+}
+.ambient {
+    background: var(--title-gradient);
+    font-family: var(--font-logo);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    font-size: clamp(3rem, 12vw + 1rem, 8rem);
+    font-weight: 100;
+}
+
+
+
+/* sections */
+.slide_container {
+  
+    padding-bottom: 1rem;
+}
+
+.content_container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.content_container h1,
+.faster_section h1 {
+    font-family: var(--font-logo);
+    color: var(--text1);
+    font-weight: 200;
+    font-size: 34px;
+    line-height: 50px;
+    text-align: center;
+}
+
+.row_container {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+
+
+.column_reverse {
+    flex-direction: column-reverse;
+}
+.row_container section {
+    max-width: 907px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    text-align: center;
+}
+
+.row_container h2 {
+    font-family: var(--font-logo);
+    color: var(--text1);
+    font-weight: 200;
+    font-size: 30px;
+    line-height: 38px;
+}
+
+.row_container p {
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text1);
+}
+
+@media only screen and (min-width: 768px) {
+    .slide_container {
+        padding-bottom: 0;
+        padding: 2rem 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .height_large {
+        min-height: 500px;
+    }
+
+    .height_small {
+        height: 300px;
+    }
+
+    .height_medium {
+        height: 400px;
+    }
+    .row_container {
+        flex-direction: row;
+    }
+    .content_container h1 {
+        text-align: start;
+    }
+}
+
+
+.home2{
+
+        background: linear-gradient(270deg, #000000 0%, rgba(0, 0, 0, 0) 15.44%, rgba(0, 0, 0, 0) 82.98%, #000000 100%),  url('../../../assets/images/home/home2.png') no-repeat
+        center center;
+        ;
+        mix-blend-mode: lighten;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+opacity: 0.75;
+height: 500px;
+
+
+}
+
+
+.home3{
+
+    background: 
+    linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 30.21%, rgba(0, 0, 0, 0) 72.4%, #000000 100%), 
+    url('../../../assets/images/home/home3.png') no-repeat  
+    ;
+mix-blend-mode: lighten;
+opacity: 0.75;
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+background-position: top 250px right 0;
+}
+.home4{
+
+  
+        background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 10.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../../assets/images/home/home4.png') no-repeat bottom center
+        ;
+mix-blend-mode: lighten;
+opacity: 0.75;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    border-bottom: 1px solid var(--border);
+ 
+   background-position: top 110px right 0;
+
+}
+
+@media only screen and (min-width: 768px) {
+    .hero_container img {
+        width: 500px;
+    }
+}

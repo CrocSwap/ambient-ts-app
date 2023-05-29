@@ -11,6 +11,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    outline: none;
+    border: none;
     /* font-size: 16px;
 
     line-height: 24px; */
@@ -36,6 +38,7 @@
        linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude; 
+            border-radius: 4px;
   }
 
 .nav_action_button {
