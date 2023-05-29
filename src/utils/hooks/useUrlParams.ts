@@ -75,7 +75,7 @@ export const useUrlParams = (
             return addrRegEx.test(addr);
         };
         const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
-        paramTuples.forEach((pt) => validateParam(pt));
+        paramTuples.forEach((pt: [string, string]) => validateParam(pt));
         function validateParam(p: [string, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
