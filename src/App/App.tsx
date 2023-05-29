@@ -2113,8 +2113,6 @@ export default function App() {
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
-    console.log(' from app', isSidebarDrawerOpen);
-
     return (
         <AppStateContext.Provider value={appState}>
             <UserPreferenceContext.Provider value={userPreferences}>
@@ -2123,7 +2121,11 @@ export default function App() {
                     data-theme={appState.theme.selected}
                     style={
                         !(currentLocation === '/')
-                            ? { maxHeight: '100vh', overflowY: 'hidden' }
+                            ? {
+                                  maxHeight: '100vh',
+                                  overflowY: 'hidden',
+                                  maxWidth: '100vw',
+                              }
                             : {}
                     }
                 >

@@ -56,17 +56,21 @@ height: 420px;
     font-family: var(--font-logo);
     color: var(--text1);
     font-weight: 200;
-    font-size: 30px;
-    line-height: 38px;
+
 }
 
 .row_container p {
     font-weight: 200;
-    font-size: 18px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 20px;
     color: var(--text1);
 }
-
+.row_container h2, .content_container h1,
+.faster_section h1  {
+ 
+    font-size: 20px;
+    line-height: 30px;
+}
 @media only screen and (min-width: 768px) {
     .slide_container {
         padding-bottom: 0;
@@ -75,6 +79,23 @@ height: 420px;
         align-items: center;
         display: flex;
     }
+    .row_container h2  {
+        font-size: 30px;
+        line-height: 38px;
+    }
+    .content_container h1,
+.faster_section h1 {
+
+    font-size: 34px;
+    line-height: 50px;
+
+}
+.row_container p {
+   
+    font-size: 18px;
+    line-height: 22px;
+
+}
 
     .height_large {
         height: 500px;

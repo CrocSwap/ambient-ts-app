@@ -527,7 +527,9 @@ function Trade(props: propsIF) {
                         }}
                         onClick={() => setIsTradeDrawerOpen(false)}
                     >
-                        <FaAngleDoubleLeft size={30} color='white' />
+                        <div style={{ padding: '0 1rem' }}>
+                            <FaAngleDoubleLeft size={30} color='white' />
+                        </div>
                     </div>
 
                     <Outlet
