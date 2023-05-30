@@ -1131,10 +1131,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@crocswap-libs/sdk@^0.2.69":
-  version "0.2.69"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.69.tgz#36f177804291447687a48d3c7b5a62eb94fdb9a2"
-  integrity sha512-J+BYs9IeIYPzYSgGi+f52g4EEy1cVMJXCh6c/uFLm9i7BGoLtNMiEFj/oW919f5dsIjwdSdKFauBnllRasSOmA==
+"@crocswap-libs/sdk@^0.2.70":
+  version "0.2.70"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.70.tgz#414af88bc3431ffd739434a260b54466daf564c0"
+  integrity sha512-hPYymZD4SOqZo2hnQasQsXQLoYK0F4N+6fMeBcl3YbSjFSO9vctdtaZsRhv3VC/5XITMtFCH7jH7zysk2FsNeg==
   dependencies:
     ethers "^5.5.3"
 

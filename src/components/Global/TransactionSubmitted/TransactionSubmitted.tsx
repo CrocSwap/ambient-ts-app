@@ -34,8 +34,8 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         reposition,
     } = props;
 
-    const blockExploer = getChainExplorer(chainId);
-    const txUrlOnBlockExplorer = `${blockExploer}/tx/${hash}`;
+    const blockExplorer = getChainExplorer(chainId);
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
