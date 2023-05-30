@@ -3420,7 +3420,7 @@ export default function Chart(props: propsIF) {
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
-                        d3YaxisCanvas.width / 2,
+                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
                     );
                 }
             });
