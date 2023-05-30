@@ -3563,7 +3563,7 @@ export default function Chart(props: propsIF) {
                 context.textAlign = 'center';
                 context.textBaseline = 'middle';
                 context.fillStyle = 'rgba(189,189,189,0.8)';
-                context.font = '13.425px Lexend Deca';
+                context.font = '12.425px Lexend Deca';
 
                 const yScaleTicks = yScale.ticks(factor);
 
