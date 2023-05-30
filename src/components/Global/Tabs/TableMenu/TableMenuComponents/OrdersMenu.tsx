@@ -25,12 +25,12 @@ import {
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
-import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -55,6 +55,8 @@ export default function OrdersMenu(props: propsIF) {
         isAccountView,
         handleAccountClick,
     } = props;
+
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 

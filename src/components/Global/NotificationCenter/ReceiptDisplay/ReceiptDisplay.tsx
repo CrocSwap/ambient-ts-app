@@ -54,8 +54,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         } else return '';
     }
 
-    const blockExploer = getChainExplorer(chainId);
-    const EtherscanTx = `${blockExploer}/tx/${hash}`;
+    const blockExplorer = getChainExplorer(chainId);
+    const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const dispatch = useAppDispatch();
 
