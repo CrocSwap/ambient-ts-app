@@ -140,43 +140,85 @@
 
 
 .home2{
-
-        background: linear-gradient(270deg, #000000 0%, rgba(0, 0, 0, 0) 15.44%, rgba(0, 0, 0, 0) 82.98%, #000000 100%),  url('../../../assets/images/home/home2.png') no-repeat
-        center center;
+/* 
+        background: linear-gradient(270deg, #000000 0%, rgba(0, 0, 0, 0) 1.44%, rgba(0, 0, 0, 0) 99.98%, #000000 100%),  url('../../../assets/images/home/home2.png') no-repeat
+     ;
         ;
         mix-blend-mode: lighten;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
-        background-size: cover;
-opacity: 0.75;
-height: 500px;
+        background-size: cover; */
+
+height: 400px;
+
+/* background-position: top -100px right 0; */
+
+position: relative;
 
 
 }
+.home2::before {
+    content: " ";
+   position: absolute;
+   width: 100%;
+   height:180%;
+
+   background: url('../../../assets/images/home/home2.png') no-repeat center center;
+
+   -webkit-background-size: cover;
+   -moz-background-size: cover;
+   -o-background-size: cover;
+   background-size: cover;
+   margin-top: 15rem;
+   /* background-position: top 110px  right 0; */
+ }
 
 
 .home3{
 
-    background: 
+    /* background: 
     linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 30.21%, rgba(0, 0, 0, 0) 72.4%, #000000 100%), 
-    url('../../../assets/images/home/home3.png') no-repeat  
+    url('../../../assets/images/home/home3.png') no-repeat 
     ;
 mix-blend-mode: lighten;
-opacity: 0.75;
+
 -webkit-background-size: cover;
 -moz-background-size: cover;
 -o-background-size: cover;
-background-size: cover;
-background-position: top 250px right 0;
+background-size: cover; */
+/* background-position: top 250px right 0; */
+
+position: relative;
+
+
 }
+.home3::before {
+    content: " ";
+   position: absolute;
+   width: 100%;
+   height:140%;
+
+   background: url('../../../assets/images/home/home3.png') no-repeat center center;
+
+   -webkit-background-size: cover;
+   -moz-background-size: cover;
+   -o-background-size: cover;
+   background-size: cover;
+   margin-bottom: 12rem;
+   /* background-position: top 110px  right 0; */
+ }
+
+
+
+
 .home4{
 
   
         background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 10.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../../assets/images/home/home4.png') no-repeat bottom center
         ;
 mix-blend-mode: lighten;
-opacity: 0.75;
+
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -184,9 +226,15 @@ opacity: 0.75;
     background-size: cover;
     border-bottom: 1px solid var(--border);
  
-   background-position: top 110px right 0;
+   background-position: top 130px right 0;
+
+
 
 }
+
+
+
+
 
 @media only screen and (min-width: 768px) {
     .hero_container img {

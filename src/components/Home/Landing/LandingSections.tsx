@@ -50,7 +50,9 @@ export default function LandingSections() {
         </div>
     );
     const fourthRow = (
-        <div className={`${styles.slide_container} ${styles.height_large} `}>
+        <div
+            className={`${styles.slide_container} ${styles.height_large} ${styles.home3}`}
+        >
             <div className={styles.row_container}>
                 <section className={styles.faster_section}>
                     <h2 tabIndex={0}>
@@ -98,11 +100,11 @@ export default function LandingSections() {
     return (
         <div className={styles.main_container}>
             {secondRow}
-            <div className={styles.home3}>
-                {thirdRow}
-                {fourthRow}
-            </div>
+            {thirdRow}
+            {fourthRow}
+
             {fifthRow}
+
             <Investors />
             <Footer />
         </div>

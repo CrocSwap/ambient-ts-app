@@ -2,53 +2,47 @@
     width: 100%;
     z-index: 2;
     border-radius: var(--border-radius);
-    background: #171D27;
+    background: var(--title-gradient);
     max-width: 16rem;
     max-height: 3rem;
-    /* width: 238px; */
+    padding: 1px;
+   
     height: 54px;
-    padding: 8px 32px;
+   
     display: flex;
     justify-content: center;
     align-items: center;
     outline: none;
     border: none;
-    /* font-size: 16px;
-
-    line-height: 24px; */
 
     cursor: pointer;
     text-align: center;
 
     text-decoration: none;
-    border: 1px solid var(--dark3);
 
-    position: relative;
-}
-.action_button::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+ 
+
     border-radius: var(--border-radius);
-
-    padding: 0.5px; 
-    background:linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%); 
-    -webkit-mask: 
-       linear-gradient(#fff 0 0) content-box, 
-       linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-            mask-composite: exclude; 
-            border-radius: 4px;
-  }
+}
 
 .nav_action_button {
     max-width: 10rem;
     max-height: 2rem;
     /* width: 238px; */
     height: 54px;
-    padding: 4px 16px;
-}
 
+
+}
+.content_container{
+    width: 100%;
+    height: 100%;
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .button_text {
     font-family: var(--font-logo);
     font-weight: 100;
@@ -68,14 +62,7 @@
 
 .action_button:hover,
 .action_button:focus-visible {
-    background: var(--dark2);
-    border-radius: 4px;
+
     box-shadow: var(--glow-box-shadow);
 }
 
-/* .action_button p {
-    color: var(--accent5);
-    font-weight: 100 !important;
-    font-size: 30px !important;
-    line-height: 38px !important;
-} */
