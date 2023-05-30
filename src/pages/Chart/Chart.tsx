@@ -3537,7 +3537,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis === undefined, location]);
+    }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -5371,6 +5371,15 @@ export default function Chart(props: propsIF) {
 
         if (tvlCrCanvas) {
             const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlYaxisCanvas = d3
+            .select('#tvl_chart')
+            .select('#y-axis-canvas_tvl');
+
+        if (tvlYaxisCanvas) {
+            const nd = tvlYaxisCanvas.node() as any;
             if (nd) nd.requestRedraw();
         }
     };
