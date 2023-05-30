@@ -18,7 +18,7 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
-    const EthersanTx = `${blockExplorer}/tx/${hash}`;
+    const EthersanTx = `${blockExplorer}tx/${hash}`;
 
     const etherscanButton = (
         <a

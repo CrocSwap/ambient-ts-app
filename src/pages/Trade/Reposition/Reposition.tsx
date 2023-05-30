@@ -712,7 +712,7 @@ function Reposition() {
         sendRepositionTransaction();
     };
 
-    const txUrlOnBlockExplorer = `${blockExplorer}/tx/${newRepositionTransactionHash}`;
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
     const etherscanButton = (
         <a
