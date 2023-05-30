@@ -62,6 +62,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
+    const [abortController, setAbortController] = useState<any>(null);
     const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [candleData, setCandleData] = useState<
@@ -137,6 +138,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            if (abortController) {
+                abortController.abort();
+            }
+
             const reqOptions = new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
@@ -161,6 +166,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             if (candleScale?.lastCandleDate) {
                 reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
             }
+
+            console.log(
+                '1',
+                'candleTimeLocal',
+                'time  :' + reqOptions.get('time')?.toString(),
+                'n :' + reqOptions.get('n')?.toString(),
+                'period :' + reqOptions.get('period')?.toString(),
+            );
 
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
@@ -256,8 +269,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return numDurations.toString();
     }
 
-    const fetchCandlesByNumDurations = (numDurations: number) =>
-        fetch(
+    const fetchCandlesByNumDurations = (numDurations: number) => {
+        const controller = new AbortController();
+        setAbortController(controller);
+        const signal = controller.signal;
+
+        return fetch(
             candleSeriesCacheEndpoint +
                 new URLSearchParams({
                     base: mainnetBaseTokenAddress.toLowerCase(),
@@ -277,6 +294,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                     poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
                 }),
+            { signal },
         )
             .then((response) => response?.json())
             .then((json) => {
@@ -316,19 +334,50 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                         candles: newCandles.concat(updatedCandles),
                     };
-
                     setCandleData(newCandleData);
                 }
             })
             .catch((e) => {
-                console.error(e);
+                if (e.name === 'AbortError') {
+                    console.log('Request cancelled');
+                } else {
+                    console.error(e);
+                }
                 setIsCandleDataNull(false);
                 // setExpandTradeTable(false);
             });
+    };
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
+
+            const a = new URLSearchParams({
+                base: mainnetBaseTokenAddress.toLowerCase(),
+                quote: mainnetQuoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                period: candleTimeLocal.toString(),
+                time: minTimeMemo ? minTimeMemo.toString() : '0',
+                // time: debouncedBoundary.toString(),
+                n: capNumDurations(numDurationsNeeded),
+                // page: '0', // nonnegative integer
+                chainId: mktDataChainId(chainData.chainId),
+                dex: 'all',
+                poolStats: 'true',
+                concise: 'true',
+                poolStatsChainIdOverride: chainData.chainId,
+                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+            });
+
+            console.log(
+                '2',
+                'fetchCandlesByNumDurations',
+                'time  :' + a.get('time')?.toString(),
+                'n :' + a.get('n')?.toString(),
+                'period :' + a.get('period')?.toString(),
+            );
         }
     }, [numDurationsNeeded]);
 

@@ -477,7 +477,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, isAdvancedModeActive]);
+    }, [minPrice, maxPrice, isAdvancedModeActive, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -5009,7 +5009,7 @@ export default function Chart(props: propsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [unparsedCandleData, candlestick, unparsedData, unparsedCandleData]);
+    }, [unparsedCandleData, candlestick, unparsedData]);
 
     useEffect(() => {
         if (d3CanvasCandle) {
