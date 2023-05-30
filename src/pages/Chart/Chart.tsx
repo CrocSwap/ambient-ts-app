@@ -6175,7 +6175,8 @@ export default function Chart(props: propsIF) {
                 : nearest?.time * 1000;
 
         if (!isLineDrag) {
-            // setIsMouseMoveCrosshair(true);
+            setIsMouseMoveCrosshair(true);
+            setCrosshairActive('chart');
 
             setCrosshairData([
                 {
@@ -6623,8 +6624,6 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
-                    setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,
@@ -6635,6 +6634,9 @@ export default function Chart(props: propsIF) {
                         _selectedDate,
                         nearest,
                     );
+
+                    setCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
 
                     if (
                         (location.pathname.includes('range') ||
