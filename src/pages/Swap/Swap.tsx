@@ -160,7 +160,6 @@ function Swap(props: propsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
@@ -189,7 +188,6 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -243,7 +241,6 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -464,12 +461,9 @@ function Swap(props: propsIF) {
         isDenomBase: tradeData.isDenomBase,
         baseTokenSymbol: tradeData.baseToken.symbol,
         quoteTokenSymbol: tradeData.quoteToken.symbol,
-        priceImpact: priceImpact,
         initiateSwapMethod: initiateSwap,
-        onClose: handleModalClose,
         newSwapTransactionHash: newSwapTransactionHash,
         txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         resetConfirmation: resetConfirmation,
@@ -480,7 +474,6 @@ function Swap(props: propsIF) {
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
         setNewSwapTransactionHash: setNewSwapTransactionHash,
-        currentPendingTransactionsArray: currentPendingTransactionsArray,
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
@@ -756,7 +749,6 @@ function Swap(props: propsIF) {
                             liquidityProviderFeeString={
                                 liquidityProviderFeeString
                             }
-                            quoteTokenIsBuy={true}
                             swapGasPriceinDollars={swapGasPriceinDollars}
                             isOnTradeRoute={isOnTradeRoute}
                         />
@@ -852,10 +844,7 @@ function Swap(props: propsIF) {
                     </ContentContainer>
                     {confirmSwapModalOrNull}
                     {isRelativeModalOpen && (
-                        <RelativeModal
-                            onClose={closeRelativeModal}
-                            title='Relative Modal'
-                        >
+                        <RelativeModal onClose={closeRelativeModal}>
                             You are about to do something that will lose you a
                             lot of money. If you think you are smarter than the
                             awesome team that programmed this, press dismiss.

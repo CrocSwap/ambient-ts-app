@@ -4,10 +4,8 @@ import styles from './TransferAddressInput.module.css';
 interface TransferAddressInputProps {
     fieldId: string;
     setTransferToAddress: Dispatch<SetStateAction<string | undefined>>;
-    sellToken?: boolean;
     disable?: boolean;
     sendToAddress: string | undefined;
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function TransferAddressInput(props: TransferAddressInputProps) {

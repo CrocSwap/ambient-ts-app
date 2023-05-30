@@ -2,14 +2,12 @@ import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    tokens: tokenMethodsIF;
 }
 
 export default function Wallet(props: propsIF) {
@@ -17,7 +15,6 @@ export default function Wallet(props: propsIF) {
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        tokens,
     } = props;
 
     const userTokens = connectedAccountActive
@@ -37,11 +34,7 @@ export default function Wallet(props: propsIF) {
             <WalletHeader />
             <div className={styles.item_container}>
                 {userTokens.map((token) => (
-                    <WalletCard
-                        key={JSON.stringify(token)}
-                        token={token}
-                        tokens={tokens}
-                    />
+                    <WalletCard key={JSON.stringify(token)} token={token} />
                 ))}
             </div>
         </div>

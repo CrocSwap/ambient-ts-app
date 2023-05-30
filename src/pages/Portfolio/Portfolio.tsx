@@ -5,7 +5,7 @@ import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components
-import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
+import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import Modal from '../../components/Global/Modal/Modal';

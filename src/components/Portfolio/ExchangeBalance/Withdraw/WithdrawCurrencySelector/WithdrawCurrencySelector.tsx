@@ -10,9 +10,6 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 interface propsIF {
     fieldId: string;
     onClick: () => void;
-    isSendToAddressChecked: boolean;
-    setIsSendToAddressChecked: Dispatch<SetStateAction<boolean>>;
-    sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
     setWithdrawQty: Dispatch<SetStateAction<string | undefined>>;

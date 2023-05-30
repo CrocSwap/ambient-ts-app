@@ -9,7 +9,6 @@ interface priceInputProps {
     title: string;
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    // onFocus: () => void;
     onBlur: () => void;
     increaseTick: () => void;
     decreaseTick: () => void;

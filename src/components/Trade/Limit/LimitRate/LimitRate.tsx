@@ -19,12 +19,8 @@ interface propsIF {
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     fieldId: string;
-    sellToken?: boolean;
     isSellTokenBase: boolean;
     disable?: boolean;
-    reverseTokens: () => void;
-    // onBlur: () => void;
-    limitTickDisplayPrice: number;
 }
 
 export default function LimitRate(props: propsIF) {

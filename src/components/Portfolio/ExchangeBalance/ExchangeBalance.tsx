@@ -125,7 +125,6 @@ export default function ExchangeBalance(props: propsIF) {
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
-                    tokenDexBalance={tokenDexBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     openTokenModal={openTokenModal}
@@ -139,7 +138,6 @@ export default function ExchangeBalance(props: propsIF) {
             content: (
                 <Withdraw
                     selectedToken={selectedToken}
-                    tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}

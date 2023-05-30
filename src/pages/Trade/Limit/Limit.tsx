@@ -111,15 +111,12 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
-        setTxErrorMessage('');
     };
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -471,7 +468,6 @@ export default function Limit() {
                 console.debug(
                     'Cannot send limit order: Knockout price inside spread',
                 );
-            setTxErrorMessage('Limit inside market price');
             return;
         }
 
@@ -495,7 +491,6 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error.code);
-            setTxErrorMessage(error.message);
             setIsWaitingForWallet(false);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
@@ -885,17 +880,14 @@ export default function Limit() {
                         centeredTitle
                     >
                         <ConfirmLimitModal
-                            onClose={handleModalClose}
                             initiateLimitOrderMethod={sendLimitOrder}
                             tokenAInputQty={tokenAInputQty}
                             tokenBInputQty={tokenBInputQty}
-                            isTokenAPrimary={isTokenAPrimary}
                             insideTickDisplayPrice={endDisplayPrice}
                             newLimitOrderTransactionHash={
                                 newLimitOrderTransactionHash
                             }
                             txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
                             showConfirmation={showConfirmation}
                             setShowConfirmation={setShowConfirmation}
                             resetConfirmation={resetConfirmation}

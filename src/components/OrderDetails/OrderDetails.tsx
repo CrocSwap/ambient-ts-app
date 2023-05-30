@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useContext } from 'react';
 
 import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
-import printDomToImage from '../../utils/functions/printDomToImage';
 import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
@@ -17,7 +16,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
 }
@@ -262,14 +260,7 @@ export default function OrderDetails(props: propsIF) {
         }
     }, [lastBlock]);
 
-    const [showSettings, setShowSettings] = useState(false);
-
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
-        if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
-        }
-    };
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         { slug: 'ticks', name: 'Show ticks', checked: true },
@@ -343,11 +334,6 @@ export default function OrderDetails(props: propsIF) {
     return (
         <div className={styles.order_details_container}>
             <OrderDetailsHeader
-                limitOrder={limitOrder}
-                onClose={props.closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}

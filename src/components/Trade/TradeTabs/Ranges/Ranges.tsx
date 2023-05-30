@@ -2,16 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-    useMemo,
-    useContext,
-    memo,
-    useRef,
-} from 'react';
+import { useEffect, useState, useMemo, useContext, memo, useRef } from 'react';
 
 // START: Import JSX Components
 
@@ -50,10 +41,6 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    notOnTradeRoute?: boolean;
-    portfolio?: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     isAccountView: boolean;
 }
 
@@ -504,7 +491,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));
@@ -516,7 +502,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));

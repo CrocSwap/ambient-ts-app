@@ -1,7 +1,7 @@
-import styles from './DepositCurrencySelector.module.css';
+import styles from './TransferCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -10,26 +10,25 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 interface propsIF {
     fieldId: string;
     onClick: () => void;
-    sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setDepositQty: Dispatch<SetStateAction<string | undefined>>;
+    setTransferQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function DepositCurrencySelector(props: propsIF) {
+function TransferCurrencySelector(props: propsIF) {
     const {
         fieldId,
         disable,
         onClick,
         selectedToken,
-        setDepositQty,
+        setTransferQty,
         inputValue,
         setInputValue,
     } = props;
 
-    const qtyInput = (
+    const rateInput = (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
@@ -45,9 +44,9 @@ export default function DepositCurrencySelector(props: propsIF) {
                             event.target.value.replaceAll(',', ''),
                             selectedToken.decimals,
                         );
-                        setDepositQty(nonDisplayQty.toString());
+                        setTransferQty(nonDisplayQty.toString());
                     } else {
-                        setDepositQty(undefined);
+                        setTransferQty(undefined);
                     }
                 }}
                 value={inputValue}
@@ -67,7 +66,7 @@ export default function DepositCurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             <span className={styles.direction}>Select Token</span>
             <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>{qtyInput}</div>
+                <div className={styles.swap_input}>{rateInput}</div>
                 <DefaultTooltip
                     interactive
                     title={`${selectedToken.symbol + ':'} ${
@@ -102,3 +101,5 @@ export default function DepositCurrencySelector(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TransferCurrencySelector);

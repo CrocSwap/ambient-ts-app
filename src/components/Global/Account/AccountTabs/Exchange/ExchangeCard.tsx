@@ -1,26 +1,28 @@
 import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 
 interface propsIF {
     token?: TokenIF;
-    tokens: tokenMethodsIF;
 }
 
 export default function ExchangeCard(props: propsIF) {
-    const { token, tokens } = props;
+    const { token } = props;
+    const {
+        tokens: { getTokenByAddress },
+    } = useContext(TokenContext);
 
     const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const tokenMapKey: string = token?.address + '_' + token?.chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getTokenByAddress(token.address)
+        ? getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{

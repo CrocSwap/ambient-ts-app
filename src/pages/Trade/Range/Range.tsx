@@ -145,7 +145,6 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -483,11 +482,6 @@ function Range() {
         }
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
-    const minimumSpan =
-        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
-            ? rangeSpanAboveCurrentPrice
-            : rangeSpanBelowCurrentPrice;
-
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
@@ -563,7 +557,6 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -1016,7 +1009,6 @@ function Range() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -1350,10 +1342,8 @@ function Range() {
             <AdvancedPriceInfo
                 poolPriceDisplay={displayPriceString}
                 isTokenABase={isTokenABase}
-                minimumSpan={minimumSpan}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
-                daysInRange={daysInRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
@@ -1636,16 +1626,11 @@ function Range() {
                             maxPriceDisplay={maxPriceDisplay}
                             minPriceDisplay={minPriceDisplay}
                             sendTransaction={sendTransaction}
-                            closeModal={handleModalClose}
                             newRangeTransactionHash={newRangeTransactionHash}
-                            setNewRangeTransactionHash={
-                                setNewRangeTransactionHash
-                            }
                             resetConfirmation={resetConfirmation}
                             showConfirmation={showConfirmation}
                             setShowConfirmation={setShowConfirmation}
                             txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
                             isInRange={!isOutOfRange}
                             pinnedMinPriceDisplayTruncatedInBase={
                                 pinnedMinPriceDisplayTruncatedInBase

@@ -15,7 +15,6 @@ interface DropdownMenuPropsIF {
     children: ReactNode;
     marginTop?: string;
     titleWidth?: string;
-    titleBackground?: string;
     logo?: string;
 }
 
@@ -63,7 +62,6 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         : titleWidth
                         ? titleWidth
                         : '100px',
-                    // background: titleBackground ? titleBackground : 'transparent',
                 }}
             >
                 <div className={styles.menu_item}>

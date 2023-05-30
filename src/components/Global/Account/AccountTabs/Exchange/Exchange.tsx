@@ -2,14 +2,12 @@ import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 
 interface propsIF {
     connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    tokens: tokenMethodsIF;
 }
 
 export default function Exchange(props: propsIF) {
@@ -17,15 +15,14 @@ export default function Exchange(props: propsIF) {
         connectedAccountActive,
         connectedUserTokens,
         resolvedAddressTokens,
-        tokens,
     } = props;
 
     const ItemContent = connectedAccountActive
         ? connectedUserTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} tokens={tokens} />
+              <ExchangeCard key={idx} token={item} />
           ))
         : resolvedAddressTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} tokens={tokens} />
+              <ExchangeCard key={idx} token={item} />
           ));
 
     return (

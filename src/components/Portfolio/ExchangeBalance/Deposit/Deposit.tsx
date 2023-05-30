@@ -37,7 +37,6 @@ interface propsIF {
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
-    tokenDexBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
@@ -49,7 +48,6 @@ export default function Deposit(props: propsIF) {
         tokenAllowance,
         selectedToken,
         tokenWalletBalance,
-        // tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         openTokenModal,

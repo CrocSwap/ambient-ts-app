@@ -5,16 +5,18 @@ import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 
 interface propsIF {
     token?: TokenIF;
-    tokens: tokenMethodsIF;
 }
 
 export default function WalletCard(props: propsIF) {
-    const { token, tokens } = props;
+    const { token } = props;
+    const {
+        tokens: { getTokenByAddress },
+    } = useContext(TokenContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -24,7 +26,7 @@ export default function WalletCard(props: propsIF) {
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getTokenByAddress(token.address)
+        ? getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{

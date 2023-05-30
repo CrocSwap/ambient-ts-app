@@ -20,7 +20,6 @@ interface propsIF {
     user: string;
     bidTick: number;
     askTick: number;
-    isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -53,7 +52,6 @@ export default function RangeDetails(props: propsIF) {
         askTick,
         position,
         positionApy,
-        // isPositionInRange,
         isAmbient,
         isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -268,8 +266,6 @@ export default function RangeDetails(props: propsIF) {
     //     setControlItems(modifiedControlItems);
     // };
 
-    const [showSettings, setShowSettings] = useState(false);
-
     // const controlDisplay = showSettings ? (
     //     <div className={styles.control_display_container}>
     //         {controlItems.map((item, idx) => (
@@ -295,7 +291,6 @@ export default function RangeDetails(props: propsIF) {
                         baseTokenSymbol={props.baseTokenSymbol}
                         quoteTokenSymbol={props.quoteTokenSymbol}
                         isDenomBase={props.isDenomBase}
-                        controlItems={controlItems}
                         isAmbient={isAmbient}
                         positionApy={positionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -322,10 +317,7 @@ export default function RangeDetails(props: propsIF) {
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
-                position={position}
                 onClose={closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}

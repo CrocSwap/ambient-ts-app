@@ -40,7 +40,6 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
-    tokenWalletBalance: string;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     sendToAddress: string | undefined;
@@ -388,8 +387,6 @@ export default function Withdraw(props: propsIF) {
                 onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQtyNonDisplay}
-                isSendToAddressChecked={isSendToAddressChecked}
-                setIsSendToAddressChecked={setIsSendToAddressChecked}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}

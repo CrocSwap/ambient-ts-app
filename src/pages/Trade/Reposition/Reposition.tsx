@@ -74,12 +74,10 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const isRepositionSent = newRepositionTransactionHash !== '';
@@ -294,7 +292,6 @@ function Reposition() {
         }
         let tx;
         setTxErrorCode('');
-        setTxErrorMessage('');
 
         // resetConfirmation();
         setIsWaitingForWallet(true);
@@ -326,7 +323,6 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -655,21 +651,13 @@ function Reposition() {
 
     const confirmRepositionModalProps = {
         isPositionInRange: isPositionInRange,
-        crocEnv: crocEnv,
         position: position as PositionIF,
-        currentPoolPriceDisplay: currentPoolPriceDisplay,
-        currentPoolPriceTick: currentPoolPriceTick,
-        rangeWidthPercentage: rangeWidthPercentage,
-        onClose: handleModalClose,
         onSend: sendRepositionTransaction,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         newRepositionTransactionHash: newRepositionTransactionHash,
         resetConfirmation: resetConfirmation,
         txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
         minPriceDisplay: minPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         currentBaseQtyDisplayTruncated: currentBaseQtyDisplayTruncated,
@@ -686,11 +674,6 @@ function Reposition() {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         isTokenABase: isTokenABase,
-        // showBypassConfirm,
-        // setShowBypassConfirm,
-
-        showExtraInfo,
-        setShowExtraInfo,
     };
 
     const bypassConfirmRepositionButtonProps = {

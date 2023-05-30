@@ -3,17 +3,13 @@ import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { Dispatch, SetStateAction } from 'react';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeDetailsPropsIF {
     onClose: () => void;
     downloadAsImage: () => void;
-    showSettings: boolean;
-    setShowSettings: Dispatch<SetStateAction<boolean>>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
-    position: PositionIF;
     handleCopyPositionId(): void;
 }
 export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {

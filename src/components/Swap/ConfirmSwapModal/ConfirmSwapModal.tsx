@@ -7,7 +7,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -32,12 +31,9 @@ interface propsIF {
     isDenomBase: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    priceImpact: CrocImpact | undefined;
-    onClose: () => void;
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
     txErrorCode: string;
-    txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;

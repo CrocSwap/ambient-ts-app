@@ -22,7 +22,6 @@ interface propsIF {
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
-    quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
     displayEffectivePriceString: string;
