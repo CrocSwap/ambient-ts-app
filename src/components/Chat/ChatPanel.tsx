@@ -189,6 +189,10 @@ function ChatPanel(props: propsIF) {
         setNotification(0);
     }, [isChatOpen]);
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messageEnd.current?.scrollHeight]);
+
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
@@ -208,8 +212,7 @@ function ChatPanel(props: propsIF) {
                 messageEnd.current?.scrollHeight,
                 messageEnd.current?.scrollHeight,
             );
-        }, 1000);
-        return () => clearTimeout(timer);
+        });
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
