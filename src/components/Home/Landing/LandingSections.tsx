@@ -5,7 +5,9 @@ import row3Image from '../../../assets/images/newHome/row3.png';
 import Investors from './Investors';
 import Footer from '../../Footer/Footer';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
-
+import bg1 from '../../../assets/images/home/home2.png';
+import bg2 from '../../../assets/images/home/home3.png';
+import bg3 from '../../../assets/images/home/home4.png';
 export default function LandingSections() {
     const secondRow = (
         <div
@@ -99,6 +101,10 @@ export default function LandingSections() {
 
     return (
         <div className={styles.main_container}>
+            <img src={bg1} alt='' className={styles.bg1} />
+            <img src={bg2} alt='' className={styles.bg2} />
+            <img src={bg3} alt='' className={styles.bg3} />
+
             {secondRow}
             {thirdRow}
             {fourthRow}
