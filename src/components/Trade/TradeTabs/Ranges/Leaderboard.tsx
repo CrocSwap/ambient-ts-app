@@ -2,15 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-    memo,
-} from 'react';
-import { ethers } from 'ethers';
+import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
@@ -22,74 +14,29 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import { PositionUpdateFn } from '../../../../App/functions/getPositionData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-
-// interface for props
-interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainData: ChainSpec;
-    provider: ethers.providers.Provider | undefined;
-    account: string;
-    chainId: string;
-    isShowAllEnabled: boolean;
-    notOnTradeRoute?: boolean;
-    lastBlockNumber: number;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    portfolio?: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation?: (type: string) => void;
-    cachedQuerySpotPrice: SpotPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
-}
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 
 // react functional component
-function Leaderboard(props: propsIF) {
-    const {
-        isUserLoggedIn,
-        chainData,
-        provider,
-        chainId,
-        isShowAllEnabled,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        lastBlockNumber,
-        expandTradeTable,
-        currentPositionActive,
-        setCurrentPositionActive,
-        account,
-        handlePulseAnimation,
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        setSimpleRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-    } = props;
+function Leaderboard() {
+    const { expandTradeTable, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state?.userData,
+    );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -120,7 +67,7 @@ function Leaderboard(props: propsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
+                    if (showAllData) {
                         dispatch(updateLeaderboard(updatedPositions));
                     } else {
                         dispatch(updateLeaderboard(updatedPositions));
@@ -135,7 +82,7 @@ function Leaderboard(props: propsIF) {
             id2: topThreePositions[2]?.positionId,
         }),
         currentTimeForPositionUpdateCaching,
-        isShowAllEnabled,
+        showAllData,
     ]);
 
     // ---------------------
@@ -144,7 +91,7 @@ function Leaderboard(props: propsIF) {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
 
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
@@ -339,8 +286,6 @@ function Leaderboard(props: propsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
-            cachedQuerySpotPrice={cachedQuerySpotPrice}
-            account={account}
             key={idx}
             position={position}
             rank={
@@ -348,28 +293,12 @@ function Leaderboard(props: propsIF) {
                     (posId) => posId === position.positionId,
                 ) + 1
             }
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            isUserLoggedIn={isUserLoggedIn}
-            chainData={chainData}
-            provider={provider}
-            chainId={chainId}
-            baseTokenBalance={baseTokenBalance}
-            quoteTokenBalance={quoteTokenBalance}
-            baseTokenDexBalance={baseTokenDexBalance}
-            quoteTokenDexBalance={quoteTokenDexBalance}
-            lastBlockNumber={lastBlockNumber}
-            isOnPortfolioPage={false}
+            isAccountView={false}
             isLeaderboard={true}
             idx={idx + 1}
-            handlePulseAnimation={handlePulseAnimation}
             showPair={showPair}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            gasPriceInGwei={gasPriceInGwei}
-            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
     const mobileView = useMediaQuery('(max-width: 1200px)');

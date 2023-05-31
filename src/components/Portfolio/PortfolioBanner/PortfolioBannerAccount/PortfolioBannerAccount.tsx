@@ -6,17 +6,16 @@ import { motion } from 'framer-motion';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
-    activeAccount: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
     jazziconsToDisplay: JSX.Element | null;
-    chainData: ChainSpec;
 }
 import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -26,17 +25,19 @@ export default function PortfolioBannerAccount(
     const {
         ensName,
         resolvedAddress,
-        activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
-        chainData,
     } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-
-    const blockExplorer = chainData.blockExplorer;
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName
@@ -46,7 +47,7 @@ export default function PortfolioBannerAccount(
         ? resolvedAddress
         : ensNameAvailable
         ? truncatedAccountAddress
-        : activeAccount;
+        : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -56,19 +57,19 @@ export default function PortfolioBannerAccount(
                 ? ensName
                 : resolvedAddress
                 ? resolvedAddress
-                : activeAccount,
+                : userAddress ?? '',
         );
         const copiedData = ensNameAvailable
             ? ensName
             : resolvedAddress
             ? resolvedAddress
-            : activeAccount;
+            : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
     function handleCopyAddress() {
-        copy(resolvedAddress ? resolvedAddress : activeAccount);
-        const copiedData = resolvedAddress ? resolvedAddress : activeAccount;
+        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        const copiedData = resolvedAddress ? resolvedAddress : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
@@ -103,7 +104,7 @@ export default function PortfolioBannerAccount(
                                 size={'12px'}
                                 onClick={(e) => {
                                     handleOpenExplorer(
-                                        resolvedAddress || activeAccount,
+                                        resolvedAddress || (userAddress ?? ''),
                                     );
                                     e.stopPropagation();
                                 }}

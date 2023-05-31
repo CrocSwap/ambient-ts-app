@@ -1,13 +1,5 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    memo,
-} from 'react';
+import { useContext, useEffect, useMemo, useState, memo } from 'react';
 import {
     useLocation,
     // useNavigate,
@@ -15,7 +7,6 @@ import {
     Navigate,
 } from 'react-router-dom';
 import {
-    ChainSpec,
     CrocPositionView,
     CrocReposition,
     toDisplayPrice,
@@ -36,7 +27,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { PositionIF, TokenPairIF } from '../../../utils/interfaces/exports';
+import { PositionIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { BigNumber } from 'ethers';
@@ -56,53 +47,28 @@ import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
-import { ethers } from 'ethers';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { RangeStateContext } from '../../../contexts/RangeStateContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
-interface propsIF {
-    isDenomBase: boolean;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
-    provider: ethers.providers.Provider;
-    chainId: string;
-    isPairStable: boolean;
-    tokenPair: TokenPairIF;
-    poolPriceDisplay: number | undefined;
-    lastBlockNumber: number;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
-    chainData: ChainSpec;
-    tokens: tokenMethodsIF;
-}
-
-function Reposition(props: propsIF) {
-    const {
-        isDenomBase,
-        ambientApy,
-        dailyVol,
-        isPairStable,
-        tokenPair,
-        poolPriceDisplay,
-        lastBlockNumber,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-        chainData,
-    } = props;
-
+function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        chainData: { blockExplorer },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
-    const { setMaxRangePrice: setMaxPrice, setMinRangePrice: setMinPrice } =
-        useContext(RangeStateContext);
+    const {
+        simpleRangeWidth,
+        setSimpleRangeWidth,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
+    } = useContext(RangeContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -167,11 +133,14 @@ function Reposition(props: propsIF) {
         updateConcLiq();
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
-    const { tradeData, receiptData } = useAppSelector((state) => state);
-
-    const isTokenABase = tradeData.isTokenABase;
-
-    const currentPoolPriceNonDisplay = tradeData.poolPriceNonDisplay;
+    const {
+        tradeData: {
+            isTokenABase,
+            poolPriceNonDisplay: currentPoolPriceNonDisplay,
+            isDenomBase,
+        },
+        receiptData,
+    } = useAppSelector((state) => state);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
@@ -688,8 +657,6 @@ function Reposition(props: propsIF) {
         isPositionInRange: isPositionInRange,
         crocEnv: crocEnv,
         position: position as PositionIF,
-        ambientApy: ambientApy,
-        dailyVol: dailyVol,
         currentPoolPriceDisplay: currentPoolPriceDisplay,
         currentPoolPriceTick: currentPoolPriceTick,
         rangeWidthPercentage: rangeWidthPercentage,
@@ -700,7 +667,6 @@ function Reposition(props: propsIF) {
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         newRepositionTransactionHash: newRepositionTransactionHash,
-        tokenPair: tokenPair,
         resetConfirmation: resetConfirmation,
         txErrorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
@@ -719,9 +685,7 @@ function Reposition(props: propsIF) {
             pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
-        isDenomBase: isDenomBase,
         isTokenABase: isTokenABase,
-        poolPriceDisplayNum: poolPriceDisplay || 0,
         // showBypassConfirm,
         // setShowBypassConfirm,
 
@@ -732,7 +696,6 @@ function Reposition(props: propsIF) {
     const bypassConfirmRepositionButtonProps = {
         newRepositionTransactionHash,
         txErrorCode,
-        tokenPair,
         onSend: sendRepositionTransaction,
         resetConfirmation,
         showExtraInfo,
@@ -749,7 +712,7 @@ function Reposition(props: propsIF) {
         sendRepositionTransaction();
     };
 
-    const txUrlOnBlockExplorer = `${chainData.blockExplorer}/tx/${newRepositionTransactionHash}`;
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
     const etherscanButton = (
         <a
@@ -768,9 +731,7 @@ function Reposition(props: propsIF) {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
-                setSimpleRangeWidth={setSimpleRangeWidth}
                 positionHash={position.positionStorageSlot}
-                isPairStable={isPairStable}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>
@@ -780,8 +741,6 @@ function Reposition(props: propsIF) {
                 />
                 <RepositionPriceInfo
                     position={position}
-                    ambientApy={ambientApy}
-                    dailyVol={dailyVol}
                     currentPoolPriceDisplay={currentPoolPriceDisplay}
                     currentPoolPriceTick={currentPoolPriceTick}
                     rangeWidthPercentage={rangeWidthPercentage}
@@ -796,9 +755,6 @@ function Reposition(props: propsIF) {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    isPairStable={isPairStable}
-                    poolPriceDisplay={poolPriceDisplay}
-                    isDenomBase={isDenomBase}
                     currentMinPrice={position?.lowRangeDisplayInBase}
                     currentMaxPrice={position?.highRangeDisplayInBase}
                 />

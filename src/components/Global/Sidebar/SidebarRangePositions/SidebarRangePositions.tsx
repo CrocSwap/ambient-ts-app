@@ -1,37 +1,45 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { SetStateAction, Dispatch, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
-    isDenomBase: boolean;
     userPositions?: PositionIF[];
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
-    const {
-        chainId,
-        isDenomBase,
-        userPositions,
-        setCurrentPositionActive,
-        isUserLoggedIn,
-        setIsShowAllEnabled,
-    } = props;
+    const { userPositions } = props;
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+    const {
         sidebar: { close: closeSidebar },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -40,28 +48,25 @@ export default function SidebarRangePositions(props: propsIF) {
 
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
-        setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                pos.base +
-                '&tokenB=' +
-                pos.quote,
-        );
+        setShowAllData(false);
+        linkGenRange.navigate({
+            chain: chainId,
+            tokenA: pos.base,
+            tokenB: pos.quote,
+        });
     };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 
@@ -78,12 +83,11 @@ export default function SidebarRangePositions(props: propsIF) {
                         <SidebarRangePositionsCard
                             key={idx}
                             position={position}
-                            isDenomBase={isDenomBase}
                             handleClick={handleRangePositionClick}
                         />
                     ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

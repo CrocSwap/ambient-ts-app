@@ -418,6 +418,11 @@ function TvlSubChart(props: TvlData) {
                 .node() as any;
             if (container) container.requestRedraw();
         }
+
+        if (d3Yaxis) {
+            const container = d3.select(d3Yaxis.current).node() as any;
+            if (container) container.requestRedraw();
+        }
     };
 
     // Tvl Chart
@@ -448,6 +453,7 @@ function TvlSubChart(props: TvlData) {
                         setCrosshairActive('tvl');
                         props.setShowTooltip(true);
                         setIsMouseMoveCrosshair(true);
+                        renderCanvas();
                     },
                 );
 
@@ -466,12 +472,13 @@ function TvlSubChart(props: TvlData) {
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
-                className='tvl-canvas'
+                className='d3CanvasArea'
             ></d3fc-canvas>
 
             <d3fc-canvas
+                id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
-                className='tvl-canvas'
+                className='d3CanvasCrosshair'
             ></d3fc-canvas>
 
             <label style={{ position: 'absolute', left: '0%' }}>
@@ -483,7 +490,7 @@ function TvlSubChart(props: TvlData) {
                 )}
             </label>
             <d3fc-canvas
-                className='y-axis-canvas'
+                className='y-axis-canvas_tvl'
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,

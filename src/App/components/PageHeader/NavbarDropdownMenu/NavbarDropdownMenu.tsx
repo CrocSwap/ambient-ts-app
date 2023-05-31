@@ -7,7 +7,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -32,6 +31,10 @@ import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -40,7 +43,6 @@ interface NavbarDropdownItemPropsIF {
     goBackItem?: boolean;
     imageIcon?: string;
     onClick?: () => void;
-
     children: ReactNode;
     rightIcon?: ReactNode;
 }
@@ -49,7 +51,6 @@ interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     closeMenu?: () => void;
-    chainId: string;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -60,7 +61,8 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
     } = useContext(AppStateContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
 
     const { i18n } = useTranslation();
 
@@ -151,7 +153,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             </NavbarDropdownItem>
             <NavbarDropdownItem
                 onClick={() => {
-                    navigate('/tos');
+                    linkGenTOS.navigate();
                     closeMenu && closeMenu();
                 }}
                 leftIcon={<HiOutlineDocumentText size={20} />}

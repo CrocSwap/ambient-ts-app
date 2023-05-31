@@ -6,6 +6,7 @@
     flex-direction: column;
     padding: 1rem;
     background: var(--dark1);
+    border-radius: var(--border-radius);
 }
 
 .container h2 {

@@ -1,16 +1,10 @@
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import { ethers } from 'ethers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
-
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
-
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ChainSpec, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
@@ -19,21 +13,17 @@ import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
-    cachedQuerySpotPrice: SpotPriceFn;
-    provider: ethers.providers.Provider | undefined;
     position: PositionIF;
-    chainId: string;
     user: string;
     bidTick: number;
     askTick: number;
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
-    baseTokenDecimals: number;
     quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
     lowRangeDisplay: string;
     highRangeDisplay: string;
     isDenomBase: boolean;
@@ -42,12 +32,10 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
-    account: string;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    chainData: ChainSpec;
 }
 
 export default function RangeDetails(props: propsIF) {
@@ -55,14 +43,11 @@ export default function RangeDetails(props: propsIF) {
 
     const {
         baseTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         quoteTokenAddress,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         lowRangeDisplay,
         highRangeDisplay,
-        chainId,
         user,
         bidTick,
         askTick,
@@ -70,20 +55,24 @@ export default function RangeDetails(props: propsIF) {
         positionApy,
         // isPositionInRange,
         isAmbient,
-        cachedQuerySpotPrice,
-        account,
-        isOnPortfolioPage,
+        isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        chainData,
     } = props;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         globalModal: { close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const crocEnv = useContext(CrocEnvContext);
+    const {
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
@@ -91,10 +80,6 @@ export default function RangeDetails(props: propsIF) {
             printDomToImage(detailsRef.current);
         }
     };
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
-
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
@@ -118,9 +103,7 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
-
-    const { posHash } = useProcessRange(position, account);
+    const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -134,7 +117,6 @@ export default function RangeDetails(props: propsIF) {
             httpGraphCacheServerDomain + '/position_stats?';
         const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
-        const poolIndex = lookupChain(chainId).poolIndex;
         if (position.positionType) {
             fetch(
                 positionStatsCacheEndpoint +
@@ -265,35 +247,6 @@ export default function RangeDetails(props: propsIF) {
                 })
                 .catch(console.error);
         }
-        if (
-            crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            baseTokenDecimals &&
-            quoteTokenDecimals &&
-            lastBlockNumber !== 0
-        ) {
-            (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    chainId,
-                    lastBlockNumber,
-                );
-
-                if (spotPrice) {
-                    const newDisplayPrice = toDisplayPrice(
-                        spotPrice,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                    );
-                    if (newDisplayPrice !== poolPriceDisplay) {
-                        setPoolPriceDisplay(newDisplayPrice);
-                    }
-                }
-            })();
-        }
     }, [lastBlockNumber]);
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
@@ -330,7 +283,6 @@ export default function RangeDetails(props: propsIF) {
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        poolPriceDisplay={poolPriceDisplay}
                         usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}
@@ -357,8 +309,7 @@ export default function RangeDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
                     {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
@@ -384,11 +335,10 @@ export default function RangeDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <RangeDetailsSimplify
-                    account={account}
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
         </div>

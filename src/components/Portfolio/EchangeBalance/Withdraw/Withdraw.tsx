@@ -1,12 +1,22 @@
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 import {
     addPendingTx,
@@ -25,43 +35,38 @@ import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    connectedAccount: string;
     selectedToken: TokenIF;
     tokenWalletBalance: string;
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
     sendToAddress: string | undefined;
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 export default function Withdraw(props: propsIF) {
     const {
-        crocEnv,
-        connectedAccount,
         selectedToken,
-        // tokenAllowance,
-        // tokenWalletBalance,
         tokenDexBalance,
-        // setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        // lastBlockNumber,
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        ethMainnetUsdPrice,
-        gasPriceInGwei,
     } = props;
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -171,7 +176,7 @@ export default function Withdraw(props: propsIF) {
     ]);
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
-        if (crocEnv && withdrawQtyNonDisplay) {
+        if (crocEnv && withdrawQtyNonDisplay && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     withdrawQtyNonDisplay,
@@ -187,7 +192,7 @@ export default function Withdraw(props: propsIF) {
                 } else {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(depositQtyDisplay, connectedAccount);
+                        .withdraw(depositQtyDisplay, userAddress);
                 }
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

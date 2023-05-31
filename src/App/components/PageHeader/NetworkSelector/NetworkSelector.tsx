@@ -5,14 +5,18 @@ import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { getSupportedChainIds } from '../../../../utils/data/chains';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface NetworkSelectorPropsIF {
-    chainId: string;
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
 
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
-    const { chainId, switchNetwork } = props;
+    const { switchNetwork } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const chains = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),

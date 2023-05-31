@@ -1,83 +1,60 @@
-import {
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useRef,
-    useState,
-    useContext,
-    memo,
-} from 'react';
+import { useEffect, useRef, useState, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
 
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainData: ChainSpec;
-    provider: ethers.providers.Provider | undefined;
-    chainId: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    account: string;
-    lastBlockNumber: number;
     showPair: boolean;
     ipadView: boolean;
     showColumns: boolean;
-    isShowAllEnabled: boolean;
     position: PositionIF;
     rank?: number;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isLeaderboard?: boolean;
     idx: number;
-    handlePulseAnimation?: (type: string) => void;
-    cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 function RangesRow(props: propsIF) {
     const {
-        chainId,
-        cachedQuerySpotPrice,
-        account,
         ipadView,
         showColumns,
         showPair,
-        isShowAllEnabled,
         position,
-        currentPositionActive,
-        setCurrentPositionActive,
-        isOnPortfolioPage,
+        isAccountView,
         isLeaderboard,
-        handlePulseAnimation,
-        setSimpleRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
     } = props;
     const {
         globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        showAllData: showAllDataSelection,
+        currentPositionActive,
+        setCurrentPositionActive,
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         posHash,
@@ -106,13 +83,9 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
-    } = useProcessRange(position, account, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        provider: props.provider,
-        chainData: props.chainData,
-        chainId: chainId,
         poolIdx: position.poolIdx,
         isPositionInRange: isPositionInRange,
         isAmbient: isAmbient,
@@ -123,10 +96,6 @@ function RangesRow(props: propsIF) {
         baseTokenDecimals: position.baseDecimals,
         quoteTokenSymbol: position.quoteSymbol,
         quoteTokenDecimals: position.quoteDecimals,
-        baseTokenBalance: props.baseTokenBalance,
-        quoteTokenBalance: props.quoteTokenBalance,
-        baseTokenDexBalance: props.baseTokenDexBalance,
-        quoteTokenDexBalance: props.quoteTokenDexBalance,
         lowRangeDisplay: ambientOrMin,
         highRangeDisplay: ambientOrMax,
         baseTokenLogoURI: position.baseTokenLogoURI,
@@ -134,28 +103,19 @@ function RangesRow(props: propsIF) {
         isDenomBase: isDenomBase,
         baseTokenAddress: props.position.base,
         quoteTokenAddress: props.position.quote,
-        lastBlockNumber: props.lastBlockNumber,
         positionApy: position.apy,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
     };
 
     const rangeMenuProps = {
-        chainData: props.chainData,
         rangeDetailsProps: rangeDetailsProps,
         userMatchesConnectedAccount: userMatchesConnectedAccount,
         isPositionEmpty: isPositionEmpty,
         positionData: position,
         position: position,
-        baseTokenBalance: props.baseTokenBalance,
-        quoteTokenBalance: props.quoteTokenBalance,
-        baseTokenDexBalance: props.baseTokenDexBalance,
-        quoteTokenDexBalance: props.quoteTokenDexBalance,
-        isOnPortfolioPage: props.isOnPortfolioPage,
-        handlePulseAnimation: handlePulseAnimation,
+        isAccountView: props.isAccountView,
         isPositionInRange: isPositionInRange,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
     };
 
     const openDetailsModal = () => {
@@ -163,12 +123,11 @@ function RangesRow(props: propsIF) {
         openGlobalModal(
             <RangeDetails
                 position={position}
-                account={account}
                 {...rangeDetailsProps}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -184,7 +143,7 @@ function RangesRow(props: propsIF) {
 
     const activePositionRef = useRef(null);
 
-    const sideCharacter = isOnPortfolioPage
+    const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -224,12 +183,10 @@ function RangesRow(props: propsIF) {
     }, [currentPositionActive]);
 
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
-            : null;
+        userNameToDisplay === 'You' && showAllData ? styles.border_left : null;
 
     const usernameStyle =
-        isOwnerActiveAccount && (isShowAllEnabled || isLeaderboard)
+        isOwnerActiveAccount && (showAllData || isLeaderboard)
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
@@ -246,11 +203,11 @@ function RangesRow(props: propsIF) {
     const handleRowMouseOut = () => setHighlightRow(false);
 
     function handleWalletLinkClick() {
-        if (!isOnPortfolioPage)
+        if (!isAccountView)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
-                    loadingStatus: isOnPortfolioPage ? false : true,
+                    loadingStatus: isAccountView ? false : true,
                 }),
             );
 
@@ -264,7 +221,7 @@ function RangesRow(props: propsIF) {
     // eslint-disable-next-line
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
-        if (!isOnPortfolioPage) {
+        if (!isAccountView) {
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
@@ -305,7 +262,7 @@ function RangesRow(props: propsIF) {
         elapsedTimeString,
 
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
 
         minRangeDenomByMoneyness,
@@ -356,11 +313,9 @@ function RangesRow(props: propsIF) {
             >
                 {rankingOrNull}
                 {showPair && rangeTimeWithTooltip}
-                {isOnPortfolioPage && showPair && tokenPair}
+                {isAccountView && showPair && tokenPair}
                 {idOrNull}
-                {!showColumns && !isOnPortfolioPage && (
-                    <li>{walletWithTooltip}</li>
-                )}
+                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
                 {!showColumns && fullScreenMinDisplay}
                 {!showColumns && fullScreenMaxDisplay}
@@ -377,9 +332,7 @@ function RangesRow(props: propsIF) {
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         showHighlightedButton={showHighlightedButton}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
                         handleAccountClick={handleAccountClick}
-                        isShowAllEnabled={isShowAllEnabled}
                     />
                 </li>
             </ul>

@@ -3,66 +3,56 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import {
-    Dispatch,
-    memo,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    chainData: ChainSpec;
     tradeData: tradeData;
-    expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
     view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
-    lastBlockNumber: number;
-
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    isShowAllEnabled: boolean;
-    isOnPortfolioPage: boolean;
-    account: string;
-    handlePulseAnimation?: (type: string) => void;
+    isAccountView: boolean;
 }
 function OrderRow(props: propsIF) {
     const {
-        account,
-        chainData,
         tradeData,
         showColumns,
         ipadView,
         showPair,
         limitOrder,
-        currentPositionActive,
-        setCurrentPositionActive,
-        isShowAllEnabled,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        lastBlockNumber,
+        isAccountView,
     } = props;
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        showAllData: showAllDataSelection,
+        currentPositionActive,
+        setCurrentPositionActive,
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         posHash,
@@ -89,17 +79,17 @@ function OrderRow(props: propsIF) {
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
-    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
-        isOnPortfolioPage: isOnPortfolioPage,
+        isAccountView: isAccountView,
     };
 
     const dispatch = useAppDispatch();
 
-    const priceCharacter = isOnPortfolioPage
+    const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -107,7 +97,7 @@ function OrderRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const sideCharacter = isOnPortfolioPage
+    const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? quoteTokenCharacter
             : baseTokenCharacter
@@ -120,20 +110,20 @@ function OrderRow(props: propsIF) {
     const sellOrderStyle = sideType === 'sell' ? 'order_sell' : 'order_buy';
 
     const usernameStyle =
-        isOwnerActiveAccount && isShowAllEnabled
+        isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'username_base_color';
     // eslint-disable-next-line
     const usernameStyleModule =
-        isOwnerActiveAccount && isShowAllEnabled
+        isOwnerActiveAccount && showAllData
             ? styles.owned_tx_contrast
             : ensName
             ? styles.gradient_text
             : styles.base_color;
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
+        userNameToDisplay === 'You' && showAllData
             ? `${styles.border_left} ${sideType}_style`
             : null;
 
@@ -142,15 +132,12 @@ function OrderRow(props: propsIF) {
 
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
@@ -203,11 +190,11 @@ function OrderRow(props: propsIF) {
     }
 
     function handleWalletLinkClick() {
-        if (!isOnPortfolioPage)
+        if (!isAccountView)
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
-                    loadingStatus: isOnPortfolioPage ? false : true,
+                    loadingStatus: isAccountView ? false : true,
                 }),
             );
 
@@ -221,7 +208,7 @@ function OrderRow(props: propsIF) {
     // eslint-disable-next-line
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
-        if (!isOnPortfolioPage) {
+        if (!isAccountView) {
             dispatch(
                 setDataLoadingStatus({
                     datasetName: 'lookupUserTxData',
@@ -259,7 +246,7 @@ function OrderRow(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
-        isOnPortfolioPage,
+        isAccountView,
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
@@ -315,11 +302,9 @@ function OrderRow(props: propsIF) {
                 onKeyDown={handleKeyPress}
             >
                 {!showColumns && OrderTimeWithTooltip}
-                {isOnPortfolioPage && showPair && tokenPair}
+                {isAccountView && showPair && tokenPair}
                 {!showColumns && <li>{IDWithTooltip}</li>}
-                {!showColumns && !isOnPortfolioPage && (
-                    <li>{walletWithTooltip}</li>
-                )}
+                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
                 {!ipadView && priceDisplay}
                 {!showColumns && sideDisplay}
@@ -334,19 +319,14 @@ function OrderRow(props: propsIF) {
 
                 <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
-                        account={account}
-                        chainData={chainData}
-                        isShowAllEnabled={isShowAllEnabled}
                         tradeData={tradeData}
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        handlePulseAnimation={handlePulseAnimation}
-                        lastBlockNumber={lastBlockNumber}
                         showHighlightedButton={showHighlightedButton}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
+                        isAccountView={isAccountView}
                         handleAccountClick={handleAccountClick}
                     />
                 </li>

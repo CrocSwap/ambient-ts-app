@@ -2,41 +2,41 @@ import styles from './PoolCard.module.css';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { PoolStatsFn, get24hChange } from '../../../App/functions/getPoolStats';
+import {
+    get24hChange,
+    memoizePoolStats,
+} from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    isUserIdle: boolean;
-    tradeData: tradeData;
-    cachedQuerySpotPrice: SpotPriceFn;
-    lastBlockNumber: number;
-    chainId: string;
     pool: topPoolIF;
-    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolCard(props: propsIF) {
-    const {
-        isUserIdle,
-        lastBlockNumber,
-        chainId,
-        cachedQuerySpotPrice,
-        pool,
-        cachedPoolStatsFetch,
-    } = props;
-
-    const crocEnv = useContext(CrocEnvContext);
+    const { pool } = props;
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const userData = useAppSelector((state) => state.userData);
+
+    const cachedPoolStatsFetch = memoizePoolStats();
+    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -55,7 +55,7 @@ export default function PoolCard(props: propsIF) {
     useEffect(() => {
         if (
             isServerEnabled &&
-            !isUserIdle &&
+            !userData.isUserIdle &&
             crocEnv &&
             lastBlockNumber !== 0
         ) {
@@ -123,7 +123,13 @@ export default function PoolCard(props: propsIF) {
                 }
             })();
         }
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, chainId, crocEnv]);
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        chainId,
+        crocEnv,
+    ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -218,9 +224,14 @@ export default function PoolCard(props: propsIF) {
     };
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle) fetchPoolStats();
+        if (isServerEnabled && !userData.isUserIdle) fetchPoolStats();
         // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        shouldInvertDisplay,
+    ]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>
@@ -315,13 +326,8 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    const linkpath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        quoteAddr +
-        '&tokenB=' +
-        baseAddr;
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol
@@ -334,7 +340,11 @@ export default function PoolCard(props: propsIF) {
     return (
         <Link
             className={styles.pool_card}
-            to={linkpath}
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: quoteAddr,
+                tokenB: baseAddr,
+            })}
             tabIndex={0}
             role='presentation'
             aria-label={ariaDescription}

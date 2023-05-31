@@ -5,15 +5,16 @@ import {
     getRangeDisplay,
     getSymbols,
 } from './functions/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    isDenomBase: boolean;
     position: PositionIF;
     handleClick: (pos: PositionIF) => void;
 }
 
 export default function SidebarRangePositionsCard(props: propsIF) {
-    const { isDenomBase, position, handleClick } = props;
+    const { position, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(

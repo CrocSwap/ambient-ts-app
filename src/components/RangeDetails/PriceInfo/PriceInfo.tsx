@@ -27,7 +27,6 @@ interface IPriceInfoProps {
     quoteTokenSymbol: string;
     isAmbient: boolean;
     isDenomBase: boolean;
-    poolPriceDisplay: number;
     controlItems: ItemIF[];
     positionApy: number | undefined;
     minRangeDenomByMoneyness: string;
@@ -50,8 +49,6 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenSymbol,
         isAmbient,
         isDenomBase,
-        // poolPriceDisplay,
-        // controlItems,
         positionApy,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
