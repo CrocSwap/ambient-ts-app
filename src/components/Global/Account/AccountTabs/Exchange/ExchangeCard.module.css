@@ -18,12 +18,20 @@
     grid-template-columns: 2fr 1fr 1fr;
     align-items: center;
     height: 48px;
-}
-
-.exchange_row {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
+    padding: 0 4px;
+    border-radius: var(--border-radius);
+}
+
+
+
+.exchange_row:hover{
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--dark2);
+    cursor: pointer;
+    
 }
 
 .token_key,
