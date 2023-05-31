@@ -1,15 +1,17 @@
 .token_info {
-    display: flex;
-    flex-direction: row;
+   
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
     align-items: center;
-    gap: 3rem;
 }
 
 .token_icon {
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 4px;
+    gap: 8px;
 }
 
 .exchange_row {
@@ -50,3 +52,9 @@
     display: flex;
     justify-content: flex-end;
 }
+
+@media only screen and (min-width: 768px) {
+    .token_info{
+        width: 50%;
+    }
+    }
