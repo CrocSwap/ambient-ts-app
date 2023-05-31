@@ -575,7 +575,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setScaleForChart(unparsedCandleData, false);
-    }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
+    }, [unparsedCandleData === undefined]);
 
     // Liq Scale
     useEffect(() => {
@@ -792,7 +792,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [period, diffHashSig(unparsedCandleData)]);
+    }, [diffHashSig(tokenPair), period, diffHashSig(unparsedCandleData)]);
 
     // resetting Chart
     useEffect(() => {
