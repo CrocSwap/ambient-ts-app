@@ -29,6 +29,7 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
+    deleteMsgFromList: (id: string) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -283,11 +284,12 @@ function SentMessagePanel(props: SentMessageProps) {
     function deleteMessages(id: string) {
         console.log('deleteMessage', id);
         // eslint-disable-next-line
-        props.setIsMessageDeleted(false);
+        // props.setIsMessageDeleted(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         deleteMessage(id).then((result: any) => {
             if (result.status === 'OK') {
                 props.setIsMessageDeleted(true);
+                props.deleteMsgFromList(id);
                 return result;
             } else {
                 props.setIsMessageDeleted(false);
