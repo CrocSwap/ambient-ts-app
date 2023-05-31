@@ -1,4 +1,3 @@
-import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import styles from './Home.module.css';
@@ -15,7 +14,7 @@ export default function Home() {
                 <TopPools />
                 <Stats />
             </div>
-            <DividerDark />
+
             <LandingSections />
         </section>
     );
