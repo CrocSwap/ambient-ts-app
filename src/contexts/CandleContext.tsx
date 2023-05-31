@@ -62,7 +62,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
-    const [abortController, setAbortController] = useState<any>(null);
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
     const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [candleData, setCandleData] = useState<
@@ -166,14 +167,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             if (candleScale?.lastCandleDate) {
                 reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
             }
-
-            console.log(
-                '1',
-                'candleTimeLocal',
-                'time  :' + reqOptions.get('time')?.toString(),
-                'n :' + reqOptions.get('n')?.toString(),
-                'period :' + reqOptions.get('period')?.toString(),
-            );
 
             IS_LOCAL_ENV && console.debug('fetching new candles');
             try {
@@ -339,7 +332,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             })
             .catch((e) => {
                 if (e.name === 'AbortError') {
-                    console.log('Request cancelled');
+                    console.log('Zoom request cancelled');
                 } else {
                     console.error(e);
                 }
@@ -351,33 +344,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
-
-            const a = new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                period: candleTimeLocal.toString(),
-                time: minTimeMemo ? minTimeMemo.toString() : '0',
-                // time: debouncedBoundary.toString(),
-                n: capNumDurations(numDurationsNeeded),
-                // page: '0', // nonnegative integer
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-            });
-
-            console.log(
-                '2',
-                'fetchCandlesByNumDurations',
-                'time  :' + a.get('time')?.toString(),
-                'n :' + a.get('n')?.toString(),
-                'period :' + a.get('period')?.toString(),
-            );
         }
     }, [numDurationsNeeded]);
 

@@ -346,11 +346,9 @@ export default function Chart(props: propsIF) {
 
     // d3
 
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
+    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+        return prev.time > current.time ? prev : current;
+    });
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -6169,7 +6167,7 @@ export default function Chart(props: propsIF) {
         }
 
         const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
+            lastCandleData?.time * 1000 <=
             scaleData?.xScale.invert(event.offsetX)
                 ? scaleData?.xScale.invert(event.offsetX)
                 : nearest?.time * 1000;
