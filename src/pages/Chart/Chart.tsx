@@ -347,11 +347,9 @@ export default function Chart(props: propsIF) {
 
     // d3
 
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
+    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+        return prev.time > current.time ? prev : current;
+    });
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -478,7 +476,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, isAdvancedModeActive]);
+    }, [minPrice, maxPrice, isAdvancedModeActive, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -643,8 +641,8 @@ export default function Chart(props: propsIF) {
                 const domainRight = scaleData?.xScale.domain()[1];
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff,
-                    domainRight + diff,
+                    domainLeft + diff * 1000,
+                    domainRight + diff * 1000,
                 ]);
             } else if (firstCandle === undefined) {
                 setFirstCandle(() => {
@@ -3567,10 +3565,17 @@ export default function Chart(props: propsIF) {
 
                 const yScaleTicks = yScale.ticks(factor);
 
-                const formatTicks =
-                    yScaleTicks[0] > 99999
-                        ? formatPoolPriceAxis
-                        : formatAmountChartData;
+                let switchFormatter = false;
+
+                yScaleTicks.forEach((element: any) => {
+                    if (element > 99999) {
+                        switchFormatter = true;
+                    }
+                });
+
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
 
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
@@ -3992,14 +3997,15 @@ export default function Chart(props: propsIF) {
                     const indexValue = filteredData.findIndex(
                         (d1: any) => d1.date === d.date,
                     );
-                    if (
-                        !d.style &&
-                        indexValue !== filteredData.length - 1 &&
-                        indexValue !== 0
-                    ) {
-                        const lastData = filteredData[indexValue + 1];
-
-                        const beforeData = filteredData[indexValue - 1];
+                    if (!d.style) {
+                        const maxIndex =
+                            indexValue === filteredData.length - 1
+                                ? indexValue
+                                : indexValue + 1;
+                        const minIndex =
+                            indexValue === 0 ? indexValue : indexValue - 1;
+                        const lastData = filteredData[maxIndex];
+                        const beforeData = filteredData[minIndex];
 
                         if (
                             beforeData.style ||
@@ -4995,7 +5001,7 @@ export default function Chart(props: propsIF) {
             setCandlestick(() => canvasCandlestick);
             renderCanvasArray([d3CanvasCandle]);
         }
-    }, [scaleData, selectedDate]);
+    }, [diffHashSig(scaleData), selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5020,7 +5026,7 @@ export default function Chart(props: propsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [unparsedCandleData, candlestick, unparsedData, unparsedCandleData]);
+    }, [unparsedCandleData, candlestick, unparsedData]);
 
     useEffect(() => {
         if (d3CanvasCandle) {
@@ -6031,6 +6037,13 @@ export default function Chart(props: propsIF) {
 
                         scaleData?.yScale.domain(domain);
                     }
+
+                    renderCanvasArray([
+                        d3CanvasCandle,
+                        d3CanvasLiqAsk,
+                        d3CanvasLiqAskDepth,
+                        d3Yaxis,
+                    ]);
                 }
             }
         }
@@ -6180,7 +6193,7 @@ export default function Chart(props: propsIF) {
         }
 
         const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
+            lastCandleData?.time * 1000 <=
             scaleData?.xScale.invert(event.offsetX)
                 ? scaleData?.xScale.invert(event.offsetX)
                 : nearest?.time * 1000;
