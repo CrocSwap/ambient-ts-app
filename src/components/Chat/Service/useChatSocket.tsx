@@ -54,12 +54,12 @@ const useChatSocket = (
 
         async function getRest() {
             const data = await getMsgWithRest(room);
-            const dataRev = data.reverse();
-            setMessages(dataRev);
-            if (dataRev.length > 0) {
-                setLastMessage(dataRev[dataRev.length - 1]);
-                setLastMessageText(dataRev[dataRev.length - 1].text);
-                setMessageUser(dataRev[dataRev.length - 1].sender);
+
+            setMessages(data.reverse());
+            if (data.length > 0) {
+                setLastMessage(data[data.length - 1]);
+                setLastMessageText(data[data.length - 1].text);
+                setMessageUser(data[data.length - 1].sender);
             }
         }
 
@@ -67,17 +67,15 @@ const useChatSocket = (
 
         if (socketRef && socketRef.current) {
             socketRef.current.on('msg-recieve', (data: any) => {
+                console.log(data);
                 setMessages([...messagesRef.current, data]);
-                if (messagesRef.current[messagesRef.current.length]) {
-                    setLastMessage(
-                        messagesRef.current[messagesRef.current.length],
-                    );
-                    setLastMessageText(
-                        messagesRef.current[messagesRef.current.length].message,
-                    );
-                    setMessageUser(
-                        messagesRef.current[messagesRef.current.length].sender,
-                    );
+                if (messagesRef.current[messagesRef.current.length - 1]) {
+                    // setLastMessage(messagesRef.current[messagesRef.current.length-1]);
+                    // setLastMessageText(messagesRef.current[messagesRef.current.length-1].message);
+                    // setMessageUser(messagesRef.current[messagesRef.current.length-1].sender);
+                    setLastMessage(data);
+                    setLastMessageText(data.message);
+                    setMessageUser(data.sender);
                 }
             });
         }

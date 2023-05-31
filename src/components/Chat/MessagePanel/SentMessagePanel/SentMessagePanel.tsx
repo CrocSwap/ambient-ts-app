@@ -108,7 +108,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
-    }, [props.message]);
+    }, [props.message, props.nextMessage]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -158,7 +158,8 @@ function SentMessagePanel(props: SentMessageProps) {
             props.message.ensName === 'defaultValue' ||
             props.message.ensName === null ||
             props.message.ensName === 'null' ||
-            props.message.ensName === undefined
+            props.message.ensName === undefined ||
+            props.message.ensName === 'undefined'
         ) {
             return props.message.walletID.slice(0, 6) + '...';
         } else {
@@ -280,6 +281,7 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function deleteMessages(id: string) {
+        console.log('deleteMessage', id);
         // eslint-disable-next-line
         props.setIsMessageDeleted(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
