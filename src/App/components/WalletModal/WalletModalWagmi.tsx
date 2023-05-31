@@ -233,7 +233,7 @@ export default function WalletModalWagmi() {
             default:
                 walletsPage;
         }
-    }, [page, delayForHelpTextElapsed]);
+    }, [page, walletsPage, delayForHelpTextElapsed]);
 
     const activeTitle = useMemo(() => {
         switch (page) {
