@@ -197,18 +197,19 @@
     color: var(--text1);
     outline: none;
     border: none;
-    /* background: var(--dark2); */
     background: transparent;
 
-    width: 25px;
-    /* margin-right: 8px; */
+    width: 60px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 4px 0 4px 5px;
     max-height: 20px;
-    /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
+
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark2);
 }
 
 .max_button:hover {
