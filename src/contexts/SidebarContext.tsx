@@ -76,7 +76,7 @@ export const SidebarContextProvider = (props: {
     }
     useEffect(() => {
         toggleSidebarBasedOnRoute();
-    }, [location.pathname.includes('/trade')]);
+    }, [location.pathname.includes('/trade'), showSidebarByDefault]);
 
     useEffect(() => {
         if (lastReceiptHash) {

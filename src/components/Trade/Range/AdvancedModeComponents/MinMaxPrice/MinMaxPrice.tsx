@@ -156,12 +156,13 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     fieldId='min'
                     title='Min Price'
                     percentageDifference={minPricePercentage}
-                    handleChangeEvent={
+                    handleChangeEvent={() => undefined}
+                    onBlur={(event) => {
                         !isDenomBase
-                            ? handleMaxPriceChangeEvent
-                            : handleMinPriceChangeEvent
-                    }
-                    onBlur={lowBoundOnBlur}
+                            ? handleMaxPriceChangeEvent(event)
+                            : handleMinPriceChangeEvent(event);
+                        lowBoundOnBlur();
+                    }}
                     increaseTick={
                         !isDenomBase ? increaseLowTick : decreaseHighTick
                     }
@@ -173,12 +174,13 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     fieldId='max'
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
-                    handleChangeEvent={
+                    handleChangeEvent={() => undefined}
+                    onBlur={(event) => {
                         !isDenomBase
-                            ? handleMinPriceChangeEvent
-                            : handleMaxPriceChangeEvent
-                    }
-                    onBlur={highBoundOnBlur}
+                            ? handleMinPriceChangeEvent(event)
+                            : handleMaxPriceChangeEvent(event);
+                        highBoundOnBlur();
+                    }}
                     increaseTick={
                         !isDenomBase ? increaseHighTick : decreaseLowTick
                     }
