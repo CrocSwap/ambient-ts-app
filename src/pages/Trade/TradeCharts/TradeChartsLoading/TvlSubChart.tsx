@@ -418,6 +418,11 @@ function TvlSubChart(props: TvlData) {
                 .node() as any;
             if (container) container.requestRedraw();
         }
+
+        if (d3Yaxis) {
+            const container = d3.select(d3Yaxis.current).node() as any;
+            if (container) container.requestRedraw();
+        }
     };
 
     // Tvl Chart
@@ -485,7 +490,7 @@ function TvlSubChart(props: TvlData) {
                 )}
             </label>
             <d3fc-canvas
-                className='y-axis-canvas'
+                className='y-axis-canvas_tvl'
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
