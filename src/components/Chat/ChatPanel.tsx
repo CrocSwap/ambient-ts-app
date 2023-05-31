@@ -89,11 +89,26 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
+            console.log(
+                'messageUser: ',
+                messageUser,
+                ' currentuser: ',
+                currentUser,
+                ' lastMessage?.mentionedName === ensName ',
+                lastMessage?.mentionedName === ensName,
+            );
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
-                    lastMessage?.mentionedName === address
+                    (lastMessage?.mentionedName === address &&
+                        address !== undefined)
                 ) {
+                    console.log(
+                        'aqqq: ',
+                        lastMessage?.mentionedName === ensName ||
+                            lastMessage?.mentionedName === address,
+                    );
+                    console.log('burada set notification vaer ???');
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
@@ -189,10 +204,6 @@ function ChatPanel(props: propsIF) {
         setNotification(0);
     }, [isChatOpen]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messageEnd.current?.scrollHeight]);
-
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
@@ -213,10 +224,14 @@ function ChatPanel(props: propsIF) {
                 messageEnd.current?.scrollHeight,
             );
         });
+        setScrollDirection('Scroll Down');
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        if (0 <= e.target.scrollTop) {
+        if (
+            e.target.scrollHeight - e.target.scrollTop ===
+            e.target.clientHeight
+        ) {
             setNotification(0);
             setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
@@ -228,14 +243,13 @@ function ChatPanel(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
         if (
-            e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !==
-                messageEnd.current?.scrollHeight
+            e.target.scrollHeight - e.target.scrollTop !==
+            e.target.clientHeight
         ) {
             setScrollDirection('Scroll Up');
+        } else {
+            setNotification(0);
             setIsScrollToBottomButtonPressed(false);
-        }
-        if (0 <= messageEnd.current?.scrollTop) {
             setScrollDirection('Scroll Down');
         }
     };
