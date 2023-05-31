@@ -18,7 +18,7 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { useParams } from 'react-router-dom';
-import { fetchAddress } from '../../App/functions/fetchAddress';
+import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
@@ -225,7 +225,7 @@ function Portfolio(props: propsIF) {
         (async () => {
             if (addressFromParams && !isAddressEns && mainnetProvider) {
                 try {
-                    const ensName = await fetchAddress(
+                    const ensName = await fetchEnsAddress(
                         mainnetProvider,
                         addressFromParams,
                         chainId,

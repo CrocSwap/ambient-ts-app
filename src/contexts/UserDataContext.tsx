@@ -7,7 +7,7 @@ import { getPositionData } from '../App/functions/getPositionData';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../utils/interfaces/PositionIF';
+import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 import {
@@ -90,15 +90,17 @@ export const UserDataContextProvider = (props: {
 
                         if (userPositions && crocEnv) {
                             Promise.all(
-                                userPositions.map((position: PositionIF) => {
-                                    return getPositionData(
-                                        position,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                    );
-                                }),
+                                userPositions.map(
+                                    (position: PositionServerIF) => {
+                                        return getPositionData(
+                                            position,
+                                            tokens.tokenUniv,
+                                            crocEnv,
+                                            chainData.chainId,
+                                            lastBlockNumber,
+                                        );
+                                    },
+                                ),
                             ).then((updatedPositions) => {
                                 dispatch(
                                     setPositionsByUser({

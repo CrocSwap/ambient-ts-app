@@ -2,20 +2,16 @@
 export interface PositionIF {
     chainId: string;
     positionId: string;
-    positionStorageSlot: string;
-    merkleStorageSlot: string;
     askTick: number;
     bidTick: number;
-    id: string;
     isBid: boolean;
-    knockout: boolean;
     poolIdx: number;
     base: string;
+    quote: string;
     baseDecimals: number;
     quoteDecimals: number;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    quote: string;
     user: string;
     ensResolution: string;
     baseSymbol: string;
@@ -32,8 +28,6 @@ export interface PositionIF {
     highRangeShortDisplayInQuote: string;
     tokenAQtyDisplay: string;
     tokenBQtyDisplay: string;
-    baseTokenDecimals: number;
-    quoteTokenDecimals: number;
     positionType: string;
     positionLiqBase?: string;
     positionLiqBaseDecimalCorrected?: number;
@@ -46,7 +40,6 @@ export interface PositionIF {
     feesLiqQuoteDecimalCorrected?: number;
     feesLiqQuote?: string;
     apy: number;
-    time: number;
     timeFirstMint: number;
     latestUpdateTime: number;
     positionLiq: string;
@@ -57,5 +50,23 @@ export interface PositionIF {
     askTickPriceDecimalCorrected: number;
     askTickInvPriceDecimalCorrected: number;
     source: string;
-    tx: string;
+    mintTx: string;
+}
+
+export interface PositionServerIF {
+    chainId: string;
+    positionId: string;
+    askTick: number;
+    bidTick: number;
+    isBid: boolean;
+    poolIdx: number;
+    base: string;
+    quote: string;
+    user: string;
+    ambientSeeds?: number;
+    concLiq: number;
+    positionType: string;
+    positionLiq: string;
+    timeFirstMint: number;
+    mintTx: string;
 }

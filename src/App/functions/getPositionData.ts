@@ -1,20 +1,30 @@
-import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    CHAIN_SPECS,
+    CrocEnv,
+    tickToPrice,
+    toDisplayPrice,
+} from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { memoizeFetchContractDetails } from './fetchContractDetails';
+import { memoizeFetchEnsAddress } from './fetchAddress';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedTokenDetails = memoizeFetchContractDetails();
+const cachedEnsResolve = memoizeFetchEnsAddress();
 
 export const getPositionData = async (
-    position: PositionIF,
+    position: PositionServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position };
+    const newPosition = { ...position } as any as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;
@@ -39,8 +49,37 @@ export const getPositionData = async (
 
     newPosition.isPositionInRange = isPositionInRange;
 
-    const baseTokenDecimals = position.baseDecimals;
-    const quoteTokenDecimals = position.quoteDecimals;
+    const baseMetadata = cachedTokenDetails(
+        (await crocEnv.context).provider,
+        position.base,
+        chainId,
+    );
+    const quoteMetadata = cachedTokenDetails(
+        (await crocEnv.context).provider,
+        position.quote,
+        chainId,
+    );
+
+    const DEFAULT_DECIMALS = 18;
+    const baseTokenDecimals =
+        (await baseMetadata)?.decimals ?? DEFAULT_DECIMALS;
+    const quoteTokenDecimals =
+        (await quoteMetadata)?.decimals ?? DEFAULT_DECIMALS;
+
+    newPosition.baseDecimals = baseTokenDecimals;
+    newPosition.quoteDecimals = quoteTokenDecimals;
+
+    newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
+    newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
+
+    newPosition.ensResolution =
+        (await cachedEnsResolve(
+            (
+                await crocEnv.context
+            ).provider,
+            newPosition.user,
+            '0x1',
+        )) ?? '';
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
