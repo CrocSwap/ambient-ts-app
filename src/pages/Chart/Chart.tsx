@@ -3567,10 +3567,17 @@ export default function Chart(props: propsIF) {
 
                 const yScaleTicks = yScale.ticks(factor);
 
-                const formatTicks =
-                    yScaleTicks[0] > 99999
-                        ? formatPoolPriceAxis
-                        : formatAmountChartData;
+                let switchFormatter = false;
+
+                yScaleTicks.forEach((element: any) => {
+                    if (element > 99999) {
+                        switchFormatter = true;
+                    }
+                });
+
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
 
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
