@@ -268,24 +268,6 @@ export default function OrderDetails(props: propsIF) {
         { slug: 'value', name: 'Show value', checked: true },
     ]);
 
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) item.checked = !item.checked;
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <OrderDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
-
     const shareComponent = (
         <div ref={detailsRef}>
             <div className={styles.main_content}>

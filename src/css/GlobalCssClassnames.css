@@ -165,9 +165,6 @@ aside.emoji-picker-react {
     display: inline-flex !important;
 }
 
-.css-1idz92c-MuiCircularProgress-svg{
-   
- 
-    color: var(--title-gradient) !important 
-
+.css-1idz92c-MuiCircularProgress-svg {
+    color: var(--title-gradient) !important;
 }

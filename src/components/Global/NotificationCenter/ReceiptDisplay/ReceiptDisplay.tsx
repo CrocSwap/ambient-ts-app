@@ -124,9 +124,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     </div>
                 </div>
                 <div className={styles.row}>
-                    <p>
-                        {`${handleTxTextDisplay(status)}  ${elapsedTimeString}`}
-                    </p>
+                    <p>{`${handleTxTextDisplay(
+                        status,
+                    )}  ${elapsedTimeString}`}</p>
                     <a
                         href={EtherscanTx}
                         className={styles.action}

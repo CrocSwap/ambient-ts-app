@@ -41,7 +41,6 @@ import {
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/exports';
-import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
@@ -73,6 +72,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 function Range() {
     const {
@@ -566,14 +567,11 @@ function Range() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),

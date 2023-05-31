@@ -25,6 +25,7 @@ import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -62,6 +63,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         sellQtyString,
         buyQtyString,
     } = props;
+
     const { pool } = useContext(PoolContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
@@ -170,21 +172,6 @@ export default function ConfirmSwapModal(props: propsIF) {
             : effectivePrice
         : undefined;
 
-    const displayEffectivePriceString =
-        !effectivePriceWithDenom ||
-        effectivePriceWithDenom === Infinity ||
-        effectivePriceWithDenom === 0
-            ? '…'
-            : effectivePriceWithDenom < 2
-            ? effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{localeBuyString}</h2>
@@ -281,8 +268,12 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                            ? `${getDisplayableEffectivePriceString(
+                                  effectivePriceWithDenom,
+                              )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${getDisplayableEffectivePriceString(
+                                  effectivePriceWithDenom,
+                              )} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>
                 <div className={styles.row}>

@@ -24,7 +24,6 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import styles from './Limit.module.css';
-import { useTradeData } from '../Trade';
 import {
     useAppDispatch,
     useAppSelector,
@@ -61,6 +60,8 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 export default function Limit() {
     const {
@@ -398,14 +399,11 @@ export default function Limit() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),

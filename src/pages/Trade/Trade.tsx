@@ -20,7 +20,6 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -31,7 +30,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-// import { useCandleTime } from './useCandleTime';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -403,16 +401,6 @@ function Trade() {
             {mainContent}
         </section>
     );
-}
-
-type ContextType = {
-    tradeData: TradeDataIF;
-    navigationMenu: JSX.Element;
-    limitTickFromParams: number | null;
-};
-
-export function useTradeData() {
-    return useOutletContext<ContextType>();
 }
 
 export default memo(Trade);

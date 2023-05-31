@@ -196,7 +196,6 @@ export default function ClaimOrder(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-
         newClaimTransactionHash,
         txErrorCode,
         showConfirmation,
