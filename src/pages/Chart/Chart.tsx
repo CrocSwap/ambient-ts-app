@@ -3997,14 +3997,15 @@ export default function Chart(props: propsIF) {
                     const indexValue = filteredData.findIndex(
                         (d1: any) => d1.date === d.date,
                     );
-                    if (
-                        !d.style &&
-                        indexValue !== filteredData.length - 1 &&
-                        indexValue !== 0
-                    ) {
-                        const lastData = filteredData[indexValue + 1];
-
-                        const beforeData = filteredData[indexValue - 1];
+                    if (!d.style) {
+                        const maxIndex =
+                            indexValue === filteredData.length - 1
+                                ? indexValue
+                                : indexValue + 1;
+                        const minIndex =
+                            indexValue === 0 ? indexValue : indexValue - 1;
+                        const lastData = filteredData[maxIndex];
+                        const beforeData = filteredData[minIndex];
 
                         if (
                             beforeData.style ||
