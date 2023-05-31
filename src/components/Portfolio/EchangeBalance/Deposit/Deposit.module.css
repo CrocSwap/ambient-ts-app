@@ -61,11 +61,16 @@
     line-height: var(--body-lh);
     outline: none;
     border: none;
-    background: var(--dark1);
-    color: var(--accent1);
+    
+    color: var(--text1);
 
     width: 25px;
     margin-left: 6px;
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
+    background: transparent;
+}
+
+.max_button:hover{
+    color: var(--accent1);
 }
