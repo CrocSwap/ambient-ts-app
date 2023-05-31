@@ -347,11 +347,9 @@ export default function Chart(props: propsIF) {
 
     // d3
 
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
+    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+        return prev.time > current.time ? prev : current;
+    });
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -478,7 +476,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, isAdvancedModeActive]);
+    }, [minPrice, maxPrice, isAdvancedModeActive, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -5027,7 +5025,7 @@ export default function Chart(props: propsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [unparsedCandleData, candlestick, unparsedData, unparsedCandleData]);
+    }, [unparsedCandleData, candlestick, unparsedData]);
 
     useEffect(() => {
         if (d3CanvasCandle) {
@@ -6194,7 +6192,7 @@ export default function Chart(props: propsIF) {
         }
 
         const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
+            lastCandleData?.time * 1000 <=
             scaleData?.xScale.invert(event.offsetX)
                 ? scaleData?.xScale.invert(event.offsetX)
                 : nearest?.time * 1000;
