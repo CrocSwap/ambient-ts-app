@@ -368,16 +368,6 @@ const PageHeader = function () {
     }, []);
 
     // TODO (#1436): logo padding is problematic in mobile views
-    const yes = false;
-
-    if (yes)
-        return (
-            <div className={styles.trial}>
-                <p>logo</p>
-                {routeDisplay}
-                <p>menu</p>
-            </div>
-        );
 
     return (
         <header
