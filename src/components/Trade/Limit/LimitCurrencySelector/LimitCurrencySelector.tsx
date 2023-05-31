@@ -196,15 +196,13 @@ function LimitCurrencySelector(props: propsIF) {
             : walletAndSurplusBalanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserConnected && !isSellTokenEth) {
+        if (handleChangeClick && isUserConnected) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
 
     const maxButton =
-        isSellTokenSelector &&
-        !isSellTokenEth &&
-        balanceLocaleString !== '0.00' ? (
+        isSellTokenSelector && balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => handleMaxButtonClick()}
