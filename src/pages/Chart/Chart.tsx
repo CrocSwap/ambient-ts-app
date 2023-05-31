@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     formatAmountChartData,
     formatAmountWithoutDigit,
+    formatPoolPriceAxis,
 } from '../../utils/numbers';
 import {
     CandleData,
@@ -343,11 +344,9 @@ export default function Chart(props: propsIF) {
 
     // d3
 
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
+    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+        return prev.time > current.time ? prev : current;
+    });
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -474,7 +473,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, tradeData.advancedMode]);
+    }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -639,8 +638,8 @@ export default function Chart(props: propsIF) {
                 const domainRight = scaleData?.xScale.domain()[1];
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff,
-                    domainRight + diff,
+                    domainLeft + diff * 1000,
+                    domainRight + diff * 1000,
                 ]);
             } else if (firstCandle === undefined) {
                 setFirstCandle(() => {
@@ -707,15 +706,16 @@ export default function Chart(props: propsIF) {
     };
 
     function changeyAxisWidth() {
-        let yTickValueLength = scaleData?.yScale.ticks()[0]?.toString().length;
+        let yTickValueLength =
+            formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
         let result = false;
         scaleData?.yScale.ticks().forEach((element: any) => {
-            if (element.toString().length > 4) {
+            if (formatPoolPriceAxis(element).length > 4) {
                 result = true;
                 yTickValueLength =
-                    yTickValueLength > element.toString().length
+                    yTickValueLength > formatPoolPriceAxis(element).length - 1
                         ? yTickValueLength
-                        : element.toString().length;
+                        : formatPoolPriceAxis(element).length - 1;
             }
         });
         if (result) {
@@ -3386,13 +3386,7 @@ export default function Chart(props: propsIF) {
     // Axis's
     useEffect(() => {
         if (scaleData) {
-            const _yAxis = d3fc
-                .axisRight()
-                .scale(scaleData?.yScale)
-                .tickFormat((d: any) => {
-                    const digit = d.toString().split('.')[1]?.length;
-                    return formatAmountChartData(d, digit ? digit : 2);
-                });
+            const _yAxis = d3fc.axisRight().scale(scaleData?.yScale);
 
             setYaxis(() => {
                 return _yAxis;
@@ -3424,7 +3418,7 @@ export default function Chart(props: propsIF) {
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
-                        d3YaxisCanvas.width / 6,
+                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
                     );
                 }
             });
@@ -3474,27 +3468,32 @@ export default function Chart(props: propsIF) {
         yAxisWidth: any = 70,
         subString: number | undefined = undefined,
     ) {
-        const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
+        context.fillRect(0, y - 10, yAxisWidth + yAxisWidth / 2, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
-        context.textAlign = 'left';
+        context.textAlign = 'center';
         context.textBaseline = 'middle';
 
         if (subString) {
-            const textXAxisLength = x + context.measureText('0.0').width;
-
             const textHeight =
                 context.measureText('0.0').actualBoundingBoxAscent +
                 context.measureText('0.0').actualBoundingBoxDescent;
 
-            context.fillText('0.0', x, y);
-            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                '0.0',
+                x -
+                    context.measureText('0.0').width / 2 -
+                    context.measureText(subString).width / 2,
+                y,
+            );
+            context.fillText(subString, x, y + textHeight / 3);
             context.fillText(
                 text,
-                textXAxisLength + context.measureText(subString).width,
+                x +
+                    context.measureText('0.0').width / 2 +
+                    context.measureText(subString).width / 2,
                 y,
             );
         } else {
@@ -3503,7 +3502,7 @@ export default function Chart(props: propsIF) {
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth + rectPadding, 20);
+            context.strokeRect(1, y - 10, yAxisWidth + yAxisWidth / 2, 20);
         }
     }
 
@@ -3537,12 +3536,11 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis === undefined, location]);
+    }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
-            const tickSize = 6;
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
                 .value;
             const high = ranges.filter(
@@ -3560,12 +3558,24 @@ export default function Chart(props: propsIF) {
                 const factor = height < 500 ? 5 : height.toString().length * 2;
 
                 context.stroke();
-                context.textAlign = 'left';
+                context.textAlign = 'center';
                 context.textBaseline = 'middle';
                 context.fillStyle = 'rgba(189,189,189,0.8)';
-                context.font = '11.425px Lexend Deca';
+                context.font = '12.425px Lexend Deca';
 
                 const yScaleTicks = yScale.ticks(factor);
+
+                let switchFormatter = false;
+
+                yScaleTicks.forEach((element: any) => {
+                    if (element > 99999) {
+                        switchFormatter = true;
+                    }
+                });
+
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
 
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
@@ -3584,31 +3594,37 @@ export default function Chart(props: propsIF) {
 
                         const factor = Math.pow(10, 3 - precision.length);
 
-                        const textXAxisLength =
-                            X - tickSize + context.measureText('0.0').width;
-
                         const textHeight =
                             context.measureText('0.0').actualBoundingBoxAscent +
                             context.measureText('0.0').actualBoundingBoxDescent;
 
                         context.beginPath();
-                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            '0.0',
+                            X -
+                                context.measureText('0.0').width / 2 -
+                                context.measureText(subString).width / 2,
+                            yScale(d),
+                        );
                         context.fillText(
                             subString,
-                            textXAxisLength,
+                            X,
                             yScale(d) + textHeight / 3,
                         );
                         context.fillText(
                             factor * Number(precision),
-                            textXAxisLength +
-                                context.measureText(subString).width,
+                            X +
+                                context.measureText(factor * Number(precision))
+                                    .width /
+                                    2 +
+                                context.measureText(subString).width / 2,
                             yScale(d),
                         );
                     } else {
                         context.beginPath();
                         context.fillText(
-                            formatAmountChartData(d, digit ? digit : 2),
-                            X - tickSize,
+                            formatTicks(d, digit ? digit : 2),
+                            X,
                             yScale(d),
                         );
                     }
@@ -3618,7 +3634,7 @@ export default function Chart(props: propsIF) {
                     .toString()
                     .includes('e');
 
-                let marketTick: number | string = formatAmountChartData(
+                let marketTick: number | string = formatTicks(
                     market[0].value,
                     undefined,
                 );
@@ -3647,7 +3663,7 @@ export default function Chart(props: propsIF) {
                 createRectLabel(
                     context,
                     yScale(market[0].value),
-                    X - tickSize,
+                    X,
                     'white',
                     'black',
                     marketTick,
@@ -3677,7 +3693,7 @@ export default function Chart(props: propsIF) {
                             .toString()
                             .includes('e');
 
-                        let lowTick: number | string = formatAmountChartData(
+                        let lowTick: number | string = formatTicks(
                             low,
                             undefined,
                         );
@@ -3713,7 +3729,7 @@ export default function Chart(props: propsIF) {
                             isSameLocationMin
                                 ? sameLocationDataMin
                                 : yScale(low),
-                            X - tickSize,
+                            X,
                             low > passValue ? lineSellColor : lineBuyColor,
                             low > passValue ? 'white' : 'black',
                             lowTick,
@@ -3731,7 +3747,7 @@ export default function Chart(props: propsIF) {
                             .toString()
                             .includes('e');
 
-                        let highTick: number | string = formatAmountChartData(
+                        let highTick: number | string = formatTicks(
                             high,
                             undefined,
                         );
@@ -3768,7 +3784,7 @@ export default function Chart(props: propsIF) {
                             isSameLocationMax
                                 ? sameLocationDataMax
                                 : yScale(high),
-                            X - tickSize,
+                            X,
                             high > passValue ? lineSellColor : lineBuyColor,
                             high > passValue ? 'white' : 'black',
                             highTick,
@@ -3792,7 +3808,7 @@ export default function Chart(props: propsIF) {
                         .toString()
                         .includes('e');
 
-                    let limitTick: number | string = formatAmountChartData(
+                    let limitTick: number | string = formatTicks(
                         limit[0].value,
                         undefined,
                     );
@@ -3827,7 +3843,7 @@ export default function Chart(props: propsIF) {
                             isSameLocation
                                 ? sameLocationData
                                 : yScale(limit[0].value),
-                            X - tickSize,
+                            X,
                             sellOrderStyle === 'order_sell'
                                 ? lineSellColor
                                 : lineBuyColor,
@@ -3843,7 +3859,7 @@ export default function Chart(props: propsIF) {
                             isSameLocation
                                 ? sameLocationData
                                 : yScale(limit[0].value),
-                            X - tickSize,
+                            X,
                             '#7772FE',
                             'white',
                             limitTick,
@@ -3864,7 +3880,7 @@ export default function Chart(props: propsIF) {
                         .toString()
                         .includes('e');
 
-                    let crTick: number | string = formatAmountChartData(
+                    let crTick: number | string = formatTicks(
                         Number(crosshairData[0].y),
                         undefined,
                     );
@@ -3896,7 +3912,7 @@ export default function Chart(props: propsIF) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
-                        X - tickSize,
+                        X,
                         '#242F3F',
                         'white',
                         crTick,
@@ -3981,14 +3997,15 @@ export default function Chart(props: propsIF) {
                     const indexValue = filteredData.findIndex(
                         (d1: any) => d1.date === d.date,
                     );
-                    if (
-                        !d.style &&
-                        indexValue !== filteredData.length - 1 &&
-                        indexValue !== 0
-                    ) {
-                        const lastData = filteredData[indexValue + 1];
-
-                        const beforeData = filteredData[indexValue - 1];
+                    if (!d.style) {
+                        const maxIndex =
+                            indexValue === filteredData.length - 1
+                                ? indexValue
+                                : indexValue + 1;
+                        const minIndex =
+                            indexValue === 0 ? indexValue : indexValue - 1;
+                        const lastData = filteredData[maxIndex];
+                        const beforeData = filteredData[minIndex];
 
                         if (
                             beforeData.style ||
@@ -4987,7 +5004,7 @@ export default function Chart(props: propsIF) {
             setCandlestick(() => canvasCandlestick);
             renderCanvasArray([d3CanvasCandle]);
         }
-    }, [scaleData, selectedDate]);
+    }, [diffHashSig(scaleData), selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5012,7 +5029,7 @@ export default function Chart(props: propsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [unparsedCandleData, candlestick, unparsedData, unparsedCandleData]);
+    }, [unparsedCandleData, candlestick, unparsedData]);
 
     useEffect(() => {
         if (d3CanvasCandle) {
@@ -5374,6 +5391,15 @@ export default function Chart(props: propsIF) {
 
         if (tvlCrCanvas) {
             const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlYaxisCanvas = d3
+            .select('#tvl_chart')
+            .select('#y-axis-canvas_tvl');
+
+        if (tvlYaxisCanvas) {
+            const nd = tvlYaxisCanvas.node() as any;
             if (nd) nd.requestRedraw();
         }
     };
@@ -6014,6 +6040,13 @@ export default function Chart(props: propsIF) {
 
                         scaleData?.yScale.domain(domain);
                     }
+
+                    renderCanvasArray([
+                        d3CanvasCandle,
+                        d3CanvasLiqAsk,
+                        d3CanvasLiqAskDepth,
+                        d3Yaxis,
+                    ]);
                 }
             }
         }
@@ -6163,13 +6196,14 @@ export default function Chart(props: propsIF) {
         }
 
         const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
+            lastCandleData?.time * 1000 <=
             scaleData?.xScale.invert(event.offsetX)
                 ? scaleData?.xScale.invert(event.offsetX)
                 : nearest?.time * 1000;
 
         if (!isLineDrag) {
-            // setIsMouseMoveCrosshair(true);
+            setIsMouseMoveCrosshair(true);
+            setCrosshairActive('chart');
 
             setCrosshairData([
                 {
@@ -6617,8 +6651,6 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
-                    setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,
@@ -6629,6 +6661,9 @@ export default function Chart(props: propsIF) {
                         _selectedDate,
                         nearest,
                     );
+
+                    setCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
 
                     if (
                         (location.pathname.includes('range') ||

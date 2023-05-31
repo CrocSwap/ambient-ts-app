@@ -6,6 +6,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenContext } from '../../../../../contexts/TokenContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     token?: TokenIF;
@@ -17,9 +18,13 @@ export default function ExchangeCard(props: propsIF) {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
     const cachedFetchTokenPrice = memoizeTokenPrice();
 
-    const tokenMapKey: string = token?.address + '_' + token?.chainId;
+    const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)

@@ -70,7 +70,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     <a
                         target='_blank'
                         rel='noreferrer'
-                        href={`${blockExplorer}/address/${accountAddressFull}`}
+                        href={`${blockExplorer}address/${accountAddressFull}`}
                         aria-label='View address on Etherscan'
                     >
                         <FiExternalLink />
