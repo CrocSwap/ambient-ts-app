@@ -17,6 +17,9 @@ const useChatSocket = (
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
 
+    const messagesRef = useRef<Message[]>([]);
+    messagesRef.current = messages;
+
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const response = await fetch(
@@ -51,34 +54,38 @@ const useChatSocket = (
 
         async function getRest() {
             const data = await getMsgWithRest(room);
-            console.log('use socket getRest method data');
-            console.log(data);
-            setMessages(data);
-            if (data[0]) {
-                setLastMessage(data[0]);
-                setLastMessageText(data[0].text);
-                setMessageUser(data[0].sender);
+            const dataRev = data.reverse();
+            setMessages(dataRev);
+            if (dataRev.length > 0) {
+                setLastMessage(dataRev[dataRev.length - 1]);
+                setLastMessageText(dataRev[dataRev.length - 1].text);
+                setMessageUser(dataRev[dataRev.length - 1].sender);
             }
         }
 
         getRest();
 
+        if (socketRef && socketRef.current) {
+            socketRef.current.on('msg-recieve', (data: any) => {
+                setMessages([...messagesRef.current, data]);
+                if (messagesRef.current[messagesRef.current.length]) {
+                    setLastMessage(
+                        messagesRef.current[messagesRef.current.length],
+                    );
+                    setLastMessageText(
+                        messagesRef.current[messagesRef.current.length].message,
+                    );
+                    setMessageUser(
+                        messagesRef.current[messagesRef.current.length].sender,
+                    );
+                }
+            });
+        }
+
         return () => {
             socketRef.current.disconnect();
         };
     }, [room, areSubscriptionsEnabled, isChatOpen]);
-
-    if (socketRef && socketRef.current) {
-        socketRef.current.on('msg-recieve', (data: any) => {
-            console.log(data);
-            setMessages([data, ...messages]);
-            if (data[0]) {
-                setLastMessage(data[0]);
-                setLastMessageText(data[0].text);
-                setMessageUser(data[0].sender);
-            }
-        });
-    }
 
     async function getMsg() {
         if (!socketRef.current) return;

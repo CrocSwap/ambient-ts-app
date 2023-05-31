@@ -263,3 +263,18 @@
 .main picture {
     max-width: 100%;
 }
+
+
+
+@keyframes msgBubbleAnim{
+    from{
+        transform: scale(0);
+    }
+    to{
+        transform: scale(1);
+    }
+}
+
+.msg_bubble_container{
+    animation: msgBubbleAnim 0.2s ease-in-out forwards;
+}

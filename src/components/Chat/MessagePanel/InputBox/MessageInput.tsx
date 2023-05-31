@@ -1,5 +1,4 @@
 import { useAccount } from 'wagmi';
-import useChatSocket from '../../Service/useChatSocket';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 

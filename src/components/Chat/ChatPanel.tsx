@@ -61,12 +61,9 @@ function ChatPanel(props: propsIF) {
     const { messages, getMsg, lastMessage, messageUser, sendMsg } =
         useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser } = useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
-    console.log(' .. . . ... ... . USER DATA .. . .  . . .. . . ');
-    console.log(userData);
-    console.log(' . .  . .. . .. . .. . ... .. . . .. . ..  .');
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
 
@@ -309,6 +306,7 @@ function ChatPanel(props: propsIF) {
             {messages &&
                 messages.map((item, i) => (
                     <SentMessagePanel
+                        key={i}
                         isUserLoggedIn={isUserLoggedIn as boolean}
                         message={item}
                         ensName={ensName}
@@ -320,11 +318,10 @@ function ChatPanel(props: propsIF) {
                         room={room}
                         isMessageDeleted={isMessageDeleted}
                         setIsMessageDeleted={setIsMessageDeleted}
-                        previousMessage={
+                        nextMessage={
                             i === messages.length - 1 ? null : messages[i + 1]
                         }
-                        nextMessage={i === 0 ? null : messages[i - 1]}
-                        key={item._id}
+                        previousMessage={i === 0 ? null : messages[i - 1]}
                     />
                 ))}
         </div>

@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -31,7 +31,7 @@ interface SentMessageProps {
     nextMessage: any;
 }
 
-export default function SentMessagePanel(props: SentMessageProps) {
+function SentMessagePanel(props: SentMessageProps) {
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
@@ -157,6 +157,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
         if (
             props.message.ensName === 'defaultValue' ||
             props.message.ensName === null ||
+            props.message.ensName === 'null' ||
             props.message.ensName === undefined
         ) {
             return props.message.walletID.slice(0, 6) + '...';
@@ -300,6 +301,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     return (
         <div
+            className={styles.msg_bubble_container}
             style={
                 hasSeparator
                     ? { width: '90%', marginBottom: 4 }
@@ -414,3 +416,5 @@ export default function SentMessagePanel(props: SentMessageProps) {
         </div>
     );
 }
+
+export default memo(SentMessagePanel);
