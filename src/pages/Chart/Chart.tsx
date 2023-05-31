@@ -641,8 +641,8 @@ export default function Chart(props: propsIF) {
                 const domainRight = scaleData?.xScale.domain()[1];
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff,
-                    domainRight + diff,
+                    domainLeft + diff * 1000,
+                    domainRight + diff * 1000,
                 ]);
             } else if (firstCandle === undefined) {
                 setFirstCandle(() => {
