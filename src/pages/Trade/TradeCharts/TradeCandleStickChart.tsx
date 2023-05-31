@@ -386,7 +386,10 @@ function TradeCandleStickChart(props: propsIF) {
                         cumAverageUSD: data.cumAverageUSD
                             ? data.cumAverageUSD
                             : 0,
-                        upperBound: data.upperBound,
+                        upperBound:
+                            data.upperBound === '+inf'
+                                ? data.lowerBound
+                                : data.upperBound,
                         lowerBound: data.lowerBound,
                     });
                 } else {
@@ -403,7 +406,10 @@ function TradeCandleStickChart(props: propsIF) {
                             cumAverageUSD: data.cumAverageUSD
                                 ? data.cumAverageUSD
                                 : 0,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                     }
@@ -422,7 +428,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqBidData[0].liqPrices;
@@ -438,7 +447,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
 
@@ -457,7 +469,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = liqUpperPrices;
@@ -475,7 +490,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqAskData[0].liqPrices;
