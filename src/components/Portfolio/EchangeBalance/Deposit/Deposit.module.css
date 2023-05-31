@@ -59,13 +59,25 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    color: var(--text1);
     outline: none;
     border: none;
-    background: var(--dark1);
-    color: var(--accent1);
+    background: transparent;
 
-    width: 25px;
+    width: 60px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
     margin-left: 6px;
+
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.max_button_enable {
+    border-radius: 4px;
+}
+
+.max_button:hover {
+    color: var(--accent1);
 }
