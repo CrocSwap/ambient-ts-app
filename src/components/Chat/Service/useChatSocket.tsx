@@ -67,7 +67,6 @@ const useChatSocket = (
 
         if (socketRef && socketRef.current) {
             socketRef.current.on('msg-recieve', (data: any) => {
-                console.log(data);
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
                     // setLastMessage(messagesRef.current[messagesRef.current.length-1]);
@@ -90,6 +89,13 @@ const useChatSocket = (
         await socketRef.current.emit('msg-recieve', {
             room: room,
         });
+    }
+
+    async function deleteMsgFromList(msgId: string) {
+        messagesRef.current = messagesRef.current.filter(
+            (m) => m._id !== msgId,
+        );
+        setMessages(messagesRef.current);
     }
 
     async function sendMsg(
@@ -115,6 +121,7 @@ const useChatSocket = (
         lastMessage,
         messageUser,
         lastMessageText,
+        deleteMsgFromList,
     };
 };
 

@@ -58,8 +58,14 @@ function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser, sendMsg } =
-        useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
+    const {
+        messages,
+        getMsg,
+        lastMessage,
+        messageUser,
+        sendMsg,
+        deleteMsgFromList,
+    } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
 
@@ -322,6 +328,7 @@ function ChatPanel(props: propsIF) {
                             i === messages.length - 1 ? null : messages[i + 1]
                         }
                         previousMessage={i === 0 ? null : messages[i - 1]}
+                        deleteMsgFromList={deleteMsgFromList}
                     />
                 ))}
         </div>
