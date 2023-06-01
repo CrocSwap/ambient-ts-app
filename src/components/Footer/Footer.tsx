@@ -1,6 +1,13 @@
 import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    GITHUB_LINK,
+    MEDIUM_LINK,
+    TWITTER_LINK,
+} from '../../constants';
 interface FooterItemProps {
     title: string | JSX.Element;
     content: string;
@@ -21,7 +28,7 @@ export default function Footer() {
         {
             title: 'Docs',
             content: 'View our documentation',
-            link: 'https://crocswap.gitbook.io/crocswap-docs/',
+            link: DOCS_LINK,
         },
 
         {
@@ -31,7 +38,7 @@ export default function Footer() {
                 </>
             ),
             content: 'View our smart contracts, SDK, and more',
-            link: 'https://github.com/CrocSwap',
+            link: GITHUB_LINK,
         },
         {
             title: (
@@ -40,7 +47,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Keep up with the latest on twitter',
-            link: 'https://twitter.com/crocswap',
+            link: TWITTER_LINK,
         },
         {
             title: (
@@ -49,7 +56,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Join the community ',
-            link: 'https://discord.com/invite/crocswap',
+            link: DISCORD_LINK,
         },
         {
             title: (
@@ -58,7 +65,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Read the latest from our team on Medium',
-            link: 'https://crocswap.medium.com/',
+            link: MEDIUM_LINK,
         },
     ];
 

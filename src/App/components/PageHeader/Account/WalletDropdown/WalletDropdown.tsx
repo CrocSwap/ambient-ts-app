@@ -1,6 +1,5 @@
 import styles from './WalletDropdown.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
@@ -107,9 +106,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 <CgProfile />
                 My Account
             </NavLink>
-            <button onClick={clickLogout}>
-                <AiOutlineLogout color='var(--text-highlight)' /> Logout
-            </button>
+            <button onClick={clickLogout}>Logout</button>
         </div>
     );
 

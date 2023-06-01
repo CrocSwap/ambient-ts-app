@@ -2,9 +2,9 @@
 
 .dropdown {
     position: absolute;
-    top: 58px;
-    width: 300px;
-    height: 284px;
+    top: 60px;
+    width: 240px;
+    height: 326px;
     transform: translateX(-45%);
     border: none;
     padding: 1rem;
@@ -12,11 +12,9 @@
     transition: all var(--animation-speed) ease;
     z-index: 99;
 
-    background: var(--blur-bg);
-    backdrop-filter: blur(16.5px);
-    -webkit-backdrop-filter: blur(16.5px);
+    background: var(--dark2);
     border-radius: var(--border-radius);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
     z-index: 999;
 }
 .menu {
@@ -38,16 +36,38 @@
 
     cursor: pointer;
 
-    color: var(--text2);
+    color: var(--text1);
     font-family: var(--font-deca);
-    font-weight: 300;
-    font-size: 15px;
-    line-height: var(--body-lh);
+    font-weight: 200;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
 
     outline: none;
     border: none;
     background: transparent;
 }
+
+.navbar_logout_container {
+    display: flex;
+    height: 50px;
+    align-items: center;
+}
+
+.navbar_logout {
+    cursor: pointer;
+    width: 100%;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+    border: none;
+    outline: none;
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--accent1);
+    padding: 6px 8px;
+    gap: 4px;
+    border-radius: var(--border-radius);
+}
+
 .topLevelContainer {
     transition: all var(--animation-speed) ease-out;
     background-position: 1% 50%;
@@ -57,7 +77,6 @@
 
 .topLevelContainer:hover,
 .topLevelContainer:focus-visible {
-    color: var(--text1);
     background: var(--title-gradient);
     background-position: 99% 50%;
 }
@@ -99,6 +118,11 @@
 .icon_right {
     margin-left: auto;
 }
+
+.icon_right svg {
+    color: var(--text1);
+}
+
 .button_container {
     width: 100%;
     display: flex;

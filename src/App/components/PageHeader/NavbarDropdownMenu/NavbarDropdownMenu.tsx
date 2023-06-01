@@ -1,40 +1,28 @@
 // START: Import React and Dongles
-import {
-    ReactNode,
-    useState,
-    useRef,
-    useEffect,
-    useContext,
-    memo,
-} from 'react';
-import { useTranslation } from 'react-i18next';
+import { ReactNode, useState, useRef, useEffect, memo } from 'react';
+
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
-import { BiArrowBack, BiMessageCheck } from 'react-icons/bi';
+import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsBook, BsMedium } from 'react-icons/bs';
-import { FiSettings } from 'react-icons/fi';
-import { FaDiscord, FaGithub, FaDotCircle } from 'react-icons/fa';
-import { GoRequestChanges } from 'react-icons/go';
-import { HiOutlineDocumentText, HiDocumentDuplicate } from 'react-icons/hi';
+import { FaDiscord } from 'react-icons/fa';
 import FocusTrap from 'focus-trap-react';
-
-import {
-    MdHelp,
-    MdArrowForwardIos,
-    MdLanguage,
-    MdReportProblem,
-} from 'react-icons/md';
-import { RiErrorWarningLine } from 'react-icons/ri';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import {
-    useLinkGen,
     linkGenMethodsIF,
+    useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { openInNewTab } from '../../../../utils/functions/openInNewTab';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    MEDIUM_LINK,
+    TWITTER_LINK,
+} from '../../../../constants';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -45,6 +33,7 @@ interface NavbarDropdownItemPropsIF {
     onClick?: () => void;
     children: ReactNode;
     rightIcon?: ReactNode;
+    isLogoutButton?: boolean;
 }
 
 interface NavbarDropdownMenuPropsIF {
@@ -55,21 +44,14 @@ interface NavbarDropdownMenuPropsIF {
 }
 
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
-    const { closeMenu, setIsNavbarMenuOpen } = props;
-
-    const {
-        tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
-    } = useContext(AppStateContext);
-
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
-
-    const { i18n } = useTranslation();
+    const { closeMenu, clickLogout, setIsNavbarMenuOpen } = props;
 
     const [activeMenu, setActiveMenu] = useState('main');
     const dropdownRef = useRef(null);
 
     const isEscapePressed = useKeyPress('Escape');
+
+    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
 
     useEffect(() => {
         if (isEscapePressed) {
@@ -96,9 +78,16 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             <div className={styles.icon_button}>{props.leftIcon}</div>
         );
 
+        const logoutStyles = `${styles.navbar_logout}`;
+        const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`;
+
+        const buttonStyle = props.isLogoutButton
+            ? logoutStyles
+            : menuItemStyles;
+
         return (
             <button
-                className={`${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`}
+                className={buttonStyle}
                 onClick={() => {
                     props.goToMenu && setActiveMenu(props.goToMenu);
                     if (props.onClick) props.onClick();
@@ -115,128 +104,36 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         );
     }
 
-    const socialsItems = (
-        <>
-            <NavbarDropdownItem leftIcon={<AiFillTwitterCircle size={20} />}>
-                Twitter
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<FaDiscord size={20} />}>
-                Discord
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<BsMedium size={20} />}>
-                Medium
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<FaGithub size={20} />}>
-                GitHub
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<HiDocumentDuplicate size={20} />}>
-                Docs
-            </NavbarDropdownItem>
-        </>
-    );
-
-    const settingsItems = (
-        <>
-            <NavbarDropdownItem
-                leftIcon={<MdLanguage size={20} />}
-                rightIcon={<MdArrowForwardIos />}
-                goToMenu='languages'
-            >
-                Language
-            </NavbarDropdownItem>
-            <NavbarDropdownItem
-                leftIcon={<RiErrorWarningLine size={20} />}
-                rightIcon={<MdArrowForwardIos />}
-                goToMenu='warnings'
-            >
-                Warnings
-            </NavbarDropdownItem>
-            <NavbarDropdownItem
-                onClick={() => {
-                    linkGenTOS.navigate();
-                    closeMenu && closeMenu();
-                }}
-                leftIcon={<HiOutlineDocumentText size={20} />}
-            >
-                Terms of Service
-            </NavbarDropdownItem>
-        </>
-    );
-
-    const handleWalkthroughClick = () => {
-        setIsTutorialMode(!isTutorialMode);
-        setIsNavbarMenuOpen(false);
-    };
-    const supportItems = (
-        <>
-            <NavbarDropdownItem leftIcon={<MdHelp size={20} />}>
-                Help Center
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<MdReportProblem size={20} />}>
-                Report a Problem
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<GoRequestChanges size={20} />}>
-                Request Features
-            </NavbarDropdownItem>
-            <NavbarDropdownItem leftIcon={<BiMessageCheck size={20} />}>
-                <div onClick={handleWalkthroughClick}>Show Walkthrough</div>
-            </NavbarDropdownItem>
-        </>
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lngs: any = {
-        en: { nativeName: 'English' },
-        zh: { nativeName: '中文' },
-        kr: { nativeName: '한국어' },
-    };
-    const circleIcon = <FaDotCircle color='#CDC1FF' size={10} />;
-
-    const languagesItems = (
-        <>
-            {Object.keys(lngs).map((lng, idx) => (
-                <div key={idx} onClick={() => i18n.changeLanguage(lng)}>
-                    <NavbarDropdownItem
-                        goBackItem
-                        key={idx}
-                        rightIcon={
-                            i18n.resolvedLanguage === lng ? circleIcon : null
-                        }
-                    >
-                        {lngs[lng].nativeName}
-                    </NavbarDropdownItem>
-                </div>
-            ))}
-        </>
-    );
-    const warningItems = (
-        <>
-            <p>Warning Items</p>
-        </>
-    );
-
-    const NavbardropdownItemData = [
-        {
-            title: 'Settings & Privacy',
-            data: settingsItems,
-            leftIcon: <FiSettings size={20} />,
-        },
-        {
-            title: 'Help & Support',
-            data: supportItems,
-            leftIcon: <MdHelp size={20} />,
-        },
-        {
-            title: 'Socials',
-            data: socialsItems,
-            leftIcon: <FaDiscord size={20} />,
-        },
-    ];
-
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
-    // const mainAriaLabel = 'account dropdown menu container';
+    const closeMenuBar = () => closeMenu && closeMenu();
+
+    const handleDocsClick = () => {
+        console.log(`handling docs click! ${DOCS_LINK}`);
+        openInNewTab(DOCS_LINK);
+        closeMenuBar();
+    };
+
+    const handleTwitterClick = () => {
+        openInNewTab(TWITTER_LINK);
+        closeMenuBar();
+    };
+
+    const handleDiscordClick = () => {
+        openInNewTab(DISCORD_LINK);
+        closeMenuBar();
+    };
+
+    const handleMediumClick = () => {
+        openInNewTab(MEDIUM_LINK);
+        closeMenuBar();
+    };
+
+    const handleLegalPrivacyClick = () => {
+        linkGenTOS.navigate();
+        closeMenu && closeMenu();
+    };
 
     return (
         <FocusTrap
@@ -247,7 +144,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             <div
                 className={styles.dropdown}
                 ref={dropdownRef}
-                // tabIndex={0}
                 aria-label={ariaLabel}
             >
                 <CSSTransition
@@ -264,80 +160,51 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         className={styles.menu}
                         tabIndex={0}
                     >
-                        {NavbardropdownItemData.map((item) => (
-                            <NavbarDropdownItem
-                                key={item.title}
-                                leftIcon={item.leftIcon ? item.leftIcon : ''}
-                                rightIcon={<MdArrowForwardIos />}
-                                goToMenu={item.title}
-                                topLevel
-                            >
-                                {item.title}
-                            </NavbarDropdownItem>
-                        ))}
-                        <NavbarDropdownItem leftIcon={<BsBook size={18} />}>
+                        <NavbarDropdownItem
+                            topLevel
+                            rightIcon={<BsBook size={18} />}
+                            onClick={handleDocsClick}
+                        >
                             Docs
                         </NavbarDropdownItem>
-                    </motion.div>
-                </CSSTransition>
-
-                {NavbardropdownItemData.map((item) => (
-                    <CSSTransition
-                        in={activeMenu === item.title}
-                        unmountOnExit
-                        key={item.title}
-                        timeout={300}
-                        classNames='menu-secondary'
-                        appear={true}
-                    >
-                        <div className={styles.menu}>
+                        <NavbarDropdownItem
+                            topLevel
+                            rightIcon={<AiFillTwitterCircle size={20} />}
+                            onClick={handleTwitterClick}
+                        >
+                            Twitter
+                        </NavbarDropdownItem>
+                        <NavbarDropdownItem
+                            topLevel
+                            rightIcon={<FaDiscord size={20} />}
+                            onClick={handleDiscordClick}
+                        >
+                            Discord
+                        </NavbarDropdownItem>
+                        <NavbarDropdownItem
+                            topLevel
+                            rightIcon={<BsMedium size={20} />}
+                            onClick={handleMediumClick}
+                        >
+                            Medium
+                        </NavbarDropdownItem>
+                        <NavbarDropdownItem
+                            topLevel
+                            rightIcon={<IoDocumentTextSharp size={20} />}
+                            onClick={handleLegalPrivacyClick}
+                        >
+                            Legal & Privacy
+                        </NavbarDropdownItem>
+                        <div className={`${styles.navbar_logout_container}`}>
                             <NavbarDropdownItem
-                                goToMenu='main'
-                                leftIcon={<BiArrowBack />}
-                                goBackItem
+                                topLevel
+                                isLogoutButton
+                                onClick={clickLogout}
                             >
-                                <h3>{item.title}</h3>
+                                Logout
                             </NavbarDropdownItem>
-                            {item.data}
                         </div>
-                    </CSSTransition>
-                ))}
-                <CSSTransition
-                    in={activeMenu === 'languages'}
-                    unmountOnExit
-                    timeout={300}
-                    classNames='menu-tertiary'
-                    appear={true}
-                >
-                    <div className={styles.menu}>
-                        <NavbarDropdownItem
-                            goToMenu='Settings & Privacy'
-                            leftIcon={<BiArrowBack />}
-                            goBackItem
-                        >
-                            <h3>{'Languages'}</h3>
-                        </NavbarDropdownItem>
-                        {languagesItems}
-                    </div>
-                </CSSTransition>
-                {/* warnings */}
-                <CSSTransition
-                    in={activeMenu === 'warnings'}
-                    unmountOnExit
-                    timeout={300}
-                    classNames='menu-tertiary'
-                    appear={true}
-                >
-                    <div className={styles.menu}>
-                        <NavbarDropdownItem
-                            goToMenu='Settings & Privacy'
-                            leftIcon={<BiArrowBack />}
-                            goBackItem
-                        >
-                            <h3>{'Warnings'}</h3>
-                        </NavbarDropdownItem>
-                        {warningItems}
-                    </div>
+                    </motion.div>
                 </CSSTransition>
             </div>
         </FocusTrap>
