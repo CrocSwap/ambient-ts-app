@@ -25,11 +25,7 @@ import {
     MdLanguage,
     MdReportProblem,
 } from 'react-icons/md';
-import {
-    RiErrorWarningLine,
-    RiLayoutLeftFill,
-    RiLayoutRightFill,
-} from 'react-icons/ri';
+import { RiErrorWarningLine } from 'react-icons/ri';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
@@ -242,23 +238,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
     // const mainAriaLabel = 'account dropdown menu container';
-
-    const layoutData = [
-        {
-            title: 'Sidebar',
-            action: console.log('sidebar'),
-            icon: RiLayoutLeftFill,
-        },
-        {
-            title: 'Trade',
-            action: console.log('trade'),
-            icon: RiLayoutRightFill,
-        },
-    ];
-
-    const pageLayoutControl = (
-        <div className={styles.page_layout_container}></div>
-    );
 
     return (
         <FocusTrap

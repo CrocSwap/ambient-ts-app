@@ -1,6 +1,6 @@
 import { useState, KeyboardEvent, MouseEvent } from 'react';
 
-type LayoutHandler = {
+export type LayoutHandler = {
     isTradeDrawerOpen: boolean;
     isSidebarDrawerOpen: boolean;
     toggleDefaultLayout: () => void;

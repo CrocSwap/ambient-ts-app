@@ -2365,10 +2365,7 @@ export default function App() {
                         </section>
                     </CrocEnvContext.Provider>
                 </div>
-                <SidebarFooter
-                    toggleTradeDrawer={toggleTradeDrawer}
-                    toggleSidebarDrawer={toggleSidebarDrawer}
-                />
+                <SidebarFooter />
                 <div className='footer_container'>
                     {currentLocation !== '/' &&
                         !currentLocation.includes('/chat') &&

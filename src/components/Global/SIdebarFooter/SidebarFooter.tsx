@@ -3,11 +3,7 @@ import styles from './SidebarFooter.module.css';
 import { Link, useLocation } from 'react-router-dom';
 
 // import { IoMdAnalytics } from 'react-icons/io';
-import {
-    RiSwapBoxFill,
-    RiLayoutLeftFill,
-    RiLayoutRightFill,
-} from 'react-icons/ri';
+import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -15,16 +11,7 @@ import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { memo } from 'react';
 import { MdAccountBox } from 'react-icons/md';
 
-interface PropsIF {
-    toggleTradeDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    toggleSidebarDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-}
-function SidebarFooter(props: PropsIF) {
-    const { toggleSidebarDrawer, toggleTradeDrawer } = props;
+function SidebarFooter() {
     const location = useLocation();
 
     const currentLocation = location.pathname;

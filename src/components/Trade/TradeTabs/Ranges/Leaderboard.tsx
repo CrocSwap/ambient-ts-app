@@ -374,8 +374,6 @@ function Leaderboard(props: propsIF) {
     ));
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
     const expandStyle = expandTradeTable
         ? mobileView
             ? 'calc(100vh - 15rem) '

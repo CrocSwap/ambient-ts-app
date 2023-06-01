@@ -5,7 +5,6 @@ import {
 } from 'react-icons/ri';
 import styles from './PageLayout.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
-import useLayoutHandler from '../../../../utils/hooks/useLayoutHandler';
 
 interface PageLayoutPropsIF {
     toggleSidebarDrawer: (

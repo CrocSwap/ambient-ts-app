@@ -555,14 +555,6 @@ function Transactions(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    // useEffect(() => {
-    //     if (mobileView) {
-    //         setExpandTradeTable(true);
-    //     }
-    // }, [mobileView]);
-
-    const mobileViewHeight = mobileView ? '' : '260px';
-
     const expandStyle = expandTradeTable
         ? mobileView
             ? 'calc(100vh - 15rem) '
