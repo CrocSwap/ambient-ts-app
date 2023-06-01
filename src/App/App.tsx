@@ -191,7 +191,7 @@ export default function App() {
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
                 <AppOverlay />
-                {currentLocation !== '/404' && <PageHeader />}
+                <PageHeader />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
