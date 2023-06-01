@@ -1,11 +1,11 @@
-import styles from './Landing1.module.css';
+import styles from './Hero.module.css';
 import logoText from '../../../assets/images/logos/logo_text.png';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 
-export default function Landing1() {
+export default function Hero() {
     return (
-        <div className={styles.main_container}>
-            <div className={styles.content_container}>
+        <div className={styles.hero_container}>
+            <div className={styles.hero_container}>
                 <img src={logoText} alt='ambient' />
                 <TradeNowButton />
             </div>
