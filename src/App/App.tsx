@@ -301,6 +301,10 @@ export default function App() {
                             element={<Portfolio userAccount={false} />}
                         />
                         <Route path='/404' element={<NotFound />} />
+                        <Route
+                            path='*'
+                            element={<Navigate to='/404' replace />}
+                        />
                     </Routes>
                 </section>
             </div>

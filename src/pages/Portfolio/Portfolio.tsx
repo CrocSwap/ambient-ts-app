@@ -9,7 +9,6 @@ import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeB
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import Modal from '../../components/Global/Modal/Modal';
-import NotFound from '../NotFound/NotFound';
 import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
@@ -17,7 +16,7 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 // START: Import Other Local Files
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -188,7 +187,7 @@ function Portfolio(props: propsIF) {
         addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
     if (addressFromParams && !isAddressEns && !isAddressHex)
-        return <NotFound />;
+        return <Navigate to='/404' replace />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
