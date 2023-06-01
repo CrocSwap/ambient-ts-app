@@ -2,24 +2,27 @@
     width: 100%;
     z-index: 2;
     border-radius: var(--border-radius);
-
+    background: var(--title-gradient);
     max-width: 16rem;
     max-height: 3rem;
-    /* width: 238px; */
+    padding: 1px;
+   
     height: 54px;
-    padding: 8px 32px;
+   
     display: flex;
     justify-content: center;
     align-items: center;
-    /* font-size: 16px;
-
-    line-height: 24px; */
+    outline: none;
+    border: none;
 
     cursor: pointer;
     text-align: center;
 
     text-decoration: none;
-    border: 1px solid var(--dark3);
+
+ 
+
+    border-radius: var(--border-radius);
 }
 
 .nav_action_button {
@@ -27,9 +30,19 @@
     max-height: 2rem;
     /* width: 238px; */
     height: 54px;
-    padding: 4px 16px;
-}
 
+
+}
+.content_container{
+    width: 100%;
+    height: 100%;
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .button_text {
     font-family: var(--font-logo);
     font-weight: 100;
@@ -49,14 +62,7 @@
 
 .action_button:hover,
 .action_button:focus-visible {
-    background: var(--dark2);
-    border-radius: 4px;
+
     box-shadow: var(--glow-box-shadow);
 }
 
-/* .action_button p {
-    color: var(--accent5);
-    font-weight: 100 !important;
-    font-size: 30px !important;
-    line-height: 38px !important;
-} */

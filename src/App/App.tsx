@@ -123,7 +123,6 @@ export default function App() {
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar />;
@@ -192,7 +191,7 @@ export default function App() {
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
                 <AppOverlay />
-                {currentLocation !== '/404' && <PageHeader />}
+                <PageHeader />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >

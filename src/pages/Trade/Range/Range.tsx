@@ -158,7 +158,7 @@ function Range() {
     const {
         tradeData: {
             isDenomBase,
-            isTokenAPrimary,
+            isTokenAPrimaryRange,
             isLinesSwitched,
             tokenA,
             tokenB,
@@ -954,7 +954,7 @@ function Range() {
         let tx;
         try {
             tx = await (isAmbient
-                ? isTokenAPrimary
+                ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
                           tokenAInputQty,
                           [minPrice, maxPrice],
@@ -975,7 +975,7 @@ function Range() {
                               ],
                           },
                       )
-                : isTokenAPrimary
+                : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
