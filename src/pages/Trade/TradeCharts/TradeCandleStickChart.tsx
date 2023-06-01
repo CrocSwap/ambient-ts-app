@@ -810,8 +810,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [diffHashSig(tokenPair), period, diffHashSig(unparsedCandleData)]);
-
+    }, [period, diffHashSig(unparsedCandleData)]);
     // resetting Chart
     useEffect(() => {
         if (isCandleDataNull && scaleData && scaleData?.xScaleCopy) {
