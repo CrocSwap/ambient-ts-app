@@ -64,18 +64,27 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    color: var(--text1);
     outline: none;
     border: none;
-    
+
     color: var(--text1);
 
-    width: 25px;
+    width: 60px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
     margin-left: 6px;
+
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
     background: transparent;
 }
 
-.max_button:hover{
+.max_button_enable {
+    border-radius: 4px;
+}
+
+.max_button:hover {
     color: var(--accent1);
 }

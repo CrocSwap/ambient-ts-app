@@ -37,8 +37,6 @@
     justify-content: flex-end;
 }
 
-
-
 .balance_with_pointer {
     display: flex;
     flex-direction: row;
@@ -125,8 +123,6 @@
     font-weight: 200;
 }
 
-
-
 .swapbox_bottom {
     margin: 6px 10px;
     height: 33px;
@@ -184,9 +180,9 @@
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
 }
+
 .max_button_enable {
     border-radius: 4px;
-   
 }
 
 .max_button:hover {

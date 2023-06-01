@@ -212,9 +212,7 @@ function RangeCurrencySelector(props: propsIF) {
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
 
-    const shouldDisplayMaxButton =
-        (isTokenASelector ? !isTokenAEth : !isTokenBEth) &&
-        balanceLocaleString !== '0.00';
+    const shouldDisplayMaxButton = balanceLocaleString !== '0.00';
 
     function handleMaxButtonClick() {
         if (handleChangeClick && isUserConnected && shouldDisplayMaxButton) {
