@@ -7,8 +7,6 @@ export interface LimitOrderIF {
     latestCrossPivotTime: number;
     positionId: string;
     source: string;
-    network: string;
-    block: number;
     time: number;
     user: string;
     base: string;
@@ -23,14 +21,10 @@ export interface LimitOrderIF {
     askTick: number;
     isBid: boolean;
     price: number;
-    deflator: number;
-    concGrowth: number;
     claimableLiq: string;
     claimableLiqPivotTimes: string;
     positionLiq: string;
     positionLiqBase: string;
-    baseFlowDecimalCorrected: number;
-    quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
     claimableLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
@@ -38,12 +32,7 @@ export interface LimitOrderIF {
     claimableLiqTotalUSD: number;
     positionLiqQuote: string;
     updateType: string;
-    latestUpdateBlock: number;
     latestUpdateTime: number;
-    latestCrossBlock: number;
-    latestCrossTime: number;
-    latestCrossTransaction: string;
-    knockoutChanges: number;
     baseSymbol: string;
     baseDecimals: number;
     baseTokenLogoURI: string;
@@ -55,7 +44,6 @@ export interface LimitOrderIF {
     limitPriceDecimalCorrected: number;
     invLimitPriceDecimalCorrected: number;
     ensResolution: string;
-    ensResolutionAge: number;
     basePrice: number;
     quotePrice: number;
     positionLiqBaseUSD: number;

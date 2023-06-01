@@ -1,6 +1,10 @@
 import {
+    baseTokenForConcLiq,
+    bigNumToFloat,
     CHAIN_SPECS,
     CrocEnv,
+    floatToBigNum,
+    quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
@@ -8,12 +12,17 @@ import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
+import {
+    memoizeQueryPoolGrowth,
+    memoizeQuerySpotPrice,
+} from './querySpotPrice';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeFetchEnsAddress } from './fetchAddress';
+import { BigNumber } from 'ethers';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedQueryPoolGrowth = memoizeQueryPoolGrowth();
 const cachedTokenDetails = memoizeFetchContractDetails();
 const cachedEnsResolve = memoizeFetchEnsAddress();
 
@@ -31,7 +40,8 @@ export const getPositionData = async (
     const quoteTokenAddress =
         position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
-    const poolPriceNonDisplay = await cachedQuerySpotPrice(
+    // Fire off network queries async simultaneous up-front
+    const poolPriceNonDisplay = cachedQuerySpotPrice(
         crocEnv,
         baseTokenAddress,
         quoteTokenAddress,
@@ -39,15 +49,13 @@ export const getPositionData = async (
         lastBlockNumber,
     );
 
-    const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-    newPosition.poolPriceInTicks = poolPriceInTicks;
-
-    const isPositionInRange =
-        position.positionType === 'ambient' ||
-        (position.bidTick <= poolPriceInTicks &&
-            poolPriceInTicks <= position.askTick);
-
-    newPosition.isPositionInRange = isPositionInRange;
+    const poolGrowthRate = cachedQueryPoolGrowth(
+        crocEnv,
+        baseTokenAddress,
+        quoteTokenAddress,
+        chainId,
+        lastBlockNumber,
+    );
 
     const baseMetadata = cachedTokenDetails(
         (await crocEnv.context).provider,
@@ -60,6 +68,25 @@ export const getPositionData = async (
         chainId,
     );
 
+    const ensRequest = cachedEnsResolve(
+        (await crocEnv.context).provider,
+        newPosition.user,
+        '0x1',
+    );
+
+    newPosition.ensResolution = (await ensRequest) ?? '';
+
+    const poolPriceInTicks =
+        Math.log(await poolPriceNonDisplay) / Math.log(1.0001);
+    newPosition.poolPriceInTicks = poolPriceInTicks;
+
+    const isPositionInRange =
+        position.positionType === 'ambient' ||
+        (position.bidTick <= poolPriceInTicks &&
+            poolPriceInTicks <= position.askTick);
+
+    newPosition.isPositionInRange = isPositionInRange;
+
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =
         (await baseMetadata)?.decimals ?? DEFAULT_DECIMALS;
@@ -71,15 +98,6 @@ export const getPositionData = async (
 
     newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
     newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
-
-    newPosition.ensResolution =
-        (await cachedEnsResolve(
-            (
-                await crocEnv.context
-            ).provider,
-            newPosition.user,
-            '0x1',
-        )) ?? '';
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -219,43 +237,76 @@ export const getPositionData = async (
                   });
     }
 
-    if (position.positionLiqBaseDecimalCorrected) {
-        const liqBaseNum = position.positionLiqBaseDecimalCorrected;
+    if (position.positionType == 'ambient') {
+        const ambientLiq = position.ambientSeeds * (1 + (await poolGrowthRate));
 
-        const baseLiqDisplayTruncated =
-            liqBaseNum === 0
-                ? '0'
-                : liqBaseNum < 0.0001
-                ? liqBaseNum.toExponential(2)
-                : liqBaseNum < 2
-                ? liqBaseNum.toPrecision(3)
-                : liqBaseNum >= 10000
-                ? formatAmountOld(liqBaseNum)
-                : liqBaseNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        newPosition.positionLiqBase =
+            ambientLiq * Math.sqrt(await poolPriceNonDisplay);
+        newPosition.positionLiqQuote =
+            ambientLiq / Math.sqrt(await poolPriceNonDisplay);
+    } else if (position.positionType == 'concentrated') {
+        newPosition.positionLiqBase = bigNumToFloat(
+            baseTokenForConcLiq(
+                await poolPriceNonDisplay,
+                floatToBigNum(position.concLiq),
+                tickToPrice(position.bidTick),
+                tickToPrice(position.askTick),
+            ),
+        );
 
-        newPosition.positionLiqBaseTruncated = baseLiqDisplayTruncated;
+        newPosition.positionLiqQuote = bigNumToFloat(
+            quoteTokenForConcLiq(
+                await poolPriceNonDisplay,
+                floatToBigNum(position.concLiq),
+                tickToPrice(position.bidTick),
+                tickToPrice(position.askTick),
+            ),
+        );
+
+        newPosition.feesLiqBase =
+            position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
+        newPosition.feesLiqQuote =
+            position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
     }
-    if (position.positionLiqQuoteDecimalCorrected) {
-        const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
-        const quoteLiqDisplayTruncated =
-            liqQuoteNum === 0
-                ? '0'
-                : liqQuoteNum < 0.0001
-                ? liqQuoteNum.toExponential(2)
-                : liqQuoteNum < 2
-                ? liqQuoteNum.toPrecision(3)
-                : liqQuoteNum >= 10000
-                ? formatAmountOld(liqQuoteNum)
-                : liqQuoteNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        newPosition.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
-    }
+    newPosition.positionLiqBaseDecimalCorrected =
+        newPosition.positionLiqBase / Math.pow(10, baseTokenDecimals);
+    newPosition.positionLiqQuoteDecimalCorrected =
+        newPosition.positionLiqQuote / Math.pow(10, quoteTokenDecimals);
+    newPosition.feesLiqBaseDecimalCorrected =
+        newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
+    newPosition.feesLiqQuoteDecimalCorrected =
+        newPosition.feesLiqQuote / Math.pow(10, quoteTokenDecimals);
+
+    const liqBaseNum = newPosition.positionLiqBaseDecimalCorrected;
+    newPosition.positionLiqBaseTruncated =
+        liqBaseNum === 0
+            ? '0'
+            : liqBaseNum < 0.0001
+            ? liqBaseNum.toExponential(2)
+            : liqBaseNum < 2
+            ? liqBaseNum.toPrecision(3)
+            : liqBaseNum >= 10000
+            ? formatAmountOld(liqBaseNum)
+            : liqBaseNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const liqQuoteNum = newPosition.positionLiqQuoteDecimalCorrected;
+    newPosition.positionLiqQuoteTruncated =
+        liqQuoteNum === 0
+            ? '0'
+            : liqQuoteNum < 0.0001
+            ? liqQuoteNum.toExponential(2)
+            : liqQuoteNum < 2
+            ? liqQuoteNum.toPrecision(3)
+            : liqQuoteNum >= 10000
+            ? formatAmountOld(liqQuoteNum)
+            : liqQuoteNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     return newPosition;
 };

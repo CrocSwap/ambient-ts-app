@@ -135,8 +135,8 @@ function RangesRow(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const positionDomId =
-        position.positionStorageSlot === currentPositionActive
-            ? `position-${position.positionStorageSlot}`
+        position.firstMintTx === currentPositionActive
+            ? `position-${position.firstMintTx}`
             : '';
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
@@ -177,9 +177,7 @@ function RangesRow(props: propsIF) {
     }
 
     useEffect(() => {
-        position.positionStorageSlot === currentPositionActive
-            ? scrollToDiv()
-            : null;
+        position.firstMintTx === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
     const userPositionStyle =
@@ -193,7 +191,7 @@ function RangesRow(props: propsIF) {
             : 'username_base_color';
 
     const activePositionStyle =
-        position.positionStorageSlot === currentPositionActive
+        position.firstMintTx === currentPositionActive
             ? styles.active_position_style
             : '';
 
@@ -295,7 +293,7 @@ function RangesRow(props: propsIF) {
     } = rangeRowConstants(rangeRowConstantsProps);
 
     function handleRowClick() {
-        if (position.positionStorageSlot === currentPositionActive) {
+        if (position.firstMintTx === currentPositionActive) {
             return;
         }
         setCurrentPositionActive('');

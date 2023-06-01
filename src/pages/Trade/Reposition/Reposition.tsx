@@ -731,7 +731,7 @@ function Reposition() {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
-                positionHash={position.positionStorageSlot}
+                positionHash={position.firstMintTx}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>

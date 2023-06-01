@@ -62,13 +62,12 @@ export default function PositionBox(props: propsIF) {
                 props.setIsPosition(true);
             } else if (
                 positionData.find(
-                    (item: PositionIF) => item.positionStorageSlot === hashMsg,
+                    (item: PositionIF) => item.firstMintTx === hashMsg,
                 )
             ) {
                 setSPosition(
                     positionData.find(
-                        (item: PositionIF) =>
-                            item.positionStorageSlot === hashMsg,
+                        (item: PositionIF) => item.firstMintTx === hashMsg,
                     ),
                 );
                 props.setIsPosition(true);
@@ -189,7 +188,7 @@ export default function PositionBox(props: propsIF) {
         }
 
         if (sPositions) {
-            return trimString(sPositions.positionStorageSlot, 6, 4, '…');
+            return trimString(sPositions.firstMintTx, 6, 4, '…');
         }
     }
 

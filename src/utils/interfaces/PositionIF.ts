@@ -26,19 +26,17 @@ export interface PositionIF {
     lowRangeDisplayInQuote: string;
     highRangeDisplayInQuote: string;
     highRangeShortDisplayInQuote: string;
-    tokenAQtyDisplay: string;
-    tokenBQtyDisplay: string;
     positionType: string;
-    positionLiqBase?: string;
-    positionLiqBaseDecimalCorrected?: number;
-    positionLiqBaseTruncated?: string;
-    positionLiqQuoteTruncated?: string;
-    positionLiqQuoteDecimalCorrected?: number;
-    positionLiqQuote?: string;
-    feesLiqBase?: string;
-    feesLiqBaseDecimalCorrected?: number;
-    feesLiqQuoteDecimalCorrected?: number;
-    feesLiqQuote?: string;
+    positionLiqBase: number;
+    positionLiqBaseDecimalCorrected: number;
+    positionLiqBaseTruncated: string;
+    positionLiqQuoteTruncated: string;
+    positionLiqQuoteDecimalCorrected: number;
+    positionLiqQuote: number;
+    feesLiqBase: number;
+    feesLiqQuote: number;
+    feesLiqBaseDecimalCorrected: number;
+    feesLiqQuoteDecimalCorrected: number;
     apy: number;
     timeFirstMint: number;
     latestUpdateTime: number;
@@ -50,7 +48,8 @@ export interface PositionIF {
     askTickPriceDecimalCorrected: number;
     askTickInvPriceDecimalCorrected: number;
     source: string;
-    mintTx: string;
+    lastMintTx: string;
+    firstMintTx: string;
 }
 
 export interface PositionServerIF {
@@ -63,10 +62,11 @@ export interface PositionServerIF {
     base: string;
     quote: string;
     user: string;
-    ambientSeeds?: number;
+    ambientSeeds: number;
     concLiq: number;
+    rewardLiq: number;
     positionType: string;
-    positionLiq: string;
     timeFirstMint: number;
-    mintTx: string;
+    lastMintTx: string;
+    firstMintTx: string;
 }
