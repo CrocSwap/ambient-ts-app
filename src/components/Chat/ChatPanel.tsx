@@ -95,45 +95,22 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
-            console.log(
-                'messageUser: ',
-                messageUser,
-                ' currentuser: ',
-                currentUser,
-                ' lastMessage?.mentionedName === ensName ',
-                lastMessage?.mentionedName === ensName,
-            );
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
                     (lastMessage?.mentionedName === address &&
                         address !== undefined)
                 ) {
-                    console.log(
-                        'aqqq: ',
-                        lastMessage?.mentionedName === ensName ||
-                            lastMessage?.mentionedName === address,
-                    );
-                    console.log('burada set notification vaer ???');
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
-                const timer = setTimeout(() => {
-                    messageEnd.current?.scrollTo(
-                        messageEnd.current?.scrollHeight,
-                        messageEnd.current?.scrollHeight,
-                    );
-                }, 100);
+                scrollToBottomButton();
 
                 setNotification(0);
-                return () => clearTimeout(timer);
             }
         } else {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
-            );
+            scrollToBottomButton();
         }
     }, [lastMessage]);
 
@@ -215,22 +192,19 @@ function ChatPanel(props: propsIF) {
     }
 
     const scrollToBottomButton = async () => {
-        setIsScrollToBottomButtonPressed(true);
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
-        );
+        setTimeout(() => {
+            setIsScrollToBottomButtonPressed(true);
+            messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+        }, 300);
         setScrollDirection('Scroll Down');
     };
 
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
-            );
-        });
+            messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+        }, 1000);
         setScrollDirection('Scroll Down');
+        return () => clearTimeout(timer);
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
