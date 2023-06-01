@@ -433,7 +433,7 @@ export default function InitPool() {
                                             autoCorrect='off'
                                             min='0'
                                             minLength={1}
-                                            pattern='^[0-9,]*[.]?[0-9]*$'
+                                            pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
                                         />
                                     </section>
                                 </div>
