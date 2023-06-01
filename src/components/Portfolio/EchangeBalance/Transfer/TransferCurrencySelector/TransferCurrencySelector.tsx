@@ -83,7 +83,6 @@ function TransferCurrencySelector(props: propsIF) {
                                 className={styles.token_list_img}
                                 src={uriToHttp(selectedToken.logoURI)}
                                 alt={selectedToken.symbol?.charAt(0)}
-                                // alt={`logo for token ${token.name}`}
                                 width='30px'
                             />
                         ) : (
