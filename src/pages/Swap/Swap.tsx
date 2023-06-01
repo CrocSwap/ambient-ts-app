@@ -90,7 +90,7 @@ function Swap(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    useUrlParams(tokens, chainId, provider);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     // this apparently different from the `bypassConfirm` that I am working with
     // it should possibly be renamed something different or better documented

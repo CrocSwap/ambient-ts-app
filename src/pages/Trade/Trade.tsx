@@ -71,7 +71,7 @@ function Trade() {
     const { pathname } = useLocation();
     const provider = useProvider();
     const { params } = useParams();
-    useUrlParams(tokens, chainId, provider);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');

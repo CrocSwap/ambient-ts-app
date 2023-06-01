@@ -7,6 +7,9 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
+
+
+
 }
 
 .footer_item_container:hover {
@@ -35,6 +38,24 @@
 
 .container {
     width: 100%;
+
+
+
+
+    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../assets/images/home/home3.png') no-repeat center center
+    ;
+mix-blend-mode: lighten;
+
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+
+background-position: top 30px right 0;
+
+
 }
 
 .content {

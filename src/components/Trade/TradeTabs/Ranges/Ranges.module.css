@@ -30,10 +30,11 @@
 .main_list_container {
     display: grid;
     overflow-y: hidden;
-    grid-template-rows: auto 1fr;
-}
-
-.main_list_expanded {
+    grid-template-rows: auto 1fr ;
+    padding: 0 4px;
+    }
+    
+.main_list_expanded{
     display: grid;
     grid-template-rows: auto 1fr 70px;
     overflow-y: hidden;

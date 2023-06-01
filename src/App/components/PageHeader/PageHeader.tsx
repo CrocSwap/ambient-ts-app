@@ -142,6 +142,7 @@ const PageHeader = function () {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
+            style={!desktopScreen ? { width: '140px' } : undefined}
             onClick={() => openWagmiModal()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
@@ -227,6 +228,8 @@ const PageHeader = function () {
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
         } else if (location.pathname.includes('chat')) {
             document.title = 'Chat ~ ambient.finance';
+        } else if (location.pathname.includes('404')) {
+            document.title = '404 ~ ambient.finance';
         } else {
             document.title = 'Home ~ ambient.finance';
         }
