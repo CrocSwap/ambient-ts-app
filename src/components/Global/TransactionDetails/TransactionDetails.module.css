@@ -2,15 +2,16 @@
     width: auto;
     max-width: 1000px;
     min-width: 340px;
-}
 
-.main_content {
     transition: all var(--animation-speed) ease-in-out;
     background: url(../../../assets/images/backgrounds/background.png) no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+}
+
+.main_content {
     cursor: default;
     display: flex;
     flex-direction: column;
