@@ -53,13 +53,13 @@ export default function WithdrawCurrencySelector(props: propsIF) {
                     }
                 }}
                 value={inputValue}
-                type='string'
+                type='text'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
                 disabled={disable}
             />
         </div>
@@ -84,7 +84,6 @@ export default function WithdrawCurrencySelector(props: propsIF) {
                                 className={styles.token_list_img}
                                 src={uriToHttp(selectedToken.logoURI)}
                                 alt={selectedToken.symbol?.charAt(0)}
-                                // alt={`logo for token ${token.name}`}
                                 width='30px'
                             />
                         ) : (
