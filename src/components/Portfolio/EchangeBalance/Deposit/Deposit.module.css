@@ -62,7 +62,8 @@
     color: var(--text1);
     outline: none;
     border: none;
-    background: transparent;
+
+    color: var(--text1);
 
     width: 60px;
     display: flex;
@@ -72,6 +73,7 @@
 
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
+    background: transparent;
 }
 
 .max_button_enable {
