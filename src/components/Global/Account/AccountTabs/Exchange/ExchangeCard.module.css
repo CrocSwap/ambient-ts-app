@@ -1,6 +1,4 @@
 .token_info {
-   
-
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
@@ -27,13 +25,10 @@
     border-radius: var(--border-radius);
 }
 
-
-
-.exchange_row:hover{
+.exchange_row:hover {
     transition: all var(--animation-speed) ease-in-out;
     background: var(--dark2);
-    cursor: pointer;
-    
+    cursor: default;
 }
 
 .token_key,
@@ -54,7 +49,7 @@
 }
 
 @media only screen and (min-width: 768px) {
-    .token_info{
+    .token_info {
         width: 50%;
     }
-    }
+}
