@@ -4,6 +4,7 @@ import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import Spinner from '../../../Spinner/Spinner';
 
 interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
@@ -38,13 +39,17 @@ export default function Wallet(props: propsIF) {
         >
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens.map((token) => (
-                    <WalletCard
-                        key={JSON.stringify(token)}
-                        token={token}
-                        tokens={tokens}
-                    />
-                ))}
+                {userTokens && userTokens.length > 0 ? (
+                    userTokens.map((token) => (
+                        <WalletCard
+                            key={JSON.stringify(token)}
+                            token={token}
+                            tokens={tokens}
+                        />
+                    ))
+                ) : (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                )}
             </div>
         </div>
     );

@@ -24,7 +24,7 @@ export default function Exchange(props: propsIF) {
         .filter((token) => token);
 
     const ItemContent = connectedAccountActive ? (
-        connectedUserTokens && connectedUserTokens[0] ? (
+        connectedUserTokens && connectedUserTokens.length > 0 ? (
             connectedUserTokens.map((item, idx) => (
                 <ExchangeCard key={idx} token={item} tokens={tokens} />
             ))
