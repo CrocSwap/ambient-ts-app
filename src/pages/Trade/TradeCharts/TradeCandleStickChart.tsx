@@ -572,8 +572,8 @@ function TradeCandleStickChart(props: propsIF) {
                 lineAskSeries: [],
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqBoundaryCurve: liqBoundary,
-                liqBoundaryDepth: liqBoundaryDepth,
+                liqTransitionPointforCurve: liqBoundary,
+                liqTransitionPointforDepth: liqBoundaryDepth,
             };
         } else {
             setIsLoading(true);
