@@ -109,9 +109,10 @@ function CurrencyQuantity(props: propsIF) {
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(targetValue) > thisToken.decimals;
 
-        const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
-            targetValue,
-        );
+        // const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
+        //     targetValue,
+        // );
+        const isUserInputValid = true;
         if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
             let valueWithDecimal = targetValue;
             if (valueWithDecimal.includes(',')) {
@@ -136,29 +137,27 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            <>
-                {isLoading && progressDisplay}
-                <input
-                    id={`${fieldId}-quantity`}
-                    className={styles.currency_quantity}
-                    placeholder={isLoading ? '' : '0.0'}
-                    tabIndex={0}
-                    aria-live={ariaLive}
-                    aria-label={`Enter ${fieldId} amount`}
-                    onChange={(event) => {
-                        handleOnChange(event);
-                    }}
-                    value={isLoading ? '' : displayValue}
-                    type='text'
-                    inputMode='decimal'
-                    autoComplete='off'
-                    autoCorrect='off'
-                    min='0'
-                    minLength={1}
-                    pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
-                    disabled={disable}
-                />
-            </>
+            {isLoading && progressDisplay}
+            <input
+                id={`${fieldId}-quantity`}
+                className={styles.currency_quantity}
+                placeholder={isLoading ? '' : '0.0'}
+                tabIndex={0}
+                aria-live={ariaLive}
+                aria-label={`Enter ${fieldId} amount`}
+                onChange={(event) => {
+                    handleOnChange(event);
+                }}
+                value={isLoading ? '' : displayValue}
+                type='text'
+                inputMode='decimal'
+                autoComplete='off'
+                autoCorrect='off'
+                min='0'
+                minLength={1}
+                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                disabled={disable}
+            />
         </div>
     );
 }
