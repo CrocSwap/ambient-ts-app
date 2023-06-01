@@ -6086,7 +6086,7 @@ export default function Chart(props: propsIF) {
         liqMode,
     ]);
 
-    const candleOrVolumeDataHoverStatus = (event: any, showHr = true) => {
+    const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData?.xScale.invert(
             event.offsetX + bandwidth / 2,
         );
