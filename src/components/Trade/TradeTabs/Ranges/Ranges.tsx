@@ -98,8 +98,10 @@ function Ranges(props: propsIF) {
 
     const isConnectedUserRangeDataLoading =
         dataLoadingStatus?.isConnectedUserRangeDataLoading;
+
     const isLookupUserRangeDataLoading =
         dataLoadingStatus?.isLookupUserRangeDataLoading;
+
     const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
 
     const isRangeDataLoadingForPortfolio =
@@ -116,8 +118,8 @@ function Ranges(props: propsIF) {
 
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
-        1000,
-    ); // debounce 1/4 second
+        3000,
+    );
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
@@ -538,7 +540,11 @@ function Ranges(props: propsIF) {
     const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
-    const rangeDataOrNull = rangeData.length ? (
+
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !rangeData.length;
+
+    const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef}>{currentRowItemContent}</ul>
             {
@@ -576,7 +582,7 @@ function Ranges(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
+                {shouldDisplayLoadingAnimation ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     rangeDataOrNull

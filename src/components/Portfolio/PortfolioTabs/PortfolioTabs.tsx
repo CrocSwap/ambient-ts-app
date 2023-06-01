@@ -111,7 +111,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-
                 if (userPositions && crocEnv) {
                     Promise.all(
                         userPositions.map((position: PositionIF) => {
@@ -220,39 +219,28 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'querying user tx/order/positions because address changed',
-                );
-            if (!connectedAccountActive) {
-                if (resolvedAddress) {
-                    dispatch(resetLookupUserDataLoadingStatus());
-                    await getLookupUserTransactions(resolvedAddress);
-                    await getLookupUserLimitOrders(resolvedAddress);
-                    await getLookupUserPositions(resolvedAddress);
-                } else {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
+            if (
+                !connectedAccountActive &&
+                !!tokens.tokenUniv &&
+                resolvedAddress &&
+                !!crocEnv
+            ) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'querying user tx/order/positions because address changed',
                     );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserRangeData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
+                dispatch(resetLookupUserDataLoadingStatus());
+                await getLookupUserTransactions(resolvedAddress);
+                await getLookupUserLimitOrders(resolvedAddress);
+                await getLookupUserPositions(resolvedAddress);
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
+    }, [
+        resolvedAddress,
+        connectedAccountActive,
+        !!tokens.tokenUniv,
+        !!crocEnv,
+    ]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
