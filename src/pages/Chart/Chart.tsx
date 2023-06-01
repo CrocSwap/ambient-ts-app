@@ -205,8 +205,6 @@ export default function Chart(props: propsIF) {
         setChartTriggeredBy,
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
-        repositionRangeWidth,
-        setRepositionRangeWidth,
     } = useContext(RangeContext);
     const { expandTradeTable, handlePulseAnimation } =
         useContext(TradeTableContext);
@@ -274,12 +272,8 @@ export default function Chart(props: propsIF) {
     const location = useLocation();
     const position = location?.state?.position;
 
-    const simpleRangeWidth = location.pathname.includes('reposition')
-        ? repositionRangeWidth
-        : rangeSimpleRangeWidth;
-    const setSimpleRangeWidth = location.pathname.includes('reposition')
-        ? setRepositionRangeWidth
-        : setRangeSimpleRangeWidth;
+    const simpleRangeWidth = rangeSimpleRangeWidth;
+    const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -5978,7 +5972,6 @@ export default function Chart(props: propsIF) {
 
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
-
                     if (
                         (location.pathname.includes('range') ||
                             location.pathname.includes('reposition')) &&
