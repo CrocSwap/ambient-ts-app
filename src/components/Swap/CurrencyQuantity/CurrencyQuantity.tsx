@@ -40,7 +40,6 @@ function CurrencyQuantity(props: propsIF) {
         setIsSellLoading,
         isLoading,
     } = props;
-    // let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -156,7 +155,7 @@ function CurrencyQuantity(props: propsIF) {
                     autoCorrect='off'
                     min='0'
                     minLength={1}
-                    pattern='^[0-9]*\.?[0-9]*$'
+                    pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
                     disabled={disable}
                 />
             </>
