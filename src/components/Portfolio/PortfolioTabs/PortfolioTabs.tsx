@@ -44,7 +44,6 @@ import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 
 // interface for React functional component props
 interface propsIF {
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
@@ -56,7 +55,6 @@ interface propsIF {
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
         connectedAccountActive,
@@ -282,7 +280,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
@@ -291,7 +288,6 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,

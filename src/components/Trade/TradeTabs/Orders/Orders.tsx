@@ -518,17 +518,7 @@ function Orders(props: propsIF) {
 
             <div className={styles.table_content}>
                 {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     orderDataOrNull
                 )}

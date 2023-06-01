@@ -3,9 +3,10 @@ import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import Spinner from '../../../Spinner/Spinner';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
@@ -13,20 +14,30 @@ interface propsIF {
 }
 
 export default function Exchange(props: propsIF) {
-    const {
-        connectedAccountActive,
-        connectedUserTokens,
-        resolvedAddressTokens,
-        tokens,
-    } = props;
+    const { connectedAccountActive, resolvedAddressTokens, tokens } = props;
 
-    const ItemContent = connectedAccountActive
-        ? connectedUserTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} tokens={tokens} />
-          ))
-        : resolvedAddressTokens.map((item, idx) => (
-              <ExchangeCard key={idx} token={item} tokens={tokens} />
-          ));
+    const { nativeToken, erc20Tokens } = useAppSelector(
+        (state) => state.userData.tokens,
+    );
+    const connectedUserTokens = [nativeToken]
+        .concat(erc20Tokens)
+        .filter((token) => token);
+
+    const ItemContent = connectedAccountActive ? (
+        connectedUserTokens && connectedUserTokens[0] ? (
+            connectedUserTokens.map((item, idx) => (
+                <ExchangeCard key={idx} token={item} tokens={tokens} />
+            ))
+        ) : (
+            <Spinner size={100} bg='var(--dark1)' centered />
+        )
+    ) : resolvedAddressTokens && resolvedAddressTokens[0] ? (
+        resolvedAddressTokens.map((item, idx) => (
+            <ExchangeCard key={idx} token={item} tokens={tokens} />
+        ))
+    ) : (
+        <Spinner size={100} bg='var(--dark1)' centered />
+    );
 
     return (
         <div
