@@ -107,7 +107,7 @@ function TradeCharts(props: propsIF) {
     const canvasRef = useRef(null);
     const downloadAsImage = () => {
         if (canvasRef.current) {
-            printDomToImage(canvasRef.current);
+            printDomToImage(canvasRef.current, '#171d27');
         }
     };
 
