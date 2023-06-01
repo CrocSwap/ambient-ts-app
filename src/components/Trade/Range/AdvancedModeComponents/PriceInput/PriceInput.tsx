@@ -9,7 +9,6 @@ interface priceInputProps {
     title: string;
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    // onFocus: () => void;
     onBlur: FocusEventHandler<HTMLInputElement>;
     increaseTick: () => void;
     decreaseTick: () => void;
@@ -28,25 +27,6 @@ function PriceInput(props: priceInputProps) {
     } = props;
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
-    const priceInput = (
-        <input
-            id={`${fieldId}-price-input-quantity`}
-            className={styles.price_quantity}
-            type='text'
-            onChange={(event) => handleChangeEvent(event)}
-            onBlur={onBlur}
-            inputMode='decimal'
-            autoComplete='off'
-            autoCorrect='off'
-            min='0'
-            minLength={1}
-            pattern='^[0-9,]*[.]?[0-9]*$'
-            placeholder='0.0'
-            disabled={disable}
-            aria-label={`${fieldId} price input quantity.`}
-        />
-    );
-
     const percentageDifferenceString =
         percentageDifference >= 0
             ? '+' + percentageDifference
@@ -54,7 +34,6 @@ function PriceInput(props: priceInputProps) {
 
     return (
         <div className={styles.minMax_container} id={`range_${fieldId}_price`}>
-            {/* {disable && disabledContent} */}
             <span className={styles.title}>{title}</span>
             <div className={styles.price_input_container}>
                 <button
@@ -69,7 +48,22 @@ function PriceInput(props: priceInputProps) {
                         showRangePulseAnimation && styles.pulse_animation
                     }
                 >
-                    {priceInput}
+                    <input
+                        id={`${fieldId}-price-input-quantity`}
+                        className={styles.price_quantity}
+                        type='text'
+                        onChange={(event) => handleChangeEvent(event)}
+                        onBlur={onBlur}
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                        placeholder='0.0'
+                        disabled={disable}
+                        aria-label={`${fieldId} price input quantity.`}
+                    />
                 </span>
                 <button
                     className={styles.sign}

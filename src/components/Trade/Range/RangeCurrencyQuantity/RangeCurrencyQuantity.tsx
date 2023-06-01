@@ -39,7 +39,6 @@ function RangeCurrencyQuantity(props: propsIF) {
 
     const disabledContent = (
         <div className={styles.overlay_container}>
-            {/* <GoCircleSlash size={15} /> */}
             <div className={styles.disabled_text}>
                 The market is outside your specified range.
                 <div className={styles.warning_text}>

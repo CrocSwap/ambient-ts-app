@@ -30,8 +30,6 @@ interface MinMaxPriceIF {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    // setRangeLowTick: Dispatch<SetStateAction<number>>;
-    // setRangeHighTick: Dispatch<SetStateAction<number>>;
     maxPrice: number;
     minPrice: number;
     setMaxPrice: Dispatch<SetStateAction<number>>;
@@ -50,8 +48,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        // setRangeLowTick,
-        // setRangeHighTick,
         maxPrice,
         minPrice,
         setMaxPrice,
@@ -120,32 +116,23 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         if (maxPrice !== undefined && minPrice !== undefined) {
             const high = maxPrice;
             const low = minPrice;
-
             setMaxPriceInputString(
                 high !== undefined ? high.toString() : '0.0',
             );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
-
-            // lowBoundOnBlur();
-            // highBoundOnBlur();
         }
     }, [maxPrice, minPrice]);
 
     const increaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick + tickSize);
-
         dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
     };
     const increaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick + tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
     };
     const decreaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick - tickSize);
         dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
     };
     const decreaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick - tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
     };
 
