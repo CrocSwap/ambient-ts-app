@@ -17,13 +17,15 @@ export default function TradeNowButton(props: Props) {
                 inNav && styles.nav_action_button
             }`}
         >
-            <p
-                className={`${styles.button_text} ${
-                    inNav && styles.nav_button_text
-                }`}
-            >
-                {t('marketCTA')}
-            </p>
+            <div className={styles.content_container}>
+                <p
+                    className={`${styles.button_text} ${
+                        inNav && styles.nav_button_text
+                    }`}
+                >
+                    {t('marketCTA')}
+                </p>
+            </div>
         </Link>
     );
 }

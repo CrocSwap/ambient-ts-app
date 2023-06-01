@@ -843,7 +843,7 @@ export default function TransactionDetailsGraph(
     );
 
     const placeholderImage = (
-        <div className='transaction_details_graph_placeholder'></div>
+        <div className='transaction_details_graph_placeholder' />
     );
 
     const chartRender = (
