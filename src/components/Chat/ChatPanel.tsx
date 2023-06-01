@@ -98,27 +98,19 @@ function ChatPanel(props: propsIF) {
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
-                    lastMessage?.mentionedName === address
+                    (lastMessage?.mentionedName === address &&
+                        address !== undefined)
                 ) {
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
-                const timer = setTimeout(() => {
-                    messageEnd.current?.scrollTo(
-                        messageEnd.current?.scrollHeight,
-                        messageEnd.current?.scrollHeight,
-                    );
-                }, 100);
+                scrollToBottomButton();
 
                 setNotification(0);
-                return () => clearTimeout(timer);
             }
         } else {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
-            );
+            scrollToBottomButton();
         }
     }, [lastMessage]);
 
@@ -200,26 +192,26 @@ function ChatPanel(props: propsIF) {
     }
 
     const scrollToBottomButton = async () => {
-        setIsScrollToBottomButtonPressed(true);
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
-        );
+        setTimeout(() => {
+            setIsScrollToBottomButtonPressed(true);
+            messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+        }, 300);
         setScrollDirection('Scroll Down');
     };
 
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
-            );
+            messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
         }, 1000);
+        setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        if (0 <= e.target.scrollTop) {
+        if (
+            e.target.scrollHeight - e.target.scrollTop ===
+            e.target.clientHeight
+        ) {
             setNotification(0);
             setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
@@ -231,14 +223,13 @@ function ChatPanel(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
         if (
-            e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !==
-                messageEnd.current?.scrollHeight
+            e.target.scrollHeight - e.target.scrollTop !==
+            e.target.clientHeight
         ) {
             setScrollDirection('Scroll Up');
+        } else {
+            setNotification(0);
             setIsScrollToBottomButtonPressed(false);
-        }
-        if (0 <= messageEnd.current?.scrollTop) {
             setScrollDirection('Scroll Down');
         }
     };
