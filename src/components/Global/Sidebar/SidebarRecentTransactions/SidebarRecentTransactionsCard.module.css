@@ -9,6 +9,14 @@
     color: var(--text2);
     cursor: pointer;
     padding: 5px;
+    border-radius: var(--border-radius);
+}
+
+.container:hover{
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--dark2);
+    cursor: pointer;
+    
 }
 
 .container div {

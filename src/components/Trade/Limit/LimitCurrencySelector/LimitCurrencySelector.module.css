@@ -23,13 +23,6 @@
     color: var(--text2);
 }
 
-/* .surplus_container {
-    min-height: 33px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 6px 10px 0px 10px;
-} */
-
 .balance_with_pointer {
     display: flex;
     flex-direction: row;
@@ -73,13 +66,11 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    /* align-items: center; */
-    /* padding: 0.5rem 0; */
+
     min-height: 40px;
 
     display: grid;
     grid-template-columns: 1fr 120px;
-    /* height: 40px; */
 }
 
 /* .swap_input {
@@ -180,13 +171,6 @@
     justify-content: flex-end;
 }
 
-/* .main_wallet_container{
-    background-color: red;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-} */
-
 .max_button {
     cursor: pointer;
     font-size: var(--body-size);
@@ -194,18 +178,15 @@
     color: var(--text1);
     outline: none;
     border: none;
-    /* background: var(--dark2); */
     background: transparent;
 
     width: 25px;
-    /* margin-right: 8px; */
     max-height: 20px;
-    /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
+
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark2);
 }
 
 .max_button:hover {
@@ -245,10 +226,7 @@
         box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
         border-radius: var(--border-radius);
     }
-    /* 50% {
-    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
-    border-radius: var(--border-radius);
-  } */
+
     100% {
         box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
         border-radius: var(--border-radius);

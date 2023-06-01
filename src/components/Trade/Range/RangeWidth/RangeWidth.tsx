@@ -106,8 +106,9 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     onClick={() =>
                         openGlobalPopup(
                             <div>
-                                Ambient Range width percentage explanation goes
-                                here
+                                Ambient liquidity remains fully in range
+                                regardless of pool price, but accumulates
+                                rewards at lower rates.
                             </div>,
                             'Ambient Range Width',
                             'right',
@@ -127,7 +128,16 @@ function RangeWidth(props: RangeWidthPropsIF) {
             style={{ margin: '0 8px', cursor: 'pointer' }}
             onClick={() =>
                 openGlobalPopup(
-                    <div>Range width percentage explanation goes here</div>,
+                    <div>
+                        <p>
+                            Percentage width of the range around current pool
+                            price
+                        </p>
+                        <p>
+                            Tighter ranges accumulate rewards at faster, but are
+                            more likely to suffer divergence losses
+                        </p>
+                    </div>,
                     'Range Width',
                     'right',
                 )
