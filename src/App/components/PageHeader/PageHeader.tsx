@@ -142,6 +142,7 @@ const PageHeader = function () {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
+            style={!desktopScreen ? { width: '140px' } : undefined}
             onClick={() => openWagmiModal()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}

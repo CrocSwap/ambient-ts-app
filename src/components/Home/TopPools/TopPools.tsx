@@ -20,7 +20,6 @@ export default function TopPools() {
             animate={{ width: '100%' }}
             exit={{ x: window.innerWidth, transition: { duration: 2 } }}
         >
-            <div className={styles.divider} />
             <div className={styles.title} tabIndex={0} aria-label='Top Pools'>
                 {t('topPools')}
             </div>

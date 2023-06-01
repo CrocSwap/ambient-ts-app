@@ -31,6 +31,7 @@
     display: grid;
     overflow-y: hidden;
     grid-template-rows: auto 1fr ;
+    padding: 0 4px;
     }
     
     .main_list_expanded{
