@@ -3685,8 +3685,8 @@ export default function Chart(props: propsIF) {
 
                     const passValue =
                         liqMode === 'curve'
-                            ? liquidityData?.liqBoundaryCurve
-                            : liquidityData?.liqBoundaryDepth;
+                            ? liquidityData?.liqTransitionPointforCurve
+                            : liquidityData?.liqTransitionPointforDepth;
 
                     if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
                         const isScientificlowTick = low
@@ -4265,7 +4265,10 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        const passValue = poolPriceDisplay ?? 0;
+        const passValue =
+            liqMode === 'curve'
+                ? liquidityData?.liqTransitionPointforCurve
+                : liquidityData?.liqTransitionPointforDepth;
 
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
@@ -5779,7 +5782,7 @@ export default function Chart(props: propsIF) {
                         clipBidHighlightedLines(
                             ctx,
                             canvas.width,
-                            liquidityData?.liqBoundaryCurve,
+                            liquidityData?.liqTransitionPointforCurve,
                         );
 
                         lineBidSeries(liqDataBidCurve);
@@ -5800,7 +5803,7 @@ export default function Chart(props: propsIF) {
                         clipBidHighlightedLines(
                             ctxDepth,
                             canvas.width,
-                            liquidityData?.liqBoundaryDepth,
+                            liquidityData?.liqTransitionPointforDepth,
                         );
 
                         lineBidDepthSeries(liqDataBidDepth);
@@ -5899,7 +5902,7 @@ export default function Chart(props: propsIF) {
                     clipAskHighlightedLines(
                         ctx,
                         canvas.width,
-                        liquidityData?.liqBoundaryCurve,
+                        liquidityData?.liqTransitionPointforCurve,
                     );
                     lineAskSeries(liqDataAskCurve);
                 })
@@ -5915,7 +5918,7 @@ export default function Chart(props: propsIF) {
                     clipAskHighlightedLines(
                         ctxDepth,
                         canvas.width,
-                        liquidityData?.liqBoundaryDepth,
+                        liquidityData?.liqTransitionPointforDepth,
                     );
                     lineAskDepthSeries(liqDataAskDepth);
                 })
