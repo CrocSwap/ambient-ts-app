@@ -4,7 +4,6 @@ import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import {
     useParams,
     Outlet,
-    useOutletContext,
     Link,
     NavLink,
     useNavigate,
