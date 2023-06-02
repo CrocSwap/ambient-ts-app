@@ -37,16 +37,11 @@ const useChatSocket = (
     useEffect(() => {
         if (!areSubscriptionsEnabled || !isChatOpen) return;
 
-        const roomId = room;
-
-        // socketRef.current = io(CHAT_BACKEND_WSS_URL, {
-        //     path: '/chat/api/subscribe/',
-        //     query: { roomId },
-        // });
-
-        socketRef.current = io(CHAT_BACKEND_WSS_URL, {
-            query: { roomId, address, ensName },
-        });
+        if (address !== undefined && address != 'undefined') {
+            socketRef.current = io(CHAT_BACKEND_WSS_URL, {
+                query: { roomId: room, address, ensName },
+            });
+        }
 
         if (isChatOpen) {
             getMsg();
@@ -80,9 +75,11 @@ const useChatSocket = (
         }
 
         return () => {
-            socketRef.current.disconnect();
+            if (socketRef && socketRef.current) {
+                socketRef.current.disconnect();
+            }
         };
-    }, [room, areSubscriptionsEnabled, isChatOpen]);
+    }, [room, areSubscriptionsEnabled, isChatOpen, address]);
 
     async function getMsg() {
         if (!socketRef.current) return;

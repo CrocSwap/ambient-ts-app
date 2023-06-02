@@ -192,10 +192,11 @@ function ChatPanel(props: propsIF) {
     }
 
     const scrollToBottomButton = async () => {
+        messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
         setTimeout(() => {
             setIsScrollToBottomButtonPressed(true);
             messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
-        }, 300);
+        }, 101);
         setScrollDirection('Scroll Down');
     };
 
