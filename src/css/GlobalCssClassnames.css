@@ -171,7 +171,7 @@ aside.emoji-picker-react {
     display: inline-flex !important;
 }
 
-.css-1160xiw-MuiPaper-root-MuiDrawer-paper{
+.css-1160xiw-MuiPaper-root-MuiDrawer-paper, .css-1nvnyqx-MuiPaper-root-MuiDrawer-paper{
     /* display: none !important;  */
     background: var(--dark1) !important;
     margin-top: 50px !important;

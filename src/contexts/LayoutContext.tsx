@@ -3,6 +3,7 @@ import React, { createContext, useState } from 'react';
 export type LayoutHandler = {
     isTradeDrawerOpen: boolean;
     isSidebarDrawerOpen: boolean;
+    isTableDrawerOpen: boolean;
     toggleDefaultLayout: () => void;
     toggleSidebarDrawer: (
         open: boolean,
@@ -10,8 +11,12 @@ export type LayoutHandler = {
     toggleTradeDrawer: (
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleTableDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
     setIsSidebarDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTradeDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsTableDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LayoutHandlerContext = createContext<LayoutHandler>(
@@ -23,12 +28,12 @@ export const LayoutHandlerContextProvider = (props: {
 }) => {
     const [isTradeDrawerOpen, setIsTradeDrawerOpen] = useState(false);
     const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
-
-    console.log({ isSidebarDrawerOpen });
+    const [isTableDrawerOpen, setIsTableDrawerOpen] = useState(false);
 
     const toggleDefaultLayout = (): void => {
         setIsSidebarDrawerOpen(false);
         setIsTradeDrawerOpen(false);
+        setIsTableDrawerOpen(false);
     };
 
     const toggleSidebarDrawer =
@@ -54,8 +59,6 @@ export const LayoutHandlerContextProvider = (props: {
             }
 
             setIsSidebarDrawerOpen(true);
-
-            console.log('opening sidebar drawer');
         };
 
     const toggleTradeDrawer =
@@ -82,6 +85,30 @@ export const LayoutHandlerContextProvider = (props: {
 
             setIsTradeDrawerOpen(true);
         };
+    const toggleTableDrawer =
+        (
+            // eslint-disable-next-line
+            open: boolean,
+        ) =>
+        (event: React.KeyboardEvent | React.MouseEvent): void => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            if (
+                event.type === 'keydown' &&
+                (event as React.KeyboardEvent).key === 'Escape'
+            ) {
+                setIsTableDrawerOpen(false);
+                return;
+            }
+
+            setIsTableDrawerOpen(true);
+        };
 
     const layoutHandler: LayoutHandler = {
         isTradeDrawerOpen,
@@ -91,6 +118,9 @@ export const LayoutHandlerContextProvider = (props: {
         toggleTradeDrawer,
         setIsSidebarDrawerOpen,
         setIsTradeDrawerOpen,
+        isTableDrawerOpen,
+        setIsTableDrawerOpen,
+        toggleTableDrawer,
     };
 
     return (

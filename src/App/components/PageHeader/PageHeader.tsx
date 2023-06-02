@@ -62,6 +62,7 @@ const PageHeader = function () {
         toggleDefaultLayout,
         isSidebarDrawerOpen,
         isTradeDrawerOpen,
+        toggleTableDrawer,
     } = useContext(LayoutHandlerContext);
 
     const { address, isConnected } = useAccount();
@@ -434,6 +435,7 @@ const PageHeader = function () {
                                     toggleDefaultLayout={toggleDefaultLayout}
                                     isSidebarDrawerOpen={isSidebarDrawerOpen}
                                     isTradeDrawerOpen={isTradeDrawerOpen}
+                                    toggleTableDrawer={toggleTableDrawer}
                                 />
                             )}
                             <NetworkSelector switchNetwork={switchNetwork} />

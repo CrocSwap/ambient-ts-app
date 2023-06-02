@@ -520,7 +520,7 @@ function Transactions(props: propsIF) {
 
     const expandStyle = expandTradeTable
         ? mobileView
-            ? 'calc(100dvh - 15rem) '
+            ? 'calc(100dvh - 11.5rem) '
             : 'calc(100dvh - 9rem)'
         : '260px';
 

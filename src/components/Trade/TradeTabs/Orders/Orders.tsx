@@ -489,8 +489,8 @@ function Orders(props: propsIF) {
 
     const expandStyle = expandTradeTable
         ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
+            ? 'calc(100dvh - 11.5rem) '
+            : 'calc(100dvh - 9rem)'
         : '260px';
 
     const portfolioPageStyle = props.isAccountView

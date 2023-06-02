@@ -1,7 +1,7 @@
 .tokens_info {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
 }
 
@@ -34,9 +34,7 @@
 }
 
 .favorite_button {
-    margin-left: 3px;
-    margin-top: -3px;
-    margin-bottom: 6px;
+
     background: transparent;
     outline: none;
     border: none;
@@ -126,6 +124,19 @@
 }
 
 @media (min-width: 968px) {
+
+    .favorite_button {
+        margin-left: 3px;
+        margin-top: -3px;
+        margin-bottom: 6px;
+
+    }
+    .tokens_info {
+
+        align-items: flex-start;
+       
+    }
+
     .tokens_name {
         font-weight: 300;
         font-size: var(--header1-size);

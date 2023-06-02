@@ -343,22 +343,16 @@
     align-items: center;
     transition: all var(--animation-speed) ease-in-out;
 }
-@media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
-    .graph_container {
-        /* display: none; */
-        margin-bottom: 15px;
-    }
 
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
+  
     .main_container_chart {
-        height: 75vh;
+        height: 100%;
         overflow: hidden;
     }
 
-    /* .chart_image,
-    .time_frame_container,
-    .token_info_container {
-        display: none;
-    } */
+ 
 }
 
 @media (min-width: 680px) {

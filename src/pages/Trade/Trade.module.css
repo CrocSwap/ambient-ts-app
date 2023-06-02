@@ -431,3 +431,16 @@
 
 
 
+@media (max-width: 1020px) {
+    .middle_col_table{
+        display: none;
+    }
+
+    .middle_col {
+        height: 100%;
+    
+        background: var(--dark2);
+      
+        display: flex;
+    }
+}

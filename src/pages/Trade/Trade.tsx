@@ -10,7 +10,6 @@ import {
     useNavigate,
     useLocation,
 } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
@@ -54,8 +53,12 @@ function Trade() {
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
-        useContext(TradeTableContext);
+    const {
+        expandTradeTable,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -261,8 +264,12 @@ function Trade() {
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
-    const { setIsTradeDrawerOpen, isTradeDrawerOpen } =
-        useContext(LayoutHandlerContext);
+    const {
+        setIsTradeDrawerOpen,
+        isTradeDrawerOpen,
+        isTableDrawerOpen,
+        setIsTableDrawerOpen,
+    } = useContext(LayoutHandlerContext);
 
     return (
         <section className={`${styles.main_layout}`}>
@@ -285,18 +292,30 @@ function Trade() {
                     </div>
                 </div>
 
-                <motion.div
-                    className={
+                <div
+                    className={`${
                         expandTradeTable
                             ? styles.full_table_height
                             : styles.min_table_height
-                    }
+                    } ${styles.middle_col_table}`}
                 >
                     <div>
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>
-                </motion.div>
+                </div>
             </div>
+            <Drawer
+                anchor='top'
+                open={isTableDrawerOpen}
+                onClose={() => {
+                    setExpandTradeTable(false);
+                    setIsTableDrawerOpen(false);
+                }}
+            >
+                <div className={styles.full_table_height}>
+                    <TradeTabs2 {...tradeTabsProps} />
+                </div>
+            </Drawer>
             {!bottomTabs && mainContent}
 
             <Drawer
