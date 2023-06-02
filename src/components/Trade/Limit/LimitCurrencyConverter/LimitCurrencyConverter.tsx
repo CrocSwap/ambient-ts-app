@@ -198,6 +198,9 @@ function LimitCurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
+            dispatch(setLimitTick(undefined));
+            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+            dispatch(setPoolPriceNonDisplay(0));
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             linkGenLimit.navigate({
                 chain: chainId,
@@ -209,11 +212,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 setTokenAInputQty(tradeData.primaryQuantity);
             } else {
                 setTokenBInputQty(tradeData.primaryQuantity);
-            }
-            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-            dispatch(setPoolPriceNonDisplay(0));
-            if (!tradeData.shouldLimitDirectionReverse) {
-                dispatch(setLimitTick(undefined));
             }
         }
     };

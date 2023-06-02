@@ -330,12 +330,14 @@ export default function Limit() {
             }
         })();
     }, [
+        !!crocEnv,
         pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
+        isSellTokenBase,
     ]);
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
