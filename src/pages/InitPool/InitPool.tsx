@@ -118,7 +118,16 @@ export default function InitPool() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isInitPending, setIsInitPending] = useState(false);
 
-    const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceDOM, setInitialPriceDOM] = useState<
+        string | undefined
+    >();
+    useEffect(
+        () => setInitialPriceforContract(parseFloat(initialPriceDOM ?? '0')),
+        [initialPriceDOM],
+    );
+    const [initialPriceForContract, setInitialPriceforContract] = useState<
+        number | undefined
+    >();
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
     const defaultInitialPrice = 2000;
@@ -131,25 +140,26 @@ export default function InitPool() {
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
-        if (initialPrice) setInitialPrice(1 / initialPrice);
+        if (initialPriceForContract)
+            setInitialPriceforContract(1 / initialPriceForContract);
         setPlaceholderPrice(1 / placeHolderPrice);
     };
 
     useEffect(() => {
-        if (initialPrice !== undefined) {
-            setValueDisplayString(initialPrice.toString() || '');
+        if (initialPriceForContract !== undefined) {
+            setValueDisplayString(initialPriceForContract.toString() || '');
         }
-    }, [initialPrice]);
+    }, [initialPriceForContract]);
 
     useEffect(() => {
-        if (initialPrice) {
+        if (initialPriceForContract) {
             if (isDenomBase) {
-                setInitialPriceInBaseDenom(initialPrice);
+                setInitialPriceInBaseDenom(initialPriceForContract);
             } else {
-                setInitialPriceInBaseDenom(1 / initialPrice);
+                setInitialPriceInBaseDenom(1 / initialPriceForContract);
             }
         }
-    }, [isDenomBase, initialPrice]);
+    }, [isDenomBase, initialPriceForContract]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -331,7 +341,6 @@ export default function InitPool() {
                         <div className={styles.pool_display_container}>
                             <div className={styles.pool_display}>
                                 <div>
-                                    {/* <img src={tokenA.logoURI} alt='token a' /> */}
                                     {tokenA &&
                                         (tokenA.logoURI ? (
                                             <img
@@ -400,16 +409,19 @@ export default function InitPool() {
                                                     targetValue.startsWith('.')
                                                         ? '0' + targetValue
                                                         : targetValue;
-                                                const targetValueNum =
-                                                    parseFloat(input);
+                                                // const targetValueNum =
+                                                //     parseFloat(input);
                                                 isValid &&
                                                     setValueDisplayString(
                                                         input,
                                                     );
                                                 if (
                                                     isValid &&
-                                                    ((!isNaN(targetValueNum) &&
-                                                        targetValueNum !== 0) ||
+                                                    ((!isNaN(
+                                                        parseFloat(input),
+                                                    ) &&
+                                                        parseFloat(input) !==
+                                                            0) ||
                                                         event.target.value ===
                                                             '')
                                                 ) {
@@ -417,17 +429,17 @@ export default function InitPool() {
                                                         event.target.value ===
                                                         ''
                                                     ) {
-                                                        setInitialPrice(
+                                                        setInitialPriceDOM(
                                                             undefined,
                                                         );
                                                     } else {
-                                                        setInitialPrice(
-                                                            targetValueNum,
+                                                        setInitialPriceDOM(
+                                                            input,
                                                         );
                                                     }
                                                 }
                                             }}
-                                            value={valueDisplayString}
+                                            value={initialPriceDOM}
                                             inputMode='decimal'
                                             autoComplete='off'
                                             autoCorrect='off'
@@ -438,7 +450,7 @@ export default function InitPool() {
                                     </section>
                                 </div>
                                 <InitPoolExtraInfo
-                                    initialPrice={initialPrice}
+                                    initialPrice={initialPriceForContract}
                                     isDenomBase={isDenomBase}
                                     initGasPriceinDollars={
                                         initGasPriceinDollars
@@ -467,8 +479,8 @@ export default function InitPool() {
                                         tokenAApprovalButton
                                     ) : !isTokenBAllowanceSufficient ? (
                                         tokenBApprovalButton
-                                    ) : initialPrice === undefined ||
-                                      initialPrice <= 0 ? (
+                                    ) : initialPriceForContract === undefined ||
+                                      initialPriceForContract <= 0 ? (
                                         <Button
                                             title='Enter an Initial Price'
                                             disabled={true}
