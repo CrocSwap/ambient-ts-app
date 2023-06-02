@@ -12,10 +12,6 @@ import FocusTrap from 'focus-trap-react';
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
-import {
-    linkGenMethodsIF,
-    useLinkGen,
-} from '../../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../../utils/functions/openInNewTab';
 import {
     DISCORD_LINK,
@@ -23,6 +19,7 @@ import {
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../../../constants';
+import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 
 interface NavbarDropdownItemPropsIF {
     onClick: () => void;
@@ -41,12 +38,11 @@ interface NavbarDropdownMenuPropsIF {
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const { closeMenu, clickLogout, setIsNavbarMenuOpen } = props;
 
+    const [, , termsUrls] = useTermsAgreed();
+
     const dropdownRef = useRef(null);
 
     const isEscapePressed = useKeyPress('Escape');
-
-    const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
-    const linkGenPrivacy: linkGenMethodsIF = useLinkGen('privacy');
 
     useEffect(() => {
         if (isEscapePressed) {
@@ -105,12 +101,12 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
 
     const handleLegalPrivacyClick = () => {
-        linkGenPrivacy.navigate();
+        openInNewTab(`${window.location.origin}/${termsUrls.privacy}`);
         closeMenuBar();
     };
 
     const handleTOSClick = () => {
-        linkGenTOS.navigate();
+        openInNewTab(`${window.location.origin}/${termsUrls.tos}`);
         closeMenuBar();
     };
 
