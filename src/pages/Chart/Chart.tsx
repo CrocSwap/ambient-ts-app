@@ -648,7 +648,7 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(props.chartItemStates),
         expandTradeTable,
-        diffHashSigChart(unparsedCandleData),
+        lastCandleData,
         firstCandle,
     ]);
 
