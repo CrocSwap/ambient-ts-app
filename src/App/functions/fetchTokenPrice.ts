@@ -23,7 +23,7 @@ export const fetchTokenPrice = async (
             return result;
         }
     } catch (error) {
-        return null;
+        return undefined;
     }
 };
 
@@ -32,19 +32,22 @@ export type TokenPriceFn = (
     chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
-) => Promise<{
-    nativePrice?:
-        | {
-              value: string;
-              decimals: number;
-              name: string;
-              symbol: string;
-          }
-        | undefined;
-    usdPrice: number;
-    exchangeAddress?: string | undefined;
-    exchangeName?: string | undefined;
-}>;
+) => Promise<
+    | {
+          nativePrice?:
+              | {
+                    value: string;
+                    decimals: number;
+                    name: string;
+                    symbol: string;
+                }
+              | undefined;
+          usdPrice: number;
+          exchangeAddress?: string | undefined;
+          exchangeName?: string | undefined;
+      }
+    | undefined
+>;
 
 export function memoizeTokenPrice(): TokenPriceFn {
     return memoizePromiseFn(fetchTokenPrice);

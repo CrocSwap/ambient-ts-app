@@ -17,11 +17,14 @@ import {
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeFetchEnsAddress } from './fetchAddress';
+import { memoizeTokenPrice } from './fetchTokenPrice';
+import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedQueryPoolGrowth = memoizeQueryPoolGrowth();
 const cachedTokenDetails = memoizeFetchContractDetails();
 const cachedEnsResolve = memoizeFetchEnsAddress();
+const cachedFetchTokenPrice = memoizeTokenPrice();
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -71,8 +74,18 @@ export const getPositionData = async (
         '0x1',
     );
 
-    const pool = crocEnv.pool(position.base, position.quote);
-    const poolInv = crocEnv.pool(position.quote, position.base);
+    const basePricedToken = getMainnetEquivalent(baseTokenAddress, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        basePricedToken.token,
+        basePricedToken.chainId,
+        lastBlockNumber,
+    );
+    const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(
+        quotePricedToken.token,
+        quotePricedToken.chainId,
+        lastBlockNumber,
+    );
 
     newPosition.ensResolution = (await ensRequest) ?? '';
 
@@ -265,6 +278,32 @@ export const getPositionData = async (
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
+
+    const basePrice = await basePricePromise;
+    const quotePrice = await quotePricePromise;
+    const poolPrice = toDisplayPrice(
+        await poolPriceNonDisplay,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+    );
+
+    if (quotePrice && basePrice) {
+        newPosition.totalValueUSD =
+            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
+            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+    } else if (basePrice) {
+        const quotePrice = basePrice.usdPrice * poolPrice;
+        newPosition.totalValueUSD =
+            quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
+            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+    } else if (quotePrice) {
+        const basePrice = quotePrice.usdPrice / poolPrice;
+        newPosition.totalValueUSD =
+            basePrice * newPosition.positionLiqBaseDecimalCorrected +
+            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+    } else {
+        newPosition.totalValueUSD = 0.0;
+    }
 
     return newPosition;
 };
