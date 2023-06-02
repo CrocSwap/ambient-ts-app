@@ -20,7 +20,7 @@ export default function WalletCard(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
+    const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? tokens.getTokenByAddress(token.address)
@@ -43,9 +43,11 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const mainnetAddress = testTokenMap
-                    .get(tokenAddress)
-                    ?.split('_')[0];
+                const chain = tokenMapKey.split('_')[1];
+                const isChainMainnet = chain === '0x1';
+                const mainnetAddress = isChainMainnet
+                    ? tokenMapKey.split('_')[0]
+                    : testTokenMap.get(tokenMapKey)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
@@ -57,7 +59,7 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenAddress]);
+    }, [tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
