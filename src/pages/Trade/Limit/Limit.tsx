@@ -699,7 +699,7 @@ export default function Limit() {
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
-        limitTickDisplayPrice: endDisplayPrice,
+        limitTickDisplayPrice: middleDisplayPrice,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
