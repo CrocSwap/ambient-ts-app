@@ -160,9 +160,11 @@ export default function TransactionDetailsGraph(
                             ? calcNumberCandlesNeeded
                             : maxNumCandlesNeeded;
 
-                    const startBoundary = Math.floor(
-                        new Date().getTime() / 1000,
-                    );
+                    const offsetInSeconds = 120;
+
+                    const startBoundary =
+                        Math.floor(new Date().getTime() / 1000) -
+                        offsetInSeconds;
 
                     try {
                         const graphData = await fetchGraphData(
@@ -828,19 +830,7 @@ export default function TransactionDetailsGraph(
         [tx],
     );
 
-    const loadingSpinner = (
-        <div
-            style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner size={100} bg='var(--dark1)' />
-        </div>
-    );
+    const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;
 
     const placeholderImage = (
         <div className='transaction_details_graph_placeholder' />
