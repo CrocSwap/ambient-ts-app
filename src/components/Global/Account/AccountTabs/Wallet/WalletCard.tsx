@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 
 interface propsIF {
     token?: TokenIF;
@@ -18,6 +19,7 @@ export default function WalletCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const cachedFetchTokenPrice = memoizeTokenPrice();
 
@@ -51,6 +53,7 @@ export default function WalletCard(props: propsIF) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
                         '0x1',
+                        lastBlockNumber,
                     );
                     if (price) setTokenPrice(price);
                 }

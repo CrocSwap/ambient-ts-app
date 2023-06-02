@@ -3,7 +3,12 @@ import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 
-export const fetchTokenPrice = async (address: string, chainId: string) => {
+export const fetchTokenPrice = async (
+    address: string,
+    chainId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lastBlockNumber: number,
+) => {
     const chain = chainId === '0x1' ? EvmChain.ETHEREUM : EvmChain.ETHEREUM;
 
     try {
@@ -25,6 +30,8 @@ export const fetchTokenPrice = async (address: string, chainId: string) => {
 export type TokenPriceFn = (
     address: string,
     chain: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lastBlockNumber: number,
 ) => Promise<{
     nativePrice?:
         | {
@@ -40,5 +47,5 @@ export type TokenPriceFn = (
 }>;
 
 export function memoizeTokenPrice(): TokenPriceFn {
-    return memoizePromiseFn(fetchTokenPrice) as TokenPriceFn;
+    return memoizePromiseFn(fetchTokenPrice);
 }

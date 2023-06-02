@@ -1,11 +1,12 @@
 import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 
 interface propsIF {
     token?: TokenIF;
@@ -14,6 +15,7 @@ interface propsIF {
 
 export default function ExchangeCard(props: propsIF) {
     const { token, tokens } = props;
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const cachedFetchTokenPrice = memoizeTokenPrice();
 
@@ -47,6 +49,7 @@ export default function ExchangeCard(props: propsIF) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
                         '0x1',
+                        lastBlockNumber,
                     );
                     if (price) setTokenPrice(price);
                 }

@@ -17,6 +17,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { memoizeTokenPrice } from '../../../../App/functions/fetchTokenPrice';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 // interface for component props
 interface propsIF {
@@ -60,6 +61,7 @@ function RangePriceInfo(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
@@ -214,6 +216,7 @@ function RangePriceInfo(props: propsIF) {
             const tokenAMainnetEthPrice = await cachedFetchTokenPrice(
                 tokenAMainnetEquivalent,
                 '0x1',
+                lastBlockNumber,
             );
             const usdPrice = tokenAMainnetEthPrice?.usdPrice;
 
@@ -226,6 +229,7 @@ function RangePriceInfo(props: propsIF) {
             const tokenBMainnetEthPrice = await cachedFetchTokenPrice(
                 tokenBMainnetEquivalent,
                 '0x1',
+                lastBlockNumber,
             );
             const usdPrice = tokenBMainnetEthPrice?.usdPrice;
             setTokenBMainnetPrice(usdPrice);

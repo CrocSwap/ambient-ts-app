@@ -1,5 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
 import { memoizeTokenPrice } from '../App/functions/fetchTokenPrice';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
@@ -8,6 +8,7 @@ import { useBlacklist } from '../App/hooks/useBlacklist';
 import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
+import { ChainDataContext } from './ChainDataContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -22,7 +23,6 @@ interface CrocEnvContextIF {
     isChainSupported: boolean;
     topPools: topPoolIF[];
     ethMainnetUsdPrice: number | undefined;
-    setEthMainnetUsdPrice: (val: number) => void;
     defaultUrlParams: UrlRoutesTemplate;
 }
 
@@ -67,7 +67,6 @@ export const CrocEnvContextProvider = (props: {
         isChainSupported,
         topPools,
         ethMainnetUsdPrice,
-        setEthMainnetUsdPrice,
         defaultUrlParams,
     };
 
@@ -122,6 +121,10 @@ export const CrocEnvContextProvider = (props: {
         chainData.chainId,
         signer,
     ]);
+
+    const ETH_PRICE_REFRESH_SECS = 5;
+    const ethPriceRefreshWindow = Date.now() / ETH_PRICE_REFRESH_SECS;
+
     useEffect(() => {
         if (provider) {
             (async () => {
@@ -130,6 +133,7 @@ export const CrocEnvContextProvider = (props: {
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                     '0x1',
+                    ethPriceRefreshWindow,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);

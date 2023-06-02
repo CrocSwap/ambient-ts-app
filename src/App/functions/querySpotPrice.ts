@@ -13,7 +13,6 @@ export const querySpotPrice = async (
     if (!crocEnv) {
         return;
     }
-
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
 
