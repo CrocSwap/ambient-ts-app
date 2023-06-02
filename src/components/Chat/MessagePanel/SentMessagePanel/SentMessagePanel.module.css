@@ -276,5 +276,5 @@
 }
 
 .msg_bubble_container{
-    animation: msgBubbleAnim 0.2s ease-in-out forwards;
+    animation: msgBubbleAnim 0.1s ease-in-out forwards;
 }
