@@ -826,20 +826,6 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [isCandleDataNull]);
 
-    const loading = (
-        <div
-            style={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner size={100} bg='var(--dark2)' />
-        </div>
-    );
-
     useEffect(() => {
         const timer = setTimeout(() => {
             const shouldReload =
@@ -915,7 +901,7 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                     />
                 ) : (
-                    <>{loading}</>
+                    <Spinner size={100} bg='var(--dark2)' centered />
                 )}
             </div>
         </>

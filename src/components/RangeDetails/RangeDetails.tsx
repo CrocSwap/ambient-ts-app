@@ -14,6 +14,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     position: PositionIF;
@@ -77,7 +78,10 @@ export default function RangeDetails(props: propsIF) {
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
         }
     };
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
