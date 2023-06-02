@@ -6,20 +6,19 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
     tokens: tokenMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function WalletCard(props: propsIF) {
-    const { token, tokens } = props;
+    const { token, tokens, cachedFetchTokenPrice } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-
-    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
 

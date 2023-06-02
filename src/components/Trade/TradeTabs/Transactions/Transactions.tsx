@@ -24,7 +24,6 @@ import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -32,6 +31,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     activeAccountTransactionData?: TransactionIF[];
@@ -136,16 +136,13 @@ function Transactions(props: propsIF) {
         (isAccountView && isTxDataLoadingForPortfolio) ||
         (!isAccountView && isTxDataLoadingForTradeTable);
 
-    const shouldDisplayNoTableData = !transactionData.length;
-
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
-        2000,
-    ); // debounce 1 second
-    const debouncedShouldDisplayNoTableData = useDebounce(
-        shouldDisplayNoTableData,
         1000,
-    ); // debounce 1 second
+    );
+
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !transactionData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
@@ -486,7 +483,7 @@ function Transactions(props: propsIF) {
         }
     };
 
-    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+    const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
             changeState={changeState}
@@ -547,18 +544,8 @@ function Transactions(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                {shouldDisplayLoadingAnimation ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     transactionDataOrNull
                 )}

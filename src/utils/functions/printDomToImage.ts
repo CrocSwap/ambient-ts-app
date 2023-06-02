@@ -1,8 +1,6 @@
-import domtoimage from 'dom-to-image';
-const photoName =
-    'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
+import { domToPng } from 'modern-screenshot';
 
-const saveAs = (uri: string, filename: string) => {
+const saveAs = async (uri: string, filename: string) => {
     const link = document.createElement('a');
 
     if (typeof link.download === 'string') {
@@ -21,10 +19,27 @@ const saveAs = (uri: string, filename: string) => {
     }
 };
 
-const printDomToImage = (node: HTMLElement) => {
-    // if (canvasRef.current) {
-    domtoimage
-        .toJpeg(node)
+const printDomToImage = (
+    node: HTMLElement,
+    background?: string,
+    additionalStyles?: Partial<CSSStyleDeclaration>,
+) => {
+    const scale = 2;
+    const photoName =
+        'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
+
+    domToPng(node, {
+        height: node.offsetHeight * scale,
+        width: node.offsetWidth * scale,
+        backgroundColor: background,
+        style: {
+            transform: 'scale(' + scale + ')',
+            transformOrigin: 'top left',
+            width: node.offsetWidth + 'px',
+            height: node.offsetHeight + 'px',
+            ...additionalStyles,
+        },
+    })
         // eslint-disable-next-line
         .then(function (dataUrl: any) {
             const img = new Image();
@@ -35,7 +50,6 @@ const printDomToImage = (node: HTMLElement) => {
         .catch(function (error: any) {
             console.error('oops, something went wrong!', error);
         });
-    // }
 };
 
 export default printDomToImage;
