@@ -21,7 +21,6 @@ import RangesRow from './RangesTable/RangesRow';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 
 // react functional component
 function Leaderboard() {
@@ -35,8 +34,6 @@ function Leaderboard() {
     );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -55,35 +52,6 @@ function Leaderboard() {
 
     // prevent query from running multiple times for the same position more than once per minute
     const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
-
-    useEffect(() => {
-        if (topThreePositions) {
-            Promise.all(
-                topThreePositions.map((position: PositionIF) => {
-                    return cachedPositionUpdateQuery(
-                        position,
-                        currentTimeForPositionUpdateCaching,
-                    );
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (showAllData) {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    } else {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    }
-                })
-                .catch(console.error);
-        }
-    }, [
-        diffHashSig({
-            id0: topThreePositions[0]?.positionId,
-            id1: topThreePositions[1]?.positionId,
-            id2: topThreePositions[2]?.positionId,
-        }),
-        currentTimeForPositionUpdateCaching,
-        showAllData,
-    ]);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);

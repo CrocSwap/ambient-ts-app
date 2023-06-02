@@ -37,10 +37,15 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+} from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 
 // interface for React functional component props
 interface propsIF {
@@ -93,7 +98,7 @@ export default function PortfolioTabs(props: propsIF) {
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const userPositionsCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_positions?';
+        GRAPHCACHE_SMALL_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint =
         httpGraphCacheServerDomain + '/user_limit_order_states?';
 
@@ -116,7 +121,7 @@ export default function PortfolioTabs(props: propsIF) {
 
                 if (userPositions && crocEnv) {
                     Promise.all(
-                        userPositions.map((position: PositionIF) => {
+                        userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
                                 position,
                                 tokens.tokenUniv,

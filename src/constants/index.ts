@@ -29,6 +29,9 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
+export const GRAPHCACHE_SMALL_URL =
+    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net';
+
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
     GRAPHCACHE_URL.replace('http', 'ws');
@@ -47,7 +50,7 @@ export const CHAT_ENABLED =
 
 export const MORALIS_KEY =
     process.env.REACT_APP_MORALIS_KEY ||
-    'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5';
+    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;

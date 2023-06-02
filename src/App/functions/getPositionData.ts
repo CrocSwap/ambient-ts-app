@@ -11,7 +11,7 @@ import {
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
 import {
     memoizeQueryPoolGrowth,
     memoizeQuerySpotPrice,
@@ -19,7 +19,6 @@ import {
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeFetchEnsAddress } from './fetchAddress';
-import { BigNumber } from 'ethers';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedQueryPoolGrowth = memoizeQueryPoolGrowth();
@@ -253,7 +252,6 @@ export const getPositionData = async (
                 tickToPrice(position.askTick),
             ),
         );
-
         newPosition.positionLiqQuote = bigNumToFloat(
             quoteTokenForConcLiq(
                 await poolPriceNonDisplay,
@@ -266,7 +264,7 @@ export const getPositionData = async (
         newPosition.feesLiqBase =
             position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
         newPosition.feesLiqQuote =
-            position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
+            position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
     }
 
     newPosition.positionLiqBaseDecimalCorrected =
@@ -309,115 +307,6 @@ export const getPositionData = async (
               });
 
     return newPosition;
-};
-
-export const getPositionStatsJsonAsync = async (
-    user: string,
-    askTick: number,
-    bidTick: number,
-    base: string,
-    quote: string,
-    poolIdx: number,
-    chainId: string,
-    positionType: string,
-    addValue: boolean,
-) => {
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
-    const positionStatsCacheEndpoint =
-        httpGraphCacheServerDomain + '/position_stats?';
-
-    const json = await fetch(
-        positionStatsCacheEndpoint +
-            new URLSearchParams({
-                user: user.length === 40 ? '0x' + user : user,
-                askTick: askTick.toString(),
-                bidTick: bidTick.toString(),
-                base: base.length === 40 ? '0x' + base : base,
-                quote: quote.length === 40 ? '0x' + quote : quote,
-                poolIdx: poolIdx.toString(),
-                chainId: chainId,
-                positionType: positionType,
-                addValue: addValue.toString(),
-            }),
-    ).then((response) => response?.json());
-
-    return json;
-};
-
-export const updatePositionStats = async (
-    position: PositionIF,
-): Promise<PositionIF> => {
-    const updatedPosition = await getPositionStatsJsonAsync(
-        position.user.length === 40 ? '0x' + position.user : position.user,
-        position.askTick,
-        position.bidTick,
-
-        position.base.length === 40 ? '0x' + position.base : position.base,
-
-        position.quote.length === 40 ? '0x' + position.quote : position.quote,
-        position.poolIdx,
-        position.chainId,
-        position.positionType,
-        true,
-    )
-        .then((json) => {
-            const apy = json?.data.apy;
-            const totalValueUSD = json?.data.totalValueUSD;
-            const positionLiq = json?.data.positionLiq;
-            const positionLiqBase = json?.data.positionLiqBase;
-            const positionLiqBaseDecimalCorrected =
-                json?.data.positionLiqBaseDecimalCorrected;
-            const positionLiqQuote = json?.data.positionLiqQuote;
-            const positionLiqQuoteDecimalCorrected =
-                json?.data.positionLiqQuoteDecimalCorrected;
-
-            const liqBaseNum = positionLiqBaseDecimalCorrected;
-            const liqQuoteNum = positionLiqQuoteDecimalCorrected;
-
-            // TODO (#1569): token value formatting
-            const positionLiqBaseTruncated = !liqBaseNum
-                ? '0'
-                : liqBaseNum < 0.0001
-                ? liqBaseNum.toExponential(2)
-                : liqBaseNum < 2
-                ? liqBaseNum.toPrecision(3)
-                : liqBaseNum >= 10000
-                ? formatAmountOld(liqBaseNum)
-                : liqBaseNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-
-            const positionLiqQuoteTruncated = !liqQuoteNum
-                ? '0'
-                : liqQuoteNum < 0.0001
-                ? liqQuoteNum.toExponential(2)
-                : liqQuoteNum < 2
-                ? liqQuoteNum.toPrecision(3)
-                : liqQuoteNum >= 10000
-                ? formatAmountOld(liqQuoteNum)
-                : liqQuoteNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-
-            return Object.assign({}, position, {
-                apy: apy || 0,
-                totalValueUSD: totalValueUSD,
-                positionLiq: positionLiq,
-                positionLiqBase: positionLiqBase,
-                positionLiqQuote: positionLiqQuote,
-                positionLiqBaseDecimalCorrected:
-                    positionLiqBaseDecimalCorrected,
-                positionLiqQuoteDecimalCorrected:
-                    positionLiqQuoteDecimalCorrected,
-                positionLiqBaseTruncated: positionLiqBaseTruncated,
-                positionLiqQuoteTruncated: positionLiqQuoteTruncated,
-            });
-        })
-        .catch(console.error);
-
-    return updatedPosition || position;
 };
 
 export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
@@ -476,16 +365,8 @@ export type PositionStatsFn = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;
 
-export function memoizePoolStats(): PositionStatsFn {
-    return memoizeCacheQueryFn(getPositionStatsJsonAsync) as PositionStatsFn;
-}
-
 export type PositionUpdateFn = (
     position: PositionIF,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<PositionIF>;
-
-export function memoizePositionUpdate(): PositionUpdateFn {
-    return memoizeCacheQueryFn(updatePositionStats) as PositionUpdateFn;
-}

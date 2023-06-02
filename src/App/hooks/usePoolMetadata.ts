@@ -1,10 +1,13 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { ZERO_ADDRESS } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import {
+    PositionIF,
+    PositionServerIF,
+} from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
     setChangesByPool,
@@ -258,7 +261,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                     // retrieve pool_positions
                     const allPositionsCacheEndpoint =
-                        props.httpGraphCacheServerDomain + '/pool_positions?';
+                        GRAPHCACHE_SMALL_URL + '/pool_positions?';
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -288,7 +291,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             if (poolPositions && crocEnv) {
                                 Promise.all(
                                     poolPositions.map(
-                                        (position: PositionIF) => {
+                                        (position: PositionServerIF) => {
                                             return getPositionData(
                                                 position,
                                                 props.searchableTokens,
@@ -321,8 +324,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                     // retrieve positions for leaderboard
                     const poolPositionsCacheEndpoint =
-                        props.httpGraphCacheServerDomain +
-                        '/annotated_pool_positions?';
+                        GRAPHCACHE_SMALL_URL + '/pool_position_apy_leaders?';
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -347,7 +349,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             if (leaderboardPositions && crocEnv) {
                                 Promise.all(
                                     leaderboardPositions.map(
-                                        (position: PositionIF) => {
+                                        (position: PositionServerIF) => {
                                             return getPositionData(
                                                 position,
                                                 props.searchableTokens,

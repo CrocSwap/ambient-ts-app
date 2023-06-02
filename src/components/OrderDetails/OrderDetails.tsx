@@ -12,7 +12,11 @@ import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import {
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+} from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
@@ -149,7 +153,7 @@ export default function OrderDetails(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType) {

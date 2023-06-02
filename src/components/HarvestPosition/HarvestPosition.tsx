@@ -34,7 +34,11 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import {
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+} from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
@@ -135,7 +139,8 @@ export default function HarvestPosition(props: propsIF) {
         setTxErrorCode('');
     };
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
     const dispatch = useAppDispatch();
 
     const positionsPendingUpdate = useAppSelector(

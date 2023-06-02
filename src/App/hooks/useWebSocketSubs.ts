@@ -6,7 +6,10 @@ import { diffHashSig } from '../../utils/functions/diffHashSig';
 import isJsonString from '../../utils/functions/isJsonString';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import {
+    PositionIF,
+    PositionServerIF,
+} from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { TransactionIF } from '../../utils/interfaces/TransactionIF';
 import {
@@ -20,7 +23,6 @@ import {
     CandlesByPoolAndDuration,
 } from '../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { getPositionData } from '../functions/getPositionData';
 import { getTransactionData } from '../functions/getTransactionData';
 
 export interface WebSockerPropsIF {
@@ -72,53 +74,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.chainData.chainId,
         ],
     );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolLiqChangeMessage,
-        //  readyState
-    } = useWebSocket(
-        poolLiqChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            // onOpen: () => console.debug('pool liqChange subscription opened'),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // onClose: (event: any) => console.debug({ event }),
-            // onClose: () => console.debug('allPositions websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => props.shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect if base/quote token addresses are available
-        props.isServerEnabled &&
-            props.areSubscriptionsEnabled &&
-            props.baseTokenAddress !== '' &&
-            props.quoteTokenAddress !== '',
-    );
-
-    /* Consumes pool liquidity changes from the backend. */
-    useEffect(() => {
-        if (lastPoolLiqChangeMessage !== null) {
-            if (!isJsonString(lastPoolLiqChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastPoolLiqChangeMessage.data,
-            ).data;
-            if (lastMessageData && crocEnv) {
-                Promise.all(
-                    lastMessageData.map((position: PositionIF) => {
-                        return getPositionData(
-                            position,
-                            props.tokenUniv,
-                            crocEnv,
-                            props.chainData.chainId,
-                            props.lastBlockNumber,
-                        );
-                    }),
-                ).then((updatedPositions) => {
-                    dispatch(addPositionsByPool(updatedPositions));
-                });
-            }
-        }
-    }, [lastPoolLiqChangeMessage]);
 
     const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -209,51 +164,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             }),
         [props.userAddress, props.chainData.chainId],
     );
-
-    // Consumes from user liquidity change endpoint (i.e. range orders)
-    const { lastMessage: lastUserPositionsMessage } = useWebSocket(
-        userLiqChangesCacheSubscriptionEndpoint,
-        {
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => props.shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        props.isServerEnabled &&
-            props.areSubscriptionsEnabled &&
-            props.userAddress !== null &&
-            props.userAddress !== undefined,
-    );
-
-    // On new message pump the position/range order message into RTK slice
-    useEffect(() => {
-        try {
-            if (lastUserPositionsMessage !== null) {
-                if (!isJsonString(lastUserPositionsMessage.data)) return;
-
-                const lastMessageData = JSON.parse(
-                    lastUserPositionsMessage.data,
-                ).data;
-
-                if (lastMessageData && crocEnv) {
-                    Promise.all(
-                        lastMessageData.map((position: PositionIF) => {
-                            return getPositionData(
-                                position,
-                                props.tokenUniv,
-                                crocEnv,
-                                props.chainData.chainId,
-                                props.lastBlockNumber,
-                            );
-                        }),
-                    ).then((updatedPositions) => {
-                        dispatch(addPositionsByUser(updatedPositions));
-                    });
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }, [lastUserPositionsMessage]);
 
     const userRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>

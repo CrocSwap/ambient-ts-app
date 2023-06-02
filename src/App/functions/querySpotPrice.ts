@@ -41,6 +41,8 @@ export type PoolQueryFn = (
     blockNum: number,
 ) => Promise<number>;
 
+export type SpotPriceFn = PoolQueryFn;
+
 export function memoizeQuerySpotPrice(): PoolQueryFn {
     return memoizeCrocEnvFn(querySpotPrice) as PoolQueryFn;
 }

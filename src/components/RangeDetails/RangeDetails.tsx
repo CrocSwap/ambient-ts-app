@@ -11,9 +11,12 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
     position: PositionIF;
@@ -80,6 +83,9 @@ export default function RangeDetails(props: propsIF) {
             printDomToImage(detailsRef.current);
         }
     };
+
+    const { tokens } = useContext(TokenContext);
+
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
@@ -103,6 +109,8 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
@@ -114,7 +122,7 @@ export default function RangeDetails(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
         const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
         if (position.positionType) {
@@ -134,12 +142,23 @@ export default function RangeDetails(props: propsIF) {
                     }),
             )
                 .then((response) => response?.json())
-                .then((json) => {
-                    const positionStats = json?.data;
+                .then(async (json) => {
+                    if (!crocEnv) {
+                        return;
+                    }
+                    const positionPayload = json?.data as PositionServerIF;
+                    const positionStats = await getPositionData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                    );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
+
                     const liqBaseDisplay =
                         liqBaseNum !== undefined
                             ? liqBaseNum === 0
@@ -247,7 +266,8 @@ export default function RangeDetails(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, crocEnv, chainId]);
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },

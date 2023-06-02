@@ -44,7 +44,11 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import {
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+} from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -414,10 +418,9 @@ function Reposition() {
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const positionStatsCacheEndpoint =
-        httpGraphCacheServerDomain + '/position_stats?';
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {

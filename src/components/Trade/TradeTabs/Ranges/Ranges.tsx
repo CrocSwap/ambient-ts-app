@@ -38,7 +38,6 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
-import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -74,8 +73,6 @@ function Ranges(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
-    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -206,61 +203,6 @@ function Ranges(props: propsIF) {
         diffHashSig(topPositions.map((p) => p.positionId)),
         REFRESH_TOP_DELAY,
     );
-
-    useEffect(() => {
-        if (topPositions.length) {
-            Promise.all(
-                topPositions.map((position: PositionIF) => {
-                    return cachedPositionUpdateQuery(
-                        position,
-                        currentTimeForPositionUpdateCaching,
-                    );
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (!isAccountView) {
-                        if (showAllData) {
-                            const updatedPositionsMatchingPool =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.base.toLowerCase() ===
-                                            baseTokenAddress.toLowerCase() &&
-                                        position.quote.toLowerCase() ===
-                                            quoteTokenAddress.toLowerCase() &&
-                                        position.poolIdx === poolIndex &&
-                                        position.chainId === chainId,
-                                );
-                            if (updatedPositionsMatchingPool.length) {
-                                dispatch(
-                                    addPositionsByPool(
-                                        updatedPositionsMatchingPool,
-                                    ),
-                                );
-                            }
-                        } else {
-                            const updatedPositionsMatchingUser =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.user.toLowerCase() ===
-                                        userAddress?.toLowerCase(),
-                                );
-                            if (updatedPositionsMatchingUser.length)
-                                dispatch(
-                                    addPositionsByUser(
-                                        updatedPositionsMatchingUser,
-                                    ),
-                                );
-                        }
-                    } else {
-                        const newArray = updatedPositions.concat(
-                            sortedPositions.slice(NUM_ROWS_TO_SYNC),
-                        );
-                        setRangeData(newArray);
-                    }
-                })
-                .catch(console.error);
-        }
-    }, [sumHashTopPositions, showAllData, isAccountView, lastBlockNumber]);
 
     // ---------------------
     // transactions per page media queries

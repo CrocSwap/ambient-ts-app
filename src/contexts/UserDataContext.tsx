@@ -4,7 +4,12 @@ import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import useDebounce from '../App/hooks/useDebounce';
+import {
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+} from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
 import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
@@ -56,6 +61,11 @@ export const UserDataContextProvider = (props: {
 
     const userLimitOrderStatesCacheEndpoint =
         GRAPHCACHE_URL + '/user_limit_order_states?';
+
+    // Wait 1 second before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
     useEffect(() => {
         if (isServerEnabled && isConnected && userAddress && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
@@ -63,7 +73,7 @@ export const UserDataContextProvider = (props: {
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
-                GRAPHCACHE_URL + '/user_positions?';
+                GRAPHCACHE_SMALL_URL + '/user_positions?';
 
             try {
                 fetch(
@@ -251,6 +261,7 @@ export const UserDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         crocEnv,
+        lastBlockNumWait,
     ]);
 
     return (
