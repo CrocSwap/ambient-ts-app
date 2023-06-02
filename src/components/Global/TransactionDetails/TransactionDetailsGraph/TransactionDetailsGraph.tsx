@@ -160,9 +160,11 @@ export default function TransactionDetailsGraph(
                             ? calcNumberCandlesNeeded
                             : maxNumCandlesNeeded;
 
-                    const startBoundary = Math.floor(
-                        new Date().getTime() / 1000,
-                    );
+                    const offsetInSeconds = 120;
+
+                    const startBoundary =
+                        Math.floor(new Date().getTime() / 1000) -
+                        offsetInSeconds;
 
                     try {
                         const graphData = await fetchGraphData(
