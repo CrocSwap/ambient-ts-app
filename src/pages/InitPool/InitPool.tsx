@@ -396,6 +396,13 @@ export default function InitPool() {
                                                     : baseToken.symbol
                                             })`}
                                             type='string'
+                                            onBlur={(e) => {
+                                                setInitialPriceDOM(
+                                                    parseFloat(
+                                                        e.target.value,
+                                                    ).toString(),
+                                                );
+                                            }}
                                             onChange={(event) => {
                                                 const isValid =
                                                     event.target.value === '' ||
