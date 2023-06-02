@@ -454,7 +454,7 @@ export default function rangeRowConstants(props: Props) {
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}
-                isEmpty={position.totalValueUSD === 0}
+                isEmpty={position.positionLiq === 0}
                 justSymbol
             />
         </li>

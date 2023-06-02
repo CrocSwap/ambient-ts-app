@@ -139,7 +139,7 @@ function Ranges(props: propsIF) {
 
     const userPositionsToDisplayOnTrade =
         positionsByUserMatchingSelectedTokens.filter(
-            (position) => position.positionLiq !== '0',
+            (position) => position.positionLiq !== 0,
         );
 
     const sumHashActiveAccountPositionData = useMemo(

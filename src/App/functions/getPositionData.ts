@@ -1,7 +1,6 @@
 import {
     baseTokenForConcLiq,
     bigNumToFloat,
-    CHAIN_SPECS,
     CrocEnv,
     floatToBigNum,
     quoteTokenForConcLiq,
@@ -10,8 +9,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeCacheQueryFn } from './memoizePromiseFn';
-import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_URL } from '../../constants';
 import {
     memoizeQueryPoolGrowth,
     memoizeQuerySpotPrice,
@@ -72,6 +70,9 @@ export const getPositionData = async (
         newPosition.user,
         '0x1',
     );
+
+    const pool = crocEnv.pool(position.base, position.quote);
+    const poolInv = crocEnv.pool(position.quote, position.base);
 
     newPosition.ensResolution = (await ensRequest) ?? '';
 
@@ -209,9 +210,7 @@ export const getPositionData = async (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-    }
 
-    if (position.positionType !== 'ambient') {
         newPosition.lowRangeDisplayInQuote =
             lowerPriceDisplayInQuote < 0.0001
                 ? lowerPriceDisplayInQuote.toExponential(2)
@@ -234,16 +233,24 @@ export const getPositionData = async (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
+
+        newPosition.bidTickPriceDecimalCorrected = lowerPriceDisplayInQuote;
+        newPosition.bidTickInvPriceDecimalCorrected = lowerPriceDisplayInBase;
+        newPosition.askTickPriceDecimalCorrected = upperPriceDisplayInQuote;
+        newPosition.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
     }
 
     if (position.positionType == 'ambient') {
-        const ambientLiq = position.ambientSeeds * (1 + (await poolGrowthRate));
+        newPosition.positionLiq =
+            position.ambientSeeds * (1 + (await poolGrowthRate));
 
         newPosition.positionLiqBase =
-            ambientLiq * Math.sqrt(await poolPriceNonDisplay);
+            newPosition.positionLiq * Math.sqrt(await poolPriceNonDisplay);
         newPosition.positionLiqQuote =
-            ambientLiq / Math.sqrt(await poolPriceNonDisplay);
+            newPosition.positionLiq / Math.sqrt(await poolPriceNonDisplay);
     } else if (position.positionType == 'concentrated') {
+        newPosition.positionLiq = position.concLiq;
+
         newPosition.positionLiqBase = bigNumToFloat(
             baseTokenForConcLiq(
                 await poolPriceNonDisplay,
@@ -265,16 +272,16 @@ export const getPositionData = async (
             position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
         newPosition.feesLiqQuote =
             position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
+        newPosition.feesLiqBaseDecimalCorrected =
+            newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
+        newPosition.feesLiqQuoteDecimalCorrected =
+            newPosition.feesLiqQuote / Math.pow(10, quoteTokenDecimals);
     }
 
     newPosition.positionLiqBaseDecimalCorrected =
         newPosition.positionLiqBase / Math.pow(10, baseTokenDecimals);
     newPosition.positionLiqQuoteDecimalCorrected =
         newPosition.positionLiqQuote / Math.pow(10, quoteTokenDecimals);
-    newPosition.feesLiqBaseDecimalCorrected =
-        newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
-    newPosition.feesLiqQuoteDecimalCorrected =
-        newPosition.feesLiqQuote / Math.pow(10, quoteTokenDecimals);
 
     const liqBaseNum = newPosition.positionLiqBaseDecimalCorrected;
     newPosition.positionLiqBaseTruncated =

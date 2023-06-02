@@ -39,14 +39,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseDisplay,
-        // quoteDisplay,
         baseQuantityDisplayShort,
         quoteQuantityDisplayShort,
         truncatedLowDisplayPrice,
@@ -59,7 +51,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         txUsdValueLocaleString,
         baseTokenCharacter,
         quoteTokenCharacter,
-        // positionLiquidity,
     } = useProcessTransaction(tx, userAddress);
 
     const { pathname } = useLocation();

@@ -34,24 +34,12 @@ export default function TransactionDetailsSimplify(
         blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
         txUsdValueLocaleString,
-
         isDenomBase,
-        // baseTokenLogo,
-        // quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseQuantityDisplayShort,
-        // quoteQuantityDisplayShort,
         baseQuantityDisplayLong,
         quoteQuantityDisplayLong,
         baseTokenAddress,
@@ -66,7 +54,6 @@ export default function TransactionDetailsSimplify(
         baseTokenCharacter,
         quoteTokenCharacter,
         isBaseTokenMoneynessGreaterOrEqual,
-        // positionLiquidity,
     } = useProcessTransaction(tx, userAddress);
 
     const isAmbient = tx.positionType === 'ambient';
