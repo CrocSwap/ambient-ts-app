@@ -1,4 +1,3 @@
-import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './NetworkSelector.module.css';

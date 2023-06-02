@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useState, useRef, useEffect, memo } from 'react';
+import { ReactNode, useRef, useEffect, memo } from 'react';
 
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -41,7 +41,6 @@ interface NavbarDropdownMenuPropsIF {
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const { closeMenu, clickLogout, setIsNavbarMenuOpen } = props;
 
-    const [activeMenu, setActiveMenu] = useState('main');
     const dropdownRef = useRef(null);
 
     const isEscapePressed = useKeyPress('Escape');
@@ -127,7 +126,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 aria-label={ariaLabel}
             >
                 <CSSTransition
-                    in={activeMenu === 'main'}
+                    in={true}
                     unmountOnExit
                     timeout={300}
                     classNames='menu-primary'
