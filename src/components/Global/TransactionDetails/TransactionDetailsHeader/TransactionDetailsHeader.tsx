@@ -1,7 +1,7 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
@@ -22,7 +22,7 @@ export default function TransactionDetailsHeader(
         // tx,
         handleCopyAddress,
         onClose,
-        // downloadAsImage,
+        downloadAsImage,
         showShareComponent,
         setShowShareComponent,
     } = props;
@@ -43,13 +43,13 @@ export default function TransactionDetailsHeader(
         </IconWithTooltip>
     );
 
-    // const downloadIconWithTooltip = (
-    //     <IconWithTooltip title='Download shareable image' placement='bottom'>
-    //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text3)' />
-    //         </div>
-    //     </IconWithTooltip>
-    // );
+    const downloadIconWithTooltip = (
+        <IconWithTooltip title='Download shareable image' placement='bottom'>
+            <div onClick={downloadAsImage}>
+                <FiDownload size={25} color='var(--text3)' />
+            </div>
+        </IconWithTooltip>
+    );
 
     return (
         <div className={styles.container}>
@@ -67,8 +67,7 @@ export default function TransactionDetailsHeader(
                 </button>
 
                 {showShareComponent ? copyIconWithTooltip : phIcon}
-
-                {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
+                {showShareComponent ? downloadIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />

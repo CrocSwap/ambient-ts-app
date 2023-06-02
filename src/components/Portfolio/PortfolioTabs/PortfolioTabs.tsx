@@ -41,10 +41,10 @@ import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
 interface propsIF {
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
@@ -53,10 +53,11 @@ interface propsIF {
     tokens: tokenMethodsIF;
 }
 
+const cachedFetchTokenPrice = memoizeTokenPrice();
+
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
         connectedAccountActive,
@@ -113,7 +114,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-
                 if (userPositions && crocEnv) {
                     Promise.all(
                         userPositions.map((position: PositionIF) => {
@@ -222,39 +222,28 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'querying user tx/order/positions because address changed',
-                );
-            if (!connectedAccountActive) {
-                if (resolvedAddress) {
-                    dispatch(resetLookupUserDataLoadingStatus());
-                    await getLookupUserTransactions(resolvedAddress);
-                    await getLookupUserLimitOrders(resolvedAddress);
-                    await getLookupUserPositions(resolvedAddress);
-                } else {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
+            if (
+                !connectedAccountActive &&
+                !!tokens.tokenUniv &&
+                resolvedAddress &&
+                !!crocEnv
+            ) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'querying user tx/order/positions because address changed',
                     );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserRangeData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
+                dispatch(resetLookupUserDataLoadingStatus());
+                await getLookupUserTransactions(resolvedAddress);
+                await getLookupUserLimitOrders(resolvedAddress);
+                await getLookupUserPositions(resolvedAddress);
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
+    }, [
+        resolvedAddress,
+        connectedAccountActive,
+        !!tokens.tokenUniv,
+        !!crocEnv,
+    ]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -282,21 +271,21 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
         tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Range/> React Element

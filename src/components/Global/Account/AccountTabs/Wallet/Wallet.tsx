@@ -3,22 +3,32 @@ import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import Spinner from '../../../Spinner/Spinner';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
     tokens: tokenMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function Wallet(props: propsIF) {
     const {
         connectedAccountActive,
-        connectedUserTokens,
         resolvedAddressTokens,
         tokens,
+        cachedFetchTokenPrice,
     } = props;
+
+    const { nativeToken, erc20Tokens } = useAppSelector(
+        (state) => state.userData.tokens,
+    );
+    const connectedUserTokens = [nativeToken]
+        .concat(erc20Tokens)
+        .filter((token) => token);
 
     const userTokens = connectedAccountActive
         ? connectedUserTokens
@@ -36,13 +46,18 @@ export default function Wallet(props: propsIF) {
         >
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens.map((token) => (
-                    <WalletCard
-                        key={JSON.stringify(token)}
-                        token={token}
-                        tokens={tokens}
-                    />
-                ))}
+                {userTokens && userTokens.length > 0 ? (
+                    userTokens.map((token) => (
+                        <WalletCard
+                            key={JSON.stringify(token)}
+                            token={token}
+                            tokens={tokens}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        />
+                    ))
+                ) : (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                )}
             </div>
         </div>
     );

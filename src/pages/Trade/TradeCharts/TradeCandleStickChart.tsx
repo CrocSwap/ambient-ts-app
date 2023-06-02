@@ -386,7 +386,10 @@ function TradeCandleStickChart(props: propsIF) {
                         cumAverageUSD: data.cumAverageUSD
                             ? data.cumAverageUSD
                             : 0,
-                        upperBound: data.upperBound,
+                        upperBound:
+                            data.upperBound === '+inf'
+                                ? data.lowerBound
+                                : data.upperBound,
                         lowerBound: data.lowerBound,
                     });
                 } else {
@@ -403,7 +406,10 @@ function TradeCandleStickChart(props: propsIF) {
                             cumAverageUSD: data.cumAverageUSD
                                 ? data.cumAverageUSD
                                 : 0,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                     }
@@ -422,7 +428,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqBidData[0].liqPrices;
@@ -438,7 +447,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
 
@@ -457,7 +469,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = liqUpperPrices;
@@ -475,7 +490,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqAskData[0].liqPrices;
@@ -575,7 +593,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setScaleForChart(unparsedCandleData, false);
-    }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
+    }, [unparsedCandleData === undefined]);
 
     // Liq Scale
     useEffect(() => {
@@ -792,7 +810,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [period, diffHashSig(unparsedCandleData)]);
+    }, [diffHashSig(tokenPair), period, diffHashSig(unparsedCandleData)]);
 
     // resetting Chart
     useEffect(() => {
@@ -808,20 +826,6 @@ function TradeCandleStickChart(props: propsIF) {
             });
         }
     }, [isCandleDataNull]);
-
-    const loading = (
-        <div
-            style={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner size={100} bg='var(--dark2)' />
-        </div>
-    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -898,7 +902,7 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                     />
                 ) : (
-                    <>{loading}</>
+                    <Spinner size={100} bg='var(--dark2)' centered />
                 )}
             </div>
         </>
