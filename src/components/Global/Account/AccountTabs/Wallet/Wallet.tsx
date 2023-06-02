@@ -5,16 +5,23 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import Spinner from '../../../Spinner/Spinner';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
     tokens: tokenMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function Wallet(props: propsIF) {
-    const { connectedAccountActive, resolvedAddressTokens, tokens } = props;
+    const {
+        connectedAccountActive,
+        resolvedAddressTokens,
+        tokens,
+        cachedFetchTokenPrice,
+    } = props;
 
     const { nativeToken, erc20Tokens } = useAppSelector(
         (state) => state.userData.tokens,
@@ -45,6 +52,7 @@ export default function Wallet(props: propsIF) {
                             key={JSON.stringify(token)}
                             token={token}
                             tokens={tokens}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ))
                 ) : (

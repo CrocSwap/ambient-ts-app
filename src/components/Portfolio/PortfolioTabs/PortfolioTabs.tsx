@@ -41,6 +41,7 @@ import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,6 +52,8 @@ interface propsIF {
     fullLayoutToggle: JSX.Element;
     tokens: tokenMethodsIF;
 }
+
+const cachedFetchTokenPrice = memoizeTokenPrice();
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
@@ -272,6 +275,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Exchange/> React Element
@@ -281,6 +285,7 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
         tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Range/> React Element
