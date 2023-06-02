@@ -125,7 +125,6 @@ export default function App() {
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar />;
@@ -210,8 +209,7 @@ export default function App() {
                 }
             >
                 <AppOverlay />
-
-                {currentLocation !== '/404' && <PageHeader />}
+                <PageHeader />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
@@ -321,6 +319,10 @@ export default function App() {
                             element={<Portfolio userAccount={false} />}
                         />
                         <Route path='/404' element={<NotFound />} />
+                        <Route
+                            path='*'
+                            element={<Navigate to='/404' replace />}
+                        />
                     </Routes>
                 </section>
             </div>

@@ -572,8 +572,8 @@ function TradeCandleStickChart(props: propsIF) {
                 lineAskSeries: [],
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqBoundaryCurve: liqBoundary,
-                liqBoundaryDepth: liqBoundaryDepth,
+                liqTransitionPointforCurve: liqBoundary,
+                liqTransitionPointforDepth: liqBoundaryDepth,
             };
         } else {
             setIsLoading(true);
@@ -810,8 +810,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [diffHashSig(tokenPair), period, diffHashSig(unparsedCandleData)]);
-
+    }, [period, diffHashSig(unparsedCandleData)]);
     // resetting Chart
     useEffect(() => {
         if (isCandleDataNull && scaleData && scaleData?.xScaleCopy) {
@@ -826,20 +825,6 @@ function TradeCandleStickChart(props: propsIF) {
             });
         }
     }, [isCandleDataNull]);
-
-    const loading = (
-        <div
-            style={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner size={100} bg='var(--dark2)' />
-        </div>
-    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -916,7 +901,7 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                     />
                 ) : (
-                    <>{loading}</>
+                    <Spinner size={100} bg='var(--dark2)' centered />
                 )}
             </div>
         </>
