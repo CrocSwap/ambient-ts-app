@@ -17,6 +17,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
+    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
@@ -29,7 +30,7 @@ import LimitRate from '../LimitRate/LimitRate';
 import styles from './LimitCurrencyConverter.module.css';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import {
@@ -193,6 +194,8 @@ function LimitCurrencyConverter(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
+    const limitTickCopied = tradeData.limitTickCopied;
+
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
             return;
@@ -204,12 +207,13 @@ function LimitCurrencyConverter(props: propsIF) {
             }
 
             dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-            IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
-            linkGenLimit.navigate({
-                chain: chainId,
-                tokenA: tradeData.tokenB.address,
-                tokenB: tradeData.tokenA.address,
-            });
+            if (!limitTickCopied) {
+                linkGenLimit.navigate({
+                    chain: chainId,
+                    tokenA: tradeData.tokenB.address,
+                    tokenB: tradeData.tokenA.address,
+                });
+            }
             if (!isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
@@ -225,6 +229,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 reverseTokens();
                 return !state;
             });
+            dispatch(setShouldLimitDirectionReverse(false));
         }
     }, [tradeData.shouldLimitDirectionReverse]);
 
@@ -251,6 +256,9 @@ function LimitCurrencyConverter(props: propsIF) {
                 setLimitButtonErrorMessage('...');
             if (isPoolInitialized === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
+        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Enter an Amount');
         } else if (!isOrderValid) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage(
@@ -261,9 +269,6 @@ function LimitCurrencyConverter(props: propsIF) {
                         : 'Below Minimum'
                 }  Price`,
             );
-        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage('Enter an Amount');
         } else {
             if (isWithdrawFromDexChecked) {
                 if (

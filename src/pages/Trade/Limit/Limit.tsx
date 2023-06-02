@@ -31,7 +31,6 @@ import {
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setLimitTick,
-    setShouldLimitDirectionReverse,
     setLimitTickCopied,
 } from '../../../utils/state/tradeDataSlice';
 import {
@@ -145,13 +144,7 @@ export default function Limit() {
         () => pool?.baseToken.tokenAddr === tokenA.address,
         [pool?.baseToken, tokenA.address],
     );
-    useEffect(() => {
-        if (!tradeData.shouldLimitDirectionReverse) {
-            dispatch(setLimitTick(undefined));
-        }
 
-        dispatch(setShouldLimitDirectionReverse(false));
-    }, [tradeData.shouldLimitDirectionReverse]);
     useEffect(() => {
         (async () => {
             if (limitTick === undefined && crocEnv && !limitTickCopied) {
@@ -357,6 +350,8 @@ export default function Limit() {
             }
             if (!limitTick) return;
 
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
+
             const testOrder = isTokenAPrimary
                 ? crocEnv.sell(tokenA.address, 0)
                 : crocEnv.buy(tokenB.address, 0);
@@ -382,6 +377,8 @@ export default function Limit() {
         updateOrderValidityStatus();
     }, [
         isTokenAPrimary,
+        isSellTokenBase,
+        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
         tokenA.address + tokenB.address,

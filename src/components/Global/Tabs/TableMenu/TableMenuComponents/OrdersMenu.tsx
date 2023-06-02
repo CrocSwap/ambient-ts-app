@@ -16,13 +16,11 @@ import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
-    setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitConverterUpdate,
+    setShouldLimitDirectionReverse,
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
-import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
@@ -87,76 +85,17 @@ export default function OrdersMenu(props: propsIF) {
     function handleCopyOrder() {
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
-        if (IS_LOCAL_ENV) {
-            console.debug({ tradeData });
-            console.debug({ limitOrder });
-        }
-        const shouldMovePrimaryQuantity =
+
+        const shouldReverse =
             tradeData.tokenA.address.toLowerCase() ===
             (limitOrder.isBid
                 ? limitOrder.quote.toLowerCase()
                 : limitOrder.base.toLowerCase());
 
-        IS_LOCAL_ENV && console.debug({ shouldMovePrimaryQuantity });
-        const shouldClearNonPrimaryQty =
-            tradeData.limitTick !== limitOrder.askTick &&
-            (tradeData.isTokenAPrimary
-                ? tradeData.tokenA.address.toLowerCase() ===
-                  (limitOrder.isBid
-                      ? limitOrder.base.toLowerCase()
-                      : limitOrder.quote.toLowerCase())
-                    ? true
-                    : false
-                : tradeData.tokenB.address.toLowerCase() ===
-                  (limitOrder.isBid
-                      ? limitOrder.quote.toLowerCase()
-                      : limitOrder.base.toLowerCase())
-                ? true
-                : false);
-        if (shouldMovePrimaryQuantity) {
-            IS_LOCAL_ENV && console.debug('flipping primary');
-            const sellQtyField = document.getElementById(
-                'sell-limit-quantity',
-            ) as HTMLInputElement;
-            const buyQtyField = document.getElementById(
-                'buy-limit-quantity',
-            ) as HTMLInputElement;
-
-            if (tradeData.isTokenAPrimary) {
-                if (buyQtyField) {
-                    buyQtyField.value = sellQtyField.value;
-                }
-                if (sellQtyField) {
-                    sellQtyField.value = '';
-                }
-            } else {
-                if (sellQtyField) {
-                    sellQtyField.value = buyQtyField.value;
-                }
-                if (buyQtyField) {
-                    buyQtyField.value = '';
-                }
-            }
-            dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-            dispatch(setShouldLimitConverterUpdate(true));
-        } else if (shouldClearNonPrimaryQty) {
-            if (!tradeData.isTokenAPrimary) {
-                const sellQtyField = document.getElementById(
-                    'sell-limit-quantity',
-                ) as HTMLInputElement;
-                if (sellQtyField) {
-                    sellQtyField.value = '';
-                }
-            } else {
-                const buyQtyField = document.getElementById(
-                    'buy-limit-quantity',
-                ) as HTMLInputElement;
-                if (buyQtyField) {
-                    buyQtyField.value = '';
-                }
-            }
-            IS_LOCAL_ENV && console.debug('resetting');
+        if (shouldReverse) {
+            dispatch(setShouldLimitDirectionReverse(true));
         }
+
         setTimeout(() => {
             dispatch(
                 setLimitTick(
@@ -269,7 +208,7 @@ export default function OrdersMenu(props: propsIF) {
             className={styles.option_button}
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
-                dispatch(setLimitTick(undefined));
+                // dispatch(setLimitTick(undefined));
                 linkGenLimit.navigate(
                     limitOrder.isBid
                         ? {
