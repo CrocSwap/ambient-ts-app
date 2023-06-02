@@ -4,6 +4,7 @@ import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
@@ -16,7 +17,6 @@ import {
 interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
-    isRangeCopied: boolean;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -25,12 +25,12 @@ function RangeWidth(props: RangeWidthPropsIF) {
     const {
         rangeWidthPercentage,
         setRangeWidthPercentage,
-        isRangeCopied,
         setRescaleRangeBoundariesWithSlider,
     } = props;
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const PercentageOptionContent = (
         <>
@@ -106,8 +106,9 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     onClick={() =>
                         openGlobalPopup(
                             <div>
-                                Ambient Range width percentage explanation goes
-                                here
+                                Ambient liquidity remains fully in range
+                                regardless of pool price, but accumulates
+                                rewards at lower rates.
                             </div>,
                             'Ambient Range Width',
                             'right',
@@ -127,7 +128,16 @@ function RangeWidth(props: RangeWidthPropsIF) {
             style={{ margin: '0 8px', cursor: 'pointer' }}
             onClick={() =>
                 openGlobalPopup(
-                    <div>Range width percentage explanation goes here</div>,
+                    <div>
+                        <p>
+                            Percentage width of the range around current pool
+                            price
+                        </p>
+                        <p>
+                            Tighter ranges accumulate rewards at faster, but are
+                            more likely to suffer divergence losses
+                        </p>
+                    </div>,
                     'Range Width',
                     'right',
                 )
@@ -143,7 +153,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 {PercentageOptionContent}
                 <span
                     className={`${styles.percentage_amount} ${
-                        isRangeCopied && styles.pulse_animation
+                        showRangePulseAnimation && styles.pulse_animation
                     }`}
                     id='percentage-output'
                     aria-live='polite'

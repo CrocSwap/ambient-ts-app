@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    useState,
-    useRef,
-    useEffect,
-    Dispatch,
-    SetStateAction,
-    useContext,
-} from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
@@ -18,7 +11,6 @@ import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
@@ -34,38 +26,31 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     userMatchesConnectedAccount: boolean | undefined;
     // todoFromJr: Assign the correct types to these data -Jr
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isPositionEmpty: boolean;
-    handlePulseAnimation?: (type: string) => void;
     showHighlightedButton: boolean;
     isEmpty: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
     isPositionInRange: boolean;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
     handleAccountClick: () => void;
-    isShowAllEnabled: boolean;
 }
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
-    const { sidebar } = useContext(AppStateContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -74,17 +59,18 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount,
         rangeDetailsProps,
         position,
-        handlePulseAnimation,
-        setSimpleRangeWidth,
         isPositionInRange,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-        chainData,
     } = props;
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const { sidebar } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -112,7 +98,6 @@ export default function RangesMenu(props: propsIF) {
             <RangeDetails
                 position={position}
                 closeGlobalModal={closeGlobalModal}
-                chainData={chainData}
                 {...rangeDetailsProps}
             />,
         );
@@ -124,9 +109,7 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
-        {
-            handlePulseAnimation ? handlePulseAnimation('range') : null;
-        }
+        handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {
             setSimpleRangeWidth(100);
@@ -148,7 +131,7 @@ export default function RangesMenu(props: propsIF) {
         <Link
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
-                chain: chainData.chainId,
+                chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,
                 lowTick: position.bidTick.toString(),
@@ -171,7 +154,7 @@ export default function RangesMenu(props: propsIF) {
             style={{ opacity: '1' }}
             className={styles.option_button}
             to={linkGenRange.getFullURL({
-                chain: chainData.chainId,
+                chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,
                 lowTick: position.bidTick.toString(),
@@ -188,7 +171,7 @@ export default function RangesMenu(props: propsIF) {
             style={{ opacity: '1' }}
             className={styles.option_button}
             to={linkGenRange.getFullURL({
-                chain: chainData.chainId,
+                chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,
                 lowTick: position.bidTick.toString(),
@@ -312,8 +295,6 @@ export default function RangesMenu(props: propsIF) {
                     <HarvestPosition
                         handleModalClose={handleModalClose}
                         position={position}
-                        gasPriceInGwei={gasPriceInGwei}
-                        ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
                 </Modal>
@@ -327,8 +308,6 @@ export default function RangesMenu(props: propsIF) {
                     <RemoveRange
                         position={position}
                         handleModalClose={handleModalClose}
-                        gasPriceInGwei={gasPriceInGwei}
-                        ethMainnetUsdPrice={ethMainnetUsdPrice}
                         {...rangeDetailsProps}
                     />
                 </Modal>

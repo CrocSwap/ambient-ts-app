@@ -1,16 +1,8 @@
 // START: Import React and Dongles
-import {
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-} from 'react';
+import { useState, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
-import { BsChevronBarDown } from 'react-icons/bs';
+import { BsChevronBarDown, BsChevronBarUp } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -29,86 +21,41 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import { TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { memoizePoolStats } from '../../functions/getPoolStats';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
-import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { topPoolIF } from '../../hooks/useTopPools';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../hooks/useTokens';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { usePoolList } from '../../hooks/usePoolList';
+import { memoizePoolStats } from '../../functions/getPoolStats';
+import { Drawer } from '@mui/material';
+import { LayoutHandlerContext } from '../../../contexts/LayoutContext';
 
-const cachedPoolStatsFetch = memoizePoolStats();
+function Sidebar() {
+    const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
-// interface for component props
-interface propsIF {
-    tradeData: tradeData;
-    isDenomBase: boolean;
-    chainId: string;
-    poolId: number;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    analyticsSearchInput: string;
-    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    lastBlockNumber: number;
-    openModalWallet: () => void;
-    poolList: TempPoolIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    tokenPair: TokenPairIF;
-    recentPools: recentPoolsMethodsIF;
-    isConnected: boolean;
-    topPools: topPoolIF[];
-    tokens: tokenMethodsIF;
-}
-
-function Sidebar(props: propsIF) {
     const {
-        tradeData,
-        isDenomBase,
-        chainId,
-        poolId,
-        setCurrentTxActiveInTransactions,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-        lastBlockNumber,
-        setAnalyticsSearchInput,
-        openModalWallet,
-        poolList,
-        tokenPair,
-        recentPools,
-        isConnected,
-        topPools,
-        tokens,
-    } = props;
-
-    const { sidebar } = useContext(AppStateContext);
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+    const { sidebar } = useContext(SidebarContext);
 
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+    const cachedPoolStatsFetch = memoizePoolStats();
 
-    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
-    const bottomTabs = useMediaQuery('(max-width: 1020px)');
+    const poolList = usePoolList(chainId, poolIndex);
 
-    useEffect(() => {
-        overflowSidebarMQ
-            ? sidebar.close()
-            : sidebar.isOpen
-            ? sidebar.open()
-            : null;
-
-        if (bottomTabs) sidebar.open();
-    }, [overflowSidebarMQ, sidebar.isOpen, bottomTabs]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
@@ -128,15 +75,7 @@ function Sidebar(props: propsIF) {
             name: 'Recent Pools',
             icon: recentPoolsImage,
 
-            data: (
-                <RecentPools
-                    tradeData={tradeData}
-                    chainId={chainId}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    recentPools={recentPools}
-                />
-            ),
+            data: <RecentPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
     const topPoolsSection = [
@@ -144,16 +83,7 @@ function Sidebar(props: propsIF) {
             name: 'Top Pools',
             icon: topPoolsImage,
 
-            data: (
-                <TopPools
-                    tradeData={tradeData}
-                    chainId={chainId}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    poolList={poolList}
-                    topPools={topPools}
-                />
-            ),
+            data: <TopPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
 
@@ -161,16 +91,7 @@ function Sidebar(props: propsIF) {
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
-            data: (
-                <SidebarRangePositions
-                    chainId={chainId}
-                    userPositions={mostRecentPositions}
-                    isDenomBase={isDenomBase}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    isUserLoggedIn={isConnected}
-                />
-            ),
+            data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
     ];
 
@@ -179,15 +100,7 @@ function Sidebar(props: propsIF) {
             name: 'Limit Orders',
             icon: openOrdersImage,
             data: (
-                <SidebarLimitOrders
-                    chainId={chainId}
-                    isDenomBase={isDenomBase}
-                    tokens={tokens}
-                    limitOrderByUser={mostRecentLimitOrders}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    isUserLoggedIn={isConnected}
-                />
+                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
         },
     ];
@@ -197,14 +110,7 @@ function Sidebar(props: propsIF) {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
 
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    chainId={chainId}
-                    poolId={poolId}
-                />
-            ),
+            data: <FavoritePools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
         },
     ];
 
@@ -214,13 +120,7 @@ function Sidebar(props: propsIF) {
             icon: recentTransactionsImage,
             data: (
                 <SidebarRecentTransactions
-                    chainId={chainId}
                     mostRecentTransactions={mostRecentTxs}
-                    setCurrentTxActiveInTransactions={
-                        setCurrentTxActiveInTransactions
-                    }
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    isUserLoggedIn={isConnected}
                 />
             ),
         },
@@ -282,7 +182,7 @@ function Sidebar(props: propsIF) {
                 className={styles.search__box}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {!searchInput && (
+            {!searchInput && !bottomTabs && (
                 <div
                     onClick={handleInputClearAnalytics}
                     className={styles.close_icon}
@@ -314,7 +214,7 @@ function Sidebar(props: propsIF) {
                 spellCheck='false'
                 autoFocus
             />
-            {searchInput && (
+            {searchInput && !bottomTabs && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
                     <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
@@ -337,7 +237,7 @@ function Sidebar(props: propsIF) {
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {openAllDefault ? 'Collapse All' : 'Expand All'}
+            {bottomTabs ? null : openAllDefault ? 'Collapse All' : 'Expand All'}
         </button>
     );
 
@@ -349,7 +249,8 @@ function Sidebar(props: propsIF) {
             }}
             className={styles.open_all_button}
         >
-            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
+            <BsChevronBarUp size={18} color='var(--text2)' />{' '}
+            {!bottomTabs && 'Collapse All'}
         </button>
     );
 
@@ -371,13 +272,21 @@ function Sidebar(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={() => sidebar.close(true)}
-                        />
-                    </div>
+                    {bottomTabs ? (
+                        !openAllDefault ? (
+                            openAllButton
+                        ) : (
+                            collapseButton
+                        )
+                    ) : (
+                        <div style={{ cursor: 'pointer', display: 'flex' }}>
+                            <img
+                                src={closeSidebarImage}
+                                alt='close sidebar'
+                                onClick={() => sidebar.close(true)}
+                            />
+                        </div>
+                    )}
                 </DefaultTooltip>
             ) : (
                 <BiSearch
@@ -389,6 +298,7 @@ function Sidebar(props: propsIF) {
         </div>
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
+    const drawerSidebarRef = useRef<HTMLDivElement>(null);
 
     const sidebarStyle = sidebar.isOpen
         ? styles.sidebar_active
@@ -404,7 +314,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -416,7 +325,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -428,7 +336,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -445,7 +352,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
@@ -457,7 +363,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
@@ -469,7 +374,6 @@ function Sidebar(props: propsIF) {
                     item={item}
                     key={idx}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
@@ -483,7 +387,13 @@ function Sidebar(props: propsIF) {
         </>
     );
 
-    return (
+    const {
+        isSidebarDrawerOpen,
+
+        setIsSidebarDrawerOpen,
+    } = useContext(LayoutHandlerContext);
+
+    const mainReturn = (
         <div ref={sidebarRef}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
@@ -497,16 +407,7 @@ function Sidebar(props: propsIF) {
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
                             searchData={searchData}
-                            tokenPair={tokenPair}
-                            isDenomBase={isDenomBase}
-                            chainId={chainId}
-                            isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            setCurrentPositionActive={setCurrentPositionActive}
-                            setCurrentTxActiveInTransactions={
-                                setCurrentTxActiveInTransactions
-                            }
-                            setIsShowAllEnabled={setIsShowAllEnabled}
                         />
                     ) : (
                         regularSidebarDisplay
@@ -514,6 +415,42 @@ function Sidebar(props: propsIF) {
                 </div>
             </nav>
         </div>
+    );
+
+    const sidebarDrawer = (
+        <Drawer
+            anchor='left'
+            open={isSidebarDrawerOpen}
+            onClose={() => setIsSidebarDrawerOpen(false)}
+        >
+            {!location.pathname.startsWith('/swap') && (
+                <nav
+                    className={`${styles.sidebar} ${sidebarStyle}`}
+                    ref={drawerSidebarRef}
+                >
+                    <div className={styles.sidebar_nav}>
+                        {searchContainerDisplay}
+                        {searchData.isInputValid &&
+                        sidebar.isOpen &&
+                        searchMode ? (
+                            <SidebarSearchResults
+                                searchData={searchData}
+                                cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            />
+                        ) : (
+                            regularSidebarDisplay
+                        )}
+                    </div>
+                </nav>
+            )}
+        </Drawer>
+    );
+
+    return (
+        <>
+            {!bottomTabs && mainReturn}
+            {bottomTabs && sidebarDrawer}
+        </>
     );
 }
 

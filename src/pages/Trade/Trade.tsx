@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-    useContext,
-    useCallback,
-    memo,
-} from 'react';
+import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import {
     useParams,
     Outlet,
@@ -18,9 +10,7 @@ import {
     useNavigate,
     useLocation,
 } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
@@ -31,134 +21,45 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import { TokenPairIF } from '../../utils/interfaces/exports';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { chartSettingsMethodsIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
-import { PositionUpdateFn } from '../../App/functions/getPositionData';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { PoolContext } from '../../contexts/PoolContext';
+import { ChartContext } from '../../contexts/ChartContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
+// import { useCandleTime } from './useCandleTime';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { useProvider } from 'wagmi';
+import { TokenContext } from '../../contexts/TokenContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { Drawer } from '@mui/material';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
-// import { useCandleTime } from './useCandleTime';
-import { tokenMethodsIF } from '../../App/hooks/useTokens';
-import { useUrlParams } from '../../utils/hooks/useUrlParams';
-
-// interface for React functional component props
-interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    provider: ethers.providers.Provider | undefined;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    account: string;
-    lastBlockNumber: number;
-    isTokenABase: boolean;
-    poolPriceDisplay?: number;
-    tokenPair: TokenPairIF;
-    chainId: string;
-    chainData: ChainSpec;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    limitRate: string;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isInitialized: boolean;
-    poolPriceNonDisplay: number | undefined;
-    poolExists: boolean | undefined;
-    setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
-    handlePulseAnimation: (type: string) => void;
-    cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
-    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
-    repositionRangeWidth: number;
-    chartSettings: chartSettingsMethodsIF;
-    ethMainnetUsdPrice: number | undefined;
-    gasPriceInGwei: number | undefined;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-    poolPriceChangePercent: string | undefined;
-    isPoolPriceChangePositive: boolean;
-    isTradeDrawerOpen: boolean;
-    toggleTradeDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    setIsTradeDrawerOpen: Dispatch<SetStateAction<boolean>>;
-    tokens: tokenMethodsIF;
-}
+import { LayoutHandlerContext } from '../../contexts/LayoutContext';
 
 // React functional component
-function Trade(props: propsIF) {
+function Trade() {
     const {
-        isPoolPriceChangePositive,
-        poolPriceChangePercent,
-        chartSettings,
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        isUserLoggedIn,
-        chainId,
-        chainData,
-        poolPriceDisplay,
-        provider,
-        lastBlockNumber,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        expandTradeTable,
-        setExpandTradeTable,
-        isShowAllEnabled,
-        setIsShowAllEnabled,
-        isTokenABase,
-        poolPriceNonDisplay,
-        account,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        poolExists,
-        handlePulseAnimation,
-        setSimpleRangeWidth,
-        simpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-        isTradeDrawerOpen,
-
-        setIsTradeDrawerOpen,
-        tokens,
-    } = props;
-
-    const { params } = useParams();
-
-    useUrlParams(tokens, chainId, provider);
-
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const {
-        chart: { isFullScreen: isChartFullScreen },
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
-    } = useContext(AppStateContext);
-
-    const {
-        candleData: { value: candleData },
-        isCandleSelected: {
-            value: isCandleSelected,
-            setValue: setIsCandleSelected,
-        },
-        isCandleDataNull: { value: isCandleDataNull },
+        candleData,
+        isCandleSelected,
+        setIsCandleSelected,
+        isCandleDataNull,
     } = useContext(CandleContext);
+    const { isFullScreen: isChartFullScreen, chartSettings } =
+        useContext(ChartContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const { tokens } = useContext(TokenContext);
+    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
+    const {
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
+    } = useContext(TradeTokenContext);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -181,6 +82,9 @@ function Trade(props: propsIF) {
     ];
 
     const { pathname } = useLocation();
+    const provider = useProvider();
+    const { params } = useParams();
+    useUrlParams(tokens, chainId, provider);
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -215,12 +119,6 @@ function Trade(props: propsIF) {
         : tradeData.baseToken.symbol;
 
     const liquidityData = graphData?.liquidityData;
-
-    const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : 0;
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -263,66 +161,12 @@ function Trade(props: propsIF) {
             setHasInitialized(false);
             setTransactionFilter(candleData);
             if (isOpen) {
-                setOutsideControlActive(true);
-                setOutsideTabSelected(0);
+                setOutsideControl(true);
+                setSelectedOutsideTab(0);
             }
         },
         [],
     );
-
-    const [chartBg, setChartBg] = useState('transparent');
-
-    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
-    const [upBorderColorPicker, setUpBorderColorPicker] =
-        useState<boolean>(false);
-    const [downBodyColorPicker, setDownBodyColorPicker] =
-        useState<boolean>(false);
-    const [downBorderColorPicker, setDownBorderColorPicker] =
-        useState<boolean>(false);
-
-    const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
-    const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
-    const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
-    const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
-    const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.5)');
-    const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.5)');
-
-    const handleChartBgColorPickerChange = (color: any) => {
-        setChartBg(color.hex);
-    };
-    const handleBodyColorPickerChange = (color: any) => {
-        setUpBodyColor(color.hex);
-    };
-    const handleBorderColorPickerChange = (color: any) => {
-        setUpBorderColor(color.hex);
-    };
-    const handleDownBodyColorPickerChange = (color: any) => {
-        setDownBodyColor(color.hex);
-    };
-    const handleDownBorderColorPickerChange = (color: any) => {
-        setDownBorderColor(color.hex);
-    };
-    const tradeSettingsColorProps = {
-        upBodyColorPicker: upBodyColorPicker,
-        setUpBodyColorPicker: setUpBodyColorPicker,
-        upBodyColor: upBodyColor,
-        handleBodyColorPickerChange: handleBodyColorPickerChange,
-        handleBorderColorPickerChange: handleBorderColorPickerChange,
-        handleDownBodyColorPickerChange: handleDownBodyColorPickerChange,
-        handleDownBorderColorPickerChange: handleDownBorderColorPickerChange,
-        setUpBorderColorPicker: setUpBorderColorPicker,
-        setDownBodyColorPicker: setDownBodyColorPicker,
-        setDownBorderColorPicker: setDownBorderColorPicker,
-        upBorderColor: upBorderColor,
-        upBorderColorPicker: upBorderColorPicker,
-        downBodyColor: downBodyColor,
-        downBodyColorPicker: downBodyColorPicker,
-        downBorderColor: downBorderColor,
-        downBorderColorPicker: downBorderColorPicker,
-        chartBg: chartBg,
-        setChartBg: setChartBg,
-        handleChartBgColorPickerChange: handleChartBgColorPickerChange,
-    };
 
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
@@ -346,124 +190,68 @@ function Trade(props: propsIF) {
         '/initpool/' +
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
-    const poolNotInitializedContent =
-        poolExists === false ? (
-            <div className={styles.pool_not_initialialized_container}>
-                <div className={styles.pool_not_initialialized_content}>
-                    <div
-                        className={styles.close_init}
-                        onClick={() => navigate(-1)}
-                    >
-                        <VscClose size={25} />
-                    </div>
-                    <h2>This pool has not been initialized.</h2>
-                    <h3>Do you want to initialize it?</h3>
-                    <Link to={initLinkPath} className={styles.initialize_link}>
-                        Initialize Pool
-                        {baseTokenLogo ? (
-                            <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={baseTokenSymbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        {quoteTokenLogo ? (
-                            <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={quoteTokenSymbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                    </Link>
-                    <button
-                        className={styles.no_thanks}
-                        onClick={() => navigate(-1)}
-                    >
-                        No, take me back.
-                    </button>
+    const showPoolNotInitializedContent = isPoolInitialized === false;
+
+    const poolNotInitializedContent = showPoolNotInitializedContent ? (
+        <div className={styles.pool_not_initialialized_container}>
+            <div className={styles.pool_not_initialialized_content}>
+                <div className={styles.close_init} onClick={() => navigate(-1)}>
+                    <VscClose size={25} />
                 </div>
+                <h2>This pool has not been initialized.</h2>
+                <h3>Do you want to initialize it?</h3>
+                <Link to={initLinkPath} className={styles.initialize_link}>
+                    Initialize Pool
+                    {baseTokenLogo ? (
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={baseTokenSymbol?.charAt(0)}
+                            width='20px'
+                        />
+                    )}
+                    {quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={quoteTokenSymbol?.charAt(0)}
+                            width='20px'
+                        />
+                    )}
+                </Link>
+                <button
+                    className={styles.no_thanks}
+                    onClick={() => navigate(-1)}
+                >
+                    No, take me back.
+                </button>
             </div>
-        ) : null;
+        </div>
+    ) : null;
 
     const tradeChartsProps = {
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
-        chartSettings: chartSettings,
-        isUserLoggedIn: isUserLoggedIn,
-        chainData: chainData,
-        poolPriceDisplay: poolPriceDisplayWithDenom,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        isTokenABase: isTokenABase,
         changeState: changeState,
         liquidityData: liquidityData,
-        lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
         limitTick: limitTick,
         isAdvancedModeActive: advancedMode,
-        simpleRangeWidth: simpleRangeWidth,
-        upBodyColor: upBodyColor,
-        upBorderColor: upBorderColor,
-        downBodyColor: downBodyColor,
-        downBorderColor: downBorderColor,
-        upVolumeColor: upVolumeColor,
-        downVolumeColor: downVolumeColor,
-        baseTokenAddress: baseTokenAddress,
-        quoteTokenAddress: quoteTokenAddress,
-        poolPriceNonDisplay: poolPriceNonDisplay,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        handlePulseAnimation: handlePulseAnimation,
-        poolPriceChangePercent: poolPriceChangePercent,
-        TradeSettingsColor: <TradeSettingsColor {...tradeSettingsColorProps} />,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        setRepositionRangeWidth: setRepositionRangeWidth,
-        repositionRangeWidth: repositionRangeWidth,
     };
 
     const tradeTabsProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        isUserLoggedIn: isUserLoggedIn,
-        isTokenABase: isTokenABase,
-        provider: provider,
-        account: account,
-        lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
-        chainData: chainData,
-        currentTxActiveInTransactions: currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        isShowAllEnabled: isShowAllEnabled,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
         isCandleSelected: isCandleSelected,
         setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
-        currentPositionActive: props.currentPositionActive,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        handlePulseAnimation: handlePulseAnimation,
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        poolPriceDisplay: poolPriceDisplayWithDenom,
-        poolPriceChangePercent: poolPriceChangePercent,
-        isPoolPriceChangePositive: isPoolPriceChangePositive,
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
@@ -473,18 +261,21 @@ function Trade(props: propsIF) {
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
+    const { setIsTradeDrawerOpen, isTradeDrawerOpen } =
+        useContext(LayoutHandlerContext);
+
     return (
-        <section className={styles.main_layout}>
+        <section className={`${styles.main_layout}`}>
+            {poolNotInitializedContent}
             <div
                 className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
             >
-                {poolNotInitializedContent}
                 <div
                     className={` ${expandGraphStyle} 
                     } ${fullScreenStyle}`}
                     style={{
-                        background: chartBg,
+                        background: 'transparent',
                     }}
                 >
                     <div className={styles.main__chart_container}>

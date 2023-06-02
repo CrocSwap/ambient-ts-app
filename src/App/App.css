@@ -246,7 +246,7 @@ p:focus-visible {
         /* max-height: 86.5vh; */
         overflow-y: hidden;
 
-        max-height: calc(100vh - 7.5rem);
+       height: 100dvh;
     }
 }
 
@@ -267,7 +267,8 @@ p:focus-visible {
     }
 
     .content-container {
-        height: 100vh;
+        height: 100dvh;
+        max-height: -webkit-fill-available;
 
         background: var(--body-bg);
     }

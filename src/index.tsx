@@ -16,6 +16,7 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
 import { MORALIS_KEY } from './constants';
+import { GlobalContexts } from './contexts/GlobalContexts';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -81,7 +82,9 @@ if (!doReload) {
             <WagmiConfig client={client}>
                 <Provider store={store}>
                     <BrowserRouter>
-                        <App />
+                        <GlobalContexts>
+                            <App />
+                        </GlobalContexts>
                     </BrowserRouter>
                 </Provider>
             </WagmiConfig>

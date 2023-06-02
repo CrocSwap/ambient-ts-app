@@ -6,9 +6,7 @@ import moment from 'moment';
 
 import {
     DetailedHTMLProps,
-    Dispatch,
     HTMLAttributes,
-    SetStateAction,
     useCallback,
     useContext,
     useEffect,
@@ -20,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     formatAmountChartData,
     formatAmountWithoutDigit,
+    formatPoolPriceAxis,
 } from '../../utils/numbers';
 import {
     CandleData,
@@ -37,12 +36,7 @@ import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubC
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
-import {
-    ChainSpec,
-    pinTickLower,
-    pinTickUpper,
-    tickToPrice,
-} from '@crocswap-libs/sdk';
+import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -57,8 +51,11 @@ import {
     diffHashSig,
     diffHashSigChart,
 } from '../../utils/functions/diffHashSig';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { CandleContext } from '../../contexts/CandleContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../contexts/SidebarContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
+import { RangeContext } from '../../contexts/RangeContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -104,10 +101,7 @@ type lineValue = {
 };
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainData: ChainSpec;
     isTokenABase: boolean;
-    expandTradeTable: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityData: any;
     changeState: (
@@ -117,8 +111,6 @@ interface propsIF {
     denomInBase: boolean;
     limitTick: number | undefined;
     isAdvancedModeActive: boolean | undefined;
-    truncatedPoolPrice: number | undefined;
-    poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleData | undefined>
@@ -126,17 +118,10 @@ interface propsIF {
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    upBodyColor: string;
-    upBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     scaleData: any;
-    chainId: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
@@ -149,23 +134,10 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityScale: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityDepthScale: any;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
-    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setRangeSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    rangeSimpleRangeWidth: number | undefined;
-    setRepositionRangeWidth: Dispatch<SetStateAction<number>>;
-    repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
     candleTime: candleTimeIF;
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
@@ -189,16 +161,11 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 
 export default function Chart(props: propsIF) {
     const {
-        isUserLoggedIn,
-        chainData,
         isTokenABase,
         denomInBase,
         isAdvancedModeActive,
-        poolPriceDisplay,
-        expandTradeTable,
         setIsCandleAdded,
         scaleData,
-        chainId,
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
@@ -211,26 +178,46 @@ export default function Chart(props: propsIF) {
         latest,
         setLatest,
         liquidityData,
-        handlePulseAnimation,
         liquidityScale,
         liquidityDepthScale,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        setRangeSimpleRangeWidth,
-        rangeSimpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        setChartTriggeredBy,
-        chartTriggeredBy,
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
         // candleTime,
     } = props;
+
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const chainId = chainData.chainId;
+    const { setCandleDomains, setCandleScale } = useContext(CandleContext);
+    const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
+        useContext(PoolContext);
+    const {
+        minRangePrice: minPrice,
+        setMinRangePrice: setMinPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+        chartTriggeredBy,
+        setChartTriggeredBy,
+        simpleRangeWidth: rangeSimpleRangeWidth,
+        setSimpleRangeWidth: setRangeSimpleRangeWidth,
+        repositionRangeWidth,
+        setRepositionRangeWidth,
+    } = useContext(RangeContext);
+    const { expandTradeTable, handlePulseAnimation } =
+        useContext(TradeTableContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [minTickForLimit, setMinTickForLimit] = useState<any>();
+    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
 
     const unparsedCandleData = unparsedData.candles;
 
@@ -239,21 +226,6 @@ export default function Chart(props: propsIF) {
     const poolAdressComb = unparsedData.pool.baseAddress
         ? unparsedData.pool.baseAddress
         : '' + unparsedData.pool.quoteAddress;
-
-    const pool = useContext(PoolContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(AppStateContext);
-
-    const {
-        candleDomains: { setValue: setCandleDomains },
-        candleScale: { setValue: setCandleScale },
-    } = useContext(CandleContext);
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const [minTickForLimit, setMinTickForLimit] = useState<any>();
-    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
 
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
@@ -268,6 +240,12 @@ export default function Chart(props: propsIF) {
     const lineBuyColor = 'rgba(205, 193, 255)';
 
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
+
+    const poolPriceDisplay = poolPriceWithoutDenom
+        ? isDenomBase && poolPriceWithoutDenom
+            ? 1 / poolPriceWithoutDenom
+            : poolPriceWithoutDenom ?? 0
+        : 0;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
     const d3CanvasCandle = useRef<HTMLInputElement | null>(null);
@@ -369,11 +347,9 @@ export default function Chart(props: propsIF) {
 
     // d3
 
-    const lastCandleData = unparsedCandleData.find(
-        (item: any) =>
-            item.time === d3.max(unparsedCandleData, (data: any) => data.time),
-    );
-
+    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+        return prev.time > current.time ? prev : current;
+    });
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -500,7 +476,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, isAdvancedModeActive]);
+    }, [minPrice, maxPrice, isAdvancedModeActive, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -665,8 +641,8 @@ export default function Chart(props: propsIF) {
                 const domainRight = scaleData?.xScale.domain()[1];
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff,
-                    domainRight + diff,
+                    domainLeft + diff * 1000,
+                    domainRight + diff * 1000,
                 ]);
             } else if (firstCandle === undefined) {
                 setFirstCandle(() => {
@@ -733,15 +709,16 @@ export default function Chart(props: propsIF) {
     };
 
     function changeyAxisWidth() {
-        let yTickValueLength = scaleData?.yScale.ticks()[0]?.toString().length;
+        let yTickValueLength =
+            formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
         let result = false;
         scaleData?.yScale.ticks().forEach((element: any) => {
-            if (element.toString().length > 4) {
+            if (formatPoolPriceAxis(element).length > 4) {
                 result = true;
                 yTickValueLength =
-                    yTickValueLength > element.toString().length
+                    yTickValueLength > formatPoolPriceAxis(element).length - 1
                         ? yTickValueLength
-                        : element.toString().length;
+                        : formatPoolPriceAxis(element).length - 1;
             }
         });
         if (result) {
@@ -3409,13 +3386,7 @@ export default function Chart(props: propsIF) {
     // Axis's
     useEffect(() => {
         if (scaleData) {
-            const _yAxis = d3fc
-                .axisRight()
-                .scale(scaleData?.yScale)
-                .tickFormat((d: any) => {
-                    const digit = d.toString().split('.')[1]?.length;
-                    return formatAmountChartData(d, digit ? digit : 2);
-                });
+            const _yAxis = d3fc.axisRight().scale(scaleData?.yScale);
 
             setYaxis(() => {
                 return _yAxis;
@@ -3447,7 +3418,7 @@ export default function Chart(props: propsIF) {
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
-                        d3YaxisCanvas.width / 6,
+                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
                     );
                 }
             });
@@ -3497,27 +3468,32 @@ export default function Chart(props: propsIF) {
         yAxisWidth: any = 70,
         subString: number | undefined = undefined,
     ) {
-        const rectPadding = text.length > 8 ? 15 : 5;
         context.beginPath();
         context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth + rectPadding, 20);
+        context.fillRect(0, y - 10, yAxisWidth + yAxisWidth / 2, 20);
         context.fillStyle = textColor;
         context.fontSize = '13';
-        context.textAlign = 'left';
+        context.textAlign = 'center';
         context.textBaseline = 'middle';
 
         if (subString) {
-            const textXAxisLength = x + context.measureText('0.0').width;
-
             const textHeight =
                 context.measureText('0.0').actualBoundingBoxAscent +
                 context.measureText('0.0').actualBoundingBoxDescent;
 
-            context.fillText('0.0', x, y);
-            context.fillText(subString, textXAxisLength, y + textHeight / 3);
+            context.fillText(
+                '0.0',
+                x -
+                    context.measureText('0.0').width / 2 -
+                    context.measureText(subString).width / 2,
+                y,
+            );
+            context.fillText(subString, x, y + textHeight / 3);
             context.fillText(
                 text,
-                textXAxisLength + context.measureText(subString).width,
+                x +
+                    context.measureText('0.0').width / 2 +
+                    context.measureText(subString).width / 2,
                 y,
             );
         } else {
@@ -3526,7 +3502,7 @@ export default function Chart(props: propsIF) {
 
         if (stroke !== undefined) {
             context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth + rectPadding, 20);
+            context.strokeRect(1, y - 10, yAxisWidth + yAxisWidth / 2, 20);
         }
     }
 
@@ -3560,12 +3536,11 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis === undefined, location]);
+    }, [yAxis, location]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
             yAxisLabels.length = 0;
-            const tickSize = 6;
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
                 .value;
             const high = ranges.filter(
@@ -3583,12 +3558,24 @@ export default function Chart(props: propsIF) {
                 const factor = height < 500 ? 5 : height.toString().length * 2;
 
                 context.stroke();
-                context.textAlign = 'left';
+                context.textAlign = 'center';
                 context.textBaseline = 'middle';
                 context.fillStyle = 'rgba(189,189,189,0.8)';
-                context.font = '11.425px Lexend Deca';
+                context.font = '12.425px Lexend Deca';
 
                 const yScaleTicks = yScale.ticks(factor);
+
+                let switchFormatter = false;
+
+                yScaleTicks.forEach((element: any) => {
+                    if (element > 99999) {
+                        switchFormatter = true;
+                    }
+                });
+
+                const formatTicks = switchFormatter
+                    ? formatPoolPriceAxis
+                    : formatAmountChartData;
 
                 yScaleTicks.forEach((d: number) => {
                     const digit = d.toString().split('.')[1]?.length;
@@ -3607,31 +3594,37 @@ export default function Chart(props: propsIF) {
 
                         const factor = Math.pow(10, 3 - precision.length);
 
-                        const textXAxisLength =
-                            X - tickSize + context.measureText('0.0').width;
-
                         const textHeight =
                             context.measureText('0.0').actualBoundingBoxAscent +
                             context.measureText('0.0').actualBoundingBoxDescent;
 
                         context.beginPath();
-                        context.fillText('0.0', X - tickSize, yScale(d));
+                        context.fillText(
+                            '0.0',
+                            X -
+                                context.measureText('0.0').width / 2 -
+                                context.measureText(subString).width / 2,
+                            yScale(d),
+                        );
                         context.fillText(
                             subString,
-                            textXAxisLength,
+                            X,
                             yScale(d) + textHeight / 3,
                         );
                         context.fillText(
                             factor * Number(precision),
-                            textXAxisLength +
-                                context.measureText(subString).width,
+                            X +
+                                context.measureText(factor * Number(precision))
+                                    .width /
+                                    2 +
+                                context.measureText(subString).width / 2,
                             yScale(d),
                         );
                     } else {
                         context.beginPath();
                         context.fillText(
-                            formatAmountChartData(d, digit ? digit : 2),
-                            X - tickSize,
+                            formatTicks(d, digit ? digit : 2),
+                            X,
                             yScale(d),
                         );
                     }
@@ -3641,7 +3634,7 @@ export default function Chart(props: propsIF) {
                     .toString()
                     .includes('e');
 
-                let marketTick: number | string = formatAmountChartData(
+                let marketTick: number | string = formatTicks(
                     market[0].value,
                     undefined,
                 );
@@ -3670,7 +3663,7 @@ export default function Chart(props: propsIF) {
                 createRectLabel(
                     context,
                     yScale(market[0].value),
-                    X - tickSize,
+                    X,
                     'white',
                     'black',
                     marketTick,
@@ -3700,7 +3693,7 @@ export default function Chart(props: propsIF) {
                             .toString()
                             .includes('e');
 
-                        let lowTick: number | string = formatAmountChartData(
+                        let lowTick: number | string = formatTicks(
                             low,
                             undefined,
                         );
@@ -3736,7 +3729,7 @@ export default function Chart(props: propsIF) {
                             isSameLocationMin
                                 ? sameLocationDataMin
                                 : yScale(low),
-                            X - tickSize,
+                            X,
                             low > passValue ? lineSellColor : lineBuyColor,
                             low > passValue ? 'white' : 'black',
                             lowTick,
@@ -3754,7 +3747,7 @@ export default function Chart(props: propsIF) {
                             .toString()
                             .includes('e');
 
-                        let highTick: number | string = formatAmountChartData(
+                        let highTick: number | string = formatTicks(
                             high,
                             undefined,
                         );
@@ -3791,7 +3784,7 @@ export default function Chart(props: propsIF) {
                             isSameLocationMax
                                 ? sameLocationDataMax
                                 : yScale(high),
-                            X - tickSize,
+                            X,
                             high > passValue ? lineSellColor : lineBuyColor,
                             high > passValue ? 'white' : 'black',
                             highTick,
@@ -3815,7 +3808,7 @@ export default function Chart(props: propsIF) {
                         .toString()
                         .includes('e');
 
-                    let limitTick: number | string = formatAmountChartData(
+                    let limitTick: number | string = formatTicks(
                         limit[0].value,
                         undefined,
                     );
@@ -3850,7 +3843,7 @@ export default function Chart(props: propsIF) {
                             isSameLocation
                                 ? sameLocationData
                                 : yScale(limit[0].value),
-                            X - tickSize,
+                            X,
                             sellOrderStyle === 'order_sell'
                                 ? lineSellColor
                                 : lineBuyColor,
@@ -3866,7 +3859,7 @@ export default function Chart(props: propsIF) {
                             isSameLocation
                                 ? sameLocationData
                                 : yScale(limit[0].value),
-                            X - tickSize,
+                            X,
                             '#7772FE',
                             'white',
                             limitTick,
@@ -3887,7 +3880,7 @@ export default function Chart(props: propsIF) {
                         .toString()
                         .includes('e');
 
-                    let crTick: number | string = formatAmountChartData(
+                    let crTick: number | string = formatTicks(
                         Number(crosshairData[0].y),
                         undefined,
                     );
@@ -3919,7 +3912,7 @@ export default function Chart(props: propsIF) {
                     createRectLabel(
                         context,
                         yScale(crosshairData[0].y),
-                        X - tickSize,
+                        X,
                         '#242F3F',
                         'white',
                         crTick,
@@ -4004,14 +3997,15 @@ export default function Chart(props: propsIF) {
                     const indexValue = filteredData.findIndex(
                         (d1: any) => d1.date === d.date,
                     );
-                    if (
-                        !d.style &&
-                        indexValue !== filteredData.length - 1 &&
-                        indexValue !== 0
-                    ) {
-                        const lastData = filteredData[indexValue + 1];
-
-                        const beforeData = filteredData[indexValue - 1];
+                    if (!d.style) {
+                        const maxIndex =
+                            indexValue === filteredData.length - 1
+                                ? indexValue
+                                : indexValue + 1;
+                        const minIndex =
+                            indexValue === 0 ? indexValue : indexValue - 1;
+                        const lastData = filteredData[maxIndex];
+                        const beforeData = filteredData[minIndex];
 
                         if (
                             beforeData.style ||
@@ -4266,7 +4260,7 @@ export default function Chart(props: propsIF) {
         market,
         checkLimitOrder,
         limit,
-        isUserLoggedIn,
+        isUserConnected,
         liqMode,
     ]);
 
@@ -4666,14 +4660,12 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
-                isUserLoggedIn
-                    ? sellOrderStyle === 'order_sell'
-                        ? limit[0].value > poolPriceDisplay
-                        : limit[0].value < poolPriceDisplay
-                    : false,
+                sellOrderStyle === 'order_sell'
+                    ? limit[0].value > poolPriceDisplay
+                    : limit[0].value < poolPriceDisplay,
             );
         }
-    }, [limit, sellOrderStyle, isUserLoggedIn, poolPriceDisplay]);
+    }, [limit, sellOrderStyle, poolPriceDisplay]);
 
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
@@ -4969,16 +4961,16 @@ export default function Chart(props: propsIF) {
                         selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upBodyColor
-                            : props.downBodyColor;
+                            ? '#CDC1FF'
+                            : '#24243e';
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upBorderColor
-                            : props.downBorderColor;
+                            ? '#CDC1FF'
+                            : '#7371FC';
 
                     context.cursorStyle = 'pointer';
                 })
@@ -5009,7 +5001,7 @@ export default function Chart(props: propsIF) {
             setCandlestick(() => canvasCandlestick);
             renderCanvasArray([d3CanvasCandle]);
         }
-    }, [scaleData, selectedDate]);
+    }, [diffHashSig(scaleData), selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -5034,7 +5026,7 @@ export default function Chart(props: propsIF) {
                     candlestick.context(ctx);
                 });
         }
-    }, [unparsedCandleData, candlestick, unparsedData, unparsedCandleData]);
+    }, [unparsedCandleData, candlestick, unparsedData]);
 
     useEffect(() => {
         if (d3CanvasCandle) {
@@ -5202,8 +5194,8 @@ export default function Chart(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upVolumeColor
-                            : props.downVolumeColor;
+                            ? 'rgba(205,193,255, 0.5)'
+                            : 'rgba(115,113,252, 0.5)';
 
                     context.strokeStyle =
                         d.volumeUSD === null
@@ -5212,8 +5204,8 @@ export default function Chart(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? props.upVolumeColor
-                            : props.downVolumeColor;
+                            ? 'rgba(205,193,255, 0.5)'
+                            : 'rgba(115,113,252, 0.5)';
 
                     context.cursorStyle = 'pointer';
                 })
@@ -5396,6 +5388,15 @@ export default function Chart(props: propsIF) {
 
         if (tvlCrCanvas) {
             const nd = tvlCrCanvas.node() as any;
+            if (nd) nd.requestRedraw();
+        }
+
+        const tvlYaxisCanvas = d3
+            .select('#tvl_chart')
+            .select('#y-axis-canvas_tvl');
+
+        if (tvlYaxisCanvas) {
+            const nd = tvlYaxisCanvas.node() as any;
             if (nd) nd.requestRedraw();
         }
     };
@@ -6036,6 +6037,13 @@ export default function Chart(props: propsIF) {
 
                         scaleData?.yScale.domain(domain);
                     }
+
+                    renderCanvasArray([
+                        d3CanvasCandle,
+                        d3CanvasLiqAsk,
+                        d3CanvasLiqAskDepth,
+                        d3Yaxis,
+                    ]);
                 }
             }
         }
@@ -6142,12 +6150,12 @@ export default function Chart(props: propsIF) {
             : false;
 
         const close = denomInBase
-            ? nearest.invPriceCloseExclMEVDecimalCorrected
-            : nearest.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invPriceCloseExclMEVDecimalCorrected
+            : nearest?.priceCloseExclMEVDecimalCorrected;
 
         const open = denomInBase
-            ? nearest.invPriceOpenExclMEVDecimalCorrected
-            : nearest.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invPriceOpenExclMEVDecimalCorrected
+            : nearest?.priceOpenExclMEVDecimalCorrected;
 
         const diff = Math.abs(close - open);
         const scale = Math.abs(
@@ -6185,13 +6193,14 @@ export default function Chart(props: propsIF) {
         }
 
         const returnXdata =
-            unparsedCandleData[0].time * 1000 <=
+            lastCandleData?.time * 1000 <=
             scaleData?.xScale.invert(event.offsetX)
                 ? scaleData?.xScale.invert(event.offsetX)
                 : nearest?.time * 1000;
 
         if (!isLineDrag) {
-            // setIsMouseMoveCrosshair(true);
+            setIsMouseMoveCrosshair(true);
+            setCrosshairActive('chart');
 
             setCrosshairData([
                 {
@@ -6205,7 +6214,7 @@ export default function Chart(props: propsIF) {
             const newData = [...prevState];
 
             newData.filter((target: any) => target.name === 'tvl')[0].value =
-                nearest.tvlData.tvl;
+                nearest?.tvlData.tvl;
 
             newData.filter(
                 (target: any) => target.name === 'feeRate',
@@ -6639,8 +6648,6 @@ export default function Chart(props: propsIF) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const onClickCanvas = (event: any) => {
-                    setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     const {
                         isHoverCandleOrVolumeData,
                         _selectedDate,
@@ -6651,6 +6658,9 @@ export default function Chart(props: propsIF) {
                         _selectedDate,
                         nearest,
                     );
+
+                    setCrosshairActive('none');
+                    setIsMouseMoveCrosshair(false);
 
                     if (
                         (location.pathname.includes('range') ||

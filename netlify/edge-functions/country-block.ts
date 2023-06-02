@@ -28,9 +28,11 @@ export default async (request: Request, context: Context) => {
         'ZW', // Zimbabwe
     ];
 
-    const blacklistArg = Deno.env.REACT_APP_BLACKLIST_COUNTRY_CODES;
+    const blacklistArg = Netlify.env.get(
+        'NETLIFY_EDGE_BLACKLIST_COUNTRY_CODES',
+    );
     const blacklist = OFAC_SANCTIONED.concat(
-        blacklistArg ? JSON.parse(blacklistArg) : [],
+        blacklistArg ? blacklistArg.split(',') : [],
     );
 
     // if user not in blocked country, show website

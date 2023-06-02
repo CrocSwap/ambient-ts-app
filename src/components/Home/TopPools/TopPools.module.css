@@ -14,11 +14,11 @@
     color: var(--text1);
 }
 
-.title:focus-visible{
-text-decoration: underline;
-text-decoration-color:var(--text1) ;
-border: none;
-outline: none;
+.title:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--text1);
+    border: none;
+    outline: none;
 }
 
 .content {
@@ -33,8 +33,4 @@ outline: none;
     gap: 1rem;
 }
 
-.divider {
-    width: 100%;
-    height: 1px;
-    background: var(--border);
-}
+

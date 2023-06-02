@@ -1,41 +1,40 @@
 import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
-import { SetStateAction, Dispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { tokenMethodsIF } from '../../../../App/hooks/useTokens';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
-    useLinkGen,
     linkGenMethodsIF,
+    useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
-    isDenomBase: boolean;
     limitOrderByUser?: LimitOrderIF[];
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isUserLoggedIn: boolean | undefined;
-    tokens: tokenMethodsIF;
 }
 
 export default function SidebarLimitOrders(props: propsIF) {
-    const {
-        chainId,
-        limitOrderByUser,
-        isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-        isUserLoggedIn,
-        tokens,
-    } = props;
+    const { limitOrderByUser } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
-        outsideControl: { setIsActive: setOutsideControlActive },
-        outsideTab: { setSelected: setOutsideTabSelected },
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
+    const {
         sidebar: { close: closeSidebar },
-    } = useContext(AppStateContext);
+    } = useContext(SidebarContext);
 
     const location = useLocation();
 
@@ -53,10 +52,10 @@ export default function SidebarLimitOrders(props: propsIF) {
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
-        setOutsideControlActive(true);
-        setOutsideTabSelected(1);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
+        setShowAllData(false);
         linkGenLimit.navigate({
             chain: chainId,
             tokenA: limitOrder.base,
@@ -66,8 +65,8 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        setOutsideControlActive(true);
-        setOutsideTabSelected(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         closeSidebar();
     };
 
@@ -86,14 +85,12 @@ export default function SidebarLimitOrders(props: propsIF) {
                                 'Sidebar-Limit-Orders-Card-' +
                                 JSON.stringify(order)
                             }
-                            isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokens={tokens}
                         />
                     ))}
             </div>
-            {isUserLoggedIn && (
+            {isUserConnected && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

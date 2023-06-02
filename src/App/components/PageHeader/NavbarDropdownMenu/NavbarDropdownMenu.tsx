@@ -51,7 +51,6 @@ interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     closeMenu?: () => void;
-    chainId: string;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

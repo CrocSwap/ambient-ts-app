@@ -18,18 +18,18 @@ import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec } from '@crocswap-libs/sdk';
-
-import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import {
     diffHashSig,
     diffHashSigCandles,
     diffHashSigLiquidity,
 } from '../../../utils/functions/diffHashSig';
-import { RangeStateContext } from '../../../contexts/RangeStateContext';
 import { CandleContext } from '../../../contexts/CandleContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -51,9 +51,6 @@ declare global {
 }
 
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    chainData: ChainSpec;
-    expandTradeTable: boolean;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -62,25 +59,12 @@ interface propsIF {
     limitTick: number | undefined;
     liquidityData?: LiquidityData;
     isAdvancedModeActive: boolean | undefined;
-    simpleRangeWidth: number | undefined;
-    truncatedPoolPrice: number | undefined;
-    poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleData | undefined>
     >;
     setCurrentVolumeData: React.Dispatch<
         React.SetStateAction<number | undefined>
     >;
-    upBodyColor: string;
-    upBorderColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    chainId: string;
-    poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
     rescale: boolean | undefined;
@@ -92,11 +76,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
-    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    repositionRangeWidth: number;
-    chartSettings: chartSettingsMethodsIF;
     isMarketOrLimitModule: boolean;
 }
 
@@ -108,30 +87,17 @@ type chartItemStates = {
 };
 
 function TradeCandleStickChart(props: propsIF) {
-    const {
-        isUserLoggedIn,
-        chainData,
-        baseTokenAddress,
-        chainId,
-        poolPriceNonDisplay,
-        selectedDate,
-        setSelectedDate,
-        handlePulseAnimation,
-        setSimpleRangeWidth,
-        setRepositionRangeWidth,
-        repositionRangeWidth,
-        poolPriceDisplay,
-        chartSettings,
-        isMarketOrLimitModule,
-    } = props;
+    const { selectedDate, setSelectedDate, isMarketOrLimitModule } = props;
 
-    const rangeState = useContext(RangeStateContext);
-
+    const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
+        useContext(CandleContext);
+    const { chartSettings } = useContext(ChartContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
     const {
-        candleData: { value: candleData },
-        fetchingCandle: { value: fetchingCandle },
-        isCandleDataNull: { value: isCandleDataNull },
-    } = useContext(CandleContext);
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
+    } = useContext(TradeTokenContext);
 
     const period = useMemo(() => {
         if (
@@ -163,8 +129,6 @@ function TradeCandleStickChart(props: propsIF) {
         undefined,
     );
 
-    const expandTradeTable = props?.expandTradeTable;
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const tokenPair = useMemo(
@@ -179,9 +143,16 @@ function TradeCandleStickChart(props: propsIF) {
             tradeData.tokenA.chainId,
         ],
     );
+    const { poolPriceNonDisplay } = tradeData;
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const poolPriceDisplay = poolPriceWithoutDenom
+        ? denominationsInBase && poolPriceWithoutDenom
+            ? 1 / poolPriceWithoutDenom
+            : poolPriceWithoutDenom ?? 0
+        : 0;
 
     const tokenA = tokenPair.dataTokenA;
     const tokenB = tokenPair.dataTokenB;
@@ -202,10 +173,6 @@ function TradeCandleStickChart(props: propsIF) {
     const candleTimeInSeconds: number = isMarketOrLimitModule
         ? chartSettings.candleTime.market.time
         : chartSettings.candleTime.range.time;
-
-    const {
-        candleScale: { setValue: setCandleScale },
-    } = useContext(CandleContext);
 
     useEffect(() => {
         setIsLoading(true);
@@ -294,12 +261,11 @@ function TradeCandleStickChart(props: propsIF) {
             poolPriceDisplay !== undefined &&
             poolPriceDisplay > 0 &&
             props.liquidityData.curveState.base ===
-                props.baseTokenAddress.toLowerCase() &&
+                baseTokenAddress.toLowerCase() &&
             props.liquidityData.curveState.quote ===
-                props.quoteTokenAddress.toLowerCase() &&
-            props.liquidityData.curveState.poolIdx ===
-                props.chainData.poolIndex &&
-            props.liquidityData.curveState.chainId === props.chainData.chainId
+                quoteTokenAddress.toLowerCase() &&
+            props.liquidityData.curveState.poolIdx === chainData.poolIndex &&
+            props.liquidityData.curveState.chainId === chainData.chainId
         ) {
             IS_LOCAL_ENV && console.debug('parsing liquidity data');
 
@@ -320,7 +286,7 @@ function TradeCandleStickChart(props: propsIF) {
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainId).gridSize,
+                lookupChain(chainData.chainId).gridSize,
             );
 
             const limitBoundary = parseFloat(
@@ -420,7 +386,10 @@ function TradeCandleStickChart(props: propsIF) {
                         cumAverageUSD: data.cumAverageUSD
                             ? data.cumAverageUSD
                             : 0,
-                        upperBound: data.upperBound,
+                        upperBound:
+                            data.upperBound === '+inf'
+                                ? data.lowerBound
+                                : data.upperBound,
                         lowerBound: data.lowerBound,
                     });
                 } else {
@@ -437,7 +406,10 @@ function TradeCandleStickChart(props: propsIF) {
                             cumAverageUSD: data.cumAverageUSD
                                 ? data.cumAverageUSD
                                 : 0,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                     }
@@ -456,7 +428,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqBidData[0].liqPrices;
@@ -472,7 +447,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
 
@@ -491,7 +469,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqUpperPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = liqUpperPrices;
@@ -509,7 +490,10 @@ function TradeCandleStickChart(props: propsIF) {
                             liqPrices: liqLowerPrices,
                             deltaAverageUSD: data.deltaAverageUSD,
                             cumAverageUSD: data.cumAverageUSD,
-                            upperBound: data.upperBound,
+                            upperBound:
+                                data.upperBound === '+inf'
+                                    ? data.lowerBound
+                                    : data.upperBound,
                             lowerBound: data.lowerBound,
                         });
                         liqBoundaryDepth = depthLiqAskData[0].liqPrices;
@@ -609,7 +593,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setScaleForChart(unparsedCandleData, false);
-    }, [diffHashSig(tokenPair), unparsedCandleData === undefined]);
+    }, [unparsedCandleData === undefined]);
 
     // Liq Scale
     useEffect(() => {
@@ -826,7 +810,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [period, diffHashSig(unparsedCandleData)]);
+    }, [diffHashSig(tokenPair), period, diffHashSig(unparsedCandleData)]);
 
     // resetting Chart
     useEffect(() => {
@@ -894,33 +878,20 @@ function TradeCandleStickChart(props: propsIF) {
                 candleData !== undefined &&
                 prevPeriod === period &&
                 candleTimeInSeconds === period &&
-                !fetchingCandle ? (
+                !isFetchingCandle ? (
                     <Chart
-                        isUserLoggedIn={isUserLoggedIn}
-                        chainData={chainData}
                         isTokenABase={isTokenABase}
-                        expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
-                        rangeSimpleRangeWidth={props.simpleRangeWidth}
-                        poolPriceDisplay={props.poolPriceDisplay}
-                        truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         setCurrentVolumeData={props.setCurrentVolumeData}
-                        upBodyColor={props.upBodyColor}
-                        upBorderColor={props.upBorderColor}
-                        downBodyColor={props.downBodyColor}
-                        downBorderColor={props.downBorderColor}
-                        upVolumeColor={props.upVolumeColor}
-                        downVolumeColor={props.downVolumeColor}
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
-                        chainId={chainId}
                         prevPeriod={prevPeriod}
                         candleTimeInSeconds={candleTimeInSeconds}
                         poolPriceNonDisplay={poolPriceNonDisplay}
@@ -937,22 +908,6 @@ function TradeCandleStickChart(props: propsIF) {
                         setShowTooltip={props.setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
-                        handlePulseAnimation={handlePulseAnimation}
-                        minPrice={rangeState.minRangePrice}
-                        maxPrice={rangeState.maxRangePrice}
-                        setMaxPrice={rangeState.setMaxRangePrice}
-                        setMinPrice={rangeState.setMinRangePrice}
-                        rescaleRangeBoundariesWithSlider={
-                            rangeState.rescaleRangeBoundariesWithSlider
-                        }
-                        setRescaleRangeBoundariesWithSlider={
-                            rangeState.setRescaleRangeBoundariesWithSlider
-                        }
-                        setRangeSimpleRangeWidth={setSimpleRangeWidth}
-                        setRepositionRangeWidth={setRepositionRangeWidth}
-                        repositionRangeWidth={repositionRangeWidth}
-                        setChartTriggeredBy={rangeState.setChartTriggeredBy}
-                        chartTriggeredBy={rangeState.chartTriggeredBy}
                         candleTime={
                             isMarketOrLimitModule
                                 ? chartSettings.candleTime.market

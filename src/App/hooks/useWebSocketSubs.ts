@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { mktDataChainId } from '../../utils/data/chains';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
+import isJsonString from '../../utils/functions/isJsonString';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
@@ -36,7 +37,7 @@ export interface WebSockerPropsIF {
     chainData: ChainSpec;
     lastBlockNumber: number;
     candleTimeLocal: number;
-    account: `0x${string}` | undefined;
+    userAddress: `0x${string}` | undefined;
     shouldCandleSubscriptionsReconnect: boolean;
     candleData?: CandlesByPoolAndDuration; // State for pool current chandle
     setCandleData: Dispatch<
@@ -49,15 +50,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
     const crocEnv = props.crocEnv;
 
     const dispatch = useAppDispatch();
-
-    function isJsonString(str: string) {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -206,7 +198,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.wssGraphCacheServerDomain +
             '/subscribe_user_liqchanges?' +
             new URLSearchParams({
-                user: props.account || '',
+                user: props.userAddress || '',
                 chainId: props.chainData.chainId,
                 annotate: 'true',
                 addCachedAPY: 'true',
@@ -215,7 +207,7 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
                 addValue: 'true',
                 // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
             }),
-        [props.account, props.chainData.chainId],
+        [props.userAddress, props.chainData.chainId],
     );
 
     // Consumes from user liquidity change endpoint (i.e. range orders)
@@ -228,8 +220,8 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         // only connect is account is available
         props.isServerEnabled &&
             props.areSubscriptionsEnabled &&
-            props.account !== null &&
-            props.account !== undefined,
+            props.userAddress !== null &&
+            props.userAddress !== undefined,
     );
 
     // On new message pump the position/range order message into RTK slice
@@ -268,13 +260,13 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.wssGraphCacheServerDomain +
             '/subscribe_user_recent_changes?' +
             new URLSearchParams({
-                user: props.account || '',
+                user: props.userAddress || '',
                 chainId: props.chainData.chainId,
                 addValue: 'true',
                 annotate: 'true',
                 ensResolution: 'true',
             }),
-        [props.account, props.chainData.chainId],
+        [props.userAddress, props.chainData.chainId],
     );
 
     // Consumes recent changes (i.e. transactions)
@@ -287,8 +279,8 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         // only connect is account is available
         props.isServerEnabled &&
             props.areSubscriptionsEnabled &&
-            props.account !== null &&
-            props.account !== undefined,
+            props.userAddress !== null &&
+            props.userAddress !== undefined,
     );
 
     // On new message pump into RTK slice
@@ -318,12 +310,12 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             props.wssGraphCacheServerDomain +
             '/subscribe_user_limit_order_changes?' +
             new URLSearchParams({
-                user: props.account || '',
+                user: props.userAddress || '',
                 chainId: props.chainData.chainId,
                 addValue: 'true',
                 ensResolution: 'true',
             }),
-        [props.account, props.chainData.chainId],
+        [props.userAddress, props.chainData.chainId],
     );
 
     // Consume limit order updates for user
@@ -336,8 +328,8 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         // only connect is account is available
         props.isServerEnabled &&
             props.areSubscriptionsEnabled &&
-            props.account !== null &&
-            props.account !== undefined,
+            props.userAddress !== null &&
+            props.userAddress !== undefined,
     );
 
     useEffect(() => {

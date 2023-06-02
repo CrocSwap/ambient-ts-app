@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -10,54 +10,59 @@ import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
 import logoText from '../../../assets/images/logos/logo_text.png';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
-import { useAccount, useEnsName, useSwitchNetwork } from 'wagmi';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
+import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { resetUserGraphData } from '../../../utils/state/graphDataSlice';
+import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
+import {
+    resetTokenData,
+    resetUserAddresses,
+} from '../../../utils/state/userDataSlice';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import PageLayout from './PageLayout/PageLayout';
+import { LayoutHandlerContext } from '../../../contexts/LayoutContext';
+import { FaWallet } from 'react-icons/fa';
 
-interface HeaderPropsIF {
-    clickLogout: () => void;
-    isChainSupported: boolean;
-    openWagmiModalWallet: () => void;
-    ethMainnetUsdPrice?: number;
-    lastBlockNumber: number;
-    poolPriceDisplay: number | undefined;
-    recentPools: recentPoolsMethodsIF;
-    chainData: ChainSpec;
-    toggleSidebarDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    toggleTradeDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    toggleDefaultLayout: () => void;
-    isSidebarDrawerOpen: boolean;
-    isTradeDrawerOpen: boolean;
-}
-
-const PageHeader = function (props: HeaderPropsIF) {
+const PageHeader = function () {
     const {
-        ethMainnetUsdPrice,
-        isChainSupported,
-        openWagmiModalWallet,
-        lastBlockNumber,
-        recentPools,
-        poolPriceDisplay,
-        chainData,
-        clickLogout,
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const { isChainSupported, setCrocEnv } = useContext(CrocEnvContext);
+    const { poolPriceDisplay } = useContext(PoolContext);
+    const { recentPools } = useContext(SidebarContext);
+    const { setShowAllData } = useContext(TradeTableContext);
+    const {
+        baseToken: {
+            setBalance: setBaseTokenBalance,
+            setDexBalance: setBaseTokenDexBalance,
+        },
+        quoteToken: {
+            setBalance: setQuoteTokenBalance,
+            setDexBalance: setQuoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
+
+    const {
         toggleSidebarDrawer,
         toggleTradeDrawer,
         toggleDefaultLayout,
         isSidebarDrawerOpen,
         isTradeDrawerOpen,
-    } = props;
+    } = useContext(LayoutHandlerContext);
 
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
@@ -72,6 +77,23 @@ const PageHeader = function (props: HeaderPropsIF) {
     const userData = useAppSelector((state) => state.userData);
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
+
+    const dispatch = useAppDispatch();
+    const { disconnect } = useDisconnect();
+
+    const clickLogout = useCallback(async () => {
+        setCrocEnv(undefined);
+        setBaseTokenBalance('');
+        setQuoteTokenBalance('');
+        setBaseTokenDexBalance('');
+        setQuoteTokenDexBalance('');
+        dispatch(resetUserGraphData());
+        dispatch(resetReceiptData());
+        dispatch(resetTokenData());
+        dispatch(resetUserAddresses());
+        setShowAllData(true);
+        disconnect();
+    }, []);
 
     const formatTokenData = (data: TokenIF[] | undefined) => {
         if (!data) return null;
@@ -125,10 +147,6 @@ const PageHeader = function (props: HeaderPropsIF) {
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        chainId: chainData.chainId,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        lastBlockNumber: lastBlockNumber,
-        chainData: chainData,
         walletDropdownTokenData,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -136,9 +154,11 @@ const PageHeader = function (props: HeaderPropsIF) {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
-            onClick={() => openWagmiModalWallet()}
+            style={!desktopScreen ? { width: '140px' } : undefined}
+            onClick={() => openWagmiModal()}
         >
-            {desktopScreen ? 'Connect Wallet' : 'Connect'}
+            {desktopScreen && 'Connect Wallet'}
+            {!desktopScreen && <FaWallet color='var(--text1)' />}
         </button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
@@ -303,7 +323,6 @@ const PageHeader = function (props: HeaderPropsIF) {
             locationPathname === linkDestination
         );
     }
-
     const routeDisplay = (
         <AnimateSharedLayout>
             <nav
@@ -361,8 +380,10 @@ const PageHeader = function (props: HeaderPropsIF) {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+    const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
     // TODO (#1436): logo padding is problematic in mobile views
+
     return (
         <header
             data-testid={'page-header'}
@@ -381,54 +402,54 @@ const PageHeader = function (props: HeaderPropsIF) {
                 )}
             </Link>
             {routeDisplay}
-            {show ? (
-                <div
-                    style={{
-                        width: '380px',
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        alignItems: 'center',
-                        padding: '0 1rem',
-                    }}
-                >
-                    <TradeNowButton inNav />{' '}
-                </div>
-            ) : (
-                <div>
-                    <div className={styles.account}>
-                        <div className={styles.branch_name}>
-                            {APP_ENVIRONMENT !== 'local' &&
-                            APP_ENVIRONMENT !== 'production' ? (
-                                <div className={styles.branch}>
-                                    {BRANCH_NAME} <BiGitBranch color='yellow' />
-                                </div>
-                            ) : null}
-                        </div>
-                        {!desktopScreen && (
-                            <PageLayout
-                                toggleSidebarDrawer={toggleSidebarDrawer}
-                                toggleTradeDrawer={toggleTradeDrawer}
-                                toggleDefaultLayout={toggleDefaultLayout}
-                                isSidebarDrawerOpen={isSidebarDrawerOpen}
-                                isTradeDrawerOpen={isTradeDrawerOpen}
-                            />
-                        )}
-                        <NetworkSelector
-                            chainId={chainData.chainId}
-                            switchNetwork={switchNetwork}
-                        />
-                        {!isConnected && connectWagmiButton}
-                        <Account {...accountProps} />
-                        <NotificationCenter
-                            showNotificationTable={showNotificationTable}
-                            setShowNotificationTable={setShowNotificationTable}
-                            lastBlockNumber={lastBlockNumber}
-                            chainId={chainData.chainId}
-                        />
+            <div className={styles.right_side}>
+                {show ? (
+                    <div
+                        style={{
+                            width: '380px',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            padding: '0 1rem',
+                        }}
+                    >
+                        {!bottomTabs && <TradeNowButton inNav />}
                     </div>
-                </div>
-            )}
-            {isChainSupported || <SwitchNetwork />}
+                ) : (
+                    <div>
+                        <div className={styles.account}>
+                            <div className={styles.branch_name}>
+                                {APP_ENVIRONMENT !== 'local' &&
+                                APP_ENVIRONMENT !== 'production' ? (
+                                    <div className={styles.branch}>
+                                        {BRANCH_NAME}{' '}
+                                        <BiGitBranch color='yellow' />
+                                    </div>
+                                ) : null}
+                            </div>
+                            {!desktopScreen && (
+                                <PageLayout
+                                    toggleSidebarDrawer={toggleSidebarDrawer}
+                                    toggleTradeDrawer={toggleTradeDrawer}
+                                    toggleDefaultLayout={toggleDefaultLayout}
+                                    isSidebarDrawerOpen={isSidebarDrawerOpen}
+                                    isTradeDrawerOpen={isTradeDrawerOpen}
+                                />
+                            )}
+                            <NetworkSelector switchNetwork={switchNetwork} />
+                            {!isConnected && connectWagmiButton}
+                            <Account {...accountProps} />
+                            <NotificationCenter
+                                showNotificationTable={showNotificationTable}
+                                setShowNotificationTable={
+                                    setShowNotificationTable
+                                }
+                            />
+                        </div>
+                    </div>
+                )}
+                {isChainSupported || <SwitchNetwork />}
+            </div>
         </header>
     );
 };

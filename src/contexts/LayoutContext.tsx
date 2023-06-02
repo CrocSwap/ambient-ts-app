@@ -1,30 +1,101 @@
-import React, { createContext, useContext } from 'react';
-import useLayoutHandler, {
-    LayoutHandler,
-} from '../utils/hooks/useLayoutHandler';
+import React, { createContext, useState } from 'react';
 
-// Define the context
-interface LayoutHandlerContextIF {
-    layoutHandler: LayoutHandler;
-}
+export type LayoutHandler = {
+    isTradeDrawerOpen: boolean;
+    isSidebarDrawerOpen: boolean;
+    toggleDefaultLayout: () => void;
+    toggleSidebarDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleTradeDrawer: (
+        open: boolean,
+    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    setIsSidebarDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsTradeDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-export const LayoutHandlerContext = createContext<LayoutHandlerContextIF>(
-    {} as LayoutHandlerContextIF,
+export const LayoutHandlerContext = createContext<LayoutHandler>(
+    {} as LayoutHandler,
 );
 
-// Define the provider component
 export const LayoutHandlerContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const layoutHandler = useLayoutHandler();
+    const [isTradeDrawerOpen, setIsTradeDrawerOpen] = useState(false);
+    const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
+
+    console.log({ isSidebarDrawerOpen });
+
+    const toggleDefaultLayout = (): void => {
+        setIsSidebarDrawerOpen(false);
+        setIsTradeDrawerOpen(false);
+    };
+
+    const toggleSidebarDrawer =
+        (
+            // eslint-disable-next-line
+            open: boolean,
+        ) =>
+        (event: React.KeyboardEvent | React.MouseEvent): void => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            if (
+                event.type === 'keydown' &&
+                (event as React.KeyboardEvent).key === 'Escape'
+            ) {
+                setIsSidebarDrawerOpen(false);
+                return;
+            }
+
+            setIsSidebarDrawerOpen(true);
+
+            console.log('opening sidebar drawer');
+        };
+
+    const toggleTradeDrawer =
+        (
+            // eslint-disable-next-line
+            open: boolean,
+        ) =>
+        (event: React.KeyboardEvent | React.MouseEvent): void => {
+            if (
+                event.type === 'keydown' &&
+                ((event as React.KeyboardEvent).key === 'Tab' ||
+                    (event as React.KeyboardEvent).key === 'Shift')
+            ) {
+                return;
+            }
+
+            if (
+                event.type === 'keydown' &&
+                (event as React.KeyboardEvent).key === 'Escape'
+            ) {
+                setIsTradeDrawerOpen(false);
+                return;
+            }
+
+            setIsTradeDrawerOpen(true);
+        };
+
+    const layoutHandler: LayoutHandler = {
+        isTradeDrawerOpen,
+        isSidebarDrawerOpen,
+        toggleDefaultLayout,
+        toggleSidebarDrawer,
+        toggleTradeDrawer,
+        setIsSidebarDrawerOpen,
+        setIsTradeDrawerOpen,
+    };
 
     return (
-        <LayoutHandlerContext.Provider value={{ layoutHandler }}>
+        <LayoutHandlerContext.Provider value={layoutHandler}>
             {props.children}
         </LayoutHandlerContext.Provider>
     );
 };
-
-// Custom hook to access the layoutHandler from the context
-export const useLayoutHandlerContext = (): LayoutHandler =>
-    useContext(LayoutHandlerContext).layoutHandler;

@@ -1,10 +1,10 @@
 import styles from '../SidebarSearchResults.module.css';
-import {
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../../../utils/interfaces/exports';
+import { TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
@@ -12,25 +12,27 @@ import {
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    tokenPair: TokenPairIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const { searchedPools, cachedPoolStatsFetch } = props;
+    const { tokenA } = useAppSelector((state) => state.tradeData);
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const { dataTokenA } = tokenPair;
         const tokenAString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? baseAddr
                 : quoteAddr;
         const tokenBString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
         linkGenMarket.navigate({

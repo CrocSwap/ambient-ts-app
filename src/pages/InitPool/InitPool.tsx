@@ -1,8 +1,7 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
-import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -25,39 +24,35 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
-// interface for props
-interface propsIF {
-    chainId: string;
-    isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    ethMainnetUsdPrice?: number;
-    gasPriceInGwei: number | undefined;
-}
-
 // react functional component
-export default function InitPool(props: propsIF) {
+export default function InitPool() {
     const {
-        chainId,
-        openModalWallet,
-        isUserLoggedIn,
+        wagmiModal: { open: openWagmiModalWallet },
+    } = useContext(AppStateContext);
+    const {
         crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-        ethMainnetUsdPrice,
-        gasPriceInGwei,
-    } = props;
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
+
+    const { isConnected } = useAccount();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
@@ -466,7 +461,7 @@ export default function InitPool(props: propsIF) {
                                         }}
                                         flat={true}
                                     />
-                                ) : isUserLoggedIn ||
+                                ) : isConnected ||
                                   !connectButtonDelayElapsed ? (
                                     !isTokenAAllowanceSufficient ? (
                                         tokenAApprovalButton
@@ -503,7 +498,7 @@ export default function InitPool(props: propsIF) {
                                 ) : (
                                     <Button
                                         title='Connect Wallet'
-                                        action={openModalWallet}
+                                        action={openWagmiModalWallet}
                                         flat={true}
                                     />
                                 )}

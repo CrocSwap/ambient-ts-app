@@ -1,20 +1,16 @@
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatAmountOld } from '../../../utils/numbers';
-import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
 
 interface StatCardProps {
     title: string;
     value: string | number;
-}
-
-interface StatsProps {
-    userData: userData;
-    lastBlockNumber: number;
-    chainId: string;
 }
 
 function StatCard(props: StatCardProps) {
@@ -26,19 +22,24 @@ function StatCard(props: StatCardProps) {
             aria-label={ariaDescription}
             tabIndex={0}
         >
-            <div className={styles.title}>{title}</div>
+            <div className={styles.title} style={{ fontWeight: '100' }}>
+                {title}
+            </div>
             <div className={styles.value}>{value}</div>
         </li>
     );
 }
 
-export default function Stats(props: StatsProps) {
-    const { userData, lastBlockNumber, chainId } = props;
+export default function Stats() {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const isUserIdle = userData.isUserIdle;
+    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const { t } = useTranslation();
 

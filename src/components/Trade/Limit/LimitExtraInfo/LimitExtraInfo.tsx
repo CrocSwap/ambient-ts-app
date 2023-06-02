@@ -1,11 +1,10 @@
 // START: Import React and Dongles
-import { memo, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import {
@@ -13,16 +12,12 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
     orderGasPriceInDollars: string | undefined;
-    didUserFlipDenom: boolean;
     isTokenABase: boolean;
-    isDenomBase: boolean;
-    limitRate: string;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
@@ -34,13 +29,14 @@ interface propsIF {
 function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
-        poolPriceDisplay,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
         isQtyEntered,
         liquidityProviderFeeString,
     } = props;
+    const { poolPriceDisplay } = useContext(PoolContext);
+
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -49,9 +45,10 @@ function LimitExtraInfo(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0

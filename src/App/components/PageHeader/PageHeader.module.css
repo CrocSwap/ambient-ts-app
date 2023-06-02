@@ -1,11 +1,22 @@
+.primary_header_container{
+    background: blue;
+    width: 100%;
+    height: 56px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
 .primary_header {
     width: 100%;
+    height: 56px;
     background: var(--dark1);
     display: flex;
     /* justify-content: space-between; */
     align-items: center;
     padding: 1rem 0;
-    height: 56px;
     border-bottom: 1px solid var(--navbar-border);
 }
 .fixed {
@@ -14,6 +25,12 @@
     z-index: 3;
 }
 
+.primary_navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--gap, 2rem);
+}
 .branch {
     display: flex;
     flex-direction: row;
@@ -25,12 +42,6 @@
     color: orange;
 }
 
-.primary_navigation {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--gap, 2rem);
-}
 
 .active,
 .inactive {
@@ -185,11 +196,21 @@
         top: 2rem;
         right: 2rem;
     }
+
+    .authenticate_button{
+        display: flex;
+        width: auto !important;
+        padding: 0 1rem;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 @media only screen and (min-width: 400px) {
     .primary_header {
         justify-content: space-between;
+
+       
     }
     .logo_container img:nth-of-type(1) {
         margin: 0 4px;
@@ -200,4 +221,26 @@
         display: block;
         margin: 0 4px;
     }
+}
+
+
+@media only screen and (min-width: 1180px) {
+.logo_container, .right_side, .primary_navigation{
+    /* background: blue; */
+    width: calc(100%/3);
+    vertical-align: middle;
+}
+
+.logo_container{
+    justify-content: flex-start;
+}
+
+.right_side{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.primary_navigation{
+    justify-content: center;
+}
 }

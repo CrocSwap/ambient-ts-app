@@ -4,6 +4,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    font-weight: 300;
 }
 
 /* order table */
@@ -19,6 +20,7 @@
 .username_base_color {
     color: var(--text1);
     font-family: monospace;
+    font-weight: 300;
 }
 
 .order_sell {
@@ -26,6 +28,7 @@
 }
 .owned_tx_contrast {
     color: var(--accent2);
+    font-weight: 300;
 }
 
 .order_buy {
@@ -145,13 +148,13 @@ aside.emoji-picker-react {
 
     background: red !important;
 } */
-.MuiPagination-ul{
+.MuiPagination-ul {
     background: var(--dark2);
     border-radius: 4px !important;
     flex-wrap: nowrap !important;
 }
 
-.MuiPaginationItem-root{
+.MuiPaginationItem-root {
     color: var(--text2) !important;
     outline: 1px solid transparent !important;
 }
@@ -159,7 +162,6 @@ aside.emoji-picker-react {
 .Mui-selected.MuiPaginationItem-root {
     color: var(--text1) !important;
     background: transparent !important;
-   
 }
 
 .MuiDrawer-paper{
@@ -179,4 +181,7 @@ aside.emoji-picker-react {
  
     color: var(--title-gradient) !important 
 
+}
+.css-1idz92c-MuiCircularProgress-svg {
+    color: var(--title-gradient) !important;
 }

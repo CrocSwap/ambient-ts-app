@@ -37,16 +37,23 @@
     place-items: center;
 }
 
-@media only screen and (max-width: 768px) {
-    
-    .content img{
-        width: 100px !important;
+@media only screen and (max-width:1020px) {
+    .content{
+       display: flex;
+       justify-content: center;
+       align-items: center;
+
+       width: 100vw;
+      
+
     }
+    
+   
 
 }
 
 /* Desktop screen Sizes */
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width:1020px) {
     .content {
         max-width: 1020px;
     }

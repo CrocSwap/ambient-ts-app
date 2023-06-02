@@ -1,6 +1,5 @@
 .active_position_style,
 .active_transaction_style {
-
     background-image: linear-gradient(
         to right,
         rgba(255, 255, 255, 0) 50%,
@@ -19,42 +18,34 @@
 
 .main_list_container {
     width: 100%;
-  height: 100%;
+    height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
     position: relative;
 }
 
-.main_list_container{
-
-
+.main_list_container {
     display: grid;
     overflow-y: hidden;
-    grid-template-rows: auto 1fr ;
-    }
-    
-    
-    
-    .main_list_expanded{
-        display: grid;
-        grid-template-rows: auto 1fr 70px;
-        overflow-y: hidden;
-    
-    }
-    
+    grid-template-rows: auto 1fr;
+    padding: 0 4px;
+}
+
+.main_list_expanded {
+    display: grid;
+    grid-template-rows: auto 1fr 70px;
+    overflow-y: hidden;
+}
 
 .header {
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    
 }
 
-.table_content{
+.table_content {
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
     overflow: auto; /* Enable scrolling for the content */
-
-  
 }
 
 .footer {
@@ -68,11 +59,9 @@
 
    
     margin: 0 auto;
-    
-    
 }
 
-.footer_content{
+.footer_content {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -80,8 +69,7 @@
     gap: 12px;
     margin: 0 auto;
     width: 60%;
-
-  }
+}
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
@@ -120,18 +108,17 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-
 }
-.row_container li:not(:last-child){
+.row_container li:not(:last-child) {
     cursor: pointer;
 }
-.main_list_container .row_container , .main_list_container .header{
+.main_list_container .row_container,
+.main_list_container .header {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -139,7 +126,8 @@
     display: table;
 }
 
-.main_list_container .row_container > li, .main_list_container .header > li {
+.main_list_container .row_container > li,
+.main_list_container .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
@@ -174,7 +162,6 @@
     animation: shine 1.5s infinite;
 }
 
-
 .view_more_container {
     padding: 10px;
     display: flex;
@@ -201,7 +188,6 @@
 .view_more_button:hover {
     color: var(--text-grey-white);
 }
-
 
 @-webkit-keyframes shine {
     from {
@@ -240,17 +226,16 @@
     margin: 0 2px;
 }
 
-.row_container:focus-visible, .row_container li:focus-visible{
-    border: 1px solid var(--text1)
+.row_container:focus-visible,
+.row_container li:focus-visible {
+    border: 1px solid var(--text1);
 }
 
-.showing_text{
+.showing_text {
     font-size: 10px;
     color: var(--text2);
     white-space: nowrap;
 }
-
-
 
 .token_qty {
     display: flex;
@@ -260,7 +245,7 @@
     gap: 4px;
 }
 
-.view_wallet_link{
+.view_wallet_link {
     background: var(--dark2);
     width: 100%;
     border: none;
@@ -272,7 +257,7 @@
     transition: all var(--animation-speed) ease-in-out;
     white-space: nowrap;
     height: 23px;
-    padding: 5px ;
+    padding: 5px;
     text-decoration: none;
     border-radius: 6.25rem;
     cursor: pointer;
@@ -284,20 +269,18 @@
     align-items: center;
     gap: 4px;
 }
-.view_wallet_link:hover, .view_wallet_link:hover .view_wallet_link svg{
+.view_wallet_link:hover,
+.view_wallet_link:hover .view_wallet_link svg {
     color: var(--text1);
-
 }
-.view_wallet_link p{
+.view_wallet_link p {
     display: flex;
 }
-.view_wallet_link svg:first-of-type{
+.view_wallet_link svg:first-of-type {
     display: none;
 }
 
-.id_tooltip_style{
-
-
+.id_tooltip_style {
     margin-left: -60px;
     background: var(--dark3);
     color: var(--text1);
@@ -312,49 +295,44 @@
     gap: 4px;
 }
 
-.wallet_tooltip_div{
-
+.wallet_tooltip_div {
     margin-right: -80px;
     background: var(--dark3);
     color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: default;
-
 }
 
-.wallet_tooltip_p{
-
- font-family: var(--roboto);
- display: flex;
- flex-direction: row;
- align-items: center;
- white-space: nowrap;
- gap: 4px;
+.wallet_tooltip_p {
+    font-family: var(--roboto);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+    gap: 4px;
 }
 
-.token_qty_tooltip{
-
- display: flex;
- align-items: center;
- justify-content: flex-end;
- gap: 4px;
- text-align: right;
+.token_qty_tooltip {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    text-align: right;
 }
 
-.order_tooltip{
-
- margin-left: -70px;
- background: var(--dark3);
- padding: 12px;
- border-radius: 4px;
- cursor: pointer;
+.order_tooltip {
+    margin-left: -70px;
+    background: var(--dark3);
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 @media only screen and (max-width: 768px) {
-    .view_wallet_link p{
+    .view_wallet_link p {
         display: none;
     }
-    .view_wallet_link svg:first-of-type{
+    .view_wallet_link svg:first-of-type {
         display: flex;
     }
     .header li {
@@ -369,21 +347,19 @@
 }
 
 @media only screen and (max-width: 800px) {
-    .main_list_expanded{
+    .main_list_expanded {
         display: grid;
         grid-template-rows: 40px 1fr 150px;
         overflow-y: hidden;
-    
     }
 
-   
     .footer_content {
-       width: 95%;
-       flex-direction: column;
-       gap: 4px;
+        width: 95%;
+        flex-direction: column;
+        gap: 4px;
     }
 
-    .showing_text{
+    .showing_text {
         display: none;
     }
 }

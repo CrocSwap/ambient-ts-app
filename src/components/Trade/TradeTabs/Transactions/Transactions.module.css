@@ -18,27 +18,23 @@
 
 .main_list_container {
     width: 100%;
-  height: 100%;
+    height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
     position: relative;
 }
 
-.main_list_container{
-
-
-display: grid;
-overflow-y: hidden;
-grid-template-rows: auto 1fr ;
+.main_list_container {
+    display: grid;
+    overflow-y: hidden;
+    grid-template-rows: auto 1fr;
+    padding: 0 4px;
 }
 
-
-
-.main_list_expanded{
+.main_list_expanded {
     display: grid;
     grid-template-rows: auto 1fr 70px;
     overflow-y: hidden;
-
 }
 
 .header {
@@ -48,12 +44,10 @@ grid-template-rows: auto 1fr ;
     
 }
 
-.table_content{
+.table_content {
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
     overflow: auto; /* Enable scrolling for the content */
 
-
-  
 }
 
 .footer {
@@ -64,15 +58,13 @@ grid-template-rows: auto 1fr ;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-  /* position: sticky;
+    /* position: sticky;
     bottom: 0; */
   
     margin: 0 auto;
-    
-    
 }
 
-.footer_content{
+.footer_content {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -80,8 +72,7 @@ grid-template-rows: auto 1fr ;
     gap: 12px;
     margin: 0 auto;
     width: 60%;
-
-  }
+}
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
@@ -124,22 +115,20 @@ grid-template-rows: auto 1fr ;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
-
 }
-
 
 .row_container li {
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
-
 }
-.row_container li:not(:last-child){
+.row_container li:not(:last-child) {
     cursor: pointer;
 }
 
-.main_list_container .row_container , .main_list_container .header{
+.main_list_container .row_container,
+.main_list_container .header {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -147,7 +136,8 @@ grid-template-rows: auto 1fr ;
     display: table;
 }
 
-.main_list_container .row_container > li, .main_list_container .header > li {
+.main_list_container .row_container > li,
+.main_list_container .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
@@ -237,7 +227,6 @@ grid-template-rows: auto 1fr ;
 }
 
 .menu {
-  
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -327,7 +316,7 @@ grid-template-rows: auto 1fr ;
     width: 460px;
 }
 
-.showing_text{
+.showing_text {
     font-size: 10px;
     color: var(--text2);
     white-space: nowrap;
@@ -352,21 +341,19 @@ grid-template-rows: auto 1fr ;
 }
 
 @media only screen and (max-width: 800px) {
-    .main_list_expanded{
+    .main_list_expanded {
         display: grid;
         grid-template-rows: 40px 1fr 150px;
         overflow-y: hidden;
-    
     }
 
-   
     .footer_content {
-       width: 95%;
-       flex-direction: column;
-       gap: 4px;
+        width: 95%;
+        flex-direction: column;
+        gap: 4px;
     }
 
-    .showing_text{
+    .showing_text {
         display: none;
     }
 }

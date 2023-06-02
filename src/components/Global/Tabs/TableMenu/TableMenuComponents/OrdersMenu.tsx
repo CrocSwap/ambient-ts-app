@@ -11,7 +11,6 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
@@ -24,26 +23,23 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
     tradeData: tradeData;
     limitOrder: LimitOrderIF;
     isOwnerActiveAccount?: boolean;
-    isShowAllEnabled: boolean;
     isOrderFilled: boolean;
-    handlePulseAnimation?: (type: string) => void;
-    account: string;
-    lastBlockNumber: number;
     showHighlightedButton: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
 }
@@ -51,33 +47,32 @@ interface propsIF {
 // React functional component
 export default function OrdersMenu(props: propsIF) {
     const {
-        chainData,
         tradeData,
         limitOrder,
         isOrderFilled,
         isOwnerActiveAccount,
-        handlePulseAnimation,
-        lastBlockNumber,
-        account,
         isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
+        isAccountView,
         handleAccountClick,
     } = props;
+
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
-        sidebar: { isOpen: isSidebarOpen },
     } = useContext(AppStateContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const [
         isModalOpen,
         //  openModal,
         closeModal,
     ] = useModal();
-
-    const crocEnv = useContext(CrocEnvContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -90,7 +85,7 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
-        handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
+        handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
         if (IS_LOCAL_ENV) {
             console.debug({ tradeData });
@@ -178,9 +173,6 @@ export default function OrdersMenu(props: propsIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -188,9 +180,6 @@ export default function OrdersMenu(props: propsIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
             />,
@@ -199,15 +188,12 @@ export default function OrdersMenu(props: propsIF) {
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
 

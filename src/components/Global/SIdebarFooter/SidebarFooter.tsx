@@ -57,20 +57,22 @@ function SidebarFooter() {
     ];
 
     return (
-        <div className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}>
-            {linksData.map((link) => (
-                <Link to={link.destination} key={link.destination}>
-                    <link.icon
-                        size={18}
-                        color={
-                            currentLocation === link.destination
-                                ? 'var(--accent1)'
-                                : 'var(--text-highlight)'
-                        }
-                    />
-                    <p> {link.title}</p>
-                </Link>
-            ))}
+        <div className={`${styles.top_container} ${sidebarPositionStyle}`}>
+            <div className={`${styles.sidebar_footer} `}>
+                {linksData.map((link) => (
+                    <Link to={link.destination} key={link.destination}>
+                        <link.icon
+                            size={18}
+                            color={
+                                currentLocation === link.destination
+                                    ? 'var(--accent1)'
+                                    : 'var(--text-highlight)'
+                            }
+                        />
+                        <p> {link.title}</p>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 }
