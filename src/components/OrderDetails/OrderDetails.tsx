@@ -14,6 +14,7 @@ import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -267,7 +268,10 @@ export default function OrderDetails(props: propsIF) {
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
         }
     };
     // eslint-disable-next-line
