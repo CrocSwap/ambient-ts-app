@@ -198,9 +198,12 @@ function LimitCurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
-            dispatch(setLimitTick(undefined));
+            if (!location.pathname.includes('limitTick')) {
+                dispatch(setLimitTick(undefined));
+                dispatch(setPoolPriceNonDisplay(0));
+            }
+
             dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-            dispatch(setPoolPriceNonDisplay(0));
             IS_LOCAL_ENV && console.debug({ isTokenAPrimaryLocal });
             linkGenLimit.navigate({
                 chain: chainId,

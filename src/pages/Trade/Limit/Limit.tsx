@@ -31,8 +31,8 @@ import {
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setLimitTick,
-    setLimitTickCopied,
     setShouldLimitDirectionReverse,
+    setLimitTickCopied,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -145,15 +145,13 @@ export default function Limit() {
         () => pool?.baseToken.tokenAddr === tokenA.address,
         [pool?.baseToken, tokenA.address],
     );
-
     useEffect(() => {
         if (!tradeData.shouldLimitDirectionReverse) {
             dispatch(setLimitTick(undefined));
         }
 
         dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenA.address, tokenB.address]);
-
+    }, [tradeData.shouldLimitDirectionReverse]);
     useEffect(() => {
         (async () => {
             if (limitTick === undefined && crocEnv && !limitTickCopied) {
