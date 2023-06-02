@@ -4,7 +4,7 @@
     position: absolute;
     top: 60px;
     width: 240px;
-    height: 326px;
+    height: 376px;
     transform: translateX(-45%);
     border: none;
     padding: 1rem;
@@ -68,6 +68,13 @@
     border-radius: var(--border-radius);
 }
 
+.navbar_logout:hover, .navbar_logout:focus-visible {
+    color: var(--accent1);
+    background: var(--dark2);
+    border: solid;
+    border-color: var(--accent1);
+}
+
 .topLevelContainer {
     transition: all var(--animation-speed) ease-out;
     background-position: 1% 50%;
@@ -75,10 +82,8 @@
     text-decoration: none;
 }
 
-.topLevelContainer:hover,
-.topLevelContainer:focus-visible {
-    background: var(--title-gradient);
-    background-position: 99% 50%;
+.menu_item:hover, .menu_item:focus-visible {
+    filter: drop-shadow(0 0 5px var(--text1));
 }
 
 .menu_item .icon_button {

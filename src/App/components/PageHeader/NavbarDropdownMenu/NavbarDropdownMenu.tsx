@@ -25,12 +25,7 @@ import {
 } from '../../../../constants';
 
 interface NavbarDropdownItemPropsIF {
-    goToMenu?: string;
-    leftIcon?: ReactNode | string;
-    topLevel?: boolean;
-    goBackItem?: boolean;
-    imageIcon?: string;
-    onClick?: () => void;
+    onClick: () => void;
     children: ReactNode;
     rightIcon?: ReactNode;
     isLogoutButton?: boolean;
@@ -52,6 +47,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const isEscapePressed = useKeyPress('Escape');
 
     const linkGenTOS: linkGenMethodsIF = useLinkGen('tos');
+    const linkGenPrivacy: linkGenMethodsIF = useLinkGen('privacy');
 
     useEffect(() => {
         if (isEscapePressed) {
@@ -60,26 +56,10 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     }, [isEscapePressed]);
 
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
-        const topLevelItemStyle = props.topLevel
-            ? styles.topLevelContainer
-            : styles.nonTopLevelContainer;
-        const goBackItemStyle = props.goBackItem ? styles.goBackStyle : null;
-
-        const imageIcon = (
-            <img
-                src={props.imageIcon}
-                alt='icon'
-                className={styles.icon_button}
-                width='25px'
-            />
-        );
-
-        const itemIcon = (
-            <div className={styles.icon_button}>{props.leftIcon}</div>
-        );
+        const topLevelItemStyle = styles.topLevelContainer;
 
         const logoutStyles = `${styles.navbar_logout}`;
-        const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle} ${goBackItemStyle}`;
+        const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle}`;
 
         const buttonStyle = props.isLogoutButton
             ? logoutStyles
@@ -88,18 +68,14 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         return (
             <button
                 className={buttonStyle}
-                onClick={() => {
-                    props.goToMenu && setActiveMenu(props.goToMenu);
-                    if (props.onClick) props.onClick();
-                }}
+                onClick={() => props.onClick()}
                 tabIndex={0}
                 role='button'
             >
-                {props.imageIcon && imageIcon}
-                {props.leftIcon && itemIcon}
-                {props.children}
-
-                <span className={styles.icon_right}>{props.rightIcon}</span>
+                <span>{props.children}</span>
+                <span className={`${styles.icon_right}`}>
+                    {props.rightIcon}
+                </span>
             </button>
         );
     }
@@ -110,7 +86,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const closeMenuBar = () => closeMenu && closeMenu();
 
     const handleDocsClick = () => {
-        console.log(`handling docs click! ${DOCS_LINK}`);
         openInNewTab(DOCS_LINK);
         closeMenuBar();
     };
@@ -131,8 +106,13 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
 
     const handleLegalPrivacyClick = () => {
+        linkGenPrivacy.navigate();
+        closeMenuBar();
+    };
+
+    const handleTOSClick = () => {
         linkGenTOS.navigate();
-        closeMenu && closeMenu();
+        closeMenuBar();
     };
 
     return (
@@ -161,43 +141,43 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         tabIndex={0}
                     >
                         <NavbarDropdownItem
-                            topLevel
                             rightIcon={<BsBook size={18} />}
                             onClick={handleDocsClick}
                         >
                             Docs
                         </NavbarDropdownItem>
                         <NavbarDropdownItem
-                            topLevel
                             rightIcon={<AiFillTwitterCircle size={20} />}
                             onClick={handleTwitterClick}
                         >
                             Twitter
                         </NavbarDropdownItem>
                         <NavbarDropdownItem
-                            topLevel
                             rightIcon={<FaDiscord size={20} />}
                             onClick={handleDiscordClick}
                         >
                             Discord
                         </NavbarDropdownItem>
                         <NavbarDropdownItem
-                            topLevel
                             rightIcon={<BsMedium size={20} />}
                             onClick={handleMediumClick}
                         >
                             Medium
                         </NavbarDropdownItem>
                         <NavbarDropdownItem
-                            topLevel
                             rightIcon={<IoDocumentTextSharp size={20} />}
                             onClick={handleLegalPrivacyClick}
                         >
-                            Legal & Privacy
+                            Privacy
+                        </NavbarDropdownItem>
+                        <NavbarDropdownItem
+                            rightIcon={<IoDocumentTextSharp size={20} />}
+                            onClick={handleTOSClick}
+                        >
+                            Terms of Service
                         </NavbarDropdownItem>
                         <div className={`${styles.navbar_logout_container}`}>
                             <NavbarDropdownItem
-                                topLevel
                                 isLogoutButton
                                 onClick={clickLogout}
                             >
