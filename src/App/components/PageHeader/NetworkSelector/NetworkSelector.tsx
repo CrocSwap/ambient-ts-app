@@ -48,14 +48,11 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                         <img
                             src={chain.logoUrl}
                             alt={chain.displayName}
-                            width='18px'
-                            height='18px'
+                            width='21px'
+                            height='21px'
                             style={{ borderRadius: '50%' }}
                         />
                         {chain.displayName}
-                        {chain.chainId == chainId && (
-                            <FaDotCircle color='#CDC1FF' size={10} />
-                        )}
                     </div>
                 </motion.li>
             ))}

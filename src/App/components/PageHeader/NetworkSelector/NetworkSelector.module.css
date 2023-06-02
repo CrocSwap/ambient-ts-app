@@ -54,15 +54,12 @@
 }
 
 .menu_content {
-    width: 150px;
+    width: 200px;
     padding: 12px;
     overflow: hidden;
     z-index: 2;
-    background: var(--body-bg);
-    backdrop-filter: blur(16.5px);
-    -webkit-backdrop-filter: blur(16.5px);
+    background: var(--dark2);
     border-radius: var(--border-radius);
-    border: 1px solid rgba(255, 255, 255, 0.18);
     z-index: 999;
 }
 
@@ -105,11 +102,17 @@
 
 .chain_name_status {
     padding: 0.6rem 0;
+    font-size: var(--header2-size);
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
     color: var(--text1);
     z-index: 9999;
+}
+
+.chain_name_status:hover, .chain_name_status:focus-visible {
+    filter: drop-shadow(0 0 5px var(--text1));
+}
+
+.chain_name_status img {
+    margin-right: 0.5em;
+    vertical-align: middle;
 }
