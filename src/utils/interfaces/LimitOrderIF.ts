@@ -1,18 +1,12 @@
 export interface LimitOrderIF {
     id: string;
-    limitOrderIdentifier: string;
-    tx: string;
+    limitOrderId: string;
     pivotTime: number;
-    timeFirstMint: number;
-    latestCrossPivotTime: number;
-    positionId: string;
-    source: string;
-    time: number;
+    crossTime: number;
     user: string;
     base: string;
     quote: string;
     poolIdx: number;
-    poolHash: string;
     bidTick: number;
     askTickInvPriceDecimalCorrected: number;
     askTickPriceDecimalCorrected: number;
@@ -20,19 +14,17 @@ export interface LimitOrderIF {
     bidTickPriceDecimalCorrected: number;
     askTick: number;
     isBid: boolean;
-    price: number;
-    claimableLiq: string;
-    claimableLiqPivotTimes: string;
-    positionLiq: string;
-    positionLiqBase: string;
+    positionLiq: number;
+    positionLiqBase: number;
+    positionLiqQuote: number;
     positionLiqBaseDecimalCorrected: number;
-    claimableLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
+    claimableLiq: number;
+    claimableLiqPivotTimes: number;
+    claimableLiqBase: number;
+    claimableLiqQuote: number;
+    claimableLiqBaseDecimalCorrected: number;
     claimableLiqQuoteDecimalCorrected: number;
-    claimableLiqTotalUSD: number;
-    positionLiqQuote: string;
-    updateType: string;
-    latestUpdateTime: number;
     baseSymbol: string;
     baseDecimals: number;
     baseTokenLogoURI: string;
@@ -44,11 +36,26 @@ export interface LimitOrderIF {
     limitPriceDecimalCorrected: number;
     invLimitPriceDecimalCorrected: number;
     ensResolution: string;
-    basePrice: number;
-    quotePrice: number;
-    positionLiqBaseUSD: number;
-    positionLiqQuoteUSD: number;
-    positionLiqTotalUSD: number;
     totalValueUSD: number;
+    latestUpdateTime: number;
+    timeFirstMint: number;
     chainId: string;
+}
+
+export interface LimitOrderServerIF {
+    chainId: string;
+    limitOrderId: string;
+    pivotTime: number;
+    askTick: number;
+    bidTick: number;
+    isBid: boolean;
+    poolIdx: number;
+    base: string;
+    quote: string;
+    user: string;
+    concLiq: number;
+    rewardLiq: number;
+    claimableLiq: number;
+    crossTime: number;
+    latestUpdateTime: number;
 }

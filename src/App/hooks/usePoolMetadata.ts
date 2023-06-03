@@ -3,7 +3,10 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../utils/interfaces/LimitOrderIF';
 import {
     PositionIF,
     PositionServerIF,
@@ -421,8 +424,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                     // retrieve pool limit order states
                     const poolLimitOrderStatesCacheEndpoint =
-                        props.httpGraphCacheServerDomain +
-                        '/pool_limit_order_states?';
+                        GRAPHCACHE_SMALL_URL + '/pool_limit_orders?';
 
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
@@ -433,9 +435,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 chainId: props.chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                n: '200',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                n: '50',
                             }),
                     )
                         .then((response) => response?.json())
@@ -449,13 +449,17 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 }),
                             );
 
-                            if (poolLimitOrderStates) {
+                            const crocEnv = props.crocEnv;
+                            if (poolLimitOrderStates && crocEnv) {
                                 Promise.all(
                                     poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderIF) => {
+                                        (limitOrder: LimitOrderServerIF) => {
                                             return getLimitOrderData(
                                                 limitOrder,
                                                 props.searchableTokens,
+                                                crocEnv,
+                                                props.chainData.chainId,
+                                                props.lastBlockNumber,
                                             );
                                         },
                                     ),

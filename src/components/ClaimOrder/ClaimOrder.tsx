@@ -78,7 +78,7 @@ export default function ClaimOrder(props: propsIF) {
     const claimPercentage = 100;
 
     const claimablePivotTime = limitOrder.claimableLiqPivotTimes
-        ? parseInt(limitOrder.claimableLiqPivotTimes)
+        ? limitOrder.claimableLiqPivotTimes
         : undefined;
 
     const claimFn = async () => {

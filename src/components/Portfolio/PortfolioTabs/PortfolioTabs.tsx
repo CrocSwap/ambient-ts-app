@@ -46,6 +46,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 
 // interface for React functional component props
 interface propsIF {
@@ -95,12 +96,11 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const userPositionsCacheEndpoint =
         GRAPHCACHE_SMALL_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -164,14 +164,19 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates) {
+                if (userLimitOrderStates && crocEnv) {
                     Promise.all(
-                        userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(
-                                limitOrder,
-                                tokens.tokenUniv,
-                            );
-                        }),
+                        userLimitOrderStates.map(
+                            (limitOrder: LimitOrderServerIF) => {
+                                return getLimitOrderData(
+                                    limitOrder,
+                                    tokens.tokenUniv,
+                                    crocEnv,
+                                    chainId,
+                                    lastBlockNumber,
+                                );
+                            },
+                        ),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });

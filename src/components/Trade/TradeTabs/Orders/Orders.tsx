@@ -150,9 +150,13 @@ function Orders(props: propsIF) {
 
     const nonEmptyOrders = showAllData
         ? limitOrdersByPool.filter(
-              (limitOrder) => limitOrder.totalValueUSD !== 0,
+              (limitOrder) =>
+                  limitOrder.positionLiq !== 0 || limitOrder.claimableLiq !== 0,
           )
-        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+        : limitOrderData.filter(
+              (limitOrder) =>
+                  limitOrder.positionLiq !== 0 || limitOrder.claimableLiq !== 0,
+          );
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', nonEmptyOrders);

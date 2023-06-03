@@ -50,7 +50,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -502,28 +502,6 @@ export default function Limit() {
             }
         }
 
-        const newLimitOrderChangeCacheEndpoint =
-            GRAPHCACHE_URL + '/new_limit_order_change?';
-
-        if (tx?.hash) {
-            fetch(
-                newLimitOrderChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: poolIndex.toString(),
-                        positionType: 'knockout',
-                        changeType: 'mint',
-                        limitTick: limitTick.toString(),
-                        isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -540,25 +518,6 @@ export default function Limit() {
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLimitOrderChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: tradeData.baseToken.address,
-                                quote: tradeData.quoteToken.address,
-                                poolIdx: poolIndex.toString(),
-                                positionType: 'knockout',
-                                changeType: 'mint',
-                                limitTick: limitTick.toString(),
-                                isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

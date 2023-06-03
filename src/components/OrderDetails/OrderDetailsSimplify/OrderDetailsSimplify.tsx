@@ -160,7 +160,6 @@ export default function OrderDetailsSimplify(
     const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
         'MM/DD/YYYY HH:mm',
     );
-    // const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
 

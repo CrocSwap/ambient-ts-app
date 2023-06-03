@@ -178,36 +178,13 @@ export default function OrderRemoval(props: propsIF) {
                 } // setTxErrorMessage(error?.message);
             }
 
-            const newLimitOrderChangeCacheEndpoint =
-                GRAPHCACHE_URL + '/new_limit_order_change?';
-
-            if (tx?.hash) {
-                fetch(
-                    newLimitOrderChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: limitOrder.chainId.toString(),
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: limitOrder.base,
-                            quote: limitOrder.quote,
-                            poolIdx: lookupChain(
-                                limitOrder.chainId,
-                            ).poolIndex.toString(),
-                            positionType: 'knockout',
-                            changeType: 'mint',
-                            limitTick: limitOrder.askTick.toString(),
-                            isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
+
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
@@ -218,27 +195,6 @@ export default function OrderRemoval(props: propsIF) {
                     setNewRemovalTransactionHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
-
-                    if (newTransactionHash) {
-                        fetch(
-                            newLimitOrderChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: limitOrder.chainId.toString(),
-                                    tx: newTransactionHash,
-                                    user: userAddress ?? '',
-                                    base: limitOrder.base,
-                                    quote: limitOrder.quote,
-                                    poolIdx: lookupChain(
-                                        limitOrder.chainId,
-                                    ).poolIndex.toString(),
-                                    positionType: 'knockout',
-                                    changeType: 'mint',
-                                    limitTick: limitOrder.askTick.toString(),
-                                    isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    }
                 } else if (isTransactionFailedError(error)) {
                     console.error({ error });
                     receipt = error.receipt;

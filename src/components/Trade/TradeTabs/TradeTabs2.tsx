@@ -150,7 +150,7 @@ function TradeTabs2(props: propsIF) {
                     selectedBase.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
                     selectedQuote.toLowerCase() &&
-                userPosition.totalValueUSD !== 0
+                userPosition.positionLiq !== 0
             );
         },
     );

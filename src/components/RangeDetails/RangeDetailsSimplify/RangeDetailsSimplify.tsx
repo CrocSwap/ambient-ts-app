@@ -140,7 +140,6 @@ export default function RangeDetailsSimplify(
     const submissionTime = moment(position.timeFirstMint * 1000).format(
         'MM/DD/YYYY HH:mm',
     );
-    // const fillTime = moment(position.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const infoContent = [
         {

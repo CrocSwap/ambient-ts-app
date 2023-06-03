@@ -45,7 +45,7 @@ export const useProcessOrder = (
         : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = limitOrder.claimableLiq !== '0';
+    const isOrderFilled = limitOrder.claimableLiq > 0;
 
     const posHash =
         limitOrder.user &&

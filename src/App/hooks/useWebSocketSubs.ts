@@ -15,14 +15,9 @@ import { TransactionIF } from '../../utils/interfaces/TransactionIF';
 import {
     addChangesByPool,
     addChangesByUser,
-    addLimitOrderChangesByPool,
-    addLimitOrderChangesByUser,
-    addPositionsByPool,
-    addPositionsByUser,
     CandleData,
     CandlesByPoolAndDuration,
 } from '../../utils/state/graphDataSlice';
-import { getLimitOrderData } from '../functions/getLimitOrderData';
 import { getTransactionData } from '../functions/getTransactionData';
 
 export interface WebSockerPropsIF {
@@ -129,42 +124,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
         }
     }, [lastPoolChangeMessage]);
 
-    // On limit order change, pump the change into the RTK slice
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, props.tokenUniv);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByPool(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    const userLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            props.wssGraphCacheServerDomain +
-            '/subscribe_user_liqchanges?' +
-            new URLSearchParams({
-                user: props.userAddress || '',
-                chainId: props.chainData.chainId,
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                ensResolution: 'true',
-                addValue: 'true',
-                // user: account || '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
-            }),
-        [props.userAddress, props.chainData.chainId],
-    );
-
     const userRecentChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             props.wssGraphCacheServerDomain +
@@ -214,54 +173,6 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             }
         }
     }, [lastUserRecentChangesMessage]);
-
-    const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            props.wssGraphCacheServerDomain +
-            '/subscribe_user_limit_order_changes?' +
-            new URLSearchParams({
-                user: props.userAddress || '',
-                chainId: props.chainData.chainId,
-                addValue: 'true',
-                ensResolution: 'true',
-            }),
-        [props.userAddress, props.chainData.chainId],
-    );
-
-    // Consume limit order updates for user
-    const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
-        userLimitOrderChangesCacheSubscriptionEndpoint,
-        {
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => props.shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        props.isServerEnabled &&
-            props.areSubscriptionsEnabled &&
-            props.userAddress !== null &&
-            props.userAddress !== undefined,
-    );
-
-    useEffect(() => {
-        if (lastUserLimitOrderChangesMessage !== null) {
-            if (!isJsonString(lastUserLimitOrderChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserLimitOrderChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((limitOrder: LimitOrderIF) => {
-                        return getLimitOrderData(limitOrder, props.tokenUniv);
-                    }),
-                ).then((updatedLimitOrderStates) => {
-                    dispatch(
-                        addLimitOrderChangesByUser(updatedLimitOrderStates),
-                    );
-                });
-            }
-        }
-    }, [lastUserLimitOrderChangesMessage]);
 
     const candleSubscriptionEndpoint = useMemo(
         () =>

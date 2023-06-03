@@ -5,14 +5,10 @@ import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges'
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
 import useDebounce from '../App/hooks/useDebounce';
-import {
-    GRAPHCACHE_SMALL_URL,
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-} from '../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
+import { PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 import {
@@ -60,7 +56,7 @@ export const UserDataContextProvider = (props: {
     }, [isConnected, isLoggedIn, userAddress]);
 
     const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_URL + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
 
     // Wait 1 second before refreshing to give cache server time to sync from
     // last block
@@ -149,10 +145,13 @@ export const UserDataContextProvider = (props: {
                     if (userLimitOrderStates) {
                         Promise.all(
                             userLimitOrderStates.map(
-                                (limitOrder: LimitOrderIF) => {
+                                (limitOrder: LimitOrderServerIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
                                         tokens.tokenUniv,
+                                        crocEnv,
+                                        chainData.chainId,
+                                        lastBlockNumber,
                                     );
                                 },
                             ),

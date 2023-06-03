@@ -451,12 +451,11 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 IS_LOCAL_ENV && console.debug({ updatedTx });
-                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const idToFind = updatedTx.limitOrderId.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByUser.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByUser.limitOrders = [
@@ -474,12 +473,11 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
+                const idToFind = updatedTx.limitOrderId?.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByPool.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier?.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId?.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByPool.limitOrders = [

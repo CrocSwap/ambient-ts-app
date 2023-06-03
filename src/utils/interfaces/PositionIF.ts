@@ -1,10 +1,8 @@
-// import { PositionPoolIF } from './PositionPoolIF';
 export interface PositionIF {
     chainId: string;
     positionId: string;
     askTick: number;
     bidTick: number;
-    isBid: boolean;
     poolIdx: number;
     base: string;
     quote: string;
@@ -58,7 +56,6 @@ export interface PositionServerIF {
     positionId: string;
     askTick: number;
     bidTick: number;
-    isBid: boolean;
     poolIdx: number;
     base: string;
     quote: string;
