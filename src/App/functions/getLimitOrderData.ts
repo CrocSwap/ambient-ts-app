@@ -168,12 +168,18 @@ export const getLimitOrderData = async (
         (newOrder.claimableLiqBase = bigNumToFloat(
             baseTokenForConcLiq(
                 tickToPrice(order.askTick),
-                floatToBigNum(order.concLiq),
+                floatToBigNum(order.claimableLiq),
                 tickToPrice(order.bidTick),
                 tickToPrice(order.askTick),
             ),
         )),
             (newOrder.claimableLiqQuote = 0);
+    }
+
+    if (newOrder.crossTime > 0 || newOrder.claimableLiq > 0) {
+        newOrder.claimableLiqPivotTimes = newOrder.pivotTime;
+    } else {
+        newOrder.claimableLiqPivotTimes = 0;
     }
 
     newOrder.positionLiqBaseDecimalCorrected =
