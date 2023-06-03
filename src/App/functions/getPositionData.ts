@@ -201,6 +201,51 @@ export const getPositionData = async (
                   maximumFractionDigits: 2,
               });
 
+    // TODO (#1569): we should be re-using a token formatting function here and below
+    newPosition.lowRangeShortDisplayInBase =
+        lowerPriceDisplayInBase < 0.0001
+            ? lowerPriceDisplayInBase.toExponential(2)
+            : lowerPriceDisplayInBase < 2
+            ? lowerPriceDisplayInBase.toPrecision(3)
+            : lowerPriceDisplayInBase >= 1000000
+            ? lowerPriceDisplayInBase.toExponential(2)
+            : lowerPriceDisplayInBase.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    newPosition.lowRangeShortDisplayInQuote =
+        lowerPriceDisplayInQuote < 0.0001
+            ? lowerPriceDisplayInQuote.toExponential(2)
+            : lowerPriceDisplayInQuote < 2
+            ? lowerPriceDisplayInQuote.toPrecision(3)
+            : lowerPriceDisplayInQuote >= 1000000
+            ? lowerPriceDisplayInQuote.toExponential(2)
+            : lowerPriceDisplayInQuote.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    newPosition.highRangeShortDisplayInBase =
+        upperPriceDisplayInBase < 0.0001
+            ? upperPriceDisplayInBase.toExponential(2)
+            : upperPriceDisplayInBase < 2
+            ? upperPriceDisplayInBase.toPrecision(3)
+            : upperPriceDisplayInBase >= 1000000
+            ? upperPriceDisplayInBase.toExponential(2)
+            : upperPriceDisplayInBase.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
+    newPosition.highRangeShortDisplayInQuote =
+        upperPriceDisplayInQuote < 0.0001
+            ? upperPriceDisplayInQuote.toExponential(2)
+            : upperPriceDisplayInQuote < 2
+            ? upperPriceDisplayInQuote.toPrecision(3)
+            : upperPriceDisplayInQuote >= 1000000
+            ? upperPriceDisplayInQuote.toExponential(2)
+            : upperPriceDisplayInQuote.toLocaleString(undefined, {
+                  maximumFractionDigits: 0,
+              });
+
     newPosition.bidTickPriceDecimalCorrected = lowerPriceDisplayInQuote;
     newPosition.bidTickInvPriceDecimalCorrected = lowerPriceDisplayInBase;
     newPosition.askTickPriceDecimalCorrected = upperPriceDisplayInQuote;
