@@ -69,7 +69,13 @@ interface propsIF {
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
     isLoading: boolean;
-    handleRefreshEvent?: (evt?: ChangeEvent<HTMLInputElement>) => Promise<void>;
+    handleTokenAChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    handleTokenBChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    isTokenAPrimaryLocal?: boolean;
 }
 
 function CurrencySelector(props: propsIF) {
@@ -83,7 +89,9 @@ function CurrencySelector(props: propsIF) {
         tokenAorB,
         handleChangeEvent,
         handleChangeClick,
-        handleRefreshEvent,
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimaryLocal,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
@@ -196,9 +204,16 @@ function CurrencySelector(props: propsIF) {
         : !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
 
     const refreshTokenData = async () => {
-        setIsBuyLoading(true);
-        handleRefreshEvent && (await handleRefreshEvent());
-        setIsBuyLoading(false);
+        if (isTokenAPrimaryLocal) {
+            setIsBuyLoading(true);
+            handleTokenAChangeEvent && (await handleTokenAChangeEvent());
+            setIsBuyLoading(false);
+        } else {
+            setIsSellLoading(true);
+            handleTokenBChangeEvent && (await handleTokenBChangeEvent());
+
+            setIsSellLoading(false);
+        }
     };
 
     // Wallet balance function and styles-----------------------------

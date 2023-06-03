@@ -683,7 +683,9 @@ function CurrencyConverter(props: propsIF) {
                     userClickedCombinedMax={userClickedCombinedMax}
                     setIsSellLoading={setIsSellLoading}
                     setIsBuyLoading={setIsBuyLoading}
-                    handleRefreshEvent={handleTokenAChangeEvent}
+                    isTokenAPrimaryLocal={isTokenAPrimaryLocal}
+                    handleTokenAChangeEvent={handleTokenAChangeEvent}
+                    handleTokenBChangeEvent={handleTokenBChangeEvent}
                 />
             </div>
         </section>
