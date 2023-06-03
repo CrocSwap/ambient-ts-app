@@ -88,8 +88,11 @@
 
     color: var(--text2);
     border: none;
-    border-radius: 0.5rem;
-    background-color: transparent;
+
+    border-radius: 50px;
+    padding: 5px 8px;
+    background-color: var(--dark2);
+    
     transition: all var(--animation-speed) ease-in-out;
 }
 
