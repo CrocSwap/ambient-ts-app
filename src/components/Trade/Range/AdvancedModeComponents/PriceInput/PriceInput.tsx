@@ -1,6 +1,6 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { ChangeEvent, memo, useContext } from 'react';
+import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface priceInputProps {
@@ -9,7 +9,7 @@ interface priceInputProps {
     title: string;
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    onBlur: () => void;
+    onBlur: FocusEventHandler<HTMLInputElement>;
     increaseTick: () => void;
     decreaseTick: () => void;
 }
@@ -33,7 +33,7 @@ function PriceInput(props: priceInputProps) {
             className={styles.price_quantity}
             type='text'
             onChange={(event) => handleChangeEvent(event)}
-            onBlur={() => onBlur()}
+            onBlur={onBlur}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'

@@ -88,6 +88,8 @@ footer {
 
 .swap-body {
     height: calc(100vh - (var(--footer-height) + 2rem));
+
+
 }
 
 h3:focus-visible,

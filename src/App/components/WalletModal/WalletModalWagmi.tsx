@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useConnect, useAccount, useEnsName, useDisconnect } from 'wagmi';
+import { useConnect, useAccount, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
 import styles from './WalletModal.module.css';
@@ -41,8 +41,7 @@ export default function WalletModalWagmi() {
             setPage('metamaskError');
         }
     }, [error]);
-    const { address, connector, isConnected } = useAccount();
-    const { data: ensName } = useEnsName({ address });
+    const { isConnected } = useAccount();
 
     const defaultState = process.env.REACT_APP_VIEW_ONLY
         ? 'notAvailable'
@@ -95,20 +94,7 @@ export default function WalletModalWagmi() {
             </a>
         </div>
     );
-    const connectorsDisplay = isConnected ? (
-        <div key={connector?.id}>
-            <div>{ensName ? `${ensName} (${address})` : address}</div>
-            <div>Connected to {connector?.name}</div>
-            <button
-                onClick={() => {
-                    disconnect();
-                    closeModal();
-                }}
-            >
-                Disconnect
-            </button>
-        </div>
-    ) : (
+    const connectorsDisplay = (
         <div className={styles.wall_buttons_container}>
             {connectors.map((connector) => (
                 <WalletButton

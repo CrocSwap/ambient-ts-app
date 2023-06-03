@@ -1131,10 +1131,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@crocswap-libs/sdk@^0.2.70":
-  version "0.2.70"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.70.tgz#414af88bc3431ffd739434a260b54466daf564c0"
-  integrity sha512-hPYymZD4SOqZo2hnQasQsXQLoYK0F4N+6fMeBcl3YbSjFSO9vctdtaZsRhv3VC/5XITMtFCH7jH7zysk2FsNeg==
+"@crocswap-libs/sdk@^0.2.71":
+  version "0.2.71"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.71.tgz#2295b799cbd02509009cd2c61db50990f402c66a"
+  integrity sha512-cGJtf/WCsflx31mDpclb+3Nz4yOsaAPD2rL89j4de8DayU1EDCxSiS5npnx43CrpuRKrl6uTJPEhWuKHbcIwWQ==
   dependencies:
     ethers "^5.5.3"
 
@@ -6919,11 +6919,6 @@ dom-serializer@^1.0.1:
     domhandler "^4.2.0"
     entities "^2.0.0"
 
-dom-to-image@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/dom-to-image/-/dom-to-image-2.6.0.tgz#8a503608088c87b1c22f9034ae032e1898955867"
-  integrity sha512-Dt0QdaHmLpjURjU7Tnu3AgYSF2LuOmksSGsUcE6ItvJoCWTBEmiMXcqBdNSAm9+QbbwD7JMoVsuuKX6ZVQv1qA==
-
 dom7@^4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/dom7/-/dom7-4.0.4.tgz#8b68c5d8e5e2ed0fddb1cb93e433bc9060c8f3fb"
@@ -10889,6 +10884,11 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+modern-screenshot@^4.4.25:
+  version "4.4.25"
+  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.4.25.tgz#5f591efe8d99e70ed0f76d243f81993e3fb27417"
+  integrity sha512-4w6T8NveojRlmpyni6sQcAF0SgdLpNwTkr+G4EXTNCflvP2V/KAaahlCVoCcx55JIDvB6mY6WJaQGqGF3DbkpQ==
 
 moment@^2.29.4:
   version "2.29.4"

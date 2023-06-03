@@ -8,6 +8,7 @@ import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import modalBackground from '../../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     tx: TransactionIF;
@@ -27,7 +28,10 @@ export default function TransactionDetails(props: propsIF) {
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
         }
     };
 

@@ -1,18 +1,23 @@
 import styles from './OrderDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 interface OrderDetailsPropsIF {
+    downloadAsImage: () => void;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyPositionId(): void;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
-    const { handleCopyPositionId, showShareComponent, setShowShareComponent } =
-        props;
+    const {
+        handleCopyPositionId,
+        showShareComponent,
+        setShowShareComponent,
+        downloadAsImage,
+    } = props;
     const {
         globalModal: { close: onClose },
     } = useContext(AppStateContext);
@@ -33,13 +38,13 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         </IconWithTooltip>
     );
 
-    // const downloadIconWithTooltip = (
-    //     <IconWithTooltip title='Download shareable image' placement='bottom'>
-    //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text3)' />
-    //         </div>
-    //     </IconWithTooltip>
-    // );
+    const downloadIconWithTooltip = (
+        <IconWithTooltip title='Download shareable image' placement='bottom'>
+            <div onClick={downloadAsImage}>
+                <FiDownload size={25} color='var(--text3)' />
+            </div>
+        </IconWithTooltip>
+    );
 
     return (
         <div className={styles.container}>
@@ -57,8 +62,7 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                 </button>
 
                 {showShareComponent ? copyIconWithTooltip : phIcon}
-
-                {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
+                {showShareComponent ? downloadIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />

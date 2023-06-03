@@ -71,7 +71,7 @@ function Trade() {
     const { pathname } = useLocation();
     const provider = useProvider();
     const { params } = useParams();
-    useUrlParams(tokens, chainId, provider);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -368,9 +368,6 @@ function Trade() {
                     className={` ${expandGraphStyle} ${
                         activeMobileComponent !== 'chart' ? styles.hide : ''
                     } ${fullScreenStyle}`}
-                    style={{
-                        background: 'transparent',
-                    }}
                 >
                     <div className={styles.main__chart_container}>
                         {!isCandleDataNull && (

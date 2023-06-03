@@ -62,6 +62,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
     const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [candleData, setCandleData] = useState<
@@ -137,6 +139,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             mainnetQuoteTokenAddress &&
             candleTimeLocal
         ) {
+            if (abortController) {
+                abortController.abort();
+            }
+
             const reqOptions = new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
@@ -256,8 +262,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return numDurations.toString();
     }
 
-    const fetchCandlesByNumDurations = (numDurations: number) =>
-        fetch(
+    const fetchCandlesByNumDurations = (numDurations: number) => {
+        const controller = new AbortController();
+        setAbortController(controller);
+        const signal = controller.signal;
+
+        return fetch(
             candleSeriesCacheEndpoint +
                 new URLSearchParams({
                     base: mainnetBaseTokenAddress.toLowerCase(),
@@ -277,6 +287,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
                     poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
                 }),
+            { signal },
         )
             .then((response) => response?.json())
             .then((json) => {
@@ -316,15 +327,19 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                         candles: newCandles.concat(updatedCandles),
                     };
-
                     setCandleData(newCandleData);
                 }
             })
             .catch((e) => {
-                console.error(e);
+                if (e.name === 'AbortError') {
+                    console.log('Zoom request cancelled');
+                } else {
+                    console.error(e);
+                }
                 setIsCandleDataNull(false);
                 // setExpandTradeTable(false);
             });
+    };
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
