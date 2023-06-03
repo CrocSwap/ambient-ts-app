@@ -10,7 +10,7 @@ export const getDisplayableEffectivePriceString = (
     } else if (effectivePriceWithDenom < 0.0001) {
         return effectivePriceWithDenom.toExponential(2);
     } else {
-        const maxDigits = effectivePriceWithDenom < 2 ? 2 : 6;
+        const maxDigits = effectivePriceWithDenom < 2 ? 6 : 2;
         return effectivePriceWithDenom.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: maxDigits,
