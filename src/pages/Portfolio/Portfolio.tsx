@@ -300,17 +300,6 @@ function Portfolio(props: propsIF) {
         </div>
     );
 
-    const connectedUserNativeToken = useAppSelector(
-        (state) => state.userData.tokens.nativeToken,
-    );
-    const connectedUserErc20Tokens = useAppSelector(
-        (state) => state.userData.tokens.erc20Tokens,
-    );
-
-    const connectedUserTokens = [connectedUserNativeToken].concat(
-        connectedUserErc20Tokens,
-    );
-
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
         useState<TokenIF | undefined>();
     const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] =
@@ -447,7 +436,6 @@ function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,

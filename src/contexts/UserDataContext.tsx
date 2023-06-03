@@ -57,7 +57,14 @@ export const UserDataContextProvider = (props: {
     const userLimitOrderStatesCacheEndpoint =
         GRAPHCACHE_URL + '/user_limit_order_states?';
     useEffect(() => {
-        if (isServerEnabled && isConnected && userAddress && crocEnv) {
+        if (
+            isServerEnabled &&
+            isConnected &&
+            userAddress &&
+            crocEnv &&
+            tokens.tokenUniv.length &&
+            chainData.chainId
+        ) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
@@ -244,11 +251,11 @@ export const UserDataContextProvider = (props: {
         }
     }, [
         isServerEnabled,
-        tokens.tokenUniv,
+        tokens.tokenUniv.length,
         isConnected,
         userAddress,
         chainData.chainId,
-        crocEnv,
+        !!crocEnv,
     ]);
 
     return (

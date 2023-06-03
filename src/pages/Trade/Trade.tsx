@@ -368,9 +368,6 @@ function Trade() {
                     className={` ${expandGraphStyle} ${
                         activeMobileComponent !== 'chart' ? styles.hide : ''
                     } ${fullScreenStyle}`}
-                    style={{
-                        background: 'transparent',
-                    }}
                 >
                     <div className={styles.main__chart_container}>
                         {!isCandleDataNull && (
