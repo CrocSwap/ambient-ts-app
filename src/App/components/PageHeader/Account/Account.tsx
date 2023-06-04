@@ -8,13 +8,11 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
-import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     nativeBalance: string | undefined;
@@ -30,17 +28,22 @@ interface propsIF {
               amount: string | undefined;
           }[]
         | null;
+    openWagmiModal: () => void;
 }
 
 export default function Account(props: propsIF) {
-    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
-        props;
+    const {
+        nativeBalance,
+        clickLogout,
+        ensName,
+        walletDropdownTokenData,
+        openWagmiModal,
+    } = props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { chainData, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
@@ -146,30 +149,15 @@ export default function Account(props: propsIF) {
                     ethValue={`${ethMainnetUsdValueTruncated}`}
                     accountAddressFull={props.accountAddressFull}
                     walletDropdownTokenData={walletDropdownTokenData}
+                    clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}
         </section>
     );
 
-    const blockNumberDisplay = (
-        <DefaultTooltip
-            interactive
-            title={`Latest block number on ${chainData.displayName}`}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <div className={styles.block_number_div}>
-                <div className={styles.page_block_sign} />
-                <span>{lastBlockNumber ? lastBlockNumber : '…'}</span>
-            </div>
-        </DefaultTooltip>
-    );
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
-            {isUserLoggedIn && blockNumberDisplay}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
@@ -179,6 +167,7 @@ export default function Account(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
+                    openWagmiModal={openWagmiModal}
                 />
             </NavItem>
         </div>

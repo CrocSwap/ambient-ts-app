@@ -66,7 +66,16 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
             >
                 <div className={styles.menu_item}>
                     {desktopScreen && (
-                        <div className={styles.icon}>{title}</div>
+                        <div className={styles.icon}>
+                            <img
+                                src={logo}
+                                alt={title}
+                                width='18px'
+                                height='18px'
+                                style={{ borderRadius: '50%' }}
+                            />
+                            {title}
+                        </div>
                     )}
                     {!desktopScreen && (
                         <img

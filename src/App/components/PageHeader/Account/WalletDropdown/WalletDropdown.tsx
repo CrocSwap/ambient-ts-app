@@ -1,6 +1,5 @@
 import styles from './WalletDropdown.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { AiOutlineLogout } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
@@ -12,6 +11,7 @@ interface WalletDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
+    clickOutsideHandler: () => void;
     connectorName: string | undefined;
     clickLogout: () => void;
     walletWrapperStyle: string;
@@ -40,13 +40,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         ensName,
         accountAddress,
         handleCopyAddress,
+        clickOutsideHandler,
         connectorName,
         clickLogout,
         walletWrapperStyle,
         accountAddressFull,
         ethAmount,
         ethValue,
-        walletDropdownTokenData,
+        // walletDropdownTokenData,
     } = props;
     const {
         chainData: { chainId },
@@ -97,13 +98,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 to={'/account'}
                 aria-label='Go to the account page '
                 tabIndex={0}
+                onClick={clickOutsideHandler}
             >
                 <CgProfile />
                 My Account
             </NavLink>
-            <button onClick={clickLogout}>
-                <AiOutlineLogout color='var(--text-highlight)' /> Logout
-            </button>
+            <button onClick={clickLogout}>Logout</button>
         </div>
     );
 
@@ -155,7 +155,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={idx}
                     />
                 ))}
-                {walletDropdownTokenData?.map((token, idx) => (
+                {/* {walletDropdownTokenData?.map((token, idx) => (
                     <TokenAmountDisplay
                         amount={token.amount ?? ''}
                         value={'$' + token.value ?? ''}
@@ -163,7 +163,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         logo={token.logo ?? ''}
                         key={idx}
                     />
-                ))}
+                ))} */}
             </section>
             {actionContent}
         </div>

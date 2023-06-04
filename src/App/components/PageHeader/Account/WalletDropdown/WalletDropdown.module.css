@@ -121,6 +121,7 @@
 }
 
 .token_container {
+    font-size: var(--header2-size);
     display: flex;
     flex-direction: row;
     align-items: center;
