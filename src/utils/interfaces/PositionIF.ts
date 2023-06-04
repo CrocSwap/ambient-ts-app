@@ -67,4 +67,5 @@ export interface PositionServerIF {
     timeFirstMint: number;
     lastMintTx: string;
     firstMintTx: string;
+    aprEst: number;
 }

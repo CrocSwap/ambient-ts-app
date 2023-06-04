@@ -17,10 +17,6 @@ import {
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    addPositionsByPool,
-    addPositionsByUser,
-} from '../../../../utils/state/graphDataSlice';
 import { Pagination } from '@mui/material';
 import {
     useAppDispatch,
@@ -61,10 +57,6 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -186,8 +178,6 @@ function Ranges(props: propsIF) {
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
     ]);
-
-    const dispatch = useAppDispatch();
 
     const NUM_ROWS_TO_SYNC = 5;
     const CACHE_WINDOW_MS = 10000;
