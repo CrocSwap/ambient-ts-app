@@ -40,6 +40,12 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import useDebounce from '../../../App/hooks/useDebounce';
+import {
+    diffHashSigLimits,
+    diffHashSigPostions,
+    diffHashSigTxs,
+} from '../../../utils/functions/diffHashSig';
 
 interface propsIF {
     isCandleSelected: boolean | undefined;
@@ -156,16 +162,14 @@ function TradeTabs2(props: propsIF) {
         },
     );
 
-    const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
-    const matchingUserLimitOrdersLength =
-        userLimitOrdersMatchingTokenSelection.length;
-    const matchingUserPositionsLength =
-        userPositionsMatchingTokenSelection.length;
-
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
     }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
         if (
@@ -183,12 +187,15 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserChangesLength < 1)
+                        userChangesMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserChangesLength < 1) {
+                } else if (userChangesMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserChangesLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userChangesMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -199,12 +206,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserLimitOrdersLength < 1)
+                        userLimitOrdersMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserLimitOrdersLength < 1) {
+                } else if (userLimitOrdersMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserLimitOrdersLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userLimitOrdersMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -215,12 +225,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserPositionsLength < 1)
+                        userPositionsMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserPositionsLength < 1) {
+                } else if (userPositionsMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserPositionsLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userPositionsMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             }
@@ -236,9 +249,9 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        matchingUserPositionsLength,
-        matchingUserChangesLength,
-        matchingUserLimitOrdersLength,
+        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigLimits(userLimitOrders),
+        diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
 
     const dispatch = useAppDispatch();
@@ -274,7 +287,7 @@ function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, showAllData]);
+    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
@@ -320,7 +333,7 @@ function TradeTabs2(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
 
     // -------------------------------DATA-----------------------------------------
     const [leader, setLeader] = useState('');

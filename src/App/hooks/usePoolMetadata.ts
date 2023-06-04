@@ -490,7 +490,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.poolIndex,
         props.searchableTokens,
         props.httpGraphCacheServerDomain,
-        props.lastBlockNumber == 0,
+        props.lastBlockNumber,
         !!props.crocEnv,
     ]);
 

@@ -1,5 +1,7 @@
 // import sum from 'hash-sum';
 
+import { LimitOrderIF } from '../interfaces/LimitOrderIF';
+import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
 import {
     CandleData,
@@ -69,4 +71,18 @@ export function diffHashSigTxs(txs?: TransactionIF[]) {
         return 'null';
     }
     return diffHashSig(txs.map((x) => x.txId));
+}
+
+export function diffHashSigLimits(txs?: LimitOrderIF[]) {
+    if (!txs) {
+        return 'null';
+    }
+    return diffHashSig(txs.map((x) => x.limitOrderId));
+}
+
+export function diffHashSigPostions(txs?: PositionIF[]) {
+    if (!txs) {
+        return 'null';
+    }
+    return diffHashSig(txs.map((x) => x.positionId));
 }

@@ -26,7 +26,10 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigTxs,
+} from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
@@ -193,11 +196,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
-        changesByPoolWithoutFills.length,
-        changesByPoolWithoutFills.at(0)?.base,
-        changesByPoolWithoutFills.at(0)?.quote,
-        changesByUserMatchingSelectedTokens.length,
-        changesByUserMatchingSelectedTokens.at(0)?.user,
+        diffHashSigTxs(changesByPoolWithoutFills),
         showAllData,
     ]);
 

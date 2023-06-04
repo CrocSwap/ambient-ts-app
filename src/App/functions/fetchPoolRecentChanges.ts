@@ -1,13 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext } from 'react';
-import {
-    GRAPHCACHE_SMALL_URL,
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-} from '../../constants';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
 import { getTransactionData } from './getTransactionData';
 
@@ -90,7 +84,11 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         .then((json) => {
             const userTransactions = json?.data;
 
-            const updatedTransactions = Promise.all(
+            if (!userTransactions) {
+                return [];
+            }
+
+            return Promise.all(
                 userTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
                         tx,
@@ -103,7 +101,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
             ).then((updatedTransactions) => {
                 return updatedTransactions;
             });
-            return updatedTransactions;
         })
         .catch(console.error);
 

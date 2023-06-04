@@ -33,7 +33,7 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { diffHashSigPostions } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
@@ -143,19 +143,22 @@ function Ranges(props: propsIF) {
         );
 
     const sumHashActiveAccountPositionData = useMemo(
-        () => diffHashSig(activeAccountPositionData),
+        () => diffHashSigPostions(activeAccountPositionData),
         [activeAccountPositionData],
     );
 
-    const sumHashRangeData = useMemo(() => diffHashSig(rangeData), [rangeData]);
+    const sumHashRangeData = useMemo(
+        () => diffHashSigPostions(rangeData),
+        [rangeData],
+    );
 
     const sumHashUserPositionsToDisplayOnTrade = useMemo(
-        () => diffHashSig(userPositionsToDisplayOnTrade),
+        () => diffHashSigPostions(userPositionsToDisplayOnTrade),
         [userPositionsToDisplayOnTrade],
     );
 
     const sumHashPositionsByPool = useMemo(
-        () => diffHashSig(positionsByPool),
+        () => diffHashSigPostions(positionsByPool),
         [positionsByPool],
     );
 
@@ -195,14 +198,6 @@ function Ranges(props: propsIF) {
         Date.now() / CACHE_WINDOW_MS,
     );
     const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
-
-    // Debounce the heavy weight networking operation of refreshing the top positions
-    // so users clicking like a maniac on the column header don't spam the network
-    const REFRESH_TOP_DELAY = 1000;
-    const sumHashTopPositions = useDebounce(
-        diffHashSig(topPositions.map((p) => p.positionId)),
-        REFRESH_TOP_DELAY,
-    );
 
     // ---------------------
     // transactions per page media queries

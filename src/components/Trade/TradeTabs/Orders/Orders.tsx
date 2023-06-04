@@ -15,7 +15,10 @@ import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigLimits,
+} from '../../../../utils/functions/diffHashSig';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -143,9 +146,9 @@ function Orders(props: propsIF) {
     }, [
         showAllData,
         connectedAccountActive,
-        diffHashSig(activeAccountLimitOrderData),
-        diffHashSig(ordersByUserMatchingSelectedTokens),
-        diffHashSig(limitOrdersByPool),
+        diffHashSigLimits(activeAccountLimitOrderData),
+        diffHashSigLimits(ordersByUserMatchingSelectedTokens),
+        diffHashSigLimits(limitOrdersByPool),
     ]);
 
     const nonEmptyOrders = showAllData
