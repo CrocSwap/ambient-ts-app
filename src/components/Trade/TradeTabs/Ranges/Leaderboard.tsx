@@ -297,7 +297,6 @@ function Leaderboard() {
             showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
-            idx={idx + 1}
             showPair={showPair}
         />
     ));

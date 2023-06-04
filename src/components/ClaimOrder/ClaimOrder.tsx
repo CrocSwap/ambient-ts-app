@@ -32,11 +32,10 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    closeGlobalModal: () => void;
 }
 
 export default function ClaimOrder(props: propsIF) {
-    const { limitOrder, closeGlobalModal } = props;
+    const { limitOrder } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -48,8 +47,6 @@ export default function ClaimOrder(props: propsIF) {
         baseTokenLogo,
         quoteTokenLogo,
         usdValue,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
@@ -74,8 +71,6 @@ export default function ClaimOrder(props: propsIF) {
             resetConfirmation();
         }
     }, [txErrorCode]);
-
-    const claimPercentage = 100;
 
     const claimablePivotTime = limitOrder.claimableLiqPivotTimes
         ? parseInt(limitOrder.claimableLiqPivotTimes)
@@ -201,7 +196,6 @@ export default function ClaimOrder(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-
         newClaimTransactionHash,
         txErrorCode,
         showConfirmation,
@@ -211,7 +205,6 @@ export default function ClaimOrder(props: propsIF) {
     const confirmationContent = (
         <>
             <ClaimOrderModalHeader
-                onClose={closeGlobalModal}
                 title={'Claim Limit Order Confirmation'}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
@@ -279,7 +272,6 @@ export default function ClaimOrder(props: propsIF) {
     ) : (
         <>
             <ClaimOrderModalHeader
-                onClose={closeGlobalModal}
                 title={'Claim Limit Order '}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
@@ -295,19 +287,11 @@ export default function ClaimOrder(props: propsIF) {
 
                 <ClaimOrderInfo
                     pivotTime={claimablePivotTime}
-                    baseTokenSymbol={baseTokenSymbol}
-                    quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
-                    claimPercentage={claimPercentage}
                     usdValue={usdValue}
-                    baseDisplayFrontend={baseDisplayFrontend}
-                    quoteDisplayFrontend={quoteDisplayFrontend}
                     baseDisplay={baseDisplay}
                     quoteDisplay={quoteDisplay}
-                    positionLiquidity={limitOrder.positionLiq.toString()}
-                    baseClaimString={'2344'}
-                    quoteClaimString={'4543'}
                     truncatedDisplayPrice={truncatedDisplayPrice}
                 />
                 {/* {gaslesssTransactionControl} */}

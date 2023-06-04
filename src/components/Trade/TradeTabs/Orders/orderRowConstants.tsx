@@ -17,7 +17,6 @@ interface Props {
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-
     quoteTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -27,20 +26,14 @@ interface Props {
     elapsedTimeString: string;
     sideType: string;
     sideCharacter: string;
-
     limitOrder: LimitOrderIF;
-
     priceCharacter: string;
-
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
     isOrderFilled: boolean;
-
     handleCopyPosHash: () => void;
-    openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;

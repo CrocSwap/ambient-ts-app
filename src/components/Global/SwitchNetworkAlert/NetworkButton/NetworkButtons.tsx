@@ -35,7 +35,6 @@ export default function NetworkButtons() {
                 <NetworkButton
                     key={idx}
                     name={chain.name}
-                    icon={chain.icon}
                     theme={chain.theme}
                     id={chain.id}
                     clickHandler={() => {
