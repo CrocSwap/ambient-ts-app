@@ -29,7 +29,8 @@
     border: 1px solid var(--accent1);
 }
 .btn_flat {
-    border: none;
+    border: 1px solid var(--accent1);
+    border-radius: 4px;
     background: var(--accent1);
     color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
@@ -44,8 +45,10 @@
 
 .btn_flat:hover,
 .btn_flat:focus-visible {
-    color: var(--text1);
-    box-shadow: 4px 4px var(--accent5);
+    background: var(--dark2);
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    border-radius: 4px;
 }
 
 .disabled_btn {

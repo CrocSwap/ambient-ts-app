@@ -9,7 +9,10 @@ import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -18,7 +21,6 @@ import {
     setLimitTick,
     setLimitTickCopied,
     setShouldLimitConverterUpdate,
-    tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { IS_LOCAL_ENV } from '../../../../../constants';
@@ -34,8 +36,6 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    tradeData: tradeData;
-    userPosition: boolean | undefined; // position belongs to active user
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
@@ -44,10 +44,9 @@ interface propsIF {
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const { tradeData, isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } =
-        props;
+    const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
     const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const {
         chainData: { blockExplorer, chainId },
@@ -56,8 +55,9 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
     const { handlePulseAnimation } = useContext(TradeTableContext);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
@@ -180,7 +180,6 @@ export default function TransactionsMenu(props: propsIF) {
         openGlobalModal(
             <TransactionDetails
                 tx={tx}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }

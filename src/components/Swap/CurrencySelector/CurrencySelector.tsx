@@ -28,39 +28,29 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { FiRefreshCw } from 'react-icons/fi';
 
 interface propsIF {
     disableReverseTokens: boolean;
     fieldId: string;
     tokenAorB: string | null;
-    direction: string;
     sellToken?: boolean;
     sellQtyString: string;
     setSellQtyString: Dispatch<SetStateAction<string>>;
     buyQtyString: string;
     setBuyQtyString: Dispatch<SetStateAction<string>>;
-    tokenBQtyLocal?: string;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
     tokenBDexBalance: string;
     isSellTokenEth?: boolean;
-    tokenAQtyCoveredByWalletBalance?: number;
-    tokenAQtyCoveredBySurplusBalance?: number;
-    tokenBQtyCoveredByWalletBalance?: number;
-    tokenBQtyCoveredBySurplusBalance?: number;
-    tokenASurplusMinusTokenARemainderNum?: number;
-    tokenAWalletMinusTokenAQtyNum: number;
-    tokenBWalletPlusTokenBQtyNum: number;
-    tokenASurplusMinusTokenAQtyNum: number;
-    tokenBSurplusPlusTokenBQtyNum: number;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     setIsSellLoading: Dispatch<SetStateAction<boolean>>;
     setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeEvent: (evt?: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
@@ -68,6 +58,13 @@ interface propsIF {
     setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
     userClickedCombinedMax: boolean;
     isLoading: boolean;
+    handleTokenAChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    handleTokenBChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    isTokenAPrimaryLocal?: boolean;
 }
 
 function CurrencySelector(props: propsIF) {
@@ -81,6 +78,9 @@ function CurrencySelector(props: propsIF) {
         tokenAorB,
         handleChangeEvent,
         handleChangeClick,
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimaryLocal,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
@@ -192,6 +192,19 @@ function CurrencySelector(props: propsIF) {
           parseFloat(balanceNonLocaleString) - displayAmountToReduceEth > 0
         : !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
 
+    const refreshTokenData = async () => {
+        if (isTokenAPrimaryLocal) {
+            setIsBuyLoading(true);
+            handleTokenAChangeEvent && (await handleTokenAChangeEvent());
+            setIsBuyLoading(false);
+        } else {
+            setIsSellLoading(true);
+            handleTokenBChangeEvent && (await handleTokenBChangeEvent());
+
+            setIsSellLoading(false);
+        }
+    };
+
     // Wallet balance function and styles-----------------------------
 
     function handleWalletBalanceClick() {
@@ -281,16 +294,12 @@ function CurrencySelector(props: propsIF) {
             enterDelay={700}
             leaveDelay={200}
         >
-            {balanceLocaleString !== '0.00' && isSellTokenSelector ? (
-                <button
-                    className={`${styles.max_button} ${styles.max_button_enable}`}
-                    onClick={handleMaxButtonClick}
-                >
-                    Max
-                </button>
-            ) : (
-                <p className={styles.max_button} />
-            )}
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={handleMaxButtonClick}
+            >
+                Max
+            </button>
         </DefaultTooltip>
     );
     const sellTokenLogoClassname =
@@ -438,8 +447,19 @@ function CurrencySelector(props: propsIF) {
                         <div>{isUserConnected ? balanceLocaleString : ''}</div>
                     </div>
                 </DefaultTooltip>
-                {isCombinedBalanceNonZero ? maxButton : null}
+                {isCombinedBalanceNonZero && isSellTokenSelector
+                    ? maxButton
+                    : null}
             </div>
+            {!isSellTokenSelector && (
+                <button
+                    onClick={refreshTokenData}
+                    className={styles.refresh_button}
+                    aria-label='Refresh data'
+                >
+                    <FiRefreshCw size={18} />
+                </button>
+            )}
         </section>
     );
     // End of  Wallet balance function and styles-----------------------------

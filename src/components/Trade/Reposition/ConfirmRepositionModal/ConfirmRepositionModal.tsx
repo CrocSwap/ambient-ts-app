@@ -14,20 +14,13 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    onClose: () => void;
     position: PositionIF;
     newRepositionTransactionHash: string;
-    rangeWidthPercentage: number;
-    currentPoolPriceTick: number;
-    currentPoolPriceDisplay: string;
     onSend: () => void;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     txErrorCode: string;
-    txErrorMessage: string;
     minPriceDisplay: string;
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
@@ -56,8 +49,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newRepositionTransactionHash,
         resetConfirmation,
         txErrorCode,
-        minPriceDisplay,
-        maxPriceDisplay,
         currentBaseQtyDisplayTruncated,
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
@@ -227,8 +218,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
             {tokenAmountDisplay}
             {isAmbient || (
                 <SelectedRange
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={

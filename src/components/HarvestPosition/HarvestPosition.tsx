@@ -91,13 +91,9 @@ export default function HarvestPosition(props: propsIF) {
     ).lastBlock;
 
     const [showConfirmation, setShowConfirmation] = useState(false);
-    // eslint-disable-next-line
     const [newHarvestTransactionHash, setNewHarvestTransactionHash] =
         useState('');
-    // eslint-disable-next-line
     const [txErrorCode, setTxErrorCode] = useState('');
-    // eslint-disable-next-line
-    // const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] =
         useState<number | undefined>();

@@ -15,16 +15,22 @@ import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
+import { linkGenMethodsIF, useLinkGen } from './useLinkGen';
+import validateAddress from '../functions/validateAddress';
+import validateChain from '../functions/validateChain';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
  * by passing parameters through to the tradeDataSlice in redux. */
 export const useUrlParams = (
+    requiredParams: string[],
     tokens: tokenMethodsIF,
     dfltChainId: string,
     provider?: ethers.providers.Provider,
 ) => {
     const { params } = useParams();
+
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
     const dispatch = useAppDispatch();
 
@@ -51,6 +57,32 @@ export const useUrlParams = (
 
         return paramMap;
     }, [params]);
+
+    // redirect user to default params if params received are malformed
+    useEffect(() => {
+        // array of keys deconstructed from params string
+        const paramKeys: string[] = [...urlParamMap.keys()];
+        // logic to redirect a user to current URL with default params
+        const redirectUser = (): void => linkGenCurrent.redirect();
+        // redirect user if a required param is missing
+        requiredParams.some((param: string) => {
+            paramKeys.includes(param) || redirectUser();
+        });
+        // array of parameter tuples from URL
+        const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
+        // run a validation fn against each param tuple
+        paramTuples.forEach((pt: [string, string]) => validateParam(pt));
+        // fn to validate each parameter tuple, will redirect user to the default
+        // ... parameterization on current route if validation fails
+        function validateParam(p: [string, string]): void {
+            const [key, val] = p;
+            if (key === 'chain') {
+                validateChain(val) || redirectUser();
+            } else if (key === 'tokenA' || key === 'tokenB') {
+                validateAddress(val) || redirectUser();
+            }
+        }
+    }, [urlParamMap]);
 
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 

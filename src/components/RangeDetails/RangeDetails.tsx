@@ -14,13 +14,13 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     position: PositionIF;
     user: string;
     bidTick: number;
     askTick: number;
-    isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -53,7 +53,6 @@ export default function RangeDetails(props: propsIF) {
         askTick,
         position,
         positionApy,
-        // isPositionInRange,
         isAmbient,
         isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -77,7 +76,10 @@ export default function RangeDetails(props: propsIF) {
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
         }
     };
     const httpGraphCacheServerDomain = GRAPHCACHE_URL;
@@ -268,8 +270,6 @@ export default function RangeDetails(props: propsIF) {
     //     setControlItems(modifiedControlItems);
     // };
 
-    const [showSettings, setShowSettings] = useState(false);
-
     // const controlDisplay = showSettings ? (
     //     <div className={styles.control_display_container}>
     //         {controlItems.map((item, idx) => (
@@ -295,7 +295,6 @@ export default function RangeDetails(props: propsIF) {
                         baseTokenSymbol={props.baseTokenSymbol}
                         quoteTokenSymbol={props.quoteTokenSymbol}
                         isDenomBase={props.isDenomBase}
-                        controlItems={controlItems}
                         isAmbient={isAmbient}
                         positionApy={positionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -322,10 +321,7 @@ export default function RangeDetails(props: propsIF) {
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
-                position={position}
                 onClose={closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}

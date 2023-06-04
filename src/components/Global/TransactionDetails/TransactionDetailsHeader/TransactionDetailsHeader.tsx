@@ -1,32 +1,32 @@
 import styles from './TransactionDetailsHeader.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
-import { TransactionIF } from '../../../../utils/interfaces/TransactionIF';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface TransactionDetailsHeaderPropsIF {
-    onClose: () => void;
     downloadAsImage: () => void;
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
-    tx: TransactionIF;
     handleCopyAddress(): void;
 }
 export default function TransactionDetailsHeader(
     props: TransactionDetailsHeaderPropsIF,
 ) {
     const {
-        // tx,
         handleCopyAddress,
-        onClose,
-        // downloadAsImage,
+        downloadAsImage,
         showShareComponent,
         setShowShareComponent,
     } = props;
     // eslint-disable-next-line
+
+    const {
+        globalModal: { close: onClose },
+    } = useContext(AppStateContext);
 
     const phIcon = (
         <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
@@ -43,13 +43,13 @@ export default function TransactionDetailsHeader(
         </IconWithTooltip>
     );
 
-    // const downloadIconWithTooltip = (
-    //     <IconWithTooltip title='Download shareable image' placement='bottom'>
-    //         <div onClick={downloadAsImage}>
-    //             <FiDownload size={25} color='var(--text3)' />
-    //         </div>
-    //     </IconWithTooltip>
-    // );
+    const downloadIconWithTooltip = (
+        <IconWithTooltip title='Download shareable image' placement='bottom'>
+            <div onClick={downloadAsImage}>
+                <FiDownload size={25} color='var(--text3)' />
+            </div>
+        </IconWithTooltip>
+    );
 
     return (
         <div className={styles.container}>
@@ -67,8 +67,7 @@ export default function TransactionDetailsHeader(
                 </button>
 
                 {showShareComponent ? copyIconWithTooltip : phIcon}
-
-                {/* {showShareComponent ? downloadIconWithTooltip : phIcon} */}
+                {showShareComponent ? downloadIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />

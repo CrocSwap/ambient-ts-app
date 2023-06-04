@@ -7,13 +7,11 @@ import styles from './Orders.module.css';
 
 // START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -23,6 +21,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -30,10 +29,6 @@ import Spinner from '../../../Global/Spinner/Spinner';
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
     isAccountView: boolean;
 }
 
@@ -42,7 +37,6 @@ function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
         connectedAccountActive,
-        changeState,
         isAccountView,
     } = props;
 
@@ -105,7 +99,7 @@ function Orders(props: propsIF) {
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
         1000,
-    ); // debounce 1/4 second
+    );
 
     const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter(
         (tx) => {
@@ -125,12 +119,8 @@ function Orders(props: propsIF) {
     const [limitOrderData, setLimitOrderData] = useState(
         isAccountView ? activeAccountLimitOrderData || [] : limitOrdersByPool,
     );
-    const shouldDisplayNoTableData = !limitOrderData.length;
-
-    const debouncedShouldDisplayNoTableData = useDebounce(
-        shouldDisplayNoTableData,
-        1000,
-    ); // debounce 1 second
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !limitOrderData.length;
 
     useEffect(() => {
         if (isAccountView) {
@@ -159,7 +149,6 @@ function Orders(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const view2 = useMediaQuery('(max-width: 1568px)');
     const showColumns = useMediaQuery('(max-width: 1800px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
@@ -403,11 +392,9 @@ function Orders(props: propsIF) {
 
     const currentRowItemContent = _DATA.currentData.map((order, idx) => (
         <OrderRow
-            tradeData={tradeData}
             showPair={showPair}
             showColumns={showColumns}
             ipadView={ipadView}
-            view2={view2}
             key={idx}
             limitOrder={order}
             isAccountView={isAccountView}
@@ -416,11 +403,9 @@ function Orders(props: propsIF) {
 
     const sortedRowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
-            tradeData={tradeData}
             showPair={showPair}
             showColumns={showColumns}
             ipadView={ipadView}
-            view2={view2}
             key={idx}
             limitOrder={order}
             isAccountView={isAccountView}
@@ -455,12 +440,8 @@ function Orders(props: propsIF) {
             }
         }
     };
-    const orderDataOrNull = debouncedShouldDisplayNoTableData ? (
-        <NoTableData
-            type='orders'
-            changeState={changeState}
-            isAccountView={isAccountView}
-        />
+    const orderDataOrNull = shouldDisplayNoTableData ? (
+        <NoTableData type='orders' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef}>{currentRowItemContent}</ul>
@@ -517,18 +498,8 @@ function Orders(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                {shouldDisplayLoadingAnimation ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     orderDataOrNull
                 )}
