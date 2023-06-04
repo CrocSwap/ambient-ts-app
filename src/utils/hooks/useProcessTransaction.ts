@@ -488,9 +488,9 @@ export const useProcessTransaction = (
     const negativeArrow = '↓';
 
     const isSellQtyZero =
-        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+        (isBuy && tx.baseFlow === 0) || (!isBuy && tx.quoteFlow === 0);
     const isBuyQtyZero =
-        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+        (!isBuy && tx.baseFlow === 0) || (isBuy && tx.quoteFlow === 0);
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
@@ -537,7 +537,7 @@ export const useProcessTransaction = (
         negativeDisplayStyle,
 
         // Value data
-        usdValue: totalValueUSD.toString(),
+        usdValue: totalValueUSDLocaleString,
         txUsdValueLocaleString: totalValueUSDLocaleString,
 
         positiveArrow,
