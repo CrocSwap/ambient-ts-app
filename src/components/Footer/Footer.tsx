@@ -8,22 +8,25 @@ import {
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../constants';
+import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 interface FooterItemProps {
     title: string | JSX.Element;
     content: string;
     link: string;
 }
 export default function Footer() {
+    const [, , termsUrls] = useTermsAgreed();
+
     const footerData = [
         {
             title: 'Terms of Service',
             content: 'Our rules for using the platform',
-            link: '/tos',
+            link: `${window.location.origin}/${termsUrls.tos}`,
         },
         {
             title: 'Privacy Policy',
             content: 'View our policies around data',
-            link: '/privacy',
+            link: `${window.location.origin}/${termsUrls.privacy}`,
         },
         {
             title: 'Docs',
