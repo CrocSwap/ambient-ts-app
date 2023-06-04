@@ -33,10 +33,17 @@ interface NavbarDropdownMenuPropsIF {
     clickLogout: () => void;
     closeMenu?: () => void;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    openWagmiModal: () => void;
 }
 
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
-    const { closeMenu, clickLogout, setIsNavbarMenuOpen } = props;
+    const {
+        closeMenu,
+        clickLogout,
+        setIsNavbarMenuOpen,
+        openWagmiModal,
+        isUserLoggedIn,
+    } = props;
 
     const [, , termsUrls] = useTermsAgreed();
 
@@ -171,14 +178,32 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         >
                             Terms of Service
                         </NavbarDropdownItem>
-                        <div className={`${styles.navbar_logout_container}`}>
-                            <NavbarDropdownItem
-                                isLogoutButton
-                                onClick={clickLogout}
+                        {isUserLoggedIn ? (
+                            <div
+                                className={`${styles.navbar_logout_container}`}
                             >
-                                Logout
-                            </NavbarDropdownItem>
-                        </div>
+                                <NavbarDropdownItem
+                                    isLogoutButton
+                                    onClick={() => {
+                                        clickLogout();
+                                        closeMenu ? closeMenu() : null;
+                                    }}
+                                >
+                                    Logout
+                                </NavbarDropdownItem>
+                            </div>
+                        ) : (
+                            <div
+                                className={`${styles.navbar_logout_container}`}
+                            >
+                                <NavbarDropdownItem
+                                    isLogoutButton
+                                    onClick={openWagmiModal}
+                                >
+                                    Connect Wallet
+                                </NavbarDropdownItem>
+                            </div>
+                        )}
                     </motion.div>
                 </CSSTransition>
             </div>

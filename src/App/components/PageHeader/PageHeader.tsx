@@ -136,6 +136,7 @@ const PageHeader = function () {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         walletDropdownTokenData,
+        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 

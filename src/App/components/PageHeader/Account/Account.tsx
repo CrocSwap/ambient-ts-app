@@ -29,11 +29,17 @@ interface propsIF {
               amount: string | undefined;
           }[]
         | null;
+    openWagmiModal: () => void;
 }
 
 export default function Account(props: propsIF) {
-    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
-        props;
+    const {
+        nativeBalance,
+        clickLogout,
+        ensName,
+        walletDropdownTokenData,
+        openWagmiModal,
+    } = props;
 
     const {
         snackbar: { open: openSnackbar },
@@ -163,6 +169,7 @@ export default function Account(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
+                    openWagmiModal={openWagmiModal}
                 />
             </NavItem>
         </div>
