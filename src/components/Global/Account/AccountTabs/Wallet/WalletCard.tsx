@@ -53,7 +53,6 @@ export default function WalletCard(props: propsIF) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
                         '0x1',
-                        lastBlockNumber,
                     );
                     if (price) setTokenPrice(price);
                 }

@@ -8,6 +8,7 @@ import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
+
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
@@ -18,7 +19,7 @@ export const useProcessTransaction = (
 
     const isDenomBase = tradeData.isDenomBase;
 
-    const txHash = tx.tx;
+    const txHash = tx.txHash;
     const ownerId = tx.user;
     const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
@@ -236,9 +237,9 @@ export const useProcessTransaction = (
             truncatedHighDisplayPrice = undefined;
         }
     } else {
-        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
-            const priceDecimalCorrected = tx.priceDecimalCorrected;
-            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+        if (tx.swapPriceDecimalCorrected && tx.swapInvPriceDecimalCorrected) {
+            const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
+            const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
 
             const nonInvertedPriceTruncated =
                 priceDecimalCorrected === 0
@@ -306,8 +307,6 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringShort =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
         baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
 
         const baseFlowDisplayTruncatedLong =
@@ -324,8 +323,6 @@ export const useProcessTransaction = (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringLong =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
         baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (
@@ -397,15 +394,6 @@ export const useProcessTransaction = (
             ? 'sell'
             : 'buy';
 
-    // const sideType =
-    //     tx.entityType === 'swap' || tx.entityType === 'limitOrder'
-    //         ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
-    //             ? 'buy'
-    //             : 'sell'
-    //         : tx.changeType === 'burn'
-    //         ? 'sell'
-    //         : 'buy';
-
     const transactionTypeSide =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'mint'
@@ -414,14 +402,6 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const transactionTypeSide =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'rangeRemove'
-    //         : 'rangeAdd';
 
     const type =
         tx.entityType === 'liqchange'
@@ -431,92 +411,17 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const type =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'Remove'
-    //         : 'Add';
 
     const sideTypeStyle = `${sideType}_style`;
 
-    const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
-    const totalFlowUSD = tx.totalFlowUSD;
-    const totalFlowAbsNum =
-        totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
-
-    const usdValueTruncated = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.01
-        ? usdValueNum.toExponential(2) + ' '
-        : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum, 2)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + ' ';
-
-    const usdValueLocaleString = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const totalValueUSDTruncated = !totalValueUSD
-        ? undefined
-        : totalValueUSD < 0.01
-        ? totalValueUSD.toExponential(2) + ' '
-        : totalValueUSD >= 100000
-        ? formatAmountOld(totalValueUSD, 2)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          totalValueUSD.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + ' ';
-
-    const totalValueUSDLocaleString = !totalValueUSD
-        ? undefined
-        : totalValueUSD < 0.01
-        ? totalValueUSD.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          totalValueUSD.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const totalFlowUSDTruncated =
-        totalFlowAbsNum === undefined
-            ? undefined
-            : totalFlowAbsNum === 0
-            ? '0.00' + ' '
-            : totalFlowAbsNum < 0.01
-            ? totalFlowAbsNum.toExponential(2) + ' '
-            : totalFlowAbsNum >= 100000
-            ? formatAmountOld(totalFlowAbsNum, 2)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              totalFlowAbsNum.toLocaleString(undefined, {
+    const totalValueUSDLocaleString =
+        totalValueUSD < 0.01
+            ? totalValueUSD.toPrecision(3)
+            : totalValueUSD.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              }) + ' ';
-
-    const totalFlowUSDLocaleString = !totalFlowAbsNum
-        ? undefined
-        : totalFlowAbsNum < 0.01
-        ? totalFlowAbsNum.toPrecision(3)
-        : totalFlowAbsNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    // --------------------------------------------------------
+              });
 
     const quantitiesAvailable =
         baseFlowDisplayShort !== undefined ||
@@ -540,24 +445,6 @@ export const useProcessTransaction = (
 
     // --------------------------------------------------------
 
-    const usdValue =
-        totalFlowUSDTruncated !== undefined
-            ? '$' + totalFlowUSDTruncated
-            : totalValueUSDTruncated
-            ? '$' + totalValueUSDTruncated
-            : usdValueTruncated
-            ? '$' + usdValueTruncated
-            : '…';
-
-    const txUsdValueLocaleString = totalFlowUSDLocaleString
-        ? '$' + totalFlowUSDLocaleString
-        : totalValueUSDLocaleString
-        ? '$' + totalValueUSDLocaleString
-        : usdValueLocaleString
-        ? '$' + usdValueLocaleString
-        : '…';
-    // --------------------OWNER AND ID WALLET DATA
-
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 13
             ? trimString(ensName, 8, 3, '…')
@@ -571,7 +458,7 @@ export const useProcessTransaction = (
         : ensNameOrOwnerTruncated;
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        tx.time * 1000,
+        tx.txTime * 1000,
         'seconds',
     );
 
@@ -610,8 +497,7 @@ export const useProcessTransaction = (
     const positiveDisplayStyle =
         baseQuantityDisplayShort === '0' ||
         !valueArrows ||
-        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
-        tx.source === 'manual'
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
             ? styles.light_grey
             : styles.positive_value;
     const negativeDisplayStyle =
@@ -651,8 +537,8 @@ export const useProcessTransaction = (
         negativeDisplayStyle,
 
         // Value data
-        usdValue,
-        txUsdValueLocaleString,
+        usdValue: totalValueUSD.toString(),
+        txUsdValueLocaleString: totalValueUSDLocaleString,
 
         positiveArrow,
         negativeArrow,

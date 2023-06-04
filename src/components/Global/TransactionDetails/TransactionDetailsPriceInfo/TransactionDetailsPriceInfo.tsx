@@ -146,73 +146,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </motion.div>
     );
 
-    // const fillTime = new Intl.DateTimeFormat('en-US', {
-    //     year: 'numeric',
-    //     month: '2-digit',
-    //     day: '2-digit',
-    //     hour: '2-digit',
-    //     minute: '2-digit',
-    //     second: '2-digit',
-    // }).format(tx.time);
-
-    // const fillTime = new Intl.DateTimeFormat('en-US', {
-    //     hour: 'numeric',
-    //     minute: '2-digit',
-    //     second: '2-digit',
-    // }).format(tx.time * 1000);
-
-    // const fillDate = new Intl.DateTimeFormat('en-US', {
-    //     year: 'numeric',
-    //     month: '2-digit',
-    //     day: '2-digit',
-    // }).format(tx.time * 1000);
-
-    // const fillTimeContent = (
-    //     <motion.div
-    //         layout
-    //         initial={{ opacity: 0 }}
-    //         animate={{ opacity: 1 }}
-    //         exit={{ opacity: 0 }}
-    //         className={styles.info_container}
-    //     >
-    //         <Row>
-    //             <DefaultTooltip
-    //                 interactive
-    //                 title={'Block: ' + tx.block}
-    //                 placement={'right'}
-    //                 arrow
-    //                 enterDelay={750}
-    //                 leaveDelay={200}
-    //             >
-    //                 <div className={styles.info_text}>{fillDate}</div>
-    //             </DefaultTooltip>
-    //             <DefaultTooltip
-    //                 interactive
-    //                 title={'Block: ' + tx.block}
-    //                 placement={'right'}
-    //                 arrow
-    //                 enterDelay={750}
-    //                 leaveDelay={200}
-    //             >
-    //                 <div className={styles.info_text}>{fillTime}</div>
-    //             </DefaultTooltip>
-
-    //             {/* <span>Date: </span> */}
-    //         </Row>
-
-    //         {/* <Row> */}
-    //         {/* <span>Time: </span> */}
-    //         {/* </Row> */}
-    //     </motion.div>
-    // );
-
     const isBuyTransactionDetails = (
-        <div
-            className={styles.tx_details}
-            // onClick={() => {
-            // dispatch(toggleDidUserFlipDenom());
-            // }}
-        >
+        <div className={styles.tx_details}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'

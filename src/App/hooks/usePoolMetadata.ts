@@ -403,6 +403,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         annotateMEV: false,
                         ensResolution: true,
                         n: 80,
+                        crocEnv: props.crocEnv,
+                        lastBlockNumber: props.lastBlockNumber,
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {

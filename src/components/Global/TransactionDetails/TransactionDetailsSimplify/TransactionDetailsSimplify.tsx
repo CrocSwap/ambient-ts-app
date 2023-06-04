@@ -162,7 +162,7 @@ export default function TransactionDetailsSimplify(
 
         {
             title: 'Time ',
-            content: moment(tx.time * 1000).format('MM/DD/YYYY HH:mm'),
+            content: moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm'),
             explanation: 'The transaction confirmation time',
         },
 

@@ -68,5 +68,5 @@ export function diffHashSigTxs(txs?: TransactionIF[]) {
     if (!txs) {
         return 'null';
     }
-    return diffHashSig(txs.map((x) => x.tx));
+    return diffHashSig(txs.map((x) => x.txId));
 }

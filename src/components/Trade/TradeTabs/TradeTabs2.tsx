@@ -84,6 +84,7 @@ function TradeTabs2(props: propsIF) {
     } = props;
 
     const {
+        crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -243,7 +244,7 @@ function TradeTabs2(props: propsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData) {
+        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokens.tokenUniv,
@@ -254,7 +255,9 @@ function TradeTabs2(props: propsIF) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 200, // fetch last 500 changes,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv,
+                    lastBlockNumber,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
@@ -278,7 +281,7 @@ function TradeTabs2(props: propsIF) {
     >([]);
 
     useEffect(() => {
-        if (isServerEnabled && isCandleSelected && filter?.time) {
+        if (isServerEnabled && isCandleSelected && filter?.time && crocEnv) {
             fetchPoolRecentChanges({
                 tokenList: tokens.tokenUniv,
                 base: selectedBase,
@@ -293,6 +296,8 @@ function TradeTabs2(props: propsIF) {
                 n: 80,
                 period: candleTime.time,
                 time: filter?.time,
+                crocEnv: crocEnv,
+                lastBlockNumber,
             })
                 .then((selectedCandleChangesJson) => {
                     IS_LOCAL_ENV &&

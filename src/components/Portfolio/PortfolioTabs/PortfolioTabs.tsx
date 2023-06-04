@@ -197,38 +197,43 @@ export default function PortfolioTabs(props: propsIF) {
                 );
             });
 
-    const getLookupUserTransactions = async (accountToSearch: string) =>
-        fetchUserRecentChanges({
-            tokenList: tokens.tokenUniv,
-            user: accountToSearch,
-            chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
-            n: 100, // fetch last 500 changes,
-        })
-            .then((updatedTransactions) => {
-                if (updatedTransactions) {
-                    setLookupAccountTransactionData(updatedTransactions);
-                }
-
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
+    const getLookupUserTransactions = async (accountToSearch: string) => {
+        if (crocEnv) {
+            fetchUserRecentChanges({
+                tokenList: tokens.tokenUniv,
+                user: accountToSearch,
+                chainId: chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100, // fetch last 100 changes,
+                crocEnv: crocEnv,
+                lastBlockNumber: lastBlockNumber,
             })
-            .catch(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
-            });
+                .then((updatedTransactions) => {
+                    if (updatedTransactions) {
+                        setLookupAccountTransactionData(updatedTransactions);
+                    }
+
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                })
+                .catch(() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                });
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -264,7 +269,12 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, tokens.tokenUniv]);
+    }, [
+        resolvedAddress,
+        connectedAccountActive,
+        tokens.tokenUniv,
+        lastBlockNumber,
+    ]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData

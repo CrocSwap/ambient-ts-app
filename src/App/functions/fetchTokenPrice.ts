@@ -30,8 +30,6 @@ export const fetchTokenPrice = async (
 export type TokenPriceFn = (
     address: string,
     chain: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
 ) => Promise<
     | {
           nativePrice?:
@@ -49,6 +47,15 @@ export type TokenPriceFn = (
     | undefined
 >;
 
+// Refresh USD prices in 15 minute windows
+const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
+
 export function memoizeTokenPrice(): TokenPriceFn {
-    return memoizePromiseFn(fetchTokenPrice);
+    const memoFn = memoizePromiseFn(fetchTokenPrice);
+    return (address: string, chain: string) =>
+        memoFn(
+            address,
+            chain,
+            Math.floor(Date.now() / PRICE_WINDOW_GRANULARITY),
+        );
 }

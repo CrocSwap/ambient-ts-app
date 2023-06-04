@@ -13,12 +13,9 @@ import {
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { TransactionIF } from '../../utils/interfaces/TransactionIF';
 import {
-    addChangesByPool,
-    addChangesByUser,
     CandleData,
     CandlesByPoolAndDuration,
 } from '../../utils/state/graphDataSlice';
-import { getTransactionData } from '../functions/getTransactionData';
 
 export interface WebSockerPropsIF {
     crocEnv?: CrocEnv;
@@ -44,136 +41,6 @@ export interface WebSockerPropsIF {
 
 /* Contains React hooks to manage ongoing websocket subscriptions from the backend. */
 export default function useWebSocketSubs(props: WebSockerPropsIF) {
-    const crocEnv = props.crocEnv;
-
-    const dispatch = useAppDispatch();
-
-    const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            props.wssGraphCacheServerDomain +
-            '/subscribe_pool_liqchanges?' +
-            new URLSearchParams({
-                base: props.baseTokenAddress.toLowerCase(),
-                quote: props.quoteTokenAddress.toLowerCase(),
-                poolIdx: props.chainData.poolIndex.toString(),
-                chainId: props.chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addCachedAPY: 'true',
-                omitKnockout: 'true',
-                addValue: 'true',
-            }),
-        [
-            props.baseTokenAddress,
-            props.quoteTokenAddress,
-            props.chainData.chainId,
-        ],
-    );
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            props.wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: props.baseTokenAddress.toLowerCase(),
-                quote: props.quoteTokenAddress.toLowerCase(),
-                poolIdx: props.chainData.poolIndex.toString(),
-                chainId: props.chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                addValue: 'true',
-            }),
-        [
-            props.baseTokenAddress,
-            props.quoteTokenAddress,
-            props.chainData.chainId,
-            props.chainData.poolIndex,
-        ],
-    );
-
-    // Consumes recent pool changes endpoint
-    const { lastMessage: lastPoolChangeMessage } = useWebSocket(
-        poolRecentChangesCacheSubscriptionEndpoint,
-        {
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if base/quote token addresses are available
-        props.isServerEnabled &&
-            props.areSubscriptionsEnabled &&
-            props.baseTokenAddress !== '' &&
-            props.quoteTokenAddress !== '',
-    );
-
-    // On pool change message, pump the change into RTK slice
-    useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            if (!isJsonString(lastPoolChangeMessage.data)) return;
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, props.tokenUniv);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByPool(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastPoolChangeMessage]);
-
-    const userRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            props.wssGraphCacheServerDomain +
-            '/subscribe_user_recent_changes?' +
-            new URLSearchParams({
-                user: props.userAddress || '',
-                chainId: props.chainData.chainId,
-                addValue: 'true',
-                annotate: 'true',
-                ensResolution: 'true',
-            }),
-        [props.userAddress, props.chainData.chainId],
-    );
-
-    // Consumes recent changes (i.e. transactions)
-    const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
-        userRecentChangesCacheSubscriptionEndpoint,
-        {
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => props.shouldNonCandleSubscriptionsReconnect,
-        },
-        // only connect is account is available
-        props.isServerEnabled &&
-            props.areSubscriptionsEnabled &&
-            props.userAddress !== null &&
-            props.userAddress !== undefined,
-    );
-
-    // On new message pump into RTK slice
-    useEffect(() => {
-        if (lastUserRecentChangesMessage !== null) {
-            if (!isJsonString(lastUserRecentChangesMessage.data)) return;
-            const lastMessageData = JSON.parse(
-                lastUserRecentChangesMessage.data,
-            ).data;
-
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, props.tokenUniv);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        dispatch(addChangesByUser(updatedTransactions));
-                    })
-                    .catch(console.error);
-            }
-        }
-    }, [lastUserRecentChangesMessage]);
-
     const candleSubscriptionEndpoint = useMemo(
         () =>
             props.wssGraphCacheServerDomain +

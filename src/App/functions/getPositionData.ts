@@ -78,13 +78,11 @@ export const getPositionData = async (
     const basePricePromise = cachedFetchTokenPrice(
         basePricedToken.token,
         basePricedToken.chainId,
-        lastBlockNumber,
     );
     const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
     const quotePricePromise = cachedFetchTokenPrice(
         quotePricedToken.token,
         quotePricedToken.chainId,
-        lastBlockNumber,
     );
 
     newPosition.ensResolution = (await ensRequest) ?? '';

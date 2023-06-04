@@ -48,16 +48,16 @@ export default function PositionBox(props: propsIF) {
     const [apy, setApy] = useState<any | undefined>();
 
     const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
-    const txFingerprint = transactionsData.map((tx) => tx.tx).join('|');
+    const txFingerprint = transactionsData.map((tx) => tx.txHash).join('|');
 
     const updateIsPosition = () => {
         if (message && message.includes('0x')) {
             const hashMsg = message
                 .split(' ')
                 .find((item) => item.includes('0x'));
-            if (transactionsData.find((item) => item.tx === hashMsg)) {
+            if (transactionsData.find((item) => item.txHash === hashMsg)) {
                 setPosition(
-                    transactionsData.find((item) => item.tx === hashMsg),
+                    transactionsData.find((item) => item.txHash === hashMsg),
                 );
                 props.setIsPosition(true);
             } else if (
@@ -128,13 +128,13 @@ export default function PositionBox(props: propsIF) {
                 }
             } else {
                 if (
-                    position.priceDecimalCorrected &&
-                    position.invPriceDecimalCorrected
+                    position.swapPriceDecimalCorrected &&
+                    position.swapInvPriceDecimalCorrected
                 ) {
                     const priceDecimalCorrected =
-                        position.priceDecimalCorrected;
+                        position.swapPriceDecimalCorrected;
                     const invPriceDecimalCorrected =
-                        position.invPriceDecimalCorrected;
+                        position.swapInvPriceDecimalCorrected;
 
                     const nonInvertedPriceTruncated =
                         priceDecimalCorrected === 0
@@ -184,7 +184,7 @@ export default function PositionBox(props: propsIF) {
 
     function getPositionAdress() {
         if (position) {
-            return trimString(position.tx, 6, 4, '…');
+            return trimString(position.txHash, 6, 4, '…');
         }
 
         if (sPositions) {

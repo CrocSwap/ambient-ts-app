@@ -62,7 +62,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowAllData(false);
-        setCurrentTxActiveInTransactions(tx.id);
+        setCurrentTxActiveInTransactions(tx.txId);
         linkGenMarket.navigate({
             chain: chainId,
             tokenA: tx.base,

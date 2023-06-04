@@ -177,6 +177,8 @@ export const UserDataContextProvider = (props: {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
+                    crocEnv: crocEnv,
+                    lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
                 })
                     .then((updatedTransactions) => {

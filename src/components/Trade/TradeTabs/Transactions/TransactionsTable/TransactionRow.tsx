@@ -106,7 +106,7 @@ function TransactionRow(props: propsIF) {
     };
 
     const activeTransactionStyle =
-        tx.id === currentTxActiveInTransactions
+        tx.txId === currentTxActiveInTransactions
             ? styles.active_transaction_style
             : '';
 
@@ -123,7 +123,7 @@ function TransactionRow(props: propsIF) {
             : 'username_base_color';
 
     const txDomId =
-        tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
+        tx.txId === currentTxActiveInTransactions ? `tx-${tx.txId}` : '';
 
     function scrollToDiv() {
         const element = document.getElementById(txDomId);
@@ -143,12 +143,12 @@ function TransactionRow(props: propsIF) {
     useOnClickOutside(activePositionRef, clickOutsideHandler);
 
     useEffect(() => {
-        tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
+        tx.txId === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            const explorerUrl = `${blockExplorer}tx/${tx.txHash}`;
             window.open(explorerUrl);
         }
     }
@@ -256,7 +256,7 @@ function TransactionRow(props: propsIF) {
     } = txRowConstants(txRowConstantsProps);
 
     function handleRowClick() {
-        if (tx.id === currentTxActiveInTransactions) {
+        if (tx.txId === currentTxActiveInTransactions) {
             return;
         }
         setCurrentTxActiveInTransactions('');

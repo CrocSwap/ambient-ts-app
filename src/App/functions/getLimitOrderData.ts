@@ -13,10 +13,7 @@ import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import { memoizeFetchEnsAddress } from './fetchAddress';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeTokenPrice } from './fetchTokenPrice';
-import {
-    memoizeQueryPoolGrowth,
-    memoizeQuerySpotPrice,
-} from './querySpotPrice';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedTokenDetails = memoizeFetchContractDetails();
@@ -67,13 +64,11 @@ export const getLimitOrderData = async (
     const basePricePromise = cachedFetchTokenPrice(
         basePricedToken.token,
         basePricedToken.chainId,
-        lastBlockNumber,
     );
     const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
     const quotePricePromise = cachedFetchTokenPrice(
         quotePricedToken.token,
         quotePricedToken.chainId,
-        lastBlockNumber,
     );
 
     const DEFAULT_DECIMALS = 18;
