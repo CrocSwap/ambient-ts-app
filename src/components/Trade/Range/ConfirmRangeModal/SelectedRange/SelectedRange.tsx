@@ -4,17 +4,12 @@ import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    minPriceDisplay: number | string;
-    maxPriceDisplay: number | string;
-    spotPriceDisplay?: string;
     isTokenABase: boolean;
     isAmbient: boolean;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    // poolPriceTruncatedInBase: string;
-    // poolPriceTruncatedInQuote: string;
 }
 function SelectedRange(props: propsIF) {
     const {

@@ -11,8 +11,6 @@ interface propsIF {
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    isDenomBase: boolean;
-
     setShowSettings: (value: React.SetStateAction<boolean>) => void;
     showSettings: boolean;
 }

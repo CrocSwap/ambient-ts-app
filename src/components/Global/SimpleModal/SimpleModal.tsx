@@ -11,10 +11,7 @@ import useKeyPress from '../../../App/hooks/useKeyPress';
 interface SimpleModalPropsIF {
     noBackground?: boolean;
     onClose: () => void;
-    handleBack?: () => void;
-
     children: ReactNode;
-
     title?: string;
 }
 

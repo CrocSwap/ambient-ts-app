@@ -99,7 +99,6 @@ function BypassConfirmRepositionButton(props: propsIF) {
     // );
     const transactionException = (
         <TransactionException
-            noAnimation
             resetConfirmation={handleReset}
             initiateTx={onSend}
         />

@@ -16,13 +16,8 @@ interface WalletDropdownPropsIF {
     clickLogout: () => void;
     walletWrapperStyle: string;
     accountAddressFull: string;
-
     ethAmount: string;
     ethValue: string;
-
-    setShowWalletDropdown: React.Dispatch<React.SetStateAction<boolean>>;
-    showWalletDropdown: boolean;
-
     walletDropdownTokenData:
         | {
               logo: string;
@@ -52,7 +47,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         ethAmount,
         ethValue,
         walletDropdownTokenData,
-        // showWalletDropdown, setShowWalletDropdown
     } = props;
     const {
         chainData: { chainId },
