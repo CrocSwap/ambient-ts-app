@@ -16,23 +16,24 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
+import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 
 // interface for props in this file
 interface propsIF {
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
-    quoteTokenIsBuy: boolean;
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
-    displayEffectivePriceString: string;
+    effectivePriceWithDenom: number | undefined;
 }
 
 // central react functional component
 function ExtraInfo(props: propsIF) {
     const {
         priceImpact,
-        displayEffectivePriceString,
+        effectivePriceWithDenom,
         slippageTolerance,
         liquidityProviderFeeString,
         swapGasPriceinDollars,
@@ -94,18 +95,6 @@ function ExtraInfo(props: propsIF) {
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
 
-    const priceImpactString = !priceImpactNum
-        ? '…'
-        : priceImpactNum >= 100
-        ? priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-          })
-        : priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
     const feesAndSlippageData = [
         {
             title: 'Slippage Tolerance',
@@ -127,8 +116,12 @@ function ExtraInfo(props: propsIF) {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
-                ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${getDisplayableEffectivePriceString(
+                      effectivePriceWithDenom,
+                  )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${getDisplayableEffectivePriceString(
+                      effectivePriceWithDenom,
+                  )} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
         {
@@ -136,7 +129,7 @@ function ExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
             // eslint-disable-next-line no-irregular-whitespace
-            data: `${priceImpactString} %`,
+            data: `${getPriceImpactString(priceImpactNum)} %`,
             placement: 'bottom',
         },
         {

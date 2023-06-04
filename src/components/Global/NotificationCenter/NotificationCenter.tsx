@@ -5,6 +5,7 @@ import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 interface NotificationCenterPropsIF {
     showNotificationTable: boolean;
@@ -22,17 +23,15 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
 
     const txCount = pendingTransactions.length + sessionReceipts.length;
 
+    let receiveReceiptHashes: Array<string> = [];
+
     useEffect(() => {
         if (txCount === 0) setShowNotificationTable(false);
     }, [txCount]);
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),

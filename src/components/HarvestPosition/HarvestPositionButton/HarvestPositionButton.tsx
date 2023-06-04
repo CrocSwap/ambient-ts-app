@@ -2,9 +2,7 @@ import Button from '../../Global/Button/Button';
 
 interface IHarvestPositionButtonProps {
     harvestFn: () => void;
-
     title: string;
-
     disabled?: boolean;
 }
 

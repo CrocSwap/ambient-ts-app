@@ -21,6 +21,7 @@
     gap: 4px;
     cursor: pointer;
     z-index: 999;
+    margin-right: 0.5em;
 }
 
 .menu_container {
@@ -40,8 +41,16 @@
 }
 
 .icon {
+    display: flex;
     cursor: pointer;
+    justify-content: center;
+    align-items: center;
 }
+
+.icon img {
+    margin-right: 0.5em;
+}
+
 .menu svg {
     cursor: pointer;
 }

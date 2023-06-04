@@ -40,7 +40,6 @@ interface Props {
     showColumns: boolean;
     rank: number | undefined;
     handleCopyPosHash: () => void;
-    openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;

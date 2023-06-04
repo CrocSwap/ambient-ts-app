@@ -79,7 +79,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         <TransactionException
             resetConfirmation={handleReset}
             initiateTx={sendTransaction}
-            noAnimation
         />
     );
 

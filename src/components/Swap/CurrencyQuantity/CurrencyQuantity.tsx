@@ -20,7 +20,6 @@ interface propsIF {
     setBuyQtyString: Dispatch<SetStateAction<string>>;
     thisToken: TokenIF;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-
     setIsSellLoading: Dispatch<SetStateAction<boolean>>;
     setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;

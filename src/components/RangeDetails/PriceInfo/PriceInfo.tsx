@@ -8,11 +8,6 @@ import Apy from '../../Global/Tabs/Apy/Apy';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { useLocation } from 'react-router-dom';
 
-type ItemIF = {
-    slug: string;
-    name: string;
-    checked: boolean;
-};
 interface IPriceInfoProps {
     usdValue: string;
     lowRangeDisplay: string;
@@ -27,7 +22,6 @@ interface IPriceInfoProps {
     quoteTokenSymbol: string;
     isAmbient: boolean;
     isDenomBase: boolean;
-    controlItems: ItemIF[];
     positionApy: number | undefined;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;

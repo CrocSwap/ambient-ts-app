@@ -2,16 +2,14 @@ import styles from './Wallet.module.css';
 import WalletCard from './WalletCard';
 import WalletHeader from './WalletHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import Spinner from '../../../Spinner/Spinner';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import Spinner from '../../../Spinner/Spinner';
 
 interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    tokens: tokenMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -19,7 +17,6 @@ export default function Wallet(props: propsIF) {
     const {
         connectedAccountActive,
         resolvedAddressTokens,
-        tokens,
         cachedFetchTokenPrice,
     } = props;
 
@@ -51,7 +48,6 @@ export default function Wallet(props: propsIF) {
                         <WalletCard
                             key={JSON.stringify(token)}
                             token={token}
-                            tokens={tokens}
                             cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ))

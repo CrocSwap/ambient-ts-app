@@ -16,7 +16,6 @@ import Spinner from '../../Spinner/Spinner';
 interface TransactionDetailsGraphIF {
     tx: any;
     transactionType: string;
-    useTx?: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
 }
