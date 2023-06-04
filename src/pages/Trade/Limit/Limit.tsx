@@ -31,7 +31,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -143,14 +142,6 @@ export default function Limit() {
         () => pool?.baseToken.tokenAddr === tokenA.address,
         [pool?.baseToken, tokenA.address],
     );
-
-    useEffect(() => {
-        if (!tradeData.shouldLimitDirectionReverse) {
-            dispatch(setLimitTick(undefined));
-        }
-
-        dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -328,12 +319,14 @@ export default function Limit() {
             }
         })();
     }, [
+        !!crocEnv,
         pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
+        isSellTokenBase,
     ]);
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
@@ -354,6 +347,8 @@ export default function Limit() {
                 return;
             }
             if (!limitTick) return;
+
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const testOrder = isTokenAPrimary
                 ? crocEnv.sell(tokenA.address, 0)
@@ -380,6 +375,8 @@ export default function Limit() {
         updateOrderValidityStatus();
     }, [
         isTokenAPrimary,
+        isSellTokenBase,
+        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
         tokenA.address + tokenB.address,
@@ -692,7 +689,7 @@ export default function Limit() {
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
-        limitTickDisplayPrice: endDisplayPrice,
+        limitTickDisplayPrice: middleDisplayPrice,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
