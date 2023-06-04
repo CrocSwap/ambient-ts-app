@@ -4,18 +4,20 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
-    tokens: tokenMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function ExchangeCard(props: propsIF) {
-    const { token, tokens, cachedFetchTokenPrice } = props;
+    const { token, cachedFetchTokenPrice } = props;
+    const {
+        tokens: { getTokenByAddress },
+    } = useContext(TokenContext);
 
     const {
         chainData: { chainId },
@@ -24,7 +26,7 @@ export default function ExchangeCard(props: propsIF) {
     const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getTokenByAddress(token.address)
+        ? getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{

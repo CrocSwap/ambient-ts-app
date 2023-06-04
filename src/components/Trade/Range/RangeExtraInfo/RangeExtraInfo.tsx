@@ -18,10 +18,8 @@ interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
-    quoteTokenIsBuy?: boolean;
     rangeGasPriceinDollars: string | undefined;
     isTokenABase: boolean;
-    isQtyEntered: boolean;
     showExtraInfoDropdown: boolean;
     isBalancedMode: boolean;
 }
@@ -30,12 +28,10 @@ interface propsIF {
 function RangeExtraInfo(props: propsIF) {
     const {
         rangeGasPriceinDollars,
-        // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFeeString,
         isTokenABase,
-        // isQtyEntered,
         showExtraInfoDropdown,
         isBalancedMode,
     } = props;

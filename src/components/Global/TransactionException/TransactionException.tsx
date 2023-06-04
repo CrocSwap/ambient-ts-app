@@ -6,7 +6,6 @@ import DividerDark from '../DividerDark/DividerDark';
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
-    noAnimation?: boolean;
     initiateTx?: () => void;
 }
 

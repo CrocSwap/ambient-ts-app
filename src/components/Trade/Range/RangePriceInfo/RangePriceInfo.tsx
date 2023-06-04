@@ -21,10 +21,7 @@ import { memoizeTokenPrice } from '../../../../App/functions/fetchTokenPrice';
 // interface for component props
 interface propsIF {
     spotPriceDisplay: string;
-    maxPriceDisplay: string;
-    minPriceDisplay: string;
     aprPercentage: number | undefined;
-    daysInRange: number | undefined;
     poolPriceCharacter: string;
     isTokenABase: boolean;
     pinnedDisplayPrices:

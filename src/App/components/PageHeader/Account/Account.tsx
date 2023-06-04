@@ -22,7 +22,6 @@ interface propsIF {
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-
     walletDropdownTokenData:
         | {
               logo: string;
@@ -146,8 +145,6 @@ export default function Account(props: propsIF) {
                     }
                     ethValue={`${ethMainnetUsdValueTruncated}`}
                     accountAddressFull={props.accountAddressFull}
-                    showWalletDropdown={showWalletDropdown}
-                    setShowWalletDropdown={setShowWalletDropdown}
                     walletDropdownTokenData={walletDropdownTokenData}
                 />
             ) : null}

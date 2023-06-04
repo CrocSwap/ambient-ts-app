@@ -21,7 +21,6 @@ interface propsIF {
     tokenAInputQty: string;
     tokenBInputQty: string;
     resetConfirmation: () => void;
-    showBypassConfirmButton: boolean;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
@@ -84,7 +83,6 @@ function BypassLimitButton(props: propsIF) {
     const transactionException = (
         <TransactionException
             resetConfirmation={handleReset}
-            noAnimation
             initiateTx={sendLimitOrder}
         />
     );

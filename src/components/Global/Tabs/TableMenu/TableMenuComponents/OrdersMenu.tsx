@@ -14,12 +14,14 @@ import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import {
     setLimitTick,
     setLimitTickCopied,
     setShouldLimitDirectionReverse,
-    tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
@@ -32,11 +34,9 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    tradeData: tradeData;
     limitOrder: LimitOrderIF;
     isOwnerActiveAccount?: boolean;
     isOrderFilled: boolean;
-    showHighlightedButton: boolean;
     isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
@@ -45,7 +45,6 @@ interface propsIF {
 // React functional component
 export default function OrdersMenu(props: propsIF) {
     const {
-        tradeData,
         limitOrder,
         isOrderFilled,
         isOwnerActiveAccount,
@@ -54,17 +53,18 @@ export default function OrdersMenu(props: propsIF) {
         handleAccountClick,
     } = props;
 
-    const { handlePulseAnimation } = useContext(TradeTableContext);
-
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     const [
         isModalOpen,
@@ -110,25 +110,14 @@ export default function OrdersMenu(props: propsIF) {
     // -----------------END OF SNACKBAR----------------
 
     const openRemoveModal = () =>
-        openGlobalModal(
-            <OrderRemoval
-                limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-            />,
-        );
+        openGlobalModal(<OrderRemoval limitOrder={limitOrder} />);
     const openClaimModal = () =>
-        openGlobalModal(
-            <ClaimOrder
-                limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-            />,
-        );
+        openGlobalModal(<ClaimOrder limitOrder={limitOrder} />);
 
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
                 limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
