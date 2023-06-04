@@ -66,11 +66,7 @@ export default function OrdersMenu(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [
-        isModalOpen,
-        //  openModal,
-        closeModal,
-    ] = useModal();
+    const [isModalOpen, closeModal] = useModal();
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -136,11 +132,8 @@ export default function OrdersMenu(props: propsIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const minView = useMediaQuery('(min-width: 720px)');
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
     const view2WithNoSidebar =
         useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
@@ -197,7 +190,6 @@ export default function OrdersMenu(props: propsIF) {
             className={styles.option_button}
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
-                // dispatch(setLimitTick(undefined));
                 linkGenLimit.navigate(
                     limitOrder.isBid
                         ? {
