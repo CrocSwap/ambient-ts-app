@@ -37,6 +37,43 @@
     color: var(--text2);
 }
 
+.mobile_bg{
+
+    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../assets/images/home/home3.png') no-repeat center center
+    ;
+    mix-blend-mode: lighten;
+    
+    
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    padding-top: 6rem;
+    background-size: cover;
+}
+.mobile_version{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 20px;
+    margin: 0 2rem;
+
+
+}
+
+
+.mobile_version .footer_item_container h3{
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.mobile_version .footer_item_container p{
+    display: none;
+}
+
 .container {
     width: 100%;
 
@@ -104,4 +141,6 @@ background-position: top 30px right 0;
     .footer_item_container {
         width: 100%;
     }
+
+   
 }

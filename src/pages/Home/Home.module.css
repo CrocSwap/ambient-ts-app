@@ -10,11 +10,6 @@
    background-size: cover;
 } */
 
-.home_container {
-    /* background: var(--body-bg); */
-
-    
-}
 
 
 .blur_background {
@@ -50,12 +45,10 @@
     opacity: 0.2;
 }
 
-.progress_bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 10px;
-    background: red;
-    transform-origin: 0%;
+.mobile_divider{
+    width: 100%;
+    height: 1px;
+    background: var(--dark2);
+    z-index: 9999;
+    margin-top: 2rem;
 }

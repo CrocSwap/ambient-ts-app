@@ -117,11 +117,13 @@
     color: var(--accent5);
     border-radius: 0;
     transition: all var(--animation-speed) ease-out;
-    background: var(--title-gradient);
-    background-position: 1% 50%;
-    background-size: 300% 300%;
+background: var(--dark3);
     text-decoration: none;
     border: 1px solid var(--accent1);
+
+    border-radius: 4px;
+    outline: none;
+
 }
 
 .authenticate_button:hover,
@@ -130,4 +132,11 @@
     border: 1px solid rgba(223, 190, 106, 0);
     color: white;
     background-position: 99% 50%;
+}
+
+@media only screen and (max-width: 600px) {
+    .dropdown {
+       width: 250px;
+    }
+
 }

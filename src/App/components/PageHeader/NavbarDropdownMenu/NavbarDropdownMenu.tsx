@@ -35,6 +35,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface NavbarDropdownItemPropsIF {
     goToMenu?: string;
@@ -55,7 +56,8 @@ interface NavbarDropdownMenuPropsIF {
 }
 
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
-    const { closeMenu, setIsNavbarMenuOpen } = props;
+    const { closeMenu, setIsNavbarMenuOpen, clickLogout, isUserLoggedIn } =
+        props;
 
     const {
         tutorial: { isActive: isTutorialMode, setIsActive: setIsTutorialMode },
@@ -133,6 +135,18 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 Docs
             </NavbarDropdownItem>
         </>
+    );
+
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    function handleLogout() {
+        clickLogout();
+        closeMenu ? closeMenu() : null;
+    }
+    const logoutButton = (
+        <div className={styles.button_container} onClick={handleLogout}>
+            <button className={styles.authenticate_button}>Logout</button>
+        </div>
     );
 
     const settingsItems = (
@@ -339,6 +353,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         {warningItems}
                     </div>
                 </CSSTransition>
+                {isUserLoggedIn && showMobileVersion && logoutButton}
             </div>
         </FocusTrap>
     );

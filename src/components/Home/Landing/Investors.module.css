@@ -102,3 +102,20 @@
 
     /* .row7{ grid-template-columns: 1fr 1fr;} */
 }
+.mobile_container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 10px;
+    align-items: center;
+    justify-items: center;
+    padding: 1rem 2rem;
+  }
+  
+  .mobile_container img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .mobile_container span {
+    text-align: center;
+  }

@@ -175,4 +175,72 @@ height: 500px;
     }
 }
 
+@media only screen and (max-width: 600px){
 
+    .slide_container h2{
+        font-size: 20px;
+    }
+    .slide_container a{
+        display: none;
+    }
+
+    .bg1, .bg2, .bg3{
+        display: none;
+    }
+}
+
+
+.mobile_card {
+    background-color: var(--dark2);
+    background: var(--dark2); /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    padding: 20px;
+    border-radius: 8px;
+    margin: 12px 0;
+    margin:  1rem 2rem;
+  }
+
+  .mobile_card:nth-of-type(even) {
+    text-align: end;
+  }
+  .mobile_card_img_container_left{
+    display: flex;
+    justify-content: flex-start;
+
+    
+  }
+  .mobile_card_img_container_right{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .mobile_card img{
+    /* not sure about this yet but it looks better without an image on mobile */
+    display: none;
+    width: 200px ;
+
+  }
+  .smaller_image{
+    width: 160px !important;
+  }
+  .mobile_card h1 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+  
+  .mobile_card h2 {
+    font-size: 20px;
+    font-weight: 200;
+    color: var(--text1);
+    margin-bottom: 10px;
+  }
+
+  
+  .mobile_card p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text2);
+    font-weight: 100;
+  }

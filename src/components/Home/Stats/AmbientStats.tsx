@@ -82,7 +82,7 @@ export default function Stats() {
     return (
         <div className={styles.container}>
             <div
-                className={styles.title}
+                className={`${styles.title} ${styles.main_title}`}
                 aria-label={t('homeStatsTitle')}
                 tabIndex={0}
             >

@@ -24,7 +24,7 @@
 .content {
     max-width: 1200px;
     margin: 0 auto;
-
+    
     list-style-type: none;
     display: flex;
     flex-wrap: wrap;
@@ -34,3 +34,19 @@
 }
 
 
+@media only screen and (min-width: 600px) {
+    .content{
+margin: none;
+max-width: none;
+width: 100%;
+
+    }
+    
+}
+
+@media only screen and (max-width: 600px) {
+    
+    .container{
+        padding: 1rem 
+    }
+}

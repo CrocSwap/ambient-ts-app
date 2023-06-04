@@ -55,6 +55,7 @@ function SidebarFooter() {
         { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
+    if (currentLocation === '/') return null;
 
     return (
         <div className={`${styles.top_container} ${sidebarPositionStyle}`}>

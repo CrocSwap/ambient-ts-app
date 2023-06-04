@@ -16,10 +16,11 @@ interface NavItemPropsIF {
     icon: ReactNode;
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
+    square?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon } = props;
+    const { children, icon, square } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const { open, setOpen } = props;
@@ -46,7 +47,11 @@ function NavItem(props: NavItemPropsIF) {
             aria-label='Nav item'
             onKeyDown={() => setOpen(true)}
         >
-            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
+            <div
+                className={styles.icon_button}
+                onClick={() => setOpen(!open)}
+                style={{ borderRadius: square ? '4px' : '50%' }}
+            >
                 {icon}
             </div>
             {open && childrenWithProps}

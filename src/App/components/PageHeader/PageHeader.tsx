@@ -36,6 +36,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import PageLayout from './PageLayout/PageLayout';
 import { LayoutHandlerContext } from '../../../contexts/LayoutContext';
 import { FaWallet } from 'react-icons/fa';
+import PageHeaderMobile from './PageHeaderMobile';
 
 const PageHeader = function () {
     const {
@@ -386,6 +387,10 @@ const PageHeader = function () {
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
     // TODO (#1436): logo padding is problematic in mobile views
+
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    if (showMobileVersion) return <PageHeaderMobile {...accountProps} />;
 
     return (
         <header

@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mui/material';
 import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
@@ -77,7 +78,22 @@ export default function Footer() {
             </a>
         );
     };
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
+    const mobileItems = (
+        <div className={styles.mobile_version}>
+            {footerData.map((data) => (
+                <FooterItem
+                    title={data.title}
+                    content={data.content}
+                    link={data.link}
+                    key={data.content}
+                />
+            ))}
+        </div>
+    );
+    if (showMobileVersion)
+        return <div className={styles.mobile_bg}>{mobileItems}</div>;
     return (
         <section className={styles.container}>
             <div className={styles.content}>
