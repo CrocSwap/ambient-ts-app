@@ -45,7 +45,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
         ethAmount,
         ethValue,
-        walletDropdownTokenData,
+        // walletDropdownTokenData,
     } = props;
     const {
         chainData: { chainId },
@@ -152,7 +152,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={idx}
                     />
                 ))}
-                {walletDropdownTokenData?.map((token, idx) => (
+                {/* {walletDropdownTokenData?.map((token, idx) => (
                     <TokenAmountDisplay
                         amount={token.amount ?? ''}
                         value={'$' + token.value ?? ''}
@@ -160,7 +160,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         logo={token.logo ?? ''}
                         key={idx}
                     />
-                ))}
+                ))} */}
             </section>
             {actionContent}
         </div>
