@@ -237,53 +237,49 @@ export const useProcessTransaction = (
             truncatedHighDisplayPrice = undefined;
         }
     } else {
-        if (tx.swapPriceDecimalCorrected && tx.swapInvPriceDecimalCorrected) {
-            const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
-            const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
+        const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
+        const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0.00'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 0.8
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(5)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmountOld(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const nonInvertedPriceTruncated =
+            priceDecimalCorrected === 0
+                ? '0.00'
+                : priceDecimalCorrected < 0.0001
+                ? priceDecimalCorrected.toExponential(2)
+                : priceDecimalCorrected < 0.8
+                ? priceDecimalCorrected.toPrecision(3)
+                : priceDecimalCorrected < 2
+                ? priceDecimalCorrected.toPrecision(5)
+                : priceDecimalCorrected >= 100000
+                ? formatAmountOld(priceDecimalCorrected)
+                : priceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0.00'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 0.8
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(5)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmountOld(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const invertedPriceTruncated =
+            invPriceDecimalCorrected === 0
+                ? '0.00'
+                : invPriceDecimalCorrected < 0.0001
+                ? invPriceDecimalCorrected.toExponential(2)
+                : invPriceDecimalCorrected < 0.8
+                ? invPriceDecimalCorrected.toPrecision(3)
+                : invPriceDecimalCorrected < 2
+                ? invPriceDecimalCorrected.toPrecision(5)
+                : invPriceDecimalCorrected >= 100000
+                ? formatAmountOld(invPriceDecimalCorrected)
+                : invPriceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            truncatedDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+        truncatedDisplayPriceDenomByMoneyness =
+            isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
-            truncatedDisplayPrice = isDenomBase
-                ? invertedPriceTruncated
-                : nonInvertedPriceTruncated;
-        } else {
-            truncatedDisplayPrice = undefined;
-        }
+        truncatedDisplayPrice = isDenomBase
+            ? invertedPriceTruncated
+            : nonInvertedPriceTruncated;
     }
 
     if (
@@ -414,14 +410,98 @@ export const useProcessTransaction = (
 
     const sideTypeStyle = `${sideType}_style`;
 
+    const usdValueNum = tx.totalValueUSD;
     const totalValueUSD = tx.totalValueUSD;
-    const totalValueUSDLocaleString =
-        totalValueUSD < 0.01
-            ? totalValueUSD.toPrecision(3)
-            : totalValueUSD.toLocaleString(undefined, {
+    const totalFlowUSD = tx.totalValueUSD;
+    const totalFlowAbsNum =
+        totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.01
+        ? usdValueNum.toExponential(2) + ' '
+        : usdValueNum >= 100000
+        ? formatAmountOld(usdValueNum, 2)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' ';
+
+    const usdValueLocaleString = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.01
+        ? usdValueNum.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const totalValueUSDTruncated = !totalValueUSD
+        ? undefined
+        : totalValueUSD < 0.01
+        ? totalValueUSD.toExponential(2) + ' '
+        : totalValueUSD >= 100000
+        ? formatAmountOld(totalValueUSD, 2)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          totalValueUSD.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + ' ';
+
+    const totalValueUSDLocaleString = !totalValueUSD
+        ? undefined
+        : totalValueUSD < 0.01
+        ? totalValueUSD.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          totalValueUSD.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const totalFlowUSDTruncated =
+        totalFlowAbsNum === undefined
+            ? undefined
+            : totalFlowAbsNum === 0
+            ? '0.00' + ' '
+            : totalFlowAbsNum < 0.01
+            ? totalFlowAbsNum.toExponential(2) + ' '
+            : totalFlowAbsNum >= 100000
+            ? formatAmountOld(totalFlowAbsNum, 2)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              totalFlowAbsNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              });
+              }) + ' ';
+
+    const totalFlowUSDLocaleString = !totalFlowAbsNum
+        ? undefined
+        : totalFlowAbsNum < 0.01
+        ? totalFlowAbsNum.toPrecision(3)
+        : totalFlowAbsNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    // --------------------------------------------------------
+
+    const usdValue =
+        totalFlowUSDTruncated !== undefined
+            ? '$' + totalFlowUSDTruncated
+            : totalValueUSDTruncated
+            ? '$' + totalValueUSDTruncated
+            : usdValueTruncated
+            ? '$' + usdValueTruncated
+            : '…';
+
+    const txUsdValueLocaleString = totalFlowUSDLocaleString
+        ? '$' + totalFlowUSDLocaleString
+        : totalValueUSDLocaleString
+        ? '$' + totalValueUSDLocaleString
+        : usdValueLocaleString
+        ? '$' + usdValueLocaleString
+        : '…';
 
     const quantitiesAvailable =
         baseFlowDisplayShort !== undefined ||
@@ -537,8 +617,8 @@ export const useProcessTransaction = (
         negativeDisplayStyle,
 
         // Value data
-        usdValue: totalValueUSDLocaleString,
-        txUsdValueLocaleString: totalValueUSDLocaleString,
+        usdValue,
+        txUsdValueLocaleString,
 
         positiveArrow,
         negativeArrow,

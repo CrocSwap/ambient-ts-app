@@ -808,8 +808,8 @@ export default function TransactionDetailsGraph(
                                                 ? denominationsInBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
-                                            ? tx.invPriceDecimalCorrected
-                                            : tx.priceDecimalCorrected,
+                                            ? tx.swapInvPriceDecimalCorrected
+                                            : tx.swapPriceDecimalCorrected,
                                     },
                                 ],
                             ]).call(crossPoint);

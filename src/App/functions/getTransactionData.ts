@@ -155,10 +155,11 @@ export const getTransactionData = async (
     );
     newTx.invLimitPriceDecimalCorrected = 1 / newTx.limitPriceDecimalCorrected;
 
-    newTx.swapPrice = newTx.baseFlow / newTx.quoteFlow;
-    newTx.swapPriceDecimalCorrected =
-        newTx.baseFlowDecimalCorrected / newTx.quoteFlowDecimalCorrected;
-    newTx.swapInvPriceDecimalCorrected = 1 / newTx.swapInvPriceDecimalCorrected;
+    newTx.swapPrice = Math.abs(newTx.baseFlow / newTx.quoteFlow);
+    newTx.swapPriceDecimalCorrected = Math.abs(
+        newTx.baseFlowDecimalCorrected / newTx.quoteFlowDecimalCorrected,
+    );
+    newTx.swapInvPriceDecimalCorrected = 1 / newTx.swapPriceDecimalCorrected;
 
     const basePrice = await basePricePromise;
     const quotePrice = await quotePricePromise;
