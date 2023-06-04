@@ -149,6 +149,7 @@ export default function Account(props: propsIF) {
                     ethValue={`${ethMainnetUsdValueTruncated}`}
                     accountAddressFull={props.accountAddressFull}
                     walletDropdownTokenData={walletDropdownTokenData}
+                    clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}
         </section>

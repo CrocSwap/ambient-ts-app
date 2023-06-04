@@ -11,6 +11,7 @@ interface WalletDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
+    clickOutsideHandler: () => void;
     connectorName: string | undefined;
     clickLogout: () => void;
     walletWrapperStyle: string;
@@ -39,6 +40,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         ensName,
         accountAddress,
         handleCopyAddress,
+        clickOutsideHandler,
         connectorName,
         clickLogout,
         walletWrapperStyle,
@@ -96,6 +98,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 to={'/account'}
                 aria-label='Go to the account page '
                 tabIndex={0}
+                onClick={clickOutsideHandler}
             >
                 <CgProfile />
                 My Account
