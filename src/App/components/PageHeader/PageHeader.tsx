@@ -371,8 +371,6 @@ const PageHeader = function () {
         };
     }, []);
 
-    // TODO (#1436): logo padding is problematic in mobile views
-
     return (
         <header
             data-testid={'page-header'}
