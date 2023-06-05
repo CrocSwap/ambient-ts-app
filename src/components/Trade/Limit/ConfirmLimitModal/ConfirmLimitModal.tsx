@@ -13,15 +13,12 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
-    onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    isTokenAPrimary: boolean;
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
-    txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
