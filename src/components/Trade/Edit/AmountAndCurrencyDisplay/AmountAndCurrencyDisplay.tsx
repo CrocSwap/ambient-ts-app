@@ -1,3 +1,4 @@
+import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
 import styles from './AmountAndCurrencyDisplay.module.css';
 
 interface AmountAndCurrencyDisplayProps {
@@ -25,7 +26,7 @@ export default function AmountAndCurrencyDisplay(
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern={decimalNumRegEx.toString()}
                 disabled={disable}
                 defaultValue={qty}
             />
