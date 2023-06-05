@@ -10,6 +10,7 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 import Spinner from '../../Global/Spinner/Spinner';
+import { decimalNumRegEx } from '../../../utils/regex/decimalNumRegEx';
 
 interface propsIF {
     disable?: boolean;
@@ -154,7 +155,7 @@ function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.toString()}
                 disabled={disable}
             />
         </div>
