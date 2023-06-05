@@ -5607,7 +5607,7 @@ export default function Chart(props: propsIF) {
                 .decorate((context: any) => {
                     context.fillStyle = isMouseLeaveLiq
                         ? gradientForBid
-                        : undefined;
+                        : defaultGradientForBid;
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
