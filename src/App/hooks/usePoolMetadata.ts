@@ -10,6 +10,7 @@ import {
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
+    resetPoolDataLoadingStatus,
     setChangesByPool,
     setDataLoadingStatus,
     setLeaderboardByPool,
@@ -36,6 +37,7 @@ import {
 import { getPositionData } from '../functions/getPositionData';
 import { getTvlSeries } from '../functions/getTvlSeries';
 import { getVolumeSeries } from '../functions/getVolumeSeries';
+import useDebounce from './useDebounce';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -104,6 +106,28 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tradeData.tokenB.address,
         tradeData.tokenB.chainId,
     ]);
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(props.lastBlockNumber, 2000);
+
+    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
+    useEffect(
+        () => setHasValidPrevData(false),
+        [
+            props.receiptCount,
+            rtkMatchesParams,
+            tradeData.tokenA.address,
+            tradeData.tokenB.address,
+            quoteTokenAddress,
+            props.chainData.chainId,
+            props.chainData.poolIndex,
+            props.searchableTokens,
+            props.httpGraphCacheServerDomain,
+            props.lastBlockNumber == 0,
+            !!props.crocEnv,
+        ],
+    );
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
@@ -258,6 +282,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 );
                         })
                         .catch(console.error);
+
+                    if (!hasValidPrevData) {
+                        resetPoolDataLoadingStatus();
+                        setHasValidPrevData(true);
+                    }
 
                     // retrieve pool_positions
                     const allPositionsCacheEndpoint =
@@ -487,7 +516,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.poolIndex,
         props.searchableTokens,
         props.httpGraphCacheServerDomain,
-        props.lastBlockNumber,
+        lastBlockNumWait,
         !!props.crocEnv,
     ]);
 

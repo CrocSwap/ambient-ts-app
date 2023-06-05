@@ -733,6 +733,11 @@ export const graphDataSlice = createSlice({
                     break;
             }
         },
+        resetPoolDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isPoolTxDataLoading = true;
+            state.dataLoadingStatus.isPoolOrderDataLoading = true;
+            state.dataLoadingStatus.isPoolRangeDataLoading = true;
+        },
         resetConnectedUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
             state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
@@ -777,6 +782,7 @@ export const {
     setChangesByPool,
     setDataLoadingStatus,
     resetUserGraphData,
+    resetPoolDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     resetLookupUserDataLoadingStatus,
 } = graphDataSlice.actions;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
@@ -58,9 +58,23 @@ export const UserDataContextProvider = (props: {
     const userLimitOrderStatesCacheEndpoint =
         GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
 
-    // Wait 1 second before refreshing to give cache server time to sync from
+    // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
+    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
+    useEffect(
+        () => setHasValidPrevData(false),
+        [
+            isServerEnabled,
+            tokens.tokenUniv.length,
+            isConnected,
+            userAddress,
+            chainData.chainId,
+            lastBlockNumber == 0,
+            !!crocEnv,
+        ],
+    );
 
     useEffect(() => {
         if (
@@ -71,7 +85,10 @@ export const UserDataContextProvider = (props: {
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
-            dispatch(resetConnectedUserDataLoadingStatus());
+            if (!hasValidPrevData) {
+                dispatch(resetConnectedUserDataLoadingStatus());
+                setHasValidPrevData(true);
+            }
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
 

@@ -251,39 +251,6 @@ function TradeTabs2(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
-            try {
-                fetchUserRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    user: userAddress,
-                    chainId: chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 100, // fetch last 100 changes,
-                    crocEnv,
-                    lastBlockNumber,
-                })
-                    .then((updatedTransactions) => {
-                        if (updatedTransactions) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: updatedTransactions,
-                                }),
-                            );
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
-            }
-        }
-    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
-
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
     >([]);
@@ -329,6 +296,39 @@ function TradeTabs2(props: propsIF) {
                 .catch(console.error);
         }
     }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
+
+    useEffect(() => {
+        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+            try {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: userAddress,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv,
+                    lastBlockNumber,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
+                                }),
+                            );
+                        }
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error;
+            }
+        }
+    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
 
     // -------------------------------DATA-----------------------------------------
     // Props for <Ranges/> React Element
