@@ -45,7 +45,6 @@ function LimitHeader() {
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='limit_share_button'
                 role='button'
-                tabIndex={0}
                 aria-label='Share button'
             />
 
@@ -63,7 +62,6 @@ function LimitHeader() {
                     className={styles.settings_icon}
                     id='limit_settings_button'
                     role='button'
-                    tabIndex={0}
                     aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />

@@ -141,15 +141,22 @@
         overflow-y: scroll;
 
         max-height: 75vh;
+       
     }
 
     .swap_route{
         background: transparent;
     }
     
-    .swap_bg{
+    .swap_bg, .no_background{
         background: var(--dark-gradient);
 
+    }
+
+    .swap_route,
+    .no_background {
+        width: 100%;
+      
     }
 }
 

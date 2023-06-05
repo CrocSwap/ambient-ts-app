@@ -18,6 +18,10 @@ import { CHAT_ENABLED } from '../constants';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
+    tradeComponent: {
+        showTradeComponent: boolean;
+        setShowTradeComponent: (val: boolean) => void;
+    };
     globalModal: globalModalMethodsIF;
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
@@ -54,6 +58,7 @@ export const AppStateContextProvider = (props: {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
+    const [showTradeComponent, setShowTradeComponent] = useState(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -87,6 +92,11 @@ export const AppStateContextProvider = (props: {
             appOverlay: {
                 isActive: isAppOverlayActive,
                 setIsActive: setIsAppOverlayActive,
+            },
+            // mobile view
+            tradeComponent: {
+                showTradeComponent: showTradeComponent,
+                setShowTradeComponent: setShowTradeComponent,
             },
             globalModal,
             globalPopup,
@@ -126,6 +136,8 @@ export const AppStateContextProvider = (props: {
             isTutorialMode,
             theme,
             isWagmiModalOpenWallet,
+            showTradeComponent,
+            setShowTradeComponent,
         ],
     );
 

@@ -53,7 +53,6 @@ function RangeHeader(props: propsIF) {
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='range_share_button'
                 role='button'
-                tabIndex={0}
                 aria-label='Share button'
             />
 
@@ -71,7 +70,6 @@ function RangeHeader(props: propsIF) {
                     className={`${styles.settings_container} ${styles.settings_icon}`}
                     id='range_settings_button'
                     role='button'
-                    tabIndex={0}
                     aria-label='Settings button'
                 >
                     <img src={settingsIcon} alt='settings' />

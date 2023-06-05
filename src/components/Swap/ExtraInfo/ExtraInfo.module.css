@@ -112,6 +112,10 @@
     .extra_details{
         height: 50px !important;
         overflow-y: scroll;
+        padding: 0 5px;
+    }
+    .extra_details::-webkit-scrollbar {
+        width: 1px;
     }
     .extra_row {
         flex-direction: row;

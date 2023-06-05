@@ -37,6 +37,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { Drawer } from '@mui/material';
 import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { LayoutHandlerContext } from '../../contexts/LayoutContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 // React functional component
 function Trade() {
@@ -85,6 +86,7 @@ function Trade() {
     ];
 
     const { pathname } = useLocation();
+
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
@@ -271,83 +273,107 @@ function Trade() {
         setIsTableDrawerOpen,
     } = useContext(LayoutHandlerContext);
 
+    const {
+        tradeComponent: { showTradeComponent: showTradeComponent },
+    } = useContext(AppStateContext);
+
+    console.log({ showTradeComponent });
+
+    const justTradeComponent = (
+        <div
+            style={{
+                display: showTradeComponent ? 'inherit' : 'none',
+                padding: '0 1rem',
+            }}
+        >
+            {mainContent}
+        </div>
+    );
+
     return (
-        <section className={`${styles.main_layout}`}>
-            {poolNotInitializedContent}
-            <div
-                className={`${styles.middle_col}
+        <>
+            {justTradeComponent}
+
+            <section
+                className={`${styles.main_layout}`}
+                style={{ display: !showTradeComponent ? 'inherit' : 'none' }}
+            >
+                {poolNotInitializedContent}
+                <div
+                    className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
-            >
-                <div
-                    className={` ${expandGraphStyle} 
-                    } ${fullScreenStyle}`}
-                >
-                    <div className={styles.main__chart_container}>
-                        {!isCandleDataNull && (
-                            <TradeCharts {...tradeChartsProps} />
-                        )}
-                    </div>
-                </div>
-
-                <div
-                    className={`${
-                        expandTradeTable
-                            ? styles.full_table_height
-                            : styles.min_table_height
-                    } ${styles.middle_col_table}`}
-                >
-                    <div>
-                        <TradeTabs2 {...tradeTabsProps} />
-                    </div>
-                </div>
-            </div>
-            <Drawer
-                anchor='top'
-                open={isTableDrawerOpen}
-                onClose={() => {
-                    setExpandTradeTable(false);
-                    setIsTableDrawerOpen(false);
-                }}
-            >
-                <div className={styles.full_table_height}>
-                    <TradeTabs2 {...tradeTabsProps} />
-                </div>
-            </Drawer>
-            {!bottomTabs && mainContent}
-
-            <Drawer
-                anchor='right'
-                open={isTradeDrawerOpen}
-                onClose={() => setIsTradeDrawerOpen(false)}
-            >
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }}
                 >
                     <div
-                        style={{
-                            width: '100%',
-                            background: 'var(--dark2)',
-                            zIndex: '3',
-                        }}
-                        onClick={() => setIsTradeDrawerOpen(false)}
+                        className={` ${expandGraphStyle} 
+                    } ${fullScreenStyle}`}
                     >
-                        <div style={{ padding: '0 1rem' }}>
-                            <FaAngleDoubleLeft size={30} color='white' />
+                        <div className={styles.main__chart_container}>
+                            {!isCandleDataNull && (
+                                <TradeCharts {...tradeChartsProps} />
+                            )}
                         </div>
                     </div>
 
-                    <Outlet
-                        context={{
-                            tradeData: tradeData,
-                            navigationMenu: navigationMenu,
-                        }}
-                    />
+                    <div
+                        className={`${
+                            expandTradeTable
+                                ? styles.full_table_height
+                                : styles.min_table_height
+                        } ${styles.middle_col_table}`}
+                    >
+                        <div>
+                            <TradeTabs2 {...tradeTabsProps} />
+                        </div>
+                    </div>
                 </div>
-            </Drawer>
-        </section>
+                <Drawer
+                    anchor='top'
+                    open={isTableDrawerOpen}
+                    onClose={() => {
+                        setExpandTradeTable(false);
+                        setIsTableDrawerOpen(false);
+                    }}
+                >
+                    <div className={styles.full_table_height}>
+                        <TradeTabs2 {...tradeTabsProps} />
+                    </div>
+                </Drawer>
+                {!bottomTabs && mainContent}
+
+                <Drawer
+                    anchor='right'
+                    open={isTradeDrawerOpen}
+                    onClose={() => setIsTradeDrawerOpen(false)}
+                >
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: '100%',
+                                background: 'var(--dark2)',
+                                zIndex: '3',
+                            }}
+                            onClick={() => setIsTradeDrawerOpen(false)}
+                        >
+                            <div style={{ padding: '0 1rem' }}>
+                                <FaAngleDoubleLeft size={30} color='white' />
+                            </div>
+                        </div>
+
+                        <Outlet
+                            context={{
+                                tradeData: tradeData,
+                                navigationMenu: navigationMenu,
+                            }}
+                        />
+                    </div>
+                </Drawer>
+            </section>
+        </>
     );
 }
 

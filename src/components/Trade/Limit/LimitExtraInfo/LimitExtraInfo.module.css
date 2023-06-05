@@ -87,3 +87,25 @@
         flex-direction: row;
     }
 }
+
+@media only screen and (max-width: 600px) {
+    .extra_details{
+        height: 50px !important;
+        overflow-y: scroll;
+        padding: 0 5px;
+    }
+    .extra_details::-webkit-scrollbar {
+        width: 1px;
+    }
+    .extra_row {
+        flex-direction: row;
+    }
+
+    .align_center{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    }
