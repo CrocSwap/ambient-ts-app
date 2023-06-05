@@ -31,7 +31,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { exponentialNumRegEx } from '../../utils/regex/exponentialNumRegEx';
+import { exponentialNumRegEx } from '../../utils/regex/exports';
 
 // react functional component
 export default function InitPool() {

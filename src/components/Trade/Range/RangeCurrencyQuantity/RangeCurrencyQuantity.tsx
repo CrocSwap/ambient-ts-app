@@ -1,8 +1,7 @@
 import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
-import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
-// import { GoCircleSlash } from 'react-icons/go';
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     value: string;

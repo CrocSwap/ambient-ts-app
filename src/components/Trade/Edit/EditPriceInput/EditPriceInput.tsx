@@ -1,7 +1,7 @@
 import styles from './EditPriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent } from 'react';
-import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface EditPriceInputProps {
     disable?: boolean;

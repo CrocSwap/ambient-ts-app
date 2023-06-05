@@ -2,7 +2,7 @@ import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { exponentialNumRegEx } from '../../../../../utils/regex/exponentialNumRegEx';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 
 interface priceInputProps {
     disable?: boolean;

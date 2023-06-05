@@ -1,4 +1,4 @@
-import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 import styles from './AmountAndCurrencyDisplay.module.css';
 
 interface AmountAndCurrencyDisplayProps {

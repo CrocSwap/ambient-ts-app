@@ -6,7 +6,7 @@ import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { exponentialNumRegEx } from '../../../../../utils/regex/exponentialNumRegEx';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 
 interface propsIF {
     fieldId: string;

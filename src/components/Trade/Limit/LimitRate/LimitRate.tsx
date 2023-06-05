@@ -11,7 +11,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { exponentialNumRegEx } from '../../../../utils/regex/exponentialNumRegEx';
+import { exponentialNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     previousDisplayPrice: string;
