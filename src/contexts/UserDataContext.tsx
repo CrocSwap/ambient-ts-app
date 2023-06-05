@@ -63,7 +63,14 @@ export const UserDataContextProvider = (props: {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        if (isServerEnabled && isConnected && userAddress && crocEnv) {
+        if (
+            isServerEnabled &&
+            isConnected &&
+            userAddress &&
+            crocEnv &&
+            tokens.tokenUniv.length &&
+            chainData.chainId
+        ) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
@@ -257,12 +264,12 @@ export const UserDataContextProvider = (props: {
         }
     }, [
         isServerEnabled,
-        tokens.tokenUniv,
+        tokens.tokenUniv.length,
         isConnected,
         userAddress,
         chainData.chainId,
-        crocEnv,
         lastBlockNumWait,
+        !!crocEnv,
     ]);
 
     return (

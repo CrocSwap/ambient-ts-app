@@ -11,22 +11,12 @@
 } */
 
 .home_container {
-    background: var(--body-bg);
+    /* background: var(--body-bg); */
+
+    
 }
 
-.pools_container {
-    /* position: relative;
 
-    background: -moz-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: -webkit-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: -o-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, var(--body-bg) 25%);
-
-    background: -ms-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%); */
-}
 .blur_background {
     position: absolute;
     /* top: 5.1em; */

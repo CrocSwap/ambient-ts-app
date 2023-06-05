@@ -44,30 +44,28 @@ import {
 } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
 interface propsIF {
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
     openTokenModal: () => void;
-    fullLayoutToggle: JSX.Element;
-    tokens: tokenMethodsIF;
 }
+
+const cachedFetchTokenPrice = memoizeTokenPrice();
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
         connectedAccountActive,
         openTokenModal,
-        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -76,6 +74,7 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -118,7 +117,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-
                 if (userPositions && crocEnv) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
@@ -237,43 +235,28 @@ export default function PortfolioTabs(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'querying user tx/order/positions because address changed',
-                );
-            if (!connectedAccountActive) {
-                if (resolvedAddress) {
-                    dispatch(resetLookupUserDataLoadingStatus());
-                    await getLookupUserTransactions(resolvedAddress);
-                    await getLookupUserLimitOrders(resolvedAddress);
-                    await getLookupUserPositions(resolvedAddress);
-                } else {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
+            if (
+                !connectedAccountActive &&
+                !!tokens.tokenUniv &&
+                resolvedAddress &&
+                !!crocEnv
+            ) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'querying user tx/order/positions because address changed',
                     );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserRangeData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
+                dispatch(resetLookupUserDataLoadingStatus());
+                await getLookupUserTransactions(resolvedAddress);
+                await getLookupUserLimitOrders(resolvedAddress);
+                await getLookupUserPositions(resolvedAddress);
             }
         })();
     }, [
         resolvedAddress,
         connectedAccountActive,
-        tokens.tokenUniv,
         lastBlockNumber,
+        !!tokens.tokenUniv,
+        !!crocEnv,
     ]);
 
     const activeAccountPositionData = connectedAccountActive
@@ -302,21 +285,19 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
-        tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
-        tokens: tokens,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Range/> React Element
@@ -331,7 +312,6 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,
-        isCandleSelected: false,
         isAccountView: true,
     };
 

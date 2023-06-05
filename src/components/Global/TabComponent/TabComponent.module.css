@@ -108,6 +108,10 @@
     font-size: 13px;
 }
 
+.non_selected:hover button {
+    color: var(--accent1);
+}
+
 .underline {
     position: absolute;
     bottom: -1px;

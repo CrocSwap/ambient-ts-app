@@ -41,7 +41,6 @@ import {
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/exports';
-import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
@@ -73,6 +72,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 function Range() {
     const {
@@ -145,7 +146,6 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -158,7 +158,7 @@ function Range() {
     const {
         tradeData: {
             isDenomBase,
-            isTokenAPrimary,
+            isTokenAPrimaryRange,
             isLinesSwitched,
             tokenA,
             tokenB,
@@ -483,11 +483,6 @@ function Range() {
         }
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
-    const minimumSpan =
-        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
-            ? rangeSpanAboveCurrentPrice
-            : rangeSpanBelowCurrentPrice;
-
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
@@ -563,7 +558,6 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -573,14 +567,11 @@ function Range() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -954,7 +945,7 @@ function Range() {
         let tx;
         try {
             tx = await (isAmbient
-                ? isTokenAPrimary
+                ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
                           tokenAInputQty,
                           [minPrice, maxPrice],
@@ -975,7 +966,7 @@ function Range() {
                               ],
                           },
                       )
-                : isTokenAPrimary
+                : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
@@ -1016,7 +1007,6 @@ function Range() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -1350,10 +1340,8 @@ function Range() {
             <AdvancedPriceInfo
                 poolPriceDisplay={displayPriceString}
                 isTokenABase={isTokenABase}
-                minimumSpan={minimumSpan}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
-                daysInRange={daysInRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
@@ -1636,16 +1624,11 @@ function Range() {
                             maxPriceDisplay={maxPriceDisplay}
                             minPriceDisplay={minPriceDisplay}
                             sendTransaction={sendTransaction}
-                            closeModal={handleModalClose}
                             newRangeTransactionHash={newRangeTransactionHash}
-                            setNewRangeTransactionHash={
-                                setNewRangeTransactionHash
-                            }
                             resetConfirmation={resetConfirmation}
                             showConfirmation={showConfirmation}
                             setShowConfirmation={setShowConfirmation}
                             txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
                             isInRange={!isOutOfRange}
                             pinnedMinPriceDisplayTruncatedInBase={
                                 pinnedMinPriceDisplayTruncatedInBase

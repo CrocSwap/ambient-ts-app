@@ -5,7 +5,6 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
-import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import {
     useAppDispatch,
     useAppSelector,
@@ -21,16 +20,13 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
     tx: TransactionIF;
-    tradeData: tradeData;
     ipadView: boolean;
     showPair: boolean;
-    view2: boolean;
     showColumns: boolean;
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const { showColumns, tradeData, ipadView, tx, isAccountView, showPair } =
-        props;
+    const { showColumns, ipadView, tx, isAccountView, showPair } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -72,7 +68,7 @@ function TransactionRow(props: propsIF) {
     } = useProcessTransaction(tx, userAddress, isAccountView);
 
     const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -96,7 +92,6 @@ function TransactionRow(props: propsIF) {
         openGlobalModal(
             <TransactionDetails
                 tx={tx}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
@@ -294,9 +289,7 @@ function TransactionRow(props: propsIF) {
 
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
-                    userPosition={userNameToDisplay === 'You'}
                     tx={tx}
-                    tradeData={tradeData}
                     isAccountView={props.isAccountView}
                     isBaseTokenMoneynessGreaterOrEqual={
                         isBaseTokenMoneynessGreaterOrEqual

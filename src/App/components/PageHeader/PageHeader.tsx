@@ -136,12 +136,14 @@ const PageHeader = function () {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         walletDropdownTokenData,
+        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
+            style={!desktopScreen ? { width: '140px' } : undefined}
             onClick={() => openWagmiModal()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
@@ -227,6 +229,8 @@ const PageHeader = function () {
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
         } else if (location.pathname.includes('chat')) {
             document.title = 'Chat ~ ambient.finance';
+        } else if (location.pathname.includes('404')) {
+            document.title = '404 ~ ambient.finance';
         } else {
             document.title = 'Home ~ ambient.finance';
         }
@@ -309,7 +313,6 @@ const PageHeader = function () {
             locationPathname === linkDestination
         );
     }
-
     const routeDisplay = (
         <AnimateSharedLayout>
             <nav
@@ -369,6 +372,7 @@ const PageHeader = function () {
     }, []);
 
     // TODO (#1436): logo padding is problematic in mobile views
+
     return (
         <header
             data-testid={'page-header'}
@@ -387,40 +391,45 @@ const PageHeader = function () {
                 )}
             </Link>
             {routeDisplay}
-            {show ? (
-                <div
-                    style={{
-                        width: '380px',
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        alignItems: 'center',
-                        padding: '0 1rem',
-                    }}
-                >
-                    <TradeNowButton inNav />{' '}
-                </div>
-            ) : (
-                <div>
-                    <div className={styles.account}>
-                        <div className={styles.branch_name}>
-                            {APP_ENVIRONMENT !== 'local' &&
-                            APP_ENVIRONMENT !== 'production' ? (
-                                <div className={styles.branch}>
-                                    {BRANCH_NAME} <BiGitBranch color='yellow' />
-                                </div>
-                            ) : null}
-                        </div>
-                        <NetworkSelector switchNetwork={switchNetwork} />
-                        {!isConnected && connectWagmiButton}
-                        <Account {...accountProps} />
-                        <NotificationCenter
-                            showNotificationTable={showNotificationTable}
-                            setShowNotificationTable={setShowNotificationTable}
-                        />
+            <div className={styles.right_side}>
+                {show ? (
+                    <div
+                        style={{
+                            width: '380px',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            padding: '0 1rem',
+                        }}
+                    >
+                        <TradeNowButton inNav />{' '}
                     </div>
-                </div>
-            )}
-            {isChainSupported || <SwitchNetwork />}
+                ) : (
+                    <div>
+                        <div className={styles.account}>
+                            <div className={styles.branch_name}>
+                                {APP_ENVIRONMENT !== 'local' &&
+                                APP_ENVIRONMENT !== 'production' ? (
+                                    <div className={styles.branch}>
+                                        {BRANCH_NAME}{' '}
+                                        <BiGitBranch color='yellow' />
+                                    </div>
+                                ) : null}
+                            </div>
+                            <NetworkSelector switchNetwork={switchNetwork} />
+                            {!isConnected && connectWagmiButton}
+                            <Account {...accountProps} />
+                            <NotificationCenter
+                                showNotificationTable={showNotificationTable}
+                                setShowNotificationTable={
+                                    setShowNotificationTable
+                                }
+                            />
+                        </div>
+                    </div>
+                )}
+                {isChainSupported || <SwitchNetwork />}
+            </div>
         </header>
     );
 };

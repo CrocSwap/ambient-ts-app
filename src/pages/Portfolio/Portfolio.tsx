@@ -5,11 +5,10 @@ import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components
-import ExchangeBalance from '../../components/Portfolio/EchangeBalance/ExchangeBalance';
+import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
 import Modal from '../../components/Global/Modal/Modal';
-import NotFound from '../NotFound/NotFound';
 import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
@@ -17,8 +16,8 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 // START: Import Other Local Files
 import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { useParams } from 'react-router-dom';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
+import { Navigate, useParams } from 'react-router-dom';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
@@ -188,7 +187,7 @@ function Portfolio(props: propsIF) {
         addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
     if (addressFromParams && !isAddressEns && !isAddressHex)
-        return <NotFound />;
+        return <Navigate to='/404' replace />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
@@ -299,17 +298,6 @@ function Portfolio(props: propsIF) {
                 />
             </section>
         </div>
-    );
-
-    const connectedUserNativeToken = useAppSelector(
-        (state) => state.userData.tokens.nativeToken,
-    );
-    const connectedUserErc20Tokens = useAppSelector(
-        (state) => state.userData.tokens.erc20Tokens,
-    );
-
-    const connectedUserTokens = [connectedUserNativeToken].concat(
-        connectedUserErc20Tokens,
     );
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
@@ -448,7 +436,6 @@ function Portfolio(props: propsIF) {
     );
 
     const portfolioTabsProps = {
-        connectedUserTokens: connectedUserTokens,
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,

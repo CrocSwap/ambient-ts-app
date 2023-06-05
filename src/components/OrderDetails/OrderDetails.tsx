@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useContext } from 'react';
 
 import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
-import printDomToImage from '../../utils/functions/printDomToImage';
 import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
@@ -19,10 +18,11 @@ import { getLimitOrderData } from '../../App/functions/getLimitOrderData';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
+import printDomToImage from '../../utils/functions/printDomToImage';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
 }
@@ -276,12 +276,13 @@ export default function OrderDetails(props: propsIF) {
         }
     }, [lastBlockNumber]);
 
-    const [showSettings, setShowSettings] = useState(false);
-
     const detailsRef = useRef(null);
     const downloadAsImage = () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
         }
     };
     // eslint-disable-next-line
@@ -290,24 +291,6 @@ export default function OrderDetails(props: propsIF) {
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
-
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) item.checked = !item.checked;
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <OrderDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
 
     const shareComponent = (
         <div ref={detailsRef}>
@@ -357,10 +340,6 @@ export default function OrderDetails(props: propsIF) {
     return (
         <div className={styles.order_details_container}>
             <OrderDetailsHeader
-                limitOrder={limitOrder}
-                onClose={props.closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}

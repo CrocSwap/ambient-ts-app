@@ -2,16 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-    useMemo,
-    useContext,
-    memo,
-    useRef,
-} from 'react';
+import { useEffect, useState, useMemo, useContext, memo, useRef } from 'react';
 
 // START: Import JSX Components
 
@@ -45,10 +36,6 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    notOnTradeRoute?: boolean;
-    portfolio?: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     isAccountView: boolean;
 }
 
@@ -88,8 +75,10 @@ function Ranges(props: propsIF) {
 
     const isConnectedUserRangeDataLoading =
         dataLoadingStatus?.isConnectedUserRangeDataLoading;
+
     const isLookupUserRangeDataLoading =
         dataLoadingStatus?.isLookupUserRangeDataLoading;
+
     const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
 
     const isRangeDataLoadingForPortfolio =
@@ -106,8 +95,8 @@ function Ranges(props: propsIF) {
 
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
-        1000,
-    ); // debounce 1/4 second
+        3000,
+    );
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
@@ -433,7 +422,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));
@@ -445,7 +433,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));
@@ -467,7 +454,11 @@ function Ranges(props: propsIF) {
     const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
-    const rangeDataOrNull = rangeData.length ? (
+
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !rangeData.length;
+
+    const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef}>{currentRowItemContent}</ul>
             {
@@ -505,18 +496,8 @@ function Ranges(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                {shouldDisplayLoadingAnimation ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     rangeDataOrNull
                 )}

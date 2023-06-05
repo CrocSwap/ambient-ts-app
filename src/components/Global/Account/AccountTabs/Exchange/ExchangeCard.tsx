@@ -4,25 +4,30 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
-    tokens: tokenMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function ExchangeCard(props: propsIF) {
-    const { token, tokens } = props;
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { token, cachedFetchTokenPrice } = props;
+    const {
+        tokens: { getTokenByAddress },
+    } = useContext(TokenContext);
 
-    const cachedFetchTokenPrice = memoizeTokenPrice();
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
-    const tokenMapKey: string = token?.address + '_' + token?.chainId;
+    const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getTokenByAddress(token.address)
+        ? getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
@@ -42,9 +47,11 @@ export default function ExchangeCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const mainnetAddress = testTokenMap
-                    .get(tokenMapKey)
-                    ?.split('_')[0];
+                const chain = tokenMapKey.split('_')[1];
+                const isChainMainnet = chain === '0x1';
+                const mainnetAddress = isChainMainnet
+                    ? tokenMapKey.split('_')[0]
+                    : testTokenMap.get(tokenMapKey)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,

@@ -27,7 +27,6 @@ interface propsIF {
     rank?: number;
     isAccountView: boolean;
     isLeaderboard?: boolean;
-    idx: number;
 }
 
 function RangesRow(props: propsIF) {
@@ -329,7 +328,6 @@ function RangesRow(props: propsIF) {
                     <RangesMenu
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
-                        showHighlightedButton={showHighlightedButton}
                         handleAccountClick={handleAccountClick}
                     />
                 </li>

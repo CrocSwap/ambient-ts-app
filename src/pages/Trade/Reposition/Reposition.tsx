@@ -55,6 +55,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 function Reposition() {
     // current URL parameter string
@@ -78,12 +79,10 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const isRepositionSent = newRepositionTransactionHash !== '';
@@ -298,7 +297,6 @@ function Reposition() {
         }
         let tx;
         setTxErrorCode('');
-        setTxErrorMessage('');
 
         // resetConfirmation();
         setIsWaitingForWallet(true);
@@ -330,7 +328,6 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -626,14 +623,11 @@ function Reposition() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -658,21 +652,13 @@ function Reposition() {
 
     const confirmRepositionModalProps = {
         isPositionInRange: isPositionInRange,
-        crocEnv: crocEnv,
         position: position as PositionIF,
-        currentPoolPriceDisplay: currentPoolPriceDisplay,
-        currentPoolPriceTick: currentPoolPriceTick,
-        rangeWidthPercentage: rangeWidthPercentage,
-        onClose: handleModalClose,
         onSend: sendRepositionTransaction,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         newRepositionTransactionHash: newRepositionTransactionHash,
         resetConfirmation: resetConfirmation,
         txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
         minPriceDisplay: minPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         currentBaseQtyDisplayTruncated: currentBaseQtyDisplayTruncated,
@@ -689,11 +675,6 @@ function Reposition() {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         isTokenABase: isTokenABase,
-        // showBypassConfirm,
-        // setShowBypassConfirm,
-
-        showExtraInfo,
-        setShowExtraInfo,
     };
 
     const bypassConfirmRepositionButtonProps = {
