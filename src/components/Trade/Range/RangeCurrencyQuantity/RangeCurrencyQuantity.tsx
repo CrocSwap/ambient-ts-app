@@ -1,6 +1,7 @@
 import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
+import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
 // import { GoCircleSlash } from 'react-icons/go';
 
 interface propsIF {
@@ -80,7 +81,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.toString()}
                 disabled={disable}
             />
         </div>
