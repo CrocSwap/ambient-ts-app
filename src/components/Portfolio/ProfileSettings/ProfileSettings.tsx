@@ -40,9 +40,7 @@ const pageTransition = {
     duration: 1,
 };
 interface ProfileSettingsPropsIF {
-    showProfileSettings: boolean;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
-    ensName: string;
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {

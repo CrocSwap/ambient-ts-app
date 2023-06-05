@@ -26,7 +26,7 @@ interface propsIF {
     setFavoritePoolsArray: any;
 }
 
-export default function RoomDropdown(props: propsIF) {
+export default function Room(props: propsIF) {
     const {
         isFullScreen,
         isCurrentPool,

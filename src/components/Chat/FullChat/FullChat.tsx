@@ -26,7 +26,6 @@ interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
-    room: string;
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
     userName: string;

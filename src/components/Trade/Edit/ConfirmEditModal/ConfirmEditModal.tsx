@@ -8,7 +8,6 @@ import { PositionIF } from '../../../../utils/interfaces/exports';
 interface propsIF {
     onClose: () => void;
     position: PositionIF;
-    // position: PositionIF;
     currentPoolPriceDisplay: string;
     denominationsInBase: boolean;
     baseTokenImageURL: string;

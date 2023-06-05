@@ -20,7 +20,7 @@ export interface candleScale {
     isFetchForTimeframe: boolean;
 }
 
-export interface tradeData {
+export interface TradeDataIF {
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;
@@ -65,7 +65,7 @@ const dfltChainId = getDefaultChainId();
 const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
 const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
 
-const initialState: tradeData = {
+const initialState: TradeDataIF = {
     tokenA: dfltTokenA,
     tokenB: dfltTokenB,
     baseToken: dfltTokenA, // We sort these in the next line
@@ -110,7 +110,7 @@ const initialState: tradeData = {
 
 sortTokens(initialState);
 
-function sortTokens(state: tradeData) {
+function sortTokens(state: TradeDataIF) {
     const [baseTokenAddress] = sortBaseQuoteTokens(
         state.tokenA.address,
         state.tokenB.address,

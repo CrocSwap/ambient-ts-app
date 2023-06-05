@@ -79,7 +79,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         <TransactionException
             resetConfirmation={handleReset}
             initiateTx={sendTransaction}
-            noAnimation
         />
     );
 
@@ -155,8 +154,8 @@ export default function BypassConfirmRangeButton(props: propsIF) {
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div style={{ color: buttonColor }}>
-                        {animationDisplay}
-                        {buttonText}
+                        <div style={{ width: '35px' }}>{animationDisplay}</div>
+                        <div>{buttonText}</div>
                     </div>
                     {showExtraInfo ? (
                         <RiArrowUpSLine size={20} />

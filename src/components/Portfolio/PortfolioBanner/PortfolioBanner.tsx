@@ -1,5 +1,4 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 // START: Import JSX Components
@@ -13,7 +12,6 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
-    setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     connectedAccountActive: boolean;
 }
 
@@ -49,7 +47,6 @@ export default function PortfolioBanner(props: propsIF) {
                 ensNameAvailable={ensNameAvailable}
                 resolvedAddress={resolvedAddress}
                 truncatedAccountAddress={truncatedAccountAddress}
-                connectedAccountActive={connectedAccountActive}
                 jazziconsToDisplay={jazziconsToDisplay}
             />
         </div>

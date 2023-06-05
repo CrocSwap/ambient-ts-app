@@ -4,22 +4,12 @@ import DividerDark from '../../Global/DividerDark/DividerDark';
 import moment from 'moment';
 
 interface IClaimOrderInfoProps {
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
+    pivotTime: number | undefined;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     usdValue: string;
-
-    baseDisplayFrontend: string;
     baseDisplay: string;
     quoteDisplay: string;
-    quoteDisplayFrontend: string;
-
-    claimPercentage: number;
-    positionLiquidity: string | undefined;
-    baseClaimString: string;
-    quoteClaimString: string;
-    pivotTime: number | undefined;
     truncatedDisplayPrice: string | undefined;
 }
 

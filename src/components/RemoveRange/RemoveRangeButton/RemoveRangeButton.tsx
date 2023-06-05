@@ -2,9 +2,7 @@ import Button from '../../Global/Button/Button';
 
 interface IRemoveRangeButtonProps {
     removeFn: () => void;
-
     title: string;
-
     disabled?: boolean;
 }
 

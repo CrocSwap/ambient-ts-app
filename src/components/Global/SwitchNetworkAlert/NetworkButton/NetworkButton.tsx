@@ -3,7 +3,6 @@ import styles from './NetworkButton.module.css';
 
 interface NetworkButtonProps {
     name: string;
-    icon: string;
     theme: string;
     id: string;
     clickHandler: Dispatch<SetStateAction<string>>;

@@ -47,7 +47,6 @@ interface propsIF {
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
-    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     tokenAInputQty: string;
     tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
@@ -58,7 +57,6 @@ interface propsIF {
     isTokenBDisabled: boolean;
     isOutOfRange: boolean;
     rangeSpanAboveCurrentPrice: number;
-    rangeSpanBelowCurrentPrice: number;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
@@ -157,33 +155,6 @@ function RangeCurrencyConverter(props: propsIF) {
 
     const tokenBSurplusMinusTokenBRemainderNum =
         parseFloat(tokenBDexBalance || '0') - (tokenBQtyLocal || 0);
-
-    const tokenASurplusMinusTokenAQtyNum =
-        tokenASurplusMinusTokenARemainderNum >= 0
-            ? tokenASurplusMinusTokenARemainderNum
-            : 0;
-    const tokenBSurplusMinusTokenBQtyNum =
-        tokenBSurplusMinusTokenBRemainderNum >= 0
-            ? tokenBSurplusMinusTokenBRemainderNum
-            : 0;
-
-    const tokenAWalletMinusTokenAQtyNum =
-        isWithdrawTokenAFromDexChecked &&
-        tokenASurplusMinusTokenARemainderNum < 0
-            ? parseFloat(tokenABalance || '0') +
-              tokenASurplusMinusTokenARemainderNum
-            : isWithdrawTokenAFromDexChecked
-            ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') - (tokenAQtyLocal || 0);
-
-    const tokenBWalletMinusTokenAQtyNum =
-        isWithdrawTokenBFromDexChecked &&
-        tokenBSurplusMinusTokenBRemainderNum < 0
-            ? parseFloat(tokenBBalance || '0') +
-              tokenBSurplusMinusTokenBRemainderNum
-            : isWithdrawTokenBFromDexChecked
-            ? parseFloat(tokenBBalance || '0')
-            : parseFloat(tokenBBalance || '0') - (tokenBQtyLocal || 0);
 
     const [
         userOverrodeSurplusWithdrawalDefault,
@@ -661,22 +632,8 @@ function RangeCurrencyConverter(props: propsIF) {
         setTokenBQtyCoveredByWalletBalance(tokenBQtyCoveredByWalletBalance);
     }, [tokenBQtyCoveredByWalletBalance]);
 
-    const tokenAQtyCoveredBySurplusBalance = isWithdrawTokenAFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum >= 0
-            ? tokenAQtyLocal
-            : parseFloat(tokenADexBalance || '0')
-        : 0;
-
-    const tokenBQtyCoveredBySurplusBalance =
-        isWithdrawTokenBFromDexChecked && tokenBQtyLocal > 0
-            ? tokenBSurplusMinusTokenBRemainderNum >= 0
-                ? tokenBQtyLocal
-                : parseFloat(tokenBDexBalance || '0')
-            : 0;
-
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
-        resetTokenQuantities: resetTokenQuantities,
         isTokenAEth,
         isTokenBEth,
         tokenAInputQty: tokenAInputQty,
@@ -685,8 +642,6 @@ function RangeCurrencyConverter(props: propsIF) {
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        tokenAWalletMinusTokenAQtyNum: tokenAWalletMinusTokenAQtyNum,
-        tokenBWalletMinusTokenBQtyNum: tokenBWalletMinusTokenAQtyNum,
         reverseTokens: reverseTokens,
         tokenABalance: tokenABalance,
         tokenBBalance: tokenBBalance,
@@ -694,18 +649,6 @@ function RangeCurrencyConverter(props: propsIF) {
         tokenBDexBalance: tokenBDexBalance,
         isTokenADisabled: isTokenADisabled,
         isTokenBDisabled: isTokenBDisabled,
-        tokenAQtyLocal: tokenAQtyLocal,
-        tokenBQtyLocal: tokenBQtyLocal,
-        tokenAQtyCoveredByWalletBalance: tokenAQtyCoveredByWalletBalance,
-        tokenBQtyCoveredByWalletBalance: tokenBQtyCoveredByWalletBalance,
-        tokenAQtyCoveredBySurplusBalance: tokenAQtyCoveredBySurplusBalance,
-        tokenBQtyCoveredBySurplusBalance: tokenBQtyCoveredBySurplusBalance,
-        tokenASurplusMinusTokenARemainderNum:
-            tokenASurplusMinusTokenARemainderNum,
-        tokenBSurplusMinusTokenBRemainderNum:
-            tokenBSurplusMinusTokenBRemainderNum,
-        tokenASurplusMinusTokenAQtyNum: tokenASurplusMinusTokenAQtyNum,
-        tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         setUserOverrodeSurplusWithdrawalDefault:
             setUserOverrodeSurplusWithdrawalDefault,
     };
