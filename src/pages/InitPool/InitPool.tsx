@@ -31,6 +31,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { exponentialNumRegEx } from '../../utils/regex/exponentialNumRegEx';
 
 // react functional component
 export default function InitPool() {
@@ -444,7 +445,7 @@ export default function InitPool() {
                                             autoCorrect='off'
                                             min='0'
                                             minLength={1}
-                                            pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                                            pattern={exponentialNumRegEx.toString()}
                                         />
                                     </section>
                                 </div>
