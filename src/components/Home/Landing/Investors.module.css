@@ -109,6 +109,9 @@
     align-items: center;
     justify-items: center;
     padding: 1rem 2rem;
+
+    background: radial-gradient(ellipse at top, var(--dark1), transparent),         
+       radial-gradient(ellipse at bottom, var(--dark3), transparent);
   }
   
   .mobile_container img {
@@ -119,3 +122,22 @@
   .mobile_container span {
     text-align: center;
   }
+  .more_button{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: transparent;
+    outline: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 14;
+    line-height: var(--body-lh);
+    padding: 1rem 0;
+  }
+
+.more_button:hover{
+    color: var(--text3)
+}

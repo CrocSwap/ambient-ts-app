@@ -52,3 +52,9 @@
     z-index: 9999;
     margin-top: 2rem;
 }
+
+.home_container{
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+}

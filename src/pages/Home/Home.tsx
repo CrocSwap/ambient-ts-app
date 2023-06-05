@@ -6,7 +6,7 @@ import Hero from '../../components/Home/Landing/Hero';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileHero from '../../components/Home/Landing/MobileHero';
 import Investors from '../../components/Home/Landing/Investors';
-import { stopAnimation } from 'framer-motion/types/render/utils/animation';
+import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -19,14 +19,18 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            {<Investors />}
+            {showMobileVersion && <Investors />}
             <div className={styles.pools_container}>
                 <TopPools />
                 {!showMobileVersion && <Stats />}
             </div>
             {showMobileVersion && <div className={styles.mobile_divider} />}
 
-            <LandingSections />
+            {showMobileVersion ? (
+                <MobileLandingSections />
+            ) : (
+                <LandingSections />
+            )}
         </section>
     );
 }

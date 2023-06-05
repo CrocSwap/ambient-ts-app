@@ -1,0 +1,79 @@
+.main_container{
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+    height: 100vh;
+    width: 100%;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.main_container::-webkit-scrollbar{
+    display: none;
+}
+.mobile_card {
+    height: 90dvh;
+    background: var(--dark2); 
+/* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
+background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 12px 0;
+
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+    
+}
+
+.mobile_card:not(:last-of-type){
+      scroll-snap-align: center;
+
+  }
+
+  .mobile_card:nth-of-type(even) {
+    text-align: end;
+  }
+  .mobile_card_img_container_left{
+    display: flex;
+    justify-content: flex-start;
+
+    
+  }
+  .mobile_card_img_container_right{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .mobile_card img{
+    /* not sure about this yet but it looks better without an image on mobile */
+    display: none;
+    width: 200px ;
+
+  }
+  .smaller_image{
+    width: 160px !important;
+  }
+  .mobile_card h1 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+  
+  .mobile_card h2 {
+    font-size: 20px;
+    font-weight: 200;
+    color: var(--text1);
+    margin-bottom: 10px;
+  }
+
+  
+  .mobile_card p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text2);
+    font-weight: 100;
+  }

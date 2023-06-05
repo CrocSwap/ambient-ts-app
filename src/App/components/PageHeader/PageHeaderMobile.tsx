@@ -4,9 +4,8 @@ import { FaWallet } from 'react-icons/fa';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import logo from '../../../assets/images/logos/ambient_logo.png';
 import NavbarDropdownMenu from './NavbarDropdownMenu/NavbarDropdownMenu';
-import { useAccount } from 'wagmi';
 import NavItem from './NavItem/NavItem';
-import { FiMenu, FiMoreHorizontal } from 'react-icons/fi';
+import { FiMenu } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { Link } from 'react-router-dom';
 
@@ -17,7 +16,7 @@ interface PropsIF {
     accountAddressFull: string;
 }
 const PageHeaderMobile = (props: PropsIF) => {
-    const { clickLogout, isUserLoggedIn, ensName, accountAddressFull } = props;
+    const { clickLogout, isUserLoggedIn, ensName } = props;
 
     const {
         wagmiModal: { open: openWagmiModal },
