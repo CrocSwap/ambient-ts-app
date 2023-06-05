@@ -1,6 +1,7 @@
 import styles from './EditPriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent } from 'react';
+import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
 
 interface EditPriceInputProps {
     disable?: boolean;
@@ -41,7 +42,7 @@ export default function EditPriceInput(props: EditPriceInputProps) {
             autoCorrect='off'
             min='0'
             minLength={1}
-            pattern='^[0-9]*[.,]?[0-9]*$'
+            pattern={decimalNumRegEx.toString()}
             placeholder='0.00'
             disabled={disable}
             defaultValue={convertedValue}
