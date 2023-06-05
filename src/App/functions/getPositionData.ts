@@ -1,9 +1,9 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
-import { formatAmountOld } from '../../utils/numbers';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { GRAPHCACHE_URL } from '../../constants';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
+import { getFormattedTokenBalance } from './getFormattedTokenBalance';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
@@ -73,50 +73,30 @@ export const getPositionData = async (
         quoteTokenDecimals,
     );
 
-    // TODO (#1569): we should be re-using a token formatting function here and below
-    newPosition.lowRangeShortDisplayInBase =
-        lowerPriceDisplayInBase < 0.0001
-            ? lowerPriceDisplayInBase.toExponential(2)
-            : lowerPriceDisplayInBase < 2
-            ? lowerPriceDisplayInBase.toPrecision(3)
-            : lowerPriceDisplayInBase >= 1000000
-            ? lowerPriceDisplayInBase.toExponential(2)
-            : lowerPriceDisplayInBase.toLocaleString(undefined, {
-                  maximumFractionDigits: 0,
-              });
-
-    newPosition.lowRangeShortDisplayInQuote =
-        lowerPriceDisplayInQuote < 0.0001
-            ? lowerPriceDisplayInQuote.toExponential(2)
-            : lowerPriceDisplayInQuote < 2
-            ? lowerPriceDisplayInQuote.toPrecision(3)
-            : lowerPriceDisplayInQuote >= 1000000
-            ? lowerPriceDisplayInQuote.toExponential(2)
-            : lowerPriceDisplayInQuote.toLocaleString(undefined, {
-                  maximumFractionDigits: 0,
-              });
-
-    newPosition.highRangeShortDisplayInBase =
-        upperPriceDisplayInBase < 0.0001
-            ? upperPriceDisplayInBase.toExponential(2)
-            : upperPriceDisplayInBase < 2
-            ? upperPriceDisplayInBase.toPrecision(3)
-            : upperPriceDisplayInBase >= 1000000
-            ? upperPriceDisplayInBase.toExponential(2)
-            : upperPriceDisplayInBase.toLocaleString(undefined, {
-                  maximumFractionDigits: 0,
-              });
-
-    newPosition.highRangeShortDisplayInQuote =
-        upperPriceDisplayInQuote < 0.0001
-            ? upperPriceDisplayInQuote.toExponential(2)
-            : upperPriceDisplayInQuote < 2
-            ? upperPriceDisplayInQuote.toPrecision(3)
-            : upperPriceDisplayInQuote >= 1000000
-            ? upperPriceDisplayInQuote.toExponential(2)
-            : upperPriceDisplayInQuote.toLocaleString(undefined, {
-                  maximumFractionDigits: 0,
-              });
+    newPosition.lowRangeShortDisplayInBase = getFormattedTokenBalance(
+        lowerPriceDisplayInBase,
+        undefined,
+        0,
+        0,
+    );
+    newPosition.lowRangeShortDisplayInQuote = getFormattedTokenBalance(
+        lowerPriceDisplayInQuote,
+        undefined,
+        0,
+        0,
+    );
+    newPosition.highRangeShortDisplayInBase = getFormattedTokenBalance(
+        upperPriceDisplayInBase,
+        undefined,
+        0,
+        0,
+    );
+    newPosition.highRangeShortDisplayInQuote = getFormattedTokenBalance(
+        upperPriceDisplayInQuote,
+        undefined,
+        0,
+        0,
+    );
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
@@ -131,90 +111,33 @@ export const getPositionData = async (
     newPosition.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
     if (position.positionType !== 'ambient') {
-        newPosition.lowRangeDisplayInBase =
-            lowerPriceDisplayInBase < 0.0001
-                ? lowerPriceDisplayInBase.toExponential(2)
-                : lowerPriceDisplayInBase < 2
-                ? lowerPriceDisplayInBase.toPrecision(3)
-                : lowerPriceDisplayInBase >= 1000000
-                ? lowerPriceDisplayInBase.toExponential(2)
-                : lowerPriceDisplayInBase.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        newPosition.highRangeDisplayInBase =
-            upperPriceDisplayInBase < 0.0001
-                ? upperPriceDisplayInBase.toExponential(2)
-                : upperPriceDisplayInBase < 2
-                ? upperPriceDisplayInBase.toPrecision(3)
-                : upperPriceDisplayInBase >= 1000000
-                ? upperPriceDisplayInBase.toExponential(2)
-                : upperPriceDisplayInBase.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-    }
+        newPosition.lowRangeDisplayInBase = getFormattedTokenBalance(
+            lowerPriceDisplayInBase,
+        );
+        newPosition.highRangeDisplayInBase = getFormattedTokenBalance(
+            upperPriceDisplayInBase,
+        );
 
-    if (position.positionType !== 'ambient') {
-        newPosition.lowRangeDisplayInQuote =
-            lowerPriceDisplayInQuote < 0.0001
-                ? lowerPriceDisplayInQuote.toExponential(2)
-                : lowerPriceDisplayInQuote < 2
-                ? lowerPriceDisplayInQuote.toPrecision(3)
-                : lowerPriceDisplayInQuote >= 1000000
-                ? lowerPriceDisplayInQuote.toExponential(2)
-                : lowerPriceDisplayInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        newPosition.highRangeDisplayInQuote =
-            upperPriceDisplayInQuote < 0.0001
-                ? upperPriceDisplayInQuote.toExponential(2)
-                : upperPriceDisplayInQuote < 2
-                ? upperPriceDisplayInQuote.toPrecision(3)
-                : upperPriceDisplayInQuote >= 1000000
-                ? upperPriceDisplayInQuote.toExponential(2)
-                : upperPriceDisplayInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        newPosition.lowRangeDisplayInQuote = getFormattedTokenBalance(
+            lowerPriceDisplayInQuote,
+        );
+        newPosition.highRangeDisplayInQuote = getFormattedTokenBalance(
+            upperPriceDisplayInQuote,
+        );
     }
 
     if (position.positionLiqBaseDecimalCorrected) {
         const liqBaseNum = position.positionLiqBaseDecimalCorrected;
 
-        const baseLiqDisplayTruncated =
-            liqBaseNum === 0
-                ? '0'
-                : liqBaseNum < 0.0001
-                ? liqBaseNum.toExponential(2)
-                : liqBaseNum < 2
-                ? liqBaseNum.toPrecision(3)
-                : liqBaseNum >= 10000
-                ? formatAmountOld(liqBaseNum)
-                : liqBaseNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        const baseLiqDisplayTruncated = getFormattedTokenBalance(liqBaseNum);
 
         newPosition.positionLiqBaseTruncated = baseLiqDisplayTruncated;
     }
     if (position.positionLiqQuoteDecimalCorrected) {
         const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
 
-        const quoteLiqDisplayTruncated =
-            liqQuoteNum === 0
-                ? '0'
-                : liqQuoteNum < 0.0001
-                ? liqQuoteNum.toExponential(2)
-                : liqQuoteNum < 2
-                ? liqQuoteNum.toPrecision(3)
-                : liqQuoteNum >= 10000
-                ? formatAmountOld(liqQuoteNum)
-                : liqQuoteNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        const quoteLiqDisplayTruncated = getFormattedTokenBalance(liqQuoteNum);
+
         newPosition.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
     }
 
@@ -281,35 +204,14 @@ export const updatePositionStats = async (
             const positionLiqQuoteDecimalCorrected =
                 json?.data.positionLiqQuoteDecimalCorrected;
 
-            const liqBaseNum = positionLiqBaseDecimalCorrected;
-            const liqQuoteNum = positionLiqQuoteDecimalCorrected;
+            const liqBaseNum = positionLiqBaseDecimalCorrected as number;
+            const liqQuoteNum = positionLiqQuoteDecimalCorrected as number;
 
-            // TODO (#1569): token value formatting
-            const positionLiqBaseTruncated = !liqBaseNum
-                ? '0'
-                : liqBaseNum < 0.0001
-                ? liqBaseNum.toExponential(2)
-                : liqBaseNum < 2
-                ? liqBaseNum.toPrecision(3)
-                : liqBaseNum >= 10000
-                ? formatAmountOld(liqBaseNum)
-                : liqBaseNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+            const positionLiqBaseTruncated =
+                getFormattedTokenBalance(liqBaseNum);
 
-            const positionLiqQuoteTruncated = !liqQuoteNum
-                ? '0'
-                : liqQuoteNum < 0.0001
-                ? liqQuoteNum.toExponential(2)
-                : liqQuoteNum < 2
-                ? liqQuoteNum.toPrecision(3)
-                : liqQuoteNum >= 10000
-                ? formatAmountOld(liqQuoteNum)
-                : liqQuoteNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+            const positionLiqQuoteTruncated =
+                getFormattedTokenBalance(liqQuoteNum);
 
             return Object.assign({}, position, {
                 apy: apy || 0,
