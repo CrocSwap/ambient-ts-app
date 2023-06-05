@@ -284,3 +284,12 @@
 }
 
 }
+
+@media only screen and (max-width: 600px) {
+.swapbox_top{
+
+    height: 70px;
+    align-items: center;
+}
+
+}

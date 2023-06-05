@@ -73,3 +73,16 @@
     color: var(--text2);
     pointer-events: none;
 }
+
+@media only screen and (max-width: 500px) {
+    .btn {
+        width: 100%;
+        outline: none;
+    
+        padding: 4px 16px;
+        font-size: 14px;
+    
+        line-height: 20px;
+
+    }
+}
