@@ -2,6 +2,7 @@ import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exponentialNumRegEx';
 
 interface priceInputProps {
     disable?: boolean;
@@ -59,7 +60,7 @@ function PriceInput(props: priceInputProps) {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                        pattern={exponentialNumRegEx.toString()}
                         placeholder='0.0'
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}
