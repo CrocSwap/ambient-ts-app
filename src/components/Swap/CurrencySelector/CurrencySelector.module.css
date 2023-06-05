@@ -5,7 +5,7 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
-    padding: 5px;
+   
 }
 
 .modalSwapbox {
@@ -276,4 +276,11 @@
 
 .pulse_animation {
     animation: shadow-pulse 1s 6;
+}
+
+@media only screen and (min-width: 600px) {
+.swapbox{
+    padding: 5px;
+}
+
 }

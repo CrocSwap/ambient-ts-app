@@ -32,9 +32,7 @@
 
 }
 
-.swap_page_container {
-    margin-top: 64px;
-}
+
 .scrollable_container {
     height: auto;
     overflow-y: scroll;
@@ -353,6 +351,12 @@
     color: var(--accent5);
 }
 
+@media only screen and (min-width: 600px) {
+
+    .swap_page_container {
+        margin-top: 64px;
+    }
+}
 @media only screen and (min-width: 700px) {
     .align_center {
         display: flex;

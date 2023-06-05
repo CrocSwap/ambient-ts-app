@@ -103,6 +103,7 @@
 
   
 }
+
 @media (min-width: 1200px) {
     .container {
         max-width: 420px;
@@ -140,6 +141,15 @@
         overflow-y: scroll;
 
         max-height: 75vh;
+    }
+
+    .swap_route{
+        background: transparent;
+    }
+    
+    .swap_bg{
+        background: var(--dark-gradient);
+
     }
 }
 
