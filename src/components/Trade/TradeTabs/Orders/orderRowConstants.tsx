@@ -341,7 +341,7 @@ export const orderRowConstants = (props: Props) => {
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
-            Order
+            Limit
         </li>
     );
 
@@ -365,7 +365,7 @@ export const orderRowConstants = (props: Props) => {
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
-            <p>Order</p>
+            <p>Limit</p>
             <p>{`${sideType} ${sideCharacter}`}</p>
         </li>
     );
