@@ -6,6 +6,7 @@ import { fromDisplayQty } from '@crocswap-libs/sdk';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exponentialNumRegEx';
 
 interface propsIF {
     fieldId: string;
@@ -56,7 +57,7 @@ export default function WithdrawCurrencySelector(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                pattern={exponentialNumRegEx.toString()}
                 disabled={disable}
             />
         </div>
