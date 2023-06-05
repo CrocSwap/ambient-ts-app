@@ -251,11 +251,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasLiqBidDepth = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqAskDepth = useRef<HTMLInputElement | null>(null);
 
-    const d3CanvasLiqBidLine = useRef<HTMLInputElement | null>(null);
-    const d3CanvasLiqAskLine = useRef<HTMLInputElement | null>(null);
-    const d3CanvasLiqBidDepthLine = useRef<HTMLInputElement | null>(null);
-    const d3CanvasLiqAskDepthLine = useRef<HTMLInputElement | null>(null);
-
     const d3CanvasBand = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrosshair = useRef<HTMLInputElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
@@ -755,15 +750,11 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('range') ||
             location.pathname.includes('reposition')
         ) {
-            showHighlightedLines();
-
             d3.select(d3Container.current)
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
         } else if (location.pathname.includes('/limit')) {
-            hideHighlightedLines();
-
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
                 .style('display', 'none');
@@ -775,8 +766,6 @@ export default function Chart(props: propsIF) {
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
-
-            hideHighlightedLines();
 
             d3.select(d3CanvasRangeLine.current)
                 .select('canvas')
@@ -4220,13 +4209,12 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [
-        unparsedCandleData,
-        scaleData,
-        market,
-        checkLimitOrder,
-        limit,
+        diffHashSig(scaleData),
+        liquidityDepthScale,
+        liquidityScale,
+        lineSellColor,
+        lineBuyColor,
         isUserConnected,
-        liqMode,
     ]);
 
     useEffect(() => {
@@ -4671,14 +4659,13 @@ export default function Chart(props: propsIF) {
         ) {
             let rangeWidthPercentage;
             let tickValue;
-            let pinnedDisplayPrices: any;
-
             if (
                 clickedValue === 0 ||
                 clickedValue === liquidityData?.topBoundary ||
                 clickedValue < liquidityData?.lowBoundary
             ) {
                 rangeWidthPercentage = 100;
+
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
@@ -4711,20 +4698,6 @@ export default function Chart(props: propsIF) {
 
                     rangeWidthPercentage =
                         rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
-
-                    const offset = rangeWidthPercentage * 100;
-
-                    const lowTick = currentPoolPriceTick - offset;
-                    const highTick = currentPoolPriceTick + offset;
-
-                    pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                        denomInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        lowTick,
-                        highTick,
-                        lookupChain(chainId).gridSize,
-                    );
                 } else {
                     tickValue = getPinnedTickFromDisplayPrice(
                         isDenomBase,
@@ -4739,42 +4712,6 @@ export default function Chart(props: propsIF) {
                         Math.abs(currentPoolPriceTick - tickValue) / 100;
                     rangeWidthPercentage =
                         rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
-                    const offset = rangeWidthPercentage * 100;
-
-                    const lowTick = currentPoolPriceTick - offset;
-                    const highTick = currentPoolPriceTick + offset;
-
-                    pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                        denomInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        lowTick,
-                        highTick,
-                        lookupChain(chainId).gridSize,
-                    );
-                }
-
-                if (pinnedDisplayPrices !== undefined) {
-                    setRanges((prevState) => {
-                        const newTargets = [...prevState];
-
-                        newTargets.filter(
-                            (target: any) => target.name === 'Min',
-                        )[0].value = Number(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
-
-                        newTargets.filter(
-                            (target: any) => target.name === 'Max',
-                        )[0].value = Number(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
-
-                        newRangeValue = newTargets;
-
-                        setLiqHighlightedLinesAndArea(newTargets);
-                        return newTargets;
-                    });
                 }
             }
 
@@ -4849,10 +4786,11 @@ export default function Chart(props: propsIF) {
 
                     renderCanvasArray([
                         d3CanvasRangeLine,
-                        d3CanvasLiqAskDepthLine,
-                        d3CanvasLiqAskLine,
-                        d3CanvasLiqBidLine,
-                        d3CanvasLiqBidDepthLine,
+                        d3CanvasLiqAsk,
+                        d3CanvasLiqAskDepth,
+                        d3CanvasLiqBid,
+                        d3CanvasLiqBidDepth,
+                        d3CanvasBand,
                     ]);
 
                     newRangeValue = newTargets;
@@ -5225,57 +5163,6 @@ export default function Chart(props: propsIF) {
         }
     }, [showVolume]);
 
-    const hideHighlightedLines = () => {
-        hideHighlightedLinesCurve();
-        hideHighlightedLinesDepth();
-    };
-
-    const showHighlightedLinesCurve = () => {
-        d3.select(d3CanvasLiqAskLine.current)
-            .select('canvas')
-            .style('display', 'inline');
-        d3.select(d3CanvasLiqBidLine.current)
-            .select('canvas')
-            .style('display', 'inline');
-    };
-
-    const hideHighlightedLinesCurve = () => {
-        d3.select(d3CanvasLiqAskLine.current)
-            .select('canvas')
-            .style('display', 'none');
-        d3.select(d3CanvasLiqBidLine.current)
-            .select('canvas')
-            .style('display', 'none');
-    };
-
-    const showHighlightedLinesDepth = () => {
-        d3.select(d3CanvasLiqAskDepthLine.current)
-            .select('canvas')
-            .style('display', 'inline');
-        d3.select(d3CanvasLiqBidDepthLine.current)
-            .select('canvas')
-            .style('display', 'inline');
-    };
-
-    const hideHighlightedLinesDepth = () => {
-        d3.select(d3CanvasLiqAskDepthLine.current)
-            .select('canvas')
-            .style('display', 'none');
-        d3.select(d3CanvasLiqBidDepthLine.current)
-            .select('canvas')
-            .style('display', 'none');
-    };
-    const showHighlightedLines = () => {
-        if (liqMode === 'curve') {
-            showHighlightedLinesCurve();
-            hideHighlightedLinesDepth();
-        }
-
-        if (liqMode === 'depth') {
-            showHighlightedLinesDepth();
-            hideHighlightedLinesCurve();
-        }
-    };
     useEffect(() => {
         if (liqMode === 'none') {
             d3.select(d3CanvasLiqAsk.current)
@@ -5291,8 +5178,6 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasLiqBidDepth.current)
                 .select('canvas')
                 .style('display', 'none');
-
-            hideHighlightedLines();
         } else {
             if (liqMode === 'curve') {
                 d3.select(d3CanvasLiqAsk.current)
@@ -5323,13 +5208,6 @@ export default function Chart(props: propsIF) {
                 d3.select(d3CanvasLiqAsk.current)
                     .select('canvas')
                     .style('display', 'none');
-            }
-
-            if (
-                location.pathname.includes('range') ||
-                location.pathname.includes('reposition')
-            ) {
-                showHighlightedLines();
             }
         }
     }, [liqMode, location]);
@@ -5477,15 +5355,7 @@ export default function Chart(props: propsIF) {
                 }
             }
 
-            renderCanvasArray([
-                d3CanvasBand,
-                d3CanvasRangeLine,
-                d3Yaxis,
-                d3CanvasLiqAskDepthLine,
-                d3CanvasLiqAskLine,
-                d3CanvasLiqBidLine,
-                d3CanvasLiqBidDepthLine,
-            ]);
+            renderCanvasArray([d3CanvasBand, d3CanvasRangeLine, d3Yaxis]);
         }
     };
 
@@ -5576,7 +5446,6 @@ export default function Chart(props: propsIF) {
     }, [
         diffHashSig(scaleData),
         gradientForAsk,
-        liqMode,
         liquidityScale,
         liquidityDepthScale,
         isMouseLeaveLiq,
@@ -5623,7 +5492,6 @@ export default function Chart(props: propsIF) {
         }
     }, [
         diffHashSig(scaleData),
-        liqMode,
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
@@ -5649,9 +5517,24 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     liqAskSeries(liquidityData?.liqAskData);
+                    if (
+                        location.pathname.includes('range') ||
+                        (location.pathname.includes('reposition') &&
+                            lineAskSeries)
+                    ) {
+                        clipAskHighlightedLines(
+                            ctx,
+                            canvas.width,
+                            liquidityData?.liqTransitionPointforCurve,
+                        );
+                        lineAskSeries(liquidityData?.liqAskData);
+                    }
                 })
                 .on('measure', (event: any) => {
                     liqAskSeries.context(ctx);
+                    if (lineAskSeries) {
+                        lineAskSeries.context(ctx);
+                    }
                     liquidityScale.range([
                         event.detail.width,
                         (event.detail.width / 10) * 6,
@@ -5663,6 +5546,18 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvasDepth);
                     liqAskDepthSeries(liquidityData?.depthLiqAskData);
+                    if (
+                        location.pathname.includes('range') ||
+                        (location.pathname.includes('reposition') &&
+                            lineAskDepthSeries)
+                    ) {
+                        clipAskHighlightedLines(
+                            ctxDepth,
+                            canvas.width,
+                            liquidityData?.liqTransitionPointforDepth,
+                        );
+                        lineAskDepthSeries(liquidityData?.depthLiqAskData);
+                    }
                 })
                 .on('measure', (event: any) => {
                     liquidityDepthScale.range([
@@ -5670,14 +5565,20 @@ export default function Chart(props: propsIF) {
                         event.detail.width * 0.5,
                     ]);
                     liqAskDepthSeries.context(ctxDepth);
+
+                    if (lineAskDepthSeries)
+                        lineAskDepthSeries.context(ctxDepth);
                 });
         }
     }, [
         liquidityData?.liqAskData,
         liquidityData?.depthLiqAskData,
         liqAskSeries,
+        lineAskSeries,
+        lineAskDepthSeries,
         liqAskDepthSeries,
         liqMode,
+        location,
     ]);
 
     useEffect(() => {
@@ -5698,9 +5599,24 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     liqBidSeries(liquidityData?.liqBidData);
+                    if (
+                        location.pathname.includes('range') ||
+                        (location.pathname.includes('reposition') &&
+                            lineBidSeries)
+                    ) {
+                        clipBidHighlightedLines(
+                            ctx,
+                            canvas.width,
+                            liquidityData?.liqTransitionPointforCurve,
+                        );
+                        lineBidSeries(liquidityData?.liqBidData);
+                    }
                 })
                 .on('measure', (event: any) => {
                     liqBidSeries.context(ctx);
+                    if (lineBidSeries) {
+                        lineBidSeries.context(ctx);
+                    }
                     liquidityScale.range([
                         event.detail.width,
                         (event.detail.width / 10) * 6,
@@ -5720,6 +5636,28 @@ export default function Chart(props: propsIF) {
                                       d.liqPrices <= liquidityData?.topBoundary,
                               ),
                     );
+
+                    if (
+                        location.pathname.includes('range') ||
+                        (location.pathname.includes('reposition') &&
+                            lineBidDepthSeries)
+                    ) {
+                        clipBidHighlightedLines(
+                            ctxDepth,
+                            canvas.width,
+                            liquidityData?.liqTransitionPointforDepth,
+                        );
+
+                        lineBidDepthSeries(
+                            tradeData.advancedMode
+                                ? liquidityData?.depthLiqBidData
+                                : liquidityData?.depthLiqBidData.filter(
+                                      (d: any) =>
+                                          d.liqPrices <=
+                                          liquidityData?.topBoundary,
+                                  ),
+                        );
+                    }
                 })
                 .on('measure', (event: any) => {
                     liquidityDepthScale.range([
@@ -5727,6 +5665,10 @@ export default function Chart(props: propsIF) {
                         event.detail.width * 0.5,
                     ]);
                     liqBidDepthSeries.context(ctxDepth);
+
+                    if (lineBidDepthSeries) {
+                        lineBidDepthSeries.context(ctxDepth);
+                    }
                 });
         }
     }, [
@@ -5734,7 +5676,10 @@ export default function Chart(props: propsIF) {
         liquidityData?.depthLiqBidData,
         tradeData.advancedMode,
         liqBidSeries,
+        lineBidSeries,
+        lineBidDepthSeries,
         liqMode,
+        location,
     ]);
 
     useEffect(() => {
@@ -5742,89 +5687,11 @@ export default function Chart(props: propsIF) {
             renderCanvasArray([
                 d3CanvasLiqAsk,
                 d3CanvasLiqAskDepth,
-                d3CanvasLiqAskLine,
-                d3CanvasLiqAskDepthLine,
                 d3CanvasLiqBid,
                 d3CanvasLiqBidDepth,
-                d3CanvasLiqBidLine,
-                d3CanvasLiqBidDepthLine,
             ]);
         }
     }, [scaleData, liquidityData, location]);
-
-    useEffect(() => {
-        if (liquidityData) {
-            const liqDataBidCurve = liquidityData?.liqBidData;
-
-            const liqDataBidDepth = tradeData.advancedMode
-                ? liquidityData?.depthLiqBidData
-                : liquidityData?.depthLiqBidData.filter(
-                      (d: any) => d.liqPrices <= liquidityData?.topBoundary,
-                  );
-
-            const canvas = d3
-                .select(d3CanvasLiqBidLine.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-            const ctx = canvas.getContext('2d');
-
-            const canvasDepth = d3
-                .select(d3CanvasLiqBidDepthLine.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-            const ctxDepth = canvasDepth.getContext('2d');
-
-            if (lineBidSeries && liquidityData?.liqBidData && liqBidSeries) {
-                d3.select(d3CanvasLiqBidLine.current)
-                    .on('draw', () => {
-                        setCanvasResolution(canvas);
-                        clipBidHighlightedLines(
-                            ctx,
-                            canvas.width,
-                            liquidityData?.liqTransitionPointforCurve,
-                        );
-
-                        lineBidSeries(liqDataBidCurve);
-                    })
-                    .on('measure', () => {
-                        lineBidSeries.context(ctx);
-                    });
-            }
-
-            if (
-                lineBidDepthSeries &&
-                liquidityData?.liqBidData &&
-                liqBidDepthSeries
-            ) {
-                d3.select(d3CanvasLiqBidDepthLine.current)
-                    .on('draw', () => {
-                        setCanvasResolution(canvasDepth);
-                        clipBidHighlightedLines(
-                            ctxDepth,
-                            canvas.width,
-                            liquidityData?.liqTransitionPointforDepth,
-                        );
-
-                        lineBidDepthSeries(liqDataBidDepth);
-                    })
-                    .on('measure', () => {
-                        lineBidDepthSeries.context(ctxDepth);
-                    });
-            }
-
-            renderCanvasArray([d3CanvasLiqBidLine, d3CanvasLiqBidDepthLine]);
-        }
-    }, [
-        diffHashSig(scaleData),
-        liquidityData?.liqBidData,
-        liquidityData?.depthLiqBidData,
-        lineBidSeries,
-        liqBidSeries,
-        liqBidDepthSeries,
-        liqMode,
-        ranges,
-        reset,
-    ]);
 
     const clipBidHighlightedLines = (
         ctx: any,
@@ -5876,70 +5743,6 @@ export default function Chart(props: propsIF) {
         ctx.rect(0, y, width, height);
         ctx.clip();
     };
-
-    useEffect(() => {
-        const liqDataAskCurve = liquidityData?.liqAskData;
-
-        const liqDataAskDepth = liquidityData?.depthLiqAskData;
-
-        const canvas = d3
-            .select(d3CanvasLiqAskLine.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        const canvasDepth = d3
-            .select(d3CanvasLiqAskDepthLine.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctxDepth = canvasDepth.getContext('2d');
-
-        if (lineAskSeries && liqAskSeries) {
-            d3.select(d3CanvasLiqAskLine.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    clipAskHighlightedLines(
-                        ctx,
-                        canvas.width,
-                        liquidityData?.liqTransitionPointforCurve,
-                    );
-                    lineAskSeries(liqDataAskCurve);
-                })
-                .on('measure', () => {
-                    lineAskSeries.context(ctx);
-                });
-        }
-
-        if (lineAskDepthSeries && liqAskDepthSeries) {
-            d3.select(d3CanvasLiqAskDepthLine.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvasDepth);
-                    clipAskHighlightedLines(
-                        ctxDepth,
-                        canvas.width,
-                        liquidityData?.liqTransitionPointforDepth,
-                    );
-                    lineAskDepthSeries(liqDataAskDepth);
-                })
-                .on('measure', () => {
-                    lineAskDepthSeries.context(ctxDepth);
-                });
-        }
-
-        renderCanvasArray([d3CanvasLiqAskLine, d3CanvasLiqAskDepthLine]);
-    }, [
-        diffHashSig(scaleData),
-        liquidityData?.liqAskData,
-        liquidityData?.depthLiqAskData,
-        lineAskSeries,
-        lineAskDepthSeries,
-        liqAskSeries,
-        liqAskDepthSeries,
-        ranges,
-        reset,
-        liquidityScale,
-        liquidityDepthScale,
-    ]);
 
     function noGoZone(poolPrice: any) {
         setLimitTickNearNoGoZone(poolPrice * 0.99, poolPrice * 1.01);
@@ -6406,12 +6209,7 @@ export default function Chart(props: propsIF) {
             setGradientForBid(gradient);
         }
 
-        renderCanvasArray([
-            d3CanvasLiqBid,
-            d3CanvasLiqBidDepth,
-            d3CanvasLiqBidLine,
-            d3CanvasLiqBidDepthLine,
-        ]);
+        renderCanvasArray([d3CanvasLiqBid, d3CanvasLiqBidDepth]);
     };
 
     const askAreaFunc = (
@@ -6504,12 +6302,7 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        renderCanvasArray([
-            d3CanvasLiqAsk,
-            d3CanvasLiqAskDepth,
-            d3CanvasLiqAskLine,
-            d3CanvasLiqAskDepthLine,
-        ]);
+        renderCanvasArray([d3CanvasLiqAsk, d3CanvasLiqAskDepth]);
     };
 
     const selectedDateEvent = (
@@ -7012,42 +6805,7 @@ export default function Chart(props: propsIF) {
                                 top: '50%',
                             }}
                         ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasLiqBidLine}
-                            className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasLiqAskLine}
-                            className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasLiqBidDepthLine}
-                            className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasLiqAskDepthLine}
-                            className='plot-canvas'
-                            style={{
-                                position: 'relative',
-                                width: '20%',
-                                left: '80%',
-                            }}
-                        ></d3fc-canvas>
+
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
                             className='liq-bid-canvas'
