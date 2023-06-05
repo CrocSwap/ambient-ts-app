@@ -2,6 +2,7 @@
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
+import { decimalNumRegEx } from '../../../../utils/regex/decimalNumRegEx';
 
 interface propsIF {
     disable?: boolean;
@@ -68,7 +69,7 @@ function LimitCurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.toString()}
                 disabled={disable}
             />
         </div>
