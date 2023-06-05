@@ -5,13 +5,9 @@ import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
 import { memoizeFetchEnsAddress } from './fetchAddress';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeTokenPrice } from './fetchTokenPrice';
-import {
-    memoizeQueryPoolGrowth,
-    memoizeQuerySpotPrice,
-} from './querySpotPrice';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedQueryPoolGrowth = memoizeQueryPoolGrowth();
 const cachedTokenDetails = memoizeFetchContractDetails();
 const cachedEnsResolve = memoizeFetchEnsAddress();
 const cachedFetchTokenPrice = memoizeTokenPrice();
@@ -23,7 +19,7 @@ export const getTransactionData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<TransactionIF> => {
-    const newTx = { ...tx } as any as TransactionIF;
+    const newTx = { ...tx } as TransactionIF;
 
     const baseTokenAddress = tx.base.length === 40 ? '0x' + tx.base : tx.base;
     const quoteTokenAddress =

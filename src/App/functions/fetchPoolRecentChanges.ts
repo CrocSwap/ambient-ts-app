@@ -1,5 +1,4 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useContext } from 'react';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';

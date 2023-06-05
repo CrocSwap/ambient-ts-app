@@ -1,5 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
 import { memoizeTokenPrice } from '../App/functions/fetchTokenPrice';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
@@ -8,7 +8,6 @@ import { useBlacklist } from '../App/hooks/useBlacklist';
 import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
-import { ChainDataContext } from './ChainDataContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -121,9 +120,6 @@ export const CrocEnvContextProvider = (props: {
         chainData.chainId,
         signer,
     ]);
-
-    const ETH_PRICE_REFRESH_SECS = 5;
-    const ethPriceRefreshWindow = Date.now() / ETH_PRICE_REFRESH_SECS;
 
     useEffect(() => {
         if (provider) {

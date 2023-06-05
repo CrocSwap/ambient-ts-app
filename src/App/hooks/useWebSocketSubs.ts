@@ -4,14 +4,7 @@ import useWebSocket from 'react-use-websocket';
 import { mktDataChainId } from '../../utils/data/chains';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import isJsonString from '../../utils/functions/isJsonString';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
-import {
-    PositionIF,
-    PositionServerIF,
-} from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { TransactionIF } from '../../utils/interfaces/TransactionIF';
 import {
     CandleData,
     CandlesByPoolAndDuration,

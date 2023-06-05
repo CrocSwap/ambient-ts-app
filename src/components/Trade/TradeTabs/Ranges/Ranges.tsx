@@ -9,10 +9,7 @@ import { useEffect, useState, useMemo, useContext, memo, useRef } from 'react';
 // START: Import Local Files
 import styles from './Ranges.module.css';
 import { Pagination } from '@mui/material';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -27,7 +24,6 @@ import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -169,16 +165,6 @@ function Ranges(props: propsIF) {
         sumHashPositionsByPool,
         lastBlockNumber,
     ]);
-
-    const NUM_ROWS_TO_SYNC = 5;
-    const CACHE_WINDOW_MS = 10000;
-
-    // synchronously query top positions periodically but prevent fetching more than
-    // once every CACHE_WINDOW_MS
-    const currentTimeForPositionUpdateCaching = Math.floor(
-        Date.now() / CACHE_WINDOW_MS,
-    );
-    const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
 
     // ---------------------
     // transactions per page media queries

@@ -27,7 +27,7 @@ export const getLimitOrderData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<LimitOrderIF> => {
-    const newOrder = order as any as LimitOrderIF;
+    const newOrder = { ...order } as LimitOrderIF;
 
     const baseTokenAddress = order.base;
     const quoteTokenAddress = order.quote;

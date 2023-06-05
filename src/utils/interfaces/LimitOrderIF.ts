@@ -40,6 +40,8 @@ export interface LimitOrderIF {
     latestUpdateTime: number;
     timeFirstMint: number;
     chainId: string;
+    concLiq: number;
+    rewardLiq: number;
 }
 
 export interface LimitOrderServerIF {

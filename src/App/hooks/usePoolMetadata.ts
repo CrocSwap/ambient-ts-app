@@ -3,10 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    LimitOrderIF,
-    LimitOrderServerIF,
-} from '../../utils/interfaces/LimitOrderIF';
+import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
     PositionIF,
     PositionServerIF,

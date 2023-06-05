@@ -49,6 +49,10 @@ export interface PositionIF {
     source: string;
     lastMintTx: string;
     firstMintTx: string;
+    concLiq: number;
+    rewardLiq: number;
+    ambientLiq: number;
+    aprEst: number;
 }
 
 export interface PositionServerIF {
@@ -60,7 +64,7 @@ export interface PositionServerIF {
     base: string;
     quote: string;
     user: string;
-    ambientSeeds: number;
+    ambientLiq: number;
     concLiq: number;
     rewardLiq: number;
     positionType: string;

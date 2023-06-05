@@ -13,10 +13,7 @@ import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import NoTableData from '../NoTableData/NoTableData';
-import {
-    diffHashSig,
-    diffHashSigLimits,
-} from '../../../../utils/functions/diffHashSig';
+import { diffHashSigLimits } from '../../../../utils/functions/diffHashSig';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';

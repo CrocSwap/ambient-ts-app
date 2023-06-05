@@ -9,11 +9,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { GRAPHCACHE_URL } from '../../constants';
-import {
-    memoizeQueryPoolGrowth,
-    memoizeQuerySpotPrice,
-} from './querySpotPrice';
+import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { memoizeFetchContractDetails } from './fetchContractDetails';
 import { memoizeFetchEnsAddress } from './fetchAddress';
@@ -21,7 +17,6 @@ import { memoizeTokenPrice } from './fetchTokenPrice';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedQueryPoolGrowth = memoizeQueryPoolGrowth();
 const cachedTokenDetails = memoizeFetchContractDetails();
 const cachedEnsResolve = memoizeFetchEnsAddress();
 const cachedFetchTokenPrice = memoizeTokenPrice();
@@ -33,7 +28,7 @@ export const getPositionData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position } as any as PositionIF;
+    const newPosition = { ...position } as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;
@@ -42,14 +37,6 @@ export const getPositionData = async (
 
     // Fire off network queries async simultaneous up-front
     const poolPriceNonDisplay = cachedQuerySpotPrice(
-        crocEnv,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainId,
-        lastBlockNumber,
-    );
-
-    const poolGrowthRate = cachedQueryPoolGrowth(
         crocEnv,
         baseTokenAddress,
         quoteTokenAddress,
@@ -250,8 +237,7 @@ export const getPositionData = async (
     newPosition.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
 
     if (position.positionType == 'ambient') {
-        newPosition.positionLiq =
-            position.ambientSeeds * (1 + (await poolGrowthRate));
+        newPosition.positionLiq = position.ambientLiq;
 
         newPosition.positionLiqBase =
             newPosition.positionLiq * Math.sqrt(await poolPriceNonDisplay);

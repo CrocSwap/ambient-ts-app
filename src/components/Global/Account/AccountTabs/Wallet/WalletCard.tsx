@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
@@ -22,7 +21,6 @@ export default function WalletCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
 

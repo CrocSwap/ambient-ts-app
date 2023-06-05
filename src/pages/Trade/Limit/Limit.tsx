@@ -66,7 +66,7 @@ export default function Limit() {
     } = useContext(AppStateContext);
     const {
         crocEnv,
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -80,8 +80,9 @@ export default function Limit() {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const { tokenA, tokenB } = tradeData;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 

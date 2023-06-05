@@ -25,12 +25,11 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
