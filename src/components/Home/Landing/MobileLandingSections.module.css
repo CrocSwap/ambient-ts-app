@@ -7,10 +7,12 @@
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scroll-snap-type: y mandatory;
-    height: 100vh;
+    height: 100dvh;
     width: 100%;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overflow-x: hidden;
+    max-width: 100dvw;
 
     /* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
 background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));   */
