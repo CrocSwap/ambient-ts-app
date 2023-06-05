@@ -11,6 +11,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { exponentialNumRegEx } from '../../../../utils/regex/exponentialNumRegEx';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -112,7 +113,7 @@ export default function LimitRate(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
+                pattern={exponentialNumRegEx.toString()}
                 disabled={disable}
                 tabIndex={0}
                 aria-label='Limit Price.'
