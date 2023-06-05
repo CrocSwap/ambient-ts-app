@@ -42,7 +42,6 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 interface propsIF {
-    provider: ethers.providers.Provider;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isPositionInRange: boolean;
@@ -614,7 +613,6 @@ export default function RemoveRange(props: propsIF) {
                     quoteTokenSymbol={props.quoteTokenSymbol}
                     baseTokenLogoURI={props.baseTokenLogoURI}
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    isDenomBase={props.isDenomBase}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
                 />

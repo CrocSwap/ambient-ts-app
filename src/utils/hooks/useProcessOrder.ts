@@ -351,7 +351,7 @@ export const useProcessOrder = (
         ? 'sell'
         : 'buy';
 
-    const type = 'order';
+    const type = 'limit';
 
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();

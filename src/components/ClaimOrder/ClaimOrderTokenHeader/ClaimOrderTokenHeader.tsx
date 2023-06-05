@@ -4,7 +4,6 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 interface IClaimOrderTokenHeaderProps {
     isOrderFilled: boolean;
-
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;

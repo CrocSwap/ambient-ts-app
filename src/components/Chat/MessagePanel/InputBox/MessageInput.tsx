@@ -5,59 +5,21 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import { useContext, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface MessageInputProps {
+    currentUser: string;
     message?: Message;
     room: string;
-    currentUser: string;
     ensName: string;
     appPage?: boolean;
 }
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitPrice: string;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
-}
 
-export interface ChatProps {
-    chatStatus: boolean;
-    onClose: () => void;
-    favePools: PoolIF[];
-    currentPool: currentPoolInfo;
-    isFullScreen?: boolean;
-    setChatStatus: Dispatch<SetStateAction<boolean>>;
-}
-
-export default function MessageInput(
-    props: MessageInputProps,
-    prop: ChatProps,
-) {
+export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
@@ -77,11 +39,7 @@ export default function MessageInput(
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
-    const roomId =
-        props.room === 'Current Pool'
-            ? prop.currentPool.baseToken.symbol.toUpperCase() +
-              prop.currentPool.quoteToken.symbol.toUpperCase()
-            : props.room;
+    const roomId = props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -114,7 +72,6 @@ export default function MessageInput(
         messageInputText();
     }, [isConnected, address]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
         setMessage('');
@@ -130,21 +87,21 @@ export default function MessageInput(
         }
     };
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function openEmojiPanel(e: any) {
         if (e.keyCode === 88 && e.altKey) {
             setShowEmojiPicker(true);
         }
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function closeEmojiPanel(e: any) {
         if (e.keyCode === 81 && e.altKey) {
             setShowEmojiPicker(false);
         }
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function openInfo(e: any) {
         if (e.keyCode === 77 && e.ctrlKey) {
             setShowEmojiPicker(true);
@@ -162,8 +119,7 @@ export default function MessageInput(
         };
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendMsg = async (msg: string, roomId: any) => {
+    const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && address) {
             sendMsg(props.currentUser, message, roomId, props.ensName, address);
         }

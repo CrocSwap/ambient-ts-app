@@ -246,7 +246,6 @@
     border: 1px solid var(--accent1);
 }
 
-
 /* pool not initialized */
 
 .pool_not_initialialized_container {
@@ -264,10 +263,10 @@
     position: absolute;
 
     position: fixed;
-  top: 50%;
-  left: 50%;
-  /* bring your own prefixes */
-  transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
 }
 
 .pool_not_initialialized_content {
@@ -289,7 +288,6 @@
     justify-content: center;
     align-items: center;
 }
-
 
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
