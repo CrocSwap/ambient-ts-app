@@ -10,7 +10,9 @@ import MobileLandingSections from '../../components/Home/Landing/MobileLandingSe
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
-    if (showMobileVersion) return <MobileLandingSections />;
+    const yes = true;
+
+    if (yes) return <MobileLandingSections />;
     return (
         <section data-testid={'home'} className={styles.home_container}>
             {!showMobileVersion && (

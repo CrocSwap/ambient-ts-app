@@ -49,4 +49,8 @@ width: 100%;
     .container{
         padding: 1rem 
     }
+
+    .content{
+        width: 100dvw;
+    }
 }

@@ -169,6 +169,14 @@
 }
 
 @media only screen and (max-width: 600px)  {
+    .main_container {
+        background-color: transparent;
+       
+        background: #F00000;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, var(--dark2), var(--body-bg));  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, var(--dark2), var(--body-bg)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    }
     .pool_card{
         padding: 0 1rem;
     }

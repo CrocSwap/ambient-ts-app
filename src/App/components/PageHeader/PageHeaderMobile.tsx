@@ -7,7 +7,7 @@ import NavbarDropdownMenu from './NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from './NavItem/NavItem';
 import { FiMenu } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface PropsIF {
     clickLogout: () => Promise<void>;
@@ -17,6 +17,8 @@ interface PropsIF {
 }
 const PageHeaderMobile = (props: PropsIF) => {
     const { clickLogout, isUserLoggedIn, ensName } = props;
+
+    const location = useLocation();
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -35,8 +37,13 @@ const PageHeaderMobile = (props: PropsIF) => {
             Connect to a wallet
         </button>
     );
+
+    const isHomePage = location.pathname === '/';
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            style={{ position: isHomePage ? 'fixed' : 'static' }}
+        >
             <Link to='/' aria-label='Home' className={styles.link}>
                 <img src={logo} alt='logo' width='35px' />
             </Link>

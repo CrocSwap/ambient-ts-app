@@ -134,7 +134,7 @@ background-size: cover;
 
 .mobile_card .scroll_button{
     position: absolute;
-    bottom: 5px;
+    bottom: 20px;
     background: transparent;
     outline: none;
     border: none;
