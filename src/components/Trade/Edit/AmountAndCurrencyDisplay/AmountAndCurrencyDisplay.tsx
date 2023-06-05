@@ -19,7 +19,6 @@ export default function AmountAndCurrencyDisplay(
                 id={`${fieldId}-edit-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                // onChange={(e) => updateOtherQuantity(e)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
