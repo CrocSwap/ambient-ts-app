@@ -13,7 +13,6 @@ import motivate from '../../../assets/images/investors/motivate.svg';
 import styles from './Investors.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-import { useState } from 'react';
 export default function Investors() {
     const row1 = (
         <div className={styles.row1}>

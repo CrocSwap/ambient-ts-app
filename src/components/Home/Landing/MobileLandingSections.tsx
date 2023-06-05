@@ -1,13 +1,10 @@
 import styles from './MobileLandingSections.module.css';
 
-import row2Image from '../../../assets/images/newHome/row2.png';
-import row3Image from '../../../assets/images/newHome/row3.png';
 import logoText from '../../../assets/images/logos/logo_text.png';
 
 import Footer from '../../Footer/Footer';
 import { useRef } from 'react';
 import { BsChevronDown } from 'react-icons/bs';
-import MobileHero from './MobileHero';
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
