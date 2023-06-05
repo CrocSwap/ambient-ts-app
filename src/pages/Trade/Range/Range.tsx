@@ -1010,47 +1010,6 @@ function Range() {
             setIsWaitingForWallet(false);
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            if (isAmbient) {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
-                            changeType: 'mint',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'concentrated',
-                            changeType: 'mint',
-                            bidTick: defaultLowTick.toString(),
-                            askTick: defaultHighTick.toString(),
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();

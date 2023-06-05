@@ -322,31 +322,6 @@ export default function HarvestPosition(props: propsIF) {
             console.error('unsupported position type for harvest');
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            fetch(
-                newLiqChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: position.chainId,
-                        tx: tx.hash,
-                        user: position.user,
-                        base: position.base,
-                        quote: position.quote,
-                        poolIdx: position.poolIdx.toString(),
-                        bidTick: position.bidTick
-                            ? position.bidTick.toString()
-                            : '0',
-                        askTick: position.askTick
-                            ? position.askTick.toString()
-                            : '0',
-                        positionType: position.positionType,
-                        changeType: 'harvest',
-                        isBid: 'false',
-                        liq: '0',
-                    }),
-            );
-        }
-
         let receipt;
 
         try {
@@ -362,31 +337,6 @@ export default function HarvestPosition(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewHarvestTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-
-                receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: position.chainId,
-                                tx: newTransactionHash,
-                                user: position.user,
-                                base: position.base,
-                                quote: position.quote,
-                                poolIdx: position.poolIdx.toString(),
-                                bidTick: position.bidTick
-                                    ? position.bidTick.toString()
-                                    : '0',
-                                askTick: position.askTick
-                                    ? position.askTick.toString()
-                                    : '0',
-                                positionType: position.positionType,
-                                changeType: 'harvest',
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

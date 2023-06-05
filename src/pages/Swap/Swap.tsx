@@ -245,8 +245,6 @@ function Swap(props: propsIF) {
             setIsWaitingForWallet(false);
         }
 
-        const newSwapCacheEndpoint = GRAPHCACHE_URL + '/new_swap?';
-
         const inBaseQty =
             (isSellTokenBase && isTokenAPrimary) ||
             (!isSellTokenBase && !isTokenAPrimary);
@@ -254,32 +252,6 @@ function Swap(props: propsIF) {
         const crocQty = await crocEnv
             .token(isTokenAPrimary ? tokenA.address : tokenB.address)
             .normQty(qty);
-
-        if (tx?.hash) {
-            fetch(
-                newSwapCacheEndpoint +
-                    new URLSearchParams({
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: isSellTokenBase
-                            ? sellTokenAddress
-                            : buyTokenAddress,
-                        quote: isSellTokenBase
-                            ? buyTokenAddress
-                            : sellTokenAddress,
-                        poolIdx: (
-                            await crocEnv.context
-                        ).chain.poolIndex.toString(),
-                        isBuy: isSellTokenBase.toString(),
-                        inBaseQty: inBaseQty.toString(),
-                        qty: crocQty.toString(),
-                        override: 'false',
-                        chainId: chainId,
-                        limitPrice: '0',
-                        minOut: '0',
-                    }),
-            );
-        }
 
         let receipt;
         try {
@@ -299,32 +271,6 @@ function Swap(props: propsIF) {
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newSwapCacheEndpoint +
-                            new URLSearchParams({
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: isSellTokenBase
-                                    ? sellTokenAddress
-                                    : buyTokenAddress,
-                                quote: isSellTokenBase
-                                    ? buyTokenAddress
-                                    : sellTokenAddress,
-                                poolIdx: (
-                                    await crocEnv.context
-                                ).chain.poolIndex.toString(),
-                                isBuy: isSellTokenBase.toString(),
-                                inBaseQty: inBaseQty.toString(),
-                                qty: crocQty.toString(),
-                                override: 'false',
-                                chainId: chainId,
-                                limitPrice: '0',
-                                minOut: '0',
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

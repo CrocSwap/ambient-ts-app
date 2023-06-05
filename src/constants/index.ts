@@ -30,7 +30,7 @@ export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
 export const GRAPHCACHE_SMALL_URL =
-    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net';
+    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
 
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
