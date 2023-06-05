@@ -109,8 +109,6 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     denomInBase: boolean;
-    limitTick: number | undefined;
-    isAdvancedModeActive: boolean | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleData | undefined>
@@ -163,7 +161,6 @@ export default function Chart(props: propsIF) {
     const {
         isTokenABase,
         denomInBase,
-        isAdvancedModeActive,
         setIsCandleAdded,
         scaleData,
         poolPriceNonDisplay,
@@ -460,7 +457,7 @@ export default function Chart(props: propsIF) {
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
                 )[0].value =
-                    !isAdvancedModeActive && simpleRangeWidth === 100
+                    !tradeData.advancedMode && simpleRangeWidth === 100
                         ? 0
                         : minPrice;
 
@@ -470,7 +467,7 @@ export default function Chart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, isAdvancedModeActive, simpleRangeWidth]);
+    }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
 
     const scaleWithButtons = (minPrice: number, maxPrice: number) => {
         if (
@@ -786,7 +783,7 @@ export default function Chart(props: propsIF) {
         location.pathname,
         period,
         simpleRangeWidth,
-        isAdvancedModeActive,
+        tradeData.advancedMode,
     ]);
 
     useEffect(() => {
@@ -1075,7 +1072,7 @@ export default function Chart(props: propsIF) {
                                 (location.pathname.includes('range') ||
                                     location.pathname.includes('reposition')) &&
                                 (simpleRangeWidth !== 100 ||
-                                    isAdvancedModeActive)
+                                    tradeData.advancedMode)
                             ) {
                                 if (
                                     maxYBoundary !== undefined &&
@@ -1574,7 +1571,10 @@ export default function Chart(props: propsIF) {
                                                 'px',
                                         );
 
-                                    if (isAdvancedModeActive && liquidityData) {
+                                    if (
+                                        tradeData.advancedMode &&
+                                        liquidityData
+                                    ) {
                                         const liqAllBidPrices =
                                             liquidityData?.liqBidData.map(
                                                 (liqPrices: any) =>
@@ -1851,7 +1851,7 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         });
-                        if (isAdvancedModeActive && liquidityData) {
+                        if (tradeData.advancedMode && liquidityData) {
                             const liqAllBidPrices =
                                 liquidityData?.liqBidData.map(
                                     (liqPrices: any) => liqPrices.liqPrices,
@@ -2071,7 +2071,7 @@ export default function Chart(props: propsIF) {
                     if (
                         (location.pathname.includes('range') ||
                             location.pathname.includes('reposition')) &&
-                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                        (simpleRangeWidth !== 100 || tradeData.advancedMode)
                     ) {
                         const low = ranges.filter(
                             (target: any) => target.name === 'Min',
@@ -2484,7 +2484,7 @@ export default function Chart(props: propsIF) {
         if (location.pathname.includes('/limit')) {
             setLimitLineValue();
         }
-    }, [location, props.limitTick, denomInBase]);
+    }, [location, tradeData.limitTick, denomInBase]);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('setting range lines');
@@ -2493,19 +2493,19 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('reposition')
         ) {
             if (
-                !isAdvancedModeActive ||
+                !tradeData.advancedMode ||
                 location.pathname.includes('reposition')
             ) {
                 setBalancedLines();
             }
         }
-    }, [location, denomInBase, isAdvancedModeActive, simpleRangeWidth]);
+    }, [location, denomInBase, tradeData.advancedMode, simpleRangeWidth]);
 
     useEffect(() => {
         if (
             (location.pathname.includes('range') ||
                 location.pathname.includes('reposition')) &&
-            isAdvancedModeActive
+            tradeData.advancedMode
         ) {
             if (chartTriggeredBy === '' || rescaleRangeBoundariesWithSlider) {
                 setAdvancedLines();
@@ -2517,7 +2517,7 @@ export default function Chart(props: propsIF) {
         minPrice,
         maxPrice,
         rescaleRangeBoundariesWithSlider,
-        isAdvancedModeActive,
+        tradeData.advancedMode,
     ]);
 
     useEffect(() => {
@@ -2528,7 +2528,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            isAdvancedModeActive &&
+            tradeData.advancedMode &&
             scaleData &&
             liquidityData &&
             denomInBase === boundaries
@@ -2544,7 +2544,7 @@ export default function Chart(props: propsIF) {
         } else {
             setBoundaries(denomInBase);
         }
-    }, [isAdvancedModeActive, ranges, liquidityData?.liqBidData, scaleData]);
+    }, [tradeData.advancedMode, ranges, liquidityData?.liqBidData, scaleData]);
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
         if (poolPriceDisplay) {
@@ -2746,7 +2746,7 @@ export default function Chart(props: propsIF) {
                         let pinnedDisplayPrices: any;
 
                         if (
-                            !isAdvancedModeActive ||
+                            !tradeData.advancedMode ||
                             location.pathname.includes('reposition')
                         ) {
                             if (
@@ -3034,7 +3034,7 @@ export default function Chart(props: propsIF) {
                                     simpleRangeWidth === 100 &&
                                     (oldRangeMinValue === 0 ||
                                         oldRangeMaxValue === 0) &&
-                                    (!isAdvancedModeActive ||
+                                    (!tradeData.advancedMode ||
                                         location.pathname.includes(
                                             'reposition',
                                         ))
@@ -3043,7 +3043,7 @@ export default function Chart(props: propsIF) {
                                     simpleRangeWidth === 100 &&
                                     (oldRangeMinValue === 0 ||
                                         oldRangeMaxValue === 0) &&
-                                    (!isAdvancedModeActive ||
+                                    (!tradeData.advancedMode ||
                                         location.pathname.includes(
                                             'reposition',
                                         ))
@@ -3067,7 +3067,7 @@ export default function Chart(props: propsIF) {
 
                     if (!cancelDrag) {
                         if (
-                            (!isAdvancedModeActive ||
+                            (!tradeData.advancedMode ||
                                 location.pathname.includes('reposition')) &&
                             rangeWidthPercentage
                         ) {
@@ -3110,7 +3110,7 @@ export default function Chart(props: propsIF) {
                                     simpleRangeWidth === 100 &&
                                     (oldRangeMinValue === 0 ||
                                         oldRangeMaxValue === 0) &&
-                                    (!isAdvancedModeActive ||
+                                    (!tradeData.advancedMode ||
                                         location.pathname.includes(
                                             'reposition',
                                         ))
@@ -3119,7 +3119,7 @@ export default function Chart(props: propsIF) {
                                     simpleRangeWidth === 100 &&
                                     (oldRangeMinValue === 0 ||
                                         oldRangeMaxValue === 0) &&
-                                    (!isAdvancedModeActive ||
+                                    (!tradeData.advancedMode ||
                                         location.pathname.includes(
                                             'reposition',
                                         ))
@@ -3358,7 +3358,7 @@ export default function Chart(props: propsIF) {
         poolPriceDisplay,
         location,
         scaleData,
-        isAdvancedModeActive,
+        tradeData.advancedMode,
         ranges,
         limit,
         minPrice,
@@ -3440,7 +3440,7 @@ export default function Chart(props: propsIF) {
         limit,
         isLineDrag,
         ranges,
-        simpleRangeWidth !== 100 || isAdvancedModeActive,
+        simpleRangeWidth !== 100 || tradeData.advancedMode,
         yAxisCanvasWidth,
         bandwidth,
         reset,
@@ -3681,7 +3681,7 @@ export default function Chart(props: propsIF) {
                             ? liquidityData?.liqTransitionPointforCurve
                             : liquidityData?.liqTransitionPointforDepth;
 
-                    if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                    if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
                         const isScientificlowTick = low
                             .toString()
                             .includes('e');
@@ -4360,8 +4360,8 @@ export default function Chart(props: propsIF) {
                 if (
                     (location.pathname.includes('range') ||
                         location.pathname.includes('reposition')) &&
-                    (isAdvancedModeActive ||
-                        ((!isAdvancedModeActive ||
+                    (tradeData.advancedMode ||
+                        ((!tradeData.advancedMode ||
                             location.pathname.includes('reposition')) &&
                             simpleRangeWidth !== 100))
                 ) {
@@ -4517,7 +4517,7 @@ export default function Chart(props: propsIF) {
                         if (
                             (location.pathname.includes('range') ||
                                 location.pathname.includes('reposition')) &&
-                            (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                            (simpleRangeWidth !== 100 || tradeData.advancedMode)
                         ) {
                             const low = ranges.filter(
                                 (target: any) => target.name === 'Min',
@@ -4693,7 +4693,10 @@ export default function Chart(props: propsIF) {
             lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
         }
 
-        if (!isAdvancedModeActive || location.pathname.includes('reposition')) {
+        if (
+            !tradeData.advancedMode ||
+            location.pathname.includes('reposition')
+        ) {
             let rangeWidthPercentage;
             let tickValue;
             let pinnedDisplayPrices: any;
@@ -5423,13 +5426,13 @@ export default function Chart(props: propsIF) {
                 [
                     simpleRangeWidthGra === 100 &&
                     (low === 0 || high === 0) &&
-                    (!isAdvancedModeActive ||
+                    (!tradeData.advancedMode ||
                         location.pathname.includes('reposition'))
                         ? 0
                         : low,
                     simpleRangeWidthGra === 100 &&
                     (low === 0 || high === 0) &&
-                    (!isAdvancedModeActive ||
+                    (!tradeData.advancedMode ||
                         location.pathname.includes('reposition'))
                         ? 0
                         : high,
@@ -5439,13 +5442,13 @@ export default function Chart(props: propsIF) {
             horizontalBandData[0] = [
                 simpleRangeWidthGra === 100 &&
                 (low === 0 || high === 0) &&
-                (!isAdvancedModeActive ||
+                (!tradeData.advancedMode ||
                     location.pathname.includes('reposition'))
                     ? 0
                     : low,
                 simpleRangeWidthGra === 100 &&
                 (low === 0 || high === 0) &&
-                (!isAdvancedModeActive ||
+                (!tradeData.advancedMode ||
                     location.pathname.includes('reposition'))
                     ? 0
                     : high,
@@ -5457,7 +5460,7 @@ export default function Chart(props: propsIF) {
                     'display',
                     (location.pathname.includes('reposition') ||
                         location.pathname.includes('range')) &&
-                        (isAdvancedModeActive || simpleRangeWidthGra !== 100)
+                        (tradeData.advancedMode || simpleRangeWidthGra !== 100)
                         ? 'inline'
                         : 'none',
                 );
@@ -5707,7 +5710,7 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvasDepth);
                     liqBidDepthSeries(
-                        isAdvancedModeActive
+                        tradeData.advancedMode
                             ? liquidityData?.depthLiqBidData
                             : liquidityData?.depthLiqBidData.filter(
                                   (d: any) =>
@@ -5726,7 +5729,7 @@ export default function Chart(props: propsIF) {
     }, [
         liquidityData?.liqBidData,
         liquidityData?.depthLiqBidData,
-        isAdvancedModeActive,
+        tradeData.advancedMode,
         liqBidSeries,
         liqMode,
     ]);
@@ -5750,7 +5753,7 @@ export default function Chart(props: propsIF) {
         if (liquidityData) {
             const liqDataBidCurve = liquidityData?.liqBidData;
 
-            const liqDataBidDepth = isAdvancedModeActive
+            const liqDataBidDepth = tradeData.advancedMode
                 ? liquidityData?.depthLiqBidData
                 : liquidityData?.depthLiqBidData.filter(
                       (d: any) => d.liqPrices <= liquidityData?.topBoundary,
@@ -5974,7 +5977,7 @@ export default function Chart(props: propsIF) {
                     if (
                         (location.pathname.includes('range') ||
                             location.pathname.includes('reposition')) &&
-                        (simpleRangeWidth !== 100 || isAdvancedModeActive)
+                        (simpleRangeWidth !== 100 || tradeData.advancedMode)
                     ) {
                         const min = ranges.filter(
                             (target: any) => target.name === 'Min',

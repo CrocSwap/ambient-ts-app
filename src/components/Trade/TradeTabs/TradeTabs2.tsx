@@ -39,12 +39,11 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { CandleContext } from '../../../contexts/CandleContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
-    isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     changeState: (
         isOpen: boolean | undefined,
@@ -55,18 +54,14 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     candleTime: candleTimeIF;
-    tokens: tokenMethodsIF;
     showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
     const {
-        isCandleSelected,
-        setIsCandleSelected,
         filter,
         setTransactionFilter,
         changeState,
@@ -75,18 +70,18 @@ function TradeTabs2(props: propsIF) {
         hasInitialized,
         setHasInitialized,
         unselectCandle,
-        isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
         candleTime,
-        tokens,
         showActiveMobileComponent,
     } = props;
 
+    const { isCandleSelected } = useContext(CandleContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
     const {
         showAllData,
         setShowAllData,
@@ -318,33 +313,24 @@ function TradeTabs2(props: propsIF) {
     }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
-    const [leader, setLeader] = useState('');
-    const [leaderOwnerId, setLeaderOwnerId] = useState('');
-
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
-        setLeader: setLeader,
-        setLeaderOwnerId: setLeaderOwnerId,
         isAccountView: false,
     };
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
-        changesInSelectedCandle: changesInSelectedCandle,
-        setIsCandleSelected: setIsCandleSelected,
-        isCandleSelected: isCandleSelected,
-        filter: filter,
-        changeState: changeState,
-        setSelectedDate: setSelectedDate,
+        changesInSelectedCandle,
+        filter,
+        changeState,
+        setSelectedDate,
         isAccountView: false,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        setShowAllData: setShowAllData,
-        setIsCandleSelected: setIsCandleSelected,
-        changeState: changeState,
+        changeState,
         isAccountView: false,
     };
 
@@ -352,21 +338,13 @@ function TradeTabs2(props: propsIF) {
         useState(true);
 
     const positionsOnlyToggleProps = {
-        setHasUserSelectedViewAll: setHasUserSelectedViewAll,
-        changeState: changeState,
-        setHasInitialized: setHasInitialized,
-        setIsCandleSelected: setIsCandleSelected,
-        isCandleSelected: isCandleSelected,
-        setTransactionFilter: setTransactionFilter,
-        showPositionsOnlyToggle: showPositionsOnlyToggle,
-        setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
-        leader: leader,
-        leaderOwnerId: leaderOwnerId,
-        selectedDate: selectedDate,
-        setSelectedDate: setSelectedDate,
-        isCandleDataNull: isCandleDataNull,
-        isCandleArrived: isCandleArrived,
-        setIsCandleDataArrived: setIsCandleDataArrived,
+        setTransactionFilter,
+        showPositionsOnlyToggle,
+        changeState,
+        setSelectedDate,
+        isCandleArrived,
+        setIsCandleDataArrived,
+        setHasUserSelectedViewAll,
     };
 
     const TradeChartsTokenInfoProps = {
@@ -492,7 +470,6 @@ function TradeTabs2(props: propsIF) {
                     <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                 }
                 setSelectedInsideTab={setSelectedInsideTab}
-                showPositionsOnlyToggle={showPositionsOnlyToggle}
                 setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
             />
         </div>

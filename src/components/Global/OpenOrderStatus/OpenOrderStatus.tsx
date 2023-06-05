@@ -3,7 +3,6 @@ import { AiOutlineCheck } from 'react-icons/ai';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 interface OpenOrderStatusProps {
     isFilled: boolean;
-    isAmbient?: boolean;
 }
 
 export default function OpenOrderStatus(props: OpenOrderStatusProps) {

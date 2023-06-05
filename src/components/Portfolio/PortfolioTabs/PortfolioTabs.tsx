@@ -40,7 +40,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import { TokenContext } from '../../../contexts/TokenContext';
 import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
 
 // interface for React functional component props
@@ -49,8 +49,6 @@ interface propsIF {
     resolvedAddress: string;
     connectedAccountActive: boolean;
     openTokenModal: () => void;
-    fullLayoutToggle: JSX.Element;
-    tokens: tokenMethodsIF;
 }
 
 const cachedFetchTokenPrice = memoizeTokenPrice();
@@ -62,7 +60,6 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddress,
         connectedAccountActive,
         openTokenModal,
-        tokens,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -71,6 +68,7 @@ export default function PortfolioTabs(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -274,7 +272,6 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
-        tokens: tokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
@@ -284,7 +281,6 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress,
         openTokenModal: openTokenModal,
-        tokens: tokens,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
@@ -300,7 +296,6 @@ export default function PortfolioTabs(props: propsIF) {
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,
-        isCandleSelected: false,
         isAccountView: true,
     };
 

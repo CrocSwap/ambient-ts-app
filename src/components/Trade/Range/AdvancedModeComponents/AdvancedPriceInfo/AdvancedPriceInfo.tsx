@@ -5,24 +5,14 @@ import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 interface propsIF {
     poolPriceDisplay: string;
     isTokenABase: boolean;
-    minimumSpan: number;
     isOutOfRange: boolean;
     aprPercentage: number | undefined;
-    daysInRange: number | undefined;
 }
 
 function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const {
-        poolPriceDisplay,
-        isTokenABase,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        minimumSpan,
-        isOutOfRange,
-        aprPercentage,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        daysInRange,
-    } = props;
+    const { poolPriceDisplay, isTokenABase, isOutOfRange, aprPercentage } =
+        props;
     const { isDenomBase, tokenA, tokenB } = useAppSelector(
         (state) => state.tradeData,
     );
