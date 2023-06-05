@@ -26,6 +26,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -52,6 +53,7 @@ function Orders(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -149,6 +151,7 @@ function Orders(props: propsIF) {
         diffHashSigLimits(activeAccountLimitOrderData),
         diffHashSigLimits(ordersByUserMatchingSelectedTokens),
         diffHashSigLimits(limitOrdersByPool),
+        lastBlockNumber,
     ]);
 
     const nonEmptyOrders = showAllData

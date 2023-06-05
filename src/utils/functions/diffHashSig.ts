@@ -77,12 +77,20 @@ export function diffHashSigLimits(txs?: LimitOrderIF[]) {
     if (!txs) {
         return 'null';
     }
-    return diffHashSig(txs.map((x) => x.limitOrderId));
+    return diffHashSig(
+        txs.map((x) => {
+            x.limitOrderId, x.latestUpdateTime;
+        }),
+    );
 }
 
 export function diffHashSigPostions(txs?: PositionIF[]) {
     if (!txs) {
         return 'null';
     }
-    return diffHashSig(txs.map((x) => x.positionId));
+    return diffHashSig(
+        txs.map((x) => {
+            x.positionId, x.latestUpdateTime;
+        }),
+    );
 }

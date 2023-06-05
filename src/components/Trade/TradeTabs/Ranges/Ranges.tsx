@@ -62,6 +62,7 @@ function Ranges(props: propsIF) {
         expandTradeTable: expandTradeTableSelection,
         setExpandTradeTable,
     } = useContext(TradeTableContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -177,6 +178,7 @@ function Ranges(props: propsIF) {
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
+        lastBlockNumber,
     ]);
 
     const NUM_ROWS_TO_SYNC = 5;
