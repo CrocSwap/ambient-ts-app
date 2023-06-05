@@ -23,8 +23,7 @@ interface TvlData {
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    isMouseMoveCrosshair: boolean;
-    setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
+    setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 function TvlSubChart(props: TvlData) {
@@ -40,9 +39,8 @@ function TvlSubChart(props: TvlData) {
         yAxisWidth,
         setCrossHairLocation,
         setCrosshairActive,
+        setCrosshairData,
         crosshairActive,
-        isMouseMoveCrosshair,
-        setIsMouseMoveCrosshair,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -381,7 +379,7 @@ function TvlSubChart(props: TvlData) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([4, 2]);
-                    if (isMouseMoveCrosshair && crosshairActive !== 'none') {
+                    if (crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (crosshairActive === 'tvl') {
                             crosshairHorizontalCanvas([
@@ -408,7 +406,6 @@ function TvlSubChart(props: TvlData) {
         crosshairHorizontalCanvas,
         tvlHorizontalyValue,
         crosshairActive,
-        isMouseMoveCrosshair,
     ]);
 
     useEffect(() => {
@@ -468,14 +465,32 @@ function TvlSubChart(props: TvlData) {
                         setCrossHairLocation(event, false);
                         setCrosshairActive('tvl');
                         props.setShowTooltip(true);
-                        setIsMouseMoveCrosshair(true);
+
+                        if (period !== undefined) {
+                            const snapDiff =
+                                scaleData?.xScale.invert(event.offsetX) %
+                                (period * 1000);
+
+                            const snappedTime =
+                                scaleData?.xScale.invert(event.offsetX) -
+                                (snapDiff > period * 1000 - snapDiff
+                                    ? -1 * (period * 1000 - snapDiff)
+                                    : snapDiff);
+
+                            setCrosshairData([
+                                {
+                                    x: snappedTime,
+                                    y: tvlyScale.invert(event.layerY),
+                                },
+                            ]);
+                        }
+
                         renderCanvas();
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     renderCanvas();
                 });
             }
