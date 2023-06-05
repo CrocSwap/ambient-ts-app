@@ -7,12 +7,15 @@ export default function AprExplanation() {
                 gap: '4px',
             }}
         >
-            <p>Lorem ipsum dolor sit amet.</p>
             <p>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nihil
-                dignissimos earum voluptatum dolorum soluta cumque!
+                Estimated APR is based on historical volume, fee rate, and pool
+                liquidity
             </p>
-            <p>Lorem ipsum dolor sit amet.</p>
+            <p>
+                This value is only a historical estimate, and does not account
+                for divergence loss from large price swings. Returns not
+                guaranteed
+            </p>
         </div>
     );
 }

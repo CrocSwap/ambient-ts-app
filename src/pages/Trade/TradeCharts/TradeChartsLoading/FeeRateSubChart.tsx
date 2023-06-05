@@ -20,8 +20,7 @@ interface FreeRateData {
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    isMouseMoveCrosshair: boolean;
-    setIsMouseMoveCrosshair: React.Dispatch<React.SetStateAction<boolean>>;
+    setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
 }
 
 function FeeRateSubChart(props: FreeRateData) {
@@ -37,9 +36,8 @@ function FeeRateSubChart(props: FreeRateData) {
         yAxisWidth,
         setCrossHairLocation,
         setCrosshairActive,
-        isMouseMoveCrosshair,
+        setCrosshairData,
         crosshairActive,
-        setIsMouseMoveCrosshair,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -222,7 +220,7 @@ function FeeRateSubChart(props: FreeRateData) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([4, 2]);
-                    if (isMouseMoveCrosshair && crosshairActive !== 'none') {
+                    if (crosshairActive !== 'none') {
                         crosshairVerticalCanvas(crosshairForSubChart);
                         if (crosshairActive === 'feeRate') {
                             crosshairHorizontalCanvas([
@@ -248,7 +246,6 @@ function FeeRateSubChart(props: FreeRateData) {
         crosshairForSubChart,
         feeRateHorizontalyValue,
         crosshairActive,
-        isMouseMoveCrosshair,
     ]);
 
     const renderCanvas = () => {
@@ -298,14 +295,30 @@ function FeeRateSubChart(props: FreeRateData) {
                         setCrossHairLocation(event, false);
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
-                        setIsMouseMoveCrosshair(true);
+
+                        if (period !== undefined) {
+                            const snapDiff =
+                                xScale.invert(event.offsetX) % (period * 1000);
+
+                            const snappedTime =
+                                xScale.invert(event.offsetX) -
+                                (snapDiff > period * 1000 - snapDiff
+                                    ? -1 * (period * 1000 - snapDiff)
+                                    : snapDiff);
+
+                            setCrosshairData([
+                                {
+                                    x: snappedTime,
+                                    y: feeRateyScale.invert(event.layerY),
+                                },
+                            ]);
+                        }
                         renderCanvas();
                     },
                 );
 
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     renderCanvas();
                 });
             }

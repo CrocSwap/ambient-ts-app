@@ -5,26 +5,27 @@ import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { memoizeTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     token?: TokenIF;
-    tokens: tokenMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function WalletCard(props: propsIF) {
-    const { token, tokens } = props;
+    const { token, cachedFetchTokenPrice } = props;
+    const {
+        tokens: { getTokenByAddress },
+    } = useContext(TokenContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const cachedFetchTokenPrice = memoizeTokenPrice();
-
-    const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;
+    const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
 
     const tokenFromMap = token?.address
-        ? tokens.getTokenByAddress(token.address)
+        ? getTokenByAddress(token.address)
         : null;
 
     const [tokenPrice, setTokenPrice] = useState<{
@@ -44,9 +45,11 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const mainnetAddress = testTokenMap
-                    .get(tokenAddress)
-                    ?.split('_')[0];
+                const chain = tokenMapKey.split('_')[1];
+                const isChainMainnet = chain === '0x1';
+                const mainnetAddress = isChainMainnet
+                    ? tokenMapKey.split('_')[0]
+                    : testTokenMap.get(tokenMapKey)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
@@ -58,7 +61,7 @@ export default function WalletCard(props: propsIF) {
                 console.error(err);
             }
         })();
-    }, [tokenAddress]);
+    }, [tokenMapKey]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 

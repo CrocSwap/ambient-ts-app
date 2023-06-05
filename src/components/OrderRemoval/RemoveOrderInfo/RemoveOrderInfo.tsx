@@ -3,18 +3,11 @@ import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 
 interface IRemoveOrderInfoProps {
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     usdValue: string;
-
-    baseDisplayFrontend: string;
     baseDisplay: string;
     quoteDisplay: string;
-    quoteDisplayFrontend: string;
-    removalPercentage: number;
-    positionLiquidity: string | undefined;
     baseRemovalString: string;
     quoteRemovalString: string;
 }

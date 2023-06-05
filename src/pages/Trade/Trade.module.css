@@ -138,10 +138,10 @@
     position: absolute;
 
     position: fixed;
-  top: 50%;
-  left: 50%;
-  /* bring your own prefixes */
-  transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
 }
 
 .pool_not_initialialized_content {
@@ -322,7 +322,6 @@
     }
     .main_layout {
         display: grid;
-
     }
 
     .main__chart {

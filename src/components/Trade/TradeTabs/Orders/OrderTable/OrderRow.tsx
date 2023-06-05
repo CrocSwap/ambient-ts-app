@@ -6,7 +6,6 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import {
     useAppDispatch,
     useAppSelector,
@@ -20,25 +19,17 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    tradeData: tradeData;
     showColumns: boolean;
     ipadView: boolean;
-    view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
     isAccountView: boolean;
 }
 function OrderRow(props: propsIF) {
+    const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
+        props;
     const {
-        tradeData,
-        showColumns,
-        ipadView,
-        showPair,
-        limitOrder,
-        isAccountView,
-    } = props;
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -116,12 +107,6 @@ function OrderRow(props: propsIF) {
             ? 'gradient_text'
             : 'username_base_color';
     // eslint-disable-next-line
-    const usernameStyleModule =
-        isOwnerActiveAccount && showAllData
-            ? styles.owned_tx_contrast
-            : ensName
-            ? styles.gradient_text
-            : styles.base_color;
     const userPositionStyle =
         userNameToDisplay === 'You' && showAllData
             ? `${styles.border_left} ${sideType}_style`
@@ -133,7 +118,6 @@ function OrderRow(props: propsIF) {
         openGlobalModal(
             <OrderDetails
                 limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
@@ -319,10 +303,8 @@ function OrderRow(props: propsIF) {
 
                 <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
-                        tradeData={tradeData}
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        showHighlightedButton={showHighlightedButton}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
