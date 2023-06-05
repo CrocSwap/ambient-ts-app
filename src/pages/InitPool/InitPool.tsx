@@ -135,21 +135,16 @@ export default function InitPool() {
     const [placeHolderPrice, setPlaceholderPrice] =
         useState<number>(defaultInitialPrice);
 
-    const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
-        if (initialPriceForContract)
+        if (initialPriceForContract) {
             setInitialPriceforContract(1 / initialPriceForContract);
-        setPlaceholderPrice(1 / placeHolderPrice);
-    };
-
-    useEffect(() => {
-        if (initialPriceForContract !== undefined) {
-            setValueDisplayString(initialPriceForContract.toString() || '');
         }
-    }, [initialPriceForContract]);
+        setPlaceholderPrice(1 / placeHolderPrice);
+        initialPriceDOM &&
+            setInitialPriceDOM((1 / parseFloat(initialPriceDOM)).toString());
+    };
 
     useEffect(() => {
         if (initialPriceForContract) {
@@ -397,11 +392,13 @@ export default function InitPool() {
                                             })`}
                                             type='string'
                                             onBlur={(e) => {
-                                                setInitialPriceDOM(
-                                                    parseFloat(
-                                                        e.target.value,
-                                                    ).toString(),
-                                                );
+                                                e.target.value !== ''
+                                                    ? setInitialPriceDOM(
+                                                          parseFloat(
+                                                              e.target.value,
+                                                          ).toString(),
+                                                      )
+                                                    : null;
                                             }}
                                             onChange={(event) => {
                                                 const isValid =
@@ -416,12 +413,7 @@ export default function InitPool() {
                                                     targetValue.startsWith('.')
                                                         ? '0' + targetValue
                                                         : targetValue;
-                                                // const targetValueNum =
-                                                //     parseFloat(input);
-                                                isValid &&
-                                                    setValueDisplayString(
-                                                        input,
-                                                    );
+
                                                 if (
                                                     isValid &&
                                                     ((!isNaN(
