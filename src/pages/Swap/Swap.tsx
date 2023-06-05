@@ -38,7 +38,7 @@ import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConf
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
@@ -61,8 +61,9 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -244,14 +245,6 @@ function Swap(props: propsIF) {
             setTxErrorCode(error?.code);
             setIsWaitingForWallet(false);
         }
-
-        const inBaseQty =
-            (isSellTokenBase && isTokenAPrimary) ||
-            (!isSellTokenBase && !isTokenAPrimary);
-
-        const crocQty = await crocEnv
-            .token(isTokenAPrimary ? tokenA.address : tokenB.address)
-            .normQty(qty);
 
         let receipt;
         try {

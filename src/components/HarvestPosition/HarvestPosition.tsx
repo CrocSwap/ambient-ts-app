@@ -34,11 +34,7 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import {
-    GRAPHCACHE_SMALL_URL,
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-} from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 

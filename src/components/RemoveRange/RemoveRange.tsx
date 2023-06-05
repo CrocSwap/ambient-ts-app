@@ -372,45 +372,6 @@ export default function RemoveRange(props: propsIF) {
                 setNewRemovalTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    if (position.positionType === 'ambient') {
-                        fetch(
-                            newLiqChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: position.chainId,
-                                    tx: newTransactionHash,
-                                    user: position.user,
-                                    base: position.base,
-                                    quote: position.quote,
-                                    poolIdx: position.poolIdx.toString(),
-                                    positionType: 'ambient',
-                                    changeType: 'burn',
-                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    } else {
-                        fetch(
-                            newLiqChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: position.chainId,
-                                    tx: newTransactionHash,
-                                    user: position.user,
-                                    base: position.base,
-                                    quote: position.quote,
-                                    poolIdx: position.poolIdx.toString(),
-                                    positionType: 'concentrated',
-                                    bidTick: position.bidTick.toString(),
-                                    askTick: position.askTick.toString(),
-                                    changeType: 'burn',
-                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    }
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
