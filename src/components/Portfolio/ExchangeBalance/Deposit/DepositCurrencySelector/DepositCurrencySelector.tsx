@@ -6,6 +6,7 @@ import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { decimalNumRegEx } from '../../../../../utils/regex/decimalNumRegEx';
 
 interface propsIF {
     fieldId: string;
@@ -56,7 +57,7 @@ export default function DepositCurrencySelector(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.toString()}
                 disabled={disable}
             />
         </div>
