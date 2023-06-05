@@ -11,7 +11,7 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
@@ -88,8 +88,6 @@ export default function RangeDetails(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
-
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
     >();
@@ -125,7 +123,6 @@ export default function RangeDetails(props: propsIF) {
     useEffect(() => {
         const positionStatsCacheEndpoint =
             GRAPHCACHE_SMALL_URL + '/position_stats?';
-        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
         if (position.positionType) {
             fetch(
@@ -145,9 +142,15 @@ export default function RangeDetails(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then(async (json) => {
-                    if (!crocEnv) {
+                    if (!crocEnv || !json?.data) {
+                        setBaseCollateralDisplay(undefined);
+                        setQuoteCollateralDisplay(undefined);
+                        setUsdValue(undefined);
+                        setBaseFeesDisplay(undefined);
+                        setQuoteFeesDisplay(undefined);
                         return;
                     }
+
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -240,31 +243,6 @@ export default function RangeDetails(props: propsIF) {
                               maximumFractionDigits: 2,
                           });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-                })
-                .catch(console.error);
-
-            fetch(
-                apyCacheEndpoint +
-                    new URLSearchParams({
-                        user: user,
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        positionType: position.positionType,
-                        concise: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const results = json?.data.results;
-                    const apr = results.apy;
-
-                    if (apr) {
-                        setUpdatedPositionApy(apr);
-                    }
                 })
                 .catch(console.error);
         }

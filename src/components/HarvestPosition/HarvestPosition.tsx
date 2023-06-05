@@ -37,6 +37,9 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -65,6 +68,7 @@ export default function HarvestPosition(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+    const { tokens } = useContext(TokenContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,
@@ -168,13 +172,27 @@ export default function HarvestPosition(props: propsIF) {
                         }),
                 )
                     .then((response) => response.json())
-                    .then((json) => {
-                        setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected,
-                        );
-                        setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected,
-                        );
+                    .then(async (json) => {
+                        if (crocEnv && json?.data) {
+                            const payload = json.data as PositionServerIF;
+                            const position = await getPositionData(
+                                payload,
+                                tokens.tokenUniv,
+                                crocEnv,
+                                chainId,
+                                lastBlockNumber,
+                            );
+
+                            setFeeLiqBaseDecimalCorrected(
+                                position.feesLiqBaseDecimalCorrected,
+                            );
+                            setFeeLiqQuoteDecimalCorrected(
+                                position.feesLiqQuoteDecimalCorrected,
+                            );
+                        } else {
+                            setFeeLiqBaseDecimalCorrected(undefined);
+                            setFeeLiqQuoteDecimalCorrected(undefined);
+                        }
                     });
             })();
         }

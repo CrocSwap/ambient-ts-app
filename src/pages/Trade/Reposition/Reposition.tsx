@@ -52,6 +52,9 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getPositionData } from '../../../App/functions/getPositionData';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 
 function Reposition() {
     // current URL parameter string
@@ -62,6 +65,7 @@ function Reposition() {
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const {
@@ -433,8 +437,20 @@ function Reposition() {
                 }),
         )
             .then((response) => response?.json())
-            .then((json) => {
-                const positionStats = json?.data;
+            .then(async (json) => {
+                if (!crocEnv || !json?.data) {
+                    setCurrentBaseQtyDisplayTruncated('...');
+                    setCurrentQuoteQtyDisplayTruncated('...');
+                    return;
+                }
+
+                const positionStats = await getPositionData(
+                    json.data as PositionServerIF,
+                    tokens.tokenUniv,
+                    crocEnv,
+                    position.chainId,
+                    lastBlockNumber,
+                );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =

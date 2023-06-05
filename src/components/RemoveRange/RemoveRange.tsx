@@ -36,10 +36,13 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 
 interface propsIF {
     baseTokenAddress: string;
@@ -73,6 +76,8 @@ export default function RemoveRange(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
+    const { tokens } = useContext(TokenContext);
+
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
@@ -84,7 +89,8 @@ export default function RemoveRange(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -182,28 +188,34 @@ export default function RemoveRange(props: propsIF) {
                         }),
                 )
                     .then((response) => response.json())
-                    .then((json) => {
-                        setPosLiqBaseDecimalCorrected(
-                            json?.data?.positionLiqBaseDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.positionLiqBaseDecimalCorrected,
-                        );
-                        setPosLiqQuoteDecimalCorrected(
-                            json?.data?.positionLiqQuoteDecimalCorrected ===
-                                null
-                                ? undefined
-                                : json?.data?.positionLiqQuoteDecimalCorrected,
-                        );
-                        setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.feesLiqBaseDecimalCorrected,
-                        );
-                        setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.feesLiqQuoteDecimalCorrected,
-                        );
+                    .then((json) => json?.data)
+                    .then(async (data: PositionServerIF) => {
+                        if (data && crocEnv) {
+                            const position = await getPositionData(
+                                data,
+                                tokens.tokenUniv,
+                                crocEnv,
+                                chainId,
+                                lastBlockNumber,
+                            );
+                            setPosLiqBaseDecimalCorrected(
+                                position.positionLiqBaseDecimalCorrected,
+                            );
+                            setPosLiqQuoteDecimalCorrected(
+                                position.positionLiqQuoteDecimalCorrected,
+                            );
+                            setFeeLiqBaseDecimalCorrected(
+                                position.feesLiqBaseDecimalCorrected,
+                            );
+                            setFeeLiqQuoteDecimalCorrected(
+                                position.feesLiqQuoteDecimalCorrected,
+                            );
+                        } else {
+                            setPosLiqBaseDecimalCorrected(undefined);
+                            setPosLiqQuoteDecimalCorrected(undefined);
+                            setFeeLiqBaseDecimalCorrected(undefined);
+                            setFeeLiqQuoteDecimalCorrected(undefined);
+                        }
                     })
                     .catch((error) => console.error({ error }));
             })();
