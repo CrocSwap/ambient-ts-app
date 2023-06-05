@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
-export default function TopPools() {
+interface TopPoolsPropsIF {
+    noTitle?: boolean;
+    gap?: string;
+}
+export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
 
     const { t } = useTranslation();
@@ -20,10 +24,19 @@ export default function TopPools() {
             animate={{ width: '100%' }}
             exit={{ x: window.innerWidth, transition: { duration: 2 } }}
         >
-            <div className={styles.title} tabIndex={0} aria-label='Top Pools'>
-                {t('topPools')}
-            </div>
-            <div className={styles.content}>
+            {!props.noTitle && (
+                <div
+                    className={styles.title}
+                    tabIndex={0}
+                    aria-label='Top Pools'
+                >
+                    {t('topPools')}
+                </div>
+            )}
+            <div
+                className={styles.content}
+                style={{ gap: props.gap ? props.gap : '1rem' }}
+            >
                 {topPools.map((pool, idx) => (
                     <PoolCard key={idx} pool={pool} />
                 ))}

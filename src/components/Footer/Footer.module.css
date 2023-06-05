@@ -39,16 +39,7 @@
 
 .mobile_bg{
 
-    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../assets/images/home/home3.png') no-repeat center center
-    ;
-    mix-blend-mode: lighten;
     
-    
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    padding-top: 6rem;
-    background-size: cover;
 }
 .mobile_version{
     display: grid;

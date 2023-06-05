@@ -103,6 +103,7 @@
     /* .row7{ grid-template-columns: 1fr 1fr;} */
 }
 .mobile_container {
+    height: 70%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     grid-gap: 10px;
@@ -110,8 +111,7 @@
     justify-items: center;
     padding: 1rem 2rem;
 
-    background: radial-gradient(ellipse at top, var(--dark1), transparent),         
-       radial-gradient(ellipse at bottom, var(--dark3), transparent);
+    
   }
   
   .mobile_container img {
