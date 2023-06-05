@@ -22,18 +22,10 @@ function LimitCurrencyQuantity(props: propsIF) {
     }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (event && fieldId === 'sell') {
-        //     setTokenBInputQty('');
-        // } else if (event && fieldId === 'buy') {
-        //     setTokenAInputQty('');
-        // }
-
         handleChangeEvent(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
-
         setDisplayValue(input);
     };
 
