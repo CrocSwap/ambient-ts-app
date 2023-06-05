@@ -313,7 +313,6 @@ export default function Chart(props: propsIF) {
 
     // Rules
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
-    const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -427,6 +426,11 @@ export default function Chart(props: propsIF) {
 
     const [gradientForAsk, setGradientForAsk] = useState();
     const [gradientForBid, setGradientForBid] = useState();
+    const [defaultGradientForBid, setDefaultGradientForBid] = useState();
+    const [defaultGradientForAsk, setDefaultGradientForAsk] = useState();
+
+    const [isMouseLeaveLiq, setIsMouseLeaveLiq] = useState(true);
+
     const [yAxisLabels] = useState<yLabel[]>([]);
 
     const currentPoolPriceTick =
@@ -1434,16 +1438,6 @@ export default function Chart(props: propsIF) {
                                         touch1.clientX,
                                     );
                                 } else {
-                                    if (rescale) {
-                                        crosshairData[0].y = Number(
-                                            formatAmountChartData(
-                                                scaleData?.yScale.invert(
-                                                    event.sourceEvent.layerY,
-                                                ),
-                                            ),
-                                        );
-                                    }
-
                                     const domainX = scaleData?.xScale.domain();
                                     const linearX = d3
                                         .scaleTime()
@@ -2680,7 +2674,6 @@ export default function Chart(props: propsIF) {
                 .drag()
                 .on('start', (event) => {
                     setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                     document.addEventListener('keydown', cancelDragEvent);
                     d3.select(d3CanvasRangeLine.current).style(
                         'cursor',
@@ -3054,15 +3047,7 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })
-                .on('end', (event: any) => {
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y: scaleData?.yScale.invert(
-                                event.sourceEvent.layerY,
-                            ),
-                        },
-                    ]);
+                .on('end', () => {
                     setIsLineDrag(false);
 
                     if (!cancelDrag) {
@@ -3137,7 +3122,6 @@ export default function Chart(props: propsIF) {
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
                     setCrosshairActive('none');
-                    setIsMouseMoveCrosshair(false);
                 });
 
             let oldLimitValue: number | undefined = undefined;
@@ -3157,7 +3141,6 @@ export default function Chart(props: propsIF) {
                 })
                 .on('drag', function (event) {
                     if (!cancelDrag) {
-                        setIsMouseMoveCrosshair(false);
                         setCrosshairActive('none');
                         setIsLineDrag(true);
 
@@ -3244,18 +3227,10 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })
-                .on('end', (event: any) => {
+                .on('end', () => {
                     setIsLineDrag(false);
 
                     draggingLine = undefined;
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y: scaleData?.yScale.invert(
-                                event.sourceEvent.layerY,
-                            ),
-                        },
-                    ]);
 
                     if (!cancelDrag) {
                         d3.select(d3Container.current).style(
@@ -3342,7 +3317,6 @@ export default function Chart(props: propsIF) {
 
                     d3.select(d3Yaxis.current).style('cursor', 'default');
 
-                    setIsMouseMoveCrosshair(false);
                     setCrosshairActive('none');
                 });
 
@@ -3376,7 +3350,6 @@ export default function Chart(props: propsIF) {
         }
     }, [reset]);
 
-    // Axis's
     useEffect(() => {
         if (scaleData) {
             const _yAxis = d3fc.axisRight().scale(scaleData?.yScale);
@@ -3395,7 +3368,12 @@ export default function Chart(props: propsIF) {
             setXaxis(() => {
                 return _xAxis;
             });
+        }
+    }, [scaleData]);
 
+    // Axis's
+    useEffect(() => {
+        if (scaleData) {
             const d3YaxisCanvas = d3
                 .select(d3Yaxis.current)
                 .select('canvas')
@@ -3436,7 +3414,6 @@ export default function Chart(props: propsIF) {
         diffHashSig(scaleData),
         market,
         diffHashSig(crosshairData),
-        isMouseMoveCrosshair,
         limit,
         isLineDrag,
         ranges,
@@ -3868,7 +3845,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                if (isMouseMoveCrosshair && crosshairActive === 'chart') {
+                if (crosshairActive === 'chart') {
                     const isScientificCrTick = crosshairData[0].y
                         .toString()
                         .includes('e');
@@ -3973,7 +3950,6 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    isMouseMoveCrosshair &&
                     crosshairActive !== 'none' &&
                     xScale(d.date) > xScale(crosshairData[0].x) - _width &&
                     xScale(d.date) < xScale(crosshairData[0].x) + _width &&
@@ -4054,11 +4030,7 @@ export default function Chart(props: propsIF) {
 
         context.beginPath();
 
-        if (
-            dateCrosshair &&
-            isMouseMoveCrosshair &&
-            crosshairActive !== 'none'
-        ) {
+        if (dateCrosshair && crosshairActive !== 'none') {
             context.fillText(
                 dateCrosshair,
                 xScale(crosshairData[0].x),
@@ -5524,7 +5496,12 @@ export default function Chart(props: propsIF) {
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
         gradient.addColorStop(1, liqAskColor);
-        setGradientForAsk(gradient);
+        setGradientForAsk(() => {
+            return gradient;
+        });
+        setDefaultGradientForAsk(() => {
+            return gradient;
+        });
     }
 
     function setBidGradientDefault() {
@@ -5534,8 +5511,22 @@ export default function Chart(props: propsIF) {
 
         const gradient = ctx.createLinearGradient(0, 0, 100, 0);
         gradient.addColorStop(1, liqBidColor);
-        setGradientForBid(gradient);
+        setGradientForBid(() => {
+            return gradient;
+        });
+        setDefaultGradientForBid(() => {
+            return gradient;
+        });
     }
+
+    useEffect(() => {
+        if (!isMouseLeaveLiq) {
+            setAskGradientDefault();
+            setBidGradientDefault();
+
+            if (liqTooltip) liqTooltip.style('visibility', 'hidden');
+        }
+    }, [isMouseLeaveLiq]);
 
     useEffect(() => {
         setAskGradientDefault();
@@ -5549,7 +5540,9 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = gradientForAsk;
+                    context.fillStyle = isMouseLeaveLiq
+                        ? gradientForAsk
+                        : defaultGradientForAsk;
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
@@ -5564,7 +5557,9 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = gradientForAsk;
+                    context.fillStyle = isMouseLeaveLiq
+                        ? gradientForAsk
+                        : defaultGradientForAsk;
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
@@ -5584,6 +5579,8 @@ export default function Chart(props: propsIF) {
         liqMode,
         liquidityScale,
         liquidityDepthScale,
+        isMouseLeaveLiq,
+        defaultGradientForAsk,
     ]);
 
     useEffect(() => {
@@ -5591,7 +5588,9 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = gradientForBid;
+                    context.fillStyle = isMouseLeaveLiq
+                        ? gradientForBid
+                        : defaultGradientForBid;
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
@@ -5606,7 +5605,9 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = gradientForBid;
+                    context.fillStyle = isMouseLeaveLiq
+                        ? gradientForBid
+                        : undefined;
                     context.strokeWidth = 2;
                 })
                 .orient('horizontal')
@@ -5626,6 +5627,8 @@ export default function Chart(props: propsIF) {
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
+        isMouseLeaveLiq,
+        defaultGradientForBid,
     ]);
 
     useEffect(() => {
@@ -6291,7 +6294,7 @@ export default function Chart(props: propsIF) {
                     bidMinBoudnary < currentDataY &&
                     currentDataY < bidMaxBoudnary
                 ) {
-                    setAskGradientDefault();
+                    setIsMouseLeaveLiq(true);
                     bidAreaFunc(event, bidMinBoudnary, bidMaxBoudnary);
                 } else if (
                     askMinBoudnary !== undefined &&
@@ -6301,28 +6304,19 @@ export default function Chart(props: propsIF) {
                         askMinBoudnary < currentDataY &&
                         currentDataY < askMaxBoudnary
                     ) {
-                        setBidGradientDefault();
+                        setIsMouseLeaveLiq(true);
                         askAreaFunc(event, askMinBoudnary, askMaxBoudnary);
                     }
                 }
             }
         } else {
-            mouseOutFuncForLiq();
+            setIsMouseLeaveLiq(false);
         }
     };
 
     useEffect(() => {
-        if (isLineDrag || isChartZoom) {
-            mouseOutFuncForLiq();
-        }
+        setIsMouseLeaveLiq(isLineDrag || isChartZoom);
     }, [isLineDrag, isChartZoom]);
-
-    const mouseOutFuncForLiq = () => {
-        if (liqTooltip) liqTooltip.style('visibility', 'hidden');
-
-        setAskGradientDefault();
-        setBidGradientDefault();
-    };
 
     const bidAreaFunc = (
         event: any,
@@ -6574,8 +6568,7 @@ export default function Chart(props: propsIF) {
                     ? -1 * (period * 1000 - snapDiff)
                     : snapDiff);
 
-            setIsMouseMoveCrosshair(true);
-            setCrosshairActive('chart');
+            // setCrosshairActive('chart');
 
             setCrosshairData([
                 {
@@ -6584,7 +6577,13 @@ export default function Chart(props: propsIF) {
                 },
             ]);
 
-            renderCanvasArray([d3CanvasCrosshair]);
+            renderCanvasArray([
+                d3CanvasCrosshair,
+                d3CanvasLiqBid,
+                d3CanvasLiqBidDepth,
+                d3CanvasLiqAsk,
+                d3CanvasLiqAskDepth,
+            ]);
         }
 
         const { isHoverCandleOrVolumeData } =
@@ -6652,7 +6651,6 @@ export default function Chart(props: propsIF) {
                 );
 
                 setCrosshairActive('none');
-                setIsMouseMoveCrosshair(false);
 
                 if (
                     (location.pathname.includes('range') ||
@@ -6741,9 +6739,8 @@ export default function Chart(props: propsIF) {
 
             d3.select(d3Container.current).on('mouseleave', () => {
                 setCrosshairActive('none');
-                setIsMouseMoveCrosshair(false);
 
-                mouseOutFuncForLiq();
+                setIsMouseLeaveLiq(false);
                 if (unparsedCandleData) {
                     const lastData = unparsedCandleData.find(
                         (item: any) =>
@@ -6779,8 +6776,7 @@ export default function Chart(props: propsIF) {
 
             const mouseLeaveCanvas = () => {
                 setCrosshairActive('none');
-                setIsMouseMoveCrosshair(false);
-                mouseOutFuncForLiq();
+                setIsMouseLeaveLiq(false);
             };
 
             d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
@@ -6796,7 +6792,6 @@ export default function Chart(props: propsIF) {
             const mouseEnterCanvas = () => {
                 if (!isLineDrag) {
                     setCrosshairActive('chart');
-                    setIsMouseMoveCrosshair(true);
                 }
 
                 props.setShowTooltip(true);
@@ -6821,6 +6816,7 @@ export default function Chart(props: propsIF) {
             liquidityDepthScale,
             isLineDrag,
             selectedDate,
+            isMouseLeaveLiq,
         ],
     );
 
@@ -7130,6 +7126,7 @@ export default function Chart(props: propsIF) {
                                 )}
                                 period={period}
                                 crosshairForSubChart={crosshairData}
+                                setCrosshairData={setCrosshairData}
                                 subChartValues={subChartValues}
                                 xScale={
                                     scaleData !== undefined
@@ -7147,10 +7144,6 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
-                                isMouseMoveCrosshair={isMouseMoveCrosshair}
-                                setIsMouseMoveCrosshair={
-                                    setIsMouseMoveCrosshair
-                                }
                             />
                         </>
                     )}
@@ -7164,6 +7157,7 @@ export default function Chart(props: propsIF) {
                                 )}
                                 period={period}
                                 crosshairForSubChart={crosshairData}
+                                setCrosshairData={setCrosshairData}
                                 scaleData={scaleData}
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
@@ -7177,10 +7171,6 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
-                                isMouseMoveCrosshair={isMouseMoveCrosshair}
-                                setIsMouseMoveCrosshair={
-                                    setIsMouseMoveCrosshair
-                                }
                             />
                         </>
                     )}
