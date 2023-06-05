@@ -56,6 +56,10 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         .then((json) => {
             const userTransactions = json?.data;
 
+            if (!userTransactions) {
+                return [] as TransactionIF[];
+            }
+
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
                     return getTransactionData(
