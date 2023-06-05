@@ -6820,6 +6820,7 @@ export default function Chart(props: propsIF) {
             liquidityScale,
             liquidityDepthScale,
             isLineDrag,
+            selectedDate,
         ],
     );
 
