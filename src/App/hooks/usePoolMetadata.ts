@@ -129,8 +129,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         ],
     );
 
-    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
-    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    // Token and range housekeeping when switching pairs
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
@@ -193,6 +192,33 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     setBaseTokenDecimals(tradeData.tokenB.decimals);
                     setQuoteTokenDecimals(tradeData.tokenA.decimals);
                 }
+            }
+        }
+    }, [
+        props.receiptCount,
+        rtkMatchesParams,
+        tradeData.tokenA.address,
+        tradeData.tokenB.address,
+        quoteTokenAddress,
+        props.chainData.chainId,
+        props.chainData.poolIndex,
+        props.searchableTokens,
+        props.lastBlockNumber == 0,
+        !!props.crocEnv,
+    ]);
+
+    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
+    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    useEffect(() => {
+        if (rtkMatchesParams && props.crocEnv) {
+            const tokenAAddress = tradeData.tokenA.address;
+            const tokenBAddress = tradeData.tokenB.address;
+
+            if (tokenAAddress && tokenBAddress) {
+                const sortedTokens = sortBaseQuoteTokens(
+                    tokenAAddress,
+                    tokenBAddress,
+                );
 
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled && props.httpGraphCacheServerDomain) {
