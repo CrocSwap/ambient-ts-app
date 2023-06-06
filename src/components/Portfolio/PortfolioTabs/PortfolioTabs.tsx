@@ -241,7 +241,6 @@ export default function PortfolioTabs(props: propsIF) {
                     console.debug(
                         'querying user tx/order/positions because address changed',
                     );
-                dispatch(resetLookupUserDataLoadingStatus());
                 await getLookupUserTransactions(resolvedAddress);
                 await getLookupUserLimitOrders(resolvedAddress);
                 await getLookupUserPositions(resolvedAddress);
