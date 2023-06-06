@@ -28,10 +28,7 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import {
-    resetLookupUserDataLoadingStatus,
-    setDataLoadingStatus,
-} from '../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
@@ -241,7 +238,6 @@ export default function PortfolioTabs(props: propsIF) {
                     console.debug(
                         'querying user tx/order/positions because address changed',
                     );
-                dispatch(resetLookupUserDataLoadingStatus());
                 await getLookupUserTransactions(resolvedAddress);
                 await getLookupUserLimitOrders(resolvedAddress);
                 await getLookupUserPositions(resolvedAddress);
