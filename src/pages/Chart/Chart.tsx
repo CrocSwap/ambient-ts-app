@@ -504,7 +504,7 @@ export default function Chart(props: propsIF) {
                     );
                     const domain = [
                         simpleRangeWidth !== 100
-                            ? Math.min(min, max)
+                            ? Math.min(min, max) - buffer
                             : 0 - buffer,
                         Math.max(max, min) + buffer / 2,
                     ];
@@ -5694,7 +5694,6 @@ export default function Chart(props: propsIF) {
                             Math.min(low, high) - bufferForRange,
                             Math.max(low, high) + bufferForRange / 2,
                         ];
-
                         scaleData?.yScale.domain(domain);
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
