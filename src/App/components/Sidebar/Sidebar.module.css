@@ -48,6 +48,7 @@
 
 .close_icon {
     display: flex;
+    cursor: pointer;
 }
 .bottom_elements {
     margin-top: auto;
