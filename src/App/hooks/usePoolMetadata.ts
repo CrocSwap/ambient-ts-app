@@ -143,12 +143,15 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             const tokenBAddress = tradeData.tokenB.address;
 
             if (tokenAAddress && tokenBAddress) {
+                const chainId = props.chainData.chainId;
                 const sortedTokens = sortBaseQuoteTokens(
                     tokenAAddress,
                     tokenBAddress,
                 );
                 const tokenAMainnetEquivalent =
-                    tokenAAddress === ZERO_ADDRESS
+                    chainId === '0x1'
+                        ? tokenAAddress
+                        : tokenAAddress === ZERO_ADDRESS
                         ? tokenAAddress
                         : testTokenMap
                               .get(
@@ -158,7 +161,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                               )
                               ?.split('_')[0];
                 const tokenBMainnetEquivalent =
-                    tokenBAddress === ZERO_ADDRESS
+                    chainId === '0x1'
+                        ? tokenBAddress
+                        : tokenBAddress === ZERO_ADDRESS
                         ? tokenBAddress
                         : testTokenMap
                               .get(
