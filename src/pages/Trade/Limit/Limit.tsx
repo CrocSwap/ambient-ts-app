@@ -430,7 +430,6 @@ export default function Limit() {
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
         if (!crocEnv) {
-            location.reload();
             return;
         }
         if (limitTick === undefined) return;
@@ -591,7 +590,6 @@ export default function Limit() {
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
-            location.reload();
             return;
         }
         try {

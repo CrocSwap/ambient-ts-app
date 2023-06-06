@@ -272,7 +272,6 @@ export default function HarvestPosition(props: propsIF) {
     const harvestFn = async () => {
         setShowConfirmation(true);
         if (!crocEnv) {
-            location.reload();
             return;
         }
         const env = crocEnv;

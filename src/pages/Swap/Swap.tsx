@@ -200,7 +200,6 @@ function Swap(props: propsIF) {
         resetConfirmation();
         setIsWaitingForWallet(true);
         if (!crocEnv) {
-            location.reload();
             return;
         }
 
@@ -369,7 +368,6 @@ function Swap(props: propsIF) {
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
-            location.reload();
             return;
         }
         try {

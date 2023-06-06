@@ -259,7 +259,6 @@ export default function Deposit(props: propsIF) {
 
     const approve = async (tokenAddress: string) => {
         if (!crocEnv) {
-            location.reload();
             return;
         }
         try {

@@ -149,7 +149,6 @@ export const fetchErc20TokenBalances = async (
     crocEnv: CrocEnv | undefined,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) {
-        location.reload();
         return;
     }
 

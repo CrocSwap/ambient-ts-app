@@ -928,7 +928,6 @@ function Range() {
 
     const sendTransaction = async () => {
         if (!crocEnv) {
-            location.reload();
             return;
         }
 
@@ -1363,7 +1362,6 @@ function Range() {
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) {
-            location.reload();
             return;
         }
         try {
