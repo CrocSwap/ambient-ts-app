@@ -47,6 +47,7 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -82,6 +83,12 @@ function TradeTabs2(props: propsIF) {
         showActiveMobileComponent,
     } = props;
 
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
     const {
         crocEnv,
@@ -273,6 +280,10 @@ function TradeTabs2(props: propsIF) {
                 time: filter?.time,
                 crocEnv: crocEnv,
                 lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((selectedCandleChangesJson) => {
                     IS_LOCAL_ENV &&
@@ -312,6 +323,10 @@ function TradeTabs2(props: propsIF) {
                     n: 100, // fetch last 100 changes,
                     crocEnv,
                     lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {

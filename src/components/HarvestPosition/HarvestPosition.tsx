@@ -40,6 +40,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getPositionData } from '../../App/functions/getPositionData';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { TokenContext } from '../../contexts/TokenContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -61,6 +62,12 @@ export default function HarvestPosition(props: propsIF) {
     // settings
     const [showSettings, setShowSettings] = useState(false);
 
+    const {
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
@@ -181,6 +188,10 @@ export default function HarvestPosition(props: propsIF) {
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
 
                             setFeeLiqBaseDecimalCorrected(

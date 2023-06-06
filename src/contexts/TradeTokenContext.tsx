@@ -6,6 +6,7 @@ import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -48,6 +49,12 @@ export const TradeTokenContextProvider = (props: {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
@@ -88,6 +95,10 @@ export const TradeTokenContextProvider = (props: {
         lastBlockNumber,
         isServerEnabled,
         cachedPoolLiquidity,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
         setSimpleRangeWidth,
         isChartEnabled,
     });

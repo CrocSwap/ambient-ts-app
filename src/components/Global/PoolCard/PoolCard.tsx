@@ -4,10 +4,7 @@ import { Link } from 'react-router-dom';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get24hChange,
-    memoizePoolStats,
-} from '../../../App/functions/getPoolStats';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 import { formatAmountOld } from '../../../utils/numbers';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
@@ -15,8 +12,8 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface propsIF {
     pool: topPoolIF;
@@ -27,6 +24,8 @@ export default function PoolCard(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const { cachedPoolStatsFetch, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -34,9 +33,6 @@ export default function PoolCard(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const userData = useAppSelector((state) => state.userData);
-
-    const cachedPoolStatsFetch = memoizePoolStats();
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
