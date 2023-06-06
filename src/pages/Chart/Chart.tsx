@@ -6361,7 +6361,7 @@ export default function Chart(props: propsIF) {
                     ? -1 * (period * 1000 - snapDiff)
                     : snapDiff);
 
-            // setCrosshairActive('chart');
+            setCrosshairActive('chart');
 
             setCrosshairData([
                 {
@@ -6610,6 +6610,7 @@ export default function Chart(props: propsIF) {
             isLineDrag,
             selectedDate,
             isMouseLeaveLiq,
+            unparsedCandleData?.length,
         ],
     );
 
