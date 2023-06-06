@@ -1,15 +1,9 @@
 import styles from './VolumeTVLFee.module.css';
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useRef,
-    memo,
-    useContext,
-} from 'react';
+import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import { SubChartTogglesIF } from '../../../../App/hooks/useChartSettings';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../../constants';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;
@@ -28,7 +22,13 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         showTvl,
         showFeeRate,
     } = props;
-    const { chartSettings } = useContext(ChartContext);
+
+    const updateSubChartToggles = (newStatus: SubChartTogglesIF) => {
+        localStorage.setItem(
+            LS_KEY_SUBCHART_SETTINGS,
+            JSON.stringify({ ...newStatus }),
+        );
+    };
 
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
         useState(false);
@@ -37,16 +37,32 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
 
     const handleVolumeToggle = () => {
         setShowVolume(!showVolume);
-        chartSettings.volumeSubchart.toggle();
+        const newSubChartStatus: SubChartTogglesIF = {
+            isVolumeSubchartEnabled: !showVolume,
+            isTvlSubchartEnabled: showTvl,
+            isFeeRateSubchartEnabled: showFeeRate,
+        };
+        updateSubChartToggles(newSubChartStatus);
     };
 
     const handleTvlToggle = () => {
         setShowTvl(!showTvl);
-        chartSettings.tvlSubchart.toggle();
+        const newSubChartStatus: SubChartTogglesIF = {
+            isVolumeSubchartEnabled: showVolume,
+            isTvlSubchartEnabled: !showTvl,
+            isFeeRateSubchartEnabled: showFeeRate,
+        };
+        updateSubChartToggles(newSubChartStatus);
     };
     const handleFeeRateToggle = () => {
         setShowFeeRate(!showFeeRate);
-        chartSettings.feeRateSubchart.toggle();
+        // localStorage.setItem('isFeeRateSubchartEnabled', `${!showFeeRate}`);
+        const newSubChartStatus: SubChartTogglesIF = {
+            isVolumeSubchartEnabled: showVolume,
+            isTvlSubchartEnabled: showTvl,
+            isFeeRateSubchartEnabled: !showFeeRate,
+        };
+        updateSubChartToggles(newSubChartStatus);
     };
 
     const volumeTvlAndFeeData = [

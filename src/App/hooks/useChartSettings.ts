@@ -1,7 +1,12 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
+import {
+    LS_KEY_CHART_SETTINGS,
+    LS_KEY_SUBCHART_SETTINGS,
+} from '../../constants';
+import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 // interface for shape of data held in local storage
-interface chartSettingsIF {
+export interface chartSettingsIF {
     isVolumeSubchartEnabled: boolean;
     isTvlSubchartEnabled: boolean;
     isFeeRateSubchartEnabled: boolean;
@@ -17,6 +22,12 @@ interface subchartSettingsIF {
     enable: () => void;
     disable: () => void;
     toggle: () => void;
+}
+
+export interface SubChartTogglesIF {
+    isVolumeSubchartEnabled: boolean;
+    isTvlSubchartEnabled: boolean;
+    isFeeRateSubchartEnabled: boolean;
 }
 
 // interface for class to manage a given chart overlay
@@ -49,43 +60,13 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (): chartSettingsMethodsIF => {
-    // key for data held in local storage
-    const localStorageKey = 'chart_settings';
-
-    // fn to retrieve and parse persisted data from local storage
-    // will return `null` if the key-val pair does not exist
-    const getDataFromLocalStorage = (): chartSettingsIF | null =>
-        JSON.parse(localStorage.getItem(localStorageKey) as string);
-
-    // fn to check a user preference for any given subchart
-    const getSubchart = (subchart: string): boolean | undefined => {
-        // persisted data from local storage, returns `null` if not present
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
-        // declare an output variable to be assigned in switch router
-        let output: boolean | undefined;
-        // logic router to assign a value to output
-        // returns `undefined` if there is missing data or for invalid input
-        switch (subchart) {
-            case 'volume':
-                output = chartSettings?.isVolumeSubchartEnabled;
-                break;
-            case 'tvl':
-                output = chartSettings?.isTvlSubchartEnabled;
-                break;
-            case 'feeRate':
-                output = chartSettings?.isFeeRateSubchartEnabled;
-                break;
-            default:
-                return;
-        }
-        return output;
-    };
-
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
     const getOverlay = (overlayFor: string): string | undefined => {
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
+        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
+            LS_KEY_CHART_SETTINGS,
+        );
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
         // logic router to assign a value to output
@@ -105,7 +86,9 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     };
 
     const getCandleTime = (timeFor: string): number | undefined => {
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
+        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
+            LS_KEY_CHART_SETTINGS,
+        );
         let time: number | undefined;
         switch (timeFor) {
             case 'market':
@@ -121,15 +104,32 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         return time;
     };
 
+    const getSubChartToggles = (subchart: 'volume' | 'tvl' | 'feeRate') => {
+        const subChartToggles: SubChartTogglesIF | null = getLocalStorageItem(
+            LS_KEY_SUBCHART_SETTINGS,
+        );
+
+        switch (subchart) {
+            case 'volume':
+                return subChartToggles?.isVolumeSubchartEnabled;
+            case 'tvl':
+                return subChartToggles?.isTvlSubchartEnabled;
+            case 'feeRate':
+                return subChartToggles?.isFeeRateSubchartEnabled;
+            default:
+                return false;
+        }
+    };
+
     // hooks to memoize user preferences in local state
     // initializer fallback value is default setting for new users
     const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] =
-        useState<boolean>(getSubchart('volume') ?? true);
+        useState<boolean>(getSubChartToggles('volume') ?? true);
     const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
-        getSubchart('tvl') ?? false,
+        getSubChartToggles('tvl') ?? false,
     );
     const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] =
-        useState<boolean>(getSubchart('feeRate') ?? false);
+        useState<boolean>(getSubChartToggles('feeRate') ?? false);
 
     const [marketOverlay, setMarketOverlay] = useState<string>(
         getOverlay('market') ?? 'depth',
@@ -148,26 +148,15 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
         localStorage.setItem(
-            localStorageKey,
+            LS_KEY_CHART_SETTINGS,
             JSON.stringify({
-                isVolumeSubchartEnabled,
-                isTvlSubchartEnabled,
-                isFeeRateSubchartEnabled,
                 marketOverlay,
                 rangeOverlay,
                 candleTimeMarket,
                 candleTimeRange,
             }),
         );
-    }, [
-        isVolumeSubchartEnabled,
-        isTvlSubchartEnabled,
-        isFeeRateSubchartEnabled,
-        marketOverlay,
-        rangeOverlay,
-        candleTimeMarket,
-        candleTimeRange,
-    ]);
+    }, [marketOverlay, rangeOverlay, candleTimeMarket, candleTimeRange]);
 
     // class definition for subchart setting and methods
     class Subchart implements subchartSettingsIF {
