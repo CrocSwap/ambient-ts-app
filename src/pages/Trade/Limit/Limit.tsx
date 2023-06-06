@@ -343,9 +343,7 @@ export default function Limit() {
 
     const updateOrderValidityStatus = async () => {
         try {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             if (!limitTick) return;
 
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
@@ -429,10 +427,7 @@ export default function Limit() {
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -549,10 +544,7 @@ export default function Limit() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

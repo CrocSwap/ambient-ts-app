@@ -298,10 +298,7 @@ function Reposition() {
     }
 
     const sendRepositionTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
 

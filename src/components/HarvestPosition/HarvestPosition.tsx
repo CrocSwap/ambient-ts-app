@@ -301,10 +301,7 @@ export default function HarvestPosition(props: propsIF) {
 
     const harvestFn = async () => {
         setShowConfirmation(true);
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         const env = crocEnv;
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
