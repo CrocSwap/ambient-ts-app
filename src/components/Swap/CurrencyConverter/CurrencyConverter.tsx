@@ -422,9 +422,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             let rawTokenBQty = undefined;
             if (evt) {
                 setUserClickedCombinedMax(false);
@@ -469,9 +467,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeClick = useMemo(
         () => async (value: string) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             let rawTokenBQty;
             const tokenAInputField = document.getElementById('sell-quantity');
             if (tokenAInputField) {
@@ -512,9 +508,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenBChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
 
             let rawTokenAQty: number | undefined;
             if (evt) {

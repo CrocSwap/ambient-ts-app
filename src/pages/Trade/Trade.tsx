@@ -47,6 +47,7 @@ function Trade() {
     const { tokens } = useContext(TokenContext);
     const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
+
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -307,9 +308,6 @@ function Trade() {
         unselectCandle: unselectCandle,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        candleTime: isMarketOrLimitModule
-            ? chartSettings.candleTime.market
-            : chartSettings.candleTime.range,
         showActiveMobileComponent: showActiveMobileComponent,
     };
 

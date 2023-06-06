@@ -63,3 +63,7 @@ export const DISCORD_LINK = 'https://discord.com/invite/crocswap';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
+
+// Localstorage keys
+export const LS_KEY_CHART_SETTINGS = 'chart_settings';
+export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
