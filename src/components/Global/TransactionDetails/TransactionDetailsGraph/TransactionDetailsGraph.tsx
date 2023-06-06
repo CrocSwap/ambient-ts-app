@@ -126,8 +126,8 @@ export default function TransactionDetailsGraph(
                 const time = () => {
                     switch (transactionType) {
                         case 'swap':
-                            return tx?.time !== undefined
-                                ? tx.time
+                            return tx?.txTime !== undefined
+                                ? tx.txTime
                                 : new Date().getTime();
                         case 'limitOrder':
                             return tx?.timeFirstMint !== undefined
@@ -803,14 +803,14 @@ export default function TransactionDetailsGraph(
                             crossPointJoin(svg, [
                                 [
                                     {
-                                        x: tx.time * 1000,
+                                        x: tx.txTime * 1000,
                                         y: (
                                             !isAccountView
                                                 ? denominationsInBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
-                                            ? tx.invPriceDecimalCorrected
-                                            : tx.priceDecimalCorrected,
+                                            ? tx.swapInvPriceDecimalCorrected
+                                            : tx.swapPriceDecimalCorrected,
                                     },
                                 ],
                             ]).call(crossPoint);

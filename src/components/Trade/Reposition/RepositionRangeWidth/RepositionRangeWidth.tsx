@@ -1,13 +1,13 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { FiMinus } from 'react-icons/fi';
-import { MdAdd } from 'react-icons/md';
+
 import { RangeContext } from '../../../../contexts/RangeContext';
 import styles from './RepositionRangeWidth.module.css';
 import {
     updateRangeWithButton,
     handleRangeSlider,
 } from './repositionRangeWidthFunctions';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface IRepositionRangeWidth {
     rangeWidthPercentage: number;
@@ -23,12 +23,12 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
     // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance, especially rangeWidthFunctions.ts.
     // Also, don't forget the input ids will be different. -JR
 
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
+
     const PercentageOptionContent = (
         <div className={styles.percentage_options}>
-            <div className={styles.add_minus_icons}>
-                <MdAdd size={22} />
-                <FiMinus size={22} />
-            </div>
             <button
                 className={styles.percentage_option_buttons}
                 onClick={() => {
@@ -86,7 +86,23 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
             >
                 Ambient
             </button>
-            <AiOutlineInfoCircle color='#ffffff' />
+            <button
+                onClick={() =>
+                    openGlobalPopup(
+                        <div>
+                            Ambient liquidity remains fully in range regardless
+                            of pool price, but accumulates rewards at lower
+                            rates.
+                        </div>,
+                        'Ambient Range Width',
+                        'right',
+                    )
+                }
+                className={styles.explanation_button}
+                aria-label='Open range width explanation popup.'
+            >
+                <AiOutlineInfoCircle color='#ffffff' />
+            </button>
         </div>
     );
 

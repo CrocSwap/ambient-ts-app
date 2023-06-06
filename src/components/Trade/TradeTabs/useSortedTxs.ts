@@ -14,7 +14,7 @@ export const useSortedTransactions = (
 ] => {
     // default sort function
     const sortByUpdateTime = (unsortedData: TransactionIF[]) =>
-        [...unsortedData].sort((a, b) => b.time - a.time);
+        [...unsortedData].sort((a, b) => b.txTime - a.txTime);
     // sort by token pair
     const sortByPool = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
@@ -35,17 +35,8 @@ export const useSortedTransactions = (
     // sort by value of limit order
     const sortByValue = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
-            const valueA = a.totalFlowUSD
-                ? a.totalFlowUSD
-                : a.totalValueUSD
-                ? a.totalValueUSD
-                : a.valueUSD;
-            const valueB: number = b.totalFlowUSD
-                ? b.totalFlowUSD
-                : b.totalValueUSD
-                ? b.totalValueUSD
-                : b.valueUSD;
-
+            const valueA = a.totalValueUSD;
+            const valueB = b.totalValueUSD;
             if (!valueB) return -1;
 
             return Math.abs(valueB) - Math.abs(valueA);
