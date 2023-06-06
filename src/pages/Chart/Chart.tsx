@@ -327,7 +327,7 @@ export default function Chart(props: propsIF) {
         lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
-    const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
+    const [horizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
 
     // d3
