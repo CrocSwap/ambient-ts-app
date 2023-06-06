@@ -55,15 +55,16 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, gridSize, blockExplorer },
@@ -83,8 +84,6 @@ export default function Limit() {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const dispatch = useAppDispatch();
 

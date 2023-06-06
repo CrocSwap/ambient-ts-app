@@ -27,7 +27,10 @@ import {
     setAdvancedMode,
     setLiquidityFee,
 } from '../../utils/state/tradeDataSlice';
+import { FetchAddrFn } from '../functions/fetchAddress';
+import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
+import { TokenPriceFn } from '../functions/fetchTokenPrice';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
 import { getLiquidityFee } from '../functions/getLiquidityFee';
 import {
@@ -37,6 +40,7 @@ import {
 import { getPositionData } from '../functions/getPositionData';
 import { getTvlSeries } from '../functions/getTvlSeries';
 import { getVolumeSeries } from '../functions/getVolumeSeries';
+import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 
 interface PoolParamsHookIF {
@@ -50,6 +54,10 @@ interface PoolParamsHookIF {
     isServerEnabled: boolean;
     isChartEnabled: boolean;
     cachedPoolLiquidity: PoolLiquidityFn;
+    cachedFetchTokenPrice: TokenPriceFn;
+    cachedQuerySpotPrice: SpotPriceFn;
+    cachedTokenDetails: FetchContractDetailsFn;
+    cachedEnsResolve: FetchAddrFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
 }
 
@@ -358,6 +366,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
+                                                props.cachedFetchTokenPrice,
+                                                props.cachedQuerySpotPrice,
+                                                props.cachedTokenDetails,
+                                                props.cachedEnsResolve,
                                             );
                                         },
                                     ),
@@ -416,6 +428,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
+                                                props.cachedFetchTokenPrice,
+                                                props.cachedQuerySpotPrice,
+                                                props.cachedTokenDetails,
+                                                props.cachedEnsResolve,
                                             );
                                         },
                                     ),
@@ -462,6 +478,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         n: 80,
                         crocEnv: props.crocEnv,
                         lastBlockNumber: props.lastBlockNumber,
+                        cachedFetchTokenPrice: props.cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: props.cachedQuerySpotPrice,
+                        cachedTokenDetails: props.cachedTokenDetails,
+                        cachedEnsResolve: props.cachedEnsResolve,
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
@@ -519,6 +539,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
+                                                props.cachedFetchTokenPrice,
+                                                props.cachedQuerySpotPrice,
+                                                props.cachedTokenDetails,
+                                                props.cachedEnsResolve,
                                             );
                                         },
                                     ),

@@ -26,6 +26,7 @@ import {
     setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -40,6 +41,12 @@ export const UserDataContextProvider = (props: {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
@@ -128,6 +135,10 @@ export const UserDataContextProvider = (props: {
                                             crocEnv,
                                             chainData.chainId,
                                             lastBlockNumber,
+                                            cachedFetchTokenPrice,
+                                            cachedQuerySpotPrice,
+                                            cachedTokenDetails,
+                                            cachedEnsResolve,
                                         );
                                     },
                                 ),
@@ -176,6 +187,10 @@ export const UserDataContextProvider = (props: {
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
+                                        cachedFetchTokenPrice,
+                                        cachedQuerySpotPrice,
+                                        cachedTokenDetails,
+                                        cachedEnsResolve,
                                     );
                                 },
                             ),
@@ -204,6 +219,10 @@ export const UserDataContextProvider = (props: {
                     crocEnv: crocEnv,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
                         dispatch(

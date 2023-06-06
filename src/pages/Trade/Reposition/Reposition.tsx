@@ -55,11 +55,18 @@ import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { blockExplorer },
@@ -450,6 +457,10 @@ function Reposition() {
                     crocEnv,
                     position.chainId,
                     lastBlockNumber,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotPrice,
+                    cachedTokenDetails,
+                    cachedEnsResolve,
                 );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
