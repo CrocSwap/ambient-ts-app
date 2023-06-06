@@ -1,5 +1,5 @@
 .modal_container {
-    width: 400px;
+   
     padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
@@ -147,4 +147,12 @@
     line-height: var(--body-lh);
     color: var(--accent2);
     text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+
+    .modal_container {
+        width: 400px;
+       
+    }
 }

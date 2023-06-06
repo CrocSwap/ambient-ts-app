@@ -1,5 +1,5 @@
 .confirm_range_modal_container {
-    width: 400px;
+   
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -119,6 +119,14 @@
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+@media only screen and (min-width: 768px) {
+
+    .confirm_range_modal_container {
+        width: 400px;
+       
+    }
 }
 /* .detail_line img {
     margin: 0 10px;

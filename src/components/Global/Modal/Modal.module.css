@@ -95,4 +95,8 @@
         line-height: var(--header2-lh);
 
     }
+
+    .outside_modal{
+        padding: 1rem;
+    }
 }
