@@ -8,6 +8,8 @@ import NavItem from './NavItem/NavItem';
 import { FiMenu } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { Link, useLocation } from 'react-router-dom';
+import PageLayout from './PageLayout/PageLayout';
+import { LayoutHandlerContext } from '../../../contexts/LayoutContext';
 
 interface PropsIF {
     clickLogout: () => Promise<void>;
@@ -37,6 +39,12 @@ const PageHeaderMobile = (props: PropsIF) => {
             Connect to a wallet
         </button>
     );
+    const {
+        toggleSidebarDrawer,
+        toggleDefaultLayout,
+        isSidebarDrawerOpen,
+        toggleTableDrawer,
+    } = useContext(LayoutHandlerContext);
 
     const isHomePage = location.pathname === '/';
     return (
@@ -56,6 +64,12 @@ const PageHeaderMobile = (props: PropsIF) => {
                 ) : (
                     connectWagmiButton
                 )}
+                <PageLayout
+                    toggleSidebarDrawer={toggleSidebarDrawer}
+                    toggleDefaultLayout={toggleDefaultLayout}
+                    isSidebarDrawerOpen={isSidebarDrawerOpen}
+                    toggleTableDrawer={toggleTableDrawer}
+                />
                 <NavItem
                     icon={<FiMenu size={20} color='var(--text1)' />}
                     open={openNavbarMenu}

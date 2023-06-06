@@ -1,8 +1,4 @@
-import {
-    RiLayoutBottom2Fill,
-    RiLayoutLeftFill,
-    RiLayoutRightFill,
-} from 'react-icons/ri';
+import { RiLayoutBottom2Fill, RiLayoutLeftFill } from 'react-icons/ri';
 import styles from './PageLayout.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { BsTable } from 'react-icons/bs';
@@ -12,9 +8,6 @@ interface PageLayoutPropsIF {
     toggleSidebarDrawer: (
         open: boolean,
     ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    toggleTradeDrawer: (
-        open: boolean,
-    ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
 
     toggleTableDrawer: (
         open: boolean,
@@ -22,25 +15,22 @@ interface PageLayoutPropsIF {
 
     toggleDefaultLayout: () => void;
     isSidebarDrawerOpen: boolean;
-    isTradeDrawerOpen: boolean;
 }
 
 export default function PageLayout(props: PageLayoutPropsIF) {
     const {
         toggleSidebarDrawer,
-        toggleTradeDrawer,
+
         toggleDefaultLayout,
         isSidebarDrawerOpen,
-        isTradeDrawerOpen,
+
         toggleTableDrawer,
     } = props;
 
     const location = useLocation();
     const currentLocation = location.pathname;
 
-    const activeIcon = isTradeDrawerOpen ? (
-        <RiLayoutRightFill size={25} />
-    ) : isSidebarDrawerOpen ? (
+    const activeIcon = isSidebarDrawerOpen ? (
         <RiLayoutLeftFill size={25} />
     ) : (
         <RiLayoutBottom2Fill size={25} />
@@ -64,12 +54,6 @@ export default function PageLayout(props: PageLayoutPropsIF) {
             action: toggleTableDrawer(true),
             icon: BsTable,
 
-            show: currentLocation.includes('trade'),
-        },
-        {
-            title: 'Trade',
-            action: toggleTradeDrawer(true),
-            icon: RiLayoutRightFill,
             show: currentLocation.includes('trade'),
         },
     ];

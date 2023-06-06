@@ -2,6 +2,9 @@ import { useMediaQuery } from '@mui/material';
 import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { AppStateContext } from '../../contexts/AppStateContext';
 interface FooterItemProps {
     title: string | JSX.Element;
     content: string;
@@ -63,6 +66,22 @@ export default function Footer() {
         },
     ];
 
+    const {
+        tradeComponent: { setShowTradeComponent: setShowTradeComponent },
+    } = useContext(AppStateContext);
+
+    const mobileButton = (
+        <Link
+            to={'/trade'}
+            tabIndex={0}
+            aria-label='Go to trade page button'
+            className={styles.started_button}
+            onClick={() => setShowTradeComponent(true)}
+        >
+            Get Started
+        </Link>
+    );
+
     const FooterItem = (props: FooterItemProps) => {
         const { title, content, link } = props;
 
@@ -90,6 +109,7 @@ export default function Footer() {
                     key={data.content}
                 />
             ))}
+            {mobileButton}
         </div>
     );
     if (showMobileVersion)

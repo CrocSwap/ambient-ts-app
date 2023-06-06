@@ -59,10 +59,8 @@ const PageHeader = function () {
 
     const {
         toggleSidebarDrawer,
-        toggleTradeDrawer,
         toggleDefaultLayout,
         isSidebarDrawerOpen,
-        isTradeDrawerOpen,
         toggleTableDrawer,
     } = useContext(LayoutHandlerContext);
 
@@ -438,10 +436,8 @@ const PageHeader = function () {
                             {!desktopScreen && (
                                 <PageLayout
                                     toggleSidebarDrawer={toggleSidebarDrawer}
-                                    toggleTradeDrawer={toggleTradeDrawer}
                                     toggleDefaultLayout={toggleDefaultLayout}
                                     isSidebarDrawerOpen={isSidebarDrawerOpen}
-                                    isTradeDrawerOpen={isTradeDrawerOpen}
                                     toggleTableDrawer={toggleTableDrawer}
                                 />
                             )}

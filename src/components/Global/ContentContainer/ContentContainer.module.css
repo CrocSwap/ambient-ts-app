@@ -150,6 +150,7 @@
     
     .swap_bg, .no_background{
         background: var(--dark-gradient);
+        border-radius: 4px;
 
     }
 

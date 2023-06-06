@@ -37,10 +37,7 @@
     color: var(--text2);
 }
 
-.mobile_bg{
 
-    
-}
 .mobile_version{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -50,6 +47,13 @@
 
 }
 
+.started_button{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: start;
+    color: var(--accent1)
+
+}
 
 .mobile_version .footer_item_container h3{
     font-weight: 300;

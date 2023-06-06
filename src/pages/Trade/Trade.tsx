@@ -35,7 +35,6 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { Drawer } from '@mui/material';
-import { FaAngleDoubleLeft } from 'react-icons/fa';
 import { LayoutHandlerContext } from '../../contexts/LayoutContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
@@ -266,12 +265,8 @@ function Trade() {
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
 
-    const {
-        setIsTradeDrawerOpen,
-        isTradeDrawerOpen,
-        isTableDrawerOpen,
-        setIsTableDrawerOpen,
-    } = useContext(LayoutHandlerContext);
+    const { isTableDrawerOpen, setIsTableDrawerOpen } =
+        useContext(LayoutHandlerContext);
 
     const {
         tradeComponent: { showTradeComponent: showTradeComponent },
@@ -339,39 +334,6 @@ function Trade() {
                     </div>
                 </Drawer>
                 {!bottomTabs && mainContent}
-
-                <Drawer
-                    anchor='right'
-                    open={isTradeDrawerOpen}
-                    onClose={() => setIsTradeDrawerOpen(false)}
-                >
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: '100%',
-                                background: 'var(--dark2)',
-                                zIndex: '3',
-                            }}
-                            onClick={() => setIsTradeDrawerOpen(false)}
-                        >
-                            <div style={{ padding: '0 1rem' }}>
-                                <FaAngleDoubleLeft size={30} color='white' />
-                            </div>
-                        </div>
-
-                        <Outlet
-                            context={{
-                                tradeData: tradeData,
-                                navigationMenu: navigationMenu,
-                            }}
-                        />
-                    </div>
-                </Drawer>
             </section>
         </>
     );
