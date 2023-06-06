@@ -22,7 +22,6 @@ interface CrocEnvContextIF {
     isChainSupported: boolean;
     topPools: topPoolIF[];
     ethMainnetUsdPrice: number | undefined;
-    setEthMainnetUsdPrice: (val: number) => void;
     defaultUrlParams: UrlRoutesTemplate;
 }
 
@@ -67,7 +66,6 @@ export const CrocEnvContextProvider = (props: {
         isChainSupported,
         topPools,
         ethMainnetUsdPrice,
-        setEthMainnetUsdPrice,
         defaultUrlParams,
     };
 
@@ -122,6 +120,7 @@ export const CrocEnvContextProvider = (props: {
         chainData.chainId,
         signer,
     ]);
+
     useEffect(() => {
         if (provider) {
             (async () => {

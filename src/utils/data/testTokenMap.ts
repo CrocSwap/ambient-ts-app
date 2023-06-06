@@ -32,3 +32,22 @@ export const testTokenMap = new Map([
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
     ],
 ]);
+
+export function getMainnetEquivalent(
+    token: string,
+    chainId: string,
+): { token: string; chainId: string } {
+    const keyLookup = (token + '_' + chainId).toLowerCase();
+    const lookup = testTokenMap.get(keyLookup);
+    if (lookup) {
+        return {
+            token: lookup.split('_')[0],
+            chainId: lookup.split('_')[1],
+        };
+    } else {
+        return {
+            token: token,
+            chainId: chainId,
+        };
+    }
+}

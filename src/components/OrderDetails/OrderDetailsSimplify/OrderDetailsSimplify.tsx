@@ -70,44 +70,19 @@ export default function OrderDetailsSimplify(
         userNameToDisplay,
         posHashTruncated,
         posHash,
-        // blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        // usdValue,
-        // baseTokenSymbol,
-        // quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        // isOrderFilled,
-
-        // isDenomBase,
-        // baseTokenLogo,
-        // quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseDisplay,
-        // quoteDisplay,
         blockExplorer,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,
-
-        // truncatedLowDisplayPrice,
-        // truncatedHighDisplayPrice,
         startPriceDisplay,
         middlePriceDisplay,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
-        // truncatedLowDisplayPriceDenomByMoneyness,
-        // truncatedHighDisplayPriceDenomByMoneyness,
-        // truncatedDisplayPriceDenomByMoneyness,
-        // isBaseTokenMoneynessGreaterOrEqual,
-        // positionLiquidity,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const {
@@ -185,7 +160,6 @@ export default function OrderDetailsSimplify(
     const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
         'MM/DD/YYYY HH:mm',
     );
-    // const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
 

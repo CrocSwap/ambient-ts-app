@@ -13,7 +13,7 @@ import { motion } from 'framer-motion';
 import { SetStateAction, Dispatch, useState, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { ethers } from 'ethers';
-import { fetchAddress } from '../../../App/functions/fetchAddress';
+import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
@@ -99,7 +99,7 @@ export default function ExchangeBalance(props: propsIF) {
                 mainnetProvider
             ) {
                 try {
-                    const ensName = await fetchAddress(
+                    const ensName = await fetchEnsAddress(
                         mainnetProvider,
                         sendToAddress,
                         '0x1',

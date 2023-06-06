@@ -34,24 +34,12 @@ export default function TransactionDetailsSimplify(
         blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
         txUsdValueLocaleString,
-
         isDenomBase,
-        // baseTokenLogo,
-        // quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseQuantityDisplayShort,
-        // quoteQuantityDisplayShort,
         baseQuantityDisplayLong,
         quoteQuantityDisplayLong,
         baseTokenAddress,
@@ -66,7 +54,6 @@ export default function TransactionDetailsSimplify(
         baseTokenCharacter,
         quoteTokenCharacter,
         isBaseTokenMoneynessGreaterOrEqual,
-        // positionLiquidity,
     } = useProcessTransaction(tx, userAddress);
 
     const isAmbient = tx.positionType === 'ambient';
@@ -175,7 +162,7 @@ export default function TransactionDetailsSimplify(
 
         {
             title: 'Time ',
-            content: moment(tx.time * 1000).format('MM/DD/YYYY HH:mm'),
+            content: moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm'),
             explanation: 'The transaction confirmation time',
         },
 
