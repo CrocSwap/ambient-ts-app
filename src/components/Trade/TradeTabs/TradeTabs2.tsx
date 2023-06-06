@@ -34,13 +34,14 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
-import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { useLocation } from 'react-router-dom';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -56,7 +57,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    candleTime: candleTimeIF;
     showActiveMobileComponent?: boolean;
 }
 
@@ -72,16 +72,27 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        candleTime,
         showActiveMobileComponent,
     } = props;
 
+    const { pathname } = useLocation();
+    const { chartSettings } = useContext(ChartContext);
+    const isMarketOrLimitModule =
+        pathname.includes('market') || pathname.includes('limit');
+    const candleTime = isMarketOrLimitModule
+        ? chartSettings.candleTime.market
+        : chartSettings.candleTime.range;
+
     const { isCandleSelected } = useContext(CandleContext);
+
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+
     const { lastBlockNumber } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
+
     const {
         showAllData,
         setShowAllData,

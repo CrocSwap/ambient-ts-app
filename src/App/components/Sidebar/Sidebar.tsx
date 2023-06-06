@@ -46,6 +46,7 @@ function Sidebar() {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
+
     const cachedPoolStatsFetch = memoizePoolStats();
 
     const poolList = usePoolList(chainId, poolIndex);

@@ -20,8 +20,8 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                 <TokenContextProvider>
                     <ChainDataContextProvider>
                         <UserDataContextProvider>
-                            <ChartContextProvider>
-                                <RangeContextProvider>
+                            <RangeContextProvider>
+                                <ChartContextProvider>
                                     <TradeTokenContextProvider>
                                         <PoolContextProvider>
                                             <CandleContextProvider>
@@ -35,8 +35,8 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                             </CandleContextProvider>
                                         </PoolContextProvider>
                                     </TradeTokenContextProvider>
-                                </RangeContextProvider>
-                            </ChartContextProvider>
+                                </ChartContextProvider>
+                            </RangeContextProvider>
                         </UserDataContextProvider>
                     </ChainDataContextProvider>
                 </TokenContextProvider>
