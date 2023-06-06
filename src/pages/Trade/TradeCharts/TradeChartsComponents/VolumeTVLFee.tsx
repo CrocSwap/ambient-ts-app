@@ -2,7 +2,6 @@ import styles from './VolumeTVLFee.module.css';
 import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { SubChartTogglesIF } from '../../../../App/hooks/useChartSettings';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../../constants';
 
 interface VolumeTVLFeePropsIF {
@@ -23,7 +22,11 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         showFeeRate,
     } = props;
 
-    const updateSubChartToggles = (newStatus: SubChartTogglesIF) => {
+    const updateSubChartToggles = (newStatus: {
+        isVolumeSubchartEnabled: boolean;
+        isTvlSubchartEnabled: boolean;
+        isFeeRateSubchartEnabled: boolean;
+    }) => {
         localStorage.setItem(
             LS_KEY_SUBCHART_SETTINGS,
             JSON.stringify({ ...newStatus }),
@@ -37,31 +40,28 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
 
     const handleVolumeToggle = () => {
         setShowVolume(!showVolume);
-        const newSubChartStatus: SubChartTogglesIF = {
+        updateSubChartToggles({
             isVolumeSubchartEnabled: !showVolume,
             isTvlSubchartEnabled: showTvl,
             isFeeRateSubchartEnabled: showFeeRate,
-        };
-        updateSubChartToggles(newSubChartStatus);
+        });
     };
 
     const handleTvlToggle = () => {
         setShowTvl(!showTvl);
-        const newSubChartStatus: SubChartTogglesIF = {
+        updateSubChartToggles({
             isVolumeSubchartEnabled: showVolume,
             isTvlSubchartEnabled: !showTvl,
             isFeeRateSubchartEnabled: showFeeRate,
-        };
-        updateSubChartToggles(newSubChartStatus);
+        });
     };
     const handleFeeRateToggle = () => {
         setShowFeeRate(!showFeeRate);
-        const newSubChartStatus: SubChartTogglesIF = {
+        updateSubChartToggles({
             isVolumeSubchartEnabled: showVolume,
             isTvlSubchartEnabled: showTvl,
             isFeeRateSubchartEnabled: !showFeeRate,
-        };
-        updateSubChartToggles(newSubChartStatus);
+        });
     };
 
     const volumeTvlAndFeeData = [
