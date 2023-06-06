@@ -61,3 +61,5 @@ export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/crocswap';
 export const DISCORD_LINK = 'https://discord.com/invite/crocswap';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+
+export const OVERRIDE_CANDLE_POOL_ID = 36000;

@@ -1,7 +1,10 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
-import { testTokenMap } from '../../utils/data/testTokenMap';
+import {
+    getMainnetEquivalent,
+    testTokenMap,
+} from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -147,26 +150,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     tokenAAddress,
                     tokenBAddress,
                 );
-                const tokenAMainnetEquivalent =
-                    tokenAAddress === ZERO_ADDRESS
-                        ? tokenAAddress
-                        : testTokenMap
-                              .get(
-                                  tokenAAddress.toLowerCase() +
-                                      '_' +
-                                      props.chainData.chainId,
-                              )
-                              ?.split('_')[0];
-                const tokenBMainnetEquivalent =
-                    tokenBAddress === ZERO_ADDRESS
-                        ? tokenBAddress
-                        : testTokenMap
-                              .get(
-                                  tokenBAddress.toLowerCase() +
-                                      '_' +
-                                      props.chainData.chainId,
-                              )
-                              ?.split('_')[0];
+                const { token: tokenAMainnetEquivalent } = getMainnetEquivalent(
+                    tokenAAddress,
+                    props.chainData.chainId,
+                );
+                const { token: tokenBMainnetEquivalent } = getMainnetEquivalent(
+                    tokenBAddress,
+                    props.chainData.chainId,
+                );
 
                 if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
                     const sortedMainnetTokens = sortBaseQuoteTokens(
