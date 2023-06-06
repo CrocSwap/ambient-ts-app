@@ -31,13 +31,14 @@
     display: grid;
     overflow-y: hidden;
     grid-template-rows: auto 1fr ;
+    padding: 0 4px;
     }
     
-    .main_list_expanded{
-        display: grid;
-        grid-template-rows: auto 1fr 70px;
-        overflow-y: hidden;
-    }
+.main_list_expanded{
+    display: grid;
+    grid-template-rows: auto 1fr 70px;
+    overflow-y: hidden;
+}
 
 .header {
     position: sticky;
@@ -50,7 +51,6 @@
         height: 50px;
     }
 }
-
 
 .table_content {
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */

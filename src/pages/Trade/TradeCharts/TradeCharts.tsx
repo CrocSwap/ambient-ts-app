@@ -21,9 +21,8 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
@@ -35,6 +34,7 @@ import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import Spinner from '../../../components/Global/Spinner/Spinner';
 
 // interface for React functional component props
 interface propsIF {
@@ -42,9 +42,6 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    limitTick: number | undefined;
-    liquidityData?: LiquidityData;
-    isAdvancedModeActive: boolean | undefined;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
 }
@@ -107,7 +104,7 @@ function TradeCharts(props: propsIF) {
     const canvasRef = useRef(null);
     const downloadAsImage = () => {
         if (canvasRef.current) {
-            printDomToImage(canvasRef.current);
+            printDomToImage(canvasRef.current, '#171d27');
         }
     };
 
@@ -126,13 +123,10 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: isMarketOrLimitModule
-                ? chartSettings.marketOverlay.overlay
-                : chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.rangeOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.marketOverlay,
         chartSettings.rangeOverlay,
         showTvl,
         showVolume,
@@ -255,13 +249,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth
-                    overlayMethods={
-                        isMarketOrLimitModule
-                            ? chartSettings.marketOverlay
-                            : chartSettings.rangeOverlay
-                    }
-                />
+                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
             </div>
         </div>
     );
@@ -349,15 +337,12 @@ function TradeCharts(props: propsIF) {
                 />
             </div>
             {graphIsLoading ? (
-                <TradeChartsLoading />
+                <Spinner size={100} bg='var(--dark2)' centered />
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        limitTick={props.limitTick}
-                        liquidityData={props.liquidityData}
-                        isAdvancedModeActive={props.isAdvancedModeActive}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
                         selectedDate={selectedDate}

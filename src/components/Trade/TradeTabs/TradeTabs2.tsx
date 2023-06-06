@@ -39,12 +39,17 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { tokenMethodsIF } from '../../../App/hooks/useTokens';
+import useDebounce from '../../../App/hooks/useDebounce';
+import {
+    diffHashSigLimits,
+    diffHashSigPostions,
+    diffHashSigTxs,
+} from '../../../utils/functions/diffHashSig';
+import { CandleContext } from '../../../contexts/CandleContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
-    isCandleSelected: boolean | undefined;
     filter: CandleData | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     changeState: (
         isOpen: boolean | undefined,
@@ -55,18 +60,14 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     candleTime: candleTimeIF;
-    tokens: tokenMethodsIF;
     showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
     const {
-        isCandleSelected,
-        setIsCandleSelected,
         filter,
         setTransactionFilter,
         changeState,
@@ -75,18 +76,19 @@ function TradeTabs2(props: propsIF) {
         hasInitialized,
         setHasInitialized,
         unselectCandle,
-        isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
         candleTime,
-        tokens,
         showActiveMobileComponent,
     } = props;
 
+    const { isCandleSelected } = useContext(CandleContext);
     const {
+        crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
     const {
         showAllData,
         setShowAllData,
@@ -150,21 +152,19 @@ function TradeTabs2(props: propsIF) {
                     selectedBase.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
                     selectedQuote.toLowerCase() &&
-                userPosition.totalValueUSD !== 0
+                userPosition.positionLiq !== 0
             );
         },
     );
-
-    const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
-    const matchingUserLimitOrdersLength =
-        userLimitOrdersMatchingTokenSelection.length;
-    const matchingUserPositionsLength =
-        userPositionsMatchingTokenSelection.length;
 
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
     }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
         if (
@@ -182,12 +182,15 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserChangesLength < 1)
+                        userChangesMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserChangesLength < 1) {
+                } else if (userChangesMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserChangesLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userChangesMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -198,12 +201,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserLimitOrdersLength < 1)
+                        userLimitOrdersMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserLimitOrdersLength < 1) {
+                } else if (userLimitOrdersMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserLimitOrdersLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userLimitOrdersMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -214,12 +220,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserPositionsLength < 1)
+                        userPositionsMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserPositionsLength < 1) {
+                } else if (userPositionsMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserPositionsLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userPositionsMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             }
@@ -235,50 +244,19 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        matchingUserPositionsLength,
-        matchingUserChangesLength,
-        matchingUserLimitOrdersLength,
+        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigLimits(userLimitOrders),
+        diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
 
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData) {
-            try {
-                fetchUserRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    user: userAddress,
-                    chainId: chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 200, // fetch last 500 changes,
-                })
-                    .then((updatedTransactions) => {
-                        if (updatedTransactions) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: updatedTransactions,
-                                }),
-                            );
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
-            }
-        }
-    }, [isServerEnabled, userAddress, showAllData]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
     >([]);
 
     useEffect(() => {
-        if (isServerEnabled && isCandleSelected && filter?.time) {
+        if (isServerEnabled && isCandleSelected && filter?.time && crocEnv) {
             fetchPoolRecentChanges({
                 tokenList: tokens.tokenUniv,
                 base: selectedBase,
@@ -293,6 +271,8 @@ function TradeTabs2(props: propsIF) {
                 n: 80,
                 period: candleTime.time,
                 time: filter?.time,
+                crocEnv: crocEnv,
+                lastBlockNumber,
             })
                 .then((selectedCandleChangesJson) => {
                     IS_LOCAL_ENV &&
@@ -315,36 +295,60 @@ function TradeTabs2(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
+
+    useEffect(() => {
+        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+            try {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: userAddress,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv,
+                    lastBlockNumber,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
+                                }),
+                            );
+                        }
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error;
+            }
+        }
+    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
 
     // -------------------------------DATA-----------------------------------------
-    const [leader, setLeader] = useState('');
-    const [leaderOwnerId, setLeaderOwnerId] = useState('');
-
     // Props for <Ranges/> React Element
     const rangesProps = {
         notOnTradeRoute: false,
-        setLeader: setLeader,
-        setLeaderOwnerId: setLeaderOwnerId,
         isAccountView: false,
     };
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
-        changesInSelectedCandle: changesInSelectedCandle,
-        setIsCandleSelected: setIsCandleSelected,
-        isCandleSelected: isCandleSelected,
-        filter: filter,
-        changeState: changeState,
-        setSelectedDate: setSelectedDate,
+        changesInSelectedCandle,
+        filter,
+        changeState,
+        setSelectedDate,
         isAccountView: false,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        setShowAllData: setShowAllData,
-        setIsCandleSelected: setIsCandleSelected,
-        changeState: changeState,
+        changeState,
         isAccountView: false,
     };
 
@@ -352,21 +356,13 @@ function TradeTabs2(props: propsIF) {
         useState(true);
 
     const positionsOnlyToggleProps = {
-        setHasUserSelectedViewAll: setHasUserSelectedViewAll,
-        changeState: changeState,
-        setHasInitialized: setHasInitialized,
-        setIsCandleSelected: setIsCandleSelected,
-        isCandleSelected: isCandleSelected,
-        setTransactionFilter: setTransactionFilter,
-        showPositionsOnlyToggle: showPositionsOnlyToggle,
-        setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
-        leader: leader,
-        leaderOwnerId: leaderOwnerId,
-        selectedDate: selectedDate,
-        setSelectedDate: setSelectedDate,
-        isCandleDataNull: isCandleDataNull,
-        isCandleArrived: isCandleArrived,
-        setIsCandleDataArrived: setIsCandleDataArrived,
+        setTransactionFilter,
+        showPositionsOnlyToggle,
+        changeState,
+        setSelectedDate,
+        isCandleArrived,
+        setIsCandleDataArrived,
+        setHasUserSelectedViewAll,
     };
 
     const TradeChartsTokenInfoProps = {
@@ -492,7 +488,6 @@ function TradeTabs2(props: propsIF) {
                     <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                 }
                 setSelectedInsideTab={setSelectedInsideTab}
-                showPositionsOnlyToggle={showPositionsOnlyToggle}
                 setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
             />
         </div>

@@ -8,7 +8,6 @@ interface IPortfolioBannerAccountPropsIF {
     resolvedAddress: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
-    connectedAccountActive: boolean;
     jazziconsToDisplay: JSX.Element | null;
 }
 import styles from './PortfolioBannerAccount.module.css';

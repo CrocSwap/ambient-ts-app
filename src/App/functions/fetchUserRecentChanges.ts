@@ -1,4 +1,5 @@
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
@@ -14,6 +15,8 @@ interface argsIF {
     ensResolution: boolean;
     n?: number;
     page?: number;
+    crocEnv: CrocEnv;
+    lastBlockNumber: number;
 }
 
 export const fetchUserRecentChanges = (args: argsIF) => {
@@ -27,10 +30,11 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         annotateMEV,
         ensResolution,
         n,
+        crocEnv,
+        lastBlockNumber,
     } = args;
 
-    const userRecentChangesCacheEndpoint =
-        GRAPHCACHE_URL + '/user_recent_changes?';
+    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/user_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching user recent changes');
 
@@ -52,9 +56,19 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         .then((json) => {
             const userTransactions = json?.data;
 
+            if (!userTransactions) {
+                return [] as TransactionIF[];
+            }
+
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(tx, tokenList);
+                    return getTransactionData(
+                        tx,
+                        tokenList,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                    );
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;

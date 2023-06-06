@@ -28,7 +28,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
-    resetTokenQuantities: () => void;
     fieldId: string;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
@@ -37,16 +36,6 @@ interface propsIF {
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    tokenAQtyCoveredByWalletBalance: number;
-    tokenBQtyCoveredByWalletBalance: number;
-    tokenAQtyCoveredBySurplusBalance: number;
-    tokenBQtyCoveredBySurplusBalance: number;
-    tokenAWalletMinusTokenAQtyNum: number;
-    tokenBWalletMinusTokenBQtyNum: number;
-    tokenASurplusMinusTokenARemainderNum: number;
-    tokenBSurplusMinusTokenBRemainderNum: number;
-    tokenASurplusMinusTokenAQtyNum: number;
-    tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
     tokenAInputQty: string;
@@ -212,9 +201,7 @@ function RangeCurrencySelector(props: propsIF) {
             ? walletBalanceNonLocaleString
             : walletAndSurplusBalanceNonLocaleString;
 
-    const shouldDisplayMaxButton =
-        (isTokenASelector ? !isTokenAEth : !isTokenBEth) &&
-        balanceLocaleString !== '0.00';
+    const shouldDisplayMaxButton = balanceLocaleString !== '0.00';
 
     function handleMaxButtonClick() {
         if (handleChangeClick && isUserConnected && shouldDisplayMaxButton) {

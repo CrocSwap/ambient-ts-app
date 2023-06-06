@@ -29,9 +29,7 @@ interface TabPropsIF {
     data: tabData[];
     setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
-    showPositionsOnlyToggle?: boolean;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
-
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -40,7 +38,6 @@ export default function TabComponent(props: TabPropsIF) {
         data,
         setSelectedInsideTab,
         rightTabOptions,
-        // showPositionsOnlyToggle,
         setShowPositionsOnlyToggle,
     } = props;
     const { outsideControl, setOutsideControl, selectedOutsideTab } =

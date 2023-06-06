@@ -48,6 +48,7 @@
 
 .close_icon {
     display: flex;
+    cursor: pointer;
 }
 .bottom_elements {
     margin-top: auto;
@@ -225,14 +226,14 @@ input:-webkit-autofill:active {
     border: none;
     opacity: 1;
     transition: all var(--animation-speed) ease-in;
-    cursor: pointer;
+    cursor: normal;
 }
 
 .search__icon {
     box-sizing: border-box;
 
     margin-top: 0;
-    cursor: pointer;
+    cursor: default;
     color: #fa983a;
     transition: all var(--animation-speed) ease-in;
 }

@@ -22,7 +22,9 @@ function StatCard(props: StatCardProps) {
             aria-label={ariaDescription}
             tabIndex={0}
         >
-            <div className={styles.title}>{title}</div>
+            <div className={styles.title} style={{ fontWeight: '100' }}>
+                {title}
+            </div>
             <div className={styles.value}>{value}</div>
         </li>
     );

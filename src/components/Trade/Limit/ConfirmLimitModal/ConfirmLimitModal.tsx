@@ -13,15 +13,12 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
-    onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    isTokenAPrimary: boolean;
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
-    txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
@@ -33,7 +30,6 @@ interface propsIF {
 export default function ConfirmLimitModal(props: propsIF) {
     const {
         initiateLimitOrderMethod,
-        insideTickDisplayPrice,
         newLimitOrderTransactionHash,
         txErrorCode,
         resetConfirmation,
@@ -75,17 +71,6 @@ export default function ConfirmLimitModal(props: propsIF) {
                   maximumFractionDigits: 6,
               })
             : displayPoolPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const trunctatedInsideTickDisplayPrice =
-        insideTickDisplayPrice < 2
-            ? insideTickDisplayPrice.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : insideTickDisplayPrice.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
@@ -194,9 +179,6 @@ export default function ConfirmLimitModal(props: propsIF) {
     const fullTxDetails = (
         <div className={styles.main_container}>
             <section>
-                <div className={styles.limit_row_container}>
-                    <h2>@ {trunctatedInsideTickDisplayPrice}</h2>
-                </div>
                 {sellCurrencyRow}
                 <div className={styles.arrow_container}>
                     <TokensArrow onlyDisplay />

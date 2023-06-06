@@ -44,13 +44,17 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getPositionData } from '../../../App/functions/getPositionData';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 
 function Reposition() {
     // current URL parameter string
@@ -61,6 +65,7 @@ function Reposition() {
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const {
@@ -74,12 +79,10 @@ function Reposition() {
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const isRepositionSent = newRepositionTransactionHash !== '';
@@ -294,7 +297,6 @@ function Reposition() {
         }
         let tx;
         setTxErrorCode('');
-        setTxErrorMessage('');
 
         // resetConfirmation();
         setIsWaitingForWallet(true);
@@ -326,7 +328,6 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
         }
 
@@ -414,10 +415,9 @@ function Reposition() {
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const positionStatsCacheEndpoint =
-        httpGraphCacheServerDomain + '/position_stats?';
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
@@ -437,8 +437,20 @@ function Reposition() {
                 }),
         )
             .then((response) => response?.json())
-            .then((json) => {
-                const positionStats = json?.data;
+            .then(async (json) => {
+                if (!crocEnv || !json?.data) {
+                    setCurrentBaseQtyDisplayTruncated('...');
+                    setCurrentQuoteQtyDisplayTruncated('...');
+                    return;
+                }
+
+                const positionStats = await getPositionData(
+                    json.data as PositionServerIF,
+                    tokens.tokenUniv,
+                    crocEnv,
+                    position.chainId,
+                    lastBlockNumber,
+                );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
@@ -623,14 +635,11 @@ function Reposition() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -655,21 +664,13 @@ function Reposition() {
 
     const confirmRepositionModalProps = {
         isPositionInRange: isPositionInRange,
-        crocEnv: crocEnv,
         position: position as PositionIF,
-        currentPoolPriceDisplay: currentPoolPriceDisplay,
-        currentPoolPriceTick: currentPoolPriceTick,
-        rangeWidthPercentage: rangeWidthPercentage,
-        onClose: handleModalClose,
         onSend: sendRepositionTransaction,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         newRepositionTransactionHash: newRepositionTransactionHash,
         resetConfirmation: resetConfirmation,
         txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
         minPriceDisplay: minPriceDisplay,
         maxPriceDisplay: maxPriceDisplay,
         currentBaseQtyDisplayTruncated: currentBaseQtyDisplayTruncated,
@@ -686,11 +687,6 @@ function Reposition() {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         isTokenABase: isTokenABase,
-        // showBypassConfirm,
-        // setShowBypassConfirm,
-
-        showExtraInfo,
-        setShowExtraInfo,
     };
 
     const bypassConfirmRepositionButtonProps = {
@@ -712,7 +708,7 @@ function Reposition() {
         sendRepositionTransaction();
     };
 
-    const txUrlOnBlockExplorer = `${blockExplorer}/tx/${newRepositionTransactionHash}`;
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
     const etherscanButton = (
         <a
@@ -731,7 +727,7 @@ function Reposition() {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
-                positionHash={position.positionStorageSlot}
+                positionHash={position.firstMintTx}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>

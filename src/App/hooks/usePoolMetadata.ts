@@ -1,12 +1,16 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { ZERO_ADDRESS } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
 import { testTokenMap } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import {
+    PositionIF,
+    PositionServerIF,
+} from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
+    resetPoolDataLoadingStatus,
     setChangesByPool,
     setDataLoadingStatus,
     setLeaderboardByPool,
@@ -33,6 +37,7 @@ import {
 import { getPositionData } from '../functions/getPositionData';
 import { getTvlSeries } from '../functions/getTvlSeries';
 import { getVolumeSeries } from '../functions/getVolumeSeries';
+import useDebounce from './useDebounce';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -102,8 +107,29 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tradeData.tokenB.chainId,
     ]);
 
-    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
-    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(props.lastBlockNumber, 2000);
+
+    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
+    useEffect(
+        () => setHasValidPrevData(false),
+        [
+            props.receiptCount,
+            rtkMatchesParams,
+            tradeData.tokenA.address,
+            tradeData.tokenB.address,
+            quoteTokenAddress,
+            props.chainData.chainId,
+            props.chainData.poolIndex,
+            props.searchableTokens,
+            props.httpGraphCacheServerDomain,
+            props.lastBlockNumber == 0,
+            !!props.crocEnv,
+        ],
+    );
+
+    // Token and range housekeeping when switching pairs
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
             if (!ticksInParams) {
@@ -166,6 +192,33 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     setBaseTokenDecimals(tradeData.tokenB.decimals);
                     setQuoteTokenDecimals(tradeData.tokenA.decimals);
                 }
+            }
+        }
+    }, [
+        props.receiptCount,
+        rtkMatchesParams,
+        tradeData.tokenA.address,
+        tradeData.tokenB.address,
+        quoteTokenAddress,
+        props.chainData.chainId,
+        props.chainData.poolIndex,
+        props.searchableTokens,
+        props.lastBlockNumber == 0,
+        !!props.crocEnv,
+    ]);
+
+    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
+    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    useEffect(() => {
+        if (rtkMatchesParams && props.crocEnv) {
+            const tokenAAddress = tradeData.tokenA.address;
+            const tokenBAddress = tradeData.tokenB.address;
+
+            if (tokenAAddress && tokenBAddress) {
+                const sortedTokens = sortBaseQuoteTokens(
+                    tokenAAddress,
+                    tokenBAddress,
+                );
 
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled && props.httpGraphCacheServerDomain) {
@@ -256,9 +309,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
 
+                    if (!hasValidPrevData) {
+                        resetPoolDataLoadingStatus();
+                        setHasValidPrevData(true);
+                    }
+
                     // retrieve pool_positions
                     const allPositionsCacheEndpoint =
-                        props.httpGraphCacheServerDomain + '/pool_positions?';
+                        GRAPHCACHE_SMALL_URL + '/pool_positions?';
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -288,7 +346,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             if (poolPositions && crocEnv) {
                                 Promise.all(
                                     poolPositions.map(
-                                        (position: PositionIF) => {
+                                        (position: PositionServerIF) => {
                                             return getPositionData(
                                                 position,
                                                 props.searchableTokens,
@@ -321,8 +379,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                     // retrieve positions for leaderboard
                     const poolPositionsCacheEndpoint =
-                        props.httpGraphCacheServerDomain +
-                        '/annotated_pool_positions?';
+                        GRAPHCACHE_SMALL_URL + '/pool_position_apy_leaders?';
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
@@ -347,7 +404,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             if (leaderboardPositions && crocEnv) {
                                 Promise.all(
                                     leaderboardPositions.map(
-                                        (position: PositionIF) => {
+                                        (position: PositionServerIF) => {
                                             return getPositionData(
                                                 position,
                                                 props.searchableTokens,
@@ -398,6 +455,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         annotateMEV: false,
                         ensResolution: true,
                         n: 80,
+                        crocEnv: props.crocEnv,
+                        lastBlockNumber: props.lastBlockNumber,
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
@@ -419,8 +478,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                     // retrieve pool limit order states
                     const poolLimitOrderStatesCacheEndpoint =
-                        props.httpGraphCacheServerDomain +
-                        '/pool_limit_order_states?';
+                        GRAPHCACHE_SMALL_URL + '/pool_limit_orders?';
 
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
@@ -431,9 +489,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 chainId: props.chainData.chainId,
                                 ensResolution: 'true',
                                 omitEmpty: 'true',
-                                n: '200',
-                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                                n: '50',
                             }),
                     )
                         .then((response) => response?.json())
@@ -447,13 +503,17 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 }),
                             );
 
-                            if (poolLimitOrderStates) {
+                            const crocEnv = props.crocEnv;
+                            if (poolLimitOrderStates && crocEnv) {
                                 Promise.all(
                                     poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderIF) => {
+                                        (limitOrder: LimitOrderServerIF) => {
                                             return getLimitOrderData(
                                                 limitOrder,
                                                 props.searchableTokens,
+                                                crocEnv,
+                                                props.chainData.chainId,
+                                                props.lastBlockNumber,
                                             );
                                         },
                                     ),
@@ -482,7 +542,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.poolIndex,
         props.searchableTokens,
         props.httpGraphCacheServerDomain,
-        props.lastBlockNumber == 0,
+        lastBlockNumWait,
         !!props.crocEnv,
     ]);
 

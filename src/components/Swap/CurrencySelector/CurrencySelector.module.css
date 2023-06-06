@@ -39,10 +39,9 @@
     height: 33px;
 
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 4px;
 
-    padding: 0 2rem;
+    padding: 0 4px;
 }
 .wallet_container,
 .surplus_container,
@@ -62,7 +61,7 @@
 }
 
 .wallet_container {
-    justify-content: flex-start;
+    justify-content: space-between;
     /* background: rgb(2, 2, 34); */
 }
 .surplus_container {
@@ -253,34 +252,12 @@
     max-height: 20px;
     transition: all var(--animation-speed) ease-in-out;
 }
-.max_dex_button {
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-    outline: none;
-    border: none;
-    /* background: var(--dark3); */
-    background: transparent;
 
-    width: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 4px 0 4px 1px;
-    /* margin-right: 8px; */
-    max-height: 20px;
-    /* padding: 0 8px; */
-    transition: all var(--animation-speed) ease-in-out;
-}
 .max_button_enable {
     border-radius: 4px;
 }
 
 .max_button:hover {
-    color: var(--accent1);
-}
-.max_dex_button:hover {
     color: var(--accent1);
 }
 
@@ -298,4 +275,17 @@
 
 .pulse_animation {
     animation: shadow-pulse 1s 6;
+}
+
+.refresh_button {
+    justify-content: flex-end;
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.refresh_button:focus-visible {
+    color: var(--text1);
+    cursor: pointer;
 }

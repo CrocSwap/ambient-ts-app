@@ -455,7 +455,6 @@ function ChatPanel(props: propsIF) {
                 setIsChatOpen={setIsChatOpen}
                 chatNotification={chatNotification}
                 messageInput={messageInput}
-                room={room}
                 userName={
                     ens === null || ens === ''
                         ? trimString(address as string, 6, 0, '…')

@@ -120,7 +120,7 @@ export default function App() {
         ? 'swap-body'
         : null;
 
-    // Show sidebar on all pages except for home and swap
+    // Show sidebar on all pages except for home, swap, chat and 404
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
@@ -192,7 +192,7 @@ export default function App() {
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
                 <AppOverlay />
-                {currentLocation !== '/404' && <PageHeader />}
+                <PageHeader />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
@@ -302,6 +302,10 @@ export default function App() {
                             element={<Portfolio userAccount={false} />}
                         />
                         <Route path='/404' element={<NotFound />} />
+                        <Route
+                            path='*'
+                            element={<Navigate to='/404' replace />}
+                        />
                     </Routes>
                 </section>
             </div>

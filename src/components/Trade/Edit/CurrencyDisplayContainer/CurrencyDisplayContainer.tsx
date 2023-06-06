@@ -20,7 +20,6 @@ export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
     return (
         <div className={styles.container}>
             <AmountAndCurrencyDisplay
-                value={2343}
                 tokenImg={props.baseTokenImageURL}
                 qty={props.tokenAQtyDisplay}
                 symbol={props.baseTokenSymbol}
@@ -29,7 +28,6 @@ export default function CurrencyDisplayContainer(props: CurrencyDisplayProps) {
             />
 
             <AmountAndCurrencyDisplay
-                value={126432}
                 tokenImg={props.quoteTokenImageURL}
                 qty={props.tokenBQtyDisplay}
                 symbol={props.quoteTokenSymbol}
