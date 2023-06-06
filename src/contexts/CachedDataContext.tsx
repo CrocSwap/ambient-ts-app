@@ -11,10 +11,6 @@ import {
 } from '../App/functions/fetchTokenPrice';
 import { PoolStatsFn, memoizePoolStats } from '../App/functions/getPoolStats';
 import {
-    PositionUpdateFn,
-    memoizePositionUpdate,
-} from '../App/functions/getPositionData';
-import {
     SpotPriceFn,
     memoizeQuerySpotPrice,
 } from '../App/functions/querySpotPrice';
@@ -23,7 +19,6 @@ interface CachedDataIF {
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedQuerySpotPrice: SpotPriceFn;
 }
@@ -40,7 +35,6 @@ export const CachedDataContextProvider = (props: {
         cachedFetchNativeTokenBalance: memoizeFetchNativeTokenBalance(),
         cachedFetchErc20TokenBalances: memoizeFetchErc20TokenBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
-        cachedPositionUpdateQuery: memoizePositionUpdate(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
     };
