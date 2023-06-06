@@ -1132,9 +1132,9 @@
     util "^0.12.4"
 
 "@crocswap-libs/sdk@^0.2.71":
-  version "0.2.71"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.71.tgz#2295b799cbd02509009cd2c61db50990f402c66a"
-  integrity sha512-cGJtf/WCsflx31mDpclb+3Nz4yOsaAPD2rL89j4de8DayU1EDCxSiS5npnx43CrpuRKrl6uTJPEhWuKHbcIwWQ==
+  version "0.2.72"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.72.tgz#2e1f43253f84df851fd522b9e6ffd16f4977845a"
+  integrity sha512-jKkWCFsWOZtCVo8nexHQEY9xSNyHKwf8PMYxZvIGSxzr+HMSx/00l0n/iocgzY32OAR0aiqCibqX9YOOK77FrA==
   dependencies:
     ethers "^5.5.3"
 

@@ -1,5 +1,7 @@
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
-import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { TokenIF } from '../../utils/interfaces/exports';
+import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
 import { getTransactionData } from './getTransactionData';
 
 interface argsIF {
@@ -17,6 +19,8 @@ interface argsIF {
     page?: number;
     period?: number;
     time?: number;
+    crocEnv: CrocEnv;
+    lastBlockNumber: number;
 }
 
 export const fetchPoolRecentChanges = (args: argsIF) => {
@@ -34,10 +38,11 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         n,
         period,
         time,
+        crocEnv,
+        lastBlockNumber,
     } = args;
 
-    const poolRecentChangesCacheEndpoint =
-        GRAPHCACHE_URL + '/pool_recent_changes?';
+    const poolRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
@@ -78,14 +83,23 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         .then((json) => {
             const userTransactions = json?.data;
 
-            const updatedTransactions = Promise.all(
-                userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(tx, tokenList);
+            if (!userTransactions) {
+                return [];
+            }
+
+            return Promise.all(
+                userTransactions.map((tx: TransactionServerIF) => {
+                    return getTransactionData(
+                        tx,
+                        tokenList,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                    );
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;
             });
-            return updatedTransactions;
         })
         .catch(console.error);
 

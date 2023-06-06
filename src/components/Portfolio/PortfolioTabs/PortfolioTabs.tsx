@@ -37,9 +37,11 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
 
@@ -89,12 +91,11 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const userPositionsCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_positions?';
+        GRAPHCACHE_SMALL_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -114,7 +115,7 @@ export default function PortfolioTabs(props: propsIF) {
                 const userPositions = json?.data;
                 if (userPositions && crocEnv) {
                     Promise.all(
-                        userPositions.map((position: PositionIF) => {
+                        userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
                                 position,
                                 tokens.tokenUniv,
@@ -157,14 +158,19 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates) {
+                if (userLimitOrderStates && crocEnv) {
                     Promise.all(
-                        userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(
-                                limitOrder,
-                                tokens.tokenUniv,
-                            );
-                        }),
+                        userLimitOrderStates.map(
+                            (limitOrder: LimitOrderServerIF) => {
+                                return getLimitOrderData(
+                                    limitOrder,
+                                    tokens.tokenUniv,
+                                    crocEnv,
+                                    chainId,
+                                    lastBlockNumber,
+                                );
+                            },
+                        ),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });
@@ -185,38 +191,43 @@ export default function PortfolioTabs(props: propsIF) {
                 );
             });
 
-    const getLookupUserTransactions = async (accountToSearch: string) =>
-        fetchUserRecentChanges({
-            tokenList: tokens.tokenUniv,
-            user: accountToSearch,
-            chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
-            n: 100, // fetch last 500 changes,
-        })
-            .then((updatedTransactions) => {
-                if (updatedTransactions) {
-                    setLookupAccountTransactionData(updatedTransactions);
-                }
-
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
+    const getLookupUserTransactions = async (accountToSearch: string) => {
+        if (crocEnv) {
+            fetchUserRecentChanges({
+                tokenList: tokens.tokenUniv,
+                user: accountToSearch,
+                chainId: chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100, // fetch last 100 changes,
+                crocEnv: crocEnv,
+                lastBlockNumber: lastBlockNumber,
             })
-            .catch(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
-            });
+                .then((updatedTransactions) => {
+                    if (updatedTransactions) {
+                        setLookupAccountTransactionData(updatedTransactions);
+                    }
+
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                })
+                .catch(() => {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                });
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -239,6 +250,7 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
+        lastBlockNumber,
         !!tokens.tokenUniv,
         !!crocEnv,
     ]);
