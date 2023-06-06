@@ -327,7 +327,7 @@ export default function Chart(props: propsIF) {
         lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
-    const [horizontalBandData] = useState([[0, 0]]);
+    const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
 
     // d3
@@ -2276,6 +2276,12 @@ export default function Chart(props: propsIF) {
             setBalancedLines(true);
         }
     }, [position?.positionId]);
+
+    useEffect(() => {
+        if (location.pathname.includes('reposition')) {
+            setBalancedLines();
+        }
+    }, [location.pathname]);
 
     const setBalancedLines = (isRepositionLinesSet = false) => {
         if (tokenA.address !== tokenB.address) {
@@ -5172,13 +5178,20 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         displayHorizontalLinesAndBand(simpleRangeWidth);
-    }, [simpleRangeWidth, tradeData.advancedMode]);
+    }, [simpleRangeWidth, tradeData.advancedMode, location]);
 
     const displayHorizontalLinesAndBand = (simpleRangeWidthGra: number) => {
         if (
             location.pathname.includes('reposition') ||
             location.pathname.includes('range')
         ) {
+            const low = ranges.filter((target: any) => target.name === 'Min')[0]
+                .value;
+            const high = ranges.filter(
+                (target: any) => target.name === 'Max',
+            )[0].value;
+
+            setHorizontalBandData([[low, high]]);
             if (tradeData.advancedMode || simpleRangeWidthGra !== 100) {
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
