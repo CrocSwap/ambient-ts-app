@@ -6,7 +6,7 @@ import {
 import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 // interface for shape of data held in local storage
-export interface chartSettingsIF {
+interface chartSettingsIF {
     isVolumeSubchartEnabled: boolean;
     isTvlSubchartEnabled: boolean;
     isFeeRateSubchartEnabled: boolean;

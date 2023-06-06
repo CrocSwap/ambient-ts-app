@@ -56,7 +56,6 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     };
     const handleFeeRateToggle = () => {
         setShowFeeRate(!showFeeRate);
-        // localStorage.setItem('isFeeRateSubchartEnabled', `${!showFeeRate}`);
         const newSubChartStatus: SubChartTogglesIF = {
             isVolumeSubchartEnabled: showVolume,
             isTvlSubchartEnabled: showTvl,
