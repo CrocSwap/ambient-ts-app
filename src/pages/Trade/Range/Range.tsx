@@ -927,10 +927,7 @@ function Range() {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
 
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -1297,10 +1294,7 @@ function Range() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
