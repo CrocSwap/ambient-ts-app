@@ -807,16 +807,6 @@ export default function Chart(props: propsIF) {
 
                 d3.select(d3CanvasMarketLine.current).raise();
             } else {
-                d3.select(d3CanvasBand.current)
-                    .select('canvas')
-                    .style(
-                        'display',
-                        location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                            ? 'inline'
-                            : 'none',
-                    );
-
                 d3.select(d3CanvasLimitLine.current)
                     .select('canvas')
                     .style(
@@ -2470,21 +2460,6 @@ export default function Chart(props: propsIF) {
     }, [location, tradeData.limitTick, denomInBase]);
 
     useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting range lines');
-        if (
-            location.pathname.includes('range') ||
-            location.pathname.includes('reposition')
-        ) {
-            if (
-                !tradeData.advancedMode ||
-                location.pathname.includes('reposition')
-            ) {
-                setBalancedLines();
-            }
-        }
-    }, [location, denomInBase, tradeData.advancedMode, simpleRangeWidth]);
-
-    useEffect(() => {
         if (
             (location.pathname.includes('range') ||
                 location.pathname.includes('reposition')) &&
@@ -2502,12 +2477,6 @@ export default function Chart(props: propsIF) {
         rescaleRangeBoundariesWithSlider,
         tradeData.advancedMode,
     ]);
-
-    useEffect(() => {
-        if (location.pathname.includes('reposition')) {
-            setBalancedLines();
-        }
-    }, [location.pathname]);
 
     useEffect(() => {
         if (
@@ -2735,8 +2704,6 @@ export default function Chart(props: propsIF) {
                                 dragedValue === 0 ||
                                 dragedValue === liquidityData?.topBoundary
                             ) {
-                                rangeWidthPercentage = 100;
-
                                 const minValue =
                                     dragedValue === 0
                                         ? 0
@@ -2761,7 +2728,6 @@ export default function Chart(props: propsIF) {
                                     setLiqHighlightedLinesAndArea(
                                         newTargets,
                                         false,
-                                        rangeWidthPercentage,
                                     );
 
                                     return newTargets;
@@ -2857,11 +2823,7 @@ export default function Chart(props: propsIF) {
                                     },
                                 ];
 
-                                setLiqHighlightedLinesAndArea(
-                                    rangesF,
-                                    false,
-                                    rangeWidthPercentage,
-                                );
+                                setLiqHighlightedLinesAndArea(rangesF, false);
 
                                 if (pinnedDisplayPrices !== undefined) {
                                     setRanges((prevState) => {
@@ -3010,29 +2972,6 @@ export default function Chart(props: propsIF) {
                                     value: oldRangeMaxValue,
                                 },
                             ]);
-
-                            setHorizontalBandData([
-                                [
-                                    simpleRangeWidth === 100 &&
-                                    (oldRangeMinValue === 0 ||
-                                        oldRangeMaxValue === 0) &&
-                                    (!tradeData.advancedMode ||
-                                        location.pathname.includes(
-                                            'reposition',
-                                        ))
-                                        ? 0
-                                        : oldRangeMinValue,
-                                    simpleRangeWidth === 100 &&
-                                    (oldRangeMinValue === 0 ||
-                                        oldRangeMaxValue === 0) &&
-                                    (!tradeData.advancedMode ||
-                                        location.pathname.includes(
-                                            'reposition',
-                                        ))
-                                        ? 0
-                                        : oldRangeMaxValue,
-                                ],
-                            ]);
                         }
                     }
                 })
@@ -3077,29 +3016,6 @@ export default function Chart(props: propsIF) {
                                     name: 'Max',
                                     value: oldRangeMaxValue,
                                 },
-                            ]);
-
-                            setHorizontalBandData([
-                                [
-                                    simpleRangeWidth === 100 &&
-                                    (oldRangeMinValue === 0 ||
-                                        oldRangeMaxValue === 0) &&
-                                    (!tradeData.advancedMode ||
-                                        location.pathname.includes(
-                                            'reposition',
-                                        ))
-                                        ? 0
-                                        : oldRangeMinValue,
-                                    simpleRangeWidth === 100 &&
-                                    (oldRangeMinValue === 0 ||
-                                        oldRangeMaxValue === 0) &&
-                                    (!tradeData.advancedMode ||
-                                        location.pathname.includes(
-                                            'reposition',
-                                        ))
-                                        ? 0
-                                        : oldRangeMaxValue,
-                                ],
                             ]);
                         }
                     }
@@ -5254,12 +5170,35 @@ export default function Chart(props: propsIF) {
         setLiqHighlightedLinesAndArea(ranges);
     }, [liqMode]);
 
+    useEffect(() => {
+        displayHorizontalLinesAndBand(simpleRangeWidth);
+    }, [simpleRangeWidth, tradeData.advancedMode]);
+
+    const displayHorizontalLinesAndBand = (simpleRangeWidthGra: number) => {
+        if (
+            location.pathname.includes('reposition') ||
+            location.pathname.includes('range')
+        ) {
+            if (tradeData.advancedMode || simpleRangeWidthGra !== 100) {
+                d3.select(d3CanvasRangeLine.current)
+                    .select('canvas')
+                    .style('display', 'inline');
+                d3.select(d3CanvasBand.current)
+                    .select('canvas')
+                    .style('display', 'inline');
+            } else {
+                d3.select(d3CanvasRangeLine.current)
+                    .select('canvas')
+                    .style('display', 'none');
+                d3.select(d3CanvasBand.current)
+                    .select('canvas')
+                    .style('display', 'none');
+            }
+        }
+    };
+
     // line gradient
-    const setLiqHighlightedLinesAndArea = (
-        ranges: any,
-        autoScale = false,
-        simpleRangeWidthGra = simpleRangeWidth,
-    ) => {
+    const setLiqHighlightedLinesAndArea = (ranges: any, autoScale = false) => {
         if (
             ranges !== undefined &&
             (location.pathname.includes('range') ||
@@ -5272,48 +5211,7 @@ export default function Chart(props: propsIF) {
                 (target: any) => target.name === 'Max',
             )[0].value;
 
-            setHorizontalBandData([
-                [
-                    simpleRangeWidthGra === 100 &&
-                    (low === 0 || high === 0) &&
-                    (!tradeData.advancedMode ||
-                        location.pathname.includes('reposition'))
-                        ? 0
-                        : low,
-                    simpleRangeWidthGra === 100 &&
-                    (low === 0 || high === 0) &&
-                    (!tradeData.advancedMode ||
-                        location.pathname.includes('reposition'))
-                        ? 0
-                        : high,
-                ],
-            ]);
-
-            horizontalBandData[0] = [
-                simpleRangeWidthGra === 100 &&
-                (low === 0 || high === 0) &&
-                (!tradeData.advancedMode ||
-                    location.pathname.includes('reposition'))
-                    ? 0
-                    : low,
-                simpleRangeWidthGra === 100 &&
-                (low === 0 || high === 0) &&
-                (!tradeData.advancedMode ||
-                    location.pathname.includes('reposition'))
-                    ? 0
-                    : high,
-            ];
-
-            d3.select(d3CanvasRangeLine.current)
-                .select('canvas')
-                .style(
-                    'display',
-                    (location.pathname.includes('reposition') ||
-                        location.pathname.includes('range')) &&
-                        (tradeData.advancedMode || simpleRangeWidthGra !== 100)
-                        ? 'inline'
-                        : 'none',
-                );
+            horizontalBandData[0] = [low, high];
 
             if (autoScale && rescale) {
                 const xmin = scaleData?.xScale.domain()[0];
@@ -6414,7 +6312,8 @@ export default function Chart(props: propsIF) {
             (location.pathname.includes('/limit') && canUserDragLimit) ||
             ((location.pathname.includes('range') ||
                 location.pathname.includes('reposition')) &&
-                canUserDragRange)
+                canUserDragRange &&
+                !(!tradeData.advancedMode && simpleRangeWidth === 100))
         ) {
             d3.select(event.currentTarget).style('cursor', 'row-resize');
 
@@ -6611,6 +6510,7 @@ export default function Chart(props: propsIF) {
             selectedDate,
             isMouseLeaveLiq,
             unparsedCandleData?.length,
+            !tradeData.advancedMode && simpleRangeWidth === 100,
         ],
     );
 
