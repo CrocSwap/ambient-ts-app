@@ -44,7 +44,7 @@ export default function TransactionDetails(props: propsIF) {
     const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
-        const txHash = tx.tx;
+        const txHash = tx.txHash;
         copy(txHash);
         openSnackbar(`${txHash} copied`, 'info');
     }

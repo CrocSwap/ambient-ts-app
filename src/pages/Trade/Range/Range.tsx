@@ -61,7 +61,7 @@ import {
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
 import { formatAmountOld } from '../../../utils/numbers';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -81,7 +81,7 @@ function Range() {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const {
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -101,7 +101,6 @@ function Range() {
     const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
@@ -153,8 +152,9 @@ function Range() {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         tradeData: {
             isDenomBase,
@@ -1010,47 +1010,6 @@ function Range() {
             setIsWaitingForWallet(false);
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            if (isAmbient) {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
-                            changeType: 'mint',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'concentrated',
-                            changeType: 'mint',
-                            bidTick: defaultLowTick.toString(),
-                            askTick: defaultHighTick.toString(),
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -1065,30 +1024,6 @@ function Range() {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (tx?.hash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx: poolIndex.toString(),
-                                positionType: isAmbient
-                                    ? 'ambient'
-                                    : 'concentrated',
-                                changeType: 'mint',
-                                bidTick: defaultLowTick.toString(),
-                                askTick: defaultHighTick.toString(),
-                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

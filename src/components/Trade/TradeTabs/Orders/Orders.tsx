@@ -13,7 +13,7 @@ import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { diffHashSigLimits } from '../../../../utils/functions/diffHashSig';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -21,6 +21,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import useDebounce from '../../../../App/hooks/useDebounce';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
@@ -43,6 +44,7 @@ function Orders(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -133,16 +135,21 @@ function Orders(props: propsIF) {
     }, [
         showAllData,
         connectedAccountActive,
-        diffHashSig(activeAccountLimitOrderData),
-        diffHashSig(ordersByUserMatchingSelectedTokens),
-        diffHashSig(limitOrdersByPool),
+        diffHashSigLimits(activeAccountLimitOrderData),
+        diffHashSigLimits(ordersByUserMatchingSelectedTokens),
+        diffHashSigLimits(limitOrdersByPool),
+        lastBlockNumber,
     ]);
 
     const nonEmptyOrders = showAllData
         ? limitOrdersByPool.filter(
-              (limitOrder) => limitOrder.totalValueUSD !== 0,
+              (limitOrder) =>
+                  limitOrder.positionLiq !== 0 || limitOrder.claimableLiq !== 0,
           )
-        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+        : limitOrderData.filter(
+              (limitOrder) =>
+                  limitOrder.positionLiq !== 0 || limitOrder.claimableLiq !== 0,
+          );
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', nonEmptyOrders);

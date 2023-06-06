@@ -54,7 +54,7 @@ export default function SidebarRangePositions(props: propsIF) {
     const handleRangePositionClick = (pos: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setCurrentPositionActive(pos.positionStorageSlot);
+        setCurrentPositionActive(pos.firstMintTx);
         setShowAllData(false);
         linkGenRange.navigate({
             chain: chainId,

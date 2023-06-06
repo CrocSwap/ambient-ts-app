@@ -63,7 +63,7 @@ export default function PositionsSearchResults(props: propsIF) {
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
-        setCurrentPositionActive(position.positionStorageSlot);
+        setCurrentPositionActive(position.lastMintTx);
         setShowAllData(false);
         linkGenRange.navigate({
             chain: chainId,

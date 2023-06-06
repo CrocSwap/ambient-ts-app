@@ -23,7 +23,7 @@ export const useSortedPositions = (
     // sort by positionHash
     const sortById = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) =>
-            b.positionStorageSlot.localeCompare(a.positionStorageSlot),
+            b.firstMintTx.localeCompare(a.firstMintTx),
         );
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
@@ -62,9 +62,9 @@ export const useSortedPositions = (
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort(
             (a, b) =>
-                (b.positionLiqTotalUSD * 1000000000000 ||
+                (b.totalValueUSD * 1000000000000 ||
                     b.bidTickInvPriceDecimalCorrected * 0.000001) -
-                (a.positionLiqTotalUSD * 1000000000000 ||
+                (a.totalValueUSD * 1000000000000 ||
                     a.bidTickInvPriceDecimalCorrected * 0.000001),
         );
 
