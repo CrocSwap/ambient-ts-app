@@ -89,3 +89,10 @@
         min-width: 400px;
     }
 }
+@media only screen and (max-width: 600px) {
+    .modal_header h2 {
+        font-size: var(--header2-size);
+        line-height: var(--header2-lh);
+
+    }
+}

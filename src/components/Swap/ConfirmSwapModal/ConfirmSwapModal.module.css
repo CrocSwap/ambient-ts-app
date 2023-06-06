@@ -1,5 +1,5 @@
 .modal_container {
-    width: 400px;
+   
     padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
@@ -156,4 +156,13 @@
     border-radius: var(--border-radius);
 
     padding: 6px 8px;
+}
+
+
+@media only screen and (min-width: 768px) {
+
+    .modal_container {
+        width: 400px;
+       
+    }
 }
