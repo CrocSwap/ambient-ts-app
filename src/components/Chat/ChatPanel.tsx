@@ -17,6 +17,7 @@ import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import MentionAutoComplete from './MessagePanel/InputBox/MentionAutoComplete/MentionAutoComplete';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -65,6 +66,7 @@ function ChatPanel(props: propsIF) {
         messageUser,
         sendMsg,
         deleteMsgFromList,
+        users,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -84,6 +86,19 @@ function ChatPanel(props: propsIF) {
             setIsChatOpen(!isChatOpen);
         }
     }
+
+    const [mentPanelActive, setMentPanelActive] = useState(false);
+    const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
+    // const mentPanelInputRef = useRef<HTMLInputElement>(null);
+
+    const messageInputListener = (value: string) => {
+        if (value.indexOf('@') !== -1) {
+            setMentPanelActive(true);
+            setMentPanelQueryStr(value.split('@')[1]);
+        } else {
+            if (mentPanelActive) setMentPanelActive(false);
+        }
+    };
 
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
@@ -427,6 +442,8 @@ function ChatPanel(props: propsIF) {
             ensName={ensName}
             appPage={props.appPage}
             sendMsg={sendMsg}
+            inputListener={messageInputListener}
+            users={users}
         />
     );
 
@@ -491,6 +508,7 @@ function ChatPanel(props: propsIF) {
                     {chatNotification}
 
                     {messageInput}
+                    {/* {mentionAutoComplete} */}
                     <div id='thelastmessage' />
                 </div>
             </div>

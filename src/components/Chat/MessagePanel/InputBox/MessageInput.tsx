@@ -17,6 +17,8 @@ import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
+import { User } from '../../Model/UserModel';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -30,6 +32,8 @@ interface MessageInputProps {
         ensName: string,
         walletID: string | null,
     ) => void;
+    inputListener?: (e: string) => void;
+    users: User[];
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -76,6 +80,9 @@ export default function MessageInput(
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
+
+    const [mentPanelActive, setMentPanelActive] = useState(false);
+    const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
 
     const roomId =
         props.room === 'Current Pool'
@@ -178,7 +185,22 @@ export default function MessageInput(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
+
+        if (e.target.value.indexOf('@') !== -1) {
+            setMentPanelActive(true);
+            setMentPanelQueryStr(e.target.value.split('@')[1]);
+        } else {
+            if (mentPanelActive) setMentPanelActive(false);
+        }
     };
+
+    const mentionAutoComplete = (
+        <MentionAutoComplete
+            userList={props.users}
+            active={mentPanelActive}
+            queryStr={mentPanelQueryStr}
+        />
+    );
 
     return (
         <div
@@ -303,6 +325,8 @@ export default function MessageInput(
                     )}
                 </div>
             )}
+
+            {mentionAutoComplete}
         </div>
     );
 }

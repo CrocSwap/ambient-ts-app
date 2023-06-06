@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { CHAT_BACKEND_WSS_URL, CHAT_BACKEND_URL } from '../../../constants';
 import { Message } from '../Model/MessageModel';
+import { User } from '../Model/UserModel';
 
 const useChatSocket = (
     room: string,
@@ -13,6 +14,7 @@ const useChatSocket = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
@@ -26,6 +28,17 @@ const useChatSocket = (
             CHAT_BACKEND_URL +
                 '/chat/api/messages/getMsgWithoutWebSocket/' +
                 encodedRoomInfo,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
+    async function getUserListWithRest() {
+        const response = await fetch(
+            CHAT_BACKEND_URL + '/chat/api/auth/getUsersForMent',
             {
                 method: 'GET',
             },
@@ -56,6 +69,9 @@ const useChatSocket = (
                 setLastMessageText(data[data.length - 1].text);
                 setMessageUser(data[data.length - 1].sender);
             }
+
+            const userListData = await getUserListWithRest();
+            setUsers(userListData);
         }
 
         getRest();
@@ -119,6 +135,7 @@ const useChatSocket = (
         messageUser,
         lastMessageText,
         deleteMsgFromList,
+        users,
     };
 };
 

@@ -1,0 +1,37 @@
+.ment_autocomp_wrapper{
+    font-size: .72rem;
+    background: rgb(36 47 63);
+    width: 40%;
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    padding: 0 .3rem;
+    border-radius: .2rem .2rem 0 0;
+    overflow: hidden;
+    transition: all .2s ease-in-out;
+    max-height: 0vh;
+    opacity: 0;
+    bottom: 2rem;
+}
+
+.ment_autocomp_wrapper_active{
+    max-height: 100vh;
+    opacity: 1;
+}
+
+.ment_autocomp_user_wrapper{
+   opacity: .5;
+}
+.ment_autocomp_input{
+   
+    background:transparent;
+    color: white;
+    border: none;
+    background-color: rgba(0,0,0, .2);
+    outline: none;
+    width: 100%;
+    margin: 0 auto;
+    padding-left: .4rem;
+    }
