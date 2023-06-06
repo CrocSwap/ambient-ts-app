@@ -41,9 +41,7 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    isAccountView: boolean;
     isPositionEmpty: boolean;
-    showHighlightedButton: boolean;
     isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;

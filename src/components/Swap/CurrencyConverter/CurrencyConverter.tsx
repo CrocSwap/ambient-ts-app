@@ -38,7 +38,6 @@ interface propsIF {
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     isLiq: boolean;
-    isTokenAPrimary: boolean;
     sellQtyString: string;
     buyQtyString: string;
     setSellQtyString: Dispatch<SetStateAction<string>>;
@@ -49,7 +48,6 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
-    priceImpact: CrocImpact | undefined;
     setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
     isLiquidityInsufficient: boolean;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
@@ -178,17 +176,6 @@ function CurrencyConverter(props: propsIF) {
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
 
-    const tokenASurplusMinusTokenAQtyNum =
-        tokenASurplusMinusTokenARemainderNum >= 0
-            ? tokenASurplusMinusTokenARemainderNum
-            : 0;
-
-    const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum >= 0
-            ? parseFloat(tokenAQtyLocal || '0')
-            : parseFloat(tokenADexBalance || '0')
-        : 0;
-
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -221,20 +208,6 @@ function CurrencyConverter(props: propsIF) {
     useEffect(() => {
         setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
     }, [tokenAQtyCoveredByWalletBalance]);
-
-    const tokenAWalletMinusTokenAQtyNum =
-        isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-            ? parseFloat(tokenABalance || '0') +
-              tokenASurplusMinusTokenARemainderNum
-            : isWithdrawFromDexChecked
-            ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') -
-              parseFloat(tokenAQtyLocal || '0');
-
-    const tokenBWalletPlusTokenBQtyNum =
-        parseFloat(tokenBBalance || '0') + parseFloat(tokenBQtyLocal || '0');
-    const tokenBSurplusPlusTokenBQtyNum =
-        parseFloat(tokenBDexBalance || '0') + parseFloat(tokenBQtyLocal || '0');
 
     const linkPathReversed = useMemo(() => {
         let locationSlug = '';
@@ -594,7 +567,6 @@ function CurrencyConverter(props: propsIF) {
                 setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
                 setBuyQtyString={setBuyQtyString}
-                direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
                 isLoading={isSellLoading}
                 tokenAorB={'A'}
@@ -606,19 +578,6 @@ function CurrencyConverter(props: propsIF) {
                 tokenADexBalance={tokenADexBalance}
                 tokenBDexBalance={tokenBDexBalance}
                 isSellTokenEth={isSellTokenEth}
-                tokenAQtyCoveredByWalletBalance={
-                    tokenAQtyCoveredByWalletBalance
-                }
-                tokenAQtyCoveredBySurplusBalance={
-                    tokenAQtyCoveredBySurplusBalance
-                }
-                tokenASurplusMinusTokenARemainderNum={
-                    tokenASurplusMinusTokenARemainderNum
-                }
-                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -650,8 +609,6 @@ function CurrencyConverter(props: propsIF) {
                     setSellQtyString={setSellQtyString}
                     setBuyQtyString={setBuyQtyString}
                     buyQtyString={buyQtyString}
-                    tokenBQtyLocal={tokenBQtyLocal}
-                    direction={isLiq ? '' : 'To:'}
                     fieldId='buy'
                     isLoading={isBuyLoading}
                     tokenAorB={'B'}
@@ -660,16 +617,6 @@ function CurrencyConverter(props: propsIF) {
                     tokenBBalance={tokenBBalance}
                     tokenADexBalance={tokenADexBalance}
                     tokenBDexBalance={tokenBDexBalance}
-                    tokenAWalletMinusTokenAQtyNum={
-                        tokenAWalletMinusTokenAQtyNum
-                    }
-                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                    tokenASurplusMinusTokenAQtyNum={
-                        tokenASurplusMinusTokenAQtyNum
-                    }
-                    tokenBSurplusPlusTokenBQtyNum={
-                        tokenBSurplusPlusTokenBQtyNum
-                    }
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -683,6 +630,9 @@ function CurrencyConverter(props: propsIF) {
                     userClickedCombinedMax={userClickedCombinedMax}
                     setIsSellLoading={setIsSellLoading}
                     setIsBuyLoading={setIsBuyLoading}
+                    isTokenAPrimaryLocal={isTokenAPrimaryLocal}
+                    handleTokenAChangeEvent={handleTokenAChangeEvent}
+                    handleTokenBChangeEvent={handleTokenBChangeEvent}
                 />
             </div>
         </section>

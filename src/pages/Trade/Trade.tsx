@@ -4,7 +4,6 @@ import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import {
     useParams,
     Outlet,
-    useOutletContext,
     Link,
     NavLink,
     useNavigate,
@@ -18,7 +17,6 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -29,7 +27,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-// import { useCandleTime } from './useCandleTime';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -43,12 +40,8 @@ function Trade() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const {
-        candleData,
-        isCandleSelected,
-        setIsCandleSelected,
-        isCandleDataNull,
-    } = useContext(CandleContext);
+    const { candleData, setIsCandleSelected, isCandleDataNull } =
+        useContext(CandleContext);
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
@@ -63,11 +56,6 @@ function Trade() {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
-
-    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
-
-    const navigate = useNavigate();
 
     const routes = [
         {
@@ -84,6 +72,7 @@ function Trade() {
         },
     ];
 
+    const navigate = useNavigate();
     const { pathname } = useLocation();
 
     const provider = useProvider();
@@ -93,21 +82,12 @@ function Trade() {
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
 
-    useEffect(() => {
-        if (
-            isCandleDataNull &&
-            candleData !== undefined &&
-            candleData.candles?.length > 0
-        ) {
-            IS_LOCAL_ENV && console.debug('Data arrived');
-            setIsCandleDataArrived(false);
-        }
-    }, [candleData]);
-
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
-    const { tradeData, graphData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick, advancedMode } = tradeData;
+    const { tradeData } = useAppSelector((state) => state);
+    const { isDenomBase } = tradeData;
     const baseTokenLogo = isDenomBase
         ? tradeData.baseToken.logoURI
         : tradeData.quoteToken.logoURI;
@@ -122,7 +102,16 @@ function Trade() {
         ? tradeData.quoteToken.symbol
         : tradeData.baseToken.symbol;
 
-    const liquidityData = graphData?.liquidityData;
+    useEffect(() => {
+        if (
+            isCandleDataNull &&
+            candleData !== undefined &&
+            candleData.candles?.length > 0
+        ) {
+            IS_LOCAL_ENV && console.debug('Data arrived');
+            setIsCandleDataArrived(false);
+        }
+    }, [candleData]);
 
     const navigationMenu = (
         <div className={styles.navigation_menu}>
@@ -235,16 +224,11 @@ function Trade() {
 
     const tradeChartsProps = {
         changeState: changeState,
-        liquidityData: liquidityData,
-        limitTick: limitTick,
-        isAdvancedModeActive: advancedMode,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
     };
 
     const tradeTabsProps = {
-        isCandleSelected: isCandleSelected,
-        setIsCandleSelected: setIsCandleSelected,
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
         changeState: changeState,
@@ -253,14 +237,12 @@ function Trade() {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
         candleTime: isMarketOrLimitModule
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
         tokens,
-        // showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
@@ -337,16 +319,6 @@ function Trade() {
             </section>
         </>
     );
-}
-
-type ContextType = {
-    tradeData: TradeDataIF;
-    navigationMenu: JSX.Element;
-    limitTickFromParams: number | null;
-};
-
-export function useTradeData() {
-    return useOutletContext<ContextType>();
 }
 
 export default memo(Trade);

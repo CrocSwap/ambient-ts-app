@@ -3,10 +3,7 @@ import useKeyPress from '../../../App/hooks/useKeyPress';
 import styles from './RelativeModal.module.css';
 
 interface RelativeModalProps {
-    content?: ReactNode;
     onClose: () => void;
-    title: string | ReactNode;
-    footer?: ReactNode;
     noHeader?: boolean;
     noBackground?: boolean;
     children: ReactNode;

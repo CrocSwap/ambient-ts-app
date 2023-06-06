@@ -1,11 +1,11 @@
 import styles from './RemoveOrderModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 // import { RiListSettingsLine } from 'react-icons/ri';
 interface RemoveOrderModalHeaderPropsIF {
     title: string;
-    onClose: () => void;
     // eslint-disable-next-line
     onGoBack?: any;
 
@@ -15,6 +15,10 @@ interface RemoveOrderModalHeaderPropsIF {
 export default function RemoveOrderModalHeader(
     props: RemoveOrderModalHeaderPropsIF,
 ) {
+    const {
+        globalModal: { close: onClose },
+    } = useContext(AppStateContext);
+
     const goBackButton = (
         <BiArrowBack
             size={22}
@@ -42,7 +46,7 @@ export default function RemoveOrderModalHeader(
                 {/* {settingsIcon} */}
                 <VscClose
                     size={22}
-                    onClick={props.onClose}
+                    onClick={onClose}
                     role='button'
                     tabIndex={0}
                     aria-label='Close modal button'

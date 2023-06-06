@@ -80,6 +80,7 @@ const PageHeaderMobile = (props: PropsIF) => {
                         isUserLoggedIn={isUserLoggedIn}
                         clickLogout={clickLogout}
                         setIsNavbarMenuOpen={setOpenNavbarMenu}
+                        openWagmiModal={openWagmiModal}
                     />
                 </NavItem>
             </div>

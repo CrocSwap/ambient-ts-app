@@ -25,21 +25,19 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: propsIF) {
-    const { limitOrder, closeGlobalModal } = props;
+    const { limitOrder } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -51,8 +49,6 @@ export default function OrderRemoval(props: propsIF) {
         baseTokenLogo,
         quoteTokenLogo,
         usdValue,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
     } = useProcessOrder(limitOrder, userAddress);
@@ -175,31 +171,7 @@ export default function OrderRemoval(props: propsIF) {
                     error.reason === 'sending a transaction requires a signer'
                 ) {
                     location.reload();
-                } // setTxErrorMessage(error?.message);
-            }
-
-            const newLimitOrderChangeCacheEndpoint =
-                GRAPHCACHE_URL + '/new_limit_order_change?';
-
-            if (tx?.hash) {
-                fetch(
-                    newLimitOrderChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: limitOrder.chainId.toString(),
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: limitOrder.base,
-                            quote: limitOrder.quote,
-                            poolIdx: lookupChain(
-                                limitOrder.chainId,
-                            ).poolIndex.toString(),
-                            positionType: 'knockout',
-                            changeType: 'mint',
-                            limitTick: limitOrder.askTick.toString(),
-                            isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
+                }
             }
 
             let receipt;
@@ -208,6 +180,7 @@ export default function OrderRemoval(props: propsIF) {
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
+
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
@@ -218,27 +191,6 @@ export default function OrderRemoval(props: propsIF) {
                     setNewRemovalTransactionHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
-
-                    if (newTransactionHash) {
-                        fetch(
-                            newLimitOrderChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: limitOrder.chainId.toString(),
-                                    tx: newTransactionHash,
-                                    user: userAddress ?? '',
-                                    base: limitOrder.base,
-                                    quote: limitOrder.quote,
-                                    poolIdx: lookupChain(
-                                        limitOrder.chainId,
-                                    ).poolIndex.toString(),
-                                    positionType: 'knockout',
-                                    changeType: 'mint',
-                                    limitTick: limitOrder.askTick.toString(),
-                                    isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    }
                 } else if (isTransactionFailedError(error)) {
                     console.error({ error });
                     receipt = error.receipt;
@@ -276,10 +228,6 @@ export default function OrderRemoval(props: propsIF) {
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
-    // const isRemovalDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
-
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
 
@@ -307,7 +255,6 @@ export default function OrderRemoval(props: propsIF) {
     const confirmationContent = (
         <>
             <RemoveOrderModalHeader
-                onClose={closeGlobalModal}
                 title={'Remove Limit Order Confirmation'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
@@ -382,7 +329,6 @@ export default function OrderRemoval(props: propsIF) {
     ) : (
         <>
             <RemoveOrderModalHeader
-                onClose={closeGlobalModal}
                 title={showConfirmation ? '' : 'Remove Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
@@ -403,17 +349,11 @@ export default function OrderRemoval(props: propsIF) {
                         setRemovalPercentage={setRemovalPercentage}
                     />
                     <RemoveOrderInfo
-                        baseTokenSymbol={baseTokenSymbol}
-                        quoteTokenSymbol={quoteTokenSymbol}
                         baseTokenLogoURI={baseTokenLogo}
                         quoteTokenLogoURI={quoteTokenLogo}
-                        removalPercentage={removalPercentage}
                         usdValue={usdValue}
-                        baseDisplayFrontend={baseDisplayFrontend}
-                        quoteDisplayFrontend={quoteDisplayFrontend}
                         baseDisplay={baseDisplay}
                         quoteDisplay={quoteDisplay}
-                        positionLiquidity={limitOrder.positionLiq.toString()}
                         baseRemovalString={baseQtyToBeRemoved}
                         quoteRemovalString={quoteQtyToBeRemoved}
                     />

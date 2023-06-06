@@ -67,7 +67,9 @@ function Sidebar() {
         graphData.limitOrdersByUser.limitOrders.filter(filterFn);
 
     const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser
+        .filter((p) => p.positionLiq > 0)
+        .slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [

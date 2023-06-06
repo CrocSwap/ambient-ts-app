@@ -11,9 +11,12 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 
 interface propsIF {
@@ -21,7 +24,6 @@ interface propsIF {
     user: string;
     bidTick: number;
     askTick: number;
-    isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -54,7 +56,6 @@ export default function RangeDetails(props: propsIF) {
         askTick,
         position,
         positionApy,
-        // isPositionInRange,
         isAmbient,
         isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -84,7 +85,8 @@ export default function RangeDetails(props: propsIF) {
             });
         }
     };
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+
+    const { tokens } = useContext(TokenContext);
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
@@ -107,6 +109,8 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
@@ -118,8 +122,7 @@ export default function RangeDetails(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
-        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -138,12 +141,29 @@ export default function RangeDetails(props: propsIF) {
                     }),
             )
                 .then((response) => response?.json())
-                .then((json) => {
-                    const positionStats = json?.data;
+                .then(async (json) => {
+                    if (!crocEnv || !json?.data) {
+                        setBaseCollateralDisplay(undefined);
+                        setQuoteCollateralDisplay(undefined);
+                        setUsdValue(undefined);
+                        setBaseFeesDisplay(undefined);
+                        setQuoteFeesDisplay(undefined);
+                        return;
+                    }
+
+                    const positionPayload = json?.data as PositionServerIF;
+                    const positionStats = await getPositionData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                    );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
+
                     const liqBaseDisplay =
                         liqBaseNum !== undefined
                             ? liqBaseNum === 0
@@ -225,33 +245,9 @@ export default function RangeDetails(props: propsIF) {
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);
-
-            fetch(
-                apyCacheEndpoint +
-                    new URLSearchParams({
-                        user: user,
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        positionType: position.positionType,
-                        concise: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const results = json?.data.results;
-                    const apr = results.apy;
-
-                    if (apr) {
-                        setUpdatedPositionApy(apr);
-                    }
-                })
-                .catch(console.error);
         }
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, crocEnv, chainId]);
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },
@@ -271,8 +267,6 @@ export default function RangeDetails(props: propsIF) {
 
     //     setControlItems(modifiedControlItems);
     // };
-
-    const [showSettings, setShowSettings] = useState(false);
 
     // const controlDisplay = showSettings ? (
     //     <div className={styles.control_display_container}>
@@ -299,7 +293,6 @@ export default function RangeDetails(props: propsIF) {
                         baseTokenSymbol={props.baseTokenSymbol}
                         quoteTokenSymbol={props.quoteTokenSymbol}
                         isDenomBase={props.isDenomBase}
-                        controlItems={controlItems}
                         isAmbient={isAmbient}
                         positionApy={positionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -326,10 +319,7 @@ export default function RangeDetails(props: propsIF) {
     return (
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
-                position={position}
                 onClose={closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}

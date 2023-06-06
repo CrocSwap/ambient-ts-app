@@ -122,9 +122,10 @@ export default function App() {
         ? 'swap-body'
         : null;
 
-    // Show sidebar on all pages except for home and swap
+    // Show sidebar on all pages except for home, swap, chat and 404
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
+        currentLocation !== '/404' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar />;

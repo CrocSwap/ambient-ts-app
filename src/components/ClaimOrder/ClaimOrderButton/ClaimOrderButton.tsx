@@ -2,9 +2,7 @@ import Button from '../../Global/Button/Button';
 import styles from './ClaimOrderButton.module.css';
 interface IClaimOrderButtonProps {
     claimFn: () => void;
-
     title: string;
-
     disabled?: boolean;
 }
 

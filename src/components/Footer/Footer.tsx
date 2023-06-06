@@ -5,27 +5,37 @@ import { FaDiscord } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    GITHUB_LINK,
+    MEDIUM_LINK,
+    TWITTER_LINK,
+} from '../../constants';
+import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 interface FooterItemProps {
     title: string | JSX.Element;
     content: string;
     link: string;
 }
 export default function Footer() {
+    const [, , termsUrls] = useTermsAgreed();
+
     const footerData = [
         {
             title: 'Terms of Service',
             content: 'Our rules for using the platform',
-            link: '/tos',
+            link: `${window.location.origin}/${termsUrls.tos}`,
         },
         {
             title: 'Privacy Policy',
             content: 'View our policies around data',
-            link: '/privacy',
+            link: `${window.location.origin}/${termsUrls.privacy}`,
         },
         {
             title: 'Docs',
             content: 'View our documentation',
-            link: 'https://crocswap.gitbook.io/crocswap-docs/',
+            link: DOCS_LINK,
         },
 
         {
@@ -35,7 +45,7 @@ export default function Footer() {
                 </>
             ),
             content: 'View our smart contracts, SDK, and more',
-            link: 'https://github.com/CrocSwap',
+            link: GITHUB_LINK,
         },
         {
             title: (
@@ -44,7 +54,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Keep up with the latest on twitter',
-            link: 'https://twitter.com/crocswap',
+            link: TWITTER_LINK,
         },
         {
             title: (
@@ -53,7 +63,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Join the community ',
-            link: 'https://discord.com/invite/crocswap',
+            link: DISCORD_LINK,
         },
         {
             title: (
@@ -62,7 +72,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Read the latest from our team on Medium',
-            link: 'https://crocswap.medium.com/',
+            link: MEDIUM_LINK,
         },
     ];
 

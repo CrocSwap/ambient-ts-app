@@ -20,10 +20,8 @@ interface NavItemPropsIF {
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon, square } = props;
+    const { children, icon, open, setOpen, square } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
-
-    const { open, setOpen } = props;
 
     const clickOutsideHandler = () => {
         setOpen(false);

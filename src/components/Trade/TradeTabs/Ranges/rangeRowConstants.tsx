@@ -40,7 +40,6 @@ interface Props {
     showColumns: boolean;
     rank: number | undefined;
     handleCopyPosHash: () => void;
-    openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
@@ -454,7 +453,7 @@ export default function rangeRowConstants(props: Props) {
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}
-                isEmpty={position.totalValueUSD === 0}
+                isEmpty={position.positionLiq === 0}
                 justSymbol
             />
         </li>

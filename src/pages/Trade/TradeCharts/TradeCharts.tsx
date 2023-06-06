@@ -21,7 +21,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { CandleData, LiquidityData } from '../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
@@ -42,9 +42,6 @@ interface propsIF {
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    limitTick: number | undefined;
-    liquidityData?: LiquidityData;
-    isAdvancedModeActive: boolean | undefined;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
 }
@@ -126,13 +123,10 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: isMarketOrLimitModule
-                ? chartSettings.marketOverlay.overlay
-                : chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.rangeOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.marketOverlay,
         chartSettings.rangeOverlay,
         showTvl,
         showVolume,
@@ -255,13 +249,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth
-                    overlayMethods={
-                        isMarketOrLimitModule
-                            ? chartSettings.marketOverlay
-                            : chartSettings.rangeOverlay
-                    }
-                />
+                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
             </div>
         </div>
     );
@@ -355,9 +343,6 @@ function TradeCharts(props: propsIF) {
                     <TradeCandleStickChart
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        limitTick={props.limitTick}
-                        liquidityData={props.liquidityData}
-                        isAdvancedModeActive={props.isAdvancedModeActive}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
                         selectedDate={selectedDate}

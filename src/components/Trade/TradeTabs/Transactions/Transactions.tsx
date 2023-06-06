@@ -1,24 +1,13 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import {
-    CandleData,
-    setDataLoadingStatus,
-} from '../../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-} from 'react';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -31,20 +20,14 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { CandleContext } from '../../../../contexts/CandleContext';
 import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    portfolio?: boolean;
     changesInSelectedCandle: TransactionIF[] | undefined;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
-    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    isCandleSelected: boolean | undefined;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
     setSelectedDate?: Dispatch<number | undefined>;
 }
 function Transactions(props: propsIF) {
@@ -52,12 +35,11 @@ function Transactions(props: propsIF) {
         activeAccountTransactionData,
         connectedAccountActive,
         changesInSelectedCandle,
-        isCandleSelected,
-        changeState,
         setSelectedDate,
         isAccountView,
     } = props;
 
+    const { isCandleSelected } = useContext(CandleContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -190,10 +172,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
-        changesByPoolWithoutFills.length,
-        changesByPoolWithoutFills.at(0)?.poolHash,
-        changesByUserMatchingSelectedTokens.length,
-        changesByUserMatchingSelectedTokens.at(0)?.user,
+        diffHashSigTxs(changesByPoolWithoutFills),
         showAllData,
     ]);
 
@@ -204,7 +183,6 @@ function Transactions(props: propsIF) {
 
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
-    const view2 = useMediaQuery('(max-width: 1568px)');
 
     // Get current transactions
 
@@ -434,10 +412,8 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            tradeData={tradeData}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -446,10 +422,8 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            tradeData={tradeData}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -486,7 +460,6 @@ function Transactions(props: propsIF) {
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
-            changeState={changeState}
             type='transactions'
             isAccountView={isAccountView}
         />
@@ -521,7 +494,7 @@ function Transactions(props: propsIF) {
             : 'calc(100dvh - 9rem)'
         : '260px';
 
-    const portfolioPageStyle = props.portfolio
+    const portfolioPageStyle = props.isAccountView
         ? mobileView
             ? 'calc(100dvh - 10rem)'
             : 'calc(100dvh - 19.5rem)'

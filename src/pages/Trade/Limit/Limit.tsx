@@ -22,7 +22,6 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 
 // START: Import Local Files
 import styles from './Limit.module.css';
-import { useTradeData } from '../Trade';
 import {
     useAppDispatch,
     useAppSelector,
@@ -31,7 +30,6 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
@@ -48,7 +46,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -57,6 +55,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 export default function Limit() {
     const {
@@ -65,7 +65,7 @@ export default function Limit() {
     } = useContext(AppStateContext);
     const {
         crocEnv,
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -79,8 +79,9 @@ export default function Limit() {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const { tokenA, tokenB } = tradeData;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
@@ -105,15 +106,12 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-
-        setTxErrorMessage('');
     };
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -144,14 +142,6 @@ export default function Limit() {
         () => pool?.baseToken.tokenAddr === tokenA.address,
         [pool?.baseToken, tokenA.address],
     );
-
-    useEffect(() => {
-        if (!tradeData.shouldLimitDirectionReverse) {
-            dispatch(setLimitTick(undefined));
-        }
-
-        dispatch(setShouldLimitDirectionReverse(false));
-    }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
         (async () => {
@@ -329,12 +319,14 @@ export default function Limit() {
             }
         })();
     }, [
+        !!crocEnv,
         pool,
         limitTickCopied,
         limitTick,
         poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
+        isSellTokenBase,
     ]);
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
@@ -355,6 +347,8 @@ export default function Limit() {
                 return;
             }
             if (!limitTick) return;
+
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const testOrder = isTokenAPrimary
                 ? crocEnv.sell(tokenA.address, 0)
@@ -381,6 +375,8 @@ export default function Limit() {
         updateOrderValidityStatus();
     }, [
         isTokenAPrimary,
+        isSellTokenBase,
+        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
         tokenA.address + tokenB.address,
@@ -395,14 +391,11 @@ export default function Limit() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -465,7 +458,6 @@ export default function Limit() {
                 console.debug(
                     'Cannot send limit order: Knockout price inside spread',
                 );
-            setTxErrorMessage('Limit inside market price');
             return;
         }
 
@@ -489,33 +481,10 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error.code);
-            setTxErrorMessage(error.message);
             setIsWaitingForWallet(false);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-        }
-
-        const newLimitOrderChangeCacheEndpoint =
-            GRAPHCACHE_URL + '/new_limit_order_change?';
-
-        if (tx?.hash) {
-            fetch(
-                newLimitOrderChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: poolIndex.toString(),
-                        positionType: 'knockout',
-                        changeType: 'mint',
-                        limitTick: limitTick.toString(),
-                        isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
         }
 
         let receipt;
@@ -534,25 +503,6 @@ export default function Limit() {
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLimitOrderChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: tradeData.baseToken.address,
-                                quote: tradeData.quoteToken.address,
-                                poolIdx: poolIndex.toString(),
-                                positionType: 'knockout',
-                                changeType: 'mint',
-                                limitTick: limitTick.toString(),
-                                isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -698,7 +648,7 @@ export default function Limit() {
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
-        limitTickDisplayPrice: endDisplayPrice,
+        limitTickDisplayPrice: middleDisplayPrice,
         isOrderValid: isOrderValid,
         setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
     };
@@ -870,17 +820,14 @@ export default function Limit() {
                     centeredTitle
                 >
                     <ConfirmLimitModal
-                        onClose={handleModalClose}
                         initiateLimitOrderMethod={sendLimitOrder}
                         tokenAInputQty={tokenAInputQty}
                         tokenBInputQty={tokenBInputQty}
-                        isTokenAPrimary={isTokenAPrimary}
                         insideTickDisplayPrice={endDisplayPrice}
                         newLimitOrderTransactionHash={
                             newLimitOrderTransactionHash
                         }
                         txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
                         showConfirmation={showConfirmation}
                         setShowConfirmation={setShowConfirmation}
                         resetConfirmation={resetConfirmation}

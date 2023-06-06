@@ -6,22 +6,15 @@ import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import { updateLeaderboard } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 
 // react functional component
 function Leaderboard() {
@@ -36,8 +29,6 @@ function Leaderboard() {
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const cachedPositionUpdateQuery = memoizePositionUpdate();
-
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
@@ -48,42 +39,6 @@ function Leaderboard() {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('apr', graphData?.leaderboardByPool?.positions);
-
-    const topThreePositions = sortedPositions.slice(0, 3);
-
-    const dispatch = useAppDispatch();
-
-    // prevent query from running multiple times for the same position more than once per minute
-    const currentTimeForPositionUpdateCaching = Math.floor(Date.now() / 60000);
-
-    useEffect(() => {
-        if (topThreePositions) {
-            Promise.all(
-                topThreePositions.map((position: PositionIF) => {
-                    return cachedPositionUpdateQuery(
-                        position,
-                        currentTimeForPositionUpdateCaching,
-                    );
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (showAllData) {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    } else {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    }
-                })
-                .catch(console.error);
-        }
-    }, [
-        diffHashSig({
-            id0: topThreePositions[0]?.positionId,
-            id1: topThreePositions[1]?.positionId,
-            id2: topThreePositions[2]?.positionId,
-        }),
-        currentTimeForPositionUpdateCaching,
-        showAllData,
-    ]);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -297,7 +252,6 @@ function Leaderboard() {
             showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
-            idx={idx + 1}
             showPair={showPair}
         />
     ));

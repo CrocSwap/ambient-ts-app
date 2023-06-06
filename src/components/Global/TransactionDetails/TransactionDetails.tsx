@@ -12,7 +12,6 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 
 interface propsIF {
     tx: TransactionIF;
-    closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
 }
@@ -45,7 +44,7 @@ export default function TransactionDetails(props: propsIF) {
     const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
-        const txHash = tx.tx;
+        const txHash = tx.txHash;
         copy(txHash);
         openSnackbar(`${txHash} copied`, 'info');
     }
@@ -84,7 +83,6 @@ export default function TransactionDetails(props: propsIF) {
                     <TransactionDetailsGraph
                         tx={tx}
                         transactionType={tx.entityType}
-                        useTx={true}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
@@ -99,8 +97,6 @@ export default function TransactionDetails(props: propsIF) {
     return (
         <div className={styles.tx_details_container}>
             <TransactionDetailsHeader
-                tx={tx}
-                onClose={props.closeGlobalModal}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 downloadAsImage={downloadAsImage}
