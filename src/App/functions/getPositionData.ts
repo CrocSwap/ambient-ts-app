@@ -9,17 +9,12 @@ import {
 } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
-import { memoizeFetchContractDetails } from './fetchContractDetails';
-import { memoizeFetchEnsAddress } from './fetchAddress';
-import { memoizeTokenPrice } from './fetchTokenPrice';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
-
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedTokenDetails = memoizeFetchContractDetails();
-const cachedEnsResolve = memoizeFetchEnsAddress();
-const cachedFetchTokenPrice = memoizeTokenPrice();
+import { FetchAddrFn } from './fetchAddress';
+import { FetchContractDetailsFn } from './fetchContractDetails';
+import { TokenPriceFn } from './fetchTokenPrice';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -27,6 +22,10 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
+    cachedFetchTokenPrice: TokenPriceFn,
+    cachedQuerySpotPrice: SpotPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    cachedEnsResolve: FetchAddrFn,
 ): Promise<PositionIF> => {
     const newPosition = { ...position } as PositionIF;
 

@@ -40,7 +40,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -49,8 +49,6 @@ interface propsIF {
     connectedAccountActive: boolean;
     openTokenModal: () => void;
 }
-
-const cachedFetchTokenPrice = memoizeTokenPrice();
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
@@ -62,6 +60,12 @@ export default function PortfolioTabs(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -119,6 +123,10 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
                         }),
                     ).then((updatedPositions) => {
@@ -165,6 +173,10 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     chainId,
                                     lastBlockNumber,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
                                 );
                             },
                         ),
@@ -202,6 +214,10 @@ export default function PortfolioTabs(props: propsIF) {
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 lastBlockNumber: lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((updatedTransactions) => {
                     if (updatedTransactions) {

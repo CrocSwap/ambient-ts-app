@@ -34,7 +34,6 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
-import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -47,6 +46,9 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { useLocation } from 'react-router-dom';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -62,7 +64,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    candleTime: candleTimeIF;
     showActiveMobileComponent?: boolean;
 }
 
@@ -78,17 +79,34 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        candleTime,
         showActiveMobileComponent,
     } = props;
 
+    const { pathname } = useLocation();
+    const { chartSettings } = useContext(ChartContext);
+    const isMarketOrLimitModule =
+        pathname.includes('market') || pathname.includes('limit');
+    const candleTime = isMarketOrLimitModule
+        ? chartSettings.candleTime.market
+        : chartSettings.candleTime.range;
+
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
+
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+
     const { lastBlockNumber } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
+
     const {
         showAllData,
         setShowAllData,
@@ -273,6 +291,10 @@ function TradeTabs2(props: propsIF) {
                 time: filter?.time,
                 crocEnv: crocEnv,
                 lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((selectedCandleChangesJson) => {
                     IS_LOCAL_ENV &&
@@ -312,6 +334,10 @@ function TradeTabs2(props: propsIF) {
                     n: 100, // fetch last 100 changes,
                     crocEnv,
                     lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {

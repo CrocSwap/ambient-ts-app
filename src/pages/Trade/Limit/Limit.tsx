@@ -55,15 +55,16 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, gridSize, blockExplorer },
@@ -83,8 +84,6 @@ export default function Limit() {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const dispatch = useAppDispatch();
 
@@ -344,9 +343,7 @@ export default function Limit() {
 
     const updateOrderValidityStatus = async () => {
         try {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             if (!limitTick) return;
 
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
@@ -430,10 +427,7 @@ export default function Limit() {
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -550,10 +544,7 @@ export default function Limit() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

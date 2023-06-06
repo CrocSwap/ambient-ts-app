@@ -53,7 +53,9 @@ export default function ExchangeCard(props: propsIF) {
                     : testTokenMap.get(tokenMapKey)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
+                        mainnetAddress === ZERO_ADDRESS
+                            ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                            : mainnetAddress,
                         '0x1',
                     );
                     if (price) setTokenPrice(price);
