@@ -124,21 +124,24 @@ function LimitExtraInfo(props: propsIF) {
         // },
         {
             title: 'Fill Start',
-            tooltipTitle: 'Fill Start Explanation',
+            tooltipTitle:
+                'Price at which the limit order will begin to be filled',
             data: isDenomBase
                 ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill Middle',
-            tooltipTitle: 'Fill Middle Explanation',
+            tooltipTitle:
+                'Average price at which the limit order will be filled',
             data: isDenomBase
                 ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill End',
-            tooltipTitle: 'Fill End Explanation',
+            tooltipTitle:
+                'Price at which the limit order will finish being filled and become claimable',
             data: isDenomBase
                 ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,

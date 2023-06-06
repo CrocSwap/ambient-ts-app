@@ -1,13 +1,14 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import useDebounce from '../App/hooks/useDebounce';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
+import { PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 import {
@@ -55,15 +56,44 @@ export const UserDataContextProvider = (props: {
     }, [isConnected, isLoggedIn, userAddress]);
 
     const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_URL + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
+    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
+    useEffect(
+        () => setHasValidPrevData(false),
+        [
+            isServerEnabled,
+            tokens.tokenUniv.length,
+            isConnected,
+            userAddress,
+            chainData.chainId,
+            lastBlockNumber == 0,
+            !!crocEnv,
+        ],
+    );
+
     useEffect(() => {
-        if (isServerEnabled && isConnected && userAddress && crocEnv) {
-            dispatch(resetConnectedUserDataLoadingStatus());
+        if (
+            isServerEnabled &&
+            isConnected &&
+            userAddress &&
+            crocEnv &&
+            tokens.tokenUniv.length &&
+            chainData.chainId
+        ) {
+            if (!hasValidPrevData) {
+                dispatch(resetConnectedUserDataLoadingStatus());
+                setHasValidPrevData(true);
+            }
 
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
-                GRAPHCACHE_URL + '/user_positions?';
+                GRAPHCACHE_SMALL_URL + '/user_positions?';
 
             try {
                 fetch(
@@ -90,15 +120,17 @@ export const UserDataContextProvider = (props: {
 
                         if (userPositions && crocEnv) {
                             Promise.all(
-                                userPositions.map((position: PositionIF) => {
-                                    return getPositionData(
-                                        position,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                    );
-                                }),
+                                userPositions.map(
+                                    (position: PositionServerIF) => {
+                                        return getPositionData(
+                                            position,
+                                            tokens.tokenUniv,
+                                            crocEnv,
+                                            chainData.chainId,
+                                            lastBlockNumber,
+                                        );
+                                    },
+                                ),
                             ).then((updatedPositions) => {
                                 dispatch(
                                     setPositionsByUser({
@@ -137,10 +169,13 @@ export const UserDataContextProvider = (props: {
                     if (userLimitOrderStates) {
                         Promise.all(
                             userLimitOrderStates.map(
-                                (limitOrder: LimitOrderIF) => {
+                                (limitOrder: LimitOrderServerIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
                                         tokens.tokenUniv,
+                                        crocEnv,
+                                        chainData.chainId,
+                                        lastBlockNumber,
                                     );
                                 },
                             ),
@@ -166,6 +201,8 @@ export const UserDataContextProvider = (props: {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
+                    crocEnv: crocEnv,
+                    lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
                 })
                     .then((updatedTransactions) => {
@@ -244,11 +281,12 @@ export const UserDataContextProvider = (props: {
         }
     }, [
         isServerEnabled,
-        tokens.tokenUniv,
+        tokens.tokenUniv.length,
         isConnected,
         userAddress,
         chainData.chainId,
-        crocEnv,
+        lastBlockNumWait,
+        !!crocEnv,
     ]);
 
     return (

@@ -173,7 +173,7 @@ export const useProcessRange = (
 
     const width = (position.askTick - position.bidTick) / 100;
 
-    const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? '0'
@@ -222,7 +222,7 @@ export const useProcessRange = (
         ? 'You'
         : ensNameOrOwnerTruncated;
 
-    const isPositionEmpty = position.positionLiq === '0';
+    const isPositionEmpty = position.positionLiq === 0;
 
     // if (!position) return null;
 

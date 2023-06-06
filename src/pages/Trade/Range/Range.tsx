@@ -41,7 +41,6 @@ import {
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/exports';
-import { useTradeData } from '../Trade';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
@@ -62,7 +61,7 @@ import {
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
 import { formatAmountOld } from '../../../utils/numbers';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -73,6 +72,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
 function Range() {
     const {
@@ -80,7 +81,7 @@ function Range() {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const {
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -100,7 +101,6 @@ function Range() {
     const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
@@ -145,7 +145,6 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -153,12 +152,13 @@ function Range() {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         tradeData: {
             isDenomBase,
-            isTokenAPrimary,
+            isTokenAPrimaryRange,
             isLinesSwitched,
             tokenA,
             tokenB,
@@ -483,11 +483,6 @@ function Range() {
         }
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
-    const minimumSpan =
-        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
-            ? rangeSpanAboveCurrentPrice
-            : rangeSpanBelowCurrentPrice;
-
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
@@ -563,7 +558,6 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -573,14 +567,11 @@ function Range() {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -954,7 +945,7 @@ function Range() {
         let tx;
         try {
             tx = await (isAmbient
-                ? isTokenAPrimary
+                ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
                           tokenAInputQty,
                           [minPrice, maxPrice],
@@ -975,7 +966,7 @@ function Range() {
                               ],
                           },
                       )
-                : isTokenAPrimary
+                : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
@@ -1016,49 +1007,7 @@ function Range() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
-        }
-
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            if (isAmbient) {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
-                            changeType: 'mint',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'concentrated',
-                            changeType: 'mint',
-                            bidTick: defaultLowTick.toString(),
-                            askTick: defaultHighTick.toString(),
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
         }
 
         let receipt;
@@ -1075,30 +1024,6 @@ function Range() {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (tx?.hash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx: poolIndex.toString(),
-                                positionType: isAmbient
-                                    ? 'ambient'
-                                    : 'concentrated',
-                                changeType: 'mint',
-                                bidTick: defaultLowTick.toString(),
-                                askTick: defaultHighTick.toString(),
-                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -1350,10 +1275,8 @@ function Range() {
             <AdvancedPriceInfo
                 poolPriceDisplay={displayPriceString}
                 isTokenABase={isTokenABase}
-                minimumSpan={minimumSpan}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
-                daysInRange={daysInRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
@@ -1636,16 +1559,11 @@ function Range() {
                             maxPriceDisplay={maxPriceDisplay}
                             minPriceDisplay={minPriceDisplay}
                             sendTransaction={sendTransaction}
-                            closeModal={handleModalClose}
                             newRangeTransactionHash={newRangeTransactionHash}
-                            setNewRangeTransactionHash={
-                                setNewRangeTransactionHash
-                            }
                             resetConfirmation={resetConfirmation}
                             showConfirmation={showConfirmation}
                             setShowConfirmation={setShowConfirmation}
                             txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
                             isInRange={!isOutOfRange}
                             pinnedMinPriceDisplayTruncatedInBase={
                                 pinnedMinPriceDisplayTruncatedInBase

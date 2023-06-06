@@ -1,17 +1,11 @@
 import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, memo, useContext } from 'react';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface NoTableDataPropsIF {
     type: string;
-    // setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
     setSelectedDate?: Dispatch<number | undefined>;
     isAccountView: boolean;
 }

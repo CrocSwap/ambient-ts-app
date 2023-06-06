@@ -4,5 +4,6 @@
     "deno.enablePaths": ["netlify/edge-functions"],
     "deno.unstable": true,
     "deno.importMap": ".netlify/edge-functions-import-map.json",
-    "deno.path": "/Users/benwolski/Library/Preferences/netlify/deno-cli/deno"
+    "deno.path": "/Users/benwolski/Library/Preferences/netlify/deno-cli/deno",
+    "liveServer.settings.port": 5501
 }

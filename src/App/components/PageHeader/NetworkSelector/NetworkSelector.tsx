@@ -1,4 +1,3 @@
-import { FaDotCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './NetworkSelector.module.css';
@@ -45,10 +44,14 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     tabIndex={0}
                 >
                     <div className={styles.chain_name_status} tabIndex={0}>
+                        <img
+                            src={chain.logoUrl}
+                            alt={chain.displayName}
+                            width='21px'
+                            height='21px'
+                            style={{ borderRadius: '50%' }}
+                        />
                         {chain.displayName}
-                        {chain.chainId == chainId && (
-                            <FaDotCircle color='#CDC1FF' size={10} />
-                        )}
                     </div>
                 </motion.li>
             ))}

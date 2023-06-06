@@ -47,7 +47,7 @@ const BASE_URL_PATHS = {
     market: '/trade/market',
     limit: '/trade/limit',
     range: '/trade/range',
-    reposition: '/reposition',
+    reposition: '/trade/reposition',
     tos: '/tos',
     testpage: '/testpage',
     account: '/account',
@@ -61,6 +61,7 @@ export interface linkGenMethodsIF {
     baseURL: string;
     getFullURL: (paramsObj?: anyParamsIF) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
+    redirect: (paramsObj?: anyParamsIF) => void;
 }
 
 // TODO:    @Emily: it probably makes sense to expand this hook to
@@ -127,9 +128,14 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         navigate(getFullURL(paramsObj));
     }
 
+    function redirectUser(paramsObj?: anyParamsIF): void {
+        navigate(getFullURL(paramsObj), { replace: true });
+    }
+
     return {
         baseURL,
         getFullURL,
         navigate: navigateUser,
+        redirect: redirectUser,
     };
 };

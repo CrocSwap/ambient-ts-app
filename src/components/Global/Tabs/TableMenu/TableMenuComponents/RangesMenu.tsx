@@ -26,7 +26,6 @@ import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
-import { handlePulseAnimation } from '../../../../../utils/functions/handlePulseAnimation';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
@@ -34,6 +33,7 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -41,9 +41,7 @@ interface propsIF {
     // eslint-disable-next-line
     rangeDetailsProps: any;
     position: PositionIF;
-    isAccountView: boolean;
     isPositionEmpty: boolean;
-    showHighlightedButton: boolean;
     isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
@@ -70,6 +68,7 @@ export default function RangesMenu(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 

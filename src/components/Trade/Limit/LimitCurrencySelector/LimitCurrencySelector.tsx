@@ -36,25 +36,15 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 interface propsIF {
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: Dispatch<SetStateAction<string>>;
-    setTokenBInputQty: Dispatch<SetStateAction<string>>;
     fieldId: string;
-    direction: string;
     sellToken?: boolean;
     reverseTokens: () => void;
     tokenABalance: string;
-    tokenBBalance: string;
     tokenADexBalance: string;
-    tokenBDexBalance: string;
     isSellTokenEth?: boolean;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     isWithdrawFromDexChecked: boolean;
-    tokenAWalletMinusTokenAQtyNum: number;
-    tokenASurplusMinusTokenAQtyNum: number;
-    tokenASurplusMinusTokenARemainderNum: number;
-    tokenAQtyCoveredBySurplusBalance: number;
-    tokenAQtyCoveredByWalletBalance: number;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
@@ -196,15 +186,13 @@ function LimitCurrencySelector(props: propsIF) {
             : walletAndSurplusBalanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserConnected && !isSellTokenEth) {
+        if (handleChangeClick && isUserConnected) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
 
     const maxButton =
-        isSellTokenSelector &&
-        !isSellTokenEth &&
-        balanceLocaleString !== '0.00' ? (
+        isSellTokenSelector && balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => handleMaxButtonClick()}

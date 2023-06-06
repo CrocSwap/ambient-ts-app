@@ -15,7 +15,6 @@ interface DropdownMenuPropsIF {
     children: ReactNode;
     marginTop?: string;
     titleWidth?: string;
-    titleBackground?: string;
     logo?: string;
 }
 
@@ -63,12 +62,20 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         : titleWidth
                         ? titleWidth
                         : '100px',
-                    // background: titleBackground ? titleBackground : 'transparent',
                 }}
             >
                 <div className={styles.menu_item}>
                     {desktopScreen && (
-                        <div className={styles.icon}>{title}</div>
+                        <div className={styles.icon}>
+                            <img
+                                src={logo}
+                                alt={title}
+                                width='18px'
+                                height='18px'
+                                style={{ borderRadius: '50%' }}
+                            />
+                            {title}
+                        </div>
                     )}
                     {!desktopScreen && (
                         <img
