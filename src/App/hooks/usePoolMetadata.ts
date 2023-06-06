@@ -1,10 +1,7 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { GRAPHCACHE_SMALL_URL, ZERO_ADDRESS } from '../../constants';
-import {
-    getMainnetEquivalent,
-    testTokenMap,
-} from '../../utils/data/testTokenMap';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -154,11 +151,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             const tokenBAddress = tradeData.tokenB.address;
 
             if (tokenAAddress && tokenBAddress) {
-                const chainId = props.chainData.chainId;
                 const sortedTokens = sortBaseQuoteTokens(
                     tokenAAddress,
                     tokenBAddress,
                 );
+
                 const { token: tokenAMainnetEquivalent } = getMainnetEquivalent(
                     tokenAAddress,
                     props.chainData.chainId,
