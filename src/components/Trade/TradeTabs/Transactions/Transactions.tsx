@@ -172,10 +172,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
-        changesByPoolWithoutFills.length,
-        changesByPoolWithoutFills.at(0)?.poolHash,
-        changesByUserMatchingSelectedTokens.length,
-        changesByUserMatchingSelectedTokens.at(0)?.user,
+        diffHashSigTxs(changesByPoolWithoutFills),
         showAllData,
     ]);
 

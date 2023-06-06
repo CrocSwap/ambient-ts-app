@@ -24,9 +24,7 @@ export const fetchNativeTokenBalance = async (
     _lastBlockNumber: number,
     crocEnv: CrocEnv | undefined,
 ) => {
-    if (!crocEnv) {
-        return;
-    }
+    if (!crocEnv) return;
 
     const getDexBalanceNonDisplay = async (
         tokenAddress: string,
@@ -148,10 +146,7 @@ export const fetchErc20TokenBalances = async (
     _lastBlockNumber: number,
     crocEnv: CrocEnv | undefined,
 ): Promise<TokenIF[] | undefined> => {
-    if (!crocEnv) {
-        location.reload();
-        return;
-    }
+    if (!crocEnv) return;
 
     // Doesn't have to be comprehensive, just to satisfy typescript
     type MoralisChainIDs = '0x1';

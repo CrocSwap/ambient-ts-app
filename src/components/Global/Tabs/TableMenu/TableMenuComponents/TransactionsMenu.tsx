@@ -171,7 +171,7 @@ export default function TransactionsMenu(props: propsIF) {
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            const explorerUrl = `${blockExplorer}tx/${tx.txHash}`;
             window.open(explorerUrl);
         }
     }
@@ -188,7 +188,7 @@ export default function TransactionsMenu(props: propsIF) {
         );
     };
 
-    const isTxCopiable = tx.source !== 'manual';
+    const isTxCopiable = true;
 
     const walletButton = (
         <button

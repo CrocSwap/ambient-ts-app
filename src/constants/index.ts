@@ -29,6 +29,9 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
+export const GRAPHCACHE_SMALL_URL =
+    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
+
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
     GRAPHCACHE_URL.replace('http', 'ws');

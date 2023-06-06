@@ -11,10 +11,14 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -69,6 +73,12 @@ export default function RangeDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -82,7 +92,8 @@ export default function RangeDetails(props: propsIF) {
             });
         }
     };
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+
+    const { tokens } = useContext(TokenContext);
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
@@ -105,6 +116,8 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
@@ -116,8 +129,7 @@ export default function RangeDetails(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
-        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -136,12 +148,33 @@ export default function RangeDetails(props: propsIF) {
                     }),
             )
                 .then((response) => response?.json())
-                .then((json) => {
-                    const positionStats = json?.data;
+                .then(async (json) => {
+                    if (!crocEnv || !json?.data) {
+                        setBaseCollateralDisplay(undefined);
+                        setQuoteCollateralDisplay(undefined);
+                        setUsdValue(undefined);
+                        setBaseFeesDisplay(undefined);
+                        setQuoteFeesDisplay(undefined);
+                        return;
+                    }
+
+                    const positionPayload = json?.data as PositionServerIF;
+                    const positionStats = await getPositionData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
+
                     const liqBaseDisplay =
                         liqBaseNum !== undefined
                             ? liqBaseNum === 0
@@ -223,33 +256,9 @@ export default function RangeDetails(props: propsIF) {
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);
-
-            fetch(
-                apyCacheEndpoint +
-                    new URLSearchParams({
-                        user: user,
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        positionType: position.positionType,
-                        concise: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const results = json?.data.results;
-                    const apr = results.apy;
-
-                    if (apr) {
-                        setUpdatedPositionApy(apr);
-                    }
-                })
-                .catch(console.error);
         }
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, crocEnv, chainId]);
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },

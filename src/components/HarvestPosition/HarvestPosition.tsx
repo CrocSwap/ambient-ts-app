@@ -34,9 +34,13 @@ import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimpl
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { FaGasPump } from 'react-icons/fa';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { TokenContext } from '../../contexts/TokenContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -59,12 +63,19 @@ export default function HarvestPosition(props: propsIF) {
     const [showSettings, setShowSettings] = useState(false);
 
     const {
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         crocEnv,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+    const { tokens } = useContext(TokenContext);
 
     const isPairStable: boolean = isStablePair(
         position.base,
@@ -131,7 +142,8 @@ export default function HarvestPosition(props: propsIF) {
         setTxErrorCode('');
     };
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
     const dispatch = useAppDispatch();
 
     const positionsPendingUpdate = useAppSelector(
@@ -167,13 +179,31 @@ export default function HarvestPosition(props: propsIF) {
                         }),
                 )
                     .then((response) => response.json())
-                    .then((json) => {
-                        setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected,
-                        );
-                        setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected,
-                        );
+                    .then(async (json) => {
+                        if (crocEnv && json?.data) {
+                            const payload = json.data as PositionServerIF;
+                            const position = await getPositionData(
+                                payload,
+                                tokens.tokenUniv,
+                                crocEnv,
+                                chainId,
+                                lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
+                            );
+
+                            setFeeLiqBaseDecimalCorrected(
+                                position.feesLiqBaseDecimalCorrected,
+                            );
+                            setFeeLiqQuoteDecimalCorrected(
+                                position.feesLiqQuoteDecimalCorrected,
+                            );
+                        } else {
+                            setFeeLiqBaseDecimalCorrected(undefined);
+                            setFeeLiqQuoteDecimalCorrected(undefined);
+                        }
                     });
             })();
         }
@@ -271,10 +301,7 @@ export default function HarvestPosition(props: propsIF) {
 
     const harvestFn = async () => {
         setShowConfirmation(true);
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         const env = crocEnv;
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
@@ -317,31 +344,6 @@ export default function HarvestPosition(props: propsIF) {
             console.error('unsupported position type for harvest');
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            fetch(
-                newLiqChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: position.chainId,
-                        tx: tx.hash,
-                        user: position.user,
-                        base: position.base,
-                        quote: position.quote,
-                        poolIdx: position.poolIdx.toString(),
-                        bidTick: position.bidTick
-                            ? position.bidTick.toString()
-                            : '0',
-                        askTick: position.askTick
-                            ? position.askTick.toString()
-                            : '0',
-                        positionType: position.positionType,
-                        changeType: 'harvest',
-                        isBid: 'false',
-                        liq: '0',
-                    }),
-            );
-        }
-
         let receipt;
 
         try {
@@ -357,31 +359,6 @@ export default function HarvestPosition(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewHarvestTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-
-                receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: position.chainId,
-                                tx: newTransactionHash,
-                                user: position.user,
-                                base: position.base,
-                                quote: position.quote,
-                                poolIdx: position.poolIdx.toString(),
-                                bidTick: position.bidTick
-                                    ? position.bidTick.toString()
-                                    : '0',
-                                askTick: position.askTick
-                                    ? position.askTick.toString()
-                                    : '0',
-                                positionType: position.positionType,
-                                changeType: 'harvest',
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

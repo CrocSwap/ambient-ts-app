@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppStateContextProvider } from './AppStateContext';
+import { CachedDataContextProvider } from './CachedDataContext';
 import { CandleContextProvider } from './CandleContext';
 import { ChainDataContextProvider } from './ChainDataContext';
 import { ChartContextProvider } from './ChartContext';
@@ -16,31 +17,33 @@ import { UserPreferenceContextProvider } from './UserPreferenceContext';
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
         <AppStateContextProvider>
-            <CrocEnvContextProvider>
-                <TokenContextProvider>
-                    <ChainDataContextProvider>
-                        <UserDataContextProvider>
-                            <RangeContextProvider>
+            <CachedDataContextProvider>
+                <CrocEnvContextProvider>
+                    <TokenContextProvider>
+                        <ChainDataContextProvider>
+                            <UserDataContextProvider>
                                 <ChartContextProvider>
-                                    <TradeTokenContextProvider>
-                                        <PoolContextProvider>
-                                            <CandleContextProvider>
-                                                <TradeTableContextProvider>
-                                                    <UserPreferenceContextProvider>
-                                                        <SidebarContextProvider>
-                                                            {props.children}
-                                                        </SidebarContextProvider>
-                                                    </UserPreferenceContextProvider>
-                                                </TradeTableContextProvider>
-                                            </CandleContextProvider>
-                                        </PoolContextProvider>
-                                    </TradeTokenContextProvider>
+                                    <RangeContextProvider>
+                                        <TradeTokenContextProvider>
+                                            <PoolContextProvider>
+                                                <CandleContextProvider>
+                                                    <TradeTableContextProvider>
+                                                        <UserPreferenceContextProvider>
+                                                            <SidebarContextProvider>
+                                                                {props.children}
+                                                            </SidebarContextProvider>
+                                                        </UserPreferenceContextProvider>
+                                                    </TradeTableContextProvider>
+                                                </CandleContextProvider>
+                                            </PoolContextProvider>
+                                        </TradeTokenContextProvider>
+                                    </RangeContextProvider>
                                 </ChartContextProvider>
-                            </RangeContextProvider>
-                        </UserDataContextProvider>
-                    </ChainDataContextProvider>
-                </TokenContextProvider>
-            </CrocEnvContextProvider>
+                            </UserDataContextProvider>
+                        </ChainDataContextProvider>
+                    </TokenContextProvider>
+                </CrocEnvContextProvider>
+            </CachedDataContextProvider>
         </AppStateContextProvider>
     );
 };

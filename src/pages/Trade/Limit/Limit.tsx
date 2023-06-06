@@ -47,7 +47,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -55,18 +55,19 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -80,10 +81,9 @@ export default function Limit() {
 
     const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
     const { tokenA, tokenB } = tradeData;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
-
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -343,9 +343,7 @@ export default function Limit() {
 
     const updateOrderValidityStatus = async () => {
         try {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             if (!limitTick) return;
 
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
@@ -429,10 +427,7 @@ export default function Limit() {
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -487,28 +482,6 @@ export default function Limit() {
             }
         }
 
-        const newLimitOrderChangeCacheEndpoint =
-            GRAPHCACHE_URL + '/new_limit_order_change?';
-
-        if (tx?.hash) {
-            fetch(
-                newLimitOrderChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: poolIndex.toString(),
-                        positionType: 'knockout',
-                        changeType: 'mint',
-                        limitTick: limitTick.toString(),
-                        isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -525,25 +498,6 @@ export default function Limit() {
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLimitOrderChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: tradeData.baseToken.address,
-                                quote: tradeData.quoteToken.address,
-                                poolIdx: poolIndex.toString(),
-                                positionType: 'knockout',
-                                changeType: 'mint',
-                                limitTick: limitTick.toString(),
-                                isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -590,10 +544,7 @@ export default function Limit() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

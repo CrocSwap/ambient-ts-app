@@ -74,7 +74,7 @@ export default function OrdersSearchResults(props: propsIF) {
     const handleClick = (limitOrder: LimitOrderIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
+        setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
         linkGenLimit.navigate({
             chain: chainId,

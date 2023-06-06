@@ -126,8 +126,8 @@ function OrderRow(props: propsIF) {
         );
     };
     const orderDomId =
-        limitOrder.limitOrderIdentifier === currentPositionActive
-            ? `order-${limitOrder.limitOrderIdentifier}`
+        limitOrder.limitOrderId === currentPositionActive
+            ? `order-${limitOrder.limitOrderId}`
             : '';
 
     const activePositionRef = useRef(null);
@@ -147,13 +147,13 @@ function OrderRow(props: propsIF) {
     }
 
     useEffect(() => {
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? scrollToDiv()
             : null;
     }, [currentPositionActive]);
 
     const activePositionStyle =
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? styles.active_position_style
             : '';
 
@@ -258,7 +258,7 @@ function OrderRow(props: propsIF) {
     } = orderRowConstants(orderRowConstantsProps);
 
     function handleRowClick() {
-        if (limitOrder.limitOrderIdentifier === currentPositionActive) {
+        if (limitOrder.limitOrderId === currentPositionActive) {
             return;
         }
         setCurrentPositionActive('');

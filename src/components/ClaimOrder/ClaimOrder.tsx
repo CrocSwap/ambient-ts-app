@@ -73,7 +73,7 @@ export default function ClaimOrder(props: propsIF) {
     }, [txErrorCode]);
 
     const claimablePivotTime = limitOrder.claimableLiqPivotTimes
-        ? parseInt(limitOrder.claimableLiqPivotTimes)
+        ? limitOrder.claimableLiqPivotTimes
         : undefined;
 
     const claimFn = async () => {

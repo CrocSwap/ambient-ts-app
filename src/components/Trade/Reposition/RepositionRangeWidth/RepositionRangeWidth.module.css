@@ -128,6 +128,16 @@ input[type='range'] {
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }
 
+.explanation_button {
+    background: transparent;
+    outline: none;
+    border: none;
+}
+
+.explanation_button:focus-visible {
+    outline: 1px solid var(--text1);
+}
+
 input[type='range']:focus {
     outline: none;
 }
