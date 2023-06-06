@@ -1,0 +1,16 @@
+.dropdown {
+    position: absolute;
+    top: 60px;
+    width: 450px;
+    height: 400px;
+    transform: translateX(-45%);
+    border: none;
+    overflow: hidden;
+    transition: all var(--animation-speed) ease;
+    z-index: 99;
+
+    background: var(--dark1);
+    border-radius: var(--border-radius);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 999;
+}

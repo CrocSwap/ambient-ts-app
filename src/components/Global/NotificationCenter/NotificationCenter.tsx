@@ -1,19 +1,15 @@
 import styles from './NotificationCenter.module.css';
 import { AnimateSharedLayout } from 'framer-motion';
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
-interface NotificationCenterPropsIF {
-    showNotificationTable: boolean;
-    setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
-}
-
-const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const { showNotificationTable, setShowNotificationTable } = props;
+const NotificationCenter = () => {
+    const [showNotificationTable, setShowNotificationTable] =
+        useState<boolean>(false);
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
