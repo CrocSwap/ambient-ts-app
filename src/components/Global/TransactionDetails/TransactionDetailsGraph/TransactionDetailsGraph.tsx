@@ -613,8 +613,6 @@ export default function TransactionDetailsGraph(
                     .scale(scaleData?.xScale)
                     .tickValues(tickValues);
 
-                console.log(xAxis);
-
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
