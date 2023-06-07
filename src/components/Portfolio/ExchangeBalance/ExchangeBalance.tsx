@@ -34,6 +34,8 @@ import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { getMainnetProvider } from '../../../App/functions/getMainnetProvider';
 import { useModal } from '../../Global/Modal/useModal';
+import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -47,9 +49,11 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         isModalView = false,
     } = props;
+    const closeModalCustom = () => setInput('');
 
-    const mainnetProvider = getMainnetProvider();
-    const [, openTokenModal] = useModal(() => setInput(''));
+    const [mainnetProvider] = useState(getMainnetProvider());
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
+        useModal(closeModalCustom);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -67,6 +71,9 @@ export default function ExchangeBalance(props: propsIF) {
     const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
         useContext(CachedDataContext);
     const { addTokenInfo, setInput } = useContext(TokenContext);
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+    } = useContext(AppStateContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -81,6 +88,8 @@ export default function ExchangeBalance(props: propsIF) {
     const [resolvedAddress, setResolvedAddress] = useState<
         string | undefined
     >();
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const isSendToAddressEns = sendToAddress?.endsWith('.eth');
     const isSendToAddressHex =
@@ -88,6 +97,26 @@ export default function ExchangeBalance(props: propsIF) {
 
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
+
+    useEffect(() => {
+        if (isTokenModalOpen) {
+            openGlobalModal(
+                <SoloTokenSelect
+                    modalCloseCustom={closeModalCustom}
+                    closeModal={closeTokenModal}
+                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                    setShowSoloSelectTokenButtons={
+                        setShowSoloSelectTokenButtons
+                    }
+                    isSingleToken={true}
+                    tokenAorB={null}
+                />,
+                'Select Token',
+            );
+        } else {
+            closeGlobalModal();
+        }
+    }, [isTokenModalOpen]);
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
@@ -305,34 +334,38 @@ export default function ExchangeBalance(props: propsIF) {
         : '';
 
     return (
-        <motion.main
-            animate={columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'}
-            style={{ width: '100%' }}
-            className={`${styles.container} ${restrictWidthStyle}`}
-        >
-            <motion.div className={styles.main_container}>
-                {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
+        <>
+            <motion.main
+                animate={
+                    columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
+                }
+                style={{ width: '100%' }}
+                className={`${styles.container} ${restrictWidthStyle}`}
+            >
+                <motion.div className={styles.main_container}>
+                    {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
                     Exchange Balance
                 </div> */}
-                <div className={styles.tabs_container}>
-                    {(!fullLayoutActive || columnView || isModalView) && (
-                        <TabComponent
-                            data={accountData}
-                            rightTabOptions={false}
-                        />
-                    )}
-                    {!isModalView && exchangeControl}
-                </div>
-            </motion.div>
-            {(!fullLayoutActive || columnView || isModalView) && (
-                <section>
-                    <div className={styles.info_text}>
-                        Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs. Collateral can be
-                        withdrawn at any time.
+                    <div className={styles.tabs_container}>
+                        {(!fullLayoutActive || columnView || isModalView) && (
+                            <TabComponent
+                                data={accountData}
+                                rightTabOptions={false}
+                            />
+                        )}
+                        {!isModalView && exchangeControl}
                     </div>
-                </section>
-            )}
-        </motion.main>
+                </motion.div>
+                {(!fullLayoutActive || columnView || isModalView) && (
+                    <section>
+                        <div className={styles.info_text}>
+                            Collateral deposited into the Ambient Finance
+                            exchange can be traded at lower gas costs.
+                            Collateral can be withdrawn at any time.
+                        </div>
+                    </section>
+                )}
+            </motion.main>
+        </>
     );
 }

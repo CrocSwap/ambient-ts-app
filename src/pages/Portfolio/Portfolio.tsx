@@ -7,10 +7,8 @@ import { Provider } from '@ethersproject/providers';
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import Modal from '../../components/Global/Modal/Modal';
 import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
-import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 
 // START: Import Other Local Files
 import styles from './Portfolio.module.css';
@@ -122,8 +120,7 @@ function Portfolio(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
+    const [, openTokenModal] = useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -249,17 +246,6 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
-
-    const handleInputClear = () => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
-
     const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
@@ -382,27 +368,6 @@ function Portfolio(props: propsIF) {
                     ? notConnectedContent
                     : connectedAccountActive && exchangeBalanceComponent}
             </div>
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={!showSoloSelectTokenButtons}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={true}
-                        tokenAorB={null}
-                    />
-                </Modal>
-            )}
         </main>
     );
 }

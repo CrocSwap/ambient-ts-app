@@ -420,7 +420,6 @@ const PageHeader = function () {
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            {/* TODO: add modal here */}
                             <ExchangeBalanceModal />
                             <NotificationCenter />
                         </div>

@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { IS_LOCAL_ENV } from '../../constants';
 
+// TODO: why is this function called 20 times?
 export const getMainnetProvider = () => {
     const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
         ? process.env.REACT_APP_INFURA_KEY_2

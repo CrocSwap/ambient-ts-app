@@ -26,7 +26,8 @@ function NavItem(props: NavItemPropsIF) {
         setOpen(false);
     };
 
-    UseOnClickOutside(navItemRef, clickOutsideHandler);
+    // TODO: confirm with team that this is okay to remove selectively
+    // UseOnClickOutside(navItemRef, clickOutsideHandler);
 
     const childrenWithProps = Children.map(children, (child, index) => {
         // eslint-disable-next-line
