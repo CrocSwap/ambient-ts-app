@@ -87,12 +87,12 @@ export const useSortedTxs = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const ordersHashSum = useMemo(() => {
+    const ordersHashSum = useMemo<string>(() => {
         return diffHashSig(transactions);
     }, [transactions]);
 
     // array of positions sorted by the relevant column
-    const sortedTransactions = useMemo(() => {
+    const sortedTransactions = useMemo<TransactionIF[]>(() => {
         return sortData(transactions);
     }, [sortBy, reverseSort, ordersHashSum]);
 
