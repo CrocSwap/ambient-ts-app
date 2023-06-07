@@ -32,10 +32,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { IS_LOCAL_ENV } from '../../constants';
-import {
-    memoizeFetchNativeTokenBalance,
-    memoizeFetchErc20TokenBalances,
-} from '../../App/functions/fetchTokenBalances';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     userAccount?: boolean;
@@ -51,15 +48,14 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
+    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens, setInput } = useContext(TokenContext);
-
-    const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
-    const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 
     const dispatch = useAppDispatch();
 

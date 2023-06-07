@@ -2,8 +2,8 @@ const swap = {
     stable: 0.1,
     volatile: 0.1,
     presets: {
-        stable: [0.1, 0.3, 0.7],
-        volatile: [0.1, 0.3, 0.7],
+        stable: [0.1, 0.3, 0.5],
+        volatile: [0.1, 0.3, 0.5],
     },
 };
 
