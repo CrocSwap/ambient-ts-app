@@ -452,7 +452,11 @@ export default function Chart(props: propsIF) {
                 const newTargets = [...prevState];
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Max',
-                )[0].value = maxPrice;
+                )[0].value =
+                    !tradeData.advancedMode && simpleRangeWidth === 100
+                        ? liquidityData?.topBoundary
+                        : maxPrice;
+
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
                 )[0].value =
@@ -461,65 +465,10 @@ export default function Chart(props: propsIF) {
                         : minPrice;
 
                 setLiqHighlightedLinesAndArea(newTargets, true);
-                scaleWithButtons(minPrice, maxPrice);
-
                 return newTargets;
             });
         }
     }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
-
-    const scaleWithButtons = (minPrice: number, maxPrice: number) => {
-        if (
-            poolPriceDisplay !== undefined &&
-            rescaleRangeBoundariesWithSlider &&
-            rescale
-        ) {
-            const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = unparsedCandleData?.filter(
-                (data: any) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
-            if (filtered !== undefined) {
-                const minYBoundary = d3.min(filtered, (d) =>
-                    denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
-                );
-                const maxYBoundary = d3.max(filtered, (d) =>
-                    denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
-                );
-
-                if (maxYBoundary && minYBoundary) {
-                    const min =
-                        minYBoundary < minPrice ? minYBoundary : minPrice;
-                    const max =
-                        maxYBoundary > maxPrice ? maxYBoundary : maxPrice;
-                    const buffer = Math.abs(
-                        (max - min) / (simpleRangeWidth !== 100 ? 6 : 90),
-                    );
-                    const domain = [
-                        simpleRangeWidth !== 100
-                            ? Math.min(min, max) - buffer
-                            : 0 - buffer,
-                        Math.max(max, min) + buffer / 2,
-                    ];
-                    scaleData?.yScale.domain(domain);
-                    setRescaleRangeBoundariesWithSlider(false);
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (rescaleRangeBoundariesWithSlider) {
-            scaleWithButtons(minPrice, maxPrice);
-        }
-    }, [rescaleRangeBoundariesWithSlider, minPrice, maxPrice]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const standardDeviation = (arr: any, usePopulation = false) => {
