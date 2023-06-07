@@ -57,7 +57,7 @@ function TransferCurrencySelector(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={exponentialNumRegEx.toString()}
+                pattern={exponentialNumRegEx.source}
                 disabled={disable}
             />
         </div>

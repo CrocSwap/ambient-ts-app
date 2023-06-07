@@ -80,7 +80,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={decimalNumRegEx.toString()}
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>

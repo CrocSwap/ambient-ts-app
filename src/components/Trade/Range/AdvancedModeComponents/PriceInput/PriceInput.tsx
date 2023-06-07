@@ -60,7 +60,7 @@ function PriceInput(props: priceInputProps) {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        pattern={exponentialNumRegEx.toString()}
+                        pattern={exponentialNumRegEx.source}
                         placeholder='0.0'
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}

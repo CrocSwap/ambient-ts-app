@@ -42,7 +42,7 @@ export default function EditPriceInput(props: EditPriceInputProps) {
             autoCorrect='off'
             min='0'
             minLength={1}
-            pattern={decimalNumRegEx.toString()}
+            pattern={decimalNumRegEx.source}
             placeholder='0.00'
             disabled={disable}
             defaultValue={convertedValue}

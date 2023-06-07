@@ -113,7 +113,7 @@ export default function LimitRate(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={exponentialNumRegEx.toString()}
+                pattern={exponentialNumRegEx.source}
                 disabled={disable}
                 tabIndex={0}
                 aria-label='Limit Price.'
