@@ -11,6 +11,11 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import './TransactionDetailsGraph.css';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
+import {
+    formatAmountChartData,
+    formatPoolPriceAxis,
+} from '../../../../utils/numbers';
+import { renderCanvasArray } from '../../../../pages/Chart/Chart';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -64,7 +69,7 @@ export default function TransactionDetailsGraph(
     const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
-    const d3Yaxis = useRef(null);
+    const d3Yaxis = useRef<HTMLInputElement | null>(null);
     const d3Xaxis = useRef(null);
     const graphMainDiv = useRef(null);
 
@@ -73,6 +78,8 @@ export default function TransactionDetailsGraph(
     const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
+
+    const [yAxis, setYaxis] = useState<any>();
 
     const decidePeriod = (diff: number) => {
         return diff <= 60
@@ -407,194 +414,10 @@ export default function TransactionDetailsGraph(
 
             const xScaleOriginal = xScale.copy();
 
-            const yAxis = d3fc.axisRight().scale(yScale);
-
-            if (transactionType !== 'swap' && tx.positionType !== 'ambient') {
-                const topLineTick = (
-                    !isAccountView
-                        ? denominationsInBase
-                        : !isBaseTokenMoneynessGreaterOrEqual
-                )
-                    ? tx.bidTickInvPriceDecimalCorrected
-                    : tx.bidTickPriceDecimalCorrected;
-
-                const lowLineTick = (
-                    !isAccountView
-                        ? denominationsInBase
-                        : !isBaseTokenMoneynessGreaterOrEqual
-                )
-                    ? tx.askTickInvPriceDecimalCorrected
-                    : tx.askTickPriceDecimalCorrected;
-
-                const topLimit =
-                    topLineTick > lowLineTick ? topLineTick : lowLineTick;
-                const bottomLimit =
-                    topLineTick < lowLineTick ? topLineTick : lowLineTick;
-
-                const shouldRound = topLimit > 1 && bottomLimit > 1;
-
-                const diff =
-                    Math.abs(yScale.domain()[1] - yScale.domain()[0]) / 8;
-
-                const lowerBoundaryFill = Math.abs(
-                    yScale.domain()[0] - bottomLimit,
-                );
-
-                const lowerBoudnaryFactor = Math.ceil(lowerBoundaryFill / diff);
-
-                const lowValues: any = [];
-
-                if (lowerBoudnaryFactor < 2) {
-                    lowValues[0] =
-                        shouldRound &&
-                        (!isAccountView
-                            ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual)
-                            ? Math.round(
-                                  (bottomLimit - lowerBoundaryFill) / 10,
-                              ) * 10
-                            : bottomLimit - lowerBoundaryFill;
-                } else {
-                    for (let i = 1; i <= lowerBoudnaryFactor; i++) {
-                        lowValues[i - 1] =
-                            shouldRound &&
-                            (!isAccountView
-                                ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual)
-                                ? Math.round(
-                                      ((i === 1
-                                          ? bottomLimit
-                                          : lowValues[i - 2]) -
-                                          Math.round(
-                                              lowerBoundaryFill /
-                                                  lowerBoudnaryFactor /
-                                                  10,
-                                          ) *
-                                              10) /
-                                          10,
-                                  ) * 10
-                                : (i === 1 ? bottomLimit : lowValues[i - 2]) -
-                                  lowerBoundaryFill / lowerBoudnaryFactor;
-                    }
-                }
-
-                const topBoundaryFill = Math.abs(
-                    yScale.domain()[1] - diff / 2 - topLimit,
-                );
-                const topBoudnaryFactor = Math.ceil(topBoundaryFill / diff);
-
-                const topValues: any = [];
-
-                if (topBoudnaryFactor < 2) {
-                    topValues[0] =
-                        shouldRound &&
-                        (!isAccountView
-                            ? denominationsInBase
-                            : !isBaseTokenMoneynessGreaterOrEqual)
-                            ? Math.round((topLimit + topBoundaryFill) / 10) * 10
-                            : topLimit + topBoundaryFill;
-                } else {
-                    for (let i = 1; i <= topBoudnaryFactor; i++) {
-                        topValues[i - 1] =
-                            shouldRound &&
-                            (!isAccountView
-                                ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual)
-                                ? Math.round(
-                                      ((i === 1 ? topLimit : topValues[i - 2]) +
-                                          Math.round(
-                                              topBoundaryFill /
-                                                  topBoudnaryFactor /
-                                                  10,
-                                          ) *
-                                              10) /
-                                          10,
-                                  ) * 10
-                                : (i === 1 ? topLimit : topValues[i - 2]) +
-                                  topBoundaryFill / topBoudnaryFactor;
-                    }
-                }
-
-                const bandBoundaryFill = Math.abs(bottomLimit - topLimit);
-                const bandBoudnaryFactor = Math.ceil(bandBoundaryFill / diff);
-
-                const bandValues: any = [];
-
-                if (bandBoundaryFill > diff) {
-                    if (bandBoudnaryFactor < 2) {
-                        bandValues[0] =
-                            shouldRound &&
-                            (!isAccountView
-                                ? denominationsInBase
-                                : !isBaseTokenMoneynessGreaterOrEqual)
-                                ? Math.round(
-                                      (topLimit - bandBoundaryFill) / 10,
-                                  ) * 10
-                                : topLimit - bandBoundaryFill;
-                    } else {
-                        for (let i = 1; i < bandBoudnaryFactor; i++) {
-                            bandValues[i - 1] =
-                                shouldRound &&
-                                (!isAccountView
-                                    ? denominationsInBase
-                                    : !isBaseTokenMoneynessGreaterOrEqual)
-                                    ? Math.round(
-                                          (topLimit -
-                                              bandBoundaryFill /
-                                                  (bandBoudnaryFactor / i)) /
-                                              10,
-                                      ) * 10
-                                    : topLimit -
-                                      bandBoundaryFill /
-                                          (bandBoudnaryFactor / i);
-                        }
-                    }
-                }
-
-                let linePrices = [];
-
-                if (
-                    shouldRound &&
-                    (!isAccountView
-                        ? denominationsInBase
-                        : !isBaseTokenMoneynessGreaterOrEqual)
-                ) {
-                    linePrices =
-                        Math.abs(
-                            Math.round(topLimit / 10) * 10 -
-                                Math.round(bottomLimit / 10) * 10,
-                        ) >
-                        diff / 2
-                            ? [
-                                  Math.round(topLimit / 10) * 10,
-                                  Math.round(bottomLimit / 10) * 10,
-                              ]
-                            : [
-                                  (Math.round(topLimit / 10) * 10 +
-                                      Math.round(bottomLimit / 10) * 10) /
-                                      2,
-                              ];
-                } else {
-                    linePrices =
-                        Math.abs(topLimit - bottomLimit) > diff / 2
-                            ? [topLimit, bottomLimit]
-                            : [(topLimit + bottomLimit) / 2];
-                }
-
-                yAxis.tickValues([
-                    0,
-                    ...linePrices,
-                    ...lowValues,
-                    ...topValues,
-                    ...bandValues,
-                ]);
-            }
-
             const scaleData = {
                 xScale: xScale,
                 yScale: yScale,
                 xScaleOriginal: xScaleOriginal,
-                yAxis: yAxis,
             };
 
             setScaleData(() => {
@@ -602,6 +425,125 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [tx, graphData]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const _yAxis = d3fc.axisRight().scale(scaleData?.yScale);
+
+            setYaxis(() => {
+                return _yAxis;
+            });
+        }
+    }, [scaleData]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const d3YaxisCanvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const d3YaxisContext = d3YaxisCanvas.getContext(
+                '2d',
+            ) as CanvasRenderingContext2D;
+
+            d3.select(d3Yaxis.current).on('draw', function () {
+                if (yAxis) {
+                    drawYaxis(
+                        d3YaxisContext,
+                        scaleData?.yScale,
+                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
+                    );
+                }
+            });
+
+            renderCanvasArray([d3Yaxis]);
+        }
+    }, [yAxis, scaleData, d3Yaxis]);
+
+    const drawYaxis = (context: any, yScale: any, X: any) => {
+        const canvas = d3
+            .select(d3Yaxis.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+
+        if (canvas !== null) {
+            const height = canvas.height;
+
+            const factor = height < 500 ? 6 : height.toString().length * 2;
+
+            context.stroke();
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = 'rgba(189,189,189,0.6)';
+            context.font = '10px Lexend Deca';
+
+            const yScaleTicks = yScale.ticks(factor);
+
+            let switchFormatter = false;
+
+            yScaleTicks.forEach((element: any) => {
+                if (element > 99999) {
+                    switchFormatter = true;
+                }
+            });
+
+            const formatTicks = switchFormatter
+                ? formatPoolPriceAxis
+                : formatAmountChartData;
+
+            yScaleTicks.forEach((d: number) => {
+                const digit = d.toString().split('.')[1]?.length;
+
+                const isScientific = d.toString().includes('e');
+
+                if (isScientific) {
+                    const splitNumber = d.toString().split('e');
+                    const subString =
+                        Math.abs(Number(splitNumber[1])) -
+                        (splitNumber.includes('.') ? 2 : 1);
+
+                    const precision = splitNumber[0]
+                        .toString()
+                        .replace('.', '');
+
+                    const factor = Math.pow(10, 3 - precision.length);
+
+                    const textHeight =
+                        context.measureText('0.0').actualBoundingBoxAscent +
+                        context.measureText('0.0').actualBoundingBoxDescent;
+
+                    context.beginPath();
+                    context.fillText(
+                        '0.0',
+                        X -
+                            context.measureText('0.0').width / 2 -
+                            context.measureText(subString).width / 2,
+                        yScale(d),
+                    );
+                    context.fillText(subString, X, yScale(d) + textHeight / 3);
+                    context.fillText(
+                        factor * Number(precision),
+                        X +
+                            context.measureText(factor * Number(precision))
+                                .width /
+                                2 +
+                            context.measureText(subString).width / 2,
+                        yScale(d),
+                    );
+                } else {
+                    context.beginPath();
+                    context.fillText(
+                        formatTicks(d, digit ? digit : 2),
+                        X,
+                        yScale(d),
+                    );
+                }
+            });
+
+            render();
+        }
+    };
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotGraph').node() as any;
@@ -671,9 +613,6 @@ export default function TransactionDetailsGraph(
                     .scale(scaleData?.xScale)
                     .tickValues(tickValues);
 
-                // const priceJoin = d3fc.dataJoin('g', 'priceJoin');
-                // const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');
-                // const finishPriceJoin = d3fc.dataJoin('g', 'finishPriceJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
@@ -691,41 +630,6 @@ export default function TransactionDetailsGraph(
                         scaleData?.yScale.range([event.detail.height, 0]);
                     },
                 );
-
-                // Zoom
-                // d3.select(d3PlotGraph.current).on('measure.range', function (event: any) {
-                //     const svg = d3.select(event.target).select('svg');
-
-                //     const zoom = d3.zoom().on('zoom', (event: any) => {
-                //         if (event.sourceEvent.type === 'wheel') {
-                //             scaleData?.xScale.domain(
-                //                 event.transform.rescaleX(scaleData?.xScaleOriginal).domain(),
-                //             );
-                //         } else {
-                //             const domainX = scaleData?.xScale.domain();
-                //             const linearX = d3
-                //                 .scaleTime()
-                //                 .domain(scaleData?.xScale.range())
-                //                 .range([0, domainX[1] - domainX[0]]);
-
-                //             const deltaX = linearX(-event.sourceEvent.movementX);
-                //             scaleData?.xScale.domain([
-                //                 new Date(domainX[0].getTime() + deltaX),
-                //                 new Date(domainX[1].getTime() + deltaX),
-                //             ]);
-                //         }
-
-                //         render();
-                //     }) as any;
-
-                //     svg.call(zoom);
-                // });
-
-                // const prng = d3.randomNormal();
-                // const data = d3.range(1e3).map((d) => ({
-                //     x: prng(),
-                //     y: prng(),
-                // }));
 
                 d3.select(d3PlotGraph.current).on(
                     'draw',
@@ -753,10 +657,6 @@ export default function TransactionDetailsGraph(
                                     : tx.askTickPriceDecimalCorrected,
                             ];
 
-                            // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
-                            //     priceLine,
-                            // );
-                            // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(priceLine);
                             horizontalBandJoin(svg, [horizontalBandData]).call(
                                 horizontalBand,
                             );
@@ -784,12 +684,6 @@ export default function TransactionDetailsGraph(
                                         : tx.askTickPriceDecimalCorrected,
                                 ];
 
-                                // finishPriceJoin(svg, [[denominationsInBase ? tx.bidTickInvPriceDecimalCorrected : tx.bidTickPriceDecimalCorrected]]).call(
-                                //     priceLine,
-                                // );
-                                // startPriceJoin(svg, [[denominationsInBase ? tx.askTickInvPriceDecimalCorrected : tx.askTickPriceDecimalCorrected]]).call(
-                                //     priceLine,
-                                // );
                                 horizontalBandJoin(svg, [
                                     horizontalBandData,
                                 ]).call(horizontalBand);
@@ -799,7 +693,6 @@ export default function TransactionDetailsGraph(
                         lineJoin(svg, [graphData]).call(lineSeries);
 
                         if (transactionType === 'swap' && tx !== undefined) {
-                            // priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
                             crossPointJoin(svg, [
                                 [
                                     {
@@ -816,9 +709,6 @@ export default function TransactionDetailsGraph(
                             ]).call(crossPoint);
                         }
 
-                        d3.select(d3Yaxis.current)
-                            .select('svg')
-                            .call(scaleData?.yAxis);
                         d3.select(d3Xaxis.current).select('svg').call(xAxis);
                     },
                 );
@@ -858,11 +748,12 @@ export default function TransactionDetailsGraph(
                     ref={d3PlotGraph}
                     style={{ height: '300px', width: '90%' }}
                 ></d3fc-svg>
-                <d3fc-svg
+
+                <d3fc-canvas
                     className='y-axis'
                     ref={d3Yaxis}
                     style={{ width: '10%' }}
-                ></d3fc-svg>
+                ></d3fc-canvas>
             </div>
             <d3fc-svg
                 className='x-axis'

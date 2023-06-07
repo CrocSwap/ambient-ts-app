@@ -11,7 +11,6 @@ import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-import { IS_LOCAL_ENV } from '../../../../constants';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 type ItemIF = {
@@ -116,8 +115,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             </Row>
         </motion.div>
     );
-
-    IS_LOCAL_ENV && console.debug({ tx });
 
     const isAmbient = tx.positionType === 'ambient';
 
