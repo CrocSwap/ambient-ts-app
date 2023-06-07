@@ -15,6 +15,7 @@ import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import {
     setIsTokenAPrimary,
     setPrimaryQuantity,
+    setShouldSwapDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     useAppDispatch,
@@ -306,9 +307,21 @@ function CurrencyConverter(props: propsIF) {
         }
     };
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
+
+    useEffect(() => {
+        if (tradeData.shouldSwapDirectionReverse) {
+            setIsTokenAPrimaryLocal((state) => {
+                reverseTokens();
+                return !state;
+            });
+            dispatch(setShouldSwapDirectionReverse(false));
+        }
+    }, [tradeData.shouldSwapDirectionReverse]);
 
     useEffect(() => {
         isTokenAPrimaryLocal

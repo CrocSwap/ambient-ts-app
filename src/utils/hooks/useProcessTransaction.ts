@@ -218,20 +218,20 @@ export const useProcessTransaction = (
                           },
                       );
             truncatedLowDisplayPrice = isDenomBase
-                ? `${invertedAskPriceTruncated}`
-                : `${nonInvertedBidPriceTruncated}`;
-            truncatedHighDisplayPrice = isDenomBase
                 ? `${invertedBidPriceTruncated}`
                 : `${nonInvertedAskPriceTruncated}`;
+            truncatedHighDisplayPrice = isDenomBase
+                ? `${invertedAskPriceTruncated}`
+                : `${nonInvertedBidPriceTruncated}`;
 
             truncatedLowDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedAskPriceTruncated}`
-                    : `${invertedAskPriceTruncated}`;
-            truncatedHighDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedBidPriceTruncated}`
                     : `${invertedBidPriceTruncated}`;
+            truncatedHighDisplayPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? `${nonInvertedAskPriceTruncated}`
+                    : `${invertedAskPriceTruncated}`;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
@@ -374,7 +374,9 @@ export const useProcessTransaction = (
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
-                ? 'add'
+                ? (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+                    ? 'sell'
+                    : 'buy'
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'
