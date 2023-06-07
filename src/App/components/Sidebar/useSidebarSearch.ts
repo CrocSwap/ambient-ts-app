@@ -146,6 +146,7 @@ export const useSidebarSearch = (
                         position.base.toLowerCase() === addr.toLowerCase() ||
                         position.quote.toLowerCase() === addr.toLowerCase(),
                 )
+                // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to filter range positions by symbol (must be exact IF input is two characters)
         const searchBySymbol = (symb: string): PositionIF[] =>
@@ -163,6 +164,7 @@ export const useSidebarSearch = (
                               .toLowerCase()
                               .includes(symb.toLowerCase()),
                 )
+                // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to return list of range positions with no search filtering
         const noSearch = (): PositionIF[] => positionList;
