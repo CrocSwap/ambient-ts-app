@@ -24,6 +24,11 @@
 .ment_autocomp_user_wrapper{
    opacity: .5;
 }
+
+.ment_autocomp_user_selected{
+   opacity: 1;
+   background: #7371fc;
+}
 .ment_autocomp_input{
    
     background:transparent;

@@ -45,6 +45,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
+    const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
 
     const roomId = props.room;
 
@@ -91,7 +92,45 @@ export default function MessageInput(props: MessageInputProps) {
             handleSendMsg(e.target.value, roomId);
             setMessage('');
             dontShowEmojiPanel();
+        } else if (
+            mentPanelActive &&
+            (e.key === 'ArrowUp' || e.key === 'ArrowDown')
+        ) {
+            e.preventDefault();
+            if (possibleMentUser === null) {
+                setPossibleMentUser(
+                    props.users[
+                        e.key === 'ArrowUp' ? props.users.length - 1 : 0
+                    ],
+                );
+            } else {
+                const index = props.users.indexOf(possibleMentUser);
+                const targetIndex = e.key === 'ArrowUp' ? index - 1 : index + 1;
+                setPossibleMentUser(
+                    props.users[
+                        targetIndex < 0
+                            ? props.users.length - 1
+                            : targetIndex == props.users.length
+                            ? 0
+                            : targetIndex
+                    ],
+                );
+            }
         }
+        // else if(e.key === 'ArrowUp' && mentPanelActive) {
+        //     e.preventDefault();
+        //     if(possibleMentUser === null) {
+        //         setPossibleMentUser(props.users[props.users.length - 1]);
+        //     }else{
+        //         const index = props.users.indexOf(possibleMentUser);
+        //         if(index > 0) {
+
+        //         }
+        //     }
+
+        // }else if(e.key === 'ArrowDown' && mentPanelActive) {
+        //     e.preventDefault();
+        // }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,6 +194,7 @@ export default function MessageInput(props: MessageInputProps) {
             userList={props.users}
             active={mentPanelActive}
             queryStr={mentPanelQueryStr}
+            selectedUser={possibleMentUser}
         />
     );
 

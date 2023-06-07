@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { User } from '../../../Model/UserModel';
 import styles from './MentionAutoComplete.module.css';
 
 interface MentionAutoCompleteProps {
     userList: User[];
+    selectedUser: User | null;
     active: boolean;
     queryStr?: string;
 }
@@ -52,8 +54,12 @@ export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
                 }
                 return (
                     <div
-                        key={index}
-                        className={styles.ment_autocomp_user_wrapper}
+                        key={u._id}
+                        className={`${styles.ment_autocomp_user_wrapper} ${
+                            props.selectedUser?._id === u._id
+                                ? styles.ment_autocomp_user_selected
+                                : ''
+                        }`}
                     >
                         {userLabel(u)}
                     </div>
