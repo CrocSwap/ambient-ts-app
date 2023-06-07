@@ -374,7 +374,9 @@ export const useProcessTransaction = (
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
-                ? 'add'
+                ? (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+                    ? 'sell'
+                    : 'buy'
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'
