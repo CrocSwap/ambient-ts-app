@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
-export type SortType =
+export type LimitSortType =
     | 'wallet'
     | 'walletid'
     | 'pool'
@@ -14,41 +14,40 @@ export type SortType =
     | 'default';
 
 export const useSortedLimits = (
-    defaultSort: SortType,
+    defaultSort: LimitSortType,
     limitOrders: LimitOrderIF[],
 ): [
-    SortType,
-    Dispatch<SetStateAction<SortType>>,
+    LimitSortType,
+    Dispatch<SetStateAction<LimitSortType>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
     LimitOrderIF[],
 ] => {
     // default sort function
-
-    const sortByTime = (unsortedData: LimitOrderIF[]) =>
+    const sortByTime = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => {
             const aTime = a.latestUpdateTime || a.timeFirstMint || Date.now();
             const bTime = b.latestUpdateTime || b.timeFirstMint || Date.now();
             return bTime - aTime;
         });
     // sort by token pair
-    const sortByPool = (unsortedData: LimitOrderIF[]) =>
+    const sortByPool = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => {
             const poolA = a.baseSymbol + a.quoteSymbol;
             const poolB = b.baseSymbol + b.quoteSymbol;
             return poolA.localeCompare(poolB);
         });
-    const sortByWallet = (unsortedData: LimitOrderIF[]) =>
+    const sortByWallet = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
     // sort by limit price
-    const sortByPrice = (unsortedData: LimitOrderIF[]) =>
+    const sortByPrice = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => a.limitPrice - b.limitPrice);
     // sort by value of limit order
-    const sortByValue = (unsortedData: LimitOrderIF[]) =>
+    const sortByValue = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => {
             const aValue = a.totalValueUSD;
             const bValue = b.totalValueUSD;
@@ -57,7 +56,7 @@ export const useSortedLimits = (
 
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header
-    const [sortBy, setSortBy] = useState<SortType>(defaultSort);
+    const [sortBy, setSortBy] = useState<LimitSortType>(defaultSort);
     // whether the sort should be ascending or descending
     const [reverseSort, setReverseSort] = useState<boolean>(false);
 
@@ -92,13 +91,13 @@ export const useSortedLimits = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const ordersHashSum = useMemo(
+    const ordersHashSum = useMemo<string>(
         () => diffHashSig(limitOrders),
         [limitOrders],
     );
 
     // array of positions sorted by the relevant column
-    const sortedLimitOrders = useMemo(
+    const sortedLimitOrders = useMemo<LimitOrderIF[]>(
         () => sortData(limitOrders),
         [sortBy, reverseSort, ordersHashSum],
     );

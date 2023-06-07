@@ -2,8 +2,9 @@ import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Orders.module.css';
-import { SortType } from '../../useSortedLimits';
-interface OrderHeaderPropsIF {
+import { LimitSortType } from '../../useSortedLimits';
+
+interface propsIF {
     header: {
         name: string | JSX.Element;
         show: boolean;
@@ -12,17 +13,17 @@ interface OrderHeaderPropsIF {
         alignRight?: boolean;
         alignCenter?: boolean;
     };
-
-    sortBy: SortType;
-    setSortBy: Dispatch<SetStateAction<SortType>>;
+    sortBy: LimitSortType;
+    setSortBy: Dispatch<SetStateAction<LimitSortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-function OrderHeader(props: OrderHeaderPropsIF) {
+
+function OrderHeader(props: propsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignCenter, alignRight } = header;
 
-    function handleClick(slug: SortType) {
+    function handleClick(slug: LimitSortType): void {
         if (sortable) {
             if (sortBy !== slug) {
                 IS_LOCAL_ENV && console.debug('first click');
@@ -44,7 +45,7 @@ function OrderHeader(props: OrderHeaderPropsIF) {
         }
     }
 
-    const arrow = useMemo(() => {
+    const arrow = useMemo<JSX.Element | undefined>(() => {
         if (sortable) {
             if (sortBy !== slug.toLowerCase()) {
                 return <BsSortDown style={{ opacity: '0' }} />;
@@ -68,7 +69,7 @@ function OrderHeader(props: OrderHeaderPropsIF) {
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
                     } ${alignCenter && styles.align_center}`}
-                    onClick={() => handleClick(slug as SortType)}
+                    onClick={() => handleClick(slug as LimitSortType)}
                 >
                     {name} {arrow}
                 </li>
