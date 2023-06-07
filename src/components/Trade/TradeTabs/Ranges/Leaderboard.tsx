@@ -143,7 +143,7 @@ function Leaderboard() {
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: true,
         },
         {
             name: 'Min',
