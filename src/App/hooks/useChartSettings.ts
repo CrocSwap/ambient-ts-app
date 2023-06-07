@@ -4,9 +4,6 @@ import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
-    isVolumeSubchartEnabled: boolean;
-    isTvlSubchartEnabled: boolean;
-    isFeeRateSubchartEnabled: boolean;
     marketOverlay: string;
     rangeOverlay: string;
     candleTimeGlobal: number;
