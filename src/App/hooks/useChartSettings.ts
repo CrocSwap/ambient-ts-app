@@ -25,7 +25,7 @@ export interface overlayIF {
 type ReadableTimeType = '1m' | '5m' | '15m' | '1h' | '4h' | '1d';
 type TimeInSecondsType = 60 | 300 | 900 | 3600 | 14400 | 86400;
 
-interface DefaultTimeTypeIF {
+interface DefaultTimeIF {
     readable: ReadableTimeType;
     seconds: TimeInSecondsType;
 }
@@ -33,7 +33,7 @@ interface DefaultTimeTypeIF {
 export interface candleTimeIF {
     time: TimeInSecondsType;
     changeTime: (val: TimeInSecondsType) => void;
-    defaults: DefaultTimeTypeIF[];
+    defaults: DefaultTimeIF[];
     readableTime: ReadableTimeType;
 }
 
@@ -155,7 +155,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         time: TimeInSecondsType;
         // eslint-disable-next-line
         changeTime: (_val: TimeInSecondsType) => void;
-        defaults: DefaultTimeTypeIF[] = [
+        defaults: DefaultTimeIF[] = [
             { readable: '1m', seconds: 60 },
             { readable: '5m', seconds: 300 },
             { readable: '15m', seconds: 900 },
@@ -164,8 +164,9 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             { readable: '1d', seconds: 86400 },
         ];
         readableTime =
-            this.defaults.find((pair) => pair.seconds === this.time)
-                ?.readable ?? '4h';
+            this.defaults.find(
+                (pair: DefaultTimeIF) => pair.seconds === this.time,
+            )?.readable ?? '15m';
         constructor(
             t: TimeInSecondsType,
             setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
@@ -177,7 +178,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         }
     }
 
-    const chartSettings = useMemo(() => {
+    const chartSettings = useMemo<chartSettingsMethodsIF>(() => {
         return {
             marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
             rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
