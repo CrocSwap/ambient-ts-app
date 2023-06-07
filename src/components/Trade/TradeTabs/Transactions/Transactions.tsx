@@ -2,10 +2,7 @@
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
@@ -52,8 +49,6 @@ function Transactions(props: propsIF) {
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
-
-    const dispatch = useAppDispatch();
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
