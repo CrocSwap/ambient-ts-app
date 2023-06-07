@@ -3104,9 +3104,9 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         }
-
-                        if (oldLimitValue)
+                        if (oldLimitValue !== undefined) {
                             onBlurLimitRate(oldLimitValue, newLimitValue);
+                        }
                     } else {
                         if (oldLimitValue !== undefined) {
                             setLimit(() => {
@@ -3316,7 +3316,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis]);
         }
-    }, [yAxis, location]);
+    }, [yAxis, location, dragLimit, dragRange]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -6457,7 +6457,6 @@ export default function Chart(props: propsIF) {
             const tickPrice = tickToPrice(pinnedTick);
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-
             if (!tickDispPrice) {
                 reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
@@ -6472,9 +6471,7 @@ export default function Chart(props: propsIF) {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
 
-                    if (displayPriceWithDenom.toString().includes('e')) {
-                        newLimitValue = displayPriceWithDenom;
-                    }
+                    newLimitValue = displayPriceWithDenom;
                     reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return [
