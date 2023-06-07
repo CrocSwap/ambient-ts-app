@@ -12,7 +12,7 @@ import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import { useSortedTransactions } from '../useSortedTxs';
+import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -127,7 +127,7 @@ function Transactions(props: propsIF) {
         !debouncedShouldDisplayLoadingAnimation && !transactionData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions(
+        useSortedTxs(
             'time',
             showAllData && !isCandleSelected
                 ? changesByPoolWithoutFills

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
-export const useSortedTransactions = (
+export const useSortedTxs = (
     defaultSort: string,
     transactions: TransactionIF[],
 ): [
