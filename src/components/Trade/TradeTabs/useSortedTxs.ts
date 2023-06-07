@@ -63,6 +63,7 @@ export const useSortedTxs = (
         // router to apply a specific sort function
         switch (sortBy) {
             case 'wallet':
+            case 'walletid':
                 sortedData = sortByWallet(data);
                 break;
             case 'pool':
