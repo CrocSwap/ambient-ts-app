@@ -502,7 +502,7 @@ export const txRowConstants = (props: Props) => {
         >
             <p>{type}</p>
             <p>
-                {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                {tx.entityType === 'liqchange'
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>
