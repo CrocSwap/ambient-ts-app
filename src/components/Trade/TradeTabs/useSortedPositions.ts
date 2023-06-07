@@ -1,12 +1,26 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+
+export type SortType =
+    | 'id'
+    | 'wallet'
+    | 'pool'
+    | 'apy'
+    | 'apr'
+    | 'min'
+    | 'max'
+    | 'value'
+    | 'time'
+    | 'status'
+    | 'default';
+
 export const useSortedPositions = (
     defaultSort: string,
     positions: PositionIF[],
 ): [
-    string,
-    Dispatch<SetStateAction<string>>,
+    SortType,
+    Dispatch<SetStateAction<SortType>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
@@ -133,7 +147,7 @@ export const useSortedPositions = (
     };
 
     // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState(defaultSort);
+    const [sortBy, setSortBy] = useState<SortType>(defaultSort as SortType);
     // whether the sort should be ascending or descening
     const [reverseSort, setReverseSort] = useState(false);
 
