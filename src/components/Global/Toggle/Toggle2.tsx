@@ -43,7 +43,7 @@ export default function Toggle2(props: TogglePropsIF) {
             tabIndex={0}
             role='checkbox'
         >
-            <motion.div className={styles.handle} layout transition={spring} />
+            <div className={styles.handle} />
         </button>
     );
 }
