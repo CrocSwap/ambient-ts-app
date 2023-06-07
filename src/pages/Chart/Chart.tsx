@@ -217,10 +217,6 @@ export default function Chart(props: propsIF) {
 
     const period = unparsedData.duration;
 
-    const poolAdressComb = unparsedData.pool.baseAddress
-        ? unparsedData.pool.baseAddress
-        : '' + unparsedData.pool.quoteAddress;
-
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
     const side =
@@ -250,7 +246,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasLiqBidDepth = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqAskDepth = useRef<HTMLInputElement | null>(null);
 
-    const d3CanvasBand = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrosshair = useRef<HTMLInputElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
@@ -326,7 +321,6 @@ export default function Chart(props: propsIF) {
         lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
-    const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [firstCandle, setFirstCandle] = useState<number>();
 
     // d3
@@ -463,7 +457,6 @@ export default function Chart(props: propsIF) {
                         ? 0
                         : minPrice;
 
-                setLiqHighlightedLinesAndArea(newTargets, true);
                 return newTargets;
             });
         }
@@ -540,8 +533,6 @@ export default function Chart(props: propsIF) {
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
                 )[0].value = 0;
-
-                setLiqHighlightedLinesAndArea(newTargets);
 
                 return newTargets;
             });
@@ -746,9 +737,6 @@ export default function Chart(props: propsIF) {
                 .on('dblclick.zoom', null);
 
             if (location.pathname.includes('market')) {
-                d3.select(d3CanvasBand.current)
-                    .select('canvas')
-                    .style('display', 'none');
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
                     .style('display', 'none');
@@ -798,10 +786,6 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         setRescale(true);
     }, [location.pathname, period]);
-
-    useEffect(() => {
-        setLiqHighlightedLinesAndArea(ranges);
-    }, [poolAdressComb]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const snapForCandle = (point: any, filtered: Array<CandleData>) => {
@@ -1344,8 +1328,6 @@ export default function Chart(props: propsIF) {
                                             liqBidDeviation,
                                             scaleData,
                                         );
-
-                                        setLiqHighlightedLinesAndArea(ranges);
                                     }
                                 }
 
@@ -1617,8 +1599,6 @@ export default function Chart(props: propsIF) {
                                 standardDeviation(liqAllBidPrices);
 
                             fillLiqAdvanced(liqBidDeviation, scaleData);
-
-                            setLiqHighlightedLinesAndArea(ranges);
                         }
 
                         setZoomAndYdragControl(event);
@@ -1949,8 +1929,6 @@ export default function Chart(props: propsIF) {
             newTargets.filter((target: any) => target.name === 'Min')[0].value =
                 minPrice !== undefined ? minPrice : 0;
 
-            setLiqHighlightedLinesAndArea(newTargets);
-
             return newTargets;
         });
     }, [denomInBase]);
@@ -2001,8 +1979,6 @@ export default function Chart(props: propsIF) {
                         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                     );
 
-                    setLiqHighlightedLinesAndArea(newTargets, true);
-
                     return newTargets;
                 });
             } else if (
@@ -2022,8 +1998,6 @@ export default function Chart(props: propsIF) {
                         newTargets.filter(
                             (target: any) => target.name === 'Min',
                         )[0].value = minPrice !== undefined ? minPrice : 0;
-
-                        setLiqHighlightedLinesAndArea(newTargets);
 
                         if (
                             poolPriceDisplay !== undefined &&
@@ -2065,8 +2039,6 @@ export default function Chart(props: propsIF) {
                         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                     );
 
-                    setLiqHighlightedLinesAndArea(newTargets, true);
-
                     return newTargets;
                 });
             }
@@ -2086,8 +2058,6 @@ export default function Chart(props: propsIF) {
                         value: maxPrice,
                     },
                 ];
-
-                setLiqHighlightedLinesAndArea(newTargets);
 
                 return newTargets;
             });
@@ -2136,8 +2106,6 @@ export default function Chart(props: propsIF) {
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
             fillLiqAdvanced(liqBidDeviation, scaleData);
-
-            setLiqHighlightedLinesAndArea(ranges);
         } else {
             setBoundaries(denomInBase);
         }
@@ -2370,11 +2338,6 @@ export default function Chart(props: propsIF) {
 
                                     newRangeValue = newTargets;
 
-                                    setLiqHighlightedLinesAndArea(
-                                        newTargets,
-                                        false,
-                                    );
-
                                     return newTargets;
                                 });
                             } else {
@@ -2452,23 +2415,6 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
                                 }
-
-                                const rangesF = [
-                                    {
-                                        name: 'Min',
-                                        value: Number(
-                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                        ),
-                                    },
-                                    {
-                                        name: 'Max',
-                                        value: Number(
-                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                        ),
-                                    },
-                                ];
-
-                                setLiqHighlightedLinesAndArea(rangesF, false);
 
                                 if (pinnedDisplayPrices !== undefined) {
                                     setRanges((prevState) => {
@@ -2596,8 +2542,6 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 newRangeValue = newTargets;
-
-                                setLiqHighlightedLinesAndArea(newTargets);
 
                                 return newTargets;
                             });
@@ -3940,7 +3884,6 @@ export default function Chart(props: propsIF) {
 
                     newRangeValue = newTargets;
 
-                    setLiqHighlightedLinesAndArea(newTargets);
                     return newTargets;
                 });
             } else {
@@ -4051,12 +3994,9 @@ export default function Chart(props: propsIF) {
                         d3CanvasLiqAskDepth,
                         d3CanvasLiqBid,
                         d3CanvasLiqBidDepth,
-                        d3CanvasBand,
                     ]);
 
                     newRangeValue = newTargets;
-
-                    setLiqHighlightedLinesAndArea(newTargets);
 
                     return newTargets;
                 });
@@ -4214,25 +4154,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const canvas = d3
-            .select(d3CanvasBand.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        if (horizontalBand) {
-            d3.select(d3CanvasBand.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    horizontalBand(horizontalBandData);
-                })
-                .on('measure', () => {
-                    horizontalBand.context(ctx);
-                });
-        }
-    }, [horizontalBandData, horizontalBand]);
-
-    useEffect(() => {
-        const canvas = d3
             .select(d3CanvasCrosshair.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
@@ -4322,7 +4243,7 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-            if (horizontalLine) {
+            if (horizontalLine && horizontalBand) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
@@ -4332,12 +4253,16 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             horizontalLine(ranges);
+                            horizontalBand([
+                                [ranges[0].value, ranges[1].value],
+                            ]);
                             triangle(ranges);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         horizontalLine.context(ctx);
+                        horizontalBand.context(ctx);
                         triangle.context(ctx);
                     });
             }
@@ -4512,10 +4437,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        setLiqHighlightedLinesAndArea(ranges);
-    }, [liqMode]);
-
-    useEffect(() => {
         displayHorizontalLinesAndBand(simpleRangeWidth);
     }, [simpleRangeWidth, tradeData.advancedMode, location]);
 
@@ -4524,87 +4445,15 @@ export default function Chart(props: propsIF) {
             location.pathname.includes('reposition') ||
             location.pathname.includes('range')
         ) {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                .value;
-            const high = ranges.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
-
-            setHorizontalBandData([[low, high]]);
             if (tradeData.advancedMode || simpleRangeWidthGra !== 100) {
                 d3.select(d3CanvasRangeLine.current)
-                    .select('canvas')
-                    .style('display', 'inline');
-                d3.select(d3CanvasBand.current)
                     .select('canvas')
                     .style('display', 'inline');
             } else {
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
                     .style('display', 'none');
-                d3.select(d3CanvasBand.current)
-                    .select('canvas')
-                    .style('display', 'none');
             }
-        }
-    };
-
-    // line gradient
-    const setLiqHighlightedLinesAndArea = (ranges: any, autoScale = false) => {
-        if (
-            ranges !== undefined &&
-            (location.pathname.includes('range') ||
-                location.pathname.includes('reposition')) &&
-            poolPriceDisplay
-        ) {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                .value;
-            const high = ranges.filter(
-                (target: any) => target.name === 'Max',
-            )[0].value;
-
-            horizontalBandData[0] = [low, high];
-
-            if (autoScale && rescale) {
-                const xmin = scaleData?.xScale.domain()[0];
-                const xmax = scaleData?.xScale.domain()[1];
-
-                const filtered = unparsedCandleData.filter(
-                    (data: CandleData) =>
-                        data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-                );
-
-                if (filtered !== undefined) {
-                    const minYBoundary = d3.min(filtered, (d) =>
-                        denomInBase
-                            ? d.invMaxPriceExclMEVDecimalCorrected
-                            : d.minPriceExclMEVDecimalCorrected,
-                    );
-                    const maxYBoundary = d3.max(filtered, (d) =>
-                        denomInBase
-                            ? d.invMinPriceExclMEVDecimalCorrected
-                            : d.maxPriceExclMEVDecimalCorrected,
-                    );
-
-                    if (maxYBoundary && minYBoundary) {
-                        const buffer = Math.abs(
-                            (Math.min(Math.min(low, high), minYBoundary) -
-                                Math.max(Math.max(low, high), maxYBoundary)) /
-                                (simpleRangeWidth !== 100 ? 6 : 90),
-                        );
-
-                        const domain = [
-                            Math.min(Math.min(low, high), minYBoundary) -
-                                buffer,
-                            Math.max(Math.max(low, high), maxYBoundary) +
-                                buffer / 2,
-                        ];
-                        scaleData?.yScale.domain(domain);
-                    }
-                }
-            }
-
-            renderCanvasArray([d3CanvasBand, d3CanvasRangeLine, d3Yaxis]);
         }
     };
 
@@ -6090,10 +5939,6 @@ export default function Chart(props: propsIF) {
                                 width: '20%',
                                 left: '80%',
                             }}
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasBand}
-                            className='band-canvas'
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasCrosshair}
