@@ -47,13 +47,17 @@ export default function TransactionDetailsGraph(
     const denominationsInBase = tradeData.isDenomBase;
 
     const mainnetBaseTokenAddress =
-        baseTokenAddress === ZERO_ADDRESS
+        chainId === '0x1'
+            ? baseTokenAddress
+            : baseTokenAddress === ZERO_ADDRESS
             ? baseTokenAddress
             : testTokenMap
                   .get(baseTokenAddress.toLowerCase() + '_' + chainId)
                   ?.split('_')[0];
     const mainnetQuoteTokenAddress =
-        quoteTokenAddress === ZERO_ADDRESS
+        chainId === '0x1'
+            ? quoteTokenAddress
+            : quoteTokenAddress === ZERO_ADDRESS
             ? quoteTokenAddress
             : testTokenMap
                   .get(quoteTokenAddress.toLowerCase() + '_' + chainId)

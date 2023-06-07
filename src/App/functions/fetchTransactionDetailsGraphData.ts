@@ -28,7 +28,8 @@ export const fetchTransactionGraphData = async (
                         new URLSearchParams({
                             base: mainnetBaseTokenAddress.toLowerCase(),
                             quote: mainnetQuoteTokenAddress.toLowerCase(),
-                            poolIdx: chainData.poolIndex.toString(),
+                            poolIdx: '36000',
+                            // poolIdx: chainData.poolIndex.toString(),
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
