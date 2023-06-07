@@ -157,6 +157,15 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
     }
 }
 
+export function renderCanvasArray(canvasArray: any[]) {
+    canvasArray.forEach((canvas) => {
+        if (canvas) {
+            const container = d3.select(canvas.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+    });
+}
+
 export default function Chart(props: propsIF) {
     const {
         isTokenABase,
@@ -4998,15 +5007,6 @@ export default function Chart(props: propsIF) {
             }
         }
     }, [liqMode, location]);
-
-    function renderCanvasArray(canvasArray: any[]) {
-        canvasArray.forEach((canvas) => {
-            if (canvas) {
-                const container = d3.select(canvas.current).node() as any;
-                if (container) container.requestRedraw();
-            }
-        });
-    }
 
     const renderSubchartCrCanvas = () => {
         const feeRateCrCanvas = d3
