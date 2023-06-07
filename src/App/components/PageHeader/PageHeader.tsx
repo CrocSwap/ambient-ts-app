@@ -180,7 +180,6 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    // Consolidate price/token/formatting
     const truncatedPoolPrice =
         !poolPriceDisplayWithDenom ||
         poolPriceDisplayWithDenom === Infinity ||
