@@ -15,6 +15,8 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { usePoolList } from '../App/hooks/usePoolList';
+import { TempPoolIF } from '../utils/interfaces/TempPoolIF';
 
 interface PoolContextIF {
     pool: CrocPoolView | undefined;
@@ -24,6 +26,7 @@ interface PoolContextIF {
     poolPriceChangePercent: string | undefined;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
+    poolList: TempPoolIF[];
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -60,6 +63,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol, setDailyVol] = useState<number | undefined>();
 
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
+
     const {
         isPoolInitialized,
         poolPriceDisplay,
@@ -89,6 +94,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolPriceChangePercent,
         ambientApy,
         dailyVol,
+        poolList,
     };
 
     // Asynchronously query the APY and volatility estimates from the backend

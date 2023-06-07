@@ -33,13 +33,13 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 function Sidebar() {
     const { cachedPoolStatsFetch } = useContext(CachedDataContext);
     const {
-        chainData: { chainId, poolIndex },
+        chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
@@ -48,7 +48,7 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(chainId, poolIndex);
+    const poolList = useContext(PoolContext);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
