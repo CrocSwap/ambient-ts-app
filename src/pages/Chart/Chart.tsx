@@ -659,7 +659,8 @@ export default function Chart(props: propsIF) {
         if (
             mouseLocationY &&
             (location.pathname.includes('range') ||
-                location.pathname.includes('reposition'))
+                location.pathname.includes('reposition')) &&
+            !(!tradeData.advancedMode && simpleRangeWidth === 100)
         ) {
             const mousePlacement = scaleData?.yScale.invert(mouseLocationY);
             const lineBuffer =
@@ -3312,9 +3313,6 @@ export default function Chart(props: propsIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
                 d3.select(d3CanvasMain.current).on('.drag', null);
 
-                d3.select(d3CanvasRangeLine.current)
-                    .select('canvas')
-                    .style('display', 'none');
                 d3.select(d3CanvasLimitLine.current)
                     .select('canvas')
                     .style('display', 'none');
@@ -3325,9 +3323,7 @@ export default function Chart(props: propsIF) {
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
                 d3.select(d3CanvasMain.current).call(dragRange);
-                d3.select(d3CanvasRangeLine.current)
-                    .select('canvas')
-                    .style('display', 'inline');
+
                 d3.select(d3CanvasLimitLine.current)
                     .select('canvas')
                     .style('display', 'none');
@@ -3335,9 +3331,6 @@ export default function Chart(props: propsIF) {
             if (location.pathname.includes('/limit')) {
                 d3.select(d3Yaxis.current).call(dragLimit);
                 d3.select(d3CanvasMain.current).call(dragLimit);
-                d3.select(d3CanvasRangeLine.current)
-                    .select('canvas')
-                    .style('display', 'none');
                 d3.select(d3CanvasLimitLine.current)
                     .select('canvas')
                     .style('display', 'inline');
@@ -5067,15 +5060,15 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        displayHorizontalLinesAndBand(simpleRangeWidth);
+        displayHorizontalLines();
     }, [simpleRangeWidth, tradeData.advancedMode, location]);
 
-    const displayHorizontalLinesAndBand = (simpleRangeWidthGra: number) => {
+    const displayHorizontalLines = () => {
         if (
             location.pathname.includes('reposition') ||
             location.pathname.includes('range')
         ) {
-            if (tradeData.advancedMode || simpleRangeWidthGra !== 100) {
+            if (tradeData.advancedMode || simpleRangeWidth !== 100) {
                 d3.select(d3CanvasRangeLine.current)
                     .select('canvas')
                     .style('display', 'inline');
