@@ -7,6 +7,7 @@ interface chartSettingsIF {
     isFeeRateSubchartEnabled: boolean;
     marketOverlay: string;
     rangeOverlay: string;
+    candleTimeGlobal: number;
     candleTimeMarket: number;
     candleTimeRange: number;
 }
@@ -42,6 +43,7 @@ export interface chartSettingsMethodsIF {
     marketOverlay: overlayIF;
     rangeOverlay: overlayIF;
     candleTime: {
+        global: candleTimeIF;
         market: candleTimeIF;
         range: candleTimeIF;
     };
@@ -84,7 +86,9 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
-    const getOverlay = (overlayFor: string): string | undefined => {
+    const getOverlay = (
+        overlayFor: 'market' | 'limit' | 'range',
+    ): string | undefined => {
         const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
@@ -104,16 +108,17 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         return output;
     };
 
-    const getCandleTime = (timeFor: string): number | undefined => {
+    const getCandleTime = (
+        timeFor: 'global' | 'market' | 'limit' | 'range',
+    ): number | undefined => {
         const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
         let time: number | undefined;
         switch (timeFor) {
+            case 'global':
             case 'market':
             case 'limit':
-                time = chartSettings?.candleTimeMarket;
-                break;
             case 'range':
-                time = chartSettings?.candleTimeRange;
+                time = chartSettings?.candleTimeGlobal;
                 break;
             default:
                 return;
@@ -137,6 +142,9 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [rangeOverlay, setRangeOverlay] = useState<string>(
         getOverlay('range') ?? 'curve',
     );
+    const [candleTimeGlobal, setCandleTimeGlobal] = useState<number>(
+        getCandleTime('global') ?? 900,
+    );
     const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
         getCandleTime('market') ?? 900,
     );
@@ -155,6 +163,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 isFeeRateSubchartEnabled,
                 marketOverlay,
                 rangeOverlay,
+                candleTimeGlobal,
                 candleTimeMarket,
                 candleTimeRange,
             }),
@@ -165,6 +174,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         isFeeRateSubchartEnabled,
         marketOverlay,
         rangeOverlay,
+        candleTimeGlobal,
         candleTimeMarket,
         candleTimeRange,
     ]);
@@ -255,6 +265,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
             rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
             candleTime: {
+                global: new CandleTime(candleTimeGlobal, setCandleTimeGlobal),
                 market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
                 range: new CandleTime(candleTimeRange, setCandleTimeRange),
             },
@@ -263,6 +274,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         isVolumeSubchartEnabled,
         isTvlSubchartEnabled,
         isFeeRateSubchartEnabled,
+        candleTimeGlobal,
         candleTimeMarket,
         candleTimeRange,
         marketOverlay,

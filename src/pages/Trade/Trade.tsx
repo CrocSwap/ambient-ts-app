@@ -8,7 +8,6 @@ import {
     Link,
     NavLink,
     useNavigate,
-    useLocation,
 } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
@@ -31,7 +30,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-// import { useCandleTime } from './useCandleTime';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -79,13 +77,9 @@ function Trade() {
         },
     ];
 
-    const { pathname } = useLocation();
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(tokens, chainId, provider);
-
-    const isMarketOrLimitModule =
-        pathname.includes('market') || pathname.includes('limit');
 
     useEffect(() => {
         if (
@@ -244,14 +238,10 @@ function Trade() {
         setIsCandleSelected(false);
     }, []);
 
-    const activeCandleDuration = isMarketOrLimitModule
-        ? chartSettings.candleTime.market.time
-        : chartSettings.candleTime.range.time;
-
     useEffect(() => {
         unselectCandle();
     }, [
-        activeCandleDuration,
+        chartSettings.candleTime.global.time,
         tradeData.baseToken.name,
         tradeData.quoteToken.name,
     ]);
@@ -324,9 +314,7 @@ function Trade() {
         isCandleDataNull: isCandleDataNull,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        candleTime: isMarketOrLimitModule
-            ? chartSettings.candleTime.market
-            : chartSettings.candleTime.range,
+        candleTime: chartSettings.candleTime.global,
         tokens,
         showActiveMobileComponent: showActiveMobileComponent,
     };

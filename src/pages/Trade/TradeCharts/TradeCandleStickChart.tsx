@@ -76,7 +76,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    isMarketOrLimitModule: boolean;
 }
 
 type chartItemStates = {
@@ -87,7 +86,7 @@ type chartItemStates = {
 };
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, isMarketOrLimitModule } = props;
+    const { selectedDate, setSelectedDate } = props;
 
     const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
         useContext(CandleContext);
@@ -99,20 +98,10 @@ function TradeCandleStickChart(props: propsIF) {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const period = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
+    const period = useMemo(
+        () => chartSettings.candleTime.global.time,
+        [chartSettings.candleTime.global.time, location.pathname],
+    );
 
     const unparsedCandleData = candleData?.candles;
 
@@ -170,13 +159,9 @@ function TradeCandleStickChart(props: propsIF) {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const candleTimeInSeconds: number = isMarketOrLimitModule
-        ? chartSettings.candleTime.market.time
-        : chartSettings.candleTime.range.time;
-
     useEffect(() => {
         setIsLoading(true);
-    }, [candleTimeInSeconds, denominationsInBase]);
+    }, [period, denominationsInBase]);
 
     useEffect(() => {
         if (props.liquidityData !== undefined) {
@@ -877,7 +862,6 @@ function TradeCandleStickChart(props: propsIF) {
                 {!isLoading &&
                 candleData !== undefined &&
                 prevPeriod === period &&
-                candleTimeInSeconds === period &&
                 !isFetchingCandle ? (
                     <Chart
                         isTokenABase={isTokenABase}
@@ -893,7 +877,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
                         prevPeriod={prevPeriod}
-                        candleTimeInSeconds={candleTimeInSeconds}
+                        candleTimeInSeconds={period}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
@@ -908,11 +892,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setShowTooltip={props.setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
-                        candleTime={
-                            isMarketOrLimitModule
-                                ? chartSettings.candleTime.market
-                                : chartSettings.candleTime.range
-                        }
+                        candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
                     />
                 ) : (

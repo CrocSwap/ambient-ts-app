@@ -91,19 +91,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
+        return chartSettings.candleTime.global.time;
+    }, [chartSettings.candleTime.global.time, location.pathname]);
 
     const candleContext = {
         candleData,
