@@ -3,7 +3,7 @@ import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
 import { useMediaQuery } from '@material-ui/core';
-import { SortType } from '../../useSortedPositions';
+import { RangeSortType } from '../../useSortedPositions';
 
 interface propsIF {
     header: {
@@ -15,8 +15,8 @@ interface propsIF {
         alignCenter?: boolean;
     };
 
-    sortBy: SortType;
-    setSortBy: Dispatch<SetStateAction<SortType>>;
+    sortBy: RangeSortType;
+    setSortBy: Dispatch<SetStateAction<RangeSortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
@@ -24,7 +24,7 @@ function RangeHeader(props: propsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
-    function handleClick(slug: SortType) {
+    function handleClick(slug: RangeSortType) {
         IS_LOCAL_ENV && console.debug(slug);
         // prevent action when user clicks a column which is not sortable
         if (!header.sortable) return;
@@ -75,7 +75,7 @@ function RangeHeader(props: propsIF) {
             {show && (
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    onClick={() => handleClick(slug as SortType)}
+                    onClick={() => handleClick(slug as RangeSortType)}
                     className={`
                     ${activeSortStyle}
                     ${alignRight && styles.align_right}

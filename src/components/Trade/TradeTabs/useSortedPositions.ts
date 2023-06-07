@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
-export type SortType =
+export type RangeSortType =
     | 'id'
     | 'wallet'
     | 'walletid'
@@ -17,41 +17,40 @@ export type SortType =
     | 'default';
 
 export const useSortedPositions = (
-    defaultSort: SortType,
+    defaultSort: RangeSortType,
     positions: PositionIF[],
 ): [
-    SortType,
-    Dispatch<SetStateAction<SortType>>,
+    RangeSortType,
+    Dispatch<SetStateAction<RangeSortType>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
 ] => {
     // default sort function
-    const sortByTime = (unsortedData: PositionIF[]) =>
+    const sortByTime = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort((a, b) => {
             const aTime = a.latestUpdateTime || a.timeFirstMint || Date.now();
             const bTime = b.latestUpdateTime || b.timeFirstMint || Date.now();
-
             return bTime - aTime;
         });
     // sort by positionHash
-    const sortById = (unsortedData: PositionIF[]) =>
+    const sortById = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort((a, b) =>
             b.firstMintTx.localeCompare(a.firstMintTx),
         );
-    const sortByWallet = (unsortedData: PositionIF[]) =>
+    const sortByWallet = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
-    const sortByPool = (unsortedData: PositionIF[]) =>
+    const sortByPool = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort((a, b) => {
             const poolA = a.baseSymbol + a.quoteSymbol + a.positionId;
             const poolB = b.baseSymbol + b.quoteSymbol + b.positionId;
             return poolA.localeCompare(poolB);
         });
-    const sortByApy = (unsortedData: PositionIF[]) =>
+    const sortByApy = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort(
             (a, b) =>
                 (b.apy * 1000000000000 ||
@@ -60,19 +59,19 @@ export const useSortedPositions = (
                     a.bidTickInvPriceDecimalCorrected * 0.000001),
         );
     // TODO: for some reason sortByMin() is leaving the final value out of sequence?
-    const sortByMin = (unsortedData: PositionIF[]) =>
+    const sortByMin = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort(
             (a, b) =>
                 parseFloat(b.lowRangeDisplayInBase) -
                 parseFloat(a.lowRangeDisplayInBase),
         );
-    const sortByMax = (unsortedData: PositionIF[]) =>
+    const sortByMax = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort(
             (a, b) =>
                 parseFloat(b.highRangeDisplayInBase) -
                 parseFloat(a.highRangeDisplayInBase),
         );
-    const sortByValue = (unsortedData: PositionIF[]) =>
+    const sortByValue = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort(
             (a, b) =>
                 (b.totalValueUSD * 1000000000000 ||
@@ -145,12 +144,12 @@ export const useSortedPositions = (
     };
 
     // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState<SortType>(defaultSort as SortType);
+    const [sortBy, setSortBy] = useState<RangeSortType>(defaultSort);
     // whether the sort should be ascending or descening
-    const [reverseSort, setReverseSort] = useState(false);
+    const [reverseSort, setReverseSort] = useState<boolean>(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: PositionIF[]) => {
+    const sortData = (data: PositionIF[]): PositionIF[] => {
         // variable to hold output
         let sortedData: PositionIF[];
         // router to apply a specific sort function
@@ -197,12 +196,14 @@ export const useSortedPositions = (
 
     // Generates a fingerprint from the positions objects. Used for comparison
     // in below React hook
-    const posHashSum = useMemo(() => diffHashSig(positions), [positions]);
+    const posHashSum = useMemo<string>(
+        () => diffHashSig(positions),
+        [positions],
+    );
 
     // array of positions sorted by the relevant column
-    const sortedPositions = useMemo(() => {
-        const poss = sortData(positions);
-        return poss;
+    const sortedPositions = useMemo<PositionIF[]>(() => {
+        return sortData(positions);
     }, [sortBy, reverseSort, posHashSum]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
