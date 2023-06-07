@@ -16,7 +16,7 @@ export type SortType =
     | 'default';
 
 export const useSortedPositions = (
-    defaultSort: string,
+    defaultSort: SortType,
     positions: PositionIF[],
 ): [
     SortType,
