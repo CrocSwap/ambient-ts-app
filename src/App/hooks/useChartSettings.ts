@@ -22,11 +22,19 @@ export interface overlayIF {
     readonly showNone: () => void;
 }
 
+type ReadableTimeType = '1m' | '5m' | '15m' | '1h' | '4h' | '1d';
+type TimeInSecondsType = 60 | 300 | 900 | 3600 | 14400 | 86400;
+
+interface DefaultTimeTypeIF {
+    readable: ReadableTimeType;
+    seconds: TimeInSecondsType;
+}
+
 export interface candleTimeIF {
-    time: number;
-    changeTime: (val: number) => void;
-    defaults: Array<{ readable: string; seconds: number }>;
-    readableTime: string;
+    time: TimeInSecondsType;
+    changeTime: (val: TimeInSecondsType) => void;
+    defaults: DefaultTimeTypeIF[];
+    readableTime: ReadableTimeType;
 }
 
 type OverlayType = 'depth' | 'curve' | 'none';
@@ -73,7 +81,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
 
     const getCandleTime = (
         timeFor: 'global' | 'market' | 'limit' | 'range',
-    ): number | undefined => {
+    ): TimeInSecondsType | undefined => {
         const chartSettings: chartSettingsIF | null = getLocalStorageItem(
             LS_KEY_CHART_SETTINGS,
         );
@@ -88,7 +96,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             default:
                 return;
         }
-        return time;
+        return time as TimeInSecondsType;
     };
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
@@ -97,13 +105,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [rangeOverlay, setRangeOverlay] = useState<OverlayType>(
         getOverlay('range') ?? 'curve',
     );
-    const [candleTimeGlobal, setCandleTimeGlobal] = useState<number>(
+    const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
         getCandleTime('global') ?? 900,
     );
-    const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
+    const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
     );
-    const [candleTimeRange, setCandleTimeRange] = useState<number>(
+    const [candleTimeRange, setCandleTimeRange] = useState<TimeInSecondsType>(
         getCandleTime('range') ?? 900, // switched from 86400 (1 day)
     );
 
@@ -144,10 +152,10 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     }
 
     class CandleTime implements candleTimeIF {
-        time: number;
+        time: TimeInSecondsType;
         // eslint-disable-next-line
-        changeTime: (_val: number) => void;
-        defaults = [
+        changeTime: (_val: TimeInSecondsType) => void;
+        defaults: DefaultTimeTypeIF[] = [
             { readable: '1m', seconds: 60 },
             { readable: '5m', seconds: 300 },
             { readable: '15m', seconds: 900 },
@@ -157,10 +165,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         ];
         readableTime =
             this.defaults.find((pair) => pair.seconds === this.time)
-                ?.readable ?? '';
-        constructor(t: number, setterFn: Dispatch<SetStateAction<number>>) {
+                ?.readable ?? '4h';
+        constructor(
+            t: TimeInSecondsType,
+            setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
+        ) {
             this.time = t;
-            this.changeTime = (val: number) => {
+            this.changeTime = (val: TimeInSecondsType) => {
                 setterFn(val);
             };
         }
