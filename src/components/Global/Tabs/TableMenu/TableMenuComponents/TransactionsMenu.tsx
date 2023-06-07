@@ -100,7 +100,6 @@ export default function TransactionsMenu(props: propsIF) {
                 const shouldReverse =
                     tradeData.tokenA.address.toLowerCase() !==
                     tx.base.toLowerCase();
-                console.log({ shouldReverse });
                 if (shouldReverse) {
                     dispatch(setPrimaryQuantityRange(''));
                     dispatch(setShouldRangeDirectionReverse(true));
