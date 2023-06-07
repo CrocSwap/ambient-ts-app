@@ -24,10 +24,10 @@ function NavItem(props: NavItemPropsIF) {
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
-        setOpen(false);
+        if (!allowClicksOutside) setOpen(false);
     };
 
-    !allowClicksOutside && UseOnClickOutside(navItemRef, clickOutsideHandler);
+    UseOnClickOutside(navItemRef, clickOutsideHandler);
 
     const childrenWithProps = Children.map(children, (child, index) => {
         // eslint-disable-next-line

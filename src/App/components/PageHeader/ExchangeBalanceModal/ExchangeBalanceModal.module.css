@@ -1,9 +1,9 @@
 .dropdown {
     position: absolute;
-    top: 60px;
+    top: 68px;
+    right: 8px;
     width: 450px;
-    height: 460px;
-    transform: translateX(-45%);
+    height: 510px;
     border: none;
     overflow: hidden;
     transition: all var(--animation-speed) ease;

@@ -40,6 +40,7 @@ interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
+    setIsTokenModalOpen?: (val: boolean) => void;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -47,6 +48,7 @@ export default function ExchangeBalance(props: propsIF) {
         fullLayoutActive,
         setFullLayoutActive,
         isModalView = false,
+        setIsTokenModalOpen,
     } = props;
 
     const [mainnetProvider] = useState(getMainnetProvider());
@@ -68,9 +70,12 @@ export default function ExchangeBalance(props: propsIF) {
         useContext(CachedDataContext);
     const { addTokenInfo, setInput } = useContext(TokenContext);
     const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
     } = useContext(AppStateContext);
-    const closeModalCustom = () => setInput('');
+
+    const closeModalCustom = () => {
+        setInput('');
+    };
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -94,19 +99,6 @@ export default function ExchangeBalance(props: propsIF) {
 
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
-
-    const openTokenSelectionModal = () =>
-        openGlobalModal(
-            <SoloTokenSelect
-                modalCloseCustom={closeModalCustom}
-                closeModal={closeGlobalModal}
-                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-                isSingleToken={true}
-                tokenAorB={null}
-            />,
-            'Select Token',
-        );
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
@@ -245,6 +237,32 @@ export default function ExchangeBalance(props: propsIF) {
             }
         })();
     }, [sendToAddress, isSendToAddressHex]);
+
+    // Needed to disable clicks outside ExchangeBalanceModal if dismissing TokenSelectionModal via GlobalModal's close()
+    useEffect(() => {
+        if (!isOpen) setIsTokenModalOpen && setIsTokenModalOpen(false);
+    }, [isOpen]);
+
+    // Needed to disable clicks outside ExchangeBalanceModal properly if dismissing TokenSelectionModal via selecting a token
+    const closeTokenSelectionModal = () => {
+        setIsTokenModalOpen && setIsTokenModalOpen(false);
+        closeGlobalModal();
+    };
+
+    const openTokenSelectionModal = () => {
+        setIsTokenModalOpen && setIsTokenModalOpen(true);
+        openGlobalModal(
+            <SoloTokenSelect
+                modalCloseCustom={closeModalCustom}
+                closeModal={closeTokenSelectionModal}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={true}
+                tokenAorB={null}
+            />,
+            'Select Token',
+        );
+    };
 
     const accountData = [
         {
