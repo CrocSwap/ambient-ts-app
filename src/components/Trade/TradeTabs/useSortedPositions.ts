@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { BigNumber } from 'ethers';
 
 export type RangeSortType =
     | 'id'
@@ -38,12 +39,24 @@ export const useSortedPositions = (
         [...unsortedData].sort((a, b) =>
             b.firstMintTx.localeCompare(a.firstMintTx),
         );
-    const sortByWallet = (unsortedData: PositionIF[]): PositionIF[] =>
-        [...unsortedData].sort((a, b) => {
-            const usernameA: string = a.ensResolution ?? a.user;
-            const usernameB: string = b.ensResolution ?? b.user;
-            return usernameA.localeCompare(usernameB);
+    const sortByWallet = (unsortedData: PositionIF[]): PositionIF[] => {
+        const positionsENS: PositionIF[] = [];
+        const positionsNoENS: PositionIF[] = [];
+        unsortedData.forEach((pos: PositionIF) => {
+            pos.ensResolution
+                ? positionsENS.push(pos)
+                : positionsNoENS.push(pos);
         });
+        const sortedENS: PositionIF[] = positionsENS.sort((a, b) => {
+            return a.ensResolution.localeCompare(b.ensResolution);
+        });
+        const sortedNoENS: PositionIF[] = positionsNoENS.sort((a, b) => {
+            const walletA = BigNumber.from(a.user);
+            const walletB = BigNumber.from(b.user);
+            return walletA.gte(walletB) ? 1 : -1;
+        });
+        return [...sortedENS, ...sortedNoENS];
+    };
     const sortByPool = (unsortedData: PositionIF[]): PositionIF[] =>
         [...unsortedData].sort((a, b) => {
             const poolA = a.baseSymbol + a.quoteSymbol + a.positionId;
