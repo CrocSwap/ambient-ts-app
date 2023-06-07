@@ -101,11 +101,11 @@ function Swap(props: propsIF) {
         useState<boolean>(false);
 
     const receiptData = useAppSelector((state) => state.receiptData);
-
-    const sessionReceipts = receiptData.sessionReceipts;
+    const receiveReceiptHashes = receiptData.sessionReceipts.map(
+        (receipt) => JSON.parse(receipt)?.transactionHash,
+    );
 
     const pendingTransactions = receiptData.pendingTransactions;
-    let receiveReceiptHashes: Array<string> = [];
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -365,12 +365,6 @@ function Swap(props: propsIF) {
             ? 1 / effectivePrice
             : effectivePrice
         : undefined;
-
-    useEffect(() => {
-        receiveReceiptHashes = sessionReceipts.map(
-            (receipt) => JSON.parse(receipt)?.transactionHash,
-        );
-    }, [sessionReceipts]);
 
     const confirmSwapModalProps = {
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
