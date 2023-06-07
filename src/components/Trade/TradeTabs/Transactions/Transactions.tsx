@@ -236,7 +236,7 @@ function Transactions(props: propsIF) {
             name: walID,
             show: showColumns,
             slug: 'walletid',
-            sortable: true,
+            sortable: !isAccountView,
             alignCenter: false,
         },
         {

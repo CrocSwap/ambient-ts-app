@@ -301,7 +301,7 @@ function Ranges(props: propsIF) {
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: true,
+            sortable: !isAccountView,
         },
         {
             name: 'Min',
