@@ -446,7 +446,11 @@ export default function Chart(props: propsIF) {
                 const newTargets = [...prevState];
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Max',
-                )[0].value = maxPrice;
+                )[0].value =
+                    !tradeData.advancedMode && simpleRangeWidth === 100
+                        ? liquidityData?.topBoundary
+                        : maxPrice;
+
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Min',
                 )[0].value =
@@ -460,56 +464,6 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
-
-    const scaleWithButtons = (minPrice: number, maxPrice: number) => {
-        if (
-            poolPriceDisplay !== undefined &&
-            rescaleRangeBoundariesWithSlider &&
-            rescale
-        ) {
-            const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = unparsedCandleData?.filter(
-                (data: any) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
-            if (filtered !== undefined) {
-                const minYBoundary = d3.min(filtered, (d) =>
-                    denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
-                );
-                const maxYBoundary = d3.max(filtered, (d) =>
-                    denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
-                );
-
-                if (maxYBoundary && minYBoundary) {
-                    const min =
-                        minYBoundary < minPrice ? minYBoundary : minPrice;
-                    const max =
-                        maxYBoundary > maxPrice ? maxYBoundary : maxPrice;
-
-                    const buffer = Math.abs((max - min) / 6);
-                    const domain = [
-                        Math.min(min, max) - buffer,
-                        Math.max(max, min) + buffer / 2,
-                    ];
-                    scaleData?.yScale.domain(domain);
-                    setRescaleRangeBoundariesWithSlider(false);
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (rescaleRangeBoundariesWithSlider) {
-            scaleWithButtons(minPrice, maxPrice);
-        }
-    }, [rescaleRangeBoundariesWithSlider, minPrice, maxPrice]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const standardDeviation = (arr: any, usePopulation = false) => {
@@ -1036,10 +990,8 @@ export default function Chart(props: propsIF) {
                             );
 
                             if (
-                                (location.pathname.includes('range') ||
-                                    location.pathname.includes('reposition')) &&
-                                (simpleRangeWidth !== 100 ||
-                                    tradeData.advancedMode)
+                                location.pathname.includes('range') ||
+                                location.pathname.includes('reposition')
                             ) {
                                 if (
                                     maxYBoundary !== undefined &&
@@ -1054,7 +1006,7 @@ export default function Chart(props: propsIF) {
                                                 Math.max(low, high),
                                                 maxYBoundary,
                                             )) /
-                                            6,
+                                            (simpleRangeWidth !== 100 ? 6 : 90),
                                     );
 
                                     const domain = [
@@ -2022,9 +1974,8 @@ export default function Chart(props: propsIF) {
                     );
 
                     if (
-                        (location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')) &&
-                        (simpleRangeWidth !== 100 || tradeData.advancedMode)
+                        location.pathname.includes('range') ||
+                        location.pathname.includes('reposition')
                     ) {
                         const low = ranges.filter(
                             (target: any) => target.name === 'Min',
@@ -2043,7 +1994,7 @@ export default function Chart(props: propsIF) {
                                         Math.min(low, high),
                                         minYBoundary,
                                     )) /
-                                    6,
+                                    (simpleRangeWidth !== 100 ? 6 : 90),
                             );
 
                             const domain = [
@@ -4180,12 +4131,8 @@ export default function Chart(props: propsIF) {
                 );
 
                 if (
-                    (location.pathname.includes('range') ||
-                        location.pathname.includes('reposition')) &&
-                    (tradeData.advancedMode ||
-                        ((!tradeData.advancedMode ||
-                            location.pathname.includes('reposition')) &&
-                            simpleRangeWidth !== 100))
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
                 ) {
                     const low = ranges.filter(
                         (target: any) => target.name === 'Min',
@@ -4201,7 +4148,7 @@ export default function Chart(props: propsIF) {
                         const buffer = Math.abs(
                             (Math.max(Math.max(low, high), maxYBoundary) -
                                 Math.min(Math.min(low, high), minYBoundary)) /
-                                6,
+                                (simpleRangeWidth !== 100 ? 6 : 90),
                         );
 
                         const domain = [
@@ -4337,9 +4284,8 @@ export default function Chart(props: propsIF) {
                         );
 
                         if (
-                            (location.pathname.includes('range') ||
-                                location.pathname.includes('reposition')) &&
-                            (simpleRangeWidth !== 100 || tradeData.advancedMode)
+                            location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
                         ) {
                             const low = ranges.filter(
                                 (target: any) => target.name === 'Min',
@@ -4361,7 +4307,7 @@ export default function Chart(props: propsIF) {
                                             Math.min(low, high),
                                             minYBoundary,
                                         )) /
-                                        6,
+                                        (simpleRangeWidth !== 100 ? 6 : 90),
                                 );
 
                                 const domain = [
@@ -5536,9 +5482,8 @@ export default function Chart(props: propsIF) {
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
                     if (
-                        (location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')) &&
-                        (simpleRangeWidth !== 100 || tradeData.advancedMode)
+                        location.pathname.includes('range') ||
+                        location.pathname.includes('reposition')
                     ) {
                         const min = ranges.filter(
                             (target: any) => target.name === 'Min',
@@ -5547,23 +5492,17 @@ export default function Chart(props: propsIF) {
                             (target: any) => target.name === 'Max',
                         )[0].value;
 
-                        const low =
-                            min !== 0
-                                ? Math.min(Math.min(min, max), minYBoundary)
-                                : minYBoundary;
+                        const low = Math.min(Math.min(min, max), minYBoundary);
 
-                        const high =
-                            max !== 0
-                                ? Math.max(Math.max(min, max), maxYBoundary)
-                                : maxYBoundary;
+                        const high = Math.max(Math.max(min, max), maxYBoundary);
 
-                        const bufferForRange = Math.abs((low - high) / 6);
-
+                        const bufferForRange = Math.abs(
+                            (low - high) / (simpleRangeWidth !== 100 ? 6 : 90),
+                        );
                         const domain = [
                             Math.min(low, high) - bufferForRange,
                             Math.max(low, high) + bufferForRange / 2,
                         ];
-
                         scaleData?.yScale.domain(domain);
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
@@ -5601,6 +5540,8 @@ export default function Chart(props: propsIF) {
                         d3CanvasCandle,
                         d3CanvasLiqAsk,
                         d3CanvasLiqAskDepth,
+                        d3CanvasLiqBid,
+                        d3CanvasLiqBidDepth,
                         d3Yaxis,
                     ]);
                 }
