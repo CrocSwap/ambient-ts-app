@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
 import styles from './Toggle2.module.css';
-import { motion } from 'framer-motion';
 interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
@@ -47,9 +46,3 @@ export default function Toggle2(props: TogglePropsIF) {
         </button>
     );
 }
-
-const spring = {
-    type: 'spring',
-    stiffness: 700,
-    damping: 30,
-};
