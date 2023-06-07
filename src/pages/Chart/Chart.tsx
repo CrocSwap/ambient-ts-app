@@ -458,8 +458,6 @@ export default function Chart(props: propsIF) {
                         ? 0
                         : minPrice;
 
-                scaleWithButtons(minPrice, maxPrice);
-
                 return newTargets;
             });
         }
