@@ -1,8 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { FiMinus } from 'react-icons/fi';
-import { MdAdd } from 'react-icons/md';
+
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
@@ -35,10 +34,6 @@ function RangeWidth(props: RangeWidthPropsIF) {
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
-                <div className={styles.add_minus_icons}>
-                    <MdAdd size={12} />
-                    <FiMinus size={12} />
-                </div>
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {

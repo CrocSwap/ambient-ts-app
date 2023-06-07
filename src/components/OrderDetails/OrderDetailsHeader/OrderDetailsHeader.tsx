@@ -1,28 +1,27 @@
 import styles from './OrderDetailsHeader.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 interface OrderDetailsPropsIF {
-    onClose: () => void;
     downloadAsImage: () => void;
-    showSettings: boolean;
-    setShowSettings: Dispatch<SetStateAction<boolean>>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
-    limitOrder: LimitOrderIF;
     handleCopyPositionId(): void;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     const {
         handleCopyPositionId,
-        onClose,
-        downloadAsImage,
         showShareComponent,
         setShowShareComponent,
+        downloadAsImage,
     } = props;
+    const {
+        globalModal: { close: onClose },
+    } = useContext(AppStateContext);
+
     // eslint-disable-next-line
     const phIcon = (
         <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />

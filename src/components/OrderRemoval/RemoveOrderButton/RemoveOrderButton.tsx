@@ -2,9 +2,7 @@ import Button from '../../Global/Button/Button';
 import styles from './RemoveOrderButton.module.css';
 interface IRemoveOrderButtonProps {
     removeFn: () => void;
-
     title: string;
-
     disabled?: boolean;
 }
 

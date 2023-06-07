@@ -2,7 +2,6 @@ import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import Spinner from '../../../Spinner/Spinner';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
@@ -11,7 +10,6 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
-    tokens: tokenMethodsIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -19,7 +17,6 @@ export default function Exchange(props: propsIF) {
     const {
         connectedAccountActive,
         resolvedAddressTokens,
-        tokens,
         cachedFetchTokenPrice,
     } = props;
 
@@ -36,7 +33,6 @@ export default function Exchange(props: propsIF) {
                 <ExchangeCard
                     key={idx}
                     token={item}
-                    tokens={tokens}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                 />
             ))
@@ -48,7 +44,6 @@ export default function Exchange(props: propsIF) {
             <ExchangeCard
                 key={idx}
                 token={item}
-                tokens={tokens}
                 cachedFetchTokenPrice={cachedFetchTokenPrice}
             />
         ))

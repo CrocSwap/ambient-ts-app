@@ -332,7 +332,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             })
             .catch((e) => {
                 if (e.name === 'AbortError') {
-                    console.log('Zoom request cancelled');
+                    console.warn('Zoom request cancelled');
                 } else {
                     console.error(e);
                 }

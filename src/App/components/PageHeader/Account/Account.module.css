@@ -7,34 +7,9 @@
     border-radius: var(--border-radius);
     gap: var(--gap, 0.5rem);
 }
-.account_container div {
-    font-size: var(--body-size);
-}
 
 .ethereum_icon {
     padding: 0 10px;
-}
-.account_container p,
-.account_container div,
-.account_container button {
-    color: var(--text2);
-    font-family: var(--font-deca);
-    font-weight: 300;
-    font-size: var(--header-size);
-    line-height: var(--body-lh);
-    text-align: center;
-    z-index: 9999;
-}
-
-.account_container .menu_item {
-    color: var(--text2);
-    font-family: var(--font-deca);
-    font-weight: 300;
-    font-size: var(--header-size);
-    line-height: var(--body-lh);
-    text-align: center;
-    cursor: pointer;
-    z-index: 9999;
 }
 
 .white {

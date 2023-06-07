@@ -20,9 +20,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     sendTransaction: () => void;
-    closeModal: () => void;
     newRangeTransactionHash: string;
-    setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
@@ -36,7 +34,6 @@ interface propsIF {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     txErrorCode: string;
-    txErrorMessage: string;
     resetConfirmation: () => void;
     isAdd: boolean;
     tokenAQtyLocal: number;
@@ -47,9 +44,6 @@ function ConfirmRangeModal(props: propsIF) {
     const {
         sendTransaction,
         newRangeTransactionHash,
-        minPriceDisplay,
-        maxPriceDisplay,
-        spotPriceDisplay,
         isTokenABase,
         isAmbient,
         isInRange,
@@ -195,9 +189,6 @@ function ConfirmRangeModal(props: propsIF) {
             </section>
             {isAmbient || (
                 <SelectedRange
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    spotPriceDisplay={spotPriceDisplay}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={

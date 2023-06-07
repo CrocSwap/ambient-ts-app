@@ -24,7 +24,6 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { useTradeData } from '../Trade/Trade';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
@@ -39,7 +38,7 @@ import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConf
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
@@ -53,6 +52,8 @@ import { isStablePair } from '../../utils/data/stablePairs';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { VscClose } from 'react-icons/vsc';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
+import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
+import { useTradeData } from '../../App/hooks/useTradeData';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -60,8 +61,9 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -103,7 +105,7 @@ function Swap(props: propsIF) {
     const sessionReceipts = receiptData.sessionReceipts;
 
     const pendingTransactions = receiptData.pendingTransactions;
-    const receiveReceiptHashes: Array<string> = [];
+    let receiveReceiptHashes: Array<string> = [];
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -160,7 +162,6 @@ function Swap(props: propsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
@@ -189,7 +190,6 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -243,44 +243,7 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
-        }
-
-        const newSwapCacheEndpoint = GRAPHCACHE_URL + '/new_swap?';
-
-        const inBaseQty =
-            (isSellTokenBase && isTokenAPrimary) ||
-            (!isSellTokenBase && !isTokenAPrimary);
-
-        const crocQty = await crocEnv
-            .token(isTokenAPrimary ? tokenA.address : tokenB.address)
-            .normQty(qty);
-
-        if (tx?.hash) {
-            fetch(
-                newSwapCacheEndpoint +
-                    new URLSearchParams({
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: isSellTokenBase
-                            ? sellTokenAddress
-                            : buyTokenAddress,
-                        quote: isSellTokenBase
-                            ? buyTokenAddress
-                            : sellTokenAddress,
-                        poolIdx: (
-                            await crocEnv.context
-                        ).chain.poolIndex.toString(),
-                        isBuy: isSellTokenBase.toString(),
-                        inBaseQty: inBaseQty.toString(),
-                        qty: crocQty.toString(),
-                        override: 'false',
-                        chainId: chainId,
-                        limitPrice: '0',
-                        minOut: '0',
-                    }),
-            );
         }
 
         let receipt;
@@ -301,32 +264,6 @@ function Swap(props: propsIF) {
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newSwapCacheEndpoint +
-                            new URLSearchParams({
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: isSellTokenBase
-                                    ? sellTokenAddress
-                                    : buyTokenAddress,
-                                quote: isSellTokenBase
-                                    ? buyTokenAddress
-                                    : sellTokenAddress,
-                                poolIdx: (
-                                    await crocEnv.context
-                                ).chain.poolIndex.toString(),
-                                isBuy: isSellTokenBase.toString(),
-                                inBaseQty: inBaseQty.toString(),
-                                qty: crocQty.toString(),
-                                override: 'false',
-                                chainId: chainId,
-                                limitPrice: '0',
-                                minOut: '0',
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -420,6 +357,7 @@ function Swap(props: propsIF) {
             setRecheckTokenAApproval(true);
         }
     };
+
     const effectivePrice =
         parseFloat(priceImpact?.buyQty || '0') /
         parseFloat(priceImpact?.sellQty || '1');
@@ -434,42 +372,20 @@ function Swap(props: propsIF) {
             : effectivePrice
         : undefined;
 
-    const displayEffectivePriceString =
-        !effectivePriceWithDenom ||
-        effectivePriceWithDenom === Infinity ||
-        effectivePriceWithDenom === 0
-            ? '…'
-            : effectivePriceWithDenom < 0.0001
-            ? effectivePriceWithDenom.toExponential(2)
-            : effectivePriceWithDenom < 2
-            ? effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
-
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = sessionReceipts.map(
+            (receipt) => JSON.parse(receipt)?.transactionHash,
+        );
+    }, [sessionReceipts]);
 
     const confirmSwapModalProps = {
         tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
         isDenomBase: tradeData.isDenomBase,
         baseTokenSymbol: tradeData.baseToken.symbol,
         quoteTokenSymbol: tradeData.quoteToken.symbol,
-        priceImpact: priceImpact,
         initiateSwapMethod: initiateSwap,
-        onClose: handleModalClose,
         newSwapTransactionHash: newSwapTransactionHash,
         txErrorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
         showConfirmation: showConfirmation,
         setShowConfirmation: setShowConfirmation,
         resetConfirmation: resetConfirmation,
@@ -480,7 +396,6 @@ function Swap(props: propsIF) {
         buyQtyString: buyQtyString,
         setShowBypassConfirm: setShowBypassConfirm,
         setNewSwapTransactionHash: setNewSwapTransactionHash,
-        currentPendingTransactionsArray: currentPendingTransactionsArray,
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
@@ -570,18 +485,6 @@ function Swap(props: propsIF) {
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
 
-    const priceImpactString = !priceImpactNum
-        ? '…'
-        : priceImpactNum >= 100
-        ? priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-          })
-        : priceImpactNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
     const liquidityInsufficientWarningOrNull = isLiquidityInsufficient ? (
         <div className={styles.price_impact}>
             <div className={styles.extra_row}>
@@ -615,7 +518,9 @@ function Swap(props: propsIF) {
                             placement='bottom'
                         />
                     </div>
-                    <div className={styles.data}>{priceImpactString}%</div>
+                    <div className={styles.data}>
+                        {getPriceImpactString(priceImpactNum)}%
+                    </div>
                 </div>
             </div>
         ) : null;
@@ -647,6 +552,7 @@ function Swap(props: propsIF) {
         }
         return text;
     }, [needConfirmTokenA, needConfirmTokenB]);
+
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
@@ -667,13 +573,6 @@ function Swap(props: propsIF) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
-
-    const focusTrapOptions = useMemo(
-        () => ({
-            clickOutsideDeactivates: true,
-        }),
-        [],
-    );
 
     const initLinkPath =
         '/initpool/' +
@@ -719,8 +618,9 @@ function Swap(props: propsIF) {
             </div>
         </div>
     ) : null;
+
     return (
-        <FocusTrap focusTrapOptions={focusTrapOptions}>
+        <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
             <section data-testid={'swap'} className={swapPageStyle}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
@@ -749,14 +649,11 @@ function Swap(props: propsIF) {
                         </motion.div>
                         <ExtraInfo
                             priceImpact={priceImpact}
-                            displayEffectivePriceString={
-                                displayEffectivePriceString
-                            }
+                            effectivePriceWithDenom={effectivePriceWithDenom}
                             slippageTolerance={slippageTolerancePercentage}
                             liquidityProviderFeeString={
                                 liquidityProviderFeeString
                             }
-                            quoteTokenIsBuy={true}
                             swapGasPriceinDollars={swapGasPriceinDollars}
                             isOnTradeRoute={isOnTradeRoute}
                         />
@@ -852,10 +749,7 @@ function Swap(props: propsIF) {
                     </ContentContainer>
                     {confirmSwapModalOrNull}
                     {isRelativeModalOpen && (
-                        <RelativeModal
-                            onClose={closeRelativeModal}
-                            title='Relative Modal'
-                        >
+                        <RelativeModal onClose={closeRelativeModal}>
                             You are about to do something that will lose you a
                             lot of money. If you think you are smarter than the
                             awesome team that programmed this, press dismiss.

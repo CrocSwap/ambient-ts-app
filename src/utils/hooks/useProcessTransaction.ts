@@ -8,6 +8,7 @@ import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
+
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
@@ -18,7 +19,7 @@ export const useProcessTransaction = (
 
     const isDenomBase = tradeData.isDenomBase;
 
-    const txHash = tx.tx;
+    const txHash = tx.txHash;
     const ownerId = tx.user;
     const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
@@ -236,53 +237,49 @@ export const useProcessTransaction = (
             truncatedHighDisplayPrice = undefined;
         }
     } else {
-        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
-            const priceDecimalCorrected = tx.priceDecimalCorrected;
-            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+        const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
+        const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0.00'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 0.8
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(5)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmountOld(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const nonInvertedPriceTruncated =
+            priceDecimalCorrected === 0
+                ? '0.00'
+                : priceDecimalCorrected < 0.0001
+                ? priceDecimalCorrected.toExponential(2)
+                : priceDecimalCorrected < 0.8
+                ? priceDecimalCorrected.toPrecision(3)
+                : priceDecimalCorrected < 2
+                ? priceDecimalCorrected.toPrecision(5)
+                : priceDecimalCorrected >= 100000
+                ? formatAmountOld(priceDecimalCorrected)
+                : priceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0.00'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 0.8
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(5)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmountOld(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const invertedPriceTruncated =
+            invPriceDecimalCorrected === 0
+                ? '0.00'
+                : invPriceDecimalCorrected < 0.0001
+                ? invPriceDecimalCorrected.toExponential(2)
+                : invPriceDecimalCorrected < 0.8
+                ? invPriceDecimalCorrected.toPrecision(3)
+                : invPriceDecimalCorrected < 2
+                ? invPriceDecimalCorrected.toPrecision(5)
+                : invPriceDecimalCorrected >= 100000
+                ? formatAmountOld(invPriceDecimalCorrected)
+                : invPriceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            truncatedDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+        truncatedDisplayPriceDenomByMoneyness =
+            isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
-            truncatedDisplayPrice = isDenomBase
-                ? invertedPriceTruncated
-                : nonInvertedPriceTruncated;
-        } else {
-            truncatedDisplayPrice = undefined;
-        }
+        truncatedDisplayPrice = isDenomBase
+            ? invertedPriceTruncated
+            : nonInvertedPriceTruncated;
     }
 
     if (
@@ -296,36 +293,32 @@ export const useProcessTransaction = (
             baseFlowAbsNum === 0
                 ? '0 '
                 : baseFlowAbsNum < 0.0001
-                ? baseFlowAbsNum.toExponential(2)
+                ? baseFlowAbsNum.toExponential(2) + ' '
                 : baseFlowAbsNum < 0.1
-                ? baseFlowAbsNum.toPrecision(3)
+                ? baseFlowAbsNum.toPrecision(3) + ' '
                 : baseFlowAbsNum >= 10000
-                ? formatAmountOld(baseFlowAbsNum)
+                ? formatAmountOld(baseFlowAbsNum) + ' '
                 : // ? baseLiqDisplayNum.toExponential(2)
                   baseFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringShort =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
         baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
 
         const baseFlowDisplayTruncatedLong =
             baseFlowAbsNum === 0
                 ? '0 '
                 : baseFlowAbsNum < 0.0001
-                ? baseFlowAbsNum.toExponential(2)
+                ? baseFlowAbsNum.toExponential(2) + ' '
                 : baseFlowAbsNum < 0.1
-                ? baseFlowAbsNum.toPrecision(3)
+                ? baseFlowAbsNum.toPrecision(3) + ' '
                 : baseFlowAbsNum >= 1000000000
-                ? formatAmountOld(baseFlowAbsNum)
+                ? formatAmountOld(baseFlowAbsNum) + ' '
                 : // ? baseLiqDisplayNum.toExponential(2)
                   baseFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringLong =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
         baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (
@@ -339,11 +332,11 @@ export const useProcessTransaction = (
             quoteFlowAbsNum === 0
                 ? '0 '
                 : quoteFlowAbsNum < 0.0001
-                ? quoteFlowAbsNum.toExponential(2)
+                ? quoteFlowAbsNum.toExponential(2) + ' '
                 : quoteFlowAbsNum < 0.1
-                ? quoteFlowAbsNum.toPrecision(3)
+                ? quoteFlowAbsNum.toPrecision(3) + ' '
                 : quoteFlowAbsNum >= 10000
-                ? formatAmountOld(quoteFlowAbsNum)
+                ? formatAmountOld(quoteFlowAbsNum) + ' '
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   quoteFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -354,11 +347,11 @@ export const useProcessTransaction = (
             quoteFlowAbsNum === 0
                 ? '0 '
                 : quoteFlowAbsNum < 0.0001
-                ? quoteFlowAbsNum.toExponential(2)
+                ? quoteFlowAbsNum.toExponential(2) + ' '
                 : quoteFlowAbsNum < 0.1
-                ? quoteFlowAbsNum.toPrecision(3)
+                ? quoteFlowAbsNum.toPrecision(3) + ' '
                 : quoteFlowAbsNum >= 1000000000
-                ? formatAmountOld(quoteFlowAbsNum)
+                ? formatAmountOld(quoteFlowAbsNum) + ' '
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   quoteFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -397,15 +390,6 @@ export const useProcessTransaction = (
             ? 'sell'
             : 'buy';
 
-    // const sideType =
-    //     tx.entityType === 'swap' || tx.entityType === 'limitOrder'
-    //         ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
-    //             ? 'buy'
-    //             : 'sell'
-    //         : tx.changeType === 'burn'
-    //         ? 'sell'
-    //         : 'buy';
-
     const transactionTypeSide =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'mint'
@@ -414,14 +398,6 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const transactionTypeSide =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'rangeRemove'
-    //         : 'rangeAdd';
 
     const type =
         tx.entityType === 'liqchange'
@@ -431,20 +407,12 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const type =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'Remove'
-    //         : 'Add';
 
     const sideTypeStyle = `${sideType}_style`;
 
-    const usdValueNum = tx.valueUSD;
+    const usdValueNum = tx.totalValueUSD;
     const totalValueUSD = tx.totalValueUSD;
-    const totalFlowUSD = tx.totalFlowUSD;
+    const totalFlowUSD = tx.totalValueUSD;
     const totalFlowAbsNum =
         totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
 
@@ -453,7 +421,7 @@ export const useProcessTransaction = (
         : usdValueNum < 0.01
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum, 2)
+        ? formatAmountOld(usdValueNum, 2) + ' '
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -518,6 +486,23 @@ export const useProcessTransaction = (
 
     // --------------------------------------------------------
 
+    const usdValue =
+        totalFlowUSDTruncated !== undefined
+            ? '$' + totalFlowUSDTruncated
+            : totalValueUSDTruncated
+            ? '$' + totalValueUSDTruncated
+            : usdValueTruncated
+            ? '$' + usdValueTruncated
+            : '…';
+
+    const txUsdValueLocaleString = totalFlowUSDLocaleString
+        ? '$' + totalFlowUSDLocaleString
+        : totalValueUSDLocaleString
+        ? '$' + totalValueUSDLocaleString
+        : usdValueLocaleString
+        ? '$' + usdValueLocaleString
+        : '…';
+
     const quantitiesAvailable =
         baseFlowDisplayShort !== undefined ||
         quoteFlowDisplayShort !== undefined;
@@ -540,24 +525,6 @@ export const useProcessTransaction = (
 
     // --------------------------------------------------------
 
-    const usdValue =
-        totalFlowUSDTruncated !== undefined
-            ? '$' + totalFlowUSDTruncated
-            : totalValueUSDTruncated
-            ? '$' + totalValueUSDTruncated
-            : usdValueTruncated
-            ? '$' + usdValueTruncated
-            : '…';
-
-    const txUsdValueLocaleString = totalFlowUSDLocaleString
-        ? '$' + totalFlowUSDLocaleString
-        : totalValueUSDLocaleString
-        ? '$' + totalValueUSDLocaleString
-        : usdValueLocaleString
-        ? '$' + usdValueLocaleString
-        : '…';
-    // --------------------OWNER AND ID WALLET DATA
-
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 13
             ? trimString(ensName, 8, 3, '…')
@@ -571,7 +538,7 @@ export const useProcessTransaction = (
         : ensNameOrOwnerTruncated;
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        tx.time * 1000,
+        tx.txTime * 1000,
         'seconds',
     );
 
@@ -601,17 +568,16 @@ export const useProcessTransaction = (
     const negativeArrow = '↓';
 
     const isSellQtyZero =
-        (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+        (isBuy && tx.baseFlow === 0) || (!isBuy && tx.quoteFlow === 0);
     const isBuyQtyZero =
-        (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
+        (!isBuy && tx.baseFlow === 0) || (isBuy && tx.quoteFlow === 0);
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
         baseQuantityDisplayShort === '0' ||
         !valueArrows ||
-        (isOrderRemove ? isSellQtyZero : isBuyQtyZero) ||
-        tx.source === 'manual'
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
             ? styles.light_grey
             : styles.positive_value;
     const negativeDisplayStyle =

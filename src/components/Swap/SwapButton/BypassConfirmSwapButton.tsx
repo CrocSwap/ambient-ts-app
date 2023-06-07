@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import JSX Components
@@ -23,21 +22,11 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     initiateSwapMethod: () => void;
-    isDenomBase: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    priceImpact: CrocImpact | undefined;
-    onClose: () => void;
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
     txErrorCode: string;
-    txErrorMessage: string;
-    showConfirmation: boolean;
     setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
-    slippageTolerancePercentage: number;
-    effectivePrice: number;
-    isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
@@ -92,7 +81,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const transactionException = (
         <TransactionException
-            noAnimation
             resetConfirmation={handleReset}
             initiateTx={initiateSwapMethod}
         />
@@ -165,8 +153,8 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div style={{ color: buttonColor }}>
-                        {animationDisplay}
-                        {buttonText}
+                        <div style={{ width: '35px' }}>{animationDisplay}</div>
+                        <div>{buttonText}</div>
                     </div>
                     {showExtraInfo ? (
                         <RiArrowUpSLine size={20} />

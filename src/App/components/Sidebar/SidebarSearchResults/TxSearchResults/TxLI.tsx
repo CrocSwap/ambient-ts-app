@@ -14,7 +14,7 @@ export default function TxLI(props: propsIF) {
     const txType = getTxType(tx.entityType);
 
     // value of transaction in human-readable format
-    const txValue = getTxValue(tx.valueUSD, tx.totalValueUSD, tx.totalFlowUSD);
+    const txValue = getTxValue(tx);
 
     // TODO:   @Junior  please refactor the top-level element of this JSX return
     // TODO:   @Junior  ... to return an <li> element, and refactor parent to

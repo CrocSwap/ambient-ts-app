@@ -1,4 +1,4 @@
-.token_amount{
+.token_amount {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -36,13 +36,10 @@
     line-height: 22px;
 }
 
-
-.circular_progress{
-  
+.circular_progress {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
-   margin: 8px 2rem;
-    
+    margin: 8px 2rem;
 }
