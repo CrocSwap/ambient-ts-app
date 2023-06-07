@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { BigNumber } from 'ethers/lib/ethers';
 
 export type LimitSortType =
     | 'wallet'
@@ -37,12 +38,30 @@ export const useSortedLimits = (
             const poolB = b.baseSymbol + b.quoteSymbol;
             return poolA.localeCompare(poolB);
         });
-    const sortByWallet = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
-        [...unsortedData].sort((a, b) => {
-            const usernameA: string = a.ensResolution ?? a.user;
-            const usernameB: string = b.ensResolution ?? b.user;
-            return usernameA.localeCompare(usernameB);
+    // sort by wallet or ens address
+    const sortByWallet = (unsortedData: LimitOrderIF[]): LimitOrderIF[] => {
+        // array to hold limit orders with a valid ENS
+        const txsENS: LimitOrderIF[] = [];
+        // array to hold limit orders with no ENS value
+        const txsNoENS: LimitOrderIF[] = [];
+        // push each limit order to one of the above temporary arrays
+        unsortedData.forEach((tx: LimitOrderIF) => {
+            tx.ensResolution ? txsENS.push(tx) : txsNoENS.push(tx);
         });
+        // sort limit orders with an ENS by the ENS value (alphanumeric)
+        const sortedENS: LimitOrderIF[] = txsENS.sort((a, b) => {
+            return a.ensResolution.localeCompare(b.ensResolution);
+        });
+        // sort limit orders with no ENS by the wallet address, for some reason
+        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        const sortedNoENS: LimitOrderIF[] = txsNoENS.sort((a, b) => {
+            const walletA = BigNumber.from(a.user);
+            const walletB = BigNumber.from(b.user);
+            return walletA.gte(walletB) ? 1 : -1;
+        });
+        // combine and return sorted arrays
+        return [...sortedENS, ...sortedNoENS];
+    };
     // sort by limit price
     const sortByPrice = (unsortedData: LimitOrderIF[]): LimitOrderIF[] =>
         [...unsortedData].sort((a, b) => a.limitPrice - b.limitPrice);
