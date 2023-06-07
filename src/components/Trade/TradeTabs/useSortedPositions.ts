@@ -5,6 +5,7 @@ import { diffHashSig } from '../../../utils/functions/diffHashSig';
 export type SortType =
     | 'id'
     | 'wallet'
+    | 'walletid'
     | 'pool'
     | 'apy'
     | 'apr'
@@ -33,13 +34,11 @@ export const useSortedPositions = (
 
             return bTime - aTime;
         });
-    // [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by positionHash
     const sortById = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) =>
             b.firstMintTx.localeCompare(a.firstMintTx),
         );
-    // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
@@ -157,6 +156,7 @@ export const useSortedPositions = (
         // router to apply a specific sort function
         switch (sortBy) {
             case 'id':
+            case 'walletid':
                 sortedData = sortById(data);
                 break;
             // sort by wallet
