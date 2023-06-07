@@ -124,7 +124,7 @@ export const useSortedPositions = (
         const outOfRangeAfterTertiarySort: PositionIF[] = sortById(
             outOfRangeAfterSecondarySort,
         );
-        const inRangeAfterTertiarySorte: PositionIF[] = sortById(
+        const inRangeAfterTertiarySort: PositionIF[] = sortById(
             inRangeAfterSecondarySort,
         );
         const ambientAfterTertiarySort: PositionIF[] = sortById(
@@ -136,10 +136,9 @@ export const useSortedPositions = (
         const huhAfterTertiarySort: PositionIF[] = sortById(
             huhAfterSecondarySort,
         );
-
         return [
             ...outOfRangeAfterTertiarySort,
-            ...inRangeAfterTertiarySorte,
+            ...inRangeAfterTertiarySort,
             ...ambientAfterTertiarySort,
             ...emptyAfterTertiarySort,
             ...huhAfterTertiarySort,
