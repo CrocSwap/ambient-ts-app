@@ -1,6 +1,6 @@
 import styles from './NotificationCenter.module.css';
 import { AnimateSharedLayout } from 'framer-motion';
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -23,15 +23,16 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
 
     const txCount = pendingTransactions.length + sessionReceipts.length;
 
-    let receiveReceiptHashes: Array<string> = [];
-
     useEffect(() => {
-        if (txCount === 0) setShowNotificationTable(false);
+        if (txCount === 0) {
+            setShowNotificationTable(false);
+        }
     }, [txCount]);
 
-    useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
+    const receiveReceiptHashes = useMemo(
+        () => getReceiptTxHashes(sessionReceipts),
+        [sessionReceipts],
+    );
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
