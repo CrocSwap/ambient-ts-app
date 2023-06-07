@@ -427,7 +427,8 @@ export default function Chart(props: propsIF) {
     const [defaultGradientForBid, setDefaultGradientForBid] = useState();
     const [defaultGradientForAsk, setDefaultGradientForAsk] = useState();
 
-    const [isMouseLeaveLiq, setIsMouseLeaveLiq] = useState(true);
+    const [isMouseLeaveBidLiq, setIsMouseLeaveBidLiq] = useState(true);
+    const [isMouseLeaveAskLiq, setIsMouseLeaveAskLiq] = useState(true);
 
     const [yAxisLabels] = useState<yLabel[]>([]);
 
@@ -5089,13 +5090,17 @@ export default function Chart(props: propsIF) {
     }
 
     useEffect(() => {
-        if (!isMouseLeaveLiq) {
+        if (!isMouseLeaveAskLiq) {
             setAskGradientDefault();
+
+            if (liqTooltip) liqTooltip.style('visibility', 'hidden');
+        }
+        if (!isMouseLeaveBidLiq) {
             setBidGradientDefault();
 
             if (liqTooltip) liqTooltip.style('visibility', 'hidden');
         }
-    }, [isMouseLeaveLiq]);
+    }, [isMouseLeaveBidLiq, isMouseLeaveAskLiq]);
 
     useEffect(() => {
         setAskGradientDefault();
@@ -5109,7 +5114,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveAskLiq
                         ? gradientForAsk
                         : defaultGradientForAsk;
                     context.strokeWidth = 2;
@@ -5126,7 +5131,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveAskLiq
                         ? gradientForAsk
                         : defaultGradientForAsk;
                     context.strokeWidth = 2;
@@ -5147,7 +5152,7 @@ export default function Chart(props: propsIF) {
         gradientForAsk,
         liquidityScale,
         liquidityDepthScale,
-        isMouseLeaveLiq,
+        isMouseLeaveAskLiq,
         defaultGradientForAsk,
     ]);
 
@@ -5156,7 +5161,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveBidLiq
                         ? gradientForBid
                         : defaultGradientForBid;
                     context.strokeWidth = 2;
@@ -5173,7 +5178,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveBidLiq
                         ? gradientForBid
                         : defaultGradientForBid;
                     context.strokeWidth = 2;
@@ -5194,7 +5199,7 @@ export default function Chart(props: propsIF) {
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
-        isMouseLeaveLiq,
+        isMouseLeaveBidLiq,
         defaultGradientForBid,
     ]);
 
@@ -5791,7 +5796,8 @@ export default function Chart(props: propsIF) {
                     bidMinBoudnary < currentDataY &&
                     currentDataY < bidMaxBoudnary
                 ) {
-                    setIsMouseLeaveLiq(true);
+                    setIsMouseLeaveBidLiq(true);
+                    setIsMouseLeaveAskLiq(false);
                     bidAreaFunc(event, bidMinBoudnary, bidMaxBoudnary);
                 } else if (
                     askMinBoudnary !== undefined &&
@@ -5801,18 +5807,21 @@ export default function Chart(props: propsIF) {
                         askMinBoudnary < currentDataY &&
                         currentDataY < askMaxBoudnary
                     ) {
-                        setIsMouseLeaveLiq(true);
+                        setIsMouseLeaveAskLiq(true);
+                        setIsMouseLeaveBidLiq(false);
                         askAreaFunc(event, askMinBoudnary, askMaxBoudnary);
                     }
                 }
             }
         } else {
-            setIsMouseLeaveLiq(false);
+            setIsMouseLeaveBidLiq(false);
+            setIsMouseLeaveAskLiq(false);
         }
     };
 
     useEffect(() => {
-        setIsMouseLeaveLiq(isLineDrag || isChartZoom);
+        setIsMouseLeaveBidLiq(isLineDrag || isChartZoom);
+        setIsMouseLeaveAskLiq(isLineDrag || isChartZoom);
     }, [isLineDrag, isChartZoom]);
 
     const bidAreaFunc = (
@@ -6228,7 +6237,9 @@ export default function Chart(props: propsIF) {
             d3.select(d3Container.current).on('mouseleave', () => {
                 setCrosshairActive('none');
 
-                setIsMouseLeaveLiq(false);
+                setIsMouseLeaveBidLiq(false);
+                setIsMouseLeaveAskLiq(false);
+
                 if (unparsedCandleData) {
                     const lastData = unparsedCandleData.find(
                         (item: any) =>
@@ -6264,7 +6275,9 @@ export default function Chart(props: propsIF) {
 
             const mouseLeaveCanvas = () => {
                 setCrosshairActive('none');
-                setIsMouseLeaveLiq(false);
+
+                setIsMouseLeaveBidLiq(false);
+                setIsMouseLeaveAskLiq(false);
             };
 
             d3.select(d3CanvasMarketLine.current).on('mouseleave', () => {
@@ -6304,7 +6317,8 @@ export default function Chart(props: propsIF) {
             liquidityDepthScale,
             isLineDrag,
             selectedDate,
-            isMouseLeaveLiq,
+            isMouseLeaveBidLiq,
+            isMouseLeaveAskLiq,
             unparsedCandleData?.length,
             !tradeData.advancedMode && simpleRangeWidth === 100,
         ],
