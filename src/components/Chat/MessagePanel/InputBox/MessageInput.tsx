@@ -11,7 +11,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import { User } from '../../Model/UserModel';
+import { User, getUserLabel } from '../../Model/UserModel';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -46,6 +46,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
+    const [mentUser, setMentUser] = useState<User | null>(null);
 
     const roomId = props.room;
 
@@ -68,6 +69,23 @@ export default function MessageInput(props: MessageInputProps) {
         setShowEmojiPicker(false);
     };
 
+    const userLabel = (user: User) => {
+        if (
+            user.ensName != null &&
+            user.ensName != '' &&
+            user.ensName != undefined &&
+            user.ensName != 'undefined' &&
+            user.ensName != 'null'
+        ) {
+            return user.ensName;
+        }
+        return (
+            user.walletID.substring(0, 6) +
+            '...' +
+            user.walletID.substring(user.walletID.length - 4)
+        );
+    };
+
     function messageInputText() {
         if (isConnected && address) {
             return 'Type to chat. Enter to submit.';
@@ -88,10 +106,29 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
+        console.log('..............................................');
+        console.log(mentPanelActive);
         if (e.key === 'Enter') {
-            handleSendMsg(e.target.value, roomId);
-            setMessage('');
-            dontShowEmojiPanel();
+            // send msg if ment panel is not active
+            if (!mentPanelActive) {
+                handleSendMsg(e.target.value, roomId);
+                setMessage('');
+                dontShowEmojiPanel();
+                setPossibleMentUser(null);
+            }
+            // assign user for ment
+            else {
+                console.log('assigning user for ment');
+                setMentUser(possibleMentUser);
+
+                const reg = /@([^\s]*)/g;
+                const newMessage = message.replace(
+                    reg,
+                    '@' + getUserLabel(possibleMentUser) + ' ',
+                );
+                setMessage(newMessage);
+                setMentPanelActive(false);
+            }
         } else if (
             mentPanelActive &&
             (e.key === 'ArrowUp' || e.key === 'ArrowDown')
@@ -181,11 +218,14 @@ export default function MessageInput(props: MessageInputProps) {
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
 
-        if (e.target.value.indexOf('@') !== -1) {
+        console.log(possibleMentUser);
+
+        if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
             setMentPanelActive(true);
             setMentPanelQueryStr(e.target.value.split('@')[1]);
         } else {
             if (mentPanelActive) setMentPanelActive(false);
+            setPossibleMentUser(null);
         }
     };
 
