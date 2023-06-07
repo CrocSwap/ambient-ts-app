@@ -140,7 +140,7 @@ export const getTransactionData = async (
     newTx.askTickPriceDecimalCorrected = upperPriceDisplayInQuote;
     newTx.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
 
-    newTx.limitPrice = newTx.isBid
+    newTx.limitPrice = newTx.isBuy
         ? tickToPrice(newTx.bidTick)
         : tickToPrice(newTx.askTick);
     newTx.limitPriceDecimalCorrected = toDisplayPrice(

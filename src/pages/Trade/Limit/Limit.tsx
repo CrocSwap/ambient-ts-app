@@ -79,11 +79,15 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
-    const { tokenA, tokenB } = tradeData;
+    const { navigationMenu, limitTickFromParams } = useTradeData();
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
 
     const dispatch = useAppDispatch();
 
@@ -138,10 +142,11 @@ export default function Limit() {
 
     const { baseToken, quoteToken } = tradeData;
 
-    const isSellTokenBase = useMemo(
-        () => pool?.baseToken.tokenAddr === tokenA.address,
-        [pool?.baseToken, tokenA.address],
-    );
+    const isSellTokenBase = useMemo(() => {
+        dispatch(setLimitTick(undefined));
+
+        return pool?.baseToken.tokenAddr === tokenA.address;
+    }, [pool?.baseToken, tokenA.address]);
 
     useEffect(() => {
         (async () => {
@@ -239,7 +244,6 @@ export default function Limit() {
                 }
             } else if (limitTick) {
                 if (!pool) return;
-                if (poolPriceNonDisplay === 0) return;
 
                 const tickPrice = tickToPrice(limitTick);
 
@@ -323,7 +327,6 @@ export default function Limit() {
         pool,
         limitTickCopied,
         limitTick,
-        poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
@@ -372,12 +375,8 @@ export default function Limit() {
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
-        isTokenAPrimary,
-        isSellTokenBase,
-        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
-        tokenA.address + tokenB.address,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
