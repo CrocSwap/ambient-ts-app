@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { BigNumber } from 'ethers/lib/ethers';
 
 export type TxSortType =
     | 'time'
@@ -32,12 +33,30 @@ export const useSortedTxs = (
             return poolA.localeCompare(poolB);
         });
     // sort by wallet or ens address
-    const sortByWallet = (unsortedData: TransactionIF[]): TransactionIF[] =>
-        [...unsortedData].sort((a, b) => {
-            const usernameA: string = a.ensResolution ?? a.user;
-            const usernameB: string = b.ensResolution ?? b.user;
-            return usernameA.localeCompare(usernameB);
+    // sort by wallet address
+    const sortByWallet = (unsortedData: TransactionIF[]): TransactionIF[] => {
+        // array to hold positions with a valid ENS
+        const txsENS: TransactionIF[] = [];
+        // array to hold positions with no ENS value
+        const txsNoENS: TransactionIF[] = [];
+        // push each position to one of the above temporary arrays
+        unsortedData.forEach((pos: TransactionIF) => {
+            pos.ensResolution ? txsENS.push(pos) : txsNoENS.push(pos);
         });
+        // sort positions with an ENS by the ENS value (alphanumeric)
+        const sortedENS: TransactionIF[] = txsENS.sort((a, b) => {
+            return a.ensResolution.localeCompare(b.ensResolution);
+        });
+        // sort positions with no ENS by the wallet address, for some reason
+        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        const sortedNoENS: TransactionIF[] = txsNoENS.sort((a, b) => {
+            const walletA = BigNumber.from(a.user);
+            const walletB = BigNumber.from(b.user);
+            return walletA.gte(walletB) ? 1 : -1;
+        });
+        // combine and return sorted arrays
+        return [...sortedENS, ...sortedNoENS];
+    };
     // sort by limit price
     const sortByPrice = (unsortedData: TransactionIF[]): TransactionIF[] =>
         [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
