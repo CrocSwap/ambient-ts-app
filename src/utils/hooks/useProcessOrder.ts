@@ -45,7 +45,7 @@ export const useProcessOrder = (
         : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = limitOrder.claimableLiq !== '0';
+    const isOrderFilled = limitOrder.claimableLiq > 0;
 
     const posHash =
         limitOrder.user &&
@@ -351,7 +351,7 @@ export const useProcessOrder = (
         ? 'sell'
         : 'buy';
 
-    const type = 'order';
+    const type = 'limit';
 
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();

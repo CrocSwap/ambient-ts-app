@@ -3,27 +3,18 @@ import { Dispatch, SetStateAction, useContext } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
-import { GiLaurelsTrophy } from 'react-icons/gi';
-import { NavLink } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
 interface PositionsOnlyToggleProps {
-    setHasInitialized: Dispatch<SetStateAction<boolean>>;
-    isCandleSelected: boolean | undefined;
-    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentTab?: string;
     showPositionsOnlyToggle?: boolean;
-    setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
-    leader: string;
-    leaderOwnerId: string;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
-    isCandleDataNull: boolean;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
@@ -33,23 +24,17 @@ const LeaderboardTabName = 'Leaderboard';
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
-        isCandleSelected,
-        setIsCandleSelected,
         setTransactionFilter,
-        // setHasInitialized,
         showPositionsOnlyToggle,
-        leader,
-        leaderOwnerId,
         changeState,
-
         setSelectedDate,
-        isCandleDataNull,
         isCandleArrived,
         setIsCandleDataArrived,
         setHasUserSelectedViewAll,
-        // setShowPositionsOnlyToggle
     } = props;
 
+    const { isCandleSelected, setIsCandleSelected, isCandleDataNull } =
+        useContext(CandleContext);
     const {
         expandTradeTable,
         setExpandTradeTable,
@@ -73,16 +58,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             {isCandleArrived && <span className={styles.graph_indicaor}></span>}
         </div>
     );
-    // <NavLink to={`/${ownerId}`}>View Account</NavLink>
-
-    const leaderName = (
-        <NavLink to={`/${leaderOwnerId}`} className={styles.leader}>
-            <h3>{leader}</h3>
-            <GiLaurelsTrophy size={25} color='#d4af37' />
-        </NavLink>
-    );
-
-    if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
     const toggleOrNull =
         !isUserConnected ||
@@ -124,7 +99,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 }`}
             >
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
-
                 <p
                     onClick={() => {
                         unselectCandle();

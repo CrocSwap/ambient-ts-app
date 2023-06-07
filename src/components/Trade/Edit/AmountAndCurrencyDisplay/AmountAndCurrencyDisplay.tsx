@@ -1,7 +1,6 @@
 import styles from './AmountAndCurrencyDisplay.module.css';
 
 interface AmountAndCurrencyDisplayProps {
-    value: string | number;
     tokenImg: string;
     qty: string;
     symbol: string;

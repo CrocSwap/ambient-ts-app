@@ -54,7 +54,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
+        setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
         linkGenLimit.navigate({
             chain: chainId,

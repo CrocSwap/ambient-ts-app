@@ -136,6 +136,7 @@ const PageHeader = function () {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         walletDropdownTokenData,
+        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
@@ -228,6 +229,8 @@ const PageHeader = function () {
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
         } else if (location.pathname.includes('chat')) {
             document.title = 'Chat ~ ambient.finance';
+        } else if (location.pathname.includes('404')) {
+            document.title = '404 ~ ambient.finance';
         } else {
             document.title = 'Home ~ ambient.finance';
         }

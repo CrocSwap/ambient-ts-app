@@ -8,7 +8,11 @@ import {
     useContext,
 } from 'react';
 import useDebounce from '../App/hooks/useDebounce';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import {
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+    OVERRIDE_CANDLE_POOL_ID,
+} from '../constants';
 import { mktDataChainId } from '../utils/data/chains';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
@@ -135,7 +139,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const reqOptions = new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
+                poolIdx: (
+                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                ).toString(),
                 period: candleTimeLocal.toString(),
                 // time: '', // optional
                 n: (candleScale?.nCandle > 1000
@@ -150,7 +156,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolStatsChainIdOverride: chainData.chainId,
                 poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                 poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                poolStatsPoolIdxOverride: (
+                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                ).toString(),
             });
 
             if (candleScale?.lastCandleDate) {
@@ -261,7 +269,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 new URLSearchParams({
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
-                    poolIdx: chainData.poolIndex.toString(),
+                    poolIdx: (
+                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                    ).toString(),
                     period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
@@ -274,7 +284,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     poolStatsChainIdOverride: chainData.chainId,
                     poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                    poolStatsPoolIdxOverride: (
+                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                    ).toString(),
                 }),
             { signal },
         )
@@ -321,7 +333,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             })
             .catch((e) => {
                 if (e.name === 'AbortError') {
-                    console.log('Zoom request cancelled');
+                    console.warn('Zoom request cancelled');
                 } else {
                     console.error(e);
                 }

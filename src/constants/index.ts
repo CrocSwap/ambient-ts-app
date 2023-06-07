@@ -29,6 +29,9 @@ export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
+export const GRAPHCACHE_SMALL_URL =
+    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
+
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
     GRAPHCACHE_URL.replace('http', 'ws');
@@ -47,7 +50,20 @@ export const CHAT_ENABLED =
 
 export const MORALIS_KEY =
     process.env.REACT_APP_MORALIS_KEY ||
-    'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5';
+    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
+
+// External links
+export const DOCS_LINK = 'https://docs.ambient.finance/';
+export const GITHUB_LINK = 'https://github.com/CrocSwap';
+export const TWITTER_LINK = 'https://twitter.com/crocswap';
+export const DISCORD_LINK = 'https://discord.com/invite/crocswap';
+export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+
+export const OVERRIDE_CANDLE_POOL_ID = 36000;
+
+// Localstorage keys
+export const LS_KEY_CHART_SETTINGS = 'chart_settings';
+export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';

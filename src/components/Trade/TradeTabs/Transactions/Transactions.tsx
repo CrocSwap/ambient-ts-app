@@ -1,30 +1,18 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import {
-    CandleData,
-    setDataLoadingStatus,
-} from '../../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import {
-    Dispatch,
-    SetStateAction,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-} from 'react';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTransactions } from '../useSortedTxs';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -32,19 +20,14 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    portfolio?: boolean;
     changesInSelectedCandle: TransactionIF[] | undefined;
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
-    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    isCandleSelected: boolean | undefined;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
     setSelectedDate?: Dispatch<number | undefined>;
 }
 function Transactions(props: propsIF) {
@@ -52,12 +35,11 @@ function Transactions(props: propsIF) {
         activeAccountTransactionData,
         connectedAccountActive,
         changesInSelectedCandle,
-        isCandleSelected,
-        changeState,
         setSelectedDate,
         isAccountView,
     } = props;
 
+    const { isCandleSelected } = useContext(CandleContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -136,16 +118,13 @@ function Transactions(props: propsIF) {
         (isAccountView && isTxDataLoadingForPortfolio) ||
         (!isAccountView && isTxDataLoadingForTradeTable);
 
-    const shouldDisplayNoTableData = !transactionData.length;
-
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
-        2000,
-    ); // debounce 1 second
-    const debouncedShouldDisplayNoTableData = useDebounce(
-        shouldDisplayNoTableData,
         1000,
-    ); // debounce 1 second
+    );
+
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !transactionData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTransactions(
@@ -193,10 +172,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
-        changesByPoolWithoutFills.length,
-        changesByPoolWithoutFills.at(0)?.poolHash,
-        changesByUserMatchingSelectedTokens.length,
-        changesByUserMatchingSelectedTokens.at(0)?.user,
+        diffHashSigTxs(changesByPoolWithoutFills),
         showAllData,
     ]);
 
@@ -207,7 +183,6 @@ function Transactions(props: propsIF) {
 
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
-    const view2 = useMediaQuery('(max-width: 1568px)');
 
     // Get current transactions
 
@@ -437,10 +412,8 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            tradeData={tradeData}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -449,10 +422,8 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            tradeData={tradeData}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -486,10 +457,9 @@ function Transactions(props: propsIF) {
         }
     };
 
-    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+    const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
-            changeState={changeState}
             type='transactions'
             isAccountView={isAccountView}
         />
@@ -547,18 +517,8 @@ function Transactions(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                {shouldDisplayLoadingAnimation ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     transactionDataOrNull
                 )}

@@ -16,7 +16,6 @@ import Spinner from '../../Spinner/Spinner';
 interface TransactionDetailsGraphIF {
     tx: any;
     transactionType: string;
-    useTx?: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
 }
@@ -127,8 +126,8 @@ export default function TransactionDetailsGraph(
                 const time = () => {
                     switch (transactionType) {
                         case 'swap':
-                            return tx?.time !== undefined
-                                ? tx.time
+                            return tx?.txTime !== undefined
+                                ? tx.txTime
                                 : new Date().getTime();
                         case 'limitOrder':
                             return tx?.timeFirstMint !== undefined
@@ -160,9 +159,11 @@ export default function TransactionDetailsGraph(
                             ? calcNumberCandlesNeeded
                             : maxNumCandlesNeeded;
 
-                    const startBoundary = Math.floor(
-                        new Date().getTime() / 1000,
-                    );
+                    const offsetInSeconds = 120;
+
+                    const startBoundary =
+                        Math.floor(new Date().getTime() / 1000) -
+                        offsetInSeconds;
 
                     try {
                         const graphData = await fetchGraphData(
@@ -802,14 +803,14 @@ export default function TransactionDetailsGraph(
                             crossPointJoin(svg, [
                                 [
                                     {
-                                        x: tx.time * 1000,
+                                        x: tx.txTime * 1000,
                                         y: (
                                             !isAccountView
                                                 ? denominationsInBase
                                                 : !isBaseTokenMoneynessGreaterOrEqual
                                         )
-                                            ? tx.invPriceDecimalCorrected
-                                            : tx.priceDecimalCorrected,
+                                            ? tx.swapInvPriceDecimalCorrected
+                                            : tx.swapPriceDecimalCorrected,
                                     },
                                 ],
                             ]).call(crossPoint);
@@ -828,19 +829,7 @@ export default function TransactionDetailsGraph(
         [tx],
     );
 
-    const loadingSpinner = (
-        <div
-            style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Spinner size={100} bg='var(--dark1)' />
-        </div>
-    );
+    const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;
 
     const placeholderImage = (
         <div className='transaction_details_graph_placeholder' />

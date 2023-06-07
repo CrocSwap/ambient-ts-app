@@ -2,30 +2,14 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useState,
-    useMemo,
-    useContext,
-    memo,
-    useRef,
-} from 'react';
+import { useEffect, useState, useMemo, useContext, memo, useRef } from 'react';
 
 // START: Import JSX Components
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    addPositionsByPool,
-    addPositionsByUser,
-} from '../../../../utils/state/graphDataSlice';
 import { Pagination } from '@mui/material';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -33,15 +17,13 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { diffHashSigPostions } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
-import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -50,10 +32,6 @@ const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    notOnTradeRoute?: boolean;
-    portfolio?: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     isAccountView: boolean;
 }
 
@@ -63,19 +41,14 @@ function Ranges(props: propsIF) {
         props;
 
     const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
         setExpandTradeTable,
     } = useContext(TradeTableContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
-    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -98,8 +71,10 @@ function Ranges(props: propsIF) {
 
     const isConnectedUserRangeDataLoading =
         dataLoadingStatus?.isConnectedUserRangeDataLoading;
+
     const isLookupUserRangeDataLoading =
         dataLoadingStatus?.isLookupUserRangeDataLoading;
+
     const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
 
     const isRangeDataLoadingForPortfolio =
@@ -116,8 +91,8 @@ function Ranges(props: propsIF) {
 
     const debouncedShouldDisplayLoadingAnimation = useDebounce(
         shouldDisplayLoadingAnimation,
-        1000,
-    ); // debounce 1/4 second
+        3000,
+    );
 
     const positionsByPool = graphData.positionsByPool?.positions;
 
@@ -142,23 +117,26 @@ function Ranges(props: propsIF) {
 
     const userPositionsToDisplayOnTrade =
         positionsByUserMatchingSelectedTokens.filter(
-            (position) => position.positionLiq !== '0',
+            (position) => position.positionLiq !== 0,
         );
 
     const sumHashActiveAccountPositionData = useMemo(
-        () => diffHashSig(activeAccountPositionData),
+        () => diffHashSigPostions(activeAccountPositionData),
         [activeAccountPositionData],
     );
 
-    const sumHashRangeData = useMemo(() => diffHashSig(rangeData), [rangeData]);
+    const sumHashRangeData = useMemo(
+        () => diffHashSigPostions(rangeData),
+        [rangeData],
+    );
 
     const sumHashUserPositionsToDisplayOnTrade = useMemo(
-        () => diffHashSig(userPositionsToDisplayOnTrade),
+        () => diffHashSigPostions(userPositionsToDisplayOnTrade),
         [userPositionsToDisplayOnTrade],
     );
 
     const sumHashPositionsByPool = useMemo(
-        () => diffHashSig(positionsByPool),
+        () => diffHashSigPostions(positionsByPool),
         [positionsByPool],
     );
 
@@ -185,82 +163,8 @@ function Ranges(props: propsIF) {
         sumHashActiveAccountPositionData,
         sumHashUserPositionsToDisplayOnTrade,
         sumHashPositionsByPool,
+        lastBlockNumber,
     ]);
-
-    const dispatch = useAppDispatch();
-
-    const NUM_ROWS_TO_SYNC = 5;
-    const CACHE_WINDOW_MS = 10000;
-
-    // synchronously query top positions periodically but prevent fetching more than
-    // once every CACHE_WINDOW_MS
-    const currentTimeForPositionUpdateCaching = Math.floor(
-        Date.now() / CACHE_WINDOW_MS,
-    );
-    const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
-
-    // Debounce the heavy weight networking operation of refreshing the top positions
-    // so users clicking like a maniac on the column header don't spam the network
-    const REFRESH_TOP_DELAY = 1000;
-    const sumHashTopPositions = useDebounce(
-        diffHashSig(topPositions.map((p) => p.positionId)),
-        REFRESH_TOP_DELAY,
-    );
-
-    useEffect(() => {
-        if (topPositions.length) {
-            Promise.all(
-                topPositions.map((position: PositionIF) => {
-                    return cachedPositionUpdateQuery(
-                        position,
-                        currentTimeForPositionUpdateCaching,
-                    );
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (!isAccountView) {
-                        if (showAllData) {
-                            const updatedPositionsMatchingPool =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.base.toLowerCase() ===
-                                            baseTokenAddress.toLowerCase() &&
-                                        position.quote.toLowerCase() ===
-                                            quoteTokenAddress.toLowerCase() &&
-                                        position.poolIdx === poolIndex &&
-                                        position.chainId === chainId,
-                                );
-                            if (updatedPositionsMatchingPool.length) {
-                                dispatch(
-                                    addPositionsByPool(
-                                        updatedPositionsMatchingPool,
-                                    ),
-                                );
-                            }
-                        } else {
-                            const updatedPositionsMatchingUser =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.user.toLowerCase() ===
-                                        userAddress?.toLowerCase(),
-                                );
-                            if (updatedPositionsMatchingUser.length)
-                                dispatch(
-                                    addPositionsByUser(
-                                        updatedPositionsMatchingUser,
-                                    ),
-                                );
-                        }
-                    } else {
-                        const newArray = updatedPositions.concat(
-                            sortedPositions.slice(NUM_ROWS_TO_SYNC),
-                        );
-                        setRangeData(newArray);
-                    }
-                })
-                .catch(console.error);
-        }
-    }, [sumHashTopPositions, showAllData, isAccountView, lastBlockNumber]);
 
     // ---------------------
     // transactions per page media queries
@@ -504,7 +408,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));
@@ -516,7 +419,6 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
-            idx={idx}
             showPair={showPair}
         />
     ));
@@ -538,7 +440,11 @@ function Ranges(props: propsIF) {
     const portfolioPageStyle = props.isAccountView
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
-    const rangeDataOrNull = rangeData.length ? (
+
+    const shouldDisplayNoTableData =
+        !debouncedShouldDisplayLoadingAnimation && !rangeData.length;
+
+    const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef}>{currentRowItemContent}</ul>
             {
@@ -576,18 +482,8 @@ function Ranges(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {debouncedShouldDisplayLoadingAnimation ? (
-                    <div
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Spinner size={100} bg='var(--dark1)' />
-                    </div>
+                {shouldDisplayLoadingAnimation ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     rangeDataOrNull
                 )}
