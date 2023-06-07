@@ -2,10 +2,10 @@ import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Orders.module.css';
+import { SortType } from '../../useSortedLimits';
 interface OrderHeaderPropsIF {
     header: {
         name: string | JSX.Element;
-        // className: string;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -13,8 +13,8 @@ interface OrderHeaderPropsIF {
         alignCenter?: boolean;
     };
 
-    sortBy: string;
-    setSortBy: Dispatch<SetStateAction<string>>;
+    sortBy: SortType;
+    setSortBy: Dispatch<SetStateAction<SortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
@@ -22,7 +22,7 @@ function OrderHeader(props: OrderHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignCenter, alignRight } = header;
 
-    function handleClick(slug: string) {
+    function handleClick(slug: SortType) {
         if (sortable) {
             if (sortBy !== slug) {
                 IS_LOCAL_ENV && console.debug('first click');
@@ -68,7 +68,7 @@ function OrderHeader(props: OrderHeaderPropsIF) {
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
                     } ${alignCenter && styles.align_center}`}
-                    onClick={() => handleClick(slug.toLowerCase())}
+                    onClick={() => handleClick(slug as SortType)}
                 >
                     {name} {arrow}
                 </li>

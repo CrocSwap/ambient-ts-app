@@ -2,12 +2,23 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
+export type SortType =
+    | 'wallet'
+    | 'walletid'
+    | 'pool'
+    | 'price'
+    | 'value'
+    | 'time'
+    | 'side'
+    | 'type'
+    | 'default';
+
 export const useSortedLimits = (
-    defaultSort: string,
+    defaultSort: SortType,
     limitOrders: LimitOrderIF[],
 ): [
-    string,
-    Dispatch<SetStateAction<string>>,
+    SortType,
+    Dispatch<SetStateAction<SortType>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
     LimitOrderIF[],
@@ -46,12 +57,12 @@ export const useSortedLimits = (
 
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header
-    const [sortBy, setSortBy] = useState(defaultSort);
+    const [sortBy, setSortBy] = useState<SortType>(defaultSort);
     // whether the sort should be ascending or descending
-    const [reverseSort, setReverseSort] = useState(false);
+    const [reverseSort, setReverseSort] = useState<boolean>(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: LimitOrderIF[]) => {
+    const sortData = (data: LimitOrderIF[]): LimitOrderIF[] => {
         // variable to hold output
         let sortedData: LimitOrderIF[];
         // router to apply a specific sort function

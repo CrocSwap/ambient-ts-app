@@ -215,7 +215,7 @@ function Orders(props: propsIF) {
             className: 'wallet_it',
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: true,
         },
         {
             name: 'Limit Price',
