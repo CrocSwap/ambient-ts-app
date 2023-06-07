@@ -4116,7 +4116,20 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            scaleData?.xScale.domain(scaleData?.xScaleCopy.domain());
+            const nowDate = Date.now();
+
+            const snapDiff = nowDate % (period * 1000);
+
+            const snappedTime =
+                nowDate -
+                (snapDiff > period * 1000 - snapDiff
+                    ? -1 * (period * 1000 - snapDiff)
+                    : snapDiff);
+
+            const minDomain = snappedTime - 100 * 1000 * period;
+            const maxDomain = snappedTime + 39 * 1000 * period;
+
+            scaleData?.xScale.domain([minDomain, maxDomain]);
 
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
