@@ -39,22 +39,30 @@ export const useSortedPositions = (
         [...unsortedData].sort((a, b) =>
             b.firstMintTx.localeCompare(a.firstMintTx),
         );
+    // sort by wallet address
     const sortByWallet = (unsortedData: PositionIF[]): PositionIF[] => {
+        // array to hold positions with a valid ENS
         const positionsENS: PositionIF[] = [];
+        // array to hold positions with no ENS value
         const positionsNoENS: PositionIF[] = [];
+        // push each position to one of the above temporary arrays
         unsortedData.forEach((pos: PositionIF) => {
             pos.ensResolution
                 ? positionsENS.push(pos)
                 : positionsNoENS.push(pos);
         });
+        // sort positions with an ENS by the ENS value (alphanumeric)
         const sortedENS: PositionIF[] = positionsENS.sort((a, b) => {
             return a.ensResolution.localeCompare(b.ensResolution);
         });
+        // sort positions with no ENS by the wallet address, for some reason
+        // ... alphanumeric sort fails so we're running a BigNumber comparison
         const sortedNoENS: PositionIF[] = positionsNoENS.sort((a, b) => {
             const walletA = BigNumber.from(a.user);
             const walletB = BigNumber.from(b.user);
             return walletA.gte(walletB) ? 1 : -1;
         });
+        // combine and return sorted arrays
         return [...sortedENS, ...sortedNoENS];
     };
     const sortByPool = (unsortedData: PositionIF[]): PositionIF[] =>
