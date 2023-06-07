@@ -56,7 +56,7 @@ export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 
 // External links
-export const DOCS_LINK = 'https://crocswap.gitbook.io/crocswap-docs/';
+export const DOCS_LINK = 'https://docs.ambient.finance/';
 export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/crocswap';
 export const DISCORD_LINK = 'https://discord.com/invite/crocswap';
