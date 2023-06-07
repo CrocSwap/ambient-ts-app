@@ -138,10 +138,12 @@ export default function Limit() {
 
     const { baseToken, quoteToken } = tradeData;
 
-    const isSellTokenBase = useMemo(
-        () => pool?.baseToken.tokenAddr === tokenA.address,
-        [pool?.baseToken, tokenA.address],
-    );
+    const isSellTokenBase = useMemo(() => {
+        console.log('firing');
+        dispatch(setLimitTick(undefined));
+
+        return pool?.baseToken.tokenAddr === tokenA.address;
+    }, [pool?.baseToken, tokenA.address]);
 
     useEffect(() => {
         (async () => {
@@ -239,7 +241,6 @@ export default function Limit() {
                 }
             } else if (limitTick) {
                 if (!pool) return;
-                if (poolPriceNonDisplay === 0) return;
 
                 const tickPrice = tickToPrice(limitTick);
 
@@ -323,7 +324,6 @@ export default function Limit() {
         pool,
         limitTickCopied,
         limitTick,
-        poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
