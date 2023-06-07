@@ -21,6 +21,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
+    setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
@@ -107,6 +108,7 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
+        dispatch(setRangeTicksCopied(true));
         handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {

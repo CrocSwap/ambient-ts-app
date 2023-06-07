@@ -42,3 +42,30 @@
 .close_button {
     cursor: pointer !important;
 }
+
+.frontrun_warning {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    font-family: var(--font-family);
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+
+    padding: 12px 8px 0 8px;
+
+    color: var(--accent2);
+    width: 100%;
+}
+
+.frontrun_warning div {
+    flex: 1;
+    padding-left: 8px;
+}
+
+.frontrun_warning p {
+    min-width: 100%;
+    max-width: min-content;
+}

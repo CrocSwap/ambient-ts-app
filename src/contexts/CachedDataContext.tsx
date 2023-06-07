@@ -1,5 +1,13 @@
 import React, { createContext } from 'react';
 import {
+    FetchAddrFn,
+    memoizeFetchEnsAddress,
+} from '../App/functions/fetchAddress';
+import {
+    FetchContractDetailsFn,
+    memoizeFetchContractDetails,
+} from '../App/functions/fetchContractDetails';
+import {
     nativeTokenBalanceFn,
     Erc20TokenBalanceFn,
     memoizeFetchNativeTokenBalance,
@@ -21,6 +29,8 @@ interface CachedDataIF {
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedTokenDetails: FetchContractDetailsFn;
+    cachedEnsResolve: FetchAddrFn;
 }
 
 export const CachedDataContext = createContext<CachedDataIF>(
@@ -37,6 +47,8 @@ export const CachedDataContextProvider = (props: {
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
+        cachedTokenDetails: memoizeFetchContractDetails(),
+        cachedEnsResolve: memoizeFetchEnsAddress(),
     };
 
     return (

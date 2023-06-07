@@ -34,13 +34,13 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
-import { memoizePoolStats } from '../../functions/getPoolStats';
 import { Drawer } from '@mui/material';
 import { LayoutHandlerContext } from '../../../contexts/LayoutContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Sidebar() {
     const bottomTabs = useMediaQuery('(max-width: 1020px)');
-
+    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -50,7 +50,6 @@ function Sidebar() {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
-    const cachedPoolStatsFetch = memoizePoolStats();
 
     const poolList = usePoolList(chainId, poolIndex);
 

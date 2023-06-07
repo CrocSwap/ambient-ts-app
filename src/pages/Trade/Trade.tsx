@@ -243,6 +243,7 @@ function Trade() {
             ? chartSettings.candleTime.market
             : chartSettings.candleTime.range,
         tokens,
+        // showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');

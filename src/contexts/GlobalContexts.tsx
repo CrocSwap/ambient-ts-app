@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppStateContextProvider } from './AppStateContext';
+import { CachedDataContextProvider } from './CachedDataContext';
 import { CandleContextProvider } from './CandleContext';
 import { ChainDataContextProvider } from './ChainDataContext';
 import { ChartContextProvider } from './ChartContext';
@@ -17,33 +18,37 @@ import { LayoutHandlerContextProvider } from './LayoutContext';
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
         <AppStateContextProvider>
-            <CrocEnvContextProvider>
-                <TokenContextProvider>
-                    <ChainDataContextProvider>
-                        <UserDataContextProvider>
-                            <ChartContextProvider>
-                                <RangeContextProvider>
-                                    <TradeTokenContextProvider>
-                                        <PoolContextProvider>
-                                            <CandleContextProvider>
-                                                <LayoutHandlerContextProvider>
-                                                    <TradeTableContextProvider>
-                                                        <UserPreferenceContextProvider>
-                                                            <SidebarContextProvider>
-                                                                {props.children}
-                                                            </SidebarContextProvider>
-                                                        </UserPreferenceContextProvider>
-                                                    </TradeTableContextProvider>
-                                                </LayoutHandlerContextProvider>
-                                            </CandleContextProvider>
-                                        </PoolContextProvider>
-                                    </TradeTokenContextProvider>
-                                </RangeContextProvider>
-                            </ChartContextProvider>
-                        </UserDataContextProvider>
-                    </ChainDataContextProvider>
-                </TokenContextProvider>
-            </CrocEnvContextProvider>
+            <CachedDataContextProvider>
+                <CrocEnvContextProvider>
+                    <TokenContextProvider>
+                        <ChainDataContextProvider>
+                            <UserDataContextProvider>
+                                <ChartContextProvider>
+                                    <RangeContextProvider>
+                                        <TradeTokenContextProvider>
+                                            <PoolContextProvider>
+                                                <CandleContextProvider>
+                                                    <LayoutHandlerContextProvider>
+                                                        <TradeTableContextProvider>
+                                                            <UserPreferenceContextProvider>
+                                                                <SidebarContextProvider>
+                                                                    {
+                                                                        props.children
+                                                                    }
+                                                                </SidebarContextProvider>
+                                                            </UserPreferenceContextProvider>
+                                                        </TradeTableContextProvider>
+                                                    </LayoutHandlerContextProvider>
+                                                </CandleContextProvider>
+                                            </PoolContextProvider>
+                                        </TradeTokenContextProvider>
+                                    </RangeContextProvider>
+                                </ChartContextProvider>
+                            </UserDataContextProvider>
+                        </ChainDataContextProvider>
+                    </TokenContextProvider>
+                </CrocEnvContextProvider>
+            </CachedDataContextProvider>
         </AppStateContextProvider>
     );
 };

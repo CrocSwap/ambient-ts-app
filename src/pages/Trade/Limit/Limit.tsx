@@ -54,15 +54,16 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, gridSize, blockExplorer },
@@ -77,13 +78,15 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
-    const { tokenA, tokenB } = tradeData;
+    const { navigationMenu, limitTickFromParams } = useTradeData();
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
 
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
 
     const dispatch = useAppDispatch();
 
@@ -138,10 +141,11 @@ export default function Limit() {
 
     const { baseToken, quoteToken } = tradeData;
 
-    const isSellTokenBase = useMemo(
-        () => pool?.baseToken.tokenAddr === tokenA.address,
-        [pool?.baseToken, tokenA.address],
-    );
+    const isSellTokenBase = useMemo(() => {
+        dispatch(setLimitTick(undefined));
+
+        return pool?.baseToken.tokenAddr === tokenA.address;
+    }, [pool?.baseToken, tokenA.address]);
 
     useEffect(() => {
         (async () => {
@@ -239,7 +243,6 @@ export default function Limit() {
                 }
             } else if (limitTick) {
                 if (!pool) return;
-                if (poolPriceNonDisplay === 0) return;
 
                 const tickPrice = tickToPrice(limitTick);
 
@@ -323,7 +326,6 @@ export default function Limit() {
         pool,
         limitTickCopied,
         limitTick,
-        poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
@@ -343,9 +345,7 @@ export default function Limit() {
 
     const updateOrderValidityStatus = async () => {
         try {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             if (!limitTick) return;
 
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
@@ -374,12 +374,8 @@ export default function Limit() {
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
-        isTokenAPrimary,
-        isSellTokenBase,
-        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
-        tokenA.address + tokenB.address,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
@@ -429,10 +425,7 @@ export default function Limit() {
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -549,10 +542,7 @@ export default function Limit() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();

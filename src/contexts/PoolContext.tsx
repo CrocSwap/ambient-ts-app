@@ -7,11 +7,11 @@ import React, {
     useState,
 } from 'react';
 import { useAccount } from 'wagmi';
-import { memoizeQuerySpotPrice } from '../App/functions/querySpotPrice';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { GRAPHCACHE_URL } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
@@ -32,6 +32,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
@@ -46,8 +47,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         (state) => state,
     );
     const { isConnected } = useAccount();
-
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
     const pool = useMemo(
         () =>
