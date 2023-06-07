@@ -33,21 +33,20 @@ export const useSortedTxs = (
             return poolA.localeCompare(poolB);
         });
     // sort by wallet or ens address
-    // sort by wallet address
     const sortByWallet = (unsortedData: TransactionIF[]): TransactionIF[] => {
-        // array to hold positions with a valid ENS
+        // array to hold transactions with a valid ENS
         const txsENS: TransactionIF[] = [];
-        // array to hold positions with no ENS value
+        // array to hold transactions with no ENS value
         const txsNoENS: TransactionIF[] = [];
-        // push each position to one of the above temporary arrays
-        unsortedData.forEach((pos: TransactionIF) => {
-            pos.ensResolution ? txsENS.push(pos) : txsNoENS.push(pos);
+        // push each transaction to one of the above temporary arrays
+        unsortedData.forEach((tx: TransactionIF) => {
+            tx.ensResolution ? txsENS.push(tx) : txsNoENS.push(tx);
         });
-        // sort positions with an ENS by the ENS value (alphanumeric)
+        // sort transactions with an ENS by the ENS value (alphanumeric)
         const sortedENS: TransactionIF[] = txsENS.sort((a, b) => {
             return a.ensResolution.localeCompare(b.ensResolution);
         });
-        // sort positions with no ENS by the wallet address, for some reason
+        // sort transactions with no ENS by the wallet address, for some reason
         // ... alphanumeric sort fails so we're running a BigNumber comparison
         const sortedNoENS: TransactionIF[] = txsNoENS.sort((a, b) => {
             const walletA = BigNumber.from(a.user);
