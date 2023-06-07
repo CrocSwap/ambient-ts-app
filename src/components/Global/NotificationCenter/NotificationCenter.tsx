@@ -26,8 +26,6 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     useEffect(() => {
         if (txCount === 0) {
             setShowNotificationTable(false);
-        } else {
-            setShowNotificationTable(true);
         }
     }, [txCount]);
 
