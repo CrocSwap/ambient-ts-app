@@ -2,7 +2,7 @@
     position: absolute;
     top: 60px;
     width: 450px;
-    height: 400px;
+    height: 422px;
     transform: translateX(-45%);
     border: none;
     overflow: hidden;
@@ -13,4 +13,5 @@
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
     z-index: 999;
+    text-align: start;
 }

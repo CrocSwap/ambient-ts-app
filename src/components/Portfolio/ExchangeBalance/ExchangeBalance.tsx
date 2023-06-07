@@ -33,7 +33,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { getMainnetProvider } from '../../../App/functions/getMainnetProvider';
-import { useModal } from '../../Global/Modal/useModal';
 import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
@@ -49,11 +48,8 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         isModalView = false,
     } = props;
-    const closeModalCustom = () => setInput('');
 
     const [mainnetProvider] = useState(getMainnetProvider());
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(closeModalCustom);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -74,6 +70,7 @@ export default function ExchangeBalance(props: propsIF) {
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
+    const closeModalCustom = () => setInput('');
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -98,25 +95,18 @@ export default function ExchangeBalance(props: propsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
-    useEffect(() => {
-        if (isTokenModalOpen) {
-            openGlobalModal(
-                <SoloTokenSelect
-                    modalCloseCustom={closeModalCustom}
-                    closeModal={closeTokenModal}
-                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                    setShowSoloSelectTokenButtons={
-                        setShowSoloSelectTokenButtons
-                    }
-                    isSingleToken={true}
-                    tokenAorB={null}
-                />,
-                'Select Token',
-            );
-        } else {
-            closeGlobalModal();
-        }
-    }, [isTokenModalOpen]);
+    const openTokenSelectionModal = () =>
+        openGlobalModal(
+            <SoloTokenSelect
+                modalCloseCustom={closeModalCustom}
+                closeModal={closeGlobalModal}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={true}
+                tokenAorB={null}
+            />,
+            'Select Token',
+        );
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
@@ -266,7 +256,7 @@ export default function ExchangeBalance(props: propsIF) {
                     tokenWalletBalance={tokenWalletBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                     selectedTokenDecimals={selectedTokenDecimals}
                 />
             ),
@@ -283,7 +273,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: withdrawImage,
@@ -299,7 +289,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: transferImage,

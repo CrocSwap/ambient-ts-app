@@ -16,18 +16,18 @@ interface NavItemPropsIF {
     icon: ReactNode;
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
+    allowClicksOutside?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon, open, setOpen } = props;
+    const { children, icon, open, setOpen, allowClicksOutside = false } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
         setOpen(false);
     };
 
-    // TODO: confirm with team that this is okay to remove selectively
-    // UseOnClickOutside(navItemRef, clickOutsideHandler);
+    !allowClicksOutside && UseOnClickOutside(navItemRef, clickOutsideHandler);
 
     const childrenWithProps = Children.map(children, (child, index) => {
         // eslint-disable-next-line

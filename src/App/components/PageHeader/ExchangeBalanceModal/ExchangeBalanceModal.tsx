@@ -13,6 +13,7 @@ export const ExchangeBalanceModal = () => {
                 icon={<img src={coins} />}
                 open={fullLayoutActive}
                 setOpen={setFullLayoutActive}
+                allowClicksOutside
             >
                 <div className={styles.dropdown}>
                     <ExchangeBalance
