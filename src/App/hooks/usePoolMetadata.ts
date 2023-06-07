@@ -10,7 +10,6 @@ import {
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
-    resetPoolDataLoadingStatus,
     setChangesByPool,
     setDataLoadingStatus,
     setLeaderboardByPool,
@@ -118,24 +117,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(props.lastBlockNumber, 2000);
-
-    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
-    useEffect(
-        () => setHasValidPrevData(false),
-        [
-            props.receiptCount,
-            rtkMatchesParams,
-            tradeData.tokenA.address,
-            tradeData.tokenB.address,
-            quoteTokenAddress,
-            props.chainData.chainId,
-            props.chainData.poolIndex,
-            props.searchableTokens,
-            props.httpGraphCacheServerDomain,
-            props.lastBlockNumber == 0,
-            !!props.crocEnv,
-        ],
-    );
 
     // Token and range housekeeping when switching pairs
     useEffect(() => {
@@ -306,11 +287,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
 
-                    if (!hasValidPrevData) {
-                        resetPoolDataLoadingStatus();
-                        setHasValidPrevData(true);
-                    }
-
                     // retrieve pool_positions
                     const allPositionsCacheEndpoint =
                         GRAPHCACHE_SMALL_URL + '/pool_positions?';
@@ -332,13 +308,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response.json())
                         .then((json) => {
                             const poolPositions = json.data;
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolRangeData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
                             const crocEnv = props.crocEnv;
                             if (poolPositions && crocEnv) {
                                 Promise.all(
@@ -365,6 +334,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 positions: updatedPositions,
                                             }),
                                         );
+                                        dispatch(
+                                            setDataLoadingStatus({
+                                                datasetName: 'poolRangeData',
+                                                loadingStatus: false,
+                                            }),
+                                        );
                                     })
                                     .catch(console.error);
                             } else {
@@ -372,6 +347,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     setPositionsByPool({
                                         dataReceived: false,
                                         positions: [],
+                                    }),
+                                );
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolRangeData',
+                                        loadingStatus: false,
                                     }),
                                 );
                             }
@@ -470,15 +451,15 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
                                 dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolTxData',
-                                        loadingStatus: false,
-                                    }),
-                                );
-                                dispatch(
                                     setChangesByPool({
                                         dataReceived: true,
                                         changes: poolChangesJsonData,
+                                    }),
+                                );
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolTxData',
+                                        loadingStatus: false,
                                     }),
                                 );
                             }
@@ -504,14 +485,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response?.json())
                         .then((json) => {
                             const poolLimitOrderStates = json?.data;
-
-                            dispatch(
-                                setDataLoadingStatus({
-                                    datasetName: 'poolOrderData',
-                                    loadingStatus: false,
-                                }),
-                            );
-
                             const crocEnv = props.crocEnv;
                             if (poolLimitOrderStates && crocEnv) {
                                 Promise.all(
@@ -536,6 +509,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             dataReceived: true,
                                             limitOrders:
                                                 updatedLimitOrderStates,
+                                        }),
+                                    );
+
+                                    dispatch(
+                                        setDataLoadingStatus({
+                                            datasetName: 'poolOrderData',
+                                            loadingStatus: false,
                                         }),
                                     );
                                 });
