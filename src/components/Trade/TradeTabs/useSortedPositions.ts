@@ -156,11 +156,11 @@ export const useSortedPositions = (
         // router to apply a specific sort function
         switch (sortBy) {
             case 'id':
-            case 'walletid':
                 sortedData = sortById(data);
                 break;
             // sort by wallet
             case 'wallet':
+            case 'walletid':
                 sortedData = sortByWallet(data);
                 break;
             // sort by token pair
