@@ -1820,7 +1820,7 @@ export default function Chart(props: propsIF) {
                 }
             }
         }
-    }, [unparsedCandleData.length, rescale, minTickForLimit, maxTickForLimit]);
+    }, [rescale]);
 
     useEffect(() => {
         setMarketLineValue();
@@ -5015,7 +5015,7 @@ export default function Chart(props: propsIF) {
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
-            if (filtered !== undefined && filtered.length > 0) {
+            if (filtered !== undefined && filtered.length > 10) {
                 const minYBoundary = d3.min(filtered, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
