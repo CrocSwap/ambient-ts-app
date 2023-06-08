@@ -13,7 +13,7 @@ export default function TradeNowButton(props: Props) {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const {
-        tradeComponent: { setShowTradeComponent: setShowTradeComponent },
+        tradeComponent: { setShowOnlyTrade },
     } = useContext(AppStateContext);
 
     const mobileButton = (
@@ -24,7 +24,7 @@ export default function TradeNowButton(props: Props) {
             className={`${styles.action_button} ${
                 inNav && styles.nav_action_button
             }`}
-            onClick={() => setShowTradeComponent(true)}
+            onClick={() => setShowOnlyTrade(true)}
             style={{ alignItems: 'flex-start' }}
         >
             <div className={styles.content_container}>

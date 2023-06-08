@@ -252,15 +252,16 @@ function Trade() {
         useContext(LayoutHandlerContext);
 
     const {
-        tradeComponent: { showTradeComponent: showTradeComponent },
+        tradeComponent: {
+            showTradeComponent: showTradeComponent,
+            showOnlyTable,
+            showOnlyTrade,
+        },
     } = useContext(AppStateContext);
-
-    console.log({ showTradeComponent });
 
     const justTradeComponent = (
         <div
             style={{
-                display: showTradeComponent ? 'inherit' : 'none',
                 padding: '0 1rem',
             }}
         >
@@ -268,13 +269,31 @@ function Trade() {
         </div>
     );
 
+    const justTableComponent = (
+        <div
+            className={`${
+                expandTradeTable
+                    ? styles.full_table_height
+                    : styles.min_table_height
+            } ${styles.middle_col_table}`}
+            style={{ display: !showTradeComponent ? 'inherit' : 'none' }}
+        >
+            <div>
+                <TradeTabs2 {...tradeTabsProps} />
+            </div>
+        </div>
+    );
+
+    console.log({ showOnlyTable, showOnlyTrade });
+
+    if (showOnlyTable) return justTableComponent;
+    if (showOnlyTrade) return justTradeComponent;
+
     return (
         <>
-            {justTradeComponent}
-
             <section
                 className={`${styles.main_layout}`}
-                style={{ display: !showTradeComponent ? 'inherit' : 'none' }}
+                // style={{ display: !showTradeComponent ? 'inherit' : 'none' }}
             >
                 {poolNotInitializedContent}
                 <div

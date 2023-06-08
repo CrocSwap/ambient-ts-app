@@ -15,12 +15,17 @@ import {
     useSnackbar,
 } from '../components/Global/SnackbarComponent/useSnackbar';
 import { CHAT_ENABLED } from '../constants';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     tradeComponent: {
         showTradeComponent: boolean;
         setShowTradeComponent: (val: boolean) => void;
+        showOnlyTable: boolean;
+        setShowOnlyTable: (val: boolean) => void;
+        showOnlyTrade: boolean;
+        setShowOnlyTrade: (val: boolean) => void;
     };
     globalModal: globalModalMethodsIF;
     globalPopup: globalPopupMethodsIF;
@@ -59,6 +64,8 @@ export const AppStateContextProvider = (props: {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [showTradeComponent, setShowTradeComponent] = useState(false);
+    const [showOnlyTable, setShowOnlyTable] = useState(false);
+    const [showOnlyTrade, setShowOnlyTrade] = useState(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -97,6 +104,10 @@ export const AppStateContextProvider = (props: {
             tradeComponent: {
                 showTradeComponent: showTradeComponent,
                 setShowTradeComponent: setShowTradeComponent,
+                showOnlyTable,
+                setShowOnlyTable,
+                showOnlyTrade,
+                setShowOnlyTrade,
             },
             globalModal,
             globalPopup,
@@ -138,8 +149,30 @@ export const AppStateContextProvider = (props: {
             isWagmiModalOpenWallet,
             showTradeComponent,
             setShowTradeComponent,
+            showOnlyTable,
+            setShowOnlyTable,
+            showOnlyTrade,
+            setShowOnlyTrade,
         ],
     );
+
+    const nonMobile = useMediaQuery('(min-width:500px)');
+
+    useEffect(() => {
+        if (nonMobile) {
+            setShowOnlyTrade(false);
+            setShowOnlyTable(false);
+        }
+    }, [nonMobile]);
+
+    useEffect(() => {
+        if (showOnlyTable) {
+            setShowOnlyTrade(false);
+        }
+        if (showOnlyTrade) {
+            setShowOnlyTable(false);
+        }
+    }, [showOnlyTable, showOnlyTrade]);
 
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();

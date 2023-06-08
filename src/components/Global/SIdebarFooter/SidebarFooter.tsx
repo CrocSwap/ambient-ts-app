@@ -1,15 +1,17 @@
 import styles from './SidebarFooter.module.css';
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 // import { IoMdAnalytics } from 'react-icons/io';
+
 import { GiTrade } from 'react-icons/gi';
-import { BsFillChatDotsFill } from 'react-icons/bs';
+import { BsFillChatDotsFill, BsTable } from 'react-icons/bs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { memo, useContext } from 'react';
-import { MdAccountBox, MdAutoGraph } from 'react-icons/md';
+import { MdAccountBox } from 'react-icons/md';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 function SidebarFooter() {
     const location = useLocation();
 
@@ -38,12 +40,27 @@ function SidebarFooter() {
         tradeData.tokenB,
     );
 
+    const { setExpandTradeTable } = useContext(TradeTableContext);
+
     const {
         tradeComponent: {
-            setShowTradeComponent: setShowTradeComponent,
-            showTradeComponent: showTradeComponent,
+            showOnlyTable,
+            showOnlyTrade,
+            setShowOnlyTable,
+            setShowOnlyTrade,
         },
     } = useContext(AppStateContext);
+    const navigate = useNavigate();
+
+    const handleTradeClick = () => {
+        navigate(tradeDestination + paramsSlug);
+        setShowOnlyTrade(true);
+    };
+    const handleTableClick = () => {
+        navigate(tradeDestination + paramsSlug);
+        setShowOnlyTable(true);
+        setExpandTradeTable(true);
+    };
 
     const linksData = [
         // ...
@@ -51,15 +68,15 @@ function SidebarFooter() {
             title: 'Trade',
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
-            action: () => setShowTradeComponent(true),
-            active: showTradeComponent,
+            action: handleTradeClick,
+            active: showOnlyTrade,
         },
         {
-            title: 'Graph',
+            title: 'Transactions',
             destination: tradeDestination + paramsSlug,
-            icon: MdAutoGraph,
-            action: () => setShowTradeComponent(false),
-            active: !showTradeComponent,
+            icon: BsTable,
+            action: handleTableClick,
+            active: showOnlyTable,
         },
         {
             title: 'Account',
