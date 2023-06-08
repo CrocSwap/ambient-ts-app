@@ -442,6 +442,8 @@ function Orders(props: propsIF) {
     useEffect(() => {
         if (!expandTradeTable) {
             setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
         }
     }, [expandTradeTable]);
 
