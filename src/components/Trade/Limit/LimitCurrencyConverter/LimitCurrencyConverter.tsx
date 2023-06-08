@@ -133,8 +133,6 @@ function LimitCurrencyConverter(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
     ] = useState<boolean>(false);
 
-    const [resetLimitTick, setResetLimitTick] = useState(true);
-
     useEffect(() => {
         if (
             !isWithdrawFromDexChecked &&
@@ -471,11 +469,6 @@ function LimitCurrencyConverter(props: propsIF) {
                 }
                 onClick={() => {
                     if (!disableReverseTokens) {
-                        if (resetLimitTick) {
-                            dispatch(setPoolPriceNonDisplay(0));
-                            dispatch(setLimitTick(undefined));
-                            setResetLimitTick(false);
-                        }
                         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
                         reverseTokens();
                     }

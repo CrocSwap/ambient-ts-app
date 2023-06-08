@@ -12,7 +12,7 @@ import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import { useSortedTransactions } from '../useSortedTxs';
+import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
 import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -127,7 +127,7 @@ function Transactions(props: propsIF) {
         !debouncedShouldDisplayLoadingAnimation && !transactionData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions(
+        useSortedTxs(
             'time',
             showAllData && !isCandleSelected
                 ? changesByPoolWithoutFills
@@ -172,6 +172,7 @@ function Transactions(props: propsIF) {
         isAccountView,
         isCandleSelected,
         isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
+        diffHashSigTxs(changesByUserMatchingSelectedTokens),
         diffHashSigTxs(changesByPoolWithoutFills),
         showAllData,
     ]);
@@ -218,7 +219,6 @@ function Transactions(props: propsIF) {
             slug: 'pool',
             sortable: true,
         },
-
         {
             name: 'ID',
 
@@ -228,22 +228,19 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Wallet',
-
             show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: showAllData,
+            sortable: true,
         },
         {
             name: walID,
-
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: !isAccountView,
             alignCenter: false,
         },
         {
             name: 'Price',
-
             show: !ipadView,
             slug: 'price',
             sortable: false,
@@ -251,7 +248,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Side',
-
             show: !showColumns,
             slug: 'side',
             sortable: false,
@@ -259,7 +255,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Type',
-
             show: !showColumns,
             slug: 'type',
             sortable: false,
@@ -267,7 +262,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
@@ -275,7 +269,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Value (USD)',
-
             show: true,
             slug: 'value',
             sortable: true,
@@ -291,7 +284,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
@@ -299,26 +291,20 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-
             show: !isAccountView && showColumns,
-
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-
             show: isAccountView && showColumns,
-
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
-
         {
             name: '',
-
             show: true,
             slug: 'menu',
             sortable: false,

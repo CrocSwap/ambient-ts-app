@@ -14,6 +14,7 @@ import {
     OVERRIDE_CANDLE_POOL_ID,
 } from '../constants';
 import { mktDataChainId } from '../utils/data/chains';
+import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import {
@@ -58,11 +59,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
+            mainnetAddress: mainnetCanonBase,
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
+            mainnetAddress: mainnetCanonQuote,
         },
     } = useContext(TradeTokenContext);
 
@@ -124,6 +125,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleScale,
         candleTimeLocal,
     };
+
+    const {
+        baseToken: mainnetBaseTokenAddress,
+        quoteToken: mainnetQuoteTokenAddress,
+    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
