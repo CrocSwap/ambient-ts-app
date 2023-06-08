@@ -2944,8 +2944,9 @@ export default function Chart(props: propsIF) {
     }
 
     useEffect(() => {
-        if (yAxis) {
+        if (yAxis && xAxis) {
             d3.select(d3CanvasMain.current).call(zoomUtils?.zoom);
+            d3.select(d3Xaxis.current).call(zoomUtils?.xAxisZoom);
 
             d3.select(d3Yaxis.current)
                 .call(zoomUtils?.yAxisZoom)
