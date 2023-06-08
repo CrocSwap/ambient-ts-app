@@ -42,7 +42,6 @@ const PageHeader = function () {
     const { isChainSupported, setCrocEnv } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
-    const { setShowAllData } = useContext(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -80,7 +79,6 @@ const PageHeader = function () {
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
         dispatch(resetUserAddresses());
-        setShowAllData(true);
         disconnect();
     }, []);
 

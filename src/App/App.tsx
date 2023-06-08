@@ -51,6 +51,7 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
+import { TradeTableContextProvider } from '../contexts/TradeTableContext';
 
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
@@ -203,7 +204,14 @@ export default function App() {
                             path='accessibility'
                             element={<Accessibility />}
                         />
-                        <Route path='trade' element={<Trade />}>
+                        <Route
+                            path='trade'
+                            element={
+                                <TradeTableContextProvider>
+                                    <Trade />
+                                </TradeTableContextProvider>
+                            }
+                        >
                             <Route
                                 path=''
                                 element={
