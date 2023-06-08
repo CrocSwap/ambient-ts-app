@@ -27,6 +27,7 @@ export const useGlobalModal = (initialMode = false) => {
             setTitle(title);
         }
     };
+
     const close = () => {
         setCurrentContent('');
         setTitle('');

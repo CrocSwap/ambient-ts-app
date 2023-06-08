@@ -190,7 +190,6 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        // candleTime,
     } = props;
 
     const {
@@ -430,7 +429,8 @@ export default function Chart(props: propsIF) {
     const [defaultGradientForBid, setDefaultGradientForBid] = useState();
     const [defaultGradientForAsk, setDefaultGradientForAsk] = useState();
 
-    const [isMouseLeaveLiq, setIsMouseLeaveLiq] = useState(true);
+    const [isMouseLeaveBidLiq, setIsMouseLeaveBidLiq] = useState(true);
+    const [isMouseLeaveAskLiq, setIsMouseLeaveAskLiq] = useState(true);
     const [
         isOnCandleOrVolumeMouseLocation,
         setIsOnCandleOrVolumeMouseLocation,
@@ -3113,9 +3113,9 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         }
-
-                        if (oldLimitValue)
+                        if (oldLimitValue !== undefined) {
                             onBlurLimitRate(oldLimitValue, newLimitValue);
+                        }
                     } else {
                         if (oldLimitValue !== undefined) {
                             setLimit(() => {
@@ -4137,7 +4137,20 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            scaleData?.xScale.domain(scaleData?.xScaleCopy.domain());
+            const nowDate = Date.now();
+
+            const snapDiff = nowDate % (period * 1000);
+
+            const snappedTime =
+                nowDate -
+                (snapDiff > period * 1000 - snapDiff
+                    ? -1 * (period * 1000 - snapDiff)
+                    : snapDiff);
+
+            const minDomain = snappedTime - 100 * 1000 * period;
+            const maxDomain = snappedTime + 39 * 1000 * period;
+
+            scaleData?.xScale.domain([minDomain, maxDomain]);
 
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
@@ -5111,13 +5124,17 @@ export default function Chart(props: propsIF) {
     }
 
     useEffect(() => {
-        if (!isMouseLeaveLiq) {
+        if (!isMouseLeaveAskLiq) {
             setAskGradientDefault();
+
+            if (liqTooltip) liqTooltip.style('visibility', 'hidden');
+        }
+        if (!isMouseLeaveBidLiq) {
             setBidGradientDefault();
 
             if (liqTooltip) liqTooltip.style('visibility', 'hidden');
         }
-    }, [isMouseLeaveLiq]);
+    }, [isMouseLeaveBidLiq, isMouseLeaveAskLiq]);
 
     useEffect(() => {
         setAskGradientDefault();
@@ -5131,7 +5148,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveAskLiq
                         ? gradientForAsk
                         : defaultGradientForAsk;
                     context.strokeWidth = 2;
@@ -5148,7 +5165,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqAskDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveAskLiq
                         ? gradientForAsk
                         : defaultGradientForAsk;
                     context.strokeWidth = 2;
@@ -5169,7 +5186,7 @@ export default function Chart(props: propsIF) {
         gradientForAsk,
         liquidityScale,
         liquidityDepthScale,
-        isMouseLeaveLiq,
+        isMouseLeaveAskLiq,
         defaultGradientForAsk,
     ]);
 
@@ -5178,7 +5195,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveBidLiq
                         ? gradientForBid
                         : defaultGradientForBid;
                     context.strokeWidth = 2;
@@ -5195,7 +5212,7 @@ export default function Chart(props: propsIF) {
             const d3CanvasLiqBidDepthChart = d3fc
                 .seriesCanvasArea()
                 .decorate((context: any) => {
-                    context.fillStyle = isMouseLeaveLiq
+                    context.fillStyle = isMouseLeaveBidLiq
                         ? gradientForBid
                         : defaultGradientForBid;
                     context.strokeWidth = 2;
@@ -5216,7 +5233,7 @@ export default function Chart(props: propsIF) {
         gradientForBid,
         liquidityScale,
         liquidityDepthScale,
-        isMouseLeaveLiq,
+        isMouseLeaveBidLiq,
         defaultGradientForBid,
     ]);
 
@@ -5813,7 +5830,8 @@ export default function Chart(props: propsIF) {
                     bidMinBoudnary < currentDataY &&
                     currentDataY < bidMaxBoudnary
                 ) {
-                    setIsMouseLeaveLiq(true);
+                    setIsMouseLeaveBidLiq(true);
+                    setIsMouseLeaveAskLiq(false);
                     bidAreaFunc(event, bidMinBoudnary, bidMaxBoudnary);
                 } else if (
                     askMinBoudnary !== undefined &&
@@ -5823,18 +5841,21 @@ export default function Chart(props: propsIF) {
                         askMinBoudnary < currentDataY &&
                         currentDataY < askMaxBoudnary
                     ) {
-                        setIsMouseLeaveLiq(true);
+                        setIsMouseLeaveAskLiq(true);
+                        setIsMouseLeaveBidLiq(false);
                         askAreaFunc(event, askMinBoudnary, askMaxBoudnary);
                     }
                 }
             }
         } else {
-            setIsMouseLeaveLiq(false);
+            setIsMouseLeaveBidLiq(false);
+            setIsMouseLeaveAskLiq(false);
         }
     };
 
     useEffect(() => {
-        setIsMouseLeaveLiq(isLineDrag || isChartZoom);
+        setIsMouseLeaveBidLiq(isLineDrag || isChartZoom);
+        setIsMouseLeaveAskLiq(isLineDrag || isChartZoom);
     }, [isLineDrag, isChartZoom]);
 
     const bidAreaFunc = (
@@ -6188,7 +6209,9 @@ export default function Chart(props: propsIF) {
             d3.select(d3Container.current).on('mouseleave', () => {
                 setCrosshairActive('none');
 
-                setIsMouseLeaveLiq(false);
+                setIsMouseLeaveBidLiq(false);
+                setIsMouseLeaveAskLiq(false);
+
                 if (unparsedCandleData) {
                     const lastData = unparsedCandleData.find(
                         (item: any) =>
@@ -6224,7 +6247,9 @@ export default function Chart(props: propsIF) {
 
             const mouseLeaveCanvas = () => {
                 setCrosshairActive('none');
-                setIsMouseLeaveLiq(false);
+
+                setIsMouseLeaveBidLiq(false);
+                setIsMouseLeaveAskLiq(false);
             };
 
             d3.select(d3CanvasMain.current).on('mouseleave', () => {
@@ -6252,7 +6277,8 @@ export default function Chart(props: propsIF) {
             liquidityDepthScale,
             isLineDrag,
             selectedDate,
-            isMouseLeaveLiq,
+            isMouseLeaveBidLiq,
+            isMouseLeaveAskLiq,
             unparsedCandleData?.length,
             !tradeData.advancedMode && simpleRangeWidth === 100,
         ],
@@ -6391,7 +6417,6 @@ export default function Chart(props: propsIF) {
             const tickPrice = tickToPrice(pinnedTick);
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-
             if (!tickDispPrice) {
                 reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
@@ -6406,9 +6431,7 @@ export default function Chart(props: propsIF) {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
 
-                    if (displayPriceWithDenom.toString().includes('e')) {
-                        newLimitValue = displayPriceWithDenom;
-                    }
+                    newLimitValue = displayPriceWithDenom;
                     reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return [
