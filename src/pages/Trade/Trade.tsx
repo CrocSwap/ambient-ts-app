@@ -7,7 +7,6 @@ import {
     Link,
     NavLink,
     useNavigate,
-    useLocation,
 } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 
@@ -73,14 +72,10 @@ function Trade() {
     ];
 
     const navigate = useNavigate();
-    const { pathname } = useLocation();
 
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
-
-    const isMarketOrLimitModule =
-        pathname.includes('market') || pathname.includes('limit');
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -167,14 +162,10 @@ function Trade() {
         setIsCandleSelected(false);
     }, []);
 
-    const activeCandleDuration = isMarketOrLimitModule
-        ? chartSettings.candleTime.market.time
-        : chartSettings.candleTime.range.time;
-
     useEffect(() => {
         unselectCandle();
     }, [
-        activeCandleDuration,
+        chartSettings.candleTime.global.time,
         tradeData.baseToken.name,
         tradeData.quoteToken.name,
     ]);
@@ -239,11 +230,8 @@ function Trade() {
         unselectCandle: unselectCandle,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        candleTime: isMarketOrLimitModule
-            ? chartSettings.candleTime.market
-            : chartSettings.candleTime.range,
+        candleTime: chartSettings.candleTime.global,
         tokens,
-        // showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const bottomTabs = useMediaQuery('(max-width: 1020px)');

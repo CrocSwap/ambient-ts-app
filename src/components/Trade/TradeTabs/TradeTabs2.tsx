@@ -28,6 +28,7 @@ import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import {
     CandleData,
     setChangesByUser,
+    setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
@@ -314,6 +315,12 @@ function TradeTabs2(props: propsIF) {
                     }
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'candleData',
+                            loadingStatus: false,
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
