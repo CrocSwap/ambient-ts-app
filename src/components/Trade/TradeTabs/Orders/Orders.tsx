@@ -439,6 +439,12 @@ function Orders(props: propsIF) {
         }
     }, [mobileView]);
 
+    useEffect(() => {
+        if (!expandTradeTable) {
+            setCurrentPage(1);
+        }
+    }, [expandTradeTable]);
+
     const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
