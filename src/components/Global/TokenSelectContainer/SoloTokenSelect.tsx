@@ -13,7 +13,6 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import styles from './SoloTokenSelect.module.css';
-import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -21,6 +20,7 @@ import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -43,6 +43,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         reverseTokens,
     } = props;
 
+    const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -146,11 +147,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     const [customToken, setCustomToken] = useState<TokenIF | null | 'querying'>(
         null,
     );
-    // Memoize the fetch contract details function
-    const cachedFetchContractDetails = useMemo(
-        () => memoizeFetchContractDetails(),
-        [],
-    );
 
     // Gatekeeping to pull token data from on-chain query
     // Runs hook when validated input or type of search changes
@@ -173,7 +169,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
         // Otherwise, query to get token metadata from on-chain
         setCustomToken('querying');
-        cachedFetchContractDetails(
+        cachedTokenDetails(
             provider as ethers.providers.Provider,
             validatedInput,
             chainId,
@@ -194,7 +190,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 console.error(`Failed to get token metadata: ${err.message}`);
                 setCustomToken(null);
             });
-    }, [searchType, validatedInput, provider, cachedFetchContractDetails]);
+    }, [searchType, validatedInput, provider, cachedTokenDetails]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 

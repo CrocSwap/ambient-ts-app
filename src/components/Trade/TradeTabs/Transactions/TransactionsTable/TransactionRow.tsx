@@ -1,14 +1,10 @@
 import styles from '../Transactions.module.css';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
@@ -82,8 +78,6 @@ function TransactionRow(props: propsIF) {
 
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
-
-    const dispatch = useAppDispatch();
 
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
@@ -165,18 +159,12 @@ function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        if (!isAccountView)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
-
-        const accountUrl = `/${
-            isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-        }`;
-        window.open(accountUrl);
+        if (!isAccountView) {
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+        }
     };
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (

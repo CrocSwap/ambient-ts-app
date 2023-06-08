@@ -18,6 +18,7 @@ import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -71,6 +72,12 @@ export default function RangeDetails(props: propsIF) {
         globalModal: { close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -158,6 +165,10 @@ export default function RangeDetails(props: propsIF) {
                         crocEnv,
                         chainId,
                         lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;

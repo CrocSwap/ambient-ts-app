@@ -33,6 +33,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { ExchangeBalanceModal } from './ExchangeBalanceModal/ExchangeBalanceModal';
 
 const PageHeader = function () {
     const {
@@ -352,7 +353,6 @@ const PageHeader = function () {
     const { switchNetwork } = useSwitchNetwork();
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
-    const [showNotificationTable, setShowNotificationTable] = useState(false);
     const [show, handleShow] = useState(false);
 
     useEffect(() => {
@@ -419,12 +419,8 @@ const PageHeader = function () {
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            <NotificationCenter
-                                showNotificationTable={showNotificationTable}
-                                setShowNotificationTable={
-                                    setShowNotificationTable
-                                }
-                            />
+                            {isConnected && <ExchangeBalanceModal />}
+                            <NotificationCenter />
                         </div>
                     </div>
                 )}

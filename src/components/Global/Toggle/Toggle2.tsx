@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
 import styles from './Toggle2.module.css';
-import { motion } from 'framer-motion';
 interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
@@ -43,13 +42,7 @@ export default function Toggle2(props: TogglePropsIF) {
             tabIndex={0}
             role='checkbox'
         >
-            <motion.div className={styles.handle} layout transition={spring} />
+            <div className={styles.handle} />
         </button>
     );
 }
-
-const spring = {
-    type: 'spring',
-    stiffness: 700,
-    damping: 30,
-};

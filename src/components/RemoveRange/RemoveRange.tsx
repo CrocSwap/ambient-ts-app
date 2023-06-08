@@ -43,6 +43,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     baseTokenAddress: string;
@@ -69,6 +70,12 @@ export default function RemoveRange(props: propsIF) {
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
@@ -197,6 +204,10 @@ export default function RemoveRange(props: propsIF) {
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
                             setPosLiqBaseDecimalCorrected(
                                 position.positionLiqBaseDecimalCorrected,
