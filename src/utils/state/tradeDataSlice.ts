@@ -30,7 +30,9 @@ export interface TradeDataIF {
     didUserFlipDenom: boolean;
     shouldSwapConverterUpdate: boolean;
     shouldLimitConverterUpdate: boolean;
+    shouldSwapDirectionReverse: boolean;
     shouldLimitDirectionReverse: boolean;
+    shouldRangeDirectionReverse: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
     isTokenAPrimary: boolean;
@@ -39,6 +41,7 @@ export interface TradeDataIF {
     primaryQuantityRange: string;
     limitTick: number | undefined;
     limitTickCopied: boolean;
+    rangeTicksCopied: boolean;
     poolPriceNonDisplay: number;
     advancedLowTick: number;
     advancedHighTick: number;
@@ -75,7 +78,9 @@ const initialState: TradeDataIF = {
     didUserFlipDenom: false,
     shouldSwapConverterUpdate: false,
     shouldLimitConverterUpdate: false,
+    shouldSwapDirectionReverse: false,
     shouldLimitDirectionReverse: false,
+    shouldRangeDirectionReverse: false,
     isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
@@ -84,6 +89,7 @@ const initialState: TradeDataIF = {
     primaryQuantityRange: '',
     limitTick: undefined,
     limitTickCopied: false,
+    rangeTicksCopied: false,
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
@@ -170,11 +176,23 @@ export const tradeDataSlice = createSlice({
         ) => {
             state.shouldLimitConverterUpdate = action.payload;
         },
+        setShouldSwapDirectionReverse: (
+            state,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.shouldSwapDirectionReverse = action.payload;
+        },
         setShouldLimitDirectionReverse: (
             state,
             action: PayloadAction<boolean>,
         ) => {
             state.shouldLimitDirectionReverse = action.payload;
+        },
+        setShouldRangeDirectionReverse: (
+            state,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.shouldRangeDirectionReverse = action.payload;
         },
         toggleDidUserFlipDenom: (state) => {
             state.didUserFlipDenom = !state.didUserFlipDenom;
@@ -211,6 +229,9 @@ export const tradeDataSlice = createSlice({
         },
         setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
             state.limitTickCopied = action.payload;
+        },
+        setRangeTicksCopied: (state, action: PayloadAction<boolean>) => {
+            state.rangeTicksCopied = action.payload;
         },
         setPoolPriceNonDisplay: (state, action: PayloadAction<number>) => {
             state.poolPriceNonDisplay = action.payload;
@@ -273,7 +294,9 @@ export const {
     toggleDidUserFlipDenom,
     setShouldSwapConverterUpdate,
     setShouldLimitConverterUpdate,
+    setShouldSwapDirectionReverse,
     setShouldLimitDirectionReverse,
+    setShouldRangeDirectionReverse,
     setDenomInBase,
     toggleDenomInBase,
     setAdvancedMode,
@@ -285,6 +308,7 @@ export const {
     setPrimaryQuantityRange,
     setLimitTick,
     setLimitTickCopied,
+    setRangeTicksCopied,
     setPoolPriceNonDisplay,
     setAdvancedLowTick,
     setAdvancedHighTick,

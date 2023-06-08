@@ -10,9 +10,7 @@ export const querySpotPrice = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
 ) => {
-    if (!crocEnv) {
-        return;
-    }
+    if (!crocEnv) return;
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
 
@@ -25,10 +23,7 @@ export const queryPoolGrowth = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
 ) => {
-    if (!crocEnv) {
-        return;
-    }
-
+    if (!crocEnv) return;
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).cumAmbientGrowth();
 };
 

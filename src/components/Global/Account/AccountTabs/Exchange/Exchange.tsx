@@ -27,29 +27,34 @@ export default function Exchange(props: propsIF) {
         .concat(erc20Tokens)
         .filter((token) => token);
 
-    const ItemContent = connectedAccountActive ? (
-        connectedUserTokens && connectedUserTokens.length > 0 ? (
-            connectedUserTokens.map((item, idx) => (
+    const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
+
+    const ItemContent = () => {
+        if (connectedAccountActive) {
+            if (connectedUserTokens && connectedUserTokens.length > 0) {
+                return connectedUserTokens.map((item, idx) => (
+                    <ExchangeCard
+                        key={idx}
+                        token={item}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                ));
+            }
+        }
+        if (resolvedAddressTokens && resolvedAddressTokens[0]) {
+            return resolvedAddressTokens.map((item, idx) => (
                 <ExchangeCard
                     key={idx}
                     token={item}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                 />
-            ))
-        ) : (
-            <Spinner size={100} bg='var(--dark1)' centered />
-        )
-    ) : resolvedAddressTokens && resolvedAddressTokens[0] ? (
-        resolvedAddressTokens.map((item, idx) => (
-            <ExchangeCard
-                key={idx}
-                token={item}
-                cachedFetchTokenPrice={cachedFetchTokenPrice}
-            />
-        ))
-    ) : (
-        <Spinner size={100} bg='var(--dark1)' centered />
-    );
+            ));
+        }
+        if (resolvedAddressTokens && !resolvedAddressTokens[0]) {
+            return;
+        }
+        return spinnerElement;
+    };
 
     return (
         <div
@@ -57,7 +62,7 @@ export default function Exchange(props: propsIF) {
             style={{ height: 'calc(100vh - 19.5rem' }}
         >
             <ExchangeHeader />
-            <div className={styles.item_container}>{ItemContent}</div>
+            <div className={styles.item_container}>{ItemContent()}</div>
         </div>
     );
 }

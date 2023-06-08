@@ -15,6 +15,7 @@ import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import {
     setIsTokenAPrimary,
     setPrimaryQuantity,
+    setShouldSwapDirectionReverse,
 } from '../../../utils/state/tradeDataSlice';
 import {
     useAppDispatch,
@@ -306,9 +307,21 @@ function CurrencyConverter(props: propsIF) {
         }
     };
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
+
+    useEffect(() => {
+        if (tradeData.shouldSwapDirectionReverse) {
+            setIsTokenAPrimaryLocal((state) => {
+                reverseTokens();
+                return !state;
+            });
+            dispatch(setShouldSwapDirectionReverse(false));
+        }
+    }, [tradeData.shouldSwapDirectionReverse]);
 
     useEffect(() => {
         isTokenAPrimaryLocal
@@ -422,9 +435,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             let rawTokenBQty = undefined;
             if (evt) {
                 setUserClickedCombinedMax(false);
@@ -469,9 +480,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeClick = useMemo(
         () => async (value: string) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             let rawTokenBQty;
             const tokenAInputField = document.getElementById('sell-quantity');
             if (tokenAInputField) {
@@ -512,9 +521,7 @@ function CurrencyConverter(props: propsIF) {
 
     const handleTokenBChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
 
             let rawTokenAQty: number | undefined;
             if (evt) {

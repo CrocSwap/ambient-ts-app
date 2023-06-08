@@ -20,6 +20,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import printDomToImage from '../../utils/functions/printDomToImage';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -28,20 +29,27 @@ interface propsIF {
 }
 
 export default function OrderDetails(props: propsIF) {
+    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
+        props;
+
     const [showShareComponent, setShowShareComponent] = useState(true);
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-
-    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
-        props;
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-    const { tokens } = useContext(TokenContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -183,6 +191,10 @@ export default function OrderDetails(props: propsIF) {
                         crocEnv,
                         chainId,
                         lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {

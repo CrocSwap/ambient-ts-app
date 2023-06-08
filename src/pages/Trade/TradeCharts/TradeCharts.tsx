@@ -35,6 +35,8 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
+import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 
 // interface for React functional component props
 interface propsIF {
@@ -109,13 +111,19 @@ function TradeCharts(props: propsIF) {
     };
 
     // CHART SETTINGS------------------------------------------------------------
-    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const subchartState: {
+        isVolumeSubchartEnabled: boolean;
+        isTvlSubchartEnabled: boolean;
+        isFeeRateSubchartEnabled: boolean;
+    } | null = getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS);
+    const [showTvl, setShowTvl] = useState(
+        subchartState?.isTvlSubchartEnabled ?? false,
+    );
     const [showFeeRate, setShowFeeRate] = useState(
-        chartSettings.feeRateSubchart.isEnabled,
+        subchartState?.isFeeRateSubchartEnabled ?? false,
     );
     const [showVolume, setShowVolume] = useState(
-        chartSettings.volumeSubchart.isEnabled,
+        subchartState?.isVolumeSubchartEnabled ?? true,
     );
 
     const chartItemStates = useMemo(() => {
@@ -123,13 +131,10 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: isMarketOrLimitModule
-                ? chartSettings.marketOverlay.overlay
-                : chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.rangeOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.marketOverlay,
         chartSettings.rangeOverlay,
         showTvl,
         showVolume,
@@ -219,13 +224,7 @@ function TradeCharts(props: propsIF) {
                 className={styles.chart_overlay_container}
                 id='trade_charts_time_frame'
             >
-                <TimeFrame
-                    candleTime={
-                        isMarketOrLimitModule
-                            ? chartSettings.candleTime.market
-                            : chartSettings.candleTime.range
-                    }
-                />
+                <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
             <div
                 style={{
@@ -252,13 +251,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth
-                    overlayMethods={
-                        isMarketOrLimitModule
-                            ? chartSettings.marketOverlay
-                            : chartSettings.rangeOverlay
-                    }
-                />
+                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
             </div>
         </div>
     );
@@ -305,11 +298,6 @@ function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        // <FocusTrap
-        //     focusTrapOptions={{
-        //         clickOutsideDeactivates: true,
-        //     }}
-        // >
         <div
             className={styles.main_container_chart}
             style={{
@@ -365,7 +353,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>
             )}
@@ -375,7 +362,6 @@ function TradeCharts(props: propsIF) {
                 steps={tradeChartTutorialSteps}
             />
         </div>
-        // </FocusTrap>
     );
 }
 
