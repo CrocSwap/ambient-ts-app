@@ -5930,7 +5930,7 @@ export default function Chart(props: propsIF) {
 
                         <d3fc-canvas
                             ref={d3CanvasMain}
-                            className='limit-line-canvas'
+                            className='main-canvas'
                         ></d3fc-canvas>
 
                         <d3fc-canvas
