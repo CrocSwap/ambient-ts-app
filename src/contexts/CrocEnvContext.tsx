@@ -8,7 +8,8 @@ import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
-import { useMainnetProvider } from '../App/functions/getMainnetProvider';
+import { useMainnetProvider } from '../App/functions/useMainnetProvider';
+import { Provider } from '@ethersproject/providers';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -61,7 +62,7 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const mainnetProvider = useMainnetProvider();
+    const mainnetProvider = IS_LOCAL_ENV ? useMainnetProvider() : useProvider();
 
     const crocEnvContext = {
         crocEnv,

@@ -50,7 +50,7 @@ export default function ExchangeBalance(props: propsIF) {
         setIsTokenModalOpen,
     } = props;
 
-    const mainnetProvider = useContext(CrocEnvContext);
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,

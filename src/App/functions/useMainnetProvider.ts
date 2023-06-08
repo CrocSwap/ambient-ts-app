@@ -6,7 +6,7 @@ import { Provider } from '@ethersproject/providers';
 export const useMainnetProvider = () => {
     const [mainnetProvider, setMainnetProvider] = useState<
         Provider | undefined
-    >(undefined);
+    >();
 
     useEffect(() => {
         const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2

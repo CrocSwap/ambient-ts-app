@@ -50,7 +50,7 @@ function Portfolio(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const mainnetProvider = useContext(CrocEnvContext);
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
