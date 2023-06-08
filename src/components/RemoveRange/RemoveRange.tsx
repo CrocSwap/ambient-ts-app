@@ -340,7 +340,7 @@ export default function RemoveRange(props: propsIF) {
         } else if (position.positionType === 'concentrated') {
             const positionLiq = currentLiquidity;
 
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+            const liquidityToBurn = BigNumber.from(positionLiq)
                 .mul(removalPercentage)
                 .div(100);
             IS_LOCAL_ENV &&
