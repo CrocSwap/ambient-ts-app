@@ -6,7 +6,7 @@ import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
     concPosSlot,
@@ -338,11 +338,6 @@ export default function RemoveRange(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = currentLiquidity;
-
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
             IS_LOCAL_ENV &&
                 console.debug(`${removalPercentage}% to be removed.`);
 
