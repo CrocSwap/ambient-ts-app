@@ -31,6 +31,7 @@ interface TabPropsIF {
     rightTabOptions?: ReactNode;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
+    shouldSyncWithTradeModules?: boolean;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -41,6 +42,7 @@ export default function TabComponent(props: TabPropsIF) {
         rightTabOptions,
         setShowPositionsOnlyToggle,
         isModalView = false,
+        shouldSyncWithTradeModules = true,
     } = props;
     const { outsideControl, setOutsideControl, selectedOutsideTab } =
         useContext(TradeTableContext);
@@ -101,8 +103,13 @@ export default function TabComponent(props: TabPropsIF) {
     }
 
     useEffect(() => {
-        handleOutside2();
-    }, [selectedTab, selectedOutsideTab, outsideControl]);
+        if (shouldSyncWithTradeModules) handleOutside2();
+    }, [
+        selectedTab,
+        selectedOutsideTab,
+        outsideControl,
+        shouldSyncWithTradeModules,
+    ]);
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
