@@ -14,6 +14,7 @@ import {
     OVERRIDE_CANDLE_POOL_ID,
 } from '../constants';
 import { mktDataChainId } from '../utils/data/chains';
+import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import {
@@ -58,11 +59,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
+            mainnetAddress: mainnetCanonBase,
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
+            mainnetAddress: mainnetCanonQuote,
         },
     } = useContext(TradeTokenContext);
 
@@ -95,19 +96,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
+        return chartSettings.candleTime.global.time;
+    }, [chartSettings.candleTime.global.time, location.pathname]);
 
     const candleContext = {
         candleData,
@@ -124,6 +114,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleScale,
         candleTimeLocal,
     };
+
+    const {
+        baseToken: mainnetBaseTokenAddress,
+        quoteToken: mainnetQuoteTokenAddress,
+    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
@@ -165,8 +160,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolStats: 'true',
                 concise: 'true',
                 poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsBaseOverride: mainnetBaseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: mainnetQuoteTokenAddress.toLowerCase(),
                 poolStatsPoolIdxOverride: (
                     OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
                 ).toString(),
