@@ -87,7 +87,7 @@ export default function MessageInput(props: MessageInputProps) {
             props.isLink(message) &&
             !props.isLinkInCrocodileLabsLinks(message)
         ) {
-            console.log('--------------------------DONT-------------------');
+            // console.log('--------------------------DONT-------------------');
         } else {
             handleSendMsg(message, roomId);
             setMessage('');
@@ -102,9 +102,9 @@ export default function MessageInput(props: MessageInputProps) {
                 props.isLink(message) &&
                 !props.isLinkInCrocodileLabsLinks(message)
             ) {
-                console.log(
-                    '--------------------------DONT-------------------',
-                );
+                // console.log(
+                //     '--------------------------DONT-------------------',
+                // );
             } else {
                 handleSendMsg(message, roomId);
                 setMessage('');
