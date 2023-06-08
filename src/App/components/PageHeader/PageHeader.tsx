@@ -33,7 +33,6 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { ExchangeBalanceModal } from './ExchangeBalanceModal/ExchangeBalanceModal';
 
 const PageHeader = function () {
     const {
@@ -419,7 +418,6 @@ const PageHeader = function () {
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            {isConnected && <ExchangeBalanceModal />}
                             <NotificationCenter />
                         </div>
                     </div>
