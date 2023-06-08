@@ -28,8 +28,8 @@ export const ExchangeBalanceModal = () => {
                 <ExchangeBalance
                     fullLayoutActive={fullLayoutActive}
                     setFullLayoutActive={setFullLayoutActive}
-                    isModalView={true}
                     setIsTokenModalOpen={setIsTokenModalOpen}
+                    isModalView
                 />
             </div>
         </NavItem>

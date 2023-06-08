@@ -359,6 +359,8 @@ export default function ExchangeBalance(props: propsIF) {
                             <TabComponent
                                 data={accountData}
                                 rightTabOptions={false}
+                                isModalView={isModalView}
+                                shouldSyncWithTradeModules={false}
                             />
                         )}
                         {!isModalView && exchangeControl}

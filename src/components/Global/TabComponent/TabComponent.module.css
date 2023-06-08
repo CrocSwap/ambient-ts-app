@@ -170,7 +170,14 @@
     .menu_content li,
     .tab_ul_left li {
         padding: 8px 10px;
+    }
+
+    .justify_content_flex_start li {
         justify-content: flex-start;
+    }
+
+    .justify_content_center li {
+        justify-content: center;
     }
 
     .tab_ul_left {
