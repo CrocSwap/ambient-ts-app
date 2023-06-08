@@ -103,7 +103,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
         getOverlay('range') ?? 'curve',
     );
     const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
-        getCandleTime('global') ?? 900,
+        getCandleTime('global') ?? 3600, // 1 hr default
     );
     const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
@@ -125,7 +125,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 candleTimeRange,
             }),
         );
-    }, [marketOverlay, rangeOverlay, candleTimeMarket, candleTimeRange]);
+    }, [
+        marketOverlay,
+        rangeOverlay,
+        candleTimeMarket,
+        candleTimeRange,
+        candleTimeGlobal,
+    ]);
 
     // class definition for overlay setting and methods
     class Overlay implements overlayIF {
@@ -185,7 +191,13 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
                 range: new CandleTime(candleTimeRange, setCandleTimeRange),
             },
         };
-    }, [candleTimeMarket, candleTimeRange, marketOverlay, rangeOverlay]);
+    }, [
+        candleTimeMarket,
+        candleTimeRange,
+        candleTimeGlobal,
+        marketOverlay,
+        rangeOverlay,
+    ]);
 
     return chartSettings;
 };
