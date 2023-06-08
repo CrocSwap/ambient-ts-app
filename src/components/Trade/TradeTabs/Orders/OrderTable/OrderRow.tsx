@@ -6,11 +6,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -77,8 +73,6 @@ function OrderRow(props: propsIF) {
         isOrderFilled: isOrderFilled,
         isAccountView: isAccountView,
     };
-
-    const dispatch = useAppDispatch();
 
     const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual

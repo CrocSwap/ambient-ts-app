@@ -6,11 +6,7 @@ import styles from '../Ranges.module.css';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -130,8 +126,6 @@ function RangesRow(props: propsIF) {
             />,
         );
     };
-
-    const dispatch = useAppDispatch();
 
     const positionDomId =
         position.firstMintTx === currentPositionActive
