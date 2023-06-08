@@ -4894,7 +4894,7 @@ export default function Chart(props: propsIF) {
     }, [poolPriceDisplay]);
 
     function changeScale() {
-        if (poolPriceDisplay && scaleData) {
+        if (poolPriceDisplay && scaleData && rescale) {
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
 
