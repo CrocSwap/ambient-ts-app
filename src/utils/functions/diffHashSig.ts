@@ -1,13 +1,10 @@
 // import sum from 'hash-sum';
 
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { LimitOrderIF } from '../interfaces/LimitOrderIF';
 import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-    LiquidityData,
-} from '../state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../state/graphDataSlice';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {
@@ -50,7 +47,7 @@ export function diffHashSigChart(chartData?: CandleData[]) {
     });
 }
 
-export function diffHashSigLiquidity(liquidity?: LiquidityData) {
+export function diffHashSigLiquidity(liquidity?: LiquidityDataIF) {
     if (!liquidity) {
         return 'null';
     }
