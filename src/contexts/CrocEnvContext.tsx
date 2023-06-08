@@ -63,7 +63,7 @@ export const CrocEnvContextProvider = (props: {
         useState<UrlRoutesTemplate>(initUrl);
 
     const mainnetProvider =
-        chainData.chainId === '0x1' ? useMainnetProvider() : useProvider();
+        chainData.chainId === '0x1' ? useProvider() : useMainnetProvider();
 
     const crocEnvContext = {
         crocEnv,
