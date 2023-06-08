@@ -2,9 +2,7 @@
     --nav-size: 60px;
 }
 
-/* <li> */
 .nav_item {
-    width: calc(var(--nav-size) * 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,12 +20,10 @@
 /* Icon Button */
 .icon_button {
     --button-size: calc(var(--nav-size) * 0.5);
-    width: var(--button-size);
     height: var(--button-size);
     background-color: var(--dark2);
     border-radius: 50%;
     padding: 5px;
-    margin: 2px;
     display: flex;
     align-items: center;
     justify-content: center;

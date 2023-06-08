@@ -13,6 +13,7 @@ import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
 
 interface propsIF {
     nativeBalance: string | undefined;
@@ -158,6 +159,7 @@ export default function Account(props: propsIF) {
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
+            {isConnected && <ExchangeBalanceModal />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
