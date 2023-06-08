@@ -189,7 +189,6 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
-        // candleTime,
     } = props;
 
     const {

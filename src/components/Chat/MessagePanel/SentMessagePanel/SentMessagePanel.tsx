@@ -6,8 +6,6 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 
 interface SentMessageProps {
     message: Message;
@@ -50,7 +48,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     const { deleteMessage } = useChatApi();
 
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -361,13 +358,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                             : props.message.ensName
                                     }`
                                 ) {
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'lookupUserTxData',
-                                            loadingStatus: true,
-                                        }),
-                                    );
-
                                     navigate(
                                         `/${
                                             props.message.ensName ===

@@ -1,17 +1,14 @@
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo } from 'react';
 import { useEnsName } from 'wagmi';
-import { BigNumber, ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import Modal from '../../components/Global/Modal/Modal';
 import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
-import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 
 // START: Import Other Local Files
 import styles from './Portfolio.module.css';
@@ -20,22 +17,15 @@ import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    setErc20Tokens,
-    setNativeToken,
-    setResolvedAddressRedux,
-} from '../../utils/state/userDataSlice';
+import { setResolvedAddressRedux } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
-import { IS_LOCAL_ENV } from '../../constants';
-import {
-    memoizeFetchNativeTokenBalance,
-    memoizeFetchErc20TokenBalances,
-} from '../../App/functions/fetchTokenBalances';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getMainnetProvider } from '../../App/functions/getMainnetProvider';
 
 interface propsIF {
     userAccount?: boolean;
@@ -51,6 +41,8 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
+    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -58,127 +50,11 @@ function Portfolio(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens, setInput } = useContext(TokenContext);
 
-    const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
-    const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
-
     const dispatch = useAppDispatch();
 
-    const selectedToken: TokenIF = useAppSelector(
-        (state) => state.soloTokenData.token,
+    const [mainnetProvider] = useState<Provider | undefined>(
+        getMainnetProvider(),
     );
-
-    const [tokenAllowance, setTokenAllowance] = useState<string>('');
-    const [recheckTokenAllowance, setRecheckTokenAllowance] =
-        useState<boolean>(false);
-    const [recheckTokenBalances, setRecheckTokenBalances] =
-        useState<boolean>(false);
-
-    const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
-    const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
-
-    const selectedTokenAddress = selectedToken.address;
-    const selectedTokenDecimals = selectedToken.decimals;
-
-    const addTokenInfo = (token: TokenIF): TokenIF => {
-        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
-            token.address,
-        );
-        const newToken = { ...token };
-        newToken.name = oldToken ? oldToken.name : '';
-        newToken.logoURI = oldToken ? oldToken.logoURI : '';
-        return newToken;
-    };
-
-    const [mainnetProvider, setMainnetProvider] = useState<
-        Provider | undefined
-    >();
-    useEffect(() => {
-        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
-            ? process.env.REACT_APP_INFURA_KEY_2
-            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
-
-        const mainnetProvider = new ethers.providers.JsonRpcProvider(
-            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
-        );
-        IS_LOCAL_ENV && console.debug({ mainnetProvider });
-        setMainnetProvider(mainnetProvider);
-    }, []);
-
-    useEffect(() => {
-        if (crocEnv && selectedToken.address && userAddress) {
-            crocEnv
-                .token(selectedToken.address)
-                .wallet(userAddress)
-                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
-                .catch(console.error);
-            crocEnv
-                .token(selectedToken.address)
-                .balance(userAddress)
-                .then((bal: BigNumber) => {
-                    setTokenDexBalance(bal.toString());
-                })
-                .catch(console.error);
-        }
-
-        if (recheckTokenBalances) {
-            (async () => {
-                if (userAddress) {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            crocEnv,
-                        );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
-                        addTokenInfo(token),
-                    );
-
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
-                }
-            })();
-        }
-
-        setRecheckTokenBalances(false);
-    }, [
-        crocEnv,
-        selectedToken.address,
-        userAddress,
-        lastBlockNumber,
-        recheckTokenBalances,
-    ]);
-
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && userAddress && selectedTokenAddress) {
-                try {
-                    const allowance = await crocEnv
-                        .token(selectedTokenAddress)
-                        .allowance(userAddress);
-                    setTokenAllowance(allowance.toString());
-                } catch (err) {
-                    console.warn(err);
-                }
-                setRecheckTokenAllowance(false);
-            }
-        })();
-    }, [
-        crocEnv,
-        selectedTokenAddress,
-        lastBlockNumber,
-        userAddress,
-        recheckTokenAllowance,
-    ]);
 
     const { address: addressFromParams } = useParams();
 
@@ -189,11 +65,13 @@ function Portfolio(props: propsIF) {
     if (addressFromParams && !isAddressEns && !isAddressHex)
         return <Navigate to='/404' replace />;
 
-    const [resolvedAddress, setResolvedAddress] = useState<string>('');
+    const [resolvedAddress, setResolvedAddress] = useState<string | undefined>(
+        undefined,
+    );
 
     const connectedAccountActive =
         !addressFromParams ||
-        resolvedAddress.toLowerCase() === userAddress?.toLowerCase();
+        resolvedAddress?.toLowerCase() === userAddress?.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -201,10 +79,8 @@ function Portfolio(props: propsIF) {
                 try {
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
-                    if (newResolvedAddress) {
-                        setResolvedAddress(newResolvedAddress);
-                        dispatch(setResolvedAddressRedux(newResolvedAddress));
-                    }
+                    setResolvedAddress(newResolvedAddress ?? '');
+                    dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
                     console.error({ error });
                 }
@@ -244,24 +120,14 @@ function Portfolio(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
+    const [, openTokenModal] = useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
-                mainnetProvider={mainnetProvider}
-                selectedToken={selectedToken}
-                tokenAllowance={tokenAllowance}
-                tokenWalletBalance={tokenWalletBalance}
-                tokenDexBalance={tokenDexBalance}
-                setRecheckTokenAllowance={setRecheckTokenAllowance}
-                setRecheckTokenBalances={setRecheckTokenBalances}
-                openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
-                selectedTokenDecimals={selectedTokenDecimals}
             />
         </div>
     );
@@ -380,17 +246,6 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
-
-    const handleInputClear = () => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
-
     const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
@@ -450,7 +305,7 @@ function Portfolio(props: propsIF) {
             : secondaryEnsName
             ? secondaryEnsName
             : '',
-        resolvedAddress: resolvedAddress,
+        resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
     };
@@ -513,27 +368,6 @@ function Portfolio(props: propsIF) {
                     ? notConnectedContent
                     : connectedAccountActive && exchangeBalanceComponent}
             </div>
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={!showSoloSelectTokenButtons}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={true}
-                        tokenAorB={null}
-                    />
-                </Modal>
-            )}
         </main>
     );
 }

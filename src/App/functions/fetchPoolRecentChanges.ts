@@ -2,7 +2,11 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { TransactionServerIF } from '../../utils/interfaces/TransactionIF';
+import { FetchAddrFn } from './fetchAddress';
+import { FetchContractDetailsFn } from './fetchContractDetails';
+import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData } from './getTransactionData';
+import { SpotPriceFn } from './querySpotPrice';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -21,6 +25,10 @@ interface argsIF {
     time?: number;
     crocEnv: CrocEnv;
     lastBlockNumber: number;
+    cachedFetchTokenPrice: TokenPriceFn;
+    cachedQuerySpotPrice: SpotPriceFn;
+    cachedTokenDetails: FetchContractDetailsFn;
+    cachedEnsResolve: FetchAddrFn;
 }
 
 export const fetchPoolRecentChanges = (args: argsIF) => {
@@ -40,6 +48,10 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         time,
         crocEnv,
         lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
     } = args;
 
     const poolRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_txs?';
@@ -95,6 +107,10 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         crocEnv,
                         chainId,
                         lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
                     );
                 }),
             ).then((updatedTransactions) => {

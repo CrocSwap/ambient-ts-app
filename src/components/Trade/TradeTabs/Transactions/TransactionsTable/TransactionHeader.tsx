@@ -2,10 +2,11 @@ import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Transactions.module.css';
+import { TxSortType } from '../../useSortedTxs';
+
 interface TransactionHeaderPropsIF {
     header: {
         name: string | JSX.Element;
-        // className: string;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -13,8 +14,8 @@ interface TransactionHeaderPropsIF {
         alignCenter?: boolean;
     };
 
-    sortBy: string;
-    setSortBy: Dispatch<SetStateAction<string>>;
+    sortBy: TxSortType;
+    setSortBy: Dispatch<SetStateAction<TxSortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
@@ -22,7 +23,7 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
-    function handleClick(slug: string) {
+    function handleClick(slug: TxSortType) {
         if (sortable) {
             if (sortBy !== slug) {
                 IS_LOCAL_ENV && console.debug('first click');
@@ -69,7 +70,7 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
                     } ${alignCenter && styles.align_center}`}
-                    onClick={() => handleClick(slug.toLowerCase())}
+                    onClick={() => handleClick(slug as TxSortType)}
                 >
                     {name} {arrow}
                 </li>
