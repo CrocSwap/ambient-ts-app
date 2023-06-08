@@ -424,7 +424,7 @@ function Transactions(props: propsIF) {
     }, [mobileView]);
 
     useEffect(() => {
-        if (!expandTradeTable) {
+        if (_DATA.currentData.length && !expandTradeTable) {
             setCurrentPage(1);
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
