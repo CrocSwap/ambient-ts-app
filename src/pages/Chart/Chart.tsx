@@ -205,7 +205,6 @@ export default function Chart(props: propsIF) {
         maxRangePrice: maxPrice,
         setMaxRangePrice: setMaxPrice,
         rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
         chartTriggeredBy,
         setChartTriggeredBy,
         simpleRangeWidth: rangeSimpleRangeWidth,
@@ -962,171 +961,6 @@ export default function Chart(props: propsIF) {
                     }
                 };
 
-                const rescaleYAxis = () => {
-                    const xmin = scaleData?.xScale.domain()[0];
-                    const xmax = scaleData?.xScale.domain()[1];
-
-                    const filtered = unparsedCandleData.filter(
-                        (data: CandleData) =>
-                            data.time * 1000 >= xmin &&
-                            data.time * 1000 <= xmax,
-                    );
-
-                    if (rescale && filtered && filtered?.length > 10) {
-                        if (filtered !== undefined) {
-                            const low = ranges.filter(
-                                (target: any) => target.name === 'Min',
-                            )[0].value;
-                            const high = ranges.filter(
-                                (target: any) => target.name === 'Max',
-                            )[0].value;
-
-                            const minYBoundary: any = d3.min(
-                                filtered,
-                                (d: CandleData) =>
-                                    denomInBase
-                                        ? d.invMaxPriceExclMEVDecimalCorrected
-                                        : d.minPriceExclMEVDecimalCorrected,
-                            );
-                            const maxYBoundary: any = d3.max(
-                                filtered,
-                                (d: CandleData) =>
-                                    denomInBase
-                                        ? d.invMinPriceExclMEVDecimalCorrected
-                                        : d.maxPriceExclMEVDecimalCorrected,
-                            );
-
-                            if (
-                                location.pathname.includes('range') ||
-                                location.pathname.includes('reposition')
-                            ) {
-                                if (
-                                    maxYBoundary !== undefined &&
-                                    minYBoundary !== undefined
-                                ) {
-                                    const buffer = Math.abs(
-                                        (Math.min(
-                                            Math.min(low, high),
-                                            minYBoundary,
-                                        ) -
-                                            Math.max(
-                                                Math.max(low, high),
-                                                maxYBoundary,
-                                            )) /
-                                            (simpleRangeWidth !== 100 ? 6 : 90),
-                                    );
-
-                                    const domain = [
-                                        Math.min(
-                                            Math.min(low, high),
-                                            minYBoundary,
-                                        ) - buffer,
-                                        Math.max(
-                                            Math.max(low, high),
-                                            maxYBoundary,
-                                        ) +
-                                            buffer / 2,
-                                    ];
-                                    scaleData?.yScale.domain(domain);
-                                }
-                            } else if (location.pathname.includes('/limit')) {
-                                if (
-                                    maxYBoundary !== undefined &&
-                                    minYBoundary !== undefined &&
-                                    poolPriceDisplay
-                                ) {
-                                    const value = limit[0].value;
-                                    if (rescale) {
-                                        const low = Math.min(
-                                            minYBoundary,
-                                            value,
-                                            minTickForLimit,
-                                        );
-
-                                        const high = Math.max(
-                                            maxYBoundary,
-                                            value,
-                                            maxTickForLimit,
-                                        );
-                                        const bufferForLimit = Math.abs(
-                                            (low - high) / 6,
-                                        );
-                                        if (value > 0) {
-                                            const domain = [
-                                                Math.min(low, high) -
-                                                    bufferForLimit,
-                                                Math.max(low, high) +
-                                                    bufferForLimit / 2,
-                                            ];
-
-                                            scaleData?.yScale.domain(domain);
-                                        }
-                                    } else {
-                                        if (value > 0) {
-                                            const low =
-                                                minYBoundary < value
-                                                    ? minYBoundary
-                                                    : value;
-
-                                            const high =
-                                                maxYBoundary > value
-                                                    ? maxYBoundary
-                                                    : value;
-
-                                            const buffer = Math.abs(
-                                                (low - high) / 6,
-                                            );
-
-                                            const domain = [
-                                                Math.min(low, high) - buffer,
-                                                Math.max(low, high) +
-                                                    buffer / 2,
-                                            ];
-                                            scaleData?.yScale.domain(domain);
-                                        } else {
-                                            const buffer = Math.abs(
-                                                (minYBoundary - maxYBoundary) /
-                                                    6,
-                                            );
-
-                                            const domain = [
-                                                Math.min(
-                                                    minYBoundary,
-                                                    maxYBoundary,
-                                                ) - buffer,
-                                                Math.max(
-                                                    minYBoundary,
-                                                    maxYBoundary,
-                                                ) +
-                                                    buffer / 2,
-                                            ];
-                                            scaleData?.yScale.domain(domain);
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (
-                                    maxYBoundary !== undefined &&
-                                    minYBoundary !== undefined
-                                ) {
-                                    const buffer = Math.abs(
-                                        (maxYBoundary - minYBoundary) / 6,
-                                    );
-
-                                    const domain = [
-                                        Math.min(minYBoundary, maxYBoundary) -
-                                            buffer,
-                                        Math.max(minYBoundary, maxYBoundary) +
-                                            buffer / 2,
-                                    ];
-
-                                    scaleData?.yScale.domain(domain);
-                                }
-                            }
-                        }
-                    }
-                };
-
                 const zoomWithWhell = (
                     event: any,
                     unparsedCandleData: Array<CandleData>,
@@ -1412,7 +1246,7 @@ export default function Chart(props: propsIF) {
                                     }
                                 }
 
-                                rescaleYAxis();
+                                changeScale();
 
                                 // PANNING
                                 if (
@@ -1884,7 +1718,7 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         }
-                        rescaleYAxis();
+                        changeScale();
 
                         setBandwidth(candlestick.bandwidth());
                         render();
@@ -1960,117 +1794,22 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
-                const xmin = scaleData?.xScale.domain()[0];
-                const xmax = scaleData?.xScale.domain()[1];
+                changeScale();
 
-                const filtered = unparsedCandleData.filter(
-                    (data: any) =>
-                        data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-                );
-
-                if (filtered !== undefined) {
-                    const minYBoundary = d3.min(filtered, (d) =>
-                        denomInBase
-                            ? d.invMaxPriceExclMEVDecimalCorrected
-                            : d.minPriceExclMEVDecimalCorrected,
+                if (
+                    location.pathname.includes('range') ||
+                    location.pathname.includes('reposition')
+                ) {
+                    const liqAllBidPrices = liquidityData?.liqBidData.map(
+                        (liqPrices: any) => liqPrices.liqPrices,
                     );
-                    const maxYBoundary = d3.max(filtered, (d) =>
-                        denomInBase
-                            ? d.invMinPriceExclMEVDecimalCorrected
-                            : d.maxPriceExclMEVDecimalCorrected,
-                    );
+                    const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    if (
-                        location.pathname.includes('range') ||
-                        location.pathname.includes('reposition')
-                    ) {
-                        const low = ranges.filter(
-                            (target: any) => target.name === 'Min',
-                        )[0].value;
-                        const high = ranges.filter(
-                            (target: any) => target.name === 'Max',
-                        )[0].value;
-
-                        if (
-                            maxYBoundary !== undefined &&
-                            minYBoundary !== undefined
-                        ) {
-                            const buffer = Math.abs(
-                                (Math.max(Math.max(low, high), maxYBoundary) -
-                                    Math.min(
-                                        Math.min(low, high),
-                                        minYBoundary,
-                                    )) /
-                                    (simpleRangeWidth !== 100 ? 6 : 90),
-                            );
-
-                            const domain = [
-                                Math.min(Math.min(low, high), minYBoundary) -
-                                    buffer,
-                                Math.max(Math.max(low, high), maxYBoundary) +
-                                    buffer / 2,
-                            ];
-
-                            scaleData?.yScale.domain(domain);
-                        }
-
-                        const liqAllBidPrices = liquidityData?.liqBidData.map(
-                            (liqPrices: any) => liqPrices.liqPrices,
-                        );
-                        const liqBidDeviation =
-                            standardDeviation(liqAllBidPrices);
-
-                        fillLiqAdvanced(liqBidDeviation, scaleData);
-                    } else if (location.pathname.includes('/limit')) {
-                        if (
-                            maxYBoundary !== undefined &&
-                            minYBoundary !== undefined &&
-                            poolPriceDisplay
-                        ) {
-                            const value = limit[0].value;
-                            const low = Math.min(
-                                minYBoundary,
-                                value,
-                                minTickForLimit,
-                            );
-
-                            const high = Math.max(
-                                maxYBoundary,
-                                value,
-                                maxTickForLimit,
-                            );
-                            const bufferForLimit = Math.abs((low - high) / 6);
-                            if (value > 0) {
-                                const domain = [
-                                    Math.min(low, high) - bufferForLimit,
-                                    Math.max(low, high) + bufferForLimit / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            }
-                        }
-                    } else {
-                        if (
-                            maxYBoundary !== undefined &&
-                            minYBoundary !== undefined &&
-                            liquidityData
-                        ) {
-                            const buffer = Math.abs(
-                                (maxYBoundary - minYBoundary) / 6,
-                            );
-                            const domain = [
-                                Math.min(minYBoundary, maxYBoundary) - buffer,
-                                Math.max(minYBoundary, maxYBoundary) +
-                                    buffer / 2,
-                            ];
-
-                            scaleData?.yScale.domain(domain);
-                        }
-                    }
+                    fillLiqAdvanced(liqBidDeviation, scaleData);
                 }
             }
         }
-    }, [unparsedCandleData.length, rescale, minTickForLimit, maxTickForLimit]);
+    }, [rescale]);
 
     useEffect(() => {
         setMarketLineValue();
@@ -2274,52 +2013,7 @@ export default function Chart(props: propsIF) {
                             rescaleRangeBoundariesWithSlider &&
                             rescale
                         ) {
-                            const xmin = scaleData?.xScale.domain()[0];
-                            const xmax = scaleData?.xScale.domain()[1];
-
-                            const filtered = unparsedCandleData.filter(
-                                (data: CandleData) =>
-                                    data.time * 1000 >= xmin &&
-                                    data.time * 1000 <= xmax,
-                            );
-
-                            if (filtered !== undefined) {
-                                const minYBoundary = d3.min(filtered, (d) =>
-                                    denomInBase
-                                        ? d.invMaxPriceExclMEVDecimalCorrected
-                                        : d.minPriceExclMEVDecimalCorrected,
-                                );
-                                const maxYBoundary = d3.max(filtered, (d) =>
-                                    denomInBase
-                                        ? d.invMinPriceExclMEVDecimalCorrected
-                                        : d.maxPriceExclMEVDecimalCorrected,
-                                );
-
-                                if (maxYBoundary && minYBoundary) {
-                                    const low =
-                                        minPrice !== undefined ? minPrice : 0;
-                                    const high =
-                                        maxPrice !== undefined ? maxPrice : 0;
-
-                                    const min =
-                                        minYBoundary < low ? minYBoundary : low;
-                                    const max =
-                                        maxYBoundary > high
-                                            ? maxYBoundary
-                                            : high;
-
-                                    const buffer = Math.abs((max - min) / 6);
-
-                                    const domain = [
-                                        Math.min(min, max) - buffer,
-                                        Math.max(min, max) + buffer / 2,
-                                    ];
-
-                                    scaleData?.yScale.domain(domain);
-
-                                    setRescaleRangeBoundariesWithSlider(false);
-                                }
-                            }
+                            changeScale();
                         }
 
                         return newTargets;
@@ -3046,62 +2740,9 @@ export default function Chart(props: propsIF) {
                             'cursor',
                             'row-resize',
                         );
+
                         if (rescale) {
-                            const xmin = scaleData?.xScale.domain()[0];
-                            const xmax = scaleData?.xScale.domain()[1];
-
-                            const filtered = unparsedCandleData.filter(
-                                (data: CandleData) =>
-                                    data.time * 1000 >= xmin &&
-                                    data.time * 1000 <= xmax,
-                            );
-
-                            if (filtered !== undefined) {
-                                const minYBoundary = d3.min(filtered, (d) =>
-                                    denomInBase
-                                        ? d.invMaxPriceExclMEVDecimalCorrected
-                                        : d.minPriceExclMEVDecimalCorrected,
-                                );
-                                const maxYBoundary = d3.max(filtered, (d) =>
-                                    denomInBase
-                                        ? d.invMinPriceExclMEVDecimalCorrected
-                                        : d.maxPriceExclMEVDecimalCorrected,
-                                );
-
-                                if (minYBoundary && maxYBoundary) {
-                                    const value = newLimitValue;
-
-                                    const low = Math.min(
-                                        minYBoundary,
-                                        value,
-                                        minTickForLimit,
-                                    );
-
-                                    const high = Math.max(
-                                        maxYBoundary,
-                                        value,
-                                        maxTickForLimit,
-                                    );
-
-                                    const min = scaleData?.yScale.domain()[0];
-                                    const max = scaleData?.yScale.domain()[1];
-
-                                    if (min > low || max < high) {
-                                        const bufferForLimit = Math.abs(
-                                            (low - high) / 6,
-                                        );
-
-                                        const domain = [
-                                            Math.min(low, high) -
-                                                bufferForLimit,
-                                            Math.max(high, low) +
-                                                bufferForLimit / 2,
-                                        ];
-
-                                        scaleData?.yScale.domain(domain);
-                                    }
-                                }
-                            }
+                            changeScale();
                         }
                         if (oldLimitValue !== undefined) {
                             onBlurLimitRate(oldLimitValue, newLimitValue);
@@ -4130,134 +3771,7 @@ export default function Chart(props: propsIF) {
 
             scaleData?.xScale.domain([minDomain, maxDomain]);
 
-            const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = unparsedCandleData.filter(
-                (data: CandleData) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
-            if (filtered !== undefined) {
-                const minYBoundary = d3.min(filtered, (d) =>
-                    denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
-                );
-                const maxYBoundary = d3.max(filtered, (d) =>
-                    denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
-                );
-
-                if (
-                    location.pathname.includes('range') ||
-                    location.pathname.includes('reposition')
-                ) {
-                    const low = ranges.filter(
-                        (target: any) => target.name === 'Min',
-                    )[0].value;
-                    const high = ranges.filter(
-                        (target: any) => target.name === 'Max',
-                    )[0].value;
-
-                    if (
-                        maxYBoundary !== undefined &&
-                        minYBoundary !== undefined
-                    ) {
-                        const buffer = Math.abs(
-                            (Math.max(Math.max(low, high), maxYBoundary) -
-                                Math.min(Math.min(low, high), minYBoundary)) /
-                                (simpleRangeWidth !== 100 ? 6 : 90),
-                        );
-
-                        const domain = [
-                            Math.min(Math.min(low, high), minYBoundary) -
-                                buffer,
-                            Math.max(Math.max(low, high), maxYBoundary) +
-                                buffer / 2,
-                        ];
-
-                        scaleData?.yScale.domain(domain);
-                    }
-                } else if (location.pathname.includes('/limit')) {
-                    if (
-                        maxYBoundary !== undefined &&
-                        minYBoundary !== undefined
-                    ) {
-                        const value = limit[0].value;
-
-                        if (rescale) {
-                            const low = Math.min(
-                                minYBoundary,
-                                value,
-                                minTickForLimit,
-                            );
-
-                            const high = Math.max(
-                                maxYBoundary,
-                                value,
-                                maxTickForLimit,
-                            );
-
-                            const bufferForLimit = Math.abs((low - high) / 6);
-                            if (value > 0) {
-                                const domain = [
-                                    Math.min(low, high) - bufferForLimit,
-                                    Math.max(low, high) + bufferForLimit / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            }
-                        } else {
-                            const low =
-                                minYBoundary < value ? minYBoundary : value;
-                            const high =
-                                maxYBoundary > value ? maxYBoundary : value;
-
-                            if (value > 0) {
-                                const buffer = Math.abs((low - high) / 6);
-                                const domain = [
-                                    Math.min(low, high) - buffer,
-                                    Math.max(low, high) + buffer / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            } else {
-                                const buffer = Math.abs(
-                                    (maxYBoundary - minYBoundary) / 6,
-                                );
-
-                                const domain = [
-                                    Math.min(minYBoundary, maxYBoundary) -
-                                        buffer,
-                                    Math.max(minYBoundary, maxYBoundary) +
-                                        buffer / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            }
-                        }
-                    }
-                } else {
-                    if (
-                        maxYBoundary !== undefined &&
-                        minYBoundary !== undefined &&
-                        liquidityData
-                    ) {
-                        const buffer = Math.abs(
-                            (maxYBoundary - minYBoundary) / 6,
-                        );
-
-                        const domain = [
-                            Math.min(minYBoundary, maxYBoundary) - buffer,
-                            Math.max(minYBoundary, maxYBoundary) + buffer / 2,
-                        ];
-
-                        scaleData?.yScale.domain(domain);
-                    }
-                }
-            }
+            changeScale();
 
             setReset(false);
             setShowLatest(false);
@@ -4281,127 +3795,12 @@ export default function Chart(props: propsIF) {
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                if (poolPriceDisplay) {
-                    const xmin = scaleData?.xScaleCopy.domain()[0];
-                    const xmax = scaleData?.xScaleCopy.domain()[1];
-
-                    const filtered = unparsedCandleData.filter(
-                        (data: CandleData) =>
-                            data.time * 1000 >= xmin &&
-                            data.time * 1000 <= xmax,
-                    );
-
-                    if (filtered !== undefined && filtered.length > 0) {
-                        const minYBoundary = d3.min(filtered, (d) =>
-                            denomInBase
-                                ? d.invMaxPriceExclMEVDecimalCorrected
-                                : d.minPriceExclMEVDecimalCorrected,
-                        );
-                        const maxYBoundary = d3.max(filtered, (d) =>
-                            denomInBase
-                                ? d.invMinPriceExclMEVDecimalCorrected
-                                : d.maxPriceExclMEVDecimalCorrected,
-                        );
-
-                        if (
-                            location.pathname.includes('range') ||
-                            location.pathname.includes('reposition')
-                        ) {
-                            const low = ranges.filter(
-                                (target: any) => target.name === 'Min',
-                            )[0].value;
-                            const high = ranges.filter(
-                                (target: any) => target.name === 'Max',
-                            )[0].value;
-
-                            if (
-                                maxYBoundary !== undefined &&
-                                minYBoundary !== undefined
-                            ) {
-                                const buffer = Math.abs(
-                                    (Math.max(
-                                        Math.max(low, high),
-                                        maxYBoundary,
-                                    ) -
-                                        Math.min(
-                                            Math.min(low, high),
-                                            minYBoundary,
-                                        )) /
-                                        (simpleRangeWidth !== 100 ? 6 : 90),
-                                );
-
-                                const domain = [
-                                    Math.min(
-                                        Math.min(low, high),
-                                        minYBoundary,
-                                    ) - buffer,
-                                    Math.max(
-                                        Math.max(low, high),
-                                        maxYBoundary,
-                                    ) +
-                                        buffer / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            }
-                        } else if (location.pathname.includes('/limit')) {
-                            if (
-                                maxYBoundary !== undefined &&
-                                minYBoundary !== undefined
-                            ) {
-                                const value = limit[0].value;
-
-                                const low = Math.min(
-                                    minYBoundary,
-                                    value,
-                                    minTickForLimit,
-                                );
-
-                                const high = Math.max(
-                                    maxYBoundary,
-                                    value,
-                                    maxTickForLimit,
-                                );
-
-                                const bufferForLimit = Math.abs(
-                                    (low - high) / 6,
-                                );
-                                if (value > 0) {
-                                    const domain = [
-                                        Math.min(low, high) - bufferForLimit,
-                                        Math.max(low, high) +
-                                            bufferForLimit / 2,
-                                    ];
-
-                                    scaleData?.yScale.domain(domain);
-                                }
-                            }
-                        } else {
-                            if (
-                                maxYBoundary !== undefined &&
-                                minYBoundary !== undefined &&
-                                liquidityData
-                            ) {
-                                const buffer = Math.abs(
-                                    (maxYBoundary - minYBoundary) / 6,
-                                );
-
-                                const domain = [
-                                    Math.min(minYBoundary, maxYBoundary) -
-                                        buffer,
-                                    Math.max(minYBoundary, maxYBoundary) +
-                                        buffer / 2,
-                                ];
-
-                                scaleData?.yScale.domain(domain);
-                            }
-                        }
-                    }
-                }
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
                 ]);
+
+                changeScale();
             } else {
                 const diffY =
                     scaleData?.yScale.domain()[1] -
@@ -5482,7 +4881,7 @@ export default function Chart(props: propsIF) {
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
-            if (filtered !== undefined && filtered.length > 0) {
+            if (filtered !== undefined && filtered.length > 10) {
                 const minYBoundary = d3.min(filtered, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
