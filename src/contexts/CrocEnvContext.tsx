@@ -8,6 +8,7 @@ import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
+import { useMainnetProvider } from '../App/functions/getMainnetProvider';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -23,6 +24,7 @@ interface CrocEnvContextIF {
     topPools: topPoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
+    mainnetProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -59,6 +61,8 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
+    const mainnetProvider = useMainnetProvider();
+
     const crocEnvContext = {
         crocEnv,
         setCrocEnv,
@@ -67,6 +71,7 @@ export const CrocEnvContextProvider = (props: {
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
+        mainnetProvider,
     };
 
     useBlacklist(userAddress);

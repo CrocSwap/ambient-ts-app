@@ -32,7 +32,6 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { getMainnetProvider } from '../../../App/functions/getMainnetProvider';
 import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 
@@ -51,7 +50,7 @@ export default function ExchangeBalance(props: propsIF) {
         setIsTokenModalOpen,
     } = props;
 
-    const [mainnetProvider] = useState(getMainnetProvider());
+    const mainnetProvider = useContext(CrocEnvContext);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
