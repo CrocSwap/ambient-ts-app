@@ -5587,8 +5587,10 @@ export default function Chart(props: propsIF) {
                 },
             );
 
-            d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
+            d3.select(d3Yaxis.current).on('mousemove', (event: any) => {
                 d3.select(event.currentTarget).style('cursor', 'row-resize');
+            });
+            d3.select(d3Yaxis.current).on('mouseover', () => {
                 mouseLeaveCanvas();
             });
 
