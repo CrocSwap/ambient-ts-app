@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
@@ -12,7 +12,6 @@ import { PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 import {
-    resetConnectedUserDataLoadingStatus,
     resetUserGraphData,
     setChangesByUser,
     setDataLoadingStatus,
@@ -69,20 +68,6 @@ export const UserDataContextProvider = (props: {
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
-    const [hasValidPrevData, setHasValidPrevData] = useState<boolean>();
-    useEffect(
-        () => setHasValidPrevData(false),
-        [
-            isServerEnabled,
-            tokens.tokenUniv.length,
-            isConnected,
-            userAddress,
-            chainData.chainId,
-            lastBlockNumber == 0,
-            !!crocEnv,
-        ],
-    );
-
     useEffect(() => {
         if (
             isServerEnabled &&
@@ -92,11 +77,6 @@ export const UserDataContextProvider = (props: {
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
-            if (!hasValidPrevData) {
-                dispatch(resetConnectedUserDataLoadingStatus());
-                setHasValidPrevData(true);
-            }
-
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
@@ -117,14 +97,6 @@ export const UserDataContextProvider = (props: {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
-
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserRangeData',
-                                loadingStatus: false,
-                            }),
-                        );
-
                         if (userPositions && crocEnv) {
                             Promise.all(
                                 userPositions.map(
@@ -149,6 +121,12 @@ export const UserDataContextProvider = (props: {
                                         positions: updatedPositions,
                                     }),
                                 );
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'connectedUserRangeData',
+                                        loadingStatus: false,
+                                    }),
+                                );
                             });
                         }
                     })
@@ -171,12 +149,6 @@ export const UserDataContextProvider = (props: {
                 .then((response) => response?.json())
                 .then((json) => {
                     const userLimitOrderStates = json?.data;
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'connectedUserOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
                     if (userLimitOrderStates) {
                         Promise.all(
                             userLimitOrderStates.map(
@@ -199,6 +171,12 @@ export const UserDataContextProvider = (props: {
                                 setLimitOrdersByUser({
                                     dataReceived: true,
                                     limitOrders: updatedLimitOrderStates,
+                                }),
+                            );
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'connectedUserOrderData',
+                                    loadingStatus: false,
                                 }),
                             );
                         });
@@ -225,12 +203,6 @@ export const UserDataContextProvider = (props: {
                     cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserTxData',
-                                loadingStatus: false,
-                            }),
-                        );
                         if (updatedTransactions) {
                             dispatch(
                                 setChangesByUser({
@@ -292,6 +264,13 @@ export const UserDataContextProvider = (props: {
                             }
                             dispatch(setRecentTokens(result));
                         }
+
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserTxData',
+                                loadingStatus: false,
+                            }),
+                        );
                     })
                     .catch(console.error);
             } catch (error) {
