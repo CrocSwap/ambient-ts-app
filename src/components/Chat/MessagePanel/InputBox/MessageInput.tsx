@@ -27,6 +27,8 @@ interface MessageInputProps {
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
+    isLinkInCrocodileLabsLinks(word: string): boolean;
+    isLink(url: string): boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -81,17 +83,33 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
-        handleSendMsg(message, roomId);
-        setMessage('');
-        dontShowEmojiPanel();
+        if (
+            props.isLink(message) &&
+            !props.isLinkInCrocodileLabsLinks(message)
+        ) {
+            console.log('--------------------------DONT-------------------');
+        } else {
+            handleSendMsg(message, roomId);
+            setMessage('');
+            dontShowEmojiPanel();
+        }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
-            handleSendMsg(e.target.value, roomId);
-            setMessage('');
-            dontShowEmojiPanel();
+            if (
+                props.isLink(message) &&
+                !props.isLinkInCrocodileLabsLinks(message)
+            ) {
+                console.log(
+                    '--------------------------DONT-------------------',
+                );
+            } else {
+                handleSendMsg(message, roomId);
+                setMessage('');
+                dontShowEmojiPanel();
+            }
         } else if (
             mentPanelActive &&
             (e.key === 'ArrowUp' || e.key === 'ArrowDown')

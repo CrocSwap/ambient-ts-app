@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { User } from '../../../Model/UserModel';
 import styles from './MentionAutoComplete.module.css';
 

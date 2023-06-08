@@ -36,7 +36,7 @@ export default function Room(props: propsIF) {
         favoritePoolsArray,
         setFavoritePoolsArray,
     } = props;
-    const { topPools: rooms } = useContext(CrocEnvContext);
+    const rooms: PoolIF[] = [];
     const { favePools } = useContext(UserPreferenceContext);
     const currentPool = useAppSelector((state) => state.tradeData);
 
@@ -121,6 +121,63 @@ export default function Room(props: propsIF) {
         } else {
             setShowCurrentPoolButton(true);
         }
+
+        const currentPoolRoom: PoolIF = {
+            name:
+                currentPool.baseToken.symbol +
+                ' / ' +
+                currentPool.quoteToken.symbol,
+            base: {
+                name: currentPool.baseToken.name,
+                address: currentPool.baseToken.address,
+                symbol: currentPool.baseToken.symbol,
+                decimals: currentPool.baseToken.decimals,
+                chainId: currentPool.baseToken.chainId,
+                logoURI: currentPool.baseToken.logoURI,
+            },
+            quote: {
+                name: currentPool.quoteToken.name,
+                address: currentPool.quoteToken.address,
+                symbol: currentPool.quoteToken.symbol,
+                decimals: currentPool.quoteToken.decimals,
+                chainId: currentPool.quoteToken.chainId,
+                logoURI: currentPool.quoteToken.logoURI,
+            },
+            chainId: '33',
+            poolId: 10,
+        };
+
+        if (!roomArray.some(({ name }) => name === currentPoolRoom.name)) {
+            roomArray.push(currentPoolRoom);
+        }
+
+        const filteredArray1 = roomArray.filter((obj1) =>
+            favePools.pools.some(
+                (obj2) =>
+                    obj2.base.symbol + ' / ' + obj2.quote.symbol !==
+                        obj1.name &&
+                    obj1.name !==
+                        currentPool.baseToken.symbol +
+                            ' / ' +
+                            currentPool.quoteToken.symbol,
+            ),
+        );
+
+        const index = roomArray.findIndex((obj1) =>
+            favePools.pools.some(
+                (obj2) =>
+                    obj2.base.symbol + ' / ' + obj2.quote.symbol !==
+                        obj1.name &&
+                    obj1.name !==
+                        currentPool.baseToken.symbol +
+                            ' / ' +
+                            currentPool.quoteToken.symbol,
+            ),
+        );
+
+        if (index !== -1) {
+            roomArray.splice(index, 1);
+        }
     }, [
         isCurrentPool,
         currentPool.baseToken.symbol,
@@ -130,11 +187,6 @@ export default function Room(props: propsIF) {
     ]);
 
     useEffect(() => {
-        rooms?.map((pool: PoolIF) => {
-            if (!roomArray.some(({ name }) => name === pool.name)) {
-                roomArray.push(pool);
-            }
-        });
         const fave:
             | PoolIF[]
             | {
@@ -160,6 +212,7 @@ export default function Room(props: propsIF) {
                   speed: number;
                   id: number;
               }[] = [];
+
         favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
                 name: pool.base.symbol + ' / ' + pool.quote.symbol,
@@ -187,6 +240,22 @@ export default function Room(props: propsIF) {
 
             if (!roomArray.some(({ name }) => name === favPool.name)) {
                 roomArray.push(favPool);
+            }
+
+            if (
+                !roomArray.some(
+                    ({ name }) =>
+                        name ===
+                        currentPool.baseToken.symbol +
+                            ' / ' +
+                            currentPool.quoteToken.symbol,
+                )
+            ) {
+                roomArray.push(
+                    (currentPool.baseToken.symbol +
+                        ' / ' +
+                        currentPool.quoteToken.symbol) as unknown as PoolIF,
+                );
             }
 
             for (let x = 0; x < roomArray.length; x++) {

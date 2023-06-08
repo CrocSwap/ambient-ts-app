@@ -33,7 +33,7 @@ export const GRAPHCACHE_SMALL_URL =
     process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
 
 // const CHAT_BACKEND = 'https://proven-exchange-chat.herokuapp.com';
-const CHAT_BACKEND = 'http://localhost:5000';
+const CHAT_BACKEND = 'https://proven-exchange-chat.herokuapp.com';
 
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
