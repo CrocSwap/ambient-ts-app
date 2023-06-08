@@ -99,16 +99,6 @@ function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
-        console.log(
-            'previous message: ',
-            props.previousMessage,
-            ' current message: ',
-            props.message,
-            ' next message: ',
-            props.nextMessage,
-            ' ',
-            hasSeparator,
-        );
     }, [props.message, props.nextMessage, props.previousMessage]);
 
     const formatAMPM = (str: string) => {
