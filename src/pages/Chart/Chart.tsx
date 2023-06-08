@@ -4717,6 +4717,8 @@ export default function Chart(props: propsIF) {
         liqAskDepthSeries,
         liqMode,
         location,
+        minPrice,
+        maxPrice,
     ]);
 
     useEffect(() => {
@@ -4818,6 +4820,8 @@ export default function Chart(props: propsIF) {
         lineBidDepthSeries,
         liqMode,
         location,
+        minPrice,
+        maxPrice,
     ]);
 
     useEffect(() => {
