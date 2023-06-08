@@ -1,22 +1,14 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
+import { LS_KEY_CHART_SETTINGS } from '../../constants';
+import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 // interface for shape of data held in local storage
 interface chartSettingsIF {
-    isVolumeSubchartEnabled: boolean;
-    isTvlSubchartEnabled: boolean;
-    isFeeRateSubchartEnabled: boolean;
     marketOverlay: string;
     rangeOverlay: string;
+    candleTimeGlobal: number;
     candleTimeMarket: number;
     candleTimeRange: number;
-}
-
-// interface for class to manage a given subchart setting
-interface subchartSettingsIF {
-    readonly isEnabled: boolean;
-    enable: () => void;
-    disable: () => void;
-    toggle: () => void;
 }
 
 // interface for class to manage a given chart overlay
@@ -27,21 +19,29 @@ export interface overlayIF {
     readonly showNone: () => void;
 }
 
-export interface candleTimeIF {
-    time: number;
-    changeTime: (val: number) => void;
-    defaults: Array<{ readable: string; seconds: number }>;
-    readableTime: string;
+type ReadableTimeType = '1m' | '5m' | '15m' | '1h' | '4h' | '1d';
+type TimeInSecondsType = 60 | 300 | 900 | 3600 | 14400 | 86400;
+
+interface DefaultTimeIF {
+    readable: ReadableTimeType;
+    seconds: TimeInSecondsType;
 }
+
+export interface candleTimeIF {
+    time: TimeInSecondsType;
+    changeTime: (val: TimeInSecondsType) => void;
+    defaults: DefaultTimeIF[];
+    readableTime: ReadableTimeType;
+}
+
+type OverlayType = 'depth' | 'curve' | 'none';
 
 // interface for return value of this hook
 export interface chartSettingsMethodsIF {
-    volumeSubchart: subchartSettingsIF;
-    tvlSubchart: subchartSettingsIF;
-    feeRateSubchart: subchartSettingsIF;
     marketOverlay: overlayIF;
     rangeOverlay: overlayIF;
     candleTime: {
+        global: candleTimeIF;
         market: candleTimeIF;
         range: candleTimeIF;
     };
@@ -49,43 +49,15 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (): chartSettingsMethodsIF => {
-    // key for data held in local storage
-    const localStorageKey = 'chart_settings';
-
-    // fn to retrieve and parse persisted data from local storage
-    // will return `null` if the key-val pair does not exist
-    const getDataFromLocalStorage = (): chartSettingsIF | null =>
-        JSON.parse(localStorage.getItem(localStorageKey) as string);
-
-    // fn to check a user preference for any given subchart
-    const getSubchart = (subchart: string): boolean | undefined => {
-        // persisted data from local storage, returns `null` if not present
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
-        // declare an output variable to be assigned in switch router
-        let output: boolean | undefined;
-        // logic router to assign a value to output
-        // returns `undefined` if there is missing data or for invalid input
-        switch (subchart) {
-            case 'volume':
-                output = chartSettings?.isVolumeSubchartEnabled;
-                break;
-            case 'tvl':
-                output = chartSettings?.isTvlSubchartEnabled;
-                break;
-            case 'feeRate':
-                output = chartSettings?.isFeeRateSubchartEnabled;
-                break;
-            default:
-                return;
-        }
-        return output;
-    };
-
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
-    const getOverlay = (overlayFor: string): string | undefined => {
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
+    const getOverlay = (
+        overlayFor: 'market' | 'limit' | 'range',
+    ): OverlayType | undefined => {
+        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
+            LS_KEY_CHART_SETTINGS,
+        );
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
         // logic router to assign a value to output
@@ -101,46 +73,42 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             default:
                 return;
         }
-        return output;
+        return output as OverlayType;
     };
 
-    const getCandleTime = (timeFor: string): number | undefined => {
-        const chartSettings: chartSettingsIF | null = getDataFromLocalStorage();
+    const getCandleTime = (
+        timeFor: 'global' | 'market' | 'limit' | 'range',
+    ): TimeInSecondsType | undefined => {
+        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
+            LS_KEY_CHART_SETTINGS,
+        );
         let time: number | undefined;
         switch (timeFor) {
+            case 'global':
             case 'market':
             case 'limit':
-                time = chartSettings?.candleTimeMarket;
-                break;
             case 'range':
-                time = chartSettings?.candleTimeRange;
+                time = chartSettings?.candleTimeGlobal;
                 break;
             default:
                 return;
         }
-        return time;
+        return time as TimeInSecondsType;
     };
 
-    // hooks to memoize user preferences in local state
-    // initializer fallback value is default setting for new users
-    const [isVolumeSubchartEnabled, setIsVolumeSubchartEnabled] =
-        useState<boolean>(getSubchart('volume') ?? true);
-    const [isTvlSubchartEnabled, setIsTvlSubchartEnabled] = useState<boolean>(
-        getSubchart('tvl') ?? false,
-    );
-    const [isFeeRateSubchartEnabled, setIsFeeRateSubchartEnabled] =
-        useState<boolean>(getSubchart('feeRate') ?? false);
-
-    const [marketOverlay, setMarketOverlay] = useState<string>(
+    const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
     );
-    const [rangeOverlay, setRangeOverlay] = useState<string>(
+    const [rangeOverlay, setRangeOverlay] = useState<OverlayType>(
         getOverlay('range') ?? 'curve',
     );
-    const [candleTimeMarket, setCandleTimeMarket] = useState<number>(
+    const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
+        getCandleTime('global') ?? 3600, // 1 hr default
+    );
+    const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
     );
-    const [candleTimeRange, setCandleTimeRange] = useState<number>(
+    const [candleTimeRange, setCandleTimeRange] = useState<TimeInSecondsType>(
         getCandleTime('range') ?? 900, // switched from 86400 (1 day)
     );
 
@@ -148,66 +116,37 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
         localStorage.setItem(
-            localStorageKey,
+            LS_KEY_CHART_SETTINGS,
             JSON.stringify({
-                isVolumeSubchartEnabled,
-                isTvlSubchartEnabled,
-                isFeeRateSubchartEnabled,
                 marketOverlay,
                 rangeOverlay,
+                candleTimeGlobal,
                 candleTimeMarket,
                 candleTimeRange,
             }),
         );
     }, [
-        isVolumeSubchartEnabled,
-        isTvlSubchartEnabled,
-        isFeeRateSubchartEnabled,
         marketOverlay,
         rangeOverlay,
         candleTimeMarket,
         candleTimeRange,
+        candleTimeGlobal,
     ]);
-
-    // class definition for subchart setting and methods
-    class Subchart implements subchartSettingsIF {
-        // base value of the preference
-        public readonly isEnabled: boolean;
-        // state setter fn
-        private readonly setter: Dispatch<SetStateAction<boolean>>;
-        // @param enabled ➡ current value from local state
-        // @param setterFn ➡ fn to update local state
-        constructor(
-            enabled: boolean,
-            setterFn: Dispatch<SetStateAction<boolean>>,
-        ) {
-            this.isEnabled = enabled;
-            this.setter = setterFn;
-        }
-        // methods to assign a new value of the variable
-        // code in this file will carry through new value to local storage
-        enable() {
-            this.setter(true);
-        }
-        disable() {
-            this.setter(false);
-        }
-        toggle() {
-            this.setter(!this.isEnabled);
-        }
-    }
 
     // class definition for overlay setting and methods
     class Overlay implements overlayIF {
         // base value
-        public readonly overlay: string;
+        public readonly overlay: OverlayType;
         // pre-loaded setter functions
         public readonly showDepth: () => void;
         public readonly showCurve: () => void;
         public readonly showNone: () => void;
         // @param value ➡ current value from local state
         // @param setterFn ➡ fn to update local state
-        constructor(value: string, setterFn: Dispatch<SetStateAction<string>>) {
+        constructor(
+            value: OverlayType,
+            setterFn: Dispatch<SetStateAction<OverlayType>>,
+        ) {
             this.overlay = value;
             this.showDepth = () => setterFn('depth');
             this.showCurve = () => setterFn('curve');
@@ -216,10 +155,10 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     }
 
     class CandleTime implements candleTimeIF {
-        time: number;
+        time: TimeInSecondsType;
         // eslint-disable-next-line
-        changeTime: (_val: number) => void;
-        defaults = [
+        changeTime: (_val: TimeInSecondsType) => void;
+        defaults: DefaultTimeIF[] = [
             { readable: '1m', seconds: 60 },
             { readable: '5m', seconds: 300 },
             { readable: '15m', seconds: 900 },
@@ -228,43 +167,34 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             { readable: '1d', seconds: 86400 },
         ];
         readableTime =
-            this.defaults.find((pair) => pair.seconds === this.time)
-                ?.readable ?? '';
-        constructor(t: number, setterFn: Dispatch<SetStateAction<number>>) {
+            this.defaults.find(
+                (pair: DefaultTimeIF) => pair.seconds === this.time,
+            )?.readable ?? '15m';
+        constructor(
+            t: TimeInSecondsType,
+            setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
+        ) {
             this.time = t;
-            this.changeTime = (val: number) => {
+            this.changeTime = (val: TimeInSecondsType) => {
                 setterFn(val);
             };
         }
     }
 
-    const chartSettings = useMemo(() => {
+    const chartSettings = useMemo<chartSettingsMethodsIF>(() => {
         return {
-            volumeSubchart: new Subchart(
-                isVolumeSubchartEnabled,
-                setIsVolumeSubchartEnabled,
-            ),
-            tvlSubchart: new Subchart(
-                isTvlSubchartEnabled,
-                setIsTvlSubchartEnabled,
-            ),
-            feeRateSubchart: new Subchart(
-                isFeeRateSubchartEnabled,
-                setIsFeeRateSubchartEnabled,
-            ),
             marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
             rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
             candleTime: {
+                global: new CandleTime(candleTimeGlobal, setCandleTimeGlobal),
                 market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
                 range: new CandleTime(candleTimeRange, setCandleTimeRange),
             },
         };
     }, [
-        isVolumeSubchartEnabled,
-        isTvlSubchartEnabled,
-        isFeeRateSubchartEnabled,
         candleTimeMarket,
         candleTimeRange,
+        candleTimeGlobal,
         marketOverlay,
         rangeOverlay,
     ]);

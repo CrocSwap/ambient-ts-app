@@ -16,14 +16,15 @@ interface NavItemPropsIF {
     icon: ReactNode;
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
+    allowClicksOutside?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon, open, setOpen } = props;
+    const { children, icon, open, setOpen, allowClicksOutside = false } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
-        setOpen(false);
+        if (!allowClicksOutside) setOpen(false);
     };
 
     UseOnClickOutside(navItemRef, clickOutsideHandler);
@@ -42,7 +43,6 @@ function NavItem(props: NavItemPropsIF) {
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
-            onKeyDown={() => setOpen(true)}
         >
             <div className={styles.icon_button} onClick={() => setOpen(!open)}>
                 {icon}

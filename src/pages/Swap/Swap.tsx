@@ -200,10 +200,7 @@ function Swap(props: propsIF) {
     async function initiateSwap() {
         resetConfirmation();
         setIsWaitingForWallet(true);
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
@@ -307,10 +304,7 @@ function Swap(props: propsIF) {
     );
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
