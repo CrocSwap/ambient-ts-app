@@ -224,13 +224,7 @@ function TradeCharts(props: propsIF) {
                 className={styles.chart_overlay_container}
                 id='trade_charts_time_frame'
             >
-                <TimeFrame
-                    candleTime={
-                        isMarketOrLimitModule
-                            ? chartSettings.candleTime.market
-                            : chartSettings.candleTime.range
-                    }
-                />
+                <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
             <div
                 style={{
@@ -304,11 +298,6 @@ function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        // <FocusTrap
-        //     focusTrapOptions={{
-        //         clickOutsideDeactivates: true,
-        //     }}
-        // >
         <div
             className={styles.main_container_chart}
             style={{
@@ -364,7 +353,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>
             )}
@@ -374,7 +362,6 @@ function TradeCharts(props: propsIF) {
                 steps={tradeChartTutorialSteps}
             />
         </div>
-        // </FocusTrap>
     );
 }
 
