@@ -1,5 +1,6 @@
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
 import { memoizeTransactionGraphFn } from './memoizePromiseFn';
 
 const httpGraphCacheServerDomain = GRAPHCACHE_URL;
@@ -17,6 +18,12 @@ export const fetchTransactionGraphData = async (
 ) => {
     IS_LOCAL_ENV && console.debug('fetching transaction details graph data ');
 
+    const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
+        translateMainnetForGraphcache(
+            mainnetBaseTokenAddress,
+            mainnetQuoteTokenAddress,
+        );
+
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
@@ -26,8 +33,8 @@ export const fetchTransactionGraphData = async (
                 return fetch(
                     candleSeriesCacheEndpoint +
                         new URLSearchParams({
-                            base: mainnetBaseTokenAddress.toLowerCase(),
-                            quote: mainnetQuoteTokenAddress.toLowerCase(),
+                            base: mainnetBase.toLowerCase(),
+                            quote: mainnetQuote.toLowerCase(),
                             poolIdx: '36000',
                             // poolIdx: chainData.poolIndex.toString(),
                             period: period.toString(),
