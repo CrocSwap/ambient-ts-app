@@ -30,6 +30,7 @@ interface TabPropsIF {
     setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
+    isModalView?: boolean;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -39,6 +40,7 @@ export default function TabComponent(props: TabPropsIF) {
         setSelectedInsideTab,
         rightTabOptions,
         setShowPositionsOnlyToggle,
+        isModalView = false,
     } = props;
     const { outsideControl, setOutsideControl, selectedOutsideTab } =
         useContext(TradeTableContext);
@@ -244,6 +246,10 @@ export default function TabComponent(props: TabPropsIF) {
         </ul>
     );
 
+    const tabAlignStyle = isModalView
+        ? styles.justify_content_center
+        : styles.justify_content_flex_start;
+
     return (
         <div
             className={styles.tab_window}
@@ -251,7 +257,7 @@ export default function TabComponent(props: TabPropsIF) {
             aria-orientation='horizontal'
             aria-label=''
         >
-            <nav className={styles.tab_nav}>
+            <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
                 <AnimateSharedLayout>
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
