@@ -89,8 +89,8 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         changesInSelectedCandle,
         activeAccountTransactionData,
-        graphData?.positionsByUser,
-        graphData?.positionsByPool,
+        graphData?.changesByUser,
+        graphData?.changesByPool,
     ]);
 
     useEffect(() => {
