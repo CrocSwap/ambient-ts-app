@@ -201,30 +201,21 @@ function RangesRow(props: propsIF) {
 
     function handleWalletLinkClick() {
         if (!isAccountView)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: isAccountView ? false : true,
-                }),
+            window.open(
+                `/${
+                    isOwnerActiveAccount
+                        ? 'account'
+                        : ensName
+                        ? ensName
+                        : ownerId
+                }`,
             );
-
-        window.open(
-            `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`,
-        );
     }
 
     // eslint-disable-next-line
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isAccountView) {
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
             const accountUrl = `/${
                 isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
             }`;

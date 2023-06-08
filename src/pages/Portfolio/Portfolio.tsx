@@ -185,11 +185,13 @@ function Portfolio(props: propsIF) {
     if (addressFromParams && !isAddressEns && !isAddressHex)
         return <Navigate to='/404' replace />;
 
-    const [resolvedAddress, setResolvedAddress] = useState<string>('');
+    const [resolvedAddress, setResolvedAddress] = useState<string | undefined>(
+        undefined,
+    );
 
     const connectedAccountActive =
         !addressFromParams ||
-        resolvedAddress.toLowerCase() === userAddress?.toLowerCase();
+        resolvedAddress?.toLowerCase() === userAddress?.toLowerCase();
 
     useEffect(() => {
         (async () => {
@@ -197,10 +199,8 @@ function Portfolio(props: propsIF) {
                 try {
                     const newResolvedAddress =
                         await mainnetProvider.resolveName(addressFromParams);
-                    if (newResolvedAddress) {
-                        setResolvedAddress(newResolvedAddress);
-                        dispatch(setResolvedAddressRedux(newResolvedAddress));
-                    }
+                    setResolvedAddress(newResolvedAddress ?? '');
+                    dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
                     console.error({ error });
                 }
@@ -446,7 +446,7 @@ function Portfolio(props: propsIF) {
             : secondaryEnsName
             ? secondaryEnsName
             : '',
-        resolvedAddress: resolvedAddress,
+        resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
     };

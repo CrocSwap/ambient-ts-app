@@ -165,18 +165,12 @@ function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        if (!isAccountView)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
-
-        const accountUrl = `/${
-            isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-        }`;
-        window.open(accountUrl);
+        if (!isAccountView) {
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+        }
     };
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
