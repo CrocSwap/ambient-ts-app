@@ -12,7 +12,6 @@ import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import { LiquidityDataLocal } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -31,6 +30,7 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LiquidityDataLocal } from './TradeCharts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

@@ -1,12 +1,6 @@
-import {
-    CrocEnv,
-    CrocPoolView,
-    quoteConcFactor,
-    tickToPrice,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
-import { range } from 'd3';
+import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { TokenPriceFn } from './fetchTokenPrice';
 
 const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_liq_curve?';
@@ -58,19 +52,27 @@ async function expandLiquidityData(
     const pool = crocEnv.pool(base, quote);
     const curveTick = pool.spotTick();
 
-    const basePricePromise = cachedFetchTokenPrice(base, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
+    const mainnetBase = getMainnetEquivalent(base, chainId);
+    const mainnetQuote = getMainnetEquivalent(quote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        mainnetBase.token,
+        mainnetBase.chainId,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        mainnetQuote.token,
+        mainnetQuote.chainId,
+    );
 
-    const basePrice = (await basePricePromise)?.nativePrice?.value || '0.0';
-    const quotePrice = (await quotePricePromise)?.nativePrice?.value || '0.0';
+    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
+    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
 
     const ranges = bumpsToRanges(
         liq,
         await curveTick,
         await pool.baseDecimals,
         await pool.quoteDecimals,
-        parseFloat(basePrice),
-        parseFloat(quotePrice),
+        basePrice,
+        quotePrice,
     );
 
     return {
@@ -93,7 +95,18 @@ function bumpsToRanges(
     basePrice: number,
     quotePrice: number,
 ): LiquidityRangeIF[] {
-    const bumps = curve.liquidityBumps.sort((a, b) => a.bumpTick - b.bumpTick);
+    let bumps = curve.liquidityBumps;
+
+    // Insert a synthetic bump right at the current price tick, so curve is smooth
+    if (curve.liquidityBumps.filter((b) => b.bumpTick == tick).length == 0) {
+        bumps = bumps.concat({
+            bumpTick: tick,
+            liquidityDelta: 0,
+            latestUpdateTime: 0,
+        });
+    }
+
+    bumps = bumps.sort((a, b) => a.bumpTick - b.bumpTick);
 
     let lastTick = -Infinity;
     let liqRunning = curve.ambientLiq;
@@ -140,12 +153,12 @@ function bumpsToRanges(
             retVal.lowerBound >= tick
                 ? Math.sqrt(retVal.upperBoundPrice) -
                   Math.sqrt(retVal.lowerBoundPrice)
-                : Math.sqrt(retVal.lowerBoundInvPrice) -
-                  Math.sqrt(retVal.upperBoundInvPrice);
+                : Math.sqrt(retVal.lowerBoundPrice) -
+                  Math.sqrt(retVal.upperBoundPrice);
         const deltaSqrtInvPrice =
-            retVal.lowerBound >= tick
-                ? Math.sqrt(retVal.lowerBoundPrice) -
-                  Math.sqrt(retVal.upperBoundPrice)
+            retVal.upperBound <= tick
+                ? Math.sqrt(retVal.upperBoundInvPrice) -
+                  Math.sqrt(retVal.lowerBoundInvPrice)
                 : Math.sqrt(retVal.lowerBoundInvPrice) -
                   Math.sqrt(retVal.upperBoundInvPrice);
 
@@ -167,7 +180,7 @@ function bumpsToRanges(
         return retVal;
     });
 
-    const bidRanges = ranges.filter((r) => r.upperBound < tick);
+    const bidRanges = ranges.filter((r) => r.upperBound <= tick);
     const askRanges = ranges.filter((r) => r.lowerBound >= tick);
 
     /* Technically we may want to split the range that covers the price

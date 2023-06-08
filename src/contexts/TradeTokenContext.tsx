@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { fetchPoolLiquidity } from '../App/functions/fetchPoolLiquidity';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';

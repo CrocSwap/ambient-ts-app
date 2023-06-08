@@ -62,8 +62,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const LIQUIDITY_FETCH_PERIOD_MS = 30000; // Call (and cache) fetchLiquidity every N milliseconds
-
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 

@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
-import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
