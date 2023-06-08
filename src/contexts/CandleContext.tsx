@@ -165,8 +165,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 poolStats: 'true',
                 concise: 'true',
                 poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsBaseOverride: mainnetBaseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: mainnetQuoteTokenAddress.toLowerCase(),
                 poolStatsPoolIdxOverride: (
                     OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
                 ).toString(),

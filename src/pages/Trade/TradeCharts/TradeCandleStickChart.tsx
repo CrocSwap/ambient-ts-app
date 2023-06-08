@@ -298,49 +298,47 @@ function TradeCandleStickChart(props: propsIF) {
 
             const domainLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : Infinity;
+                    return o.activeLiq !== undefined ? o.activeLiq : Infinity;
                 }),
             );
             const domainRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : 0;
+                    return o.activeLiq !== undefined ? o.activeLiq : 0;
                 }),
             );
 
             const depthBidLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : Infinity;
                 }),
             );
+
             const depthBidRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : 0;
                 }),
             );
 
             const depthAskLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                        ? parseFloat(o.cumAskLiq)
+                    return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                        ? o.cumAskLiq
                         : Infinity;
                 }),
             );
+
             const depthAskRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
                     const price = denominationsInBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
-                        return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                            ? parseFloat(o.cumAskLiq)
+                        return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                            ? o.cumAskLiq
                             : 0;
                     }
                     return 0;

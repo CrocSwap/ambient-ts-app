@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
 import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
@@ -12,7 +13,7 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData?: LiquidityData;
+    liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
@@ -114,43 +115,6 @@ export interface VolumeByTimeData {
     time: number;
     volumeDay: number;
     method: string;
-}
-
-export interface LiquidityData {
-    time: number;
-    currentTick: number;
-    ranges: Array<Range>;
-    curveState: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-        network: string; // Backend network label - NOT same as chainId
-    };
-}
-
-export interface Range {
-    lowerBound: number | string;
-    lowerBoundPrice: number;
-    lowerBoundInvPrice: number | string;
-    lowerBoundPriceDecimalCorrected: number;
-    lowerBoundInvPriceDecimalCorrected: number | string;
-    upperBound: number;
-    upperBoundPrice: number;
-    upperBoundInvPrice: number;
-    upperBoundPriceDecimalCorrected: number;
-    upperBoundInvPriceDecimalCorrected: number;
-    activeLiq: string;
-    activeAmbientLiq: string;
-    activeConcLiq: string;
-    cumAskLiq: string;
-    cumAmbientAskLiq: string;
-    cumConcAskLiq: string;
-    cumBidLiq: string;
-    cumAmbientBidLiq: string;
-    cumConcBidLiq: string;
-    deltaAverageUSD: number;
-    cumAverageUSD: number;
 }
 
 export interface CandlesForAllPools {
@@ -513,12 +477,12 @@ export const graphDataSlice = createSlice({
             }
         },
 
-        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
+        setLiquidity: (state, action: PayloadAction<LiquidityDataIF>) => {
             // Sanitize the raw result from the backend
             const curve = action.payload.curveState;
             const base = normalizeAddr(curve.base);
             const quote = normalizeAddr(curve.quote);
-            const chainId = backendNetworkToChainId(curve.network);
+            const chainId = curve.chainId;
 
             // Verify that the result matches the current request in case multiple are in-flight
             if (
