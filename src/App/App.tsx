@@ -124,7 +124,7 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
-        currentLocation !== '/ToS' &&
+        currentLocation !== '/tos' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart &&
         isChainSupported && <Sidebar />;
@@ -137,7 +137,7 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
-        currentLocation == '/ToS' ||
+        currentLocation == '/tos' ||
         currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
@@ -303,7 +303,6 @@ export default function App() {
                             path='/:address'
                             element={<Portfolio userAccount={false} />}
                         />
-                        <Route path='/ToS' element={<TermsOfService />} />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
