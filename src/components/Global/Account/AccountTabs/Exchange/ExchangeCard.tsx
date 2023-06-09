@@ -53,7 +53,6 @@ export default function ExchangeCard(props: propsIF) {
                     isChainMainnet && tokenAddress !== ZERO_ADDRESS
                         ? tokenMapKey.split('_')[0]
                         : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                console.log({ mainnetAddress });
                 if (
                     mainnetAddress &&
                     (mainnetAddress ===
