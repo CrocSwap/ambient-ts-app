@@ -15,7 +15,10 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import { renderCanvasArray } from '../../../../pages/Chart/Chart';
+import {
+    renderCanvasArray,
+    setCanvasResolution,
+} from '../../../../pages/Chart/Chart';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -453,6 +456,7 @@ export default function TransactionDetailsGraph(
 
             d3.select(d3Yaxis.current).on('draw', function () {
                 if (yAxis) {
+                    setCanvasResolution(d3YaxisCanvas);
                     drawYaxis(
                         d3YaxisContext,
                         scaleData?.yScale,
