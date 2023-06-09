@@ -58,6 +58,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import CandleChart from './CandleChart';
+import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -172,7 +173,6 @@ export default function Chart(props: propsIF) {
     const {
         isTokenABase,
         denomInBase,
-        setIsCandleAdded,
         scaleData,
         poolPriceNonDisplay,
         selectedDate,
@@ -247,7 +247,6 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
-    const d3CanvasBar = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqBid = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqAsk = useRef<HTMLInputElement | null>(null);
 
@@ -363,7 +362,6 @@ export default function Chart(props: propsIF) {
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [barSeries, setBarSeries] = useState<any>();
     // Line Series
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [horizontalLine, setHorizontalLine] = useState<any>();
@@ -1744,7 +1742,6 @@ export default function Chart(props: propsIF) {
         scaleData,
         rescale,
         location,
-        barSeries,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
         showLatest,
@@ -4184,86 +4181,6 @@ export default function Chart(props: propsIF) {
     }, [ranges, horizontalLine, location.pathname]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
-            const canvasBarChart = d3fc
-                .autoBandwidth(d3fc.seriesCanvasBar())
-                .decorate((context: any, d: any) => {
-                    const close = denomInBase
-                        ? d.invPriceCloseExclMEVDecimalCorrected
-                        : d.priceCloseExclMEVDecimalCorrected;
-
-                    const open = denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected;
-
-                    context.fillStyle =
-                        d.volumeUSD === null
-                            ? 'transparent'
-                            : selectedDate !== undefined &&
-                              selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? 'rgba(205,193,255, 0.5)'
-                            : 'rgba(115,113,252, 0.5)';
-
-                    context.strokeStyle =
-                        d.volumeUSD === null
-                            ? 'transparent'
-                            : selectedDate !== undefined &&
-                              selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? 'rgba(205,193,255, 0.5)'
-                            : 'rgba(115,113,252, 0.5)';
-
-                    context.cursorStyle = 'pointer';
-                })
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.volumeScale)
-                .crossValue((d: any) => d.time * 1000)
-                .mainValue((d: any) => (d.volumeUSD ? d.volumeUSD : 0));
-
-            setBarSeries(() => canvasBarChart);
-            renderCanvasArray([d3CanvasBar]);
-        }
-    }, [scaleData, selectedDate]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasBar.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
-
-        if (barSeries) {
-            d3.select(d3CanvasBar.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    barSeries(unparsedCandleData);
-                })
-                .on('measure', (event: any) => {
-                    scaleData?.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 5,
-                    ]);
-                    barSeries.context(ctx);
-                });
-        }
-    }, [unparsedCandleData, barSeries]);
-
-    useEffect(() => {
-        if (showVolume) {
-            d3.select(d3CanvasBar.current)
-                .select('canvas')
-                .style('display', 'inline');
-        } else {
-            d3.select(d3CanvasBar.current)
-                .select('canvas')
-                .style('display', 'none');
-        }
-    }, [showVolume]);
-
-    useEffect(() => {
         if (liqMode === 'none') {
             d3.select(d3CanvasLiqAsk.current)
                 .select('canvas')
@@ -5747,15 +5664,13 @@ export default function Chart(props: propsIF) {
                             setBandwidth={setBandwidth}
                         />
 
-                        <d3fc-canvas
-                            ref={d3CanvasBar}
-                            className='volume-canvas'
-                            style={{
-                                position: 'relative',
-                                height: '50%',
-                                top: '50%',
-                            }}
-                        ></d3fc-canvas>
+                        <VolumeBarCanvas
+                            scaleData={scaleData}
+                            volumeData={unparsedCandleData}
+                            denomInBase={denomInBase}
+                            selectedDate={selectedDate}
+                            showVolume={showVolume}
+                        />
 
                         <d3fc-canvas
                             ref={d3CanvasLiqBid}
