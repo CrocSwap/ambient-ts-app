@@ -1,14 +1,24 @@
 .tx_details_container {
     width: auto;
     max-width: 1000px;
-    min-width: 340px;
+
 
     transition: all var(--animation-speed) ease-in-out;
-    background: url(../../../assets/images/backgrounds/background.png) no-repeat;
+  
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    padding: 1rem;
+}
+
+.main_outer_container{
+  
+    background: url(../../../assets/images/backgrounds/detailsCard.png)
+        no-repeat;
+        background-position: center bottom 50px;
+
+
 }
 
 .main_content {
@@ -32,8 +42,13 @@
 }
 
 .left_container {
-    /* width: 350px; */
-    padding-right: 2rem;
+    background: rgba(23, 29, 39, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+    margin-top: auto;
+    margin-bottom: auto;
+
+   
 }
 
 .right_container {
@@ -41,36 +56,56 @@
     background: rgba(23, 29, 39, 0.3);
     backdrop-filter: blur(10px);
     border-radius: 4px;
-    padding: 1rem;
+   
 }
 
 .ambi_copyright {
     display: flex;
     justify-content: center;
-    font-family: var(--font-logo);
-    font-weight: 100;
+   
+    font-weight: 300;
     font-size: 24px;
     line-height: 30px;
-    color: var(--text3);
+    color: var(--accent5);
     padding: 4px 0;
     cursor: default;
 }
 
 @media only screen and (min-width: 768px) {
-    .main_content {
+
+
+    .outer_container {
+        height: 562px;
+        width: 1000px;
+
+        display: grid;
+        grid-template-rows: 60px auto;
+        gap: 1rem;
+       
+    }
+
+    .main_outer_container{
+        width: 100%;
+        height: 100%;
+       
+        display: flex;
+        flex-direction: column;
+
+    }
+   .main_content {
+    width: 100%;
+    height: 100%;
         display: grid;
         grid-template-columns: 244px auto;
+        gap: 1rem;
 
         animation: fadeIn ease 1s;
         -webkit-animation: fadeIn ease 1s;
         -moz-animation: fadeIn ease 1s;
         -o-animation: fadeIn ease 1s;
         -ms-animation: fadeIn ease 1s;
-    }
 
-    .tx_details_container {
-        height: 500px;
-        width: 1000px;
+        
     }
 }
 

@@ -71,7 +71,7 @@ export default function TransactionDetails(props: propsIF) {
     // ) : null;
 
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <TransactionDetailsPriceInfo
@@ -95,7 +95,7 @@ export default function TransactionDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.tx_details_container}>
+        <div className={styles.outer_container}>
             <TransactionDetailsHeader
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}

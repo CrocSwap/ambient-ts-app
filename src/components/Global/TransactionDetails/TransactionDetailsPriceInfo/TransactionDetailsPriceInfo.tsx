@@ -169,7 +169,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     )}
                 </div>
             </Row>
-            <span className={styles.divider}></span>
+
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
