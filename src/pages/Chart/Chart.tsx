@@ -57,6 +57,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import CandleChart from './CandleChart';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -82,7 +83,7 @@ type crosshair = {
     x: number | Date;
     y: number | string;
 };
-type chartItemStates = {
+export type chartItemStates = {
     showTvl: boolean;
     showVolume: boolean;
     showFeeRate: boolean;
@@ -211,8 +212,7 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    const { expandTradeTable, handlePulseAnimation } =
-        useContext(TradeTableContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -247,7 +247,6 @@ export default function Chart(props: propsIF) {
         : 0;
 
     const d3Container = useRef<HTMLInputElement | null>(null);
-    const d3CanvasCandle = useRef<HTMLInputElement | null>(null);
     const d3CanvasBar = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqBid = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqAsk = useRef<HTMLInputElement | null>(null);
@@ -332,7 +331,6 @@ export default function Chart(props: propsIF) {
         lowerBound: 0,
     });
     const [selectedLiq, setSelectedLiq] = useState('');
-    const [firstCandle, setFirstCandle] = useState<number>();
 
     // d3
 
@@ -364,7 +362,6 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [candlestick, setCandlestick] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [barSeries, setBarSeries] = useState<any>();
     // Line Series
@@ -567,43 +564,6 @@ export default function Chart(props: propsIF) {
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
     }, []);
-
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (expandTradeTable) return;
-
-        if (unparsedCandleData && unparsedCandleData.length > 0) {
-            if (
-                !showLatest &&
-                firstCandle &&
-                unparsedCandleData[0].time !== firstCandle
-            ) {
-                setIsCandleAdded(false);
-                setFirstCandle(() => {
-                    return unparsedCandleData[0].time;
-                });
-
-                const domainLeft = scaleData?.xScale.domain()[0];
-                const domainRight = scaleData?.xScale.domain()[1];
-
-                scaleData?.xScale.domain([
-                    domainLeft + period * 1000,
-                    domainRight + period * 1000,
-                ]);
-            } else if (firstCandle === undefined) {
-                setFirstCandle(() => {
-                    return unparsedCandleData[0].time;
-                });
-            }
-        }
-
-        renderCanvasArray([d3CanvasCandle]);
-    }, [
-        diffHashSig(props.chartItemStates),
-        expandTradeTable,
-        lastCandleData,
-        firstCandle,
-    ]);
 
     const sameLocationLimit = () => {
         const resultData =
@@ -1347,9 +1307,6 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 clickedForLine = true;
-                                if (candlestick) {
-                                    setBandwidth(candlestick.bandwidth());
-                                }
                                 render();
                                 setZoomAndYdragControl(event);
                             }
@@ -1737,8 +1694,6 @@ export default function Chart(props: propsIF) {
                             }
                         }
                         changeScale();
-
-                        setBandwidth(candlestick.bandwidth());
                         render();
 
                         setZoomAndYdragControl(event);
@@ -1789,7 +1744,7 @@ export default function Chart(props: propsIF) {
         scaleData,
         rescale,
         location,
-        candlestick,
+        barSeries,
         diffHashSig(scaleData?.xScale.domain()[0]),
         diffHashSig(scaleData?.xScale?.domain()[1]),
         showLatest,
@@ -4098,94 +4053,8 @@ export default function Chart(props: propsIF) {
     }, [scaleData]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
-            const canvasCandlestick = d3fc
-                .autoBandwidth(d3fc.seriesCanvasCandlestick())
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .decorate((context: any, d: any) => {
-                    const close = denomInBase
-                        ? d.invPriceCloseExclMEVDecimalCorrected
-                        : d.priceCloseExclMEVDecimalCorrected;
-
-                    const open = denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected;
-
-                    context.fillStyle =
-                        selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#24243e';
-
-                    context.strokeStyle =
-                        selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#7371FC';
-
-                    context.cursorStyle = 'pointer';
-                })
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .crossValue((d: any) => d.time * 1000)
-                .highValue((d: any) =>
-                    denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
-                )
-                .lowValue((d: any) =>
-                    denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
-                )
-                .openValue((d: any) =>
-                    denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected,
-                )
-                .closeValue((d: any) =>
-                    denomInBase
-                        ? d.invPriceCloseExclMEVDecimalCorrected
-                        : d.priceCloseExclMEVDecimalCorrected,
-                );
-
-            setCandlestick(() => canvasCandlestick);
-            renderCanvasArray([d3CanvasCandle]);
-        }
-    }, [diffHashSig(scaleData), selectedDate]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasCandle.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        if (candlestick) {
-            d3.select(d3CanvasCandle.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    if (unparsedCandleData !== undefined) {
-                        candlestick(unparsedCandleData);
-                    }
-                })
-                .on('measure', (event: any) => {
-                    scaleData?.xScale.range([0, event.detail.width]);
-                    scaleData?.yScale.range([event.detail.height, 0]);
-                    scaleData?.xScaleCopy.range([0, event.detail.width]);
-
-                    candlestick.context(ctx);
-                });
-        }
-    }, [unparsedCandleData, candlestick, unparsedData]);
-
-    useEffect(() => {
-        if (d3CanvasCandle) {
-            const canvasDiv = d3.select(d3CanvasCandle.current) as any;
+        if (d3CanvasMain) {
+            const canvasDiv = d3.select(d3CanvasMain.current) as any;
 
             const resizeObserver = new ResizeObserver(() => {
                 render();
@@ -4978,7 +4847,7 @@ export default function Chart(props: propsIF) {
                     }
 
                     renderCanvasArray([
-                        d3CanvasCandle,
+                        // d3CanvasCandle,
                         d3CanvasLiqAsk,
                         d3CanvasLiqAskDepth,
                         d3CanvasLiqBid,
@@ -5866,10 +5735,18 @@ export default function Chart(props: propsIF) {
                     }}
                 >
                     <div className='chart_grid'>
-                        <d3fc-canvas
-                            ref={d3CanvasCandle}
-                            className='candle-canvas'
-                        ></d3fc-canvas>
+                        <CandleChart
+                            chartItemStates={props.chartItemStates}
+                            data={unparsedCandleData}
+                            denomInBase={denomInBase}
+                            lastCandleData={lastCandleData}
+                            period={period}
+                            scaleData={scaleData}
+                            selectedDate={selectedDate}
+                            showLatest={showLatest}
+                            setBandwidth={setBandwidth}
+                        />
+
                         <d3fc-canvas
                             ref={d3CanvasBar}
                             className='volume-canvas'
