@@ -48,6 +48,7 @@ export default function LimitActionModal(props: propsIF) {
         usdValue,
         baseDisplay,
         quoteDisplay,
+        truncatedDisplayPrice,
     } = useProcessOrder(limitOrder, userAddress);
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -367,6 +368,7 @@ export default function LimitActionModal(props: propsIF) {
                         baseDisplay={baseDisplay}
                         quoteDisplay={quoteDisplay}
                         networkFee={networkFee}
+                        truncatedDisplayPrice={truncatedDisplayPrice}
                     />
                     <LimitActionButton
                         onClick={type === 'Remove' ? removeFn : claimFn}

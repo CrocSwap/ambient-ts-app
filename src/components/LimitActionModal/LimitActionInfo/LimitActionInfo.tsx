@@ -8,6 +8,7 @@ interface ILimitActionInfoProps {
     usdValue: string;
     baseDisplay: string;
     quoteDisplay: string;
+    truncatedDisplayPrice: string | undefined;
     networkFee: string | undefined;
 }
 
@@ -19,6 +20,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
         usdValue,
         baseDisplay,
         quoteDisplay,
+        truncatedDisplayPrice,
         networkFee,
     } = props;
 
@@ -44,8 +46,18 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                     <Row>
                         <span>Limit Order Price</span>
                         <div className={styles.align_center}>
-                            <p className={styles.info_text}>{quoteDisplay}</p>
-                            <img src={quoteTokenLogoURI} alt='' width='15px' />
+                            <p className={styles.info_text}>
+                                {type === 'Remove'
+                                    ? quoteDisplay
+                                    : truncatedDisplayPrice}
+                            </p>
+                            {type === 'Remove' && (
+                                <img
+                                    src={quoteTokenLogoURI}
+                                    alt=''
+                                    width='15px'
+                                />
+                            )}
                         </div>
                     </Row>
                 </div>
@@ -57,8 +69,18 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                                 : 'Claimable Amount'}{' '}
                         </span>
                         <div className={styles.align_center}>
-                            <p className={styles.info_text}>{baseDisplay}</p>
-                            <img src={baseTokenLogoURI} alt='' width='15px' />
+                            <p className={styles.info_text}>
+                                {type === 'Remove' ? baseDisplay : quoteDisplay}
+                            </p>
+                            <img
+                                src={
+                                    type === 'Remove'
+                                        ? baseTokenLogoURI
+                                        : quoteTokenLogoURI
+                                }
+                                alt=''
+                                width='15px'
+                            />
                         </div>
                     </Row>
                 </div>
