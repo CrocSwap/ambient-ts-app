@@ -649,7 +649,9 @@ function Swap(props: propsIF) {
                                 liquidityProviderFeeString
                             }
                             swapGasPriceinDollars={swapGasPriceinDollars}
-                            isOnTradeRoute={isOnTradeRoute}
+                            isQtyEntered={
+                                sellQtyString !== '' && buyQtyString !== ''
+                            }
                         />
                         {isUserConnected ===
                         undefined ? null : isUserConnected === true ? (
