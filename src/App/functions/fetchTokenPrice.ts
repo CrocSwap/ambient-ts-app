@@ -7,7 +7,7 @@ export const fetchTokenPrice = async (
     address: string,
     chainId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
+    _lastTime: number,
 ) => {
     const chain = chainId === '0x1' ? EvmChain.ETHEREUM : EvmChain.ETHEREUM;
 
