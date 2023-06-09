@@ -184,12 +184,13 @@ function ExtraInfo(props: propsIF) {
         </div>
     );
 
-    const dropDownOrNull = priceImpact ? (
-        <div style={{ cursor: 'pointer', marginTop: '4px' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
+    const dropDownOrNull =
+        priceImpact && isQtyEntered ? (
+            <div style={{ cursor: 'pointer', marginTop: '4px' }}>
+                {!showExtraDetails && <RiArrowDownSLine size={22} />}
+                {showExtraDetails && <RiArrowUpSLine size={22} />}
+            </div>
+        ) : null;
 
     const dispatch = useAppDispatch();
 
