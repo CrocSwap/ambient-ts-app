@@ -81,6 +81,7 @@
         display: grid;
         grid-template-rows: 60px auto;
         gap: 1rem;
+        padding-top: 1rem;
        
     }
 
