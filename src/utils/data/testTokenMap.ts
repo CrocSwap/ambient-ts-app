@@ -1,5 +1,9 @@
 export const testTokenMap = new Map([
     [
+        '0x0000000000000000000000000000000000000000_0x1', // 'ETH' on Mainnet
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
+    ],
+    [
         '0x0000000000000000000000000000000000000000_0x5', // 'ETH' on Goerli
         '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
     ],
