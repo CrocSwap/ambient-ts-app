@@ -410,8 +410,12 @@ function Swap(props: propsIF) {
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageSwapCostInGasDrops = 106000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageSwapCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
                 '$' +
