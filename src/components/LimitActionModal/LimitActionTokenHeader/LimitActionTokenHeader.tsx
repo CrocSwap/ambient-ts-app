@@ -1,9 +1,11 @@
-import styles from './ClaimOrderTokenHeader.module.css';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
-interface IClaimOrderTokenHeaderProps {
+import styles from './LimitActionTokenHeader.module.css';
+
+interface ILimitActionTokenHeaderProps {
     isOrderFilled: boolean;
+
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
@@ -11,8 +13,8 @@ interface IClaimOrderTokenHeaderProps {
     isDenomBase: boolean;
 }
 
-export default function ClaimOrderTokenHeader(
-    props: IClaimOrderTokenHeaderProps,
+export default function LimitActionTokenHeader(
+    props: ILimitActionTokenHeaderProps,
 ) {
     const dispatch = useAppDispatch();
 
@@ -30,6 +32,7 @@ export default function ClaimOrderTokenHeader(
                             ? props.baseTokenLogoURI
                             : props.quoteTokenLogoURI
                     }
+                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png'
                     alt=''
                 />
                 <img
@@ -40,6 +43,7 @@ export default function ClaimOrderTokenHeader(
                     }
                     alt=''
                 />
+                {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
                 <span>
                     {props.isDenomBase
                         ? props.baseTokenSymbol
