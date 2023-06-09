@@ -228,7 +228,7 @@ export default function PortfolioTabs(props: propsIF) {
             if (
                 !connectedAccountActive &&
                 !!tokens.tokenUniv &&
-                resolvedAddress !== undefined &&
+                resolvedAddress &&
                 !!crocEnv
             ) {
                 IS_LOCAL_ENV &&
