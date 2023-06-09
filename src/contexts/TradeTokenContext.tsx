@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { memoizePoolLiquidity } from '../App/functions/getPoolLiquidity';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
@@ -63,9 +62,6 @@ export const TradeTokenContextProvider = (props: {
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
     const { address: userAddress, isConnected } = useAccount();
-
-    const cachedPoolLiquidity = memoizePoolLiquidity();
-
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -94,7 +90,6 @@ export const TradeTokenContextProvider = (props: {
         receiptCount: receiptData.sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
-        cachedPoolLiquidity,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
