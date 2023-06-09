@@ -1033,8 +1033,12 @@ function Range() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageRangeCostInGasDrops = 140000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageRangeCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
                 '$' +
