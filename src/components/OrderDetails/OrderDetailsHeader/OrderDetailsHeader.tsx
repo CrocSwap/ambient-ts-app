@@ -1,12 +1,12 @@
 import styles from './OrderDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy, FiDownload } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 interface OrderDetailsPropsIF {
-    downloadAsImage: () => void;
+    copyOrderDetailsToClipboard: () => Promise<void>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyPositionId(): void;
@@ -16,18 +16,17 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         handleCopyPositionId,
         showShareComponent,
         setShowShareComponent,
-        downloadAsImage,
+        copyOrderDetailsToClipboard,
     } = props;
     const {
         globalModal: { close: onClose },
     } = useContext(AppStateContext);
 
-    // eslint-disable-next-line
     const phIcon = (
         <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
 
-    const copyIconWithTooltip = (
+    const copySlotIDIconWithTooltip = (
         <IconWithTooltip
             title='Copy position slot ID to clipboard'
             placement='bottom'
@@ -38,10 +37,10 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         </IconWithTooltip>
     );
 
-    const downloadIconWithTooltip = (
-        <IconWithTooltip title='Download shareable image' placement='bottom'>
-            <div onClick={downloadAsImage}>
-                <FiDownload size={25} color='var(--text3)' />
+    const copyImageIconWithTooltip = (
+        <IconWithTooltip title='Copy shareable image' placement='bottom'>
+            <div onClick={copyOrderDetailsToClipboard}>
+                <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -61,8 +60,8 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
-                {showShareComponent ? copyIconWithTooltip : phIcon}
-                {showShareComponent ? downloadIconWithTooltip : phIcon}
+                {showShareComponent ? copySlotIDIconWithTooltip : phIcon}
+                {showShareComponent ? copyImageIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />
