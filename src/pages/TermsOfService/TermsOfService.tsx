@@ -259,7 +259,7 @@ export default function TermsOfService() {
                             2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </span>
                         <span style={{ fontWeight: 'bold' }}>
-                            INTELLECTUAL PROPERTY RIGHTS.
+                            INTELLECTUAL PROPERTY RIGHTS.{' '}
                         </span>
                         We own all intellectual property and other rights in
                         each of our Services and its respective contents,
@@ -1145,18 +1145,37 @@ export default function TermsOfService() {
                         inclusive of attorneys’ fees and interest, shall be
                         subject to JAMS’s most current version of the
                         Streamlined Arbitration Rules and procedures available
-                        at
-                        http://www.jamsadr.com/rules-streamlined-arbitration/;
-                        all other disputes shall be subject to JAMS’s most
+                        at{' '}
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='https://www.jamsadr.com/rules-streamlined-arbitration/'
+                        >
+                            www.jamsadr.com/rules-streamlined-arbitration/
+                        </a>
+                        ; all other disputes shall be subject to JAMS’s most
                         current version of the Comprehensive Arbitration Rules
-                        and Procedures, available at
-                        http://www.jamsadr.com/rules-comprehensive-arbitration/.
-                        JAMS’s rules are also available at www.jamsadr.com or by
-                        calling JAMS at 800-352-5267. If JAMS is not available
-                        to arbitrate, the parties will select an alternative
-                        arbitral forum. Your responsibility to pay any JAMS fees
-                        and costs will be solely as set forth in the applicable
-                        JAMS rules.&nbsp;{' '}
+                        and Procedures, available at{' '}
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='https://www.jamsadr.com/rules-comprehensive-arbitration/'
+                        >
+                            www.jamsadr.com/rules-comprehensive-arbitration/
+                        </a>
+                        . JAMS’s rules are also available at{' '}
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='https://www.jamsadr.com'
+                        >
+                            www.jamsadr.com
+                        </a>{' '}
+                        or by calling JAMS at 800-352-5267. If JAMS is not
+                        available to arbitrate, the parties will select an
+                        alternative arbitral forum. Your responsibility to pay
+                        any JAMS fees and costs will be solely as set forth in
+                        the applicable JAMS rules.&nbsp;{' '}
                     </p>
                     <p>
                         A party who wishes to initiate arbitration must provide
