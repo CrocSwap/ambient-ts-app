@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHeader';
@@ -31,6 +31,8 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { CrocPositionView } from '@crocswap-libs/sdk';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -60,6 +62,16 @@ export default function OrderRemoval(props: propsIF) {
     const [txErrorCode, setTxErrorCode] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
+    const [currentLiquidity, setCurrentLiquidity] = useState<
+        BigNumber | undefined
+    >();
+
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
+    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
+
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
@@ -72,9 +84,35 @@ export default function OrderRemoval(props: propsIF) {
         }
     }, [txErrorCode]);
 
-    const [removalPercentage, setRemovalPercentage] = useState(100);
-    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
-    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
+    const liquidityToBurn = useMemo(
+        () => currentLiquidity?.mul(removalPercentage).div(100),
+        [currentLiquidity, removalPercentage],
+    );
+
+    const updateLiq = async () => {
+        try {
+            if (!crocEnv || !limitOrder) return;
+            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
+            const pos = new CrocPositionView(pool, limitOrder.user);
+
+            const liqBigNum = (
+                await pos.queryKnockoutLivePos(
+                    limitOrder.isBid,
+                    limitOrder.bidTick,
+                    limitOrder.askTick,
+                )
+            ).liq;
+            setCurrentLiquidity(liqBigNum);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (crocEnv && limitOrder) {
+            updateLiq();
+        }
+    }, [crocEnv, lastBlockNumber, limitOrder?.limitOrderId]);
 
     const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
@@ -121,17 +159,12 @@ export default function OrderRemoval(props: propsIF) {
             setQuoteQtyToBeRemoved(quoteRemovalTruncated);
     }, [removalPercentage]);
 
-    const positionLiquidity = limitOrder.positionLiq;
-
     const removeFn = async () => {
+        if (!liquidityToBurn) return;
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
             IS_LOCAL_ENV && { limitOrder };
-
-            const liqToRemove = BigNumber.from(positionLiquidity)
-                .mul(removalPercentage)
-                .div(100);
 
             let tx;
             try {
@@ -139,7 +172,7 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(liquidityToBurn);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -153,7 +186,7 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(liquidityToBurn);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -361,7 +394,7 @@ export default function OrderRemoval(props: propsIF) {
                     {/* {tooltipExplanationDataDisplay} */}
                     <RemoveOrderButton
                         removeFn={removeFn}
-                        disabled={false}
+                        disabled={liquidityToBurn === undefined}
                         title='Remove Limit Order'
                     />
                 </div>
