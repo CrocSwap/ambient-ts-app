@@ -48,9 +48,14 @@ export function getMainnetEquivalent(
             token: lookup.split('_')[0],
             chainId: lookup.split('_')[1],
         };
-    } else {
+    } else if (chainId === '0x1') {
         return {
             token: token,
+            chainId: chainId,
+        };
+    } else {
+        return {
+            token: '',
             chainId: chainId,
         };
     }
