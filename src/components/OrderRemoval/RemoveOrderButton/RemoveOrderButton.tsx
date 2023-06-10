@@ -7,13 +7,13 @@ interface IRemoveOrderButtonProps {
 }
 
 export default function RemoveOrderButton(props: IRemoveOrderButtonProps) {
-    const { removeFn, title } = props;
+    const { removeFn, title, disabled } = props;
 
     return (
         <div className={styles.button_container}>
             <Button
-                title={title}
-                disabled={props.disabled}
+                title={disabled ? '...' : title}
+                disabled={disabled}
                 action={removeFn}
                 flat={true}
             />
