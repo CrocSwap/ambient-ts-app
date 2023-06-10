@@ -3,24 +3,26 @@ import styles from './LimitActionInfo.module.css';
 
 interface ILimitActionInfoProps {
     type: 'Remove' | 'Claim';
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
     usdValue: string;
-    baseDisplay: string;
-    quoteDisplay: string;
-    truncatedDisplayPrice: string | undefined;
+    tokenQuantity: string | undefined;
+    tokenQuantityLogo: string;
+    limitOrderPrice: string | undefined;
+    limitOrderPriceLogo: string;
+    receivingAmount: string | undefined;
+    receivingAmountLogo: string;
     networkFee: string | undefined;
 }
 
 export default function LimitActionInfo(props: ILimitActionInfoProps) {
     const {
         type,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
         usdValue,
-        baseDisplay,
-        quoteDisplay,
-        truncatedDisplayPrice,
+        tokenQuantity,
+        tokenQuantityLogo,
+        limitOrderPrice,
+        limitOrderPriceLogo,
+        receivingAmount,
+        receivingAmountLogo,
         networkFee,
     } = props;
 
@@ -39,25 +41,21 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                     <Row>
                         <span>Token Quantity</span>
                         <div className={styles.align_center}>
-                            <p className={styles.info_text}>{baseDisplay}</p>
-                            <img src={baseTokenLogoURI} alt='' width='15px' />
+                            <p className={styles.info_text}>{tokenQuantity}</p>
+                            <img src={tokenQuantityLogo} alt='' width='15px' />
                         </div>
                     </Row>
                     <Row>
                         <span>Limit Order Price</span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>
-                                {type === 'Remove'
-                                    ? quoteDisplay
-                                    : truncatedDisplayPrice}
+                                {limitOrderPrice}
                             </p>
-                            {type === 'Remove' && (
-                                <img
-                                    src={quoteTokenLogoURI}
-                                    alt=''
-                                    width='15px'
-                                />
-                            )}
+                            <img
+                                src={limitOrderPriceLogo}
+                                alt=''
+                                width='15px'
+                            />
                         </div>
                     </Row>
                 </div>
@@ -70,14 +68,10 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                         </span>
                         <div className={styles.align_center}>
                             <p className={styles.info_text}>
-                                {type === 'Remove' ? baseDisplay : quoteDisplay}
+                                {receivingAmount}
                             </p>
                             <img
-                                src={
-                                    type === 'Remove'
-                                        ? baseTokenLogoURI
-                                        : quoteTokenLogoURI
-                                }
+                                src={receivingAmountLogo}
                                 alt=''
                                 width='15px'
                             />

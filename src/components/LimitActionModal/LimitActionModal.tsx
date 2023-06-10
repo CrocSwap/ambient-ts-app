@@ -49,7 +49,9 @@ export default function LimitActionModal(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
+        initialTokenQty,
     } = useProcessOrder(limitOrder, userAddress);
+
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -299,6 +301,47 @@ export default function LimitActionModal(props: propsIF) {
         }
     }
 
+    const limitInfoProps =
+        type === 'Remove'
+            ? {
+                  type,
+                  usdValue,
+                  tokenQuantity: limitOrder.isBid ? baseDisplay : quoteDisplay,
+                  tokenQuantityLogo: limitOrder.isBid
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  limitOrderPrice: truncatedDisplayPrice,
+                  limitOrderPriceLogo: !isDenomBase
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  receivingAmount: limitOrder.isBid
+                      ? baseDisplay
+                      : quoteDisplay,
+                  receivingAmountLogo: limitOrder.isBid
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  networkFee,
+              }
+            : {
+                  type,
+                  usdValue,
+                  tokenQuantity: initialTokenQty,
+                  tokenQuantityLogo: limitOrder.isBid
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  limitOrderPrice: truncatedDisplayPrice,
+                  limitOrderPriceLogo: !isDenomBase
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  receivingAmount: !limitOrder.isBid
+                      ? baseDisplay
+                      : quoteDisplay,
+                  receivingAmountLogo: !limitOrder.isBid
+                      ? baseTokenLogo
+                      : quoteTokenLogo,
+                  networkFee,
+              };
+
     useEffect(() => {
         handleConfirmationChange();
     }, [
@@ -360,16 +403,7 @@ export default function LimitActionModal(props: propsIF) {
                     quoteTokenLogoURI={quoteTokenLogo}
                 />
                 <div style={{ padding: '0 8px' }}>
-                    <LimitActionInfo
-                        type={type}
-                        baseTokenLogoURI={baseTokenLogo}
-                        quoteTokenLogoURI={quoteTokenLogo}
-                        usdValue={usdValue}
-                        baseDisplay={baseDisplay}
-                        quoteDisplay={quoteDisplay}
-                        networkFee={networkFee}
-                        truncatedDisplayPrice={truncatedDisplayPrice}
-                    />
+                    <LimitActionInfo {...limitInfoProps} />
                     <LimitActionButton
                         onClick={type === 'Remove' ? removeFn : claimFn}
                         disabled={false}
