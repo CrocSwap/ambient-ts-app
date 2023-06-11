@@ -260,7 +260,6 @@ export async function getChainStats(
                 return undefined;
             }
             const payload = json.data as DexTokenAggServerIF[];
-            console.log(payload);
             return expandChainStats(
                 payload,
                 chainId,
@@ -301,7 +300,6 @@ async function expandChainStats(
          * because we're only 10 most recent tokens. */
         accum.volumeTotalUsd += s.volumeTotalUsd / 2.0;
     });
-    console.log(subAggs);
     return accum;
 }
 
