@@ -31,13 +31,13 @@ import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
 import { TokenPriceFn } from '../functions/fetchTokenPrice';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { getLiquidityFee } from '../functions/getLiquidityFee';
 import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
 import { getPositionData } from '../functions/getPositionData';
 import { getTvlSeries } from '../functions/getTvlSeries';
 import { getVolumeSeries } from '../functions/getVolumeSeries';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
+import { getLiquidityFee } from '../functions/getPoolStats';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;

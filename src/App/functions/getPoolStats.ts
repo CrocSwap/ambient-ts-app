@@ -10,6 +10,35 @@ import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const poolStatsFreshEndpoint = GRAPHCACHE_SMALL_URL + '/pool_stats?';
 
+export const getLiquidityFee = async (
+    base: string,
+    quote: string,
+    poolIdx: number,
+    chainId: string,
+): Promise<number | undefined> => {
+    return fetch(
+        poolStatsFreshEndpoint +
+            new URLSearchParams({
+                base: base,
+                quote: quote,
+                poolIdx: poolIdx.toString(),
+                chainId: chainId,
+            }),
+    )
+        .then((response) => response?.json())
+        .then((json) => {
+            if (!json?.data) {
+                return undefined;
+            }
+
+            const payload = json.data as PoolStatsServerIF;
+            return payload.feeRate;
+        })
+        .catch(() => {
+            return undefined;
+        });
+};
+
 const fetchPoolStats = async (
     chainId: string,
     base: string,
@@ -122,6 +151,7 @@ interface PoolStatsServerIF {
     baseFee: number;
     quoteFee: number;
     lastPriceIndic: number;
+    feeRate: number;
 }
 
 type PoolStatsIF = PoolStatsServerIF & {
@@ -143,64 +173,6 @@ type PoolStatsIF = PoolStatsServerIF & {
     tvlTotalUsd: number;
     volumeTotalUsd: number;
     feeTotalUsd: number;
-};
-
-const poolVolumeCacheEndpoint = GRAPHCACHE_URL + '/pool_volume?';
-
-const getPoolVolume = async (
-    tokenA: string,
-    tokenB: string,
-    poolIdx: number,
-    chainId: string,
-): Promise<number> => {
-    if (tokenA && tokenB && poolIdx) {
-        const totalVolumeUSD = fetch(
-            poolVolumeCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    base: tokenA,
-                    quote: tokenB,
-                    poolIdx: poolIdx.toString(),
-                    concise: 'true',
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                return json?.data?.totalVolumeUSD;
-            });
-        return totalVolumeUSD;
-    } else {
-        return 0;
-    }
-};
-
-const poolTvlCacheEndpoint = GRAPHCACHE_URL + '/pool_tvl?';
-
-const getPoolTVL = async (
-    tokenA: string,
-    tokenB: string,
-    poolIdx: number,
-    chainId: string,
-): Promise<number> => {
-    if (tokenA && tokenB && poolIdx) {
-        const tvl = fetch(
-            poolTvlCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    base: tokenA,
-                    quote: tokenB,
-                    poolIdx: poolIdx.toString(),
-                    concise: 'true',
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                return json?.data?.tvl;
-            });
-        return tvl;
-    } else {
-        return 0;
-    }
 };
 
 const poolPriceChangeCacheEndpoint = GRAPHCACHE_URL + '/pool_price_change?';
@@ -256,7 +228,7 @@ const get24hChange = async (
     }
 };
 
-export { getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
+export { get24hChange, getPoolPriceChange };
 
 export type PoolStatsFn = (
     chain: string,
