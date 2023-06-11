@@ -1,9 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import {
-    GRAPHCACHE_SMALL_URL,
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-} from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
@@ -180,7 +176,7 @@ const get24hChange = async (
     quoteToken: string,
     poolIdx: number,
     denomInBase: boolean,
-): Promise<number> => {
+): Promise<number | undefined> => {
     const nowQuery = fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -230,6 +226,106 @@ const get24hChange = async (
         return 0.0;
     }
 };
+
+interface DexAggStatsIF {
+    tvlTotalUsd: number;
+    volumeTotalUsd: number;
+    feesTotalUsd: number;
+}
+
+interface DexTokenAggServerIF {
+    tokenAddr: string;
+    dexVolume: number;
+    dexTvl: number;
+    dexFees: number;
+}
+
+export async function getChainStats(
+    chainId: string,
+    crocEnv: CrocEnv,
+    cachedFetchTokenPrice: TokenPriceFn,
+): Promise<DexAggStatsIF | undefined> {
+    const N_TOKEN_CHAIN_SUMM = 10;
+    return fetch(
+        GRAPHCACHE_SMALL_URL +
+            '/chain_stats?' +
+            new URLSearchParams({
+                chainId: chainId,
+                n: N_TOKEN_CHAIN_SUMM.toString(),
+            }),
+    )
+        .then((response) => response?.json())
+        .then((json) => {
+            if (!json?.data) {
+                return undefined;
+            }
+            const payload = json.data as DexTokenAggServerIF[];
+            console.log(payload);
+            return expandChainStats(
+                payload,
+                chainId,
+                crocEnv,
+                cachedFetchTokenPrice,
+            );
+        })
+        .catch((e) => {
+            console.warn(e);
+            return undefined;
+        });
+}
+
+async function expandChainStats(
+    tokenStats: DexTokenAggServerIF[],
+    chainId: string,
+    crocEnv: CrocEnv,
+    cachedFetchTokenPrice: TokenPriceFn,
+): Promise<DexAggStatsIF> {
+    const subAggs = await Promise.all(
+        tokenStats.map((t) =>
+            expandTokenStats(t, chainId, crocEnv, cachedFetchTokenPrice),
+        ),
+    );
+
+    const accum = {
+        tvlTotalUsd: 0.0,
+        volumeTotalUsd: 0.0,
+        feesTotalUsd: 0.0,
+    };
+
+    subAggs.forEach((s) => {
+        accum.tvlTotalUsd += s.tvlTotalUsd;
+        accum.feesTotalUsd += s.feesTotalUsd;
+
+        /* Because each trade has two sides and we're summing each token's
+         * volume divide by two. This may undercount volume from long tail pairs,
+         * because we're only 10 most recent tokens. */
+        accum.volumeTotalUsd += s.volumeTotalUsd / 2.0;
+    });
+    console.log(subAggs);
+    return accum;
+}
+
+async function expandTokenStats(
+    stats: DexTokenAggServerIF,
+    chainId: string,
+    crocEnv: CrocEnv,
+    cachedFetchTokenPrice: TokenPriceFn,
+): Promise<DexAggStatsIF> {
+    const decimals = crocEnv.token(stats.tokenAddr).decimals;
+
+    const mainnetEquiv = getMainnetEquivalent(stats.tokenAddr, chainId);
+    const usdPrice = cachedFetchTokenPrice(
+        mainnetEquiv.token,
+        mainnetEquiv.chainId,
+    ).then((p) => p?.usdPrice || 0.0);
+
+    const mult = (await usdPrice) / Math.pow(10, await decimals);
+    return {
+        tvlTotalUsd: stats.dexTvl * mult,
+        volumeTotalUsd: stats.dexVolume * mult,
+        feesTotalUsd: stats.dexFees * mult,
+    };
+}
 
 export { get24hChange };
 
