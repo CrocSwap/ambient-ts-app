@@ -41,7 +41,6 @@ import { getLiquidityFee } from '../functions/getPoolStats';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
-    httpGraphCacheServerDomain: string;
     pathname: string;
     chainData: ChainSpec;
     searchableTokens: TokenIF[];
@@ -193,7 +192,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 );
 
                 // retrieve pool liquidity provider fee
-                if (props.isServerEnabled && props.httpGraphCacheServerDomain) {
+                if (props.isServerEnabled) {
                     getLiquidityFee(
                         sortedTokens[0],
                         sortedTokens[1],
@@ -528,7 +527,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.chainId,
         props.chainData.poolIndex,
         props.searchableTokens,
-        props.httpGraphCacheServerDomain,
         lastBlockNumWait,
         !!props.crocEnv,
     ]);

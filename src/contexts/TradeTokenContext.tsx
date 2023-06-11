@@ -83,7 +83,6 @@ export const TradeTokenContextProvider = (props: {
         isTokenABase,
     } = usePoolMetadata({
         crocEnv,
-        httpGraphCacheServerDomain: GRAPHCACHE_URL,
         pathname: location.pathname,
         chainData,
         searchableTokens: tokens.tokenUniv,

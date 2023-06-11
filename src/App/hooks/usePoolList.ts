@@ -10,6 +10,8 @@ export const usePoolList = (
 
     useEffect(() => {
         const pools = fetchPoolList(chainId, poolIndex);
+        pools.then(console.log);
+        pools.then(setPoolList).then(console.log);
         Promise.resolve<TempPoolIF[]>(pools)
             .then((res) => setPoolList(res))
             .catch((err) => {
