@@ -33,8 +33,6 @@ export async function fetchDepositBalances(
 
             const tokens = json.data.tokens as string[];
 
-            console.log(tokens);
-            console.log(props);
             return Promise.all(tokens.map((t) => expandTokenBalance(t, props)));
         })
         .catch((e) => {
@@ -47,8 +45,6 @@ async function expandTokenBalance(
     token: string,
     props: IFetchDepositBalancesProps,
 ): Promise<IDepositedTokenBalance> {
-    console.log(props.crocEnv);
-    console.log(await props.crocEnv.context);
     const details = props.cachedTokenDetails(
         (await props.crocEnv.context).provider,
         token,
