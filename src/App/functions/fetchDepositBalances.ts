@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { IDepositedTokenBalance } from './fetchTokenBalances';
 
@@ -16,7 +16,7 @@ export async function fetchDepositBalances(
     const { chainId, user } = props;
 
     const depositBalancesCacheEndpoint =
-        GRAPHCACHE_URL + '/gcgo/user_balance_tokens?';
+        GRAPHCACHE_SMALL_URL + '/user_balance_tokens?';
 
     return fetch(
         depositBalancesCacheEndpoint +
