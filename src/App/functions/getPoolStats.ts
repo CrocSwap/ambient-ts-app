@@ -48,7 +48,6 @@ const fetchPoolStats = async (
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<PoolStatsIF | undefined> => {
-    IS_LOCAL_ENV && console.debug('fetching fresh pool stats ');
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -175,30 +174,6 @@ type PoolStatsIF = PoolStatsServerIF & {
     feeTotalUsd: number;
 };
 
-const poolPriceChangeCacheEndpoint = GRAPHCACHE_URL + '/pool_price_change?';
-
-const getPoolPriceChange = async (
-    chainId: string,
-    baseToken: string,
-    quoteToken: string,
-    poolIdx: number,
-) => {
-    return fetch(
-        poolPriceChangeCacheEndpoint +
-            new URLSearchParams({
-                chainId: chainId,
-                base: baseToken,
-                quote: quoteToken,
-                poolIdx: poolIdx.toString(),
-                concise: 'true',
-            }),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            return json.data;
-        });
-};
-
 const get24hChange = async (
     chainId: string,
     baseToken: string,
@@ -206,29 +181,57 @@ const get24hChange = async (
     poolIdx: number,
     denomInBase: boolean,
 ): Promise<number> => {
-    if (baseToken && quoteToken && poolIdx) {
-        const changePercentage = fetch(
-            poolPriceChangeCacheEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    base: baseToken,
-                    quote: quoteToken,
-                    poolIdx: poolIdx.toString(),
-                    concise: 'true',
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                if (denomInBase) return json?.data?.changeQuoteOverBase;
-                return json?.data?.changeBaseOverQuote;
-            });
-        return changePercentage;
+    const nowQuery = fetch(
+        poolStatsFreshEndpoint +
+            new URLSearchParams({
+                chainId: chainId,
+                base: baseToken,
+                quote: quoteToken,
+                poolIdx: poolIdx.toString(),
+            }),
+    )
+        .then((response) => response.json())
+        .then((json) => {
+            if (!json?.data) {
+                return;
+            }
+            const payload = json.data as PoolStatsServerIF;
+            return payload.lastPriceIndic;
+        });
+
+    const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
+    const ydayQuery = fetch(
+        poolStatsFreshEndpoint +
+            new URLSearchParams({
+                chainId: chainId,
+                base: baseToken,
+                quote: quoteToken,
+                poolIdx: poolIdx.toString(),
+                histTime: ydayTime.toString(),
+            }),
+    )
+        .then((response) => response.json())
+        .then((json) => {
+            if (!json?.data) {
+                return;
+            }
+            const payload = json.data as PoolStatsServerIF;
+            return payload.lastPriceIndic;
+        });
+
+    const ydayPrice = await ydayQuery;
+    const nowPrice = await nowQuery;
+
+    if (ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0) {
+        return denomInBase
+            ? nowPrice / ydayPrice - 1.0
+            : ydayPrice / nowPrice - 1.0;
     } else {
-        return 0;
+        return 0.0;
     }
 };
 
-export { get24hChange, getPoolPriceChange };
+export { get24hChange };
 
 export type PoolStatsFn = (
     chain: string,
