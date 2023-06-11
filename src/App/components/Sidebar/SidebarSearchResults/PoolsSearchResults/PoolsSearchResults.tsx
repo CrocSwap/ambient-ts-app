@@ -9,17 +9,21 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, cachedPoolStatsFetch } = props;
+    const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        props;
     const { tokenA } = useAppSelector((state) => state.tradeData);
 
     const {
+        crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -62,6 +66,8 @@ export default function PoolsSearchResults(props: propsIF) {
                                 handleClick={handleClick}
                                 pool={pool}
                                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                cachedFetchTokenPrice={cachedFetchTokenPrice}
+                                crocEnv={crocEnv}
                             />
                         ))}
                     </ol>

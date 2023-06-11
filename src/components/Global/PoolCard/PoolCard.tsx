@@ -24,8 +24,11 @@ export default function PoolCard(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { cachedPoolStatsFetch, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+    const {
+        cachedPoolStatsFetch,
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -151,7 +154,8 @@ export default function PoolCard(props: propsIF) {
                 poolIndex &&
                 chainId &&
                 lastBlockNumber &&
-                shouldInvertDisplay !== undefined
+                shouldInvertDisplay !== undefined &&
+                crocEnv
             ) {
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
@@ -159,11 +163,13 @@ export default function PoolCard(props: propsIF) {
                     pool.quote.address,
                     poolIndex,
                     Math.floor(Date.now() / 60000),
+                    crocEnv,
+                    cachedFetchTokenPrice,
                 );
 
-                const tvlResult = poolStats?.tvl;
-                const volumeResult = poolStats?.volume; // display the 24 hour volume
-                const apyResult = poolStats?.apy;
+                const tvlResult = poolStats?.tvlTotalUsd;
+                const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
+                const apyResult = 1.0;
 
                 if (tvlResult) {
                     const tvlString = formatAmountOld(tvlResult);
@@ -274,7 +280,7 @@ export default function PoolCard(props: propsIF) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>24h Vol.</div>
+                <div className={styles.row_title}>Volume</div>
                 <div className={styles.vol}>
                     {poolVolume === undefined ? '…' : `$${poolVolume}`}
                 </div>
