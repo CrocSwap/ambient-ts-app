@@ -14,6 +14,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 
 interface propsIF {
     pool: topPoolIF;
@@ -157,6 +158,16 @@ export default function PoolCard(props: propsIF) {
                 shouldInvertDisplay !== undefined &&
                 crocEnv
             ) {
+                const RANGE_WIDTH = 0.1;
+
+                const apyEst = estimateFrom24HrRangeApr(
+                    RANGE_WIDTH,
+                    pool.base.address,
+                    pool.quote.address,
+                    crocEnv,
+                    lastBlockNumber,
+                );
+
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
@@ -169,7 +180,7 @@ export default function PoolCard(props: propsIF) {
 
                 const tvlResult = poolStats?.tvlTotalUsd;
                 const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
-                const apyResult = 1.0;
+                const apyResult = await apyEst;
 
                 if (tvlResult) {
                     const tvlString = formatAmountOld(tvlResult);

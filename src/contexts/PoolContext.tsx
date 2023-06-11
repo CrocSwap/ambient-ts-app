@@ -7,6 +7,7 @@ import React, {
     useState,
 } from 'react';
 import { useAccount } from 'wagmi';
+import { estimateFrom24HrAmbientApr } from '../App/functions/fetchAprEst';
 import { usePoolPricing } from '../App/hooks/usePoolPricing';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
@@ -90,10 +91,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         dailyVol,
     };
 
-    // Approximately 24 hours in Ethereum. TODO make this generalizable across
-    // chains.
-    const FIXED_APY_N_BLOCK_LOOKBACK = 7000;
-
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
@@ -105,25 +102,14 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 quoteTokenAddress &&
                 lastBlockNumber > 0
             ) {
-                const lookbackBlockNum =
-                    lastBlockNumber - FIXED_APY_N_BLOCK_LOOKBACK;
-                const lookbackBlock = provider.getBlock(lookbackBlockNum);
+                const annualizedGrowth = estimateFrom24HrAmbientApr(
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    crocEnv,
+                    lastBlockNumber,
+                );
 
-                const nowGrowth = crocEnv
-                    .pool(baseTokenAddress, quoteTokenAddress)
-                    .cumAmbientGrowth(lastBlockNumber);
-                const prevGrowth = crocEnv
-                    .pool(baseTokenAddress, quoteTokenAddress)
-                    .cumAmbientGrowth(lookbackBlockNum);
-
-                const periodGrowth = (await nowGrowth) - (await prevGrowth);
-                const timeSecs =
-                    Date.now() / 1000 - (await lookbackBlock).timestamp;
-
-                const timeYears = timeSecs / (365 * 24 * 3600);
-                const annualizedGrowth = periodGrowth / timeYears;
-
-                setAmbientApy(annualizedGrowth);
+                setAmbientApy(await annualizedGrowth);
             }
         })();
     }, [
