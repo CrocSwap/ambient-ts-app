@@ -1,9 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import {
-    GRAPHCACHE_SMALL_URL,
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-} from '../../constants';
+import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
 import {
     getMainnetEquivalent,
     translateMainnetForGraphcache,
