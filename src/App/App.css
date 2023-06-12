@@ -12,18 +12,7 @@
 }
 
 /* ===== Scrollbar CSS ===== */
-/* Firefox */
-* {
-    scrollbar-width: none;
-}
 
-body::-webkit-scrollbar {
-    display: none;
-}
-
-body::-webkit-scrollbar-track {
-    background: transparent; /* opacity: 0; should do the thing either */
-}
 body::-webkit-scrollbar-thumb {
     background: linear-gradient(
         0deg,
