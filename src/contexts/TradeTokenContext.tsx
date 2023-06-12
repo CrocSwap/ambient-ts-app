@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';

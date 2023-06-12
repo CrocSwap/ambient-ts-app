@@ -155,9 +155,6 @@ export interface CandleData {
     volumeUSD: number;
     averageLiquidityFee: number;
     time: number;
-    poolHash: string;
-    firstBlock: number;
-    lastBlock: number;
     minPriceDecimalCorrected: number;
     maxPriceDecimalCorrected: number;
     priceOpenDecimalCorrected: number;
@@ -174,22 +171,11 @@ export interface CandleData {
     invMaxPriceExclMEVDecimalCorrected: number;
     priceOpenExclMEVDecimalCorrected: number;
     invPriceOpenExclMEVDecimalCorrected: number;
-    numSwaps: number;
-    netBaseFlow: string;
-    netQuoteFlow: string;
-    totalBaseFlow: string;
-    totalQuoteFlow: string;
-    firstSwap: string;
-    lastSwap: string;
-    numSwapsFromCroc: number;
-    numSwapsFromUniV3: number;
-    network: string;
     chainId: string;
     base: string;
     quote: string;
     poolIdx: number;
     period: number;
-    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {
