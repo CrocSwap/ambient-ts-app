@@ -42,11 +42,14 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 ${noBackground ? styles.no_background_modal : null}
                 `}
                 onMouseDown={(e) => e.stopPropagation()}
-                style={{ justifyContent: 'flex-start' }}
+                style={{ justifyContent: 'flex-start', borderRadius: '4px' }}
                 tabIndex={0}
                 aria-label={`${title} modal`}
             >
-                <section className={styles.modal_content}>
+                <section
+                    className={styles.modal_content}
+                    style={{ borderRadius: '4px' }}
+                >
                     {title && (
                         <SimpleModalHeader title={title} onClose={onClose} />
                     )}

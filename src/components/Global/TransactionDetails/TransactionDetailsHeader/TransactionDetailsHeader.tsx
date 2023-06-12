@@ -1,6 +1,7 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import logo from '../../../../assets/images/logos/ambient_logo.png';
+import logoText from '../../../../assets/images/logos/logo_text.png';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
@@ -27,10 +28,6 @@ export default function TransactionDetailsHeader(
         globalModal: { close: onClose },
     } = useContext(AppStateContext);
 
-    const phIcon = (
-        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
-    );
-
     const copyTxHashIconWithTooltip = (
         <IconWithTooltip
             title='Copy transaction hash to clipboard'
@@ -53,20 +50,23 @@ export default function TransactionDetailsHeader(
     return (
         <div className={styles.container}>
             <section className={styles.logo_container}>
-                <img src={ambientLogo} alt='ambient' width='35px' />
-                <span className={styles.ambient_title}>ambient</span>
+                <img src={logo} alt='ambient' className={styles.logo} />
+                <img
+                    src={logoText}
+                    alt='ambient'
+                    className={styles.logo_text}
+                />
             </section>
 
             <section className={styles.settings_control}>
+                {!showShareComponent ? copyTxHashIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
                 <button
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
-
-                {showShareComponent ? copyTxHashIconWithTooltip : phIcon}
-                {showShareComponent ? copyImageIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />

@@ -1,16 +1,16 @@
 import { Dispatch, SetStateAction } from 'react';
-import styles from './RemoveOrderSettings.module.css';
+import styles from './LimitActionSettings.module.css';
 import { BsArrowLeft } from 'react-icons/bs';
-import Button from '../../Global/Button/Button';
+import { Button } from '@material-ui/core';
 import { IS_LOCAL_ENV } from '../../../constants';
 
-interface RemoveOrderSettingsPropsIF {
+interface LimitActionSettingsPropsIF {
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
     onBackClick: () => void;
 }
 
-export default function RemoveOrderSettings(props: RemoveOrderSettingsPropsIF) {
+export default function LimitActionSettings(props: LimitActionSettingsPropsIF) {
     // eslint-disable-next-line
     const { showSettings, setShowSettings, onBackClick } = props;
     const preset1 = '0.1';
