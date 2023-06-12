@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
@@ -48,56 +49,6 @@ export interface LimitOrdersByPool {
     limitOrders: LimitOrderIF[];
 }
 
-export interface PoolVolumeSeries {
-    dataReceived: boolean;
-    pools: Array<VolumeSeriesByPool>;
-}
-
-export interface VolumeSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    volumeData: VolumeSeriesByPoolTimeAndResolution;
-}
-
-export interface TvlSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<TvlByTimeData>;
-}
-
-export interface VolumeSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<VolumeByTimeData>;
-}
-
-export interface TvlByTimeData {
-    time: number;
-    tvl: number;
-    method: string;
-}
-
-export interface VolumeByTimeData {
-    time: number;
-    volumeDay: number;
-    method: string;
-}
-
 export interface CandlesForAllPools {
     pools: Array<Pool>;
 }
@@ -107,7 +58,6 @@ export interface Pool {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
     };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
@@ -117,43 +67,10 @@ export interface CandlesByPoolAndDuration {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
+        chainId: string;
     };
     duration: number;
     candles: Array<CandleData>;
-}
-
-export interface TvlData {
-    interpBadness: number;
-    interpDistHigher: number;
-    interpDistLower: number;
-    method: string;
-    time: number;
-    tvl: number;
-}
-
-export interface CandleData {
-    tvlData: TvlData;
-    volumeUSD: number;
-    averageLiquidityFee: number;
-    time: number;
-    minPriceDecimalCorrected: number;
-    maxPriceDecimalCorrected: number;
-    priceOpenDecimalCorrected: number;
-    priceCloseDecimalCorrected: number;
-    priceCloseExclMEVDecimalCorrected: number;
-    invPriceCloseExclMEVDecimalCorrected: number;
-    invMinPriceDecimalCorrected: number;
-    invMaxPriceDecimalCorrected: number;
-    invPriceOpenDecimalCorrected: number;
-    invPriceCloseDecimalCorrected: number;
-    minPriceExclMEVDecimalCorrected: number;
-    invMinPriceExclMEVDecimalCorrected: number;
-    maxPriceExclMEVDecimalCorrected: number;
-    invMaxPriceExclMEVDecimalCorrected: number;
-    priceOpenExclMEVDecimalCorrected: number;
-    invPriceOpenExclMEVDecimalCorrected: number;
-    period: number;
 }
 
 export interface PositionsByUser {
