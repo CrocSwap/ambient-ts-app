@@ -1,5 +1,7 @@
 import styles from './RangeDetailsHeader.module.css';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import ambientLogoText from '../../../assets/images/logos/logo_text.png';
+
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { Dispatch, SetStateAction } from 'react';
@@ -20,10 +22,6 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         showShareComponent,
         setShowShareComponent,
     } = props;
-
-    const phIcon = (
-        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
-    );
 
     const copySlotIDIconWithTooltip = (
         <IconWithTooltip
@@ -48,7 +46,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         <div className={styles.container}>
             <section className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' width='35px' />
-                <span className={styles.ambient_title}>ambient</span>
+                <img src={ambientLogoText} alt='ambient' width='176px' />
             </section>
 
             <section className={styles.settings_control}>
@@ -58,17 +56,8 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
                 >
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
-
-                {/* {showShareComponent ? (
-                    <div onClick={handleCopyAddress}>
-                        <FiCopy size={25} color='var(--text3)' />
-                    </div>
-                ) : (
-                    phIcon
-                )} */}
-                {showShareComponent ? copySlotIDIconWithTooltip : phIcon}
-
-                {showShareComponent ? copyImageIconWithTooltip : phIcon}
+                {!showShareComponent ? copySlotIDIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />
