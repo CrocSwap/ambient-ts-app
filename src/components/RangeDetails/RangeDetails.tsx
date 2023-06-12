@@ -291,9 +291,8 @@ export default function RangeDetails(props: propsIF) {
     //         ))}
     //     </div>
     // ) : null;
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -324,16 +323,14 @@ export default function RangeDetails(props: propsIF) {
                         }
                         isAccountView={isAccountView}
                     />
-                    {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
-                {/* <RangeDetailsActions /> */}
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.outer_container}>
             <RangeDetailsHeader
                 onClose={closeGlobalModal}
                 copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}

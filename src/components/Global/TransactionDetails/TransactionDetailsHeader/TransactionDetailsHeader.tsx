@@ -1,6 +1,7 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import ambientLogoText from '../../../../assets/images/logos/logo_text.png';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
@@ -50,7 +51,7 @@ export default function TransactionDetailsHeader(
         <div className={styles.container}>
             <section className={styles.logo_container}>
                 <img src={ambientLogo} alt='ambient' width='35px' />
-                <span className={styles.ambient_title}>ambient</span>
+                <img src={ambientLogoText} alt='ambient' width='176px' />
             </section>
 
             <section className={styles.settings_control}>
