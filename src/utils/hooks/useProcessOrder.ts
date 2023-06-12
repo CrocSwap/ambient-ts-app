@@ -483,6 +483,8 @@ export const useProcessOrder = (
                 ? limitOrder.claimableLiqBaseDecimalCorrected
                 : limitOrder.claimableLiqQuoteDecimalCorrected;
             const intialTokenQtyNum = middlePriceDisplayNum * finalTokenQty;
+            const invIntialTokenQtyNum =
+                (1 / middlePriceDisplayNum) * finalTokenQty;
             const intialTokenQtyTruncated =
                 intialTokenQtyNum === 0
                     ? '0'
@@ -496,7 +498,24 @@ export const useProcessOrder = (
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            setInitialTokenQty(intialTokenQtyTruncated);
+            const invIntialTokenQtyTruncated =
+                invIntialTokenQtyNum === 0
+                    ? '0'
+                    : invIntialTokenQtyNum < 0.0001
+                    ? invIntialTokenQtyNum.toExponential(2)
+                    : invIntialTokenQtyNum < 2
+                    ? invIntialTokenQtyNum.toPrecision(3)
+                    : invIntialTokenQtyNum >= 100000
+                    ? formatAmountOld(invIntialTokenQtyNum)
+                    : invIntialTokenQtyNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialTokenQty(
+                isDenomBase
+                    ? intialTokenQtyTruncated
+                    : invIntialTokenQtyTruncated,
+            );
         }
     }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
 
