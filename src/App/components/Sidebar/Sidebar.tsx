@@ -25,7 +25,8 @@ import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import unlock from '../../../assets/images/sidebarImages/unlock.svg';
+import upDownChevrons from '../../../assets/images/sidebarImages/chevrons-up-down.svg';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -35,6 +36,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 function Sidebar() {
     const { cachedPoolStatsFetch } = useContext(CachedDataContext);
@@ -232,34 +234,14 @@ function Sidebar() {
 
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
+    const [isLocked, setIsLocked] = useState(false);
 
-    const openAllButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                if (!sidebar.isOpen) {
-                    sidebar.open();
-                }
-                setOpenAllDefault(true);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {openAllDefault ? 'Collapse All' : 'Expand All'}
-        </button>
-    );
+    const toggleLockSidebar = () => setIsLocked(!isLocked);
 
-    const collapseButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                setOpenAllDefault(false);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
-        </button>
-    );
+    const toggleExpandCollapseAll = () => {
+        setIsDefaultOverridden(true);
+        setOpenAllDefault(!openAllDefault);
+    };
 
     const searchContainerDisplay = (
         <div
@@ -271,22 +253,27 @@ function Sidebar() {
                 ? AnalyticsSearchContainer
                 : searchContainer}
             {sidebar.isOpen ? (
-                <DefaultTooltip
-                    interactive
-                    title={!openAllDefault ? openAllButton : collapseButton}
-                    placement={'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={() => sidebar.close(true)}
-                        />
-                    </div>
-                </DefaultTooltip>
+                <div style={{ cursor: 'pointer', display: 'flex' }}>
+                    <img
+                        // TODO: add lock image here
+                        src={isLocked ? unlock : unlock}
+                        alt='Lock/Unlock All'
+                        onClick={toggleLockSidebar}
+                    />
+                    <img
+                        src={upDownChevrons}
+                        alt='Collapse/Expand All'
+                        onClick={toggleExpandCollapseAll}
+                    />
+                    <input
+                        type='image'
+                        src={closeSidebarImage}
+                        alt='close sidebar'
+                        onClick={() => sidebar.close(true)}
+                        disabled={isLocked}
+                        style={{ opacity: isLocked ? 0.5 : 1 }}
+                    />
+                </div>
             ) : (
                 <BiSearch
                     size={18}
