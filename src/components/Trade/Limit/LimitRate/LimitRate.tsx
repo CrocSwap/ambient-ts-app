@@ -140,9 +140,19 @@ export default function LimitRate(props: propsIF) {
                                 isValid &&
                                 targetValue !== previousDisplayPrice
                             ) {
-                                // remove first character if it is a negative sign
-                                let targetValPositive = targetValue;
-                                while (targetValPositive.startsWith('-')) {
+                                // remove first character if it is not a numeral
+                                let targetValPositive = targetValue.trim();
+                                const checkFirstCharValid = (): boolean => {
+                                    return (
+                                        targetValPositive.startsWith('-') ||
+                                        targetValPositive.startsWith('+') ||
+                                        targetValPositive.startsWith(',') ||
+                                        targetValPositive.startsWith('%') ||
+                                        targetValPositive.startsWith('e') ||
+                                        targetValPositive.startsWith('E')
+                                    );
+                                };
+                                while (checkFirstCharValid()) {
                                     targetValPositive =
                                         targetValPositive.substring(1);
                                 }
