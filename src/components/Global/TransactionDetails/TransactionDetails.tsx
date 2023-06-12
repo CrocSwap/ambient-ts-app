@@ -26,12 +26,17 @@ export default function TransactionDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyTransactionDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Transaction Details copied to clipboard', 'info');
+            }
         }
     };
 
@@ -48,27 +53,6 @@ export default function TransactionDetails(props: propsIF) {
         copy(txHash);
         openSnackbar(`${txHash} copied`, 'info');
     }
-
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) {
-    //             item.checked = !item.checked;
-    //         }
-
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
 
     const shareComponent = (
         <div ref={detailsRef}>
@@ -94,16 +78,18 @@ export default function TransactionDetails(props: propsIF) {
         </div>
     );
 
+    const transactionDetailsHeaderProps = {
+        showSettings,
+        setShowSettings,
+        copyTransactionDetailsToClipboard,
+        setShowShareComponent,
+        showShareComponent,
+        handleCopyAddress,
+    };
+
     return (
         <div className={styles.tx_details_container}>
-            <TransactionDetailsHeader
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                downloadAsImage={downloadAsImage}
-                setShowShareComponent={setShowShareComponent}
-                showShareComponent={showShareComponent}
-                handleCopyAddress={handleCopyAddress}
-            />
+            <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
 
             {showShareComponent ? (
                 shareComponent

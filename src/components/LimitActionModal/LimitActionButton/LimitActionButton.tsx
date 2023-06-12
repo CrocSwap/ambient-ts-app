@@ -6,14 +6,14 @@ interface ILimitActionButtonProps {
     disabled?: boolean;
 }
 
-export default function LimitActionButton(props: ILimitActionButtonProps) {
-    const { onClick, title } = props;
+export default function RemoveOrderButton(props: ILimitActionButtonProps) {
+    const { onClick, title, disabled } = props;
 
     return (
         <div className={styles.button_container}>
             <Button
-                title={title}
-                disabled={props.disabled}
+                title={disabled ? '...' : title}
+                disabled={disabled}
                 action={onClick}
                 flat={true}
             />

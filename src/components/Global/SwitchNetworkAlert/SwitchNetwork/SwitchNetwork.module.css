@@ -1,6 +1,6 @@
 .outside_modal {
     position: fixed;
-    z-index: 9999;
+    z-index: 99999;
     top: 0;
     right: 0;
     bottom: 0;
@@ -20,24 +20,24 @@
 .modal_container {
     padding: 1px;
     background: var(--title-gradient);
-    min-height: 223px;
+  height: auto;
     min-width: 347px;
     border-radius: var(--border-radius);
 }
 .modal {
-    position: relative;
+ 
 
     display: flex;
     flex-direction: column;
 
-    padding: 0 0 3rem;
-
+   
     color: white;
 
     background-color: var(--dark1);
 
     align-items: center;
     border-radius: var(--border-radius);
+    height: auto;
 }
 
 .modal_header {
@@ -80,6 +80,7 @@
 .modal_content {
     width: 100%;
     padding: 1rem;
+    height: auto;
 }
 
 .content_title {
