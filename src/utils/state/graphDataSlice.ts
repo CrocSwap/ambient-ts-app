@@ -14,7 +14,6 @@ export interface graphData {
     candlesForAllPools: CandlesForAllPools;
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
-    poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
@@ -217,7 +216,6 @@ const initialState: graphData = {
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
     liquidityRequest: undefined,
-    poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
@@ -353,12 +351,6 @@ export const graphDataSlice = createSlice({
                         action.payload[index];
                 }
             }
-        },
-        setPoolVolumeSeries: (
-            state,
-            action: PayloadAction<PoolVolumeSeries>,
-        ) => {
-            state.poolVolumeSeries = action.payload;
         },
         setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
             state.poolTvlSeries = action.payload;
@@ -715,7 +707,6 @@ export const {
     setLeaderboardByPool,
     updateLeaderboard,
     addPositionsByPool,
-    setPoolVolumeSeries,
     setPoolTvlSeries,
     setLiquidity,
     setLiquidityPending,

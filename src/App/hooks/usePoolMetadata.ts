@@ -17,7 +17,6 @@ import {
     setLiquidity,
     setLiquidityPending,
     setPoolTvlSeries,
-    setPoolVolumeSeries,
     setPositionsByPool,
 } from '../../utils/state/graphDataSlice';
 import {
@@ -34,7 +33,6 @@ import { getLimitOrderData } from '../functions/getLimitOrderData';
 import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
 import { getPositionData } from '../functions/getPositionData';
 import { getTvlSeries } from '../functions/getTvlSeries';
-import { getVolumeSeries } from '../functions/getVolumeSeries';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
@@ -235,44 +233,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                         props.chainData.chainId,
                                                 },
                                                 tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool volume series
-                    getVolumeSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        props.chainData.poolIndex,
-                        props.chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((volumeSeries) => {
-                            if (
-                                volumeSeries &&
-                                volumeSeries.base &&
-                                volumeSeries.quote &&
-                                volumeSeries.poolIdx &&
-                                volumeSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolVolumeSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: volumeSeries.base,
-                                                    quote: volumeSeries.quote,
-                                                    poolIdx:
-                                                        volumeSeries.poolIdx,
-                                                    chainId:
-                                                        props.chainData.chainId,
-                                                },
-                                                volumeData: volumeSeries,
                                             },
                                         ],
                                     }),
