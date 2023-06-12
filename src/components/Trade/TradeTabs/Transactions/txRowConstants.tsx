@@ -413,7 +413,9 @@ export const txRowConstants = (props: Props) => {
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
-            {tx.entityType === 'liqchange'
+            {tx.entityType === 'liqchange' ||
+            tx.changeType === 'burn' ||
+            tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
         </li>
@@ -502,7 +504,9 @@ export const txRowConstants = (props: Props) => {
         >
             <p>{type}</p>
             <p>
-                {tx.entityType === 'liqchange'
+                {tx.entityType === 'liqchange' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'recover'
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>

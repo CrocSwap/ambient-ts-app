@@ -53,13 +53,7 @@ export default function ExchangeCard(props: propsIF) {
                     isChainMainnet && tokenAddress !== ZERO_ADDRESS
                         ? tokenMapKey.split('_')[0]
                         : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (
-                    mainnetAddress &&
-                    (mainnetAddress ===
-                        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'.toLowerCase() ||
-                        mainnetAddress.toLowerCase() ===
-                            '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'.toLowerCase())
-                ) {
+                if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
                         mainnetAddress,
                         '0x1',

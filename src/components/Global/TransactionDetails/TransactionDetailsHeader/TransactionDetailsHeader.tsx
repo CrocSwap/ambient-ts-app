@@ -6,7 +6,7 @@ import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface TransactionDetailsHeaderPropsIF {
-    downloadAsImage: () => void;
+    copyTransactionDetailsToClipboard: () => Promise<void>;
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
     showShareComponent: boolean;
@@ -18,22 +18,29 @@ export default function TransactionDetailsHeader(
 ) {
     const {
         handleCopyAddress,
-
+        copyTransactionDetailsToClipboard,
         showShareComponent,
         setShowShareComponent,
     } = props;
-    // eslint-disable-next-line
 
     const {
         globalModal: { close: onClose },
     } = useContext(AppStateContext);
 
-    const copyIconWithTooltip = (
+    const copyTxHashIconWithTooltip = (
         <IconWithTooltip
             title='Copy transaction hash to clipboard'
             placement='bottom'
         >
             <div onClick={handleCopyAddress}>
+                <FiCopy size={25} color='var(--text3)' />
+            </div>
+        </IconWithTooltip>
+    );
+
+    const copyImageIconWithTooltip = (
+        <IconWithTooltip title='Copy shareable image' placement='bottom'>
+            <div onClick={copyTransactionDetailsToClipboard}>
                 <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
@@ -47,7 +54,8 @@ export default function TransactionDetailsHeader(
             </section>
 
             <section className={styles.settings_control}>
-                {copyIconWithTooltip}
+                {!showShareComponent ? copyTxHashIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
                 <button
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
