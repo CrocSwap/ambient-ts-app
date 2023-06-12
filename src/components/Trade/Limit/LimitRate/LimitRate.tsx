@@ -140,8 +140,9 @@ export default function LimitRate(props: propsIF) {
                                 isValid &&
                                 targetValue !== previousDisplayPrice
                             ) {
-                                // remove first character if it is not a numeral
+                                // current value of input allowing sanitation
                                 let targetValPositive = targetValue.trim();
+                                // fn to determine if input has invalid leading char
                                 const checkFirstCharValid = (): boolean => {
                                     return (
                                         targetValPositive.startsWith('-') ||
@@ -152,6 +153,7 @@ export default function LimitRate(props: propsIF) {
                                         targetValPositive.startsWith('E')
                                     );
                                 };
+                                // remove all leading invalid character from input string
                                 while (checkFirstCharValid()) {
                                     targetValPositive =
                                         targetValPositive.substring(1);
