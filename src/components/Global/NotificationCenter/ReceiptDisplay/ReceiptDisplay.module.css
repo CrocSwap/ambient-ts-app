@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    background: var(--dark2);
+    background: var(--dark1);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     padding: 0.4rem 8px;
@@ -85,7 +85,7 @@ cursor: pointer;
     left: 6px;
     right: 6px;
     bottom: 6px;
-    background: var(--body-bg);
+    background: var(--dark1);
     border-radius: 50%;
     z-index: 2;
 }
