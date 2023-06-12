@@ -84,12 +84,17 @@ export default function RangeDetails(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyRangeDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Range Details copied to clipboard', 'info');
+            }
         }
     };
 
@@ -331,7 +336,7 @@ export default function RangeDetails(props: propsIF) {
         <div className={styles.range_details_container}>
             <RangeDetailsHeader
                 onClose={closeGlobalModal}
-                downloadAsImage={downloadAsImage}
+                copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}

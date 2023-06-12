@@ -1,13 +1,13 @@
 import styles from './RangeDetailsHeader.module.css';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { FiCopy, FiDownload } from 'react-icons/fi';
+import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import { Dispatch, SetStateAction } from 'react';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 
 interface RangeDetailsPropsIF {
     onClose: () => void;
-    downloadAsImage: () => void;
+    copyRangeDetailsToClipboard: () => Promise<void>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyPositionId(): void;
@@ -16,7 +16,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     const {
         onClose,
         handleCopyPositionId,
-        downloadAsImage,
+        copyRangeDetailsToClipboard,
         showShareComponent,
         setShowShareComponent,
     } = props;
@@ -25,7 +25,7 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
     );
 
-    const copyIconWithTooltip = (
+    const copySlotIDIconWithTooltip = (
         <IconWithTooltip
             title='Copy position slot ID to clipboard'
             placement='bottom'
@@ -36,10 +36,10 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         </IconWithTooltip>
     );
 
-    const downloadIconWithTooltip = (
-        <IconWithTooltip title='Download shareable image' placement='bottom'>
-            <div onClick={downloadAsImage}>
-                <FiDownload size={25} color='var(--text3)' />
+    const copyImageIconWithTooltip = (
+        <IconWithTooltip title='Copy shareable image' placement='bottom'>
+            <div onClick={copyRangeDetailsToClipboard}>
+                <FiCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -66,9 +66,9 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
                 ) : (
                     phIcon
                 )} */}
-                {showShareComponent ? copyIconWithTooltip : phIcon}
+                {showShareComponent ? copySlotIDIconWithTooltip : phIcon}
 
-                {showShareComponent ? downloadIconWithTooltip : phIcon}
+                {showShareComponent ? copyImageIconWithTooltip : phIcon}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />
