@@ -50,14 +50,14 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
             </section>
 
             <section className={styles.settings_control}>
+                {!showShareComponent ? copySlotIDIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
                 <button
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
                 >
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
-                {!showShareComponent ? copySlotIDIconWithTooltip : null}
-                {showShareComponent ? copyImageIconWithTooltip : null}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />

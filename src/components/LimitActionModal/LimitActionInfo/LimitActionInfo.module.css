@@ -1,11 +1,10 @@
 .remove_position_info {
     background: var(--dark2);
     border-radius: var(--border-radius);
-    padding: 8px;
+    padding: 0 8px;
 
     display: flex;
     flex-direction: column;
-    gap: 8px;
 
     font-weight: 300;
     color: var(--text2);
@@ -19,7 +18,10 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    padding: 8px 0;
     gap: 8px;
+
+    border-bottom: 1px solid var(--dark1);
 }
 .token_price {
     display: flex;
@@ -37,4 +39,20 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
+}
+
+.network_fee_container {
+    border: 1px solid var(--dark2);
+    border-radius: var(--border-radius);
+    padding: 8px 16px;
+    margin-top: 8px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    font-weight: 300;
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }

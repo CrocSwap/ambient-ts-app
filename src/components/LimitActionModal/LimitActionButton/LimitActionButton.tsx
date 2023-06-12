@@ -1,20 +1,20 @@
 import Button from '../../Global/Button/Button';
-import styles from './RemoveOrderButton.module.css';
-interface IRemoveOrderButtonProps {
-    removeFn: () => void;
+import styles from './LimitActionButton.module.css';
+interface ILimitActionButtonProps {
+    onClick: () => void;
     title: string;
     disabled?: boolean;
 }
 
-export default function RemoveOrderButton(props: IRemoveOrderButtonProps) {
-    const { removeFn, title, disabled } = props;
+export default function RemoveOrderButton(props: ILimitActionButtonProps) {
+    const { onClick, title, disabled } = props;
 
     return (
         <div className={styles.button_container}>
             <Button
                 title={disabled ? '...' : title}
                 disabled={disabled}
-                action={removeFn}
+                action={onClick}
                 flat={true}
             />
         </div>
