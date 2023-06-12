@@ -261,36 +261,18 @@ export default function PoolCard(props: propsIF) {
     const apyDisplay = (
         <>
             <div></div>
-            <div>
-                <div className={styles.row_title}>24h APR</div>
-                <div className={styles.apr}>
-                    {poolApy === undefined ? '…' : `${poolApy}%`}
-                </div>
-            </div>
         </>
     );
 
     const volumeDisplay = (
         <>
             <div></div>
-            <div>
-                <div className={styles.row_title}>24h Vol.</div>
-                <div className={styles.vol}>
-                    {poolVolume === undefined ? '…' : `$${poolVolume}`}
-                </div>
-            </div>
         </>
     );
 
     const tvlDisplay = (
         <>
             <div></div>
-            <div>
-                <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>
-                    {poolTvl === undefined ? '…' : `$${poolTvl}`}
-                </div>
-            </div>
         </>
     );
 
@@ -346,16 +328,38 @@ export default function PoolCard(props: propsIF) {
             aria-label={ariaDescription}
         >
             <div className={styles.main_container}>
-                <div className={styles.row}>
+                <div className={styles.row} style={{ padding: '4px' }}>
                     {tokenImagesDisplay}
                     {tokenNamesDisplay}
                 </div>
-                <div className={styles.row}>{volumeDisplay}</div>
-                <div className={styles.row}>{apyDisplay}</div>
-                <div className={styles.row}>{tvlDisplay}</div>
-                <div className={styles.column}>
-                    {poolPriceChangeDisplay}
-                    {poolPriceDisplayDOM}
+                <div className={styles.row}>
+                    <div className={styles.column}>
+                        {poolPriceChangeDisplay}
+                        {poolPriceDisplayDOM}
+                    </div>
+                    <div className={styles.column}>
+                        <div className={styles.row}></div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>24h Vol.</div>
+                            <div className={styles.vol}>
+                                {poolVolume === undefined
+                                    ? '…'
+                                    : `$${poolVolume}`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>24h APR</div>
+                            <div className={styles.apr}>
+                                {poolApy === undefined ? '…' : `${poolApy}%`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>TVL</div>
+                            <div className={styles.vol}>
+                                {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Link>

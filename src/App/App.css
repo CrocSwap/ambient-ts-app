@@ -267,6 +267,7 @@ p:focus-visible {
     }
 
     .content-container {
+        overflow: auto;
         height: 100vh;
 
         background: var(--body-bg);
