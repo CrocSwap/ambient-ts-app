@@ -140,10 +140,15 @@ export default function LimitRate(props: propsIF) {
                                 isValid &&
                                 targetValue !== previousDisplayPrice
                             ) {
+                                // remove first character if it is a negative sign
+                                const targetValPositive: string =
+                                    targetValue.startsWith('-')
+                                        ? targetValue.substring(1)
+                                        : targetValue;
                                 handleLimitChange(
-                                    targetValue.replaceAll(',', ''),
+                                    targetValPositive.replaceAll(',', ''),
                                 );
-                                setPreviousDisplayPrice(targetValue);
+                                setPreviousDisplayPrice(targetValPositive);
                             }
                         }}
                         value={displayPrice === 'NaN' ? '...' : displayPrice}
