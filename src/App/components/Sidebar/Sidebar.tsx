@@ -34,9 +34,10 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
-import { memoizePoolStats } from '../../functions/getPoolStats';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Sidebar() {
+    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -46,7 +47,6 @@ function Sidebar() {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
-    const cachedPoolStatsFetch = memoizePoolStats();
 
     const poolList = usePoolList(chainId, poolIndex);
 
@@ -73,7 +73,9 @@ function Sidebar() {
         graphData.limitOrdersByUser.limitOrders.filter(filterFn);
 
     const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser
+        .filter((p) => p.positionLiq > 0)
+        .slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [

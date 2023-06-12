@@ -14,8 +14,8 @@ export const useTermsAgreed = (): [
 ] => {
     const TOS_VERSION = '2023-04-13';
     const TERMS_URLS = {
-        tos: 'eula/CrocodileLabsTermsOfService.html',
-        privacy: 'eula/CrocodileLabsPrivacyPolicy.html',
+        tos: 'tos',
+        privacy: 'privacy',
         openSource: 'https://github.com/CrocSwap/ambient-ts-app',
     };
 

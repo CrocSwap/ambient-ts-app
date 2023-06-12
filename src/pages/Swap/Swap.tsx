@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import FocusTrap from 'focus-trap-react';
 
 // START: Import React Components
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
@@ -38,7 +37,7 @@ import BypassConfirmSwapButton from '../../components/Swap/SwapButton/BypassConf
 import TutorialOverlay from '../../components/Global/TutorialOverlay/TutorialOverlay';
 import { swapTutorialSteps } from '../../utils/tutorial/Swap';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useProvider } from 'wagmi';
@@ -61,8 +60,9 @@ interface propsIF {
 
 function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -199,10 +199,7 @@ function Swap(props: propsIF) {
     async function initiateSwap() {
         resetConfirmation();
         setIsWaitingForWallet(true);
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
@@ -245,42 +242,6 @@ function Swap(props: propsIF) {
             setIsWaitingForWallet(false);
         }
 
-        const newSwapCacheEndpoint = GRAPHCACHE_URL + '/new_swap?';
-
-        const inBaseQty =
-            (isSellTokenBase && isTokenAPrimary) ||
-            (!isSellTokenBase && !isTokenAPrimary);
-
-        const crocQty = await crocEnv
-            .token(isTokenAPrimary ? tokenA.address : tokenB.address)
-            .normQty(qty);
-
-        if (tx?.hash) {
-            fetch(
-                newSwapCacheEndpoint +
-                    new URLSearchParams({
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: isSellTokenBase
-                            ? sellTokenAddress
-                            : buyTokenAddress,
-                        quote: isSellTokenBase
-                            ? buyTokenAddress
-                            : sellTokenAddress,
-                        poolIdx: (
-                            await crocEnv.context
-                        ).chain.poolIndex.toString(),
-                        isBuy: isSellTokenBase.toString(),
-                        inBaseQty: inBaseQty.toString(),
-                        qty: crocQty.toString(),
-                        override: 'false',
-                        chainId: chainId,
-                        limitPrice: '0',
-                        minOut: '0',
-                    }),
-            );
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -299,32 +260,6 @@ function Swap(props: propsIF) {
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newSwapCacheEndpoint +
-                            new URLSearchParams({
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: isSellTokenBase
-                                    ? sellTokenAddress
-                                    : buyTokenAddress,
-                                quote: isSellTokenBase
-                                    ? buyTokenAddress
-                                    : sellTokenAddress,
-                                poolIdx: (
-                                    await crocEnv.context
-                                ).chain.poolIndex.toString(),
-                                isBuy: isSellTokenBase.toString(),
-                                inBaseQty: inBaseQty.toString(),
-                                qty: crocQty.toString(),
-                                override: 'false',
-                                chainId: chainId,
-                                limitPrice: '0',
-                                minOut: '0',
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -368,10 +303,7 @@ function Swap(props: propsIF) {
     );
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -477,8 +409,12 @@ function Swap(props: propsIF) {
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageSwapCostInGasDrops = 106000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageSwapCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
                 '$' +
@@ -681,149 +617,143 @@ function Swap(props: propsIF) {
     ) : null;
 
     return (
-        <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
-            <section data-testid={'swap'} className={swapPageStyle}>
-                {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}
-                <div className={`${swapContainerStyle}`}>
-                    {poolNotInitializedContent}
-                    <ContentContainer
-                        isOnTradeRoute={isOnTradeRoute}
-                        padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+        <section data-testid={'swap'} className={swapPageStyle}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        <SwapHeader isOnTradeRoute={isOnTradeRoute} />
-                        {navigationMenu}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <CurrencyConverter {...currencyConverterProps} />
-                        </motion.div>
-                        <ExtraInfo
-                            priceImpact={priceImpact}
-                            effectivePriceWithDenom={effectivePriceWithDenom}
-                            slippageTolerance={slippageTolerancePercentage}
-                            liquidityProviderFeeString={
-                                liquidityProviderFeeString
-                            }
-                            swapGasPriceinDollars={swapGasPriceinDollars}
-                            isOnTradeRoute={isOnTradeRoute}
-                        />
-                        {isUserConnected ===
-                        undefined ? null : isUserConnected === true ? (
-                            isPoolInitialized &&
-                            !isTokenAAllowanceSufficient &&
-                            parseFloat(sellQtyString) > 0 &&
-                            sellQtyString !== 'Infinity' ? (
-                                approvalButton
-                            ) : (
-                                <>
-                                    {!showBypassConfirm ? (
-                                        // user has hide confirmation modal off
-                                        <SwapButton
-                                            onClickFn={
-                                                areBothAckd
-                                                    ? bypassConfirmSwap.isEnabled
-                                                        ? handleSwapButtonClickWithBypass
-                                                        : openModal
-                                                    : ackAsNeeded
-                                            }
-                                            swapAllowed={
-                                                swapAllowed &&
-                                                sellQtyString !== '' &&
-                                                buyQtyString !== ''
-                                            }
-                                            swapButtonErrorMessage={
-                                                swapButtonErrorMessage
-                                            }
-                                            bypassConfirmSwap={
-                                                bypassConfirmSwap
-                                            }
-                                            areBothAckd={areBothAckd}
-                                        />
-                                    ) : (
-                                        // user has hide confirmation modal on
-                                        <BypassConfirmSwapButton
-                                            {...confirmSwapModalProps}
-                                        />
-                                    )}
-                                    {ackTokenMessage && (
-                                        <p
-                                            className={styles.acknowledge_text}
-                                            dangerouslySetInnerHTML={{
-                                                __html: formattedAckTokenMessage,
-                                            }}
-                                        ></p>
-                                    )}
-                                    <div
-                                        className={
-                                            styles.acknowledge_etherscan_links
-                                        }
-                                    >
-                                        {needConfirmTokenA && (
-                                            <a
-                                                href={
-                                                    blockExplorer +
-                                                    'token/' +
-                                                    tokenA.address
-                                                }
-                                                rel={'noopener noreferrer'}
-                                                target='_blank'
-                                                aria-label={`approve ${tokenA.symbol}`}
-                                            >
-                                                {tokenA.symbol || tokenA.name}{' '}
-                                                <FiExternalLink />
-                                            </a>
-                                        )}
-                                        {needConfirmTokenB && (
-                                            <a
-                                                href={
-                                                    blockExplorer +
-                                                    'token/' +
-                                                    tokenB.address
-                                                }
-                                                rel={'noopener noreferrer'}
-                                                target='_blank'
-                                                aria-label={`approve ${tokenB.symbol}`}
-                                            >
-                                                {tokenB.symbol || tokenB.name}{' '}
-                                                <FiExternalLink />
-                                            </a>
-                                        )}
-                                    </div>
-                                </>
-                            )
-                        ) : (
-                            loginButton
-                        )}
-                        {priceImpactWarningOrNull}
-                        {liquidityInsufficientWarningOrNull}
-                    </ContentContainer>
-                    {confirmSwapModalOrNull}
-                    {isRelativeModalOpen && (
-                        <RelativeModal onClose={closeRelativeModal}>
-                            You are about to do something that will lose you a
-                            lot of money. If you think you are smarter than the
-                            awesome team that programmed this, press dismiss.
-                        </RelativeModal>
-                    )}
+                        Tutorial Mode
+                    </button>
                 </div>
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={swapTutorialSteps}
-                />
-            </section>
-        </FocusTrap>
+            )}
+            <div className={`${swapContainerStyle}`}>
+                {poolNotInitializedContent}
+                <ContentContainer
+                    isOnTradeRoute={isOnTradeRoute}
+                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+                >
+                    <SwapHeader isOnTradeRoute={isOnTradeRoute} />
+                    {navigationMenu}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <CurrencyConverter {...currencyConverterProps} />
+                    </motion.div>
+                    <ExtraInfo
+                        priceImpact={priceImpact}
+                        effectivePriceWithDenom={effectivePriceWithDenom}
+                        slippageTolerance={slippageTolerancePercentage}
+                        liquidityProviderFeeString={liquidityProviderFeeString}
+                        swapGasPriceinDollars={swapGasPriceinDollars}
+                        isQtyEntered={tradeData?.primaryQuantity !== ''}
+                    />
+                    {isUserConnected === undefined ? null : isUserConnected ===
+                      true ? (
+                        isPoolInitialized &&
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(sellQtyString) > 0 &&
+                        sellQtyString !== 'Infinity' ? (
+                            approvalButton
+                        ) : (
+                            <>
+                                {!showBypassConfirm ? (
+                                    // user has hide confirmation modal off
+                                    <SwapButton
+                                        onClickFn={
+                                            areBothAckd
+                                                ? bypassConfirmSwap.isEnabled
+                                                    ? handleSwapButtonClickWithBypass
+                                                    : openModal
+                                                : ackAsNeeded
+                                        }
+                                        swapAllowed={
+                                            swapAllowed &&
+                                            sellQtyString !== '' &&
+                                            buyQtyString !== ''
+                                        }
+                                        swapButtonErrorMessage={
+                                            swapButtonErrorMessage
+                                        }
+                                        bypassConfirmSwap={bypassConfirmSwap}
+                                        areBothAckd={areBothAckd}
+                                    />
+                                ) : (
+                                    // user has hide confirmation modal on
+                                    <BypassConfirmSwapButton
+                                        {...confirmSwapModalProps}
+                                    />
+                                )}
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={`approve ${tokenA.symbol}`}
+                                        >
+                                            {tokenA.symbol || tokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={`approve ${tokenB.symbol}`}
+                                        >
+                                            {tokenB.symbol || tokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
+                        )
+                    ) : (
+                        loginButton
+                    )}
+                    {priceImpactWarningOrNull}
+                    {liquidityInsufficientWarningOrNull}
+                </ContentContainer>
+                {confirmSwapModalOrNull}
+                {isRelativeModalOpen && (
+                    <RelativeModal onClose={closeRelativeModal}>
+                        You are about to do something that will lose you a lot
+                        of money. If you think you are smarter than the awesome
+                        team that programmed this, press dismiss.
+                    </RelativeModal>
+                )}
+            </div>
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={swapTutorialSteps}
+            />
+        </section>
     );
 }
 

@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import FocusTrap from 'focus-trap-react';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -61,7 +60,7 @@ import {
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
 import { formatAmountOld } from '../../../utils/numbers';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -81,7 +80,7 @@ function Range() {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const {
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -101,7 +100,6 @@ function Range() {
     const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
@@ -153,8 +151,9 @@ function Range() {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         tradeData: {
             isDenomBase,
@@ -927,10 +926,7 @@ function Range() {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
 
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -1010,47 +1006,6 @@ function Range() {
             setIsWaitingForWallet(false);
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            if (isAmbient) {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
-                            changeType: 'mint',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: poolIndex.toString(),
-                            positionType: 'concentrated',
-                            changeType: 'mint',
-                            bidTick: defaultLowTick.toString(),
-                            askTick: defaultHighTick.toString(),
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -1065,30 +1020,6 @@ function Range() {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (tx?.hash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx: poolIndex.toString(),
-                                positionType: isAmbient
-                                    ? 'ambient'
-                                    : 'concentrated',
-                                changeType: 'mint',
-                                bidTick: defaultLowTick.toString(),
-                                askTick: defaultHighTick.toString(),
-                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -1101,8 +1032,12 @@ function Range() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageRangeCostInGasDrops = 140000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageRangeCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
                 '$' +
@@ -1362,10 +1297,7 @@ function Range() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -1488,174 +1420,161 @@ function Range() {
     };
 
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <section
-                data-testid={'range'}
-                className={styles.scrollable_container}
-            >
-                {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}
-
-                <ContentContainer isOnTradeRoute>
-                    <RangeHeader
-                        mintSlippage={mintSlippage}
-                        isTokenABase={isTokenABase}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
+        <section data-testid={'range'} className={styles.scrollable_container}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        {advancedMode ? advancedModeContent : baseModeContent}
-                    </motion.div>
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        poolPriceNonDisplay !== 0 &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        !isTokenAAllowanceSufficient ? (
-                            tokenAApprovalButton
-                        ) : poolPriceNonDisplay !== 0 &&
-                          parseFloat(tokenBInputQty) > 0 &&
-                          !isTokenBAllowanceSufficient ? (
-                            tokenBApprovalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassConfirmRangeButton
-                                {...bypassConfirmButtonProps}
-                            />
-                        ) : (
-                            <>
-                                <RangeButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmRange.isEnabled
-                                                ? handleRangeButtonClickWithBypass
-                                                : openConfirmationModal
-                                            : ackAsNeeded
-                                    }
-                                    rangeAllowed={
-                                        isPoolInitialized === true &&
-                                        rangeAllowed &&
-                                        !isInvalidRange
-                                    }
-                                    rangeButtonErrorMessage={
-                                        rangeButtonErrorMessage
-                                    }
-                                    isAmbient={isAmbient}
-                                    isAdd={isAdd}
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
 
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenA.symbol}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </ContentContainer>
-                {isConfirmationModalOpen && (
-                    <Modal
-                        onClose={handleModalClose}
-                        title={'Pool Confirmation'}
-                        centeredTitle
-                    >
-                        <ConfirmRangeModal
-                            tokenAQtyLocal={tokenAQtyLocal}
-                            tokenBQtyLocal={tokenBQtyLocal}
-                            spotPriceDisplay={displayPriceString}
-                            isTokenABase={isTokenABase}
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                            maxPriceDisplay={maxPriceDisplay}
-                            minPriceDisplay={minPriceDisplay}
-                            sendTransaction={sendTransaction}
-                            newRangeTransactionHash={newRangeTransactionHash}
-                            resetConfirmation={resetConfirmation}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            txErrorCode={txErrorCode}
-                            isInRange={!isOutOfRange}
-                            pinnedMinPriceDisplayTruncatedInBase={
-                                pinnedMinPriceDisplayTruncatedInBase
-                            }
-                            pinnedMinPriceDisplayTruncatedInQuote={
-                                pinnedMinPriceDisplayTruncatedInQuote
-                            }
-                            pinnedMaxPriceDisplayTruncatedInBase={
-                                pinnedMaxPriceDisplayTruncatedInBase
-                            }
-                            pinnedMaxPriceDisplayTruncatedInQuote={
-                                pinnedMaxPriceDisplayTruncatedInQuote
-                            }
-                        />
-                    </Modal>
-                )}
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={
-                        !advancedMode
-                            ? rangeTutorialStepsAdvanced
-                            : rangeTutorialSteps
-                    }
+            <ContentContainer isOnTradeRoute>
+                <RangeHeader
+                    mintSlippage={mintSlippage}
+                    isTokenABase={isTokenABase}
                 />
-            </section>
-        </FocusTrap>
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {advancedMode ? advancedModeContent : baseModeContent}
+                </motion.div>
+                {isUserConnected === undefined ? null : isUserConnected ===
+                  true ? (
+                    poolPriceNonDisplay !== 0 &&
+                    parseFloat(tokenAInputQty) > 0 &&
+                    !isTokenAAllowanceSufficient ? (
+                        tokenAApprovalButton
+                    ) : poolPriceNonDisplay !== 0 &&
+                      parseFloat(tokenBInputQty) > 0 &&
+                      !isTokenBAllowanceSufficient ? (
+                        tokenBApprovalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassConfirmRangeButton
+                            {...bypassConfirmButtonProps}
+                        />
+                    ) : (
+                        <>
+                            <RangeButton
+                                onClickFn={
+                                    areBothAckd
+                                        ? bypassConfirmRange.isEnabled
+                                            ? handleRangeButtonClickWithBypass
+                                            : openConfirmationModal
+                                        : ackAsNeeded
+                                }
+                                rangeAllowed={
+                                    isPoolInitialized === true &&
+                                    rangeAllowed &&
+                                    !isInvalidRange
+                                }
+                                rangeButtonErrorMessage={
+                                    rangeButtonErrorMessage
+                                }
+                                isAmbient={isAmbient}
+                                isAdd={isAdd}
+                                areBothAckd={areBothAckd}
+                            />
+                            {ackTokenMessage && (
+                                <p
+                                    className={styles.acknowledge_text}
+                                    dangerouslySetInnerHTML={{
+                                        __html: formattedAckTokenMessage,
+                                    }}
+                                ></p>
+                            )}
+
+                            <div className={styles.acknowledge_etherscan_links}>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenA.symbol}
+                                    >
+                                        {tokenA.symbol || tokenA.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenB.symbol}
+                                    >
+                                        {tokenB.symbol || tokenB.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )
+                ) : (
+                    loginButton
+                )}
+            </ContentContainer>
+            {isConfirmationModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title={'Pool Confirmation'}
+                    centeredTitle
+                >
+                    <ConfirmRangeModal
+                        tokenAQtyLocal={tokenAQtyLocal}
+                        tokenBQtyLocal={tokenBQtyLocal}
+                        spotPriceDisplay={displayPriceString}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        txErrorCode={txErrorCode}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                    />
+                </Modal>
+            )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={
+                    !advancedMode
+                        ? rangeTutorialStepsAdvanced
+                        : rangeTutorialSteps
+                }
+            />
+        </section>
     );
 }
 

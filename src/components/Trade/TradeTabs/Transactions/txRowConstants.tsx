@@ -126,7 +126,10 @@ export const txRowConstants = (props: Props) => {
                     className={styles.id_tooltip_style}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <span onClick={handleOpenExplorer}> {tx.tx + 'ㅤ'}</span>
+                    <span onClick={handleOpenExplorer}>
+                        {' '}
+                        {tx.txHash + 'ㅤ'}
+                    </span>
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
                         size={'12px'}
@@ -330,7 +333,7 @@ export const txRowConstants = (props: Props) => {
                         cursor: 'pointer',
                     }}
                 >
-                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
                 </p>
             }
             placement={'right'}
@@ -410,7 +413,9 @@ export const txRowConstants = (props: Props) => {
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
-            {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+            {tx.entityType === 'liqchange' ||
+            tx.changeType === 'burn' ||
+            tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
         </li>
@@ -499,7 +504,9 @@ export const txRowConstants = (props: Props) => {
         >
             <p>{type}</p>
             <p>
-                {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                {tx.entityType === 'liqchange' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'recover'
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>

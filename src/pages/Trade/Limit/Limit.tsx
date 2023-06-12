@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, useContext } from 'react';
 import { motion } from 'framer-motion';
-import FocusTrap from 'focus-trap-react';
 
 import {
     tickToPrice,
@@ -47,7 +46,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -55,18 +54,19 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
-        chainData: { chainId, poolIndex, gridSize, blockExplorer },
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -78,12 +78,15 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const { tradeData, navigationMenu, limitTickFromParams } = useTradeData();
-    const { tokenA, tokenB } = tradeData;
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { navigationMenu, limitTickFromParams } = useTradeData();
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
-    const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
 
     const dispatch = useAppDispatch();
 
@@ -138,10 +141,11 @@ export default function Limit() {
 
     const { baseToken, quoteToken } = tradeData;
 
-    const isSellTokenBase = useMemo(
-        () => pool?.baseToken.tokenAddr === tokenA.address,
-        [pool?.baseToken, tokenA.address],
-    );
+    const isSellTokenBase = useMemo(() => {
+        dispatch(setLimitTick(undefined));
+
+        return pool?.baseToken.tokenAddr === tokenA.address;
+    }, [pool?.baseToken, tokenA.address]);
 
     useEffect(() => {
         (async () => {
@@ -239,7 +243,6 @@ export default function Limit() {
                 }
             } else if (limitTick) {
                 if (!pool) return;
-                if (poolPriceNonDisplay === 0) return;
 
                 const tickPrice = tickToPrice(limitTick);
 
@@ -323,7 +326,6 @@ export default function Limit() {
         pool,
         limitTickCopied,
         limitTick,
-        poolPriceNonDisplay === 0,
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
@@ -343,9 +345,7 @@ export default function Limit() {
 
     const updateOrderValidityStatus = async () => {
         try {
-            if (!crocEnv) {
-                return;
-            }
+            if (!crocEnv) return;
             if (!limitTick) return;
 
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
@@ -374,12 +374,8 @@ export default function Limit() {
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
-        isTokenAPrimary,
-        isSellTokenBase,
-        isDenomBase,
         limitTick,
         poolPriceNonDisplay,
-        tokenA.address + tokenB.address,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
 
@@ -429,10 +425,7 @@ export default function Limit() {
 
     const sendLimitOrder = async () => {
         IS_LOCAL_ENV && console.debug('Send limit');
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -487,28 +480,6 @@ export default function Limit() {
             }
         }
 
-        const newLimitOrderChangeCacheEndpoint =
-            GRAPHCACHE_URL + '/new_limit_order_change?';
-
-        if (tx?.hash) {
-            fetch(
-                newLimitOrderChangeCacheEndpoint +
-                    new URLSearchParams({
-                        chainId: chainId,
-                        tx: tx.hash,
-                        user: userAddress ?? '',
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: poolIndex.toString(),
-                        positionType: 'knockout',
-                        changeType: 'mint',
-                        limitTick: limitTick.toString(),
-                        isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                    }),
-            );
-        }
-
         let receipt;
         try {
             if (tx) receipt = await tx.wait();
@@ -525,25 +496,6 @@ export default function Limit() {
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    fetch(
-                        newLimitOrderChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: userAddress ?? '',
-                                base: tradeData.baseToken.address,
-                                quote: tradeData.quoteToken.address,
-                                poolIdx: poolIndex.toString(),
-                                positionType: 'knockout',
-                                changeType: 'mint',
-                                limitTick: limitTick.toString(),
-                                isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -590,10 +542,7 @@ export default function Limit() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -644,8 +593,12 @@ export default function Limit() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageLimitCostInGasDrops = 240000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageLimitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
                 '$' +
@@ -745,154 +698,144 @@ export default function Limit() {
     });
 
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <section className={styles.scrollable_container}>
-                {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}{' '}
-                <ContentContainer isOnTradeRoute>
-                    <LimitHeader />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
+        <section className={styles.scrollable_container}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        <LimitCurrencyConverter {...currencyConverterProps} />
-                    </motion.div>
-                    <div className={styles.header_container}></div>
-                    <LimitExtraInfo
-                        isQtyEntered={
-                            tokenAInputQty !== '' || tokenBInputQty !== ''
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}{' '}
+            <ContentContainer isOnTradeRoute>
+                <LimitHeader />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <LimitCurrencyConverter {...currencyConverterProps} />
+                </motion.div>
+                <div className={styles.header_container}></div>
+                <LimitExtraInfo
+                    isQtyEntered={
+                        tokenAInputQty !== '' || tokenBInputQty !== ''
+                    }
+                    orderGasPriceInDollars={orderGasPriceInDollars}
+                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    isTokenABase={isSellTokenBase}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
+                />
+                {isUserConnected === undefined ? null : isUserConnected ===
+                  true ? (
+                    !isTokenAAllowanceSufficient &&
+                    parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassLimitButton {...bypassLimitProps} />
+                    ) : (
+                        <>
+                            <LimitButton
+                                onClickFn={
+                                    areBothAckd
+                                        ? bypassConfirmLimit.isEnabled
+                                            ? handleLimitButtonClickWithBypass
+                                            : openModal
+                                        : ackAsNeeded
+                                }
+                                limitAllowed={
+                                    isOrderValid &&
+                                    poolPriceNonDisplay !== 0 &&
+                                    limitAllowed
+                                }
+                                limitButtonErrorMessage={
+                                    limitButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirmLimit.isEnabled
+                                }
+                                areBothAckd={areBothAckd}
+                            />
+                            {ackTokenMessage && (
+                                <p
+                                    className={styles.acknowledge_text}
+                                    dangerouslySetInnerHTML={{
+                                        __html: formattedAckTokenMessage,
+                                    }}
+                                ></p>
+                            )}
+                            <div className={styles.acknowledge_etherscan_links}>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={`approve ${tokenA.symbol}`}
+                                    >
+                                        {tokenA.symbol || tokenA.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenB.symbol}
+                                    >
+                                        {tokenB.symbol || tokenB.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )
+                ) : (
+                    loginButton
+                )}
+            </ContentContainer>
+            {isModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title='Limit Confirmation'
+                    centeredTitle
+                >
+                    <ConfirmLimitModal
+                        initiateLimitOrderMethod={sendLimitOrder}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        insideTickDisplayPrice={endDisplayPrice}
+                        newLimitOrderTransactionHash={
+                            newLimitOrderTransactionHash
                         }
-                        orderGasPriceInDollars={orderGasPriceInDollars}
-                        liquidityProviderFeeString={liquidityProviderFeeString}
-                        isTokenABase={isSellTokenBase}
+                        txErrorCode={txErrorCode}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(tokenAInputQty) > 0 ? (
-                            approvalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassLimitButton {...bypassLimitProps} />
-                        ) : (
-                            <>
-                                <LimitButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmLimit.isEnabled
-                                                ? handleLimitButtonClickWithBypass
-                                                : openModal
-                                            : ackAsNeeded
-                                    }
-                                    limitAllowed={
-                                        isOrderValid &&
-                                        poolPriceNonDisplay !== 0 &&
-                                        limitAllowed
-                                    }
-                                    limitButtonErrorMessage={
-                                        limitButtonErrorMessage
-                                    }
-                                    isBypassConfirmEnabled={
-                                        bypassConfirmLimit.isEnabled
-                                    }
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={`approve ${tokenA.symbol}`}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </ContentContainer>
-                {isModalOpen && (
-                    <Modal
-                        onClose={handleModalClose}
-                        title='Limit Confirmation'
-                        centeredTitle
-                    >
-                        <ConfirmLimitModal
-                            initiateLimitOrderMethod={sendLimitOrder}
-                            tokenAInputQty={tokenAInputQty}
-                            tokenBInputQty={tokenBInputQty}
-                            insideTickDisplayPrice={endDisplayPrice}
-                            newLimitOrderTransactionHash={
-                                newLimitOrderTransactionHash
-                            }
-                            txErrorCode={txErrorCode}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            resetConfirmation={resetConfirmation}
-                            startDisplayPrice={startDisplayPrice}
-                            middleDisplayPrice={middleDisplayPrice}
-                            endDisplayPrice={endDisplayPrice}
-                        />
-                    </Modal>
-                )}
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={limitTutorialSteps}
-                />
-            </section>
-        </FocusTrap>
+                </Modal>
+            )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={limitTutorialSteps}
+            />
+        </section>
     );
 }

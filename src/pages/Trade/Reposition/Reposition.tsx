@@ -44,7 +44,7 @@ import {
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
 import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -52,16 +52,27 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getPositionData } from '../../../App/functions/getPositionData';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         crocEnv,
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { bypassConfirmRepo } = useContext(UserPreferenceContext);
     const {
@@ -287,10 +298,7 @@ function Reposition() {
     }
 
     const sendRepositionTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
 
@@ -411,10 +419,9 @@ function Reposition() {
         currentQuoteQtyDisplayTruncated,
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const positionStatsCacheEndpoint =
-        httpGraphCacheServerDomain + '/position_stats?';
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
     const fetchCurrentCollateral = () => {
@@ -434,8 +441,24 @@ function Reposition() {
                 }),
         )
             .then((response) => response?.json())
-            .then((json) => {
-                const positionStats = json?.data;
+            .then(async (json) => {
+                if (!crocEnv || !json?.data) {
+                    setCurrentBaseQtyDisplayTruncated('...');
+                    setCurrentQuoteQtyDisplayTruncated('...');
+                    return;
+                }
+
+                const positionStats = await getPositionData(
+                    json.data as PositionServerIF,
+                    tokens.tokenUniv,
+                    crocEnv,
+                    position.chainId,
+                    lastBlockNumber,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotPrice,
+                    cachedTokenDetails,
+                    cachedEnsResolve,
+                );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
@@ -712,7 +735,7 @@ function Reposition() {
         <div className={styles.repositionContainer}>
             <RepositionHeader
                 setRangeWidthPercentage={setRangeWidthPercentage}
-                positionHash={position.positionStorageSlot}
+                positionHash={position.firstMintTx}
                 resetTxHash={() => setNewRepositionTransactionHash('')}
             />
             <div className={styles.reposition_content}>

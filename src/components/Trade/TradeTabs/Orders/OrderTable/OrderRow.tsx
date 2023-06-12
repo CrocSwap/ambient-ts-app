@@ -6,11 +6,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -78,8 +74,6 @@ function OrderRow(props: propsIF) {
         isAccountView: isAccountView,
     };
 
-    const dispatch = useAppDispatch();
-
     const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
@@ -126,8 +120,8 @@ function OrderRow(props: propsIF) {
         );
     };
     const orderDomId =
-        limitOrder.limitOrderIdentifier === currentPositionActive
-            ? `order-${limitOrder.limitOrderIdentifier}`
+        limitOrder.limitOrderId === currentPositionActive
+            ? `order-${limitOrder.limitOrderId}`
             : '';
 
     const activePositionRef = useRef(null);
@@ -147,13 +141,13 @@ function OrderRow(props: propsIF) {
     }
 
     useEffect(() => {
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? scrollToDiv()
             : null;
     }, [currentPositionActive]);
 
     const activePositionStyle =
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? styles.active_position_style
             : '';
 
@@ -175,30 +169,21 @@ function OrderRow(props: propsIF) {
 
     function handleWalletLinkClick() {
         if (!isAccountView)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: isAccountView ? false : true,
-                }),
+            window.open(
+                `/${
+                    isOwnerActiveAccount
+                        ? 'account'
+                        : ensName
+                        ? ensName
+                        : ownerId
+                }`,
             );
-
-        window.open(
-            `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`,
-        );
     }
 
     // eslint-disable-next-line
     const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isAccountView) {
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
             const accountUrl = `/${
                 isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
             }`;
@@ -258,7 +243,7 @@ function OrderRow(props: propsIF) {
     } = orderRowConstants(orderRowConstantsProps);
 
     function handleRowClick() {
-        if (limitOrder.limitOrderIdentifier === currentPositionActive) {
+        if (limitOrder.limitOrderId === currentPositionActive) {
             return;
         }
         setCurrentPositionActive('');

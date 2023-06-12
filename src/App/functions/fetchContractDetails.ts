@@ -55,7 +55,7 @@ export const fetchContractDetails = async (
     };
 };
 
-type FetchContractDetailsFn = (
+export type FetchContractDetailsFn = (
     provider: ethers.providers.Provider,
     address: string,
     chainId: string,

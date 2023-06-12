@@ -1,5 +1,9 @@
 export const testTokenMap = new Map([
     [
+        '0x0000000000000000000000000000000000000000_0x1', // 'ETH' on Mainnet
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
+    ],
+    [
         '0x0000000000000000000000000000000000000000_0x5', // 'ETH' on Goerli
         '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
     ],
@@ -32,3 +36,42 @@ export const testTokenMap = new Map([
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
     ],
 ]);
+
+export function getMainnetEquivalent(
+    token: string,
+    chainId: string,
+): { token: string; chainId: string } {
+    const keyLookup = (token + '_' + chainId).toLowerCase();
+    const lookup = testTokenMap.get(keyLookup);
+    if (lookup) {
+        return {
+            token: lookup.split('_')[0],
+            chainId: lookup.split('_')[1],
+        };
+    } else if (chainId === '0x1') {
+        return {
+            token: token,
+            chainId: chainId,
+        };
+    } else {
+        return {
+            token: '',
+            chainId: chainId,
+        };
+    }
+}
+
+export function translateMainnetForGraphcache(
+    baseToken: string,
+    quoteToken: string,
+): { baseToken: string; quoteToken: string } {
+    const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    const ZERO = '0x0000000000000000000000000000000000000000';
+    if (baseToken === WETH) {
+        return { baseToken: ZERO, quoteToken: quoteToken };
+    } else if (quoteToken === WETH) {
+        return { baseToken: ZERO, quoteToken: baseToken };
+    } else {
+        return { baseToken: baseToken, quoteToken: quoteToken };
+    }
+}

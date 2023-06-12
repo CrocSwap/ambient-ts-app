@@ -28,19 +28,28 @@ import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import {
     CandleData,
     setChangesByUser,
+    setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
-import { candleTimeIF } from '../../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import useDebounce from '../../../App/hooks/useDebounce';
+import {
+    diffHashSigLimits,
+    diffHashSigPostions,
+    diffHashSigTxs,
+} from '../../../utils/functions/diffHashSig';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { useLocation } from 'react-router-dom';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -56,7 +65,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    candleTime: candleTimeIF;
     showActiveMobileComponent?: boolean;
 }
 
@@ -72,16 +80,34 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        candleTime,
         showActiveMobileComponent,
     } = props;
 
-    const { isCandleSelected } = useContext(CandleContext);
+    const { pathname } = useLocation();
+    const { chartSettings } = useContext(ChartContext);
+    const isMarketOrLimitModule =
+        pathname.includes('market') || pathname.includes('limit');
+    const candleTime = isMarketOrLimitModule
+        ? chartSettings.candleTime.market
+        : chartSettings.candleTime.range;
+
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { isCandleSelected } = useContext(CandleContext);
+
+    const {
+        crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+
     const { lastBlockNumber } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
+
     const {
         showAllData,
         setShowAllData,
@@ -145,21 +171,19 @@ function TradeTabs2(props: propsIF) {
                     selectedBase.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
                     selectedQuote.toLowerCase() &&
-                userPosition.totalValueUSD !== 0
+                userPosition.positionLiq !== 0
             );
         },
     );
-
-    const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
-    const matchingUserLimitOrdersLength =
-        userLimitOrdersMatchingTokenSelection.length;
-    const matchingUserPositionsLength =
-        userPositionsMatchingTokenSelection.length;
 
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
     }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
         if (
@@ -177,12 +201,15 @@ function TradeTabs2(props: propsIF) {
                     (!isUserConnected && !isCandleSelected) ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserChangesLength < 1)
+                        userChangesMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserChangesLength < 1) {
+                } else if (userChangesMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserChangesLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userChangesMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -193,12 +220,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserLimitOrdersLength < 1)
+                        userLimitOrdersMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserLimitOrdersLength < 1) {
+                } else if (userLimitOrdersMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserLimitOrdersLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userLimitOrdersMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             } else if (
@@ -209,12 +239,15 @@ function TradeTabs2(props: propsIF) {
                     !isUserConnected ||
                     (!isCandleSelected &&
                         !showAllData &&
-                        matchingUserPositionsLength < 1)
+                        userPositionsMatchingTokenSelection.length < 1)
                 ) {
                     setShowAllData(true);
-                } else if (matchingUserPositionsLength < 1) {
+                } else if (userPositionsMatchingTokenSelection.length < 1) {
                     return;
-                } else if (showAllData && matchingUserPositionsLength >= 1) {
+                } else if (
+                    showAllData &&
+                    userPositionsMatchingTokenSelection.length >= 1
+                ) {
                     setShowAllData(false);
                 }
             }
@@ -230,50 +263,19 @@ function TradeTabs2(props: propsIF) {
         selectedInsideTab,
         selectedOutsideTab,
         showAllData,
-        matchingUserPositionsLength,
-        matchingUserChangesLength,
-        matchingUserLimitOrdersLength,
+        diffHashSigTxs(userChangesMatchingTokenSelection),
+        diffHashSigLimits(userLimitOrders),
+        diffHashSigPostions(userPositionsMatchingTokenSelection),
     ]);
 
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData) {
-            try {
-                fetchUserRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    user: userAddress,
-                    chainId: chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 200, // fetch last 500 changes,
-                })
-                    .then((updatedTransactions) => {
-                        if (updatedTransactions) {
-                            dispatch(
-                                setChangesByUser({
-                                    dataReceived: true,
-                                    changes: updatedTransactions,
-                                }),
-                            );
-                        }
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error;
-            }
-        }
-    }, [isServerEnabled, userAddress, showAllData]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
         TransactionIF[]
     >([]);
 
     useEffect(() => {
-        if (isServerEnabled && isCandleSelected && filter?.time) {
+        if (isServerEnabled && isCandleSelected && filter?.time && crocEnv) {
             fetchPoolRecentChanges({
                 tokenList: tokens.tokenUniv,
                 base: selectedBase,
@@ -288,6 +290,12 @@ function TradeTabs2(props: propsIF) {
                 n: 80,
                 period: candleTime.time,
                 time: filter?.time,
+                crocEnv: crocEnv,
+                lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((selectedCandleChangesJson) => {
                     IS_LOCAL_ENV &&
@@ -307,10 +315,53 @@ function TradeTabs2(props: propsIF) {
                     }
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'candleData',
+                            loadingStatus: false,
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
+
+    useEffect(() => {
+        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+            try {
+                fetchUserRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    user: userAddress,
+                    chainId: chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100, // fetch last 100 changes,
+                    crocEnv,
+                    lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
+                                }),
+                            );
+                        }
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error;
+            }
+        }
+    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
 
     // -------------------------------DATA-----------------------------------------
     // Props for <Ranges/> React Element

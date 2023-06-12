@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
-import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
@@ -12,7 +12,7 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData?: LiquidityData;
+    liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
     poolVolumeSeries: PoolVolumeSeries;
     poolTvlSeries: PoolTvlSeries;
@@ -114,43 +114,6 @@ export interface VolumeByTimeData {
     time: number;
     volumeDay: number;
     method: string;
-}
-
-export interface LiquidityData {
-    time: number;
-    currentTick: number;
-    ranges: Array<Range>;
-    curveState: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-        network: string; // Backend network label - NOT same as chainId
-    };
-}
-
-export interface Range {
-    lowerBound: number | string;
-    lowerBoundPrice: number;
-    lowerBoundInvPrice: number | string;
-    lowerBoundPriceDecimalCorrected: number;
-    lowerBoundInvPriceDecimalCorrected: number | string;
-    upperBound: number;
-    upperBoundPrice: number;
-    upperBoundInvPrice: number;
-    upperBoundPriceDecimalCorrected: number;
-    upperBoundInvPriceDecimalCorrected: number;
-    activeLiq: string;
-    activeAmbientLiq: string;
-    activeConcLiq: string;
-    cumAskLiq: string;
-    cumAmbientAskLiq: string;
-    cumConcAskLiq: string;
-    cumBidLiq: string;
-    cumAmbientBidLiq: string;
-    cumConcBidLiq: string;
-    deltaAverageUSD: number;
-    cumAverageUSD: number;
 }
 
 export interface CandlesForAllPools {
@@ -425,9 +388,9 @@ export const graphDataSlice = createSlice({
 
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const txToFind = updatedTx.tx.toLowerCase();
+                const txToFind = updatedTx.txHash.toLowerCase();
                 const indexOfTxInState = state.changesByUser.changes.findIndex(
-                    (tx) => tx.tx.toLowerCase() === txToFind,
+                    (tx) => tx.txHash.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
                     newChangesArray.push(action.payload[index]);
@@ -451,12 +414,11 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 IS_LOCAL_ENV && console.debug({ updatedTx });
-                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const idToFind = updatedTx.limitOrderId.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByUser.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByUser.limitOrders = [
@@ -474,12 +436,11 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
+                const idToFind = updatedTx.limitOrderId?.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByPool.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier?.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId?.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByPool.limitOrders = [
@@ -500,9 +461,9 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const txToFind = updatedTx.tx.toLowerCase();
+                const txToFind = updatedTx.txHash.toLowerCase();
                 const indexOfTxInState = state.changesByPool.changes.findIndex(
-                    (tx) => tx.tx.toLowerCase() === txToFind,
+                    (tx) => tx.txHash.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
                     state.changesByPool.changes = [
@@ -515,12 +476,12 @@ export const graphDataSlice = createSlice({
             }
         },
 
-        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
+        setLiquidity: (state, action: PayloadAction<LiquidityDataIF>) => {
             // Sanitize the raw result from the backend
             const curve = action.payload.curveState;
             const base = normalizeAddr(curve.base);
             const quote = normalizeAddr(curve.quote);
-            const chainId = backendNetworkToChainId(curve.network);
+            const chainId = curve.chainId;
 
             // Verify that the result matches the current request in case multiple are in-flight
             if (
@@ -735,6 +696,11 @@ export const graphDataSlice = createSlice({
                     break;
             }
         },
+        resetPoolDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isPoolTxDataLoading = true;
+            state.dataLoadingStatus.isPoolOrderDataLoading = true;
+            state.dataLoadingStatus.isPoolRangeDataLoading = true;
+        },
         resetConnectedUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
             state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
@@ -779,6 +745,7 @@ export const {
     setChangesByPool,
     setDataLoadingStatus,
     resetUserGraphData,
+    resetPoolDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     resetLookupUserDataLoadingStatus,
 } = graphDataSlice.actions;

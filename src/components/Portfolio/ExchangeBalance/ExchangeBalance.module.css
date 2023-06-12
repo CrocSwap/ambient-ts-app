@@ -5,6 +5,7 @@
     background: var(--dark1);
     border-radius: 4px;
     padding-left: 5px;
+    height: 100%;
 }
 
 .main_container {
@@ -134,13 +135,17 @@ ul.tab_navs {
     .container {
         /* height: calc(100vh - 16rem); */
         height: 100%;
+    }
+
+    .container_restrict_width {
+        height: 100%;
         max-width: 400px;
     }
 
     .main_container {
         height: 100%;
         /* height: calc(100vh - 17rem); */
-        /* width: 100%; */
+        width: 100%;
     }
 
     .control_container {

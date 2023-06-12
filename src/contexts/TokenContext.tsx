@@ -18,6 +18,7 @@ interface TokenContextIF {
     searchType: string;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: getRecentTokensParamsIF) => TokenIF[];
+    addTokenInfo: (token: TokenIF) => TokenIF;
 }
 
 export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
@@ -40,6 +41,16 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         getRecentTokens,
     );
 
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
+            token.address,
+        );
+        const newToken = { ...token };
+        newToken.name = oldToken ? oldToken.name : '';
+        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+        return newToken;
+    };
+
     const tokenContext = {
         tokens,
         outputTokens,
@@ -48,6 +59,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         searchType,
         addRecentToken,
         getRecentTokens,
+        addTokenInfo,
     };
 
     useEffect(() => {

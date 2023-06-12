@@ -2,37 +2,25 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { useEffect, useState, useMemo, useContext, memo, useRef } from 'react';
+import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import JSX Components
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    addPositionsByPool,
-    addPositionsByUser,
-} from '../../../../utils/state/graphDataSlice';
 import { Pagination } from '@mui/material';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
-import { memoizePositionUpdate } from '../../../../App/functions/getPositionData';
 import Spinner from '../../../Global/Spinner/Spinner';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -50,10 +38,6 @@ function Ranges(props: propsIF) {
         props;
 
     const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
         setExpandTradeTable,
@@ -61,8 +45,6 @@ function Ranges(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
-    const cachedPositionUpdateQuery = memoizePositionUpdate();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -74,182 +56,59 @@ function Ranges(props: propsIF) {
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
-
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
+    const [rangeData, setRangeData] = useState<PositionIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const isConnectedUserRangeDataLoading =
-        dataLoadingStatus?.isConnectedUserRangeDataLoading;
+    useEffect(() => {
+        if (isAccountView) setRangeData(activeAccountPositionData || []);
+        else if (!showAllData)
+            setRangeData(
+                graphData?.positionsByUser?.positions.filter(
+                    (position) =>
+                        position.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        position.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase() &&
+                        position.positionLiq != 0,
+                ),
+            );
+        else {
+            setRangeData(graphData?.positionsByPool.positions);
+        }
+    }, [
+        showAllData,
+        activeAccountPositionData,
+        graphData?.positionsByUser,
+        graphData?.positionsByPool,
+    ]);
 
-    const isLookupUserRangeDataLoading =
-        dataLoadingStatus?.isLookupUserRangeDataLoading;
-
-    const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
-
-    const isRangeDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserRangeDataLoading) ||
-        (!connectedAccountActive && isLookupUserRangeDataLoading);
-
-    const isRangeDataLoadingForTradeTable =
-        (showAllData && isPoolRangeDataLoading) ||
-        (!showAllData && isConnectedUserRangeDataLoading);
-
-    const shouldDisplayLoadingAnimation =
-        (isAccountView && isRangeDataLoadingForPortfolio) ||
-        (!isAccountView && isRangeDataLoadingForTradeTable);
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        3000,
-    );
-
-    const positionsByPool = graphData.positionsByPool?.positions;
-
-    const [rangeData, setRangeData] = useState(
-        isAccountView ? activeAccountPositionData || [] : positionsByPool,
-    );
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
+            );
+        else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+    }, [
+        showAllData,
+        connectedAccountActive,
+        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
+    ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
-
-    const positionsByUserMatchingSelectedTokens =
-        graphData?.positionsByUser?.positions.filter((position) => {
-            if (
-                position.base.toLowerCase() === baseTokenAddressLowerCase &&
-                position.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-    const userPositionsToDisplayOnTrade =
-        positionsByUserMatchingSelectedTokens.filter(
-            (position) => position.positionLiq !== '0',
-        );
-
-    const sumHashActiveAccountPositionData = useMemo(
-        () => diffHashSig(activeAccountPositionData),
-        [activeAccountPositionData],
-    );
-
-    const sumHashRangeData = useMemo(() => diffHashSig(rangeData), [rangeData]);
-
-    const sumHashUserPositionsToDisplayOnTrade = useMemo(
-        () => diffHashSig(userPositionsToDisplayOnTrade),
-        [userPositionsToDisplayOnTrade],
-    );
-
-    const sumHashPositionsByPool = useMemo(
-        () => diffHashSig(positionsByPool),
-        [positionsByPool],
-    );
-
-    const updateRangeData = () => {
-        if (
-            isAccountView &&
-            activeAccountPositionData &&
-            sumHashActiveAccountPositionData !== sumHashRangeData
-        ) {
-            setRangeData(activeAccountPositionData);
-        } else if (!showAllData && !isAccountView) {
-            setRangeData(userPositionsToDisplayOnTrade);
-        } else if (positionsByPool && !isAccountView) {
-            setRangeData(positionsByPool);
-        }
-    };
-
-    useEffect(() => {
-        updateRangeData();
-    }, [
-        isAccountView,
-        showAllData,
-        connectedAccountActive,
-        sumHashActiveAccountPositionData,
-        sumHashUserPositionsToDisplayOnTrade,
-        sumHashPositionsByPool,
-    ]);
-
-    const dispatch = useAppDispatch();
-
-    const NUM_ROWS_TO_SYNC = 5;
-    const CACHE_WINDOW_MS = 10000;
-
-    // synchronously query top positions periodically but prevent fetching more than
-    // once every CACHE_WINDOW_MS
-    const currentTimeForPositionUpdateCaching = Math.floor(
-        Date.now() / CACHE_WINDOW_MS,
-    );
-    const topPositions = sortedPositions.slice(0, NUM_ROWS_TO_SYNC);
-
-    // Debounce the heavy weight networking operation of refreshing the top positions
-    // so users clicking like a maniac on the column header don't spam the network
-    const REFRESH_TOP_DELAY = 1000;
-    const sumHashTopPositions = useDebounce(
-        diffHashSig(topPositions.map((p) => p.positionId)),
-        REFRESH_TOP_DELAY,
-    );
-
-    useEffect(() => {
-        if (topPositions.length) {
-            Promise.all(
-                topPositions.map((position: PositionIF) => {
-                    return cachedPositionUpdateQuery(
-                        position,
-                        currentTimeForPositionUpdateCaching,
-                    );
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (!isAccountView) {
-                        if (showAllData) {
-                            const updatedPositionsMatchingPool =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.base.toLowerCase() ===
-                                            baseTokenAddress.toLowerCase() &&
-                                        position.quote.toLowerCase() ===
-                                            quoteTokenAddress.toLowerCase() &&
-                                        position.poolIdx === poolIndex &&
-                                        position.chainId === chainId,
-                                );
-                            if (updatedPositionsMatchingPool.length) {
-                                dispatch(
-                                    addPositionsByPool(
-                                        updatedPositionsMatchingPool,
-                                    ),
-                                );
-                            }
-                        } else {
-                            const updatedPositionsMatchingUser =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.user.toLowerCase() ===
-                                        userAddress?.toLowerCase(),
-                                );
-                            if (updatedPositionsMatchingUser.length)
-                                dispatch(
-                                    addPositionsByUser(
-                                        updatedPositionsMatchingUser,
-                                    ),
-                                );
-                        }
-                    } else {
-                        const newArray = updatedPositions.concat(
-                            sortedPositions.slice(NUM_ROWS_TO_SYNC),
-                        );
-                        setRangeData(newArray);
-                    }
-                })
-                .catch(console.error);
-        }
-    }, [sumHashTopPositions, showAllData, isAccountView, lastBlockNumber]);
 
     // ---------------------
     // transactions per page media queries
@@ -386,7 +245,7 @@ function Ranges(props: propsIF) {
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: showAllData,
+            sortable: !isAccountView,
         },
         {
             name: 'Min',
@@ -515,6 +374,14 @@ function Ranges(props: propsIF) {
         }
     }, [mobileView]);
 
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
+
     const mobileViewHeight = mobileView ? '70vh' : '260px';
 
     const expandStyle = expandTradeTable
@@ -526,8 +393,7 @@ function Ranges(props: propsIF) {
         ? 'calc(100vh - 19.5rem)'
         : expandStyle;
 
-    const shouldDisplayNoTableData =
-        !debouncedShouldDisplayLoadingAnimation && !rangeData.length;
+    const shouldDisplayNoTableData = !isLoading && !rangeData.length;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
@@ -567,7 +433,7 @@ function Ranges(props: propsIF) {
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {shouldDisplayLoadingAnimation ? (
+                {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     rangeDataOrNull

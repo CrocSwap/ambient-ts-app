@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHeader';
@@ -25,13 +25,14 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { CrocPositionView } from '@crocswap-libs/sdk';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -61,6 +62,16 @@ export default function OrderRemoval(props: propsIF) {
     const [txErrorCode, setTxErrorCode] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
+    const [currentLiquidity, setCurrentLiquidity] = useState<
+        BigNumber | undefined
+    >();
+
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
+    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
+
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
@@ -73,9 +84,35 @@ export default function OrderRemoval(props: propsIF) {
         }
     }, [txErrorCode]);
 
-    const [removalPercentage, setRemovalPercentage] = useState(100);
-    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
-    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
+    const liquidityToBurn = useMemo(
+        () => currentLiquidity?.mul(removalPercentage).div(100),
+        [currentLiquidity, removalPercentage],
+    );
+
+    const updateLiq = async () => {
+        try {
+            if (!crocEnv || !limitOrder) return;
+            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
+            const pos = new CrocPositionView(pool, limitOrder.user);
+
+            const liqBigNum = (
+                await pos.queryKnockoutLivePos(
+                    limitOrder.isBid,
+                    limitOrder.bidTick,
+                    limitOrder.askTick,
+                )
+            ).liq;
+            setCurrentLiquidity(liqBigNum);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (crocEnv && limitOrder) {
+            updateLiq();
+        }
+    }, [crocEnv, lastBlockNumber, limitOrder?.limitOrderId]);
 
     const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
@@ -122,17 +159,12 @@ export default function OrderRemoval(props: propsIF) {
             setQuoteQtyToBeRemoved(quoteRemovalTruncated);
     }, [removalPercentage]);
 
-    const positionLiquidity = limitOrder.positionLiq;
-
     const removeFn = async () => {
+        if (!liquidityToBurn) return;
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
             IS_LOCAL_ENV && { limitOrder };
-
-            const liqToRemove = BigNumber.from(positionLiquidity)
-                .mul(removalPercentage)
-                .div(100);
 
             let tx;
             try {
@@ -140,7 +172,7 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(liquidityToBurn);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -154,7 +186,7 @@ export default function OrderRemoval(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(liquidityToBurn);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -175,36 +207,13 @@ export default function OrderRemoval(props: propsIF) {
                 }
             }
 
-            const newLimitOrderChangeCacheEndpoint =
-                GRAPHCACHE_URL + '/new_limit_order_change?';
-
-            if (tx?.hash) {
-                fetch(
-                    newLimitOrderChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: limitOrder.chainId.toString(),
-                            tx: tx.hash,
-                            user: userAddress ?? '',
-                            base: limitOrder.base,
-                            quote: limitOrder.quote,
-                            poolIdx: lookupChain(
-                                limitOrder.chainId,
-                            ).poolIndex.toString(),
-                            positionType: 'knockout',
-                            changeType: 'mint',
-                            limitTick: limitOrder.askTick.toString(),
-                            isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-
             let receipt;
             try {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
+
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
@@ -215,27 +224,6 @@ export default function OrderRemoval(props: propsIF) {
                     setNewRemovalTransactionHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
-
-                    if (newTransactionHash) {
-                        fetch(
-                            newLimitOrderChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: limitOrder.chainId.toString(),
-                                    tx: newTransactionHash,
-                                    user: userAddress ?? '',
-                                    base: limitOrder.base,
-                                    quote: limitOrder.quote,
-                                    poolIdx: lookupChain(
-                                        limitOrder.chainId,
-                                    ).poolIndex.toString(),
-                                    positionType: 'knockout',
-                                    changeType: 'mint',
-                                    limitTick: limitOrder.askTick.toString(),
-                                    isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    }
                 } else if (isTransactionFailedError(error)) {
                     console.error({ error });
                     receipt = error.receipt;
@@ -406,7 +394,7 @@ export default function OrderRemoval(props: propsIF) {
                     {/* {tooltipExplanationDataDisplay} */}
                     <RemoveOrderButton
                         removeFn={removeFn}
-                        disabled={false}
+                        disabled={liquidityToBurn === undefined}
                         title='Remove Limit Order'
                     />
                 </div>

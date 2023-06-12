@@ -164,7 +164,10 @@ export const userDataSlice = createSlice({
         ) => {
             state.secondaryImageData = action.payload;
         },
-        setResolvedAddressRedux: (state, action: PayloadAction<string>) => {
+        setResolvedAddressRedux: (
+            state,
+            action: PayloadAction<string | undefined>,
+        ) => {
             state.resolvedAddress = action.payload;
         },
     },

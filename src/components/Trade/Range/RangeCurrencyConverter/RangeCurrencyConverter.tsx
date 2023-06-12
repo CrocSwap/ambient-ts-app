@@ -21,9 +21,10 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
-    reverseTokensInRTK,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
+    setRangeTicksCopied,
+    setShouldRangeDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -324,18 +325,22 @@ function RangeCurrencyConverter(props: propsIF) {
         }
     };
 
+    const rangeTicksCopied = tradeData.rangeTicksCopied;
+
     // hook to generate navigation actions with pre-loaded path
     const linkGenRange: linkGenMethodsIF = useLinkGen('range');
 
     const reverseTokens = (): void => {
-        dispatch(reverseTokensInRTK());
         resetTokenQuantities();
-        linkGenRange.navigate({
-            chain: chainId,
-            tokenA: tradeData.tokenB.address,
-            tokenB: tradeData.tokenA.address,
-        });
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        if (!rangeTicksCopied) {
+            linkGenRange.navigate({
+                chain: chainId,
+                tokenA: tradeData.tokenB.address,
+                tokenB: tradeData.tokenA.address,
+            });
+        }
+        if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: number) => {
@@ -590,6 +595,13 @@ function RangeCurrencyConverter(props: propsIF) {
             }
         }
     };
+
+    useEffect(() => {
+        if (tradeData.shouldRangeDirectionReverse) {
+            reverseTokens();
+            dispatch(setShouldRangeDirectionReverse(false));
+        }
+    }, [tradeData.shouldRangeDirectionReverse]);
 
     useEffect(() => {
         if (isPoolInitialized) {

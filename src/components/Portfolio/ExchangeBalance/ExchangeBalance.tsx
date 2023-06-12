@@ -10,50 +10,170 @@ import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import { motion } from 'framer-motion';
-import { SetStateAction, Dispatch, useState, useEffect } from 'react';
+import {
+    SetStateAction,
+    Dispatch,
+    useState,
+    useEffect,
+    useContext,
+} from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { ethers } from 'ethers';
-import { fetchAddress } from '../../../App/functions/fetchAddress';
+import { BigNumber } from 'ethers';
+import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import {
+    setErc20Tokens,
+    setNativeToken,
+} from '../../../utils/state/userDataSlice';
+import { useDispatch } from 'react-redux';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
-    mainnetProvider: ethers.providers.Provider | undefined;
-    selectedToken: TokenIF;
-    tokenAllowance: string;
-    tokenWalletBalance: string;
-    tokenDexBalance: string;
-    setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
-    setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    openTokenModal: () => void;
-    selectedTokenDecimals: number;
+    isModalView?: boolean;
+    setIsTokenModalOpen?: (val: boolean) => void;
 }
 
 export default function ExchangeBalance(props: propsIF) {
     const {
-        mainnetProvider,
-        selectedToken,
-        tokenAllowance,
-        tokenWalletBalance,
-        tokenDexBalance,
-        setRecheckTokenAllowance,
-        setRecheckTokenBalances,
-        openTokenModal,
         fullLayoutActive,
         setFullLayoutActive,
-        selectedTokenDecimals,
+        isModalView = false,
+        setIsTokenModalOpen,
     } = props;
+
+    const { mainnetProvider } = useContext(CrocEnvContext);
+
+    const selectedToken: TokenIF = useAppSelector(
+        (state) => state.soloTokenData.token,
+    );
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+    const dispatch = useDispatch();
+
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
+        useContext(CachedDataContext);
+    const { addTokenInfo, setInput } = useContext(TokenContext);
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
+    } = useContext(AppStateContext);
+
+    const closeModalCustom = () => {
+        setInput('');
+    };
+
+    const [tokenAllowance, setTokenAllowance] = useState<string>('');
+    const [recheckTokenAllowance, setRecheckTokenAllowance] =
+        useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] =
+        useState<boolean>(false);
+
+    const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
     const [resolvedAddress, setResolvedAddress] = useState<
         string | undefined
     >();
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
+        useState(true);
 
     const isSendToAddressEns = sendToAddress?.endsWith('.eth');
     const isSendToAddressHex =
         sendToAddress?.startsWith('0x') && sendToAddress?.length == 42;
+
+    const selectedTokenAddress = selectedToken.address;
+    const selectedTokenDecimals = selectedToken.decimals;
+
+    useEffect(() => {
+        if (crocEnv && selectedToken.address && userAddress) {
+            crocEnv
+                .token(selectedToken.address)
+                .wallet(userAddress)
+                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
+                .catch(console.error);
+            crocEnv
+                .token(selectedToken.address)
+                .balance(userAddress)
+                .then((bal: BigNumber) => {
+                    setTokenDexBalance(bal.toString());
+                })
+                .catch(console.error);
+        }
+
+        if (recheckTokenBalances) {
+            (async () => {
+                if (userAddress) {
+                    const newNativeToken: TokenIF =
+                        await cachedFetchNativeTokenBalance(
+                            userAddress,
+                            chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
+
+                    dispatch(setNativeToken(newNativeToken));
+
+                    const erc20Results: TokenIF[] =
+                        await cachedFetchErc20TokenBalances(
+                            userAddress,
+                            chainId,
+                            lastBlockNumber,
+                            crocEnv,
+                        );
+                    const erc20TokensWithLogos = erc20Results.map((token) =>
+                        addTokenInfo(token),
+                    );
+
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                }
+            })();
+        }
+
+        setRecheckTokenBalances(false);
+    }, [
+        crocEnv,
+        selectedToken.address,
+        userAddress,
+        lastBlockNumber,
+        recheckTokenBalances,
+    ]);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && userAddress && selectedTokenAddress) {
+                try {
+                    const allowance = await crocEnv
+                        .token(selectedTokenAddress)
+                        .allowance(userAddress);
+                    setTokenAllowance(allowance.toString());
+                } catch (err) {
+                    console.warn(err);
+                }
+                setRecheckTokenAllowance(false);
+            }
+        })();
+    }, [
+        crocEnv,
+        selectedTokenAddress,
+        lastBlockNumber,
+        userAddress,
+        recheckTokenAllowance,
+    ]);
 
     useEffect(() => {
         (async () => {
@@ -99,7 +219,7 @@ export default function ExchangeBalance(props: propsIF) {
                 mainnetProvider
             ) {
                 try {
-                    const ensName = await fetchAddress(
+                    const ensName = await fetchEnsAddress(
                         mainnetProvider,
                         sendToAddress,
                         '0x1',
@@ -117,6 +237,32 @@ export default function ExchangeBalance(props: propsIF) {
         })();
     }, [sendToAddress, isSendToAddressHex]);
 
+    // Needed to disable clicks outside ExchangeBalanceModal if dismissing TokenSelectionModal via GlobalModal's close()
+    useEffect(() => {
+        if (!isOpen) setIsTokenModalOpen && setIsTokenModalOpen(false);
+    }, [isOpen]);
+
+    // Needed to disable clicks outside ExchangeBalanceModal properly if dismissing TokenSelectionModal via selecting a token
+    const closeTokenSelectionModal = () => {
+        setIsTokenModalOpen && setIsTokenModalOpen(false);
+        closeGlobalModal();
+    };
+
+    const openTokenSelectionModal = () => {
+        setIsTokenModalOpen && setIsTokenModalOpen(true);
+        openGlobalModal(
+            <SoloTokenSelect
+                modalCloseCustom={closeModalCustom}
+                closeModal={closeTokenSelectionModal}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={true}
+                tokenAorB={null}
+            />,
+            'Select Token',
+        );
+    };
+
     const accountData = [
         {
             label: 'Deposit',
@@ -127,7 +273,7 @@ export default function ExchangeBalance(props: propsIF) {
                     tokenWalletBalance={tokenWalletBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                     selectedTokenDecimals={selectedTokenDecimals}
                 />
             ),
@@ -144,7 +290,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: withdrawImage,
@@ -160,7 +306,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenModal}
+                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: transferImage,
@@ -187,35 +333,48 @@ export default function ExchangeBalance(props: propsIF) {
     // const titleOpacity = fullLayoutActive ? '0' : '1';
 
     const columnView = useMediaQuery('(max-width: 1200px)');
+
+    const restrictWidth =
+        !isModalView && useMediaQuery('screen and (min-width: 1200px)');
+    const restrictWidthStyle = restrictWidth
+        ? `${styles.container_restrict_width}`
+        : '';
+
     return (
-        <motion.main
-            animate={columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'}
-            style={{ width: '100%' }}
-            className={styles.container}
-        >
-            <motion.div className={styles.main_container}>
-                {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
+        <>
+            <motion.main
+                animate={
+                    columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
+                }
+                style={{ width: '100%' }}
+                className={`${styles.container} ${restrictWidthStyle}`}
+            >
+                <motion.div className={styles.main_container}>
+                    {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
                     Exchange Balance
                 </div> */}
-                <div className={styles.tabs_container}>
-                    {(!fullLayoutActive || columnView) && (
-                        <TabComponent
-                            data={accountData}
-                            rightTabOptions={false}
-                        />
-                    )}
-                    {exchangeControl}
-                </div>
-            </motion.div>
-            {(!fullLayoutActive || columnView) && (
-                <section>
-                    <div className={styles.info_text}>
-                        Collateral deposited into the Ambient Finance exchange
-                        can be traded at lower gas costs. Collateral can be
-                        withdrawn at any time.
+                    <div className={styles.tabs_container}>
+                        {(!fullLayoutActive || columnView || isModalView) && (
+                            <TabComponent
+                                data={accountData}
+                                rightTabOptions={false}
+                                isModalView={isModalView}
+                                shouldSyncWithTradeModules={false}
+                            />
+                        )}
+                        {!isModalView && exchangeControl}
                     </div>
-                </section>
-            )}
-        </motion.main>
+                </motion.div>
+                {(!fullLayoutActive || columnView || isModalView) && (
+                    <section>
+                        <div className={styles.info_text}>
+                            Collateral deposited into the Ambient Finance
+                            exchange can be traded at lower gas costs.
+                            Collateral can be withdrawn at any time.
+                        </div>
+                    </section>
+                )}
+            </motion.main>
+        </>
     );
 }
