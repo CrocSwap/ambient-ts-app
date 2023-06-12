@@ -254,25 +254,43 @@ function Sidebar() {
                 : searchContainer}
             {sidebar.isOpen ? (
                 <div style={{ cursor: 'pointer', display: 'flex' }}>
-                    <img
-                        // TODO: add lock image here
-                        src={isLocked ? unlock : unlock}
-                        alt='Lock/Unlock All'
-                        onClick={toggleLockSidebar}
-                    />
-                    <img
-                        src={upDownChevrons}
-                        alt='Collapse/Expand All'
-                        onClick={toggleExpandCollapseAll}
-                    />
-                    <input
-                        type='image'
-                        src={closeSidebarImage}
-                        alt='close sidebar'
-                        onClick={() => sidebar.close(true)}
-                        disabled={isLocked}
-                        style={{ opacity: isLocked ? 0.5 : 1 }}
-                    />
+                    <DefaultTooltip
+                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                    >
+                        <img
+                            // TODO: add locked image
+                            src={isLocked ? unlock : unlock}
+                            alt='Lock/Unlock All'
+                            onClick={toggleLockSidebar}
+                        />
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
+                    >
+                        <img
+                            src={upDownChevrons}
+                            alt='Collapse/Expand All'
+                            onClick={toggleExpandCollapseAll}
+                        />
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={
+                            isLocked
+                                ? 'Sidebar locked'
+                                : sidebar.isOpen
+                                ? 'Close Sidebar'
+                                : 'Open Sidebar'
+                        }
+                    >
+                        <input
+                            type='image'
+                            src={closeSidebarImage}
+                            alt='close sidebar'
+                            onClick={() => sidebar.close(true)}
+                            disabled={isLocked}
+                            style={{ opacity: isLocked ? 0.5 : 1 }}
+                        />
+                    </DefaultTooltip>
                 </div>
             ) : (
                 <BiSearch
