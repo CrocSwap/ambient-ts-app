@@ -543,7 +543,11 @@ export default function PrivacyPolicy() {
                     <p className={styles.sub_header}>How to contact us</p>
                     <p>
                         <span style={{ fontWeight: 'bold' }}>Email</span>:{' '}
-                        <a href='mailto:info@crocodilelabs.io'>
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='mailto:info@crocodilelabs.io'
+                        >
                             info@crocodilelabs.io
                         </a>
                         &nbsp;

@@ -1002,14 +1002,21 @@ export default function TermsOfService() {
                         receives such Notice, unless an extension is mutually
                         agreed upon by the parties in writing. Notice to
                         Crocodile Labs that you intend to initiate an Informal
-                        Dispute Resolution Conference should be sent by email to
-                        legal@crocodilelabs.io or regular mail to our offices
-                        located at 5020 Clark Rd. #436, Sarasota, FL 34233. The
-                        Notice must include: (1) your name, telephone number,
-                        mailing address, e‐mail address associated with your
-                        account (if you have one); (2) the name, telephone
-                        number, mailing address and e‐mail address of your
-                        counsel, if any; and (3) a description of your Dispute.
+                        Dispute Resolution Conference should be sent by email to{' '}
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='mailto:legal@crocodilelabs.io'
+                        >
+                            legal@crocodilelabs.io
+                        </a>{' '}
+                        or regular mail to our offices located at 5020 Clark Rd.
+                        #436, Sarasota, FL 34233. The Notice must include: (1)
+                        your name, telephone number, mailing address, e‐mail
+                        address associated with your account (if you have one);
+                        (2) the name, telephone number, mailing address and
+                        e‐mail address of your counsel, if any; and (3) a
+                        description of your Dispute.
                     </p>
                     <p>
                         The Informal Dispute Resolution Conference shall be
@@ -1719,7 +1726,11 @@ export default function TermsOfService() {
                     </p>
                     <span>&nbsp;</span>
                     <span>
-                        <a href='mailto:legal@crocodilelabs.io'>
+                        <a
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href='mailto:legal@crocodilelabs.io'
+                        >
                             legal@crocodilelabs.io
                         </a>
                     </span>
