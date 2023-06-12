@@ -77,23 +77,6 @@ export default function LimitRate(props: propsIF) {
         });
     };
 
-    const buttonControls = (
-        <div className={styles.button_controls}>
-            <button
-                onClick={!isDenomBase ? increaseTick : decreaseTick}
-                aria-label='Increase limit tick.'
-            >
-                <HiPlus />
-            </button>
-            <button>
-                <HiMinus
-                    onClick={!isDenomBase ? decreaseTick : increaseTick}
-                    aria-label='Decrease limit tick.'
-                />
-            </button>
-        </div>
-    );
-
     return (
         <div
             className={`${styles.swapbox} ${
@@ -180,7 +163,20 @@ export default function LimitRate(props: propsIF) {
                         aria-relevant='all'
                     />
                 </div>
-                {buttonControls}
+                <div className={styles.button_controls}>
+                    <button
+                        onClick={!isDenomBase ? increaseTick : decreaseTick}
+                        aria-label='Increase limit tick.'
+                    >
+                        <HiPlus />
+                    </button>
+                    <button>
+                        <HiMinus
+                            onClick={!isDenomBase ? decreaseTick : increaseTick}
+                            aria-label='Decrease limit tick.'
+                        />
+                    </button>
+                </div>
             </div>
         </div>
     );
