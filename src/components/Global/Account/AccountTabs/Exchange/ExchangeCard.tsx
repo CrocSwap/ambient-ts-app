@@ -46,16 +46,16 @@ export default function ExchangeCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
+                const tokenAddress = tokenMapKey.split('_')[0];
                 const chain = tokenMapKey.split('_')[1];
                 const isChainMainnet = chain === '0x1';
-                const mainnetAddress = isChainMainnet
-                    ? tokenMapKey.split('_')[0]
-                    : testTokenMap.get(tokenMapKey)?.split('_')[0];
+                const mainnetAddress =
+                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
+                        ? tokenMapKey.split('_')[0]
+                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
                 if (mainnetAddress) {
                     const price = await cachedFetchTokenPrice(
-                        mainnetAddress === ZERO_ADDRESS
-                            ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-                            : mainnetAddress,
+                        mainnetAddress,
                         '0x1',
                     );
                     if (price) setTokenPrice(price);

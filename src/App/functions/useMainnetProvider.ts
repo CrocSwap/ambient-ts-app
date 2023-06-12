@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { IS_LOCAL_ENV } from '../../constants';
 import { useEffect, useState } from 'react';
 import { Provider } from '@ethersproject/providers';
 
@@ -9,16 +8,15 @@ export const useMainnetProvider = () => {
     >();
 
     useEffect(() => {
-        const infuraKey2 = process.env.REACT_APP_INFURA_KEY_2
-            ? process.env.REACT_APP_INFURA_KEY_2
-            : '360ea5fda45b4a22883de8522ebd639e'; // croc labs #2
+        const infuraKey = process.env.REACT_APP_INFURA_KEY
+            ? process.env.REACT_APP_INFURA_KEY
+            : '62d8ac2df76d4c839efd81b063e99f81'; // croc labs
 
         const mainnetProvider = new ethers.providers.JsonRpcProvider(
-            'https://mainnet.infura.io/v3/' + infuraKey2, // croc labs #2
+            'https://mainnet.infura.io/v3/' + infuraKey, // croc labs
         );
-        IS_LOCAL_ENV && console.debug({ mainnetProvider });
         setMainnetProvider(mainnetProvider);
-    }, [IS_LOCAL_ENV]);
+    }, []);
 
     return mainnetProvider;
 };

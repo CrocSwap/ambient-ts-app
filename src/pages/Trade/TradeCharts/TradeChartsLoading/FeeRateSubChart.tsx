@@ -350,7 +350,7 @@ function FeeRateSubChart(props: FreeRateData) {
                           subChartValues.filter(
                               (value: any) => value.name === 'feeRate',
                           )[0].value * 100
-                      ).toString() + '%'
+                      ).toFixed(2) + '%'
                     : '-'}
             </label>
             <d3fc-canvas
