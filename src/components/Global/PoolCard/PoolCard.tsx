@@ -229,53 +229,6 @@ export default function PoolCard(props: propsIF) {
         shouldInvertDisplay,
     ]);
 
-    const tokenImagesDisplay = (
-        <div className={styles.token_images}>
-            <img
-                src={
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }`}
-            />
-            <img
-                src={
-                    shouldInvertDisplay ? pool.quote.logoURI : pool.base.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.quote.name : pool.base.name
-                }`}
-            />
-        </div>
-    );
-
-    const tokenNamesDisplay = (
-        <div className={styles.tokens_name}>
-            {shouldInvertDisplay
-                ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                : `${pool.quote.symbol} / ${pool.base.symbol}`}
-        </div>
-    );
-
-    const apyDisplay = (
-        <>
-            <div></div>
-        </>
-    );
-
-    const volumeDisplay = (
-        <>
-            <div></div>
-        </>
-    );
-
-    const tvlDisplay = (
-        <>
-            <div></div>
-        </>
-    );
-
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
             {poolPriceDisplay === undefined
@@ -329,8 +282,37 @@ export default function PoolCard(props: propsIF) {
         >
             <div className={styles.main_container}>
                 <div className={styles.row} style={{ padding: '4px' }}>
-                    {tokenImagesDisplay}
-                    {tokenNamesDisplay}
+                    <div className={styles.token_images}>
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }`}
+                        />
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.quote.logoURI
+                                    : pool.base.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.quote.name
+                                    : pool.base.name
+                            }`}
+                        />
+                    </div>
+                    <div className={styles.tokens_name}>
+                        {shouldInvertDisplay
+                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                            : `${pool.quote.symbol} / ${pool.base.symbol}`}
+                    </div>
                 </div>
                 <div className={styles.row}>
                     <div className={styles.column}>
