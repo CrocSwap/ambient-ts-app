@@ -93,7 +93,7 @@ export default function RangeDetails(props: propsIF) {
             });
             if (blob) {
                 copy(blob);
-                openSnackbar('Range Details copied to clipboard', 'info');
+                openSnackbar('Shareable image copied to clipboard', 'info');
             }
         }
     };

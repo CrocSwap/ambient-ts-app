@@ -112,7 +112,7 @@ function TradeCharts(props: propsIF) {
             const blob = await printDomToImage(canvasRef.current, '#171d27');
             if (blob) {
                 copy(blob);
-                openSnackbar('Chart copied to clipboard', 'info');
+                openSnackbar('Chart image copied to clipboard', 'info');
             }
         }
     };

@@ -298,7 +298,7 @@ export default function OrderDetails(props: propsIF) {
             });
             if (blob) {
                 copy(blob);
-                openSnackbar('Order details copied to clipboard', 'info');
+                openSnackbar('Shareable image copied to clipboard', 'info');
             }
         }
     };

@@ -35,7 +35,7 @@ export default function TransactionDetails(props: propsIF) {
             });
             if (blob) {
                 copy(blob);
-                openSnackbar('Transaction Details copied to clipboard', 'info');
+                openSnackbar('Shareable image copied to clipboard', 'info');
             }
         }
     };
