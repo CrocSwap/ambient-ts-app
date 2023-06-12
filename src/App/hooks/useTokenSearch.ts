@@ -148,15 +148,6 @@ export const useTokenSearch = (
         // keep tokens listed by Ambient at the top
         const sortedTokens: TokenIF[] = foundTokens.sort(
             (a: TokenIF, b: TokenIF) => {
-                const isOnAmbientList = (t: TokenIF) =>
-                    t.listedBy?.includes(tokenListURIs.ambient);
-                function comparePopularity(): number {
-                    const getPopularity = (tkn: TokenIF): number =>
-                        tkn.listedBy?.length ?? 1;
-                    const popularityTokenA: number = getPopularity(a);
-                    const popularityTokenB: number = getPopularity(b);
-                    return popularityTokenB - popularityTokenA;
-                }
                 let rank: number;
                 if (isOnAmbientList(a) && isOnAmbientList(b)) {
                     rank = comparePopularity();
@@ -166,6 +157,16 @@ export const useTokenSearch = (
                     rank = 1;
                 } else {
                     rank = comparePopularity();
+                }
+                function isOnAmbientList(t: TokenIF): boolean {
+                    return !!t.listedBy?.includes(tokenListURIs.ambient);
+                }
+                function comparePopularity(): number {
+                    const getPopularity = (tkn: TokenIF): number =>
+                        tkn.listedBy?.length ?? 1;
+                    const popularityTokenA: number = getPopularity(a);
+                    const popularityTokenB: number = getPopularity(b);
+                    return popularityTokenB - popularityTokenA;
                 }
                 return rank;
             },
