@@ -141,10 +141,11 @@ export default function LimitRate(props: propsIF) {
                                 targetValue !== previousDisplayPrice
                             ) {
                                 // remove first character if it is a negative sign
-                                const targetValPositive: string =
-                                    targetValue.startsWith('-')
-                                        ? targetValue.substring(1)
-                                        : targetValue;
+                                let targetValPositive = targetValue;
+                                while (targetValPositive.startsWith('-')) {
+                                    targetValPositive =
+                                        targetValPositive.substring(1);
+                                }
                                 handleLimitChange(
                                     targetValPositive.replaceAll(',', ''),
                                 );
