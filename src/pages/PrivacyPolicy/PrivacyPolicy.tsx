@@ -18,7 +18,9 @@ export default function PrivacyPolicy() {
                         &quot;) processes personal information that we collect
                         through our digital or online properties or services
                         that link to this Privacy Policy (the “
-                        <span style={{ fontWeight: 'bold' }}>Service</span>”).{' '}
+                        <span style={{ fontWeight: 'bold' }}>
+                            Service
+                        </span>”).{' '}
                     </p>
                     <p className={styles.sub_header}>
                         Personal information we collect
@@ -541,7 +543,9 @@ export default function PrivacyPolicy() {
                     <p className={styles.sub_header}>How to contact us</p>
                     <p>
                         <span style={{ fontWeight: 'bold' }}>Email</span>:{' '}
-                        <a href='mailto:info@crocswap.com'>info@crocswap.com</a>
+                        <a href='mailto:info@crocodilelabs.io'>
+                            info@crocodilelabs.io
+                        </a>
                         &nbsp;
                     </p>
                     <p>&nbsp;</p>
