@@ -62,7 +62,7 @@ export async function fetchCandleSeriesCroc(
     baseTokenAddress: string,
     quoteTokenAddress: string,
     time: number,
-    nCandles: string,
+    nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<CandlesByPoolAndDuration | undefined> {
@@ -72,17 +72,20 @@ export async function fetchCandleSeriesCroc(
 
     const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
 
-    return fetch(
-        candleSeriesEndpoint +
-            new URLSearchParams({
-                base: baseTokenAddress,
-                quote: quoteTokenAddress,
-                poolIdx: chainData.poolIndex.toString(),
-                period: period.toString(),
-                n: nCandles, // positive integer
-                chainId: chainData.chainId,
-            }),
-    )
+    const reqOptions = new URLSearchParams({
+        base: baseTokenAddress,
+        quote: quoteTokenAddress,
+        poolIdx: chainData.poolIndex.toString(),
+        period: period.toString(),
+        n: capNumDurations(nCandles).toString(),
+        chainId: chainData.chainId,
+    });
+
+    if (time > 0) {
+        reqOptions.set('time', time.toString()); // optional
+    }
+
+    return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -116,6 +119,19 @@ export async function fetchCandleSeriesCroc(
             console.warn(e);
             return undefined;
         });
+}
+
+function capNumDurations(numDurations: number): number {
+    const MAX_NUM_DURATIONS = 5000;
+    const MIN_NUM_DURATIONS = 1;
+    if (numDurations > MAX_NUM_DURATIONS) {
+        console.warn(`Candle fetch n=${numDurations} exceeds max cap.`);
+        return MAX_NUM_DURATIONS;
+    } else if (numDurations < MIN_NUM_DURATIONS) {
+        console.warn(`Candle fetch n=${numDurations} non-positive.`);
+        return MIN_NUM_DURATIONS;
+    }
+    return numDurations;
 }
 
 async function expandPoolStats(
@@ -212,6 +228,7 @@ export const fetchCandleSeriesUniswap = async (
     time: string,
     candleNeeded: string,
 ) => {
+    console.log('Fetch candle series');
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
         translateMainnetForGraphcache(
             mainnetBaseTokenAddress,

@@ -7,7 +7,10 @@ import {
     useState,
     useContext,
 } from 'react';
-import { CandleData } from '../App/functions/fetchCandleSeries';
+import {
+    CandleData,
+    fetchCandleSeriesCroc,
+} from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import {
     GRAPHCACHE_URL,
@@ -21,6 +24,7 @@ import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
@@ -53,7 +57,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
     const {
         baseToken: {
             address: baseTokenAddress,
@@ -64,6 +68,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             mainnetAddress: mainnetCanonQuote,
         },
     } = useContext(TradeTokenContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
@@ -134,13 +139,39 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            candleTimeLocal
+            candleTimeLocal &&
+            crocEnv
         ) {
             if (abortController) {
                 abortController.abort();
             }
 
-            const reqOptions = new URLSearchParams({
+            const candleTime = candleScale?.lastCandleDate || 0;
+            const nCandles =
+                candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
+
+            setIsFetchingCandle(true);
+            fetchCandleSeriesCroc(
+                true,
+                chainData,
+                candleTimeLocal,
+                baseTokenAddress,
+                quoteTokenAddress,
+                candleTime,
+                nCandles,
+                crocEnv,
+                cachedFetchTokenPrice,
+            ).then((candles) => {
+                setCandleData(candles);
+                setIsCandleDataNull(false);
+
+                const candleSeries = candles?.candles;
+                if (candleSeries && candleSeries.length > 0) {
+                    setIsFetchingCandle(false);
+                }
+            });
+
+            /* const reqOptions = new URLSearchParams({
                 base: mainnetBaseTokenAddress.toLowerCase(),
                 quote: mainnetQuoteTokenAddress.toLowerCase(),
                 poolIdx: (
@@ -210,7 +241,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             } catch (error) {
                 console.error({ error });
-            }
+            } */
         } else {
             setIsCandleDataNull(true);
             // setExpandTradeTable(true);
@@ -248,27 +279,23 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
-    const candleSeriesCacheEndpoint = GRAPHCACHE_URL + '/candle_series?';
-
-    function capNumDurations(numDurations: number): string {
-        const MAX_NUM_DURATIONS = 5000;
-        const MIN_NUM_DURATIONS = 1;
-        if (numDurations > MAX_NUM_DURATIONS) {
-            console.warn(`Candle fetch n=${numDurations} exceeds max cap.`);
-            return MAX_NUM_DURATIONS.toString();
-        } else if (numDurations < MIN_NUM_DURATIONS) {
-            console.warn(`Candle fetch n=${numDurations} non-positive.`);
-            return MIN_NUM_DURATIONS.toString();
-        }
-        return numDurations.toString();
-    }
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
         const controller = new AbortController();
         setAbortController(controller);
         const signal = controller.signal;
 
-        return fetch(
+        if (!crocEnv) {
+            return;
+        }
+        /* fetchCandleSeriesCroc(true, chainData, candleTimeLocal,
+            baseTokenAddress, quoteTokenAddress, 
+            minTimeMemo ? minTimeMemo : 0,
+            numDurations, crocEnv, cachedFetchTokenPrice)
+            .then(candles => {
+                setCandleData(candles)
+            }) */
+        /* return fetch(
             candleSeriesCacheEndpoint +
                 new URLSearchParams({
                     base: mainnetBaseTokenAddress.toLowerCase(),
@@ -343,7 +370,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
                 setIsCandleDataNull(false);
                 // setExpandTradeTable(false);
-            });
+            }); */
     };
     useEffect(() => {
         if (!numDurationsNeeded) return;

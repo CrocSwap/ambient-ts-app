@@ -42,7 +42,6 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import useWebSocketSubs from './hooks/useWebSocketSubs';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { ChainDataContext } from '../contexts/ChainDataContext';
@@ -90,30 +89,6 @@ export default function App() {
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
     } = useContext(SidebarContext);
-
-    const { address: userAddress } = useAccount();
-
-    useWebSocketSubs({
-        crocEnv,
-        wssGraphCacheServerDomain,
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        isServerEnabled,
-        shouldNonCandleSubscriptionsReconnect:
-            SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-        areSubscriptionsEnabled,
-        tokenUniv: tokens.tokenUniv,
-        chainData,
-        lastBlockNumber,
-        candleData,
-        setCandleData,
-        candleTimeLocal,
-        userAddress,
-        shouldCandleSubscriptionsReconnect:
-            SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    });
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
