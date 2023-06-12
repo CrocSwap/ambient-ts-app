@@ -2255,19 +2255,12 @@ export default function Chart(props: propsIF) {
                 }
             };
 
-            const canvasLimit = d3
-                .select(d3CanvasLimitLine.current)
+            const canvas = d3
+                .select(d3CanvasMain.current)
                 .select('canvas')
                 .node() as any;
 
-            const rectLimit = canvasLimit.getBoundingClientRect();
-
-            const canvasRange = d3
-                .select(d3CanvasRangeLine.current)
-                .select('canvas')
-                .node() as any;
-
-            const rectRange = canvasRange.getBoundingClientRect();
+            const rectCanvas = canvas.getBoundingClientRect();
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
@@ -2281,7 +2274,7 @@ export default function Chart(props: propsIF) {
                     d3.select(d3Yaxis.current).style('cursor', 'none');
 
                     const advancedValue = scaleData?.yScale.invert(
-                        event.sourceEvent.clientY - rectRange.top,
+                        event.sourceEvent.clientY - rectCanvas.top,
                     );
 
                     const low = ranges.filter(
@@ -2310,11 +2303,12 @@ export default function Chart(props: propsIF) {
                         setCrosshairActive('none');
                         let dragedValue =
                             scaleData?.yScale.invert(
-                                event.sourceEvent.clientY - rectRange.top,
+                                event.sourceEvent.clientY - rectCanvas.top,
                             ) >= liquidityData?.topBoundary
                                 ? liquidityData?.topBoundary
                                 : scaleData?.yScale.invert(
-                                      event.sourceEvent.clientY - rectRange.top,
+                                      event.sourceEvent.clientY -
+                                          rectCanvas.top,
                                   );
 
                         dragedValue = dragedValue < 0 ? 0 : dragedValue;
@@ -2468,7 +2462,7 @@ export default function Chart(props: propsIF) {
                             }
                         } else {
                             const advancedValue = scaleData?.yScale.invert(
-                                event.sourceEvent.clientY - rectRange.top,
+                                event.sourceEvent.clientY - rectCanvas.top,
                             );
                             highLineMoved = draggingLine === 'Max';
                             lowLineMoved = draggingLine === 'Min';
@@ -2660,7 +2654,7 @@ export default function Chart(props: propsIF) {
                         setIsLineDrag(true);
 
                         newLimitValue = scaleData?.yScale.invert(
-                            event.sourceEvent.clientY - rectLimit.top,
+                            event.sourceEvent.clientY - rectCanvas.top,
                         );
 
                         if (newLimitValue < 0) newLimitValue = 0;
@@ -2982,7 +2976,13 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis, d3CanvasMain]);
         }
-    }, [location, zoomUtils, dragLimit, dragRange]);
+    }, [
+        location.pathname,
+        zoomUtils,
+        dragLimit,
+        dragRange,
+        d3CanvasRangeLine?.current,
+    ]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {

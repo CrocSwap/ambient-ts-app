@@ -33,7 +33,6 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
             role='dialog'
             aria-modal='true'
         >
-            {/* <FocusTrap> */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -57,7 +56,6 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                     {children}
                 </section>
             </motion.div>
-            {/* </FocusTrap> */}
         </aside>
     );
 }
