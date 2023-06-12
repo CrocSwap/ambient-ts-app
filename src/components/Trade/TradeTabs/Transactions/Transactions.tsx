@@ -69,7 +69,8 @@ function Transactions(props: propsIF) {
                             tradeData.baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
                             tradeData.quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill',
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
                 ),
             );
         else {
@@ -80,7 +81,8 @@ function Transactions(props: propsIF) {
                             tradeData.baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
                             tradeData.quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill',
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
                 ),
             );
         }
@@ -89,8 +91,8 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         changesInSelectedCandle,
         activeAccountTransactionData,
-        graphData?.positionsByUser,
-        graphData?.positionsByPool,
+        graphData?.changesByUser,
+        graphData?.changesByPool,
     ]);
 
     useEffect(() => {
@@ -422,6 +424,14 @@ function Transactions(props: propsIF) {
             setExpandTradeTable(true);
         }
     }, [mobileView]);
+
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
 
     const mobileViewHeight = mobileView ? '70vh' : '260px';
 

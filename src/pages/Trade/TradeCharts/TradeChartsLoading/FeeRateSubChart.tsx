@@ -4,7 +4,8 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+
 interface FreeRateData {
     feeData: Array<CandleData>;
     period: number | undefined;
@@ -349,7 +350,7 @@ function FeeRateSubChart(props: FreeRateData) {
                           subChartValues.filter(
                               (value: any) => value.name === 'feeRate',
                           )[0].value * 100
-                      ).toString() + '%'
+                      ).toFixed(2) + '%'
                     : '-'}
             </label>
             <d3fc-canvas

@@ -36,8 +36,11 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
@@ -186,6 +189,7 @@ export const ChainDataContextProvider = (props: {
                             userAddress,
                             chainData.chainId,
                             everyEigthBlock,
+                            cachedTokenDetails,
                             crocEnv,
                         );
                     const erc20TokensWithLogos = erc20Results.map((token) => {

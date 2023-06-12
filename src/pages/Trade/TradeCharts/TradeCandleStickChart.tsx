@@ -7,12 +7,10 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import { LiquidityDataLocal } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -31,6 +29,8 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LiquidityDataLocal } from './TradeCharts';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -283,49 +283,47 @@ function TradeCandleStickChart(props: propsIF) {
 
             const domainLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : Infinity;
+                    return o.activeLiq !== undefined ? o.activeLiq : Infinity;
                 }),
             );
             const domainRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : 0;
+                    return o.activeLiq !== undefined ? o.activeLiq : 0;
                 }),
             );
 
             const depthBidLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : Infinity;
                 }),
             );
+
             const depthBidRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : 0;
                 }),
             );
 
             const depthAskLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                        ? parseFloat(o.cumAskLiq)
+                    return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                        ? o.cumAskLiq
                         : Infinity;
                 }),
             );
+
             const depthAskRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
                     const price = denominationsInBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
-                        return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                            ? parseFloat(o.cumAskLiq)
+                        return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                            ? o.cumAskLiq
                             : 0;
                     }
                     return 0;

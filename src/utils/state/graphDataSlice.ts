@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
-import { backendNetworkToChainId } from '../data/chains';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
@@ -12,10 +13,8 @@ export interface graphData {
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData?: LiquidityData;
+    liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
-    poolVolumeSeries: PoolVolumeSeries;
-    poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
@@ -50,109 +49,6 @@ export interface LimitOrdersByPool {
     limitOrders: LimitOrderIF[];
 }
 
-export interface PoolVolumeSeries {
-    dataReceived: boolean;
-    pools: Array<VolumeSeriesByPool>;
-}
-
-export interface PoolTvlSeries {
-    dataReceived: boolean;
-    pools: Array<TvlSeriesByPool>;
-}
-
-export interface TvlSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    tvlData: TvlSeriesByPoolTimeAndResolution;
-}
-
-export interface VolumeSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    volumeData: VolumeSeriesByPoolTimeAndResolution;
-}
-
-export interface TvlSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<TvlByTimeData>;
-}
-
-export interface VolumeSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<VolumeByTimeData>;
-}
-
-export interface TvlByTimeData {
-    time: number;
-    tvl: number;
-    method: string;
-}
-
-export interface VolumeByTimeData {
-    time: number;
-    volumeDay: number;
-    method: string;
-}
-
-export interface LiquidityData {
-    time: number;
-    currentTick: number;
-    ranges: Array<Range>;
-    curveState: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-        network: string; // Backend network label - NOT same as chainId
-    };
-}
-
-export interface Range {
-    lowerBound: number | string;
-    lowerBoundPrice: number;
-    lowerBoundInvPrice: number | string;
-    lowerBoundPriceDecimalCorrected: number;
-    lowerBoundInvPriceDecimalCorrected: number | string;
-    upperBound: number;
-    upperBoundPrice: number;
-    upperBoundInvPrice: number;
-    upperBoundPriceDecimalCorrected: number;
-    upperBoundInvPriceDecimalCorrected: number;
-    activeLiq: string;
-    activeAmbientLiq: string;
-    activeConcLiq: string;
-    cumAskLiq: string;
-    cumAmbientAskLiq: string;
-    cumConcAskLiq: string;
-    cumBidLiq: string;
-    cumAmbientBidLiq: string;
-    cumConcBidLiq: string;
-    deltaAverageUSD: number;
-    cumAverageUSD: number;
-}
-
 export interface CandlesForAllPools {
     pools: Array<Pool>;
 }
@@ -162,7 +58,6 @@ export interface Pool {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
     };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
@@ -172,61 +67,10 @@ export interface CandlesByPoolAndDuration {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
+        chainId: string;
     };
     duration: number;
     candles: Array<CandleData>;
-}
-
-export interface TvlData {
-    interpBadness: number;
-    interpDistHigher: number;
-    interpDistLower: number;
-    method: string;
-    time: number;
-    tvl: number;
-}
-
-export interface CandleData {
-    tvlData: TvlData;
-    volumeUSD: number;
-    averageLiquidityFee: number;
-    time: number;
-    poolHash: string;
-    firstBlock: number;
-    lastBlock: number;
-    minPriceDecimalCorrected: number;
-    maxPriceDecimalCorrected: number;
-    priceOpenDecimalCorrected: number;
-    priceCloseDecimalCorrected: number;
-    priceCloseExclMEVDecimalCorrected: number;
-    invPriceCloseExclMEVDecimalCorrected: number;
-    invMinPriceDecimalCorrected: number;
-    invMaxPriceDecimalCorrected: number;
-    invPriceOpenDecimalCorrected: number;
-    invPriceCloseDecimalCorrected: number;
-    minPriceExclMEVDecimalCorrected: number;
-    invMinPriceExclMEVDecimalCorrected: number;
-    maxPriceExclMEVDecimalCorrected: number;
-    invMaxPriceExclMEVDecimalCorrected: number;
-    priceOpenExclMEVDecimalCorrected: number;
-    invPriceOpenExclMEVDecimalCorrected: number;
-    numSwaps: number;
-    netBaseFlow: string;
-    netQuoteFlow: string;
-    totalBaseFlow: string;
-    totalQuoteFlow: string;
-    firstSwap: string;
-    lastSwap: string;
-    numSwapsFromCroc: number;
-    numSwapsFromUniV3: number;
-    network: string;
-    chainId: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    period: number;
-    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {
@@ -268,8 +112,6 @@ const initialState: graphData = {
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
     liquidityRequest: undefined,
-    poolVolumeSeries: { dataReceived: false, pools: [] },
-    poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
@@ -405,15 +247,6 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        setPoolVolumeSeries: (
-            state,
-            action: PayloadAction<PoolVolumeSeries>,
-        ) => {
-            state.poolVolumeSeries = action.payload;
-        },
-        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
-            state.poolTvlSeries = action.payload;
-        },
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
         },
@@ -513,12 +346,12 @@ export const graphDataSlice = createSlice({
             }
         },
 
-        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
+        setLiquidity: (state, action: PayloadAction<LiquidityDataIF>) => {
             // Sanitize the raw result from the backend
             const curve = action.payload.curveState;
             const base = normalizeAddr(curve.base);
             const quote = normalizeAddr(curve.quote);
-            const chainId = backendNetworkToChainId(curve.network);
+            const chainId = curve.chainId;
 
             // Verify that the result matches the current request in case multiple are in-flight
             if (
@@ -766,8 +599,6 @@ export const {
     setLeaderboardByPool,
     updateLeaderboard,
     addPositionsByPool,
-    setPoolVolumeSeries,
-    setPoolTvlSeries,
     setLiquidity,
     setLiquidityPending,
     setCandles,

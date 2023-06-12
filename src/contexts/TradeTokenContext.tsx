@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { memoizePoolLiquidity } from '../App/functions/getPoolLiquidity';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -63,9 +62,6 @@ export const TradeTokenContextProvider = (props: {
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
     const { address: userAddress, isConnected } = useAccount();
-
-    const cachedPoolLiquidity = memoizePoolLiquidity();
-
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -87,14 +83,12 @@ export const TradeTokenContextProvider = (props: {
         isTokenABase,
     } = usePoolMetadata({
         crocEnv,
-        httpGraphCacheServerDomain: GRAPHCACHE_URL,
         pathname: location.pathname,
         chainData,
         searchableTokens: tokens.tokenUniv,
         receiptCount: receiptData.sessionReceipts.length,
         lastBlockNumber,
         isServerEnabled,
-        cachedPoolLiquidity,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,

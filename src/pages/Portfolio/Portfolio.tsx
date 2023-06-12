@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo } from 'react';
 import { useEnsName } from 'wagmi';
-import { Provider } from '@ethersproject/providers';
 
 // START: Import JSX Components
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
@@ -25,7 +24,6 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getMainnetProvider } from '../../App/functions/getMainnetProvider';
 
 interface propsIF {
     userAccount?: boolean;
@@ -41,8 +39,11 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -52,9 +53,7 @@ function Portfolio(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [mainnetProvider] = useState<Provider | undefined>(
-        getMainnetProvider(),
-    );
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -208,6 +207,7 @@ function Portfolio(props: propsIF) {
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
+                        cachedTokenDetails,
                         crocEnv,
                     );
 
