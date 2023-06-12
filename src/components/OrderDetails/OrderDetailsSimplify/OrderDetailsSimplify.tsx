@@ -10,6 +10,7 @@ import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -62,6 +63,8 @@ export default function OrderDetailsSimplify(
         isAccountView,
     } = props;
 
+    const { chainData } = useContext(CrocEnvContext);
+
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -112,7 +115,7 @@ export default function OrderDetailsSimplify(
         if (posHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }

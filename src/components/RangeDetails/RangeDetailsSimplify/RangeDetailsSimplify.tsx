@@ -11,6 +11,7 @@ import { useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -63,6 +64,8 @@ export default function RangeDetailsSimplify(
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
+    const { chainData } = useContext(CrocEnvContext);
+
     const [_, copy] = useCopyToClipboard();
 
     function handleOpenWallet() {
@@ -87,7 +90,7 @@ export default function RangeDetailsSimplify(
         if (tokenAAddressLowerCase && blockExplorer) {
             const adressUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${tokenAAddressLowerCase}`;
             window.open(adressUrl);
         }

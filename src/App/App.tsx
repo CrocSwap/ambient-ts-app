@@ -51,6 +51,7 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
+import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
@@ -125,6 +126,8 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/tos' &&
+        currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
         !fullScreenChart && (
             // isChainSupported &&
@@ -139,6 +142,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/tos' ||
+        currentLocation == '/privacy' ||
         currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
@@ -298,6 +303,7 @@ export default function App() {
                         />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='tos' element={<TermsOfService />} />
+                        <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -315,6 +321,9 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
+                    currentLocation !== '/404' &&
+                    currentLocation !== '/tos' &&
+                    currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>

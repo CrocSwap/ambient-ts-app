@@ -53,7 +53,6 @@ const NotificationCenter = () => {
 
     return (
         <AnimateSharedLayout>
-            {/* <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}> */}
             <div className={styles.container}>
                 <span ref={activityCenterRef}>
                     <ActivityIndicator
@@ -74,7 +73,6 @@ const NotificationCenter = () => {
                 </div>
                 <div></div>
             </div>
-            {/* </FocusTrap> */}
         </AnimateSharedLayout>
     );
 };
