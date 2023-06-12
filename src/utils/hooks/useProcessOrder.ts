@@ -512,7 +512,7 @@ export const useProcessOrder = (
                           maximumFractionDigits: 2,
                       });
             setInitialTokenQty(
-                isDenomBase
+                (isBid && !isDenomBase) || (!isBid && isDenomBase)
                     ? intialTokenQtyTruncated
                     : invIntialTokenQtyTruncated,
             );
