@@ -77,53 +77,6 @@ export default function LimitRate(props: propsIF) {
         });
     };
 
-    const rateInput = (
-        <div className={styles.token_amount}>
-            <input
-                id={`${fieldId}-quantity`}
-                onFocus={() => {
-                    const limitRateInputField = document.getElementById(
-                        'limit-rate-quantity',
-                    );
-
-                    (limitRateInputField as HTMLInputElement).select();
-                }}
-                onChange={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    isValid ? setDisplayPrice(event.target.value) : null;
-                }}
-                className={styles.currency_quantity}
-                placeholder='0.0'
-                onBlur={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    const targetValue = event.target.value;
-                    if (isValid && targetValue !== previousDisplayPrice) {
-                        handleLimitChange(targetValue.replaceAll(',', ''));
-                        setPreviousDisplayPrice(targetValue);
-                    }
-                }}
-                value={displayPrice === 'NaN' ? '...' : displayPrice}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern={exponentialNumRegEx.source}
-                disabled={disable}
-                tabIndex={0}
-                aria-label='Limit Price.'
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='all'
-            />
-        </div>
-    );
-
     const buttonControls = (
         <div className={styles.button_controls}>
             <button
@@ -158,7 +111,57 @@ export default function LimitRate(props: propsIF) {
                 <p>Price</p>
             </span>
             <div className={styles.swap_input} id='limit_rate'>
-                {rateInput}
+                <div className={styles.token_amount}>
+                    <input
+                        id={`${fieldId}-quantity`}
+                        onFocus={() => {
+                            const limitRateInputField = document.getElementById(
+                                'limit-rate-quantity',
+                            );
+
+                            (limitRateInputField as HTMLInputElement).select();
+                        }}
+                        onChange={(event) => {
+                            const isValid =
+                                event.target.value === '' ||
+                                event.target.validity.valid;
+                            isValid
+                                ? setDisplayPrice(event.target.value)
+                                : null;
+                        }}
+                        className={styles.currency_quantity}
+                        placeholder='0.0'
+                        onBlur={(event) => {
+                            const isValid =
+                                event.target.value === '' ||
+                                event.target.validity.valid;
+                            const targetValue = event.target.value;
+                            if (
+                                isValid &&
+                                targetValue !== previousDisplayPrice
+                            ) {
+                                handleLimitChange(
+                                    targetValue.replaceAll(',', ''),
+                                );
+                                setPreviousDisplayPrice(targetValue);
+                            }
+                        }}
+                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        type='text'
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        pattern={exponentialNumRegEx.source}
+                        disabled={disable}
+                        tabIndex={0}
+                        aria-label='Limit Price.'
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                    />
+                </div>
                 {buttonControls}
             </div>
         </div>
