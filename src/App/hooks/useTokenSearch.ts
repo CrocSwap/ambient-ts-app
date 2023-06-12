@@ -148,7 +148,11 @@ export const useTokenSearch = (
         // keep tokens listed by Ambient at the top
         const sortedTokens: TokenIF[] = foundTokens.sort(
             (a: TokenIF, b: TokenIF) => {
+                // output value
                 let rank: number;
+                // decision tree to determine sort order
+                // sort ambient-listed token higher if only one is listed by us
+                // otherwise sort by number of lists featuring the token overall
                 if (isOnAmbientList(a) && isOnAmbientList(b)) {
                     rank = comparePopularity();
                 } else if (isOnAmbientList(a)) {
@@ -158,9 +162,11 @@ export const useTokenSearch = (
                 } else {
                     rank = comparePopularity();
                 }
+                // fn to determine if a given token is on the ambient list
                 function isOnAmbientList(t: TokenIF): boolean {
                     return !!t.listedBy?.includes(tokenListURIs.ambient);
                 }
+                // fn to determine which of the two tokens is more popular
                 function comparePopularity(): number {
                     const getPopularity = (tkn: TokenIF): number =>
                         tkn.listedBy?.length ?? 1;
@@ -168,6 +174,7 @@ export const useTokenSearch = (
                     const popularityTokenB: number = getPopularity(b);
                     return popularityTokenB - popularityTokenA;
                 }
+                // return the output variable
                 return rank;
             },
         );
