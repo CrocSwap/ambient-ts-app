@@ -45,29 +45,28 @@ export default function LimitRate(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const limitTick = tradeData.limitTick;
+    const isDenomBase: boolean = tradeData.isDenomBase;
+    const limitTick: number | undefined = tradeData.limitTick;
 
-    const increaseTick = () => {
+    const increaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick + gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const decreaseTick = () => {
+    const decreaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick - gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const handleLimitChange = (value: string) => {
+    const handleLimitChange = (value: string): void => {
         IS_LOCAL_ENV && console.debug({ value });
         const limitNonDisplay = isDenomBase
             ? pool?.fromDisplayPrice(parseFloat(value))
             : pool?.fromDisplayPrice(1 / parseFloat(value));
-
         limitNonDisplay?.then((limit) => {
             const pinnedTick: number = isSellTokenBase
                 ? pinTickLower(limit, gridSize)
