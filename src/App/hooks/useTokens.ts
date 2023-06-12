@@ -76,7 +76,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
             .forEach((t) => {
+                // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
+                // deep copy of this token data object
                 const deepToken = {
                     address: t.address,
                     chainId: t.chainId,
@@ -87,14 +89,17 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     name: t.name,
                     symbol: t.symbol,
                 };
+                // get the current token from the Map if already listed
                 const tknFromMap: TokenIF | undefined = retMap.get(
                     t.address.toLowerCase(),
                 );
+                // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
                     deepToken.listedBy = deepToken.listedBy.concat(
                         tknFromMap.listedBy,
                     );
                 }
+                // add updated deep copy to the Map
                 retMap.set(deepToken.address.toLowerCase(), deepToken);
             });
         return retMap;

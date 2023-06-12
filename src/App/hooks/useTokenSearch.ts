@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
 
 export const useTokenSearch = (
     chainId: string,
@@ -143,9 +144,35 @@ export const useTokenSearch = (
             default:
                 foundTokens = noSearch();
         }
+        // sort to list tokens higher which are recognized by more authorities
+        // keep tokens listed by Ambient at the top
+        const sortedTokens: TokenIF[] = foundTokens.sort(
+            (a: TokenIF, b: TokenIF) => {
+                const isOnAmbientList = (t: TokenIF) =>
+                    t.listedBy?.includes(tokenListURIs.ambient);
+                function comparePopularity(): number {
+                    const getPopularity = (tkn: TokenIF): number =>
+                        tkn.listedBy?.length ?? 1;
+                    const popularityTokenA: number = getPopularity(a);
+                    const popularityTokenB: number = getPopularity(b);
+                    return popularityTokenB - popularityTokenA;
+                }
+                let rank: number;
+                if (isOnAmbientList(a) && isOnAmbientList(b)) {
+                    rank = comparePopularity();
+                } else if (isOnAmbientList(a)) {
+                    rank = -1;
+                } else if (isOnAmbientList(b)) {
+                    rank = 1;
+                } else {
+                    rank = comparePopularity();
+                }
+                return rank;
+            },
+        );
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
-        setOutputTokens(foundTokens);
+        setOutputTokens(sortedTokens);
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [

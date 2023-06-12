@@ -56,7 +56,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         addRecentToken,
         getRecentTokens,
     } = useContext(TokenContext);
-    console.log({ outputTokens });
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
