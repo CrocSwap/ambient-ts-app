@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
@@ -38,7 +37,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { isChainSupported, setCrocEnv } = useContext(CrocEnvContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -422,7 +421,6 @@ const PageHeader = function () {
                         </div>
                     </div>
                 )}
-                {isChainSupported || <SwitchNetwork />}
             </div>
         </header>
     );
