@@ -89,7 +89,7 @@
 
 .footer button:hover,
 .footer button:focus-visible {
-    color: var(--dark2);
+    color: var(--dark1);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }

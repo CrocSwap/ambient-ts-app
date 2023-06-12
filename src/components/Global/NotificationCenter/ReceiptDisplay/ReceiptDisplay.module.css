@@ -1,6 +1,6 @@
 .container {
     width: 100%;
-    background: var(--dark1);
+    background: var(--dark2);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     padding: 0.4rem 8px;
