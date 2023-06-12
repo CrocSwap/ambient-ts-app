@@ -80,7 +80,7 @@ export const useTokenSearch = (
         function searchAsNameOrSymbol(): TokenIF[] {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
-            const exactOnly = validatedInput.length === 2;
+            const exactOnly: boolean = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
             return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
         }
@@ -88,7 +88,7 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = tokens.defaultTokens;
+            const outputTokens: TokenIF[] = tokens.defaultTokens;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],

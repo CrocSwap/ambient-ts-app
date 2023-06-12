@@ -75,7 +75,28 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
-            .forEach((t) => retMap.set(t.address.toLowerCase(), t));
+            .forEach((t) => {
+                const originatingList: string = t.fromList ?? 'unknown';
+                const deepToken = {
+                    address: t.address,
+                    chainId: t.chainId,
+                    decimals: t.decimals,
+                    fromList: originatingList,
+                    listedBy: [originatingList],
+                    logoURI: t.logoURI,
+                    name: t.name,
+                    symbol: t.symbol,
+                };
+                const tknFromMap: TokenIF | undefined = retMap.get(
+                    t.address.toLowerCase(),
+                );
+                if (tknFromMap?.listedBy) {
+                    deepToken.listedBy = deepToken.listedBy.concat(
+                        tknFromMap.listedBy,
+                    );
+                }
+                retMap.set(deepToken.address.toLowerCase(), deepToken);
+            });
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
@@ -165,7 +186,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     const getTokensFromList = useCallback(
         (uri: string) => {
             return tokenUniv.filter((tkn: TokenIF) =>
-                tkn.fromListArr?.includes(uri),
+                tkn.listedBy?.includes(uri),
             );
         },
         [chainId, tokenUniv],
