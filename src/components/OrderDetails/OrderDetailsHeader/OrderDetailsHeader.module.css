@@ -6,7 +6,6 @@
     align-items: center;
     padding: 1rem;
     cursor: default;
-
     height: 60px;
 }
 
@@ -15,6 +14,7 @@
     display: flex;
     flex-direction: row;
     /* align-items: flex-start; */
+
     gap: 8px;
 }
 
@@ -29,16 +29,16 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-transform: none;
-    font-weight: 100;
     font-size: 2.25rem;
+    font-weight: 100;
     line-height: 2.81rem;
     display: none;
 }
 
 .ambient_text {
     font-weight: 100;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: 18px;
+    line-height: 22px;
     font-family: var(--font-logo);
     color: var(--text2);
 }

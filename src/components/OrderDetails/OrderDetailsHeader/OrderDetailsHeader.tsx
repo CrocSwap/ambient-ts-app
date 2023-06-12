@@ -60,8 +60,8 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
                     {showShareComponent ? 'Details' : 'Share'}
                 </button>
 
-                {showShareComponent ? copySlotIDIconWithTooltip : phIcon}
-                {showShareComponent ? copyImageIconWithTooltip : phIcon}
+                {!showShareComponent ? copySlotIDIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
 
                 <div onClick={onClose}>
                     <CgClose size={28} color='var(--text3)' />
