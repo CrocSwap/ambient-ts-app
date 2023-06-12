@@ -1,6 +1,6 @@
 import styles from './RangeDetailsHeader.module.css';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import ambientLogoText from '../../../assets/images/logos/logo_text.png';
+import logo from '../../../assets/images/logos/ambient_logo.png';
+import logoText from '../../../assets/images/logos/logo_text.png';
 
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
@@ -45,8 +45,12 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
     return (
         <div className={styles.container}>
             <section className={styles.logo_container}>
-                <img src={ambientLogo} alt='ambient' width='35px' />
-                <img src={ambientLogoText} alt='ambient' width='176px' />
+                <img src={logo} alt='ambient' className={styles.logo} />
+                <img
+                    src={logoText}
+                    alt='ambient'
+                    className={styles.logo_text}
+                />
             </section>
 
             <section className={styles.settings_control}>
