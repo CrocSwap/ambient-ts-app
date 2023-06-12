@@ -9,16 +9,21 @@
 
     height: 60px;
 }
-.logo_container{
-    width: 233px;
+.logo_container {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.logo_container img:nth-of-type(2){
-    display: none;
+.logo {
+    height: 35px;
+    margin-left: 18px;
+}
+
+.logo_text {
+    width: 176px;
+    margin-left: 10px;
 }
 .settings_control {
     display: flex;
@@ -27,8 +32,6 @@
     gap: 8px;
     justify-content: center;
 }
-
-
 
 .settings_control div {
     cursor: pointer;
@@ -42,16 +45,4 @@
     width: 70px;
     height: 25px;
     cursor: pointer;
-}
-
-@media only screen and (min-width: 768px) {
-
-
-    .logo_container{
-        width: 233px;
-}
-.logo_container img:nth-of-type(2){
-    display:block;
-}
-
 }
