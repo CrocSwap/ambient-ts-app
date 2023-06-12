@@ -23,10 +23,6 @@ export default function RangeDetailsHeader(props: RangeDetailsPropsIF) {
         setShowShareComponent,
     } = props;
 
-    const phIcon = (
-        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
-    );
-
     const copySlotIDIconWithTooltip = (
         <IconWithTooltip
             title='Copy position slot ID to clipboard'

@@ -24,10 +24,6 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         globalModal: { close: onClose },
     } = useContext(AppStateContext);
 
-    const phIcon = (
-        <FiCopy size={25} color='var(--text3)' style={{ opacity: '0' }} />
-    );
-
     const copySlotIDIconWithTooltip = (
         <IconWithTooltip
             title='Copy position slot ID to clipboard'
