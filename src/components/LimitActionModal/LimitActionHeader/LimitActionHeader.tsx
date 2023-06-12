@@ -1,10 +1,10 @@
-import styles from './RemoveOrderModalHeader.module.css';
+import styles from './LimitActionHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 // import { RiListSettingsLine } from 'react-icons/ri';
-interface RemoveOrderModalHeaderPropsIF {
+interface LimitActionHeaderPropsIF {
     title: string;
     // eslint-disable-next-line
     onGoBack?: any;
@@ -12,8 +12,8 @@ interface RemoveOrderModalHeaderPropsIF {
     showSettings: boolean;
     setShowSettings: Dispatch<SetStateAction<boolean>>;
 }
-export default function RemoveOrderModalHeader(
-    props: RemoveOrderModalHeaderPropsIF,
+export default function LimitActionModalHeader(
+    props: LimitActionHeaderPropsIF,
 ) {
     const {
         globalModal: { close: onClose },
