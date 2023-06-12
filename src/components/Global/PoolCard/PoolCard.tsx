@@ -190,7 +190,8 @@ export default function PoolCard(props: propsIF) {
                         shouldInvertDisplay,
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
+                        // setPoolPriceChangePercent('No Change');
+                        setPoolPriceChangePercent('...');
                         setIsPoolPriceChangePositive(true);
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
@@ -258,69 +259,78 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    const apyDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h APR</div>
-                <div className={styles.apr}>
-                    {poolApy === undefined ? '…' : `${poolApy}%`}
-                </div>
-            </div>
-        </>
-    );
-
     const volumeDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h Vol.</div>
-                <div className={styles.vol}>
+        <div className={styles.full_content}>
+            <p />
+            <div className={styles.half_content}>
+                <p className={styles.row_title}>Vol.</p>
+                <p className={styles.vol}>
                     {poolVolume === undefined ? '…' : `$${poolVolume}`}
-                </div>
+                </p>
             </div>
-        </>
-    );
-
-    const tvlDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>
-                    {poolTvl === undefined ? '…' : `$${poolTvl}`}
-                </div>
-            </div>
-        </>
-    );
-
-    const poolPriceDisplayDOM = (
-        <div className={styles.price}>
-            {poolPriceDisplay === undefined
-                ? '…'
-                : shouldInvertDisplay
-                ? `${quoteTokenCharacter}${poolPriceDisplay}`
-                : `${baseTokenCharacter}${poolPriceDisplay}`}
         </div>
     );
 
+    const apyDisplay = (
+        <div className={styles.full_content}>
+            <p />
+
+            <div className={styles.half_content}>
+                <p className={styles.row_title}>APY</p>
+                <p className={styles.apr}>
+                    {poolApy === undefined ? '…' : `${poolApy}%`}
+                </p>
+            </div>
+        </div>
+    );
     const poolPriceChangeDisplay = (
-        <div className={styles.pool_price_change}>
-            <div className={styles.pool_price_title}>24h Δ</div>
-            <div
-                className={
-                    isPoolPriceChangePositive
-                        ? styles.change_positive
-                        : styles.change_negative
-                }
-            >
-                {poolPriceDisplay === undefined ||
-                poolPriceChangePercent === undefined
+        <div className={styles.full_content}>
+            <p className={styles.price}>
+                {poolPriceDisplay === undefined
                     ? '…'
-                    : poolPriceChangePercent}
+                    : shouldInvertDisplay
+                    ? `${quoteTokenCharacter}${poolPriceDisplay}`
+                    : `${baseTokenCharacter}${poolPriceDisplay}`}
+            </p>
+            <div className={styles.half_content}>
+                <p className={styles.row_title}>24h </p>
+                <p
+                    className={
+                        isPoolPriceChangePositive
+                            ? styles.change_positive
+                            : styles.change_negative
+                    }
+                >
+                    {poolPriceDisplay === undefined ||
+                    poolPriceChangePercent === undefined
+                        ? '…'
+                        : poolPriceChangePercent}
+                </p>
             </div>
         </div>
     );
+
+    // const tvlDisplay = (
+    //     <>
+    //         <div></div>
+    //         <div>
+    //             <div className={styles.row_title}>TVL</div>
+    //             <div className={styles.vol}>
+    //                 {poolTvl === undefined ? '…' : `$${poolTvl}`}
+    //             </div>
+    //         </div>
+    //     </>
+    // );
+
+    // const poolPriceDisplayDOM = (
+    //     <div className={styles.price}>
+    //         {poolPriceDisplay === undefined
+    //             ? '…'
+    //             : shouldInvertDisplay
+    //             ? `${quoteTokenCharacter}${poolPriceDisplay}`
+    //             : `${baseTokenCharacter}${poolPriceDisplay}`}
+    //     </div>
+    // );
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -350,13 +360,9 @@ export default function PoolCard(props: propsIF) {
                     {tokenImagesDisplay}
                     {tokenNamesDisplay}
                 </div>
-                <div className={styles.row}>{volumeDisplay}</div>
-                <div className={styles.row}>{apyDisplay}</div>
-                <div className={styles.row}>{tvlDisplay}</div>
-                <div className={styles.column}>
-                    {poolPriceChangeDisplay}
-                    {poolPriceDisplayDOM}
-                </div>
+                {apyDisplay}
+                {volumeDisplay}
+                {poolPriceChangeDisplay}
             </div>
         </Link>
     );
