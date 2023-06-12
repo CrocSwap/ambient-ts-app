@@ -14,7 +14,6 @@ export interface graphData {
     candlesForAllPools: CandlesForAllPools;
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
-    poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
@@ -52,22 +51,6 @@ export interface LimitOrdersByPool {
 export interface PoolVolumeSeries {
     dataReceived: boolean;
     pools: Array<VolumeSeriesByPool>;
-}
-
-export interface PoolTvlSeries {
-    dataReceived: boolean;
-    pools: Array<TvlSeriesByPool>;
-}
-
-export interface TvlSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    tvlData: TvlSeriesByPoolTimeAndResolution;
 }
 
 export interface VolumeSeriesByPool {
@@ -170,10 +153,6 @@ export interface CandleData {
     invMaxPriceExclMEVDecimalCorrected: number;
     priceOpenExclMEVDecimalCorrected: number;
     invPriceOpenExclMEVDecimalCorrected: number;
-    chainId: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
     period: number;
 }
 
@@ -216,7 +195,6 @@ const initialState: graphData = {
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
     liquidityRequest: undefined,
-    poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
@@ -351,9 +329,6 @@ export const graphDataSlice = createSlice({
                         action.payload[index];
                 }
             }
-        },
-        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
-            state.poolTvlSeries = action.payload;
         },
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
@@ -707,7 +682,6 @@ export const {
     setLeaderboardByPool,
     updateLeaderboard,
     addPositionsByPool,
-    setPoolTvlSeries,
     setLiquidity,
     setLiquidityPending,
     setCandles,

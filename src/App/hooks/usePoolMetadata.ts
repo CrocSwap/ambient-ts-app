@@ -16,7 +16,6 @@ import {
     setLimitOrdersByPool,
     setLiquidity,
     setLiquidityPending,
-    setPoolTvlSeries,
     setPositionsByPool,
 } from '../../utils/state/graphDataSlice';
 import {
@@ -32,7 +31,6 @@ import { TokenPriceFn } from '../functions/fetchTokenPrice';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
 import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
 import { getPositionData } from '../functions/getPositionData';
-import { getTvlSeries } from '../functions/getTvlSeries';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
@@ -200,43 +198,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)
                                 dispatch(setLiquidityFee(liquidityFeeNum));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool TVL series
-                    getTvlSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        props.chainData.poolIndex,
-                        props.chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((tvlSeries) => {
-                            if (
-                                tvlSeries &&
-                                tvlSeries.base &&
-                                tvlSeries.quote &&
-                                tvlSeries.poolIdx &&
-                                tvlSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolTvlSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: tvlSeries.base,
-                                                    quote: tvlSeries.quote,
-                                                    poolIdx: tvlSeries.poolIdx,
-                                                    chainId:
-                                                        props.chainData.chainId,
-                                                },
-                                                tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
                         })
                         .catch(console.error);
 
