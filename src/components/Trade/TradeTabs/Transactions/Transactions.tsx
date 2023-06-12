@@ -69,7 +69,8 @@ function Transactions(props: propsIF) {
                             tradeData.baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
                             tradeData.quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill',
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
                 ),
             );
         else {
@@ -80,7 +81,8 @@ function Transactions(props: propsIF) {
                             tradeData.baseToken.address.toLowerCase() &&
                         tx.quote.toLowerCase() ===
                             tradeData.quoteToken.address.toLowerCase() &&
-                        tx.changeType !== 'fill',
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
                 ),
             );
         }

@@ -353,7 +353,7 @@ function CurrencyConverter(props: propsIF) {
         if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
-        } else if (!isPoolInitialized) {
+        } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(parseFloat(tokenAQtyLocal))) {

@@ -8,11 +8,8 @@ import {
     memo,
     useMemo,
 } from 'react';
-import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
+import { AiOutlineFullscreen } from 'react-icons/ai';
+import { FiCopy } from 'react-icons/fi';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -37,6 +34,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 
 // interface for React functional component props
 interface propsIF {
@@ -104,9 +102,18 @@ function TradeCharts(props: propsIF) {
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
     const canvasRef = useRef(null);
-    const downloadAsImage = () => {
+    const [, copy] = useCopyToClipboard();
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
+    const copyChartToClipboard = async () => {
         if (canvasRef.current) {
-            printDomToImage(canvasRef.current, '#171d27');
+            const blob = await printDomToImage(canvasRef.current, '#171d27');
+            if (blob) {
+                copy(blob);
+                openSnackbar('Chart copied to clipboard', 'info');
+            }
         }
     };
 
@@ -158,13 +165,13 @@ function TradeCharts(props: propsIF) {
     const saveImageContent = (
         <div
             className={styles.save_image_content}
-            onClick={downloadAsImage}
+            onClick={copyChartToClipboard}
             role='button'
             tabIndex={0}
             aria-label='Download chart image button'
         >
-            Save Chart Image
-            <AiOutlineDownload />
+            Copy to Clipboard
+            <FiCopy />
         </div>
     );
 
@@ -201,15 +208,15 @@ function TradeCharts(props: propsIF) {
                 enterDelay={500}
             >
                 <button
-                    onClick={downloadAsImage}
+                    onClick={copyChartToClipboard}
                     className={styles.fullscreen_button}
                 >
-                    <AiOutlineCamera
+                    <FiCopy
                         size={20}
                         id='trade_chart_save_image'
                         role='button'
                         tabIndex={0}
-                        aria-label='Save chart image button'
+                        aria-label='Copy chart image button'
                     />
                 </button>
             </DefaultTooltip>

@@ -52,6 +52,7 @@ import { CandleContext } from '../contexts/CandleContext';
 import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
@@ -128,8 +129,10 @@ export default function App() {
         currentLocation !== '/tos' &&
         currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
-        isChainSupported && <Sidebar />;
+        !fullScreenChart && (
+            // isChainSupported &&
+            <Sidebar />
+        );
 
     const sidebarDislayStyle = isSidebarOpen
         ? 'sidebar_content_layout'
@@ -196,6 +199,7 @@ export default function App() {
     return (
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
+                {!isChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
