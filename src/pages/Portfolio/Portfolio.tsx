@@ -39,8 +39,11 @@ function Portfolio(props: propsIF) {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -204,6 +207,7 @@ function Portfolio(props: propsIF) {
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
+                        cachedTokenDetails,
                         crocEnv,
                     );
 
