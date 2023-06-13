@@ -1,30 +1,40 @@
 import { useState } from 'react';
 
-type CopiedValue = string | null;
-type CopyFn = (text: string) => Promise<boolean>; // Return success
+type SupportedCopies = string | Blob;
+type CopiedValue = SupportedCopies | null;
+type CopyFn = (data: SupportedCopies) => Promise<boolean>; // Return success
 
 function useCopyToClipboard(): [CopiedValue, CopyFn] {
-    const [copiedText, setCopiedText] = useState<CopiedValue>(null);
+    const [copiedData, setCopiedData] = useState<CopiedValue>(null);
 
-    const copy: CopyFn = async (text) => {
+    const copy: CopyFn = async (data) => {
         if (!navigator?.clipboard) {
             console.error('Clipboard not supported');
             return false;
         }
 
-        // Try to save to clipboard then save it in the state if worked
+        // Try to save to clipboard then save it in the state if it worked
         try {
-            await navigator.clipboard.writeText(text);
-            setCopiedText(text);
+            if (typeof data === 'string') {
+                await navigator.clipboard.writeText(data);
+            } else if (data instanceof Blob) {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': data }),
+                ]);
+            } else {
+                throw new Error('Unsupported copy data type');
+            }
+
+            setCopiedData(data);
             return true;
         } catch (error) {
             console.error('Copy failed', error);
-            setCopiedText(null);
+            setCopiedData(null);
             return false;
         }
     };
 
-    return [copiedText, copy];
+    return [copiedData, copy];
 }
 
 export default useCopyToClipboard;

@@ -35,11 +35,11 @@ body::-webkit-scrollbar-thumb {
     box-shadow: 0px 0px 0px 100000vh black;
 }
 body {
-    background: var(--body-bg);
+    background: var(--dark1);
 }
 
 html {
-    background: var(--body-bg);
+    background: var(--dark1);
     scrollbar-width: none;
     color: var(--text1);
     height: 100%;
@@ -219,7 +219,7 @@ p:focus-visible {
 
 .swiper-pagination {
     bottom: 0 !important;
-    background: var(--body-bg) !important;
+    background: var(--dark1) !important;
 }
 .swiper-pagination-bullet {
     width: 10px !important;
@@ -269,11 +269,11 @@ p:focus-visible {
     .content-container {
         height: 100vh;
 
-        background: var(--body-bg);
+        background: var(--dark1);
     }
     .content-container-trade {
         overflow: hidden;
 
-        background: var(--body-bg);
+        background: var(--dark1);
     }
 }

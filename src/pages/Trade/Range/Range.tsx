@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import FocusTrap from 'focus-trap-react';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -1421,174 +1420,161 @@ function Range() {
     };
 
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <section
-                data-testid={'range'}
-                className={styles.scrollable_container}
-            >
-                {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}
-
-                <ContentContainer isOnTradeRoute>
-                    <RangeHeader
-                        mintSlippage={mintSlippage}
-                        isTokenABase={isTokenABase}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
+        <section data-testid={'range'} className={styles.scrollable_container}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        {advancedMode ? advancedModeContent : baseModeContent}
-                    </motion.div>
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        poolPriceNonDisplay !== 0 &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        !isTokenAAllowanceSufficient ? (
-                            tokenAApprovalButton
-                        ) : poolPriceNonDisplay !== 0 &&
-                          parseFloat(tokenBInputQty) > 0 &&
-                          !isTokenBAllowanceSufficient ? (
-                            tokenBApprovalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassConfirmRangeButton
-                                {...bypassConfirmButtonProps}
-                            />
-                        ) : (
-                            <>
-                                <RangeButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmRange.isEnabled
-                                                ? handleRangeButtonClickWithBypass
-                                                : openConfirmationModal
-                                            : ackAsNeeded
-                                    }
-                                    rangeAllowed={
-                                        isPoolInitialized === true &&
-                                        rangeAllowed &&
-                                        !isInvalidRange
-                                    }
-                                    rangeButtonErrorMessage={
-                                        rangeButtonErrorMessage
-                                    }
-                                    isAmbient={isAmbient}
-                                    isAdd={isAdd}
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
 
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenA.symbol}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </ContentContainer>
-                {isConfirmationModalOpen && (
-                    <Modal
-                        onClose={handleModalClose}
-                        title={'Pool Confirmation'}
-                        centeredTitle
-                    >
-                        <ConfirmRangeModal
-                            tokenAQtyLocal={tokenAQtyLocal}
-                            tokenBQtyLocal={tokenBQtyLocal}
-                            spotPriceDisplay={displayPriceString}
-                            isTokenABase={isTokenABase}
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                            maxPriceDisplay={maxPriceDisplay}
-                            minPriceDisplay={minPriceDisplay}
-                            sendTransaction={sendTransaction}
-                            newRangeTransactionHash={newRangeTransactionHash}
-                            resetConfirmation={resetConfirmation}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            txErrorCode={txErrorCode}
-                            isInRange={!isOutOfRange}
-                            pinnedMinPriceDisplayTruncatedInBase={
-                                pinnedMinPriceDisplayTruncatedInBase
-                            }
-                            pinnedMinPriceDisplayTruncatedInQuote={
-                                pinnedMinPriceDisplayTruncatedInQuote
-                            }
-                            pinnedMaxPriceDisplayTruncatedInBase={
-                                pinnedMaxPriceDisplayTruncatedInBase
-                            }
-                            pinnedMaxPriceDisplayTruncatedInQuote={
-                                pinnedMaxPriceDisplayTruncatedInQuote
-                            }
-                        />
-                    </Modal>
-                )}
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={
-                        !advancedMode
-                            ? rangeTutorialStepsAdvanced
-                            : rangeTutorialSteps
-                    }
+            <ContentContainer isOnTradeRoute>
+                <RangeHeader
+                    mintSlippage={mintSlippage}
+                    isTokenABase={isTokenABase}
                 />
-            </section>
-        </FocusTrap>
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {advancedMode ? advancedModeContent : baseModeContent}
+                </motion.div>
+                {isUserConnected === undefined ? null : isUserConnected ===
+                  true ? (
+                    poolPriceNonDisplay !== 0 &&
+                    parseFloat(tokenAInputQty) > 0 &&
+                    !isTokenAAllowanceSufficient ? (
+                        tokenAApprovalButton
+                    ) : poolPriceNonDisplay !== 0 &&
+                      parseFloat(tokenBInputQty) > 0 &&
+                      !isTokenBAllowanceSufficient ? (
+                        tokenBApprovalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassConfirmRangeButton
+                            {...bypassConfirmButtonProps}
+                        />
+                    ) : (
+                        <>
+                            <RangeButton
+                                onClickFn={
+                                    areBothAckd
+                                        ? bypassConfirmRange.isEnabled
+                                            ? handleRangeButtonClickWithBypass
+                                            : openConfirmationModal
+                                        : ackAsNeeded
+                                }
+                                rangeAllowed={
+                                    isPoolInitialized === true &&
+                                    rangeAllowed &&
+                                    !isInvalidRange
+                                }
+                                rangeButtonErrorMessage={
+                                    rangeButtonErrorMessage
+                                }
+                                isAmbient={isAmbient}
+                                isAdd={isAdd}
+                                areBothAckd={areBothAckd}
+                            />
+                            {ackTokenMessage && (
+                                <p
+                                    className={styles.acknowledge_text}
+                                    dangerouslySetInnerHTML={{
+                                        __html: formattedAckTokenMessage,
+                                    }}
+                                ></p>
+                            )}
+
+                            <div className={styles.acknowledge_etherscan_links}>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenA.symbol}
+                                    >
+                                        {tokenA.symbol || tokenA.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenB.symbol}
+                                    >
+                                        {tokenB.symbol || tokenB.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )
+                ) : (
+                    loginButton
+                )}
+            </ContentContainer>
+            {isConfirmationModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title={'Pool Confirmation'}
+                    centeredTitle
+                >
+                    <ConfirmRangeModal
+                        tokenAQtyLocal={tokenAQtyLocal}
+                        tokenBQtyLocal={tokenBQtyLocal}
+                        spotPriceDisplay={displayPriceString}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        txErrorCode={txErrorCode}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                    />
+                </Modal>
+            )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={
+                    !advancedMode
+                        ? rangeTutorialStepsAdvanced
+                        : rangeTutorialSteps
+                }
+            />
+        </section>
     );
 }
 
