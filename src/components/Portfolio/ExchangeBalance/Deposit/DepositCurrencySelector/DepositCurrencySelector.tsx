@@ -79,6 +79,7 @@ export default function DepositCurrencySelector(props: propsIF) {
                         <TokenIcon
                             src={uriToHttp(selectedToken.logoURI)}
                             alt={selectedToken.symbol?.charAt(0)}
+                            size='2xl'
                         />
                         <span className={styles.token_list_text}>
                             {selectedToken.symbol}
