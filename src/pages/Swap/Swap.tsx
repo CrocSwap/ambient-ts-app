@@ -581,31 +581,41 @@ function Swap(props: propsIF) {
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
-            <div className={styles.pool_not_initialialized_content}>
-                <div className={styles.close_init} onClick={() => navigate(-1)}>
-                    <VscClose size={25} />
+            <div className={styles.pool_init_bg}>
+                <div className={styles.pool_not_initialialized_content}>
+                    <div
+                        className={styles.close_init}
+                        onClick={() => navigate(-1)}
+                    >
+                        <VscClose size={28} />
+                    </div>
+                    <div className={styles.pool_not_init_inner}>
+                        <h2>This pool has not been initialized.</h2>
+                        <h3>Do you want to initialize it?</h3>
+                        <Link
+                            to={initLinkPath}
+                            className={styles.initialize_link}
+                        >
+                            Initialize Pool
+                            <TokenIcon
+                                src={tokenA.logoURI}
+                                alt={tokenA.symbol}
+                                size='m'
+                            />
+                            <TokenIcon
+                                src={tokenB.logoURI}
+                                alt={tokenB.symbol}
+                                size='m'
+                            />
+                        </Link>
+                        <button
+                            className={styles.no_thanks}
+                            onClick={() => navigate(-1)}
+                        >
+                            No, take me back.
+                        </button>
+                    </div>
                 </div>
-                <h2>This pool has not been initialized.</h2>
-                <h3>Do you want to initialize it?</h3>
-                <Link to={initLinkPath} className={styles.initialize_link}>
-                    Initialize Pool
-                    <TokenIcon
-                        src={tokenA.logoURI}
-                        alt={tokenA.symbol}
-                        size='m'
-                    />
-                    <TokenIcon
-                        src={tokenB.logoURI}
-                        alt={tokenB.symbol}
-                        size='m'
-                    />
-                </Link>
-                <button
-                    className={styles.no_thanks}
-                    onClick={() => navigate(-1)}
-                >
-                    No, take me back.
-                </button>
             </div>
         </div>
     ) : null;

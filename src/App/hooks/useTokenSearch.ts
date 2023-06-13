@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { ZERO_ADDRESS } from '../../constants';
+import { USDC } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
@@ -80,7 +83,7 @@ export const useTokenSearch = (
         function searchAsNameOrSymbol(): TokenIF[] {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
-            const exactOnly = validatedInput.length === 2;
+            const exactOnly: boolean = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
             return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
         }
@@ -88,7 +91,7 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = tokens.defaultTokens;
+            const outputTokens: TokenIF[] = tokens.defaultTokens;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -143,9 +146,76 @@ export const useTokenSearch = (
             default:
                 foundTokens = noSearch();
         }
+        // sort to list tokens higher which are recognized by more authorities
+        // keep tokens listed by Ambient at the top
+        const sortedTokens: TokenIF[] = foundTokens
+            .sort((a: TokenIF, b: TokenIF) => {
+                // output value
+                let rank: number;
+                // decision tree to determine sort order
+                // sort ambient-listed token higher if only one is listed by us
+                // otherwise sort by number of lists featuring the token overall
+                if (isOnAmbientList(a) && isOnAmbientList(b)) {
+                    rank = comparePopularity();
+                } else if (isOnAmbientList(a)) {
+                    rank = -1;
+                } else if (isOnAmbientList(b)) {
+                    rank = 1;
+                } else {
+                    rank = comparePopularity();
+                }
+                // fn to determine if a given token is on the ambient list
+                function isOnAmbientList(t: TokenIF): boolean {
+                    return !!t.listedBy?.includes(tokenListURIs.ambient);
+                }
+                // fn to determine which of the two tokens is more popular
+                function comparePopularity(): number {
+                    const getPopularity = (tkn: TokenIF): number =>
+                        tkn.listedBy?.length ?? 1;
+                    return getPopularity(b) - getPopularity(a);
+                }
+                // return the output variable
+                return rank;
+            })
+            // promote privileged tokens to the top of the list
+            .sort((a: TokenIF, b: TokenIF) => {
+                // fn to numerically prioritize a token (high = important)
+                const getPriority = (tkn: TokenIF): number => {
+                    // declare an output variable
+                    let priority: number;
+                    // canonical token addresses to assign probability
+                    const addresses = {
+                        nativeToken: ZERO_ADDRESS,
+                        USDC: USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase(),
+                    };
+                    // logic router to assign numerical priority to output
+                    // unlisted tokens get priority 0
+                    switch (tkn.address.toLowerCase()) {
+                        // native token
+                        case addresses.nativeToken:
+                            priority = 1000;
+                            break;
+                        // USDCoin (uses address for current chain)
+                        case addresses.USDC:
+                            priority = 900;
+                            break;
+                        // all non-privileged tokens
+                        default:
+                            priority = 0;
+                    }
+                    // return numerical priority of the token
+                    return priority;
+                };
+                // sort tokens by relative priority level
+                return getPriority(b) - getPriority(a);
+            });
+
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
-        setOutputTokens(foundTokens);
+        const resultsLimiter = 8;
+        setOutputTokens(sortedTokens.slice(0, resultsLimiter));
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [

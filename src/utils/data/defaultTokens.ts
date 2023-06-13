@@ -23,28 +23,6 @@ export const mainnetUSDC = {
     symbol: 'USDC',
 };
 
-export const mainnetDAI = {
-    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    chainId: 1,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    logoURI:
-        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-    name: 'Dai Stablecoin',
-    symbol: 'DAI',
-};
-
-export const mainnetWBTC = {
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    chainId: 1,
-    decimals: 8,
-    fromList: '/ambient-token-list.json',
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    name: 'Wrapped BTC',
-    symbol: 'WBTC',
-};
-
 export const goerliETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -132,8 +110,6 @@ export const arbGoerliDAI = {
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
-    mainnetDAI,
-    mainnetWBTC,
     goerliETH,
     goerliUSDC,
     goerliWBTC,
