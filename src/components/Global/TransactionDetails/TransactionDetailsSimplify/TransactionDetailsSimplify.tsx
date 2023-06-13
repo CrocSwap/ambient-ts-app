@@ -293,17 +293,15 @@ export default function TransactionDetailsSimplify(
 
     return (
         <div className={styles.tx_details_container}>
-            <div className={styles.main_container}>
-                <div className={styles.info_content}>
-                    {infoContent.map((info, idx) => (
-                        <InfoRow
-                            key={info.title + idx}
-                            title={info.title}
-                            content={info.content}
-                            explanation={info.explanation}
-                        />
-                    ))}
-                </div>
+            <div className={styles.info_content}>
+                {infoContent.map((info, idx) => (
+                    <InfoRow
+                        key={info.title + idx}
+                        title={info.title}
+                        content={info.content}
+                        explanation={info.explanation}
+                    />
+                ))}
             </div>
         </div>
     );

@@ -9,10 +9,9 @@ import Modal from '../../../../Global/Modal/Modal';
 import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
-import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
+import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
@@ -106,9 +105,13 @@ export default function OrdersMenu(props: propsIF) {
     // -----------------END OF SNACKBAR----------------
 
     const openRemoveModal = () =>
-        openGlobalModal(<OrderRemoval limitOrder={limitOrder} />);
+        openGlobalModal(
+            <LimitActionModal limitOrder={limitOrder} type='Remove' />,
+        );
     const openClaimModal = () =>
-        openGlobalModal(<ClaimOrder limitOrder={limitOrder} />);
+        openGlobalModal(
+            <LimitActionModal limitOrder={limitOrder} type='Claim' />,
+        );
 
     const openDetailsModal = () =>
         openGlobalModal(

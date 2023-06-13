@@ -59,15 +59,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
     const tokenPairDetails = (
-        <div
-            className={styles.token_pair_details}
-            onClick={() => {
-                // dispatch(toggleDidUserFlipDenom());
-            }}
-        >
+        <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                {/* <img src={baseTokenLogo} alt={baseTokenSymbol} /> */}
-                {/* <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} /> */}
                 {baseTokenLogo ? (
                     <img src={baseTokenLogo} alt={baseTokenSymbol} />
                 ) : (
@@ -169,7 +162,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     )}
                 </div>
             </Row>
-            <span className={styles.divider}></span>
+
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
