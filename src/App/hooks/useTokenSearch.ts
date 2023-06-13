@@ -185,13 +185,13 @@ export const useTokenSearch = (
                     let priority: number;
                     // logic router to assign numerical priority to output
                     // unlisted tokens get priority 0
-                    switch (tkn.address) {
+                    switch (tkn.address.toLowerCase()) {
                         // native token
                         case ZERO_ADDRESS:
                             priority = 1000;
                             break;
                         // USDCoin (uses address for current chain)
-                        case USDC[chainId as keyof typeof USDC]:
+                        case USDC[chainId.toLowerCase() as keyof typeof USDC]:
                             priority = 900;
                             break;
                         // all non-privileged tokens
