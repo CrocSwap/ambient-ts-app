@@ -62,29 +62,22 @@ function CurrencyQuantity(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (timeoutId) clearTimeout(timeoutId);
-
         const { value } = event.target;
         const inputValue = value.startsWith('.') ? '0' + value : value;
-
         if (fieldId === 'sell') {
             setBuyQtyString('');
             if (inputValue) {
                 setIsBuyLoading(true);
                 setSellQtyString(inputValue);
             }
-            if (!value) setIsBuyLoading(false);
-
-            // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
+            value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
             if (inputValue) {
                 setIsSellLoading(true);
                 setBuyQtyString(inputValue);
             }
-            if (!value) setIsSellLoading(false);
-
-            // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
+            value || setIsSellLoading(false);
         }
 
         setDisplayValue(inputValue);
@@ -96,22 +89,13 @@ function CurrencyQuantity(props: propsIF) {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
     };
 
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         const targetValue = event.target.value.replace(',', '.');
-        //  I know this seems a bit much here so I will leave a little explanation
-        //  \d*\.?\d* matches any number with an optional decimal point in the middle
-        // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
-        // can be tested here => https://regex101.com/
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(targetValue) > thisToken.decimals;
-
-        // const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
-        //     targetValue,
-        // );
         const isUserInputValid = true;
         if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
             let valueWithDecimal = targetValue;
@@ -148,6 +132,9 @@ function CurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
+                onBlur={() =>
+                    setDisplayValue(parseFloat(displayValue).toString())
+                }
                 value={isLoading ? '' : displayValue}
                 type='text'
                 inputMode='decimal'
