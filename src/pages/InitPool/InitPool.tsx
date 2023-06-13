@@ -5,7 +5,6 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
@@ -31,7 +30,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { Input } from '@material-ui/core';
 
 // react functional component
 export default function InitPool() {
@@ -477,42 +475,41 @@ export default function InitPool() {
         <section className={styles.main}>
             {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
-                <div className={styles.back_button}>
-                    <VscClose size={30} onClick={() => navigate(-1)} />
-                </div>
                 <div className={styles.top_content}>
-                    <ContentContainer>
-                        <header>
-                            <h1>INITIALIZE POOL</h1>
-                        </header>
-                        <div className={styles.pool_display_container}>
-                            {tokenADisplay}
-                            {tokenBDisplay}
-                            <div className={styles.padding_center}>
-                                <div className={styles.pool_price_container}>
-                                    <span>Initial Price</span>
-                                    <section style={{ width: '100%%' }}>
-                                        {initialPriceInput}
-                                    </section>
-                                </div>
-                                <InitPoolExtraInfo
-                                    initialPrice={initialPrice}
-                                    isDenomBase={isDenomBase}
-                                    initGasPriceinDollars={
-                                        initGasPriceinDollars
-                                    }
-                                    baseToken={baseToken}
-                                    quoteToken={quoteToken}
-                                    setIsDenomBase={setIsDenomBase}
-                                    invertInitialPrice={invertInitialPrice}
-                                />
-                            </div>
+                    {/* <div className={styles.back_button}>
+                </div> */}
 
-                            <footer>
-                                <ButtonToRender />
-                            </footer>
+                    <header>
+                        <p />
+                        <h1>Initialize Pool</h1>
+                        <VscClose size={25} onClick={() => navigate(-1)} />
+                    </header>
+                    <div className={styles.pool_display_container}>
+                        {tokenADisplay}
+                        {tokenBDisplay}
+
+                        <div className={styles.padding_center}>
+                            <div className={styles.pool_price_container}>
+                                <span>Initial Price</span>
+                                <section style={{ width: '100%' }}>
+                                    {initialPriceInput}
+                                </section>
+                            </div>
+                            <InitPoolExtraInfo
+                                initialPrice={initialPrice}
+                                isDenomBase={isDenomBase}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                baseToken={baseToken}
+                                quoteToken={quoteToken}
+                                setIsDenomBase={setIsDenomBase}
+                                invertInitialPrice={invertInitialPrice}
+                            />
                         </div>
-                    </ContentContainer>
+
+                        <footer>
+                            <ButtonToRender />
+                        </footer>
+                    </div>
                 </div>
             </div>
         </section>

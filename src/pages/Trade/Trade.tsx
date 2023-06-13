@@ -32,7 +32,6 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
-import { TbRulerOff } from 'react-icons/tb';
 
 // React functional component
 function Trade() {
