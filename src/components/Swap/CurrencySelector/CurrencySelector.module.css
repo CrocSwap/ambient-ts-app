@@ -140,11 +140,6 @@
     color: white;
 }
 
-.token_select img {
-    padding: 1px;
-    max-width: 100%;
-}
-
 .token_list_text {
     padding: 1px;
     font-size: var(--header2-size);

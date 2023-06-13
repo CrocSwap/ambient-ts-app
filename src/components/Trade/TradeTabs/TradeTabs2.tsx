@@ -26,7 +26,6 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import {
-    CandleData,
     setChangesByUser,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
@@ -48,8 +47,8 @@ import {
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { useLocation } from 'react-router-dom';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -83,13 +82,9 @@ function TradeTabs2(props: propsIF) {
         showActiveMobileComponent,
     } = props;
 
-    const { pathname } = useLocation();
     const { chartSettings } = useContext(ChartContext);
-    const isMarketOrLimitModule =
-        pathname.includes('market') || pathname.includes('limit');
-    const candleTime = isMarketOrLimitModule
-        ? chartSettings.candleTime.market
-        : chartSettings.candleTime.range;
+
+    const candleTime = chartSettings.candleTime.global;
 
     const {
         cachedQuerySpotPrice,
@@ -270,12 +265,17 @@ function TradeTabs2(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
-        TransactionIF[]
-    >([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] =
+        useState<TransactionIF[]>();
 
     useEffect(() => {
-        if (isServerEnabled && isCandleSelected && filter?.time && crocEnv) {
+        if (
+            isServerEnabled &&
+            isCandleSelected &&
+            candleTime.time &&
+            filter?.time &&
+            crocEnv
+        ) {
             fetchPoolRecentChanges({
                 tokenList: tokens.tokenUniv,
                 base: selectedBase,
@@ -324,7 +324,13 @@ function TradeTabs2(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
+    }, [
+        isServerEnabled,
+        isCandleSelected,
+        filter?.time,
+        candleTime.time,
+        lastBlockNumWait,
+    ]);
 
     useEffect(() => {
         if (userAddress && isServerEnabled && !showAllData && crocEnv) {
@@ -510,19 +516,36 @@ function TradeTabs2(props: propsIF) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            {isCandleSelected ? selectedMessageContent : null}
-            {(expandTradeTable || showActiveMobileComponent) && (
-                <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-            )}
-            <TabComponent
-                data={tradeTabData}
-                rightTabOptions={
-                    <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+        <div
+            ref={tabComponentRef}
+            className={styles.trade_tab_container}
+            style={{
+                padding:
+                    expandTradeTable || showActiveMobileComponent
+                        ? '0px'
+                        : '8px',
+            }}
+        >
+            <div
+                className={
+                    !expandTradeTable
+                        ? styles.round_container
+                        : styles.flex_column
                 }
-                setSelectedInsideTab={setSelectedInsideTab}
-                setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
-            />
+            >
+                {isCandleSelected ? selectedMessageContent : null}
+                {(expandTradeTable || showActiveMobileComponent) && (
+                    <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
+                )}
+                <TabComponent
+                    data={tradeTabData}
+                    rightTabOptions={
+                        <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+                    }
+                    setSelectedInsideTab={setSelectedInsideTab}
+                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
+                />
+            </div>
         </div>
     );
 }

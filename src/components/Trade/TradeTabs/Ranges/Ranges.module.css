@@ -187,9 +187,6 @@
 }
 
 .token_images_account img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
     margin: 0 2px;
 }
 .main_list_container > ul:nth-child(1),

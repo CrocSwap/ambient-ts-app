@@ -593,7 +593,7 @@ export default function Limit() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageLimitCostInGasDrops = 240000;
+            const averageLimitCostInGasDrops = 193000;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *

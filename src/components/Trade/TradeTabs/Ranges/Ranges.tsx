@@ -382,17 +382,6 @@ function Ranges(props: propsIF) {
         }
     }, [expandTradeTable]);
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
-
     const shouldDisplayNoTableData = !isLoading && !rangeData.length;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
@@ -428,7 +417,6 @@ function Ranges(props: propsIF) {
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 

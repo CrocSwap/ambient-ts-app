@@ -36,6 +36,10 @@ export default function RangeDetailsSimplify(
     );
 
     const {
+        isDenomBase,
+        isBaseTokenMoneynessGreaterOrEqual,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
         userNameToDisplay,
         posHashTruncated,
         posHash,
@@ -45,6 +49,8 @@ export default function RangeDetailsSimplify(
         usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
         isPositionInRange,
@@ -115,7 +121,11 @@ export default function RangeDetailsSimplify(
         </div>
     );
     const walletContent = (
-        <div className={styles.link_row} onClick={handleOpenWallet}>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenWallet}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{userNameToDisplay}</p>
             <RiExternalLinkLine />
         </div>
@@ -148,7 +158,7 @@ export default function RangeDetailsSimplify(
         {
             title: 'Position Type ',
             content: isAmbient ? 'Ambient' : 'Range',
-            explanation: 'e.g. Range / Ambient ',
+            explanation: 'e.g. Range, Ambient ',
         },
         {
             title: 'Position Slot ID ',
@@ -181,7 +191,7 @@ export default function RangeDetailsSimplify(
 
         {
             title: 'Token 1 ',
-            content: baseTokenSymbol,
+            content: baseTokenSymbol + ' - ' + baseTokenName,
             explanation: 'Token #1 in the token pair',
         },
 
@@ -200,7 +210,7 @@ export default function RangeDetailsSimplify(
 
         {
             title: 'Token 2 ',
-            content: quoteTokenSymbol,
+            content: quoteTokenSymbol + ' - ' + quoteTokenName,
             explanation: 'Token #2 in the token pair',
         },
 
@@ -218,12 +228,28 @@ export default function RangeDetailsSimplify(
         },
         {
             title: 'Range Min ',
-            content: ambientOrMin,
+            content: isAmbient
+                ? ambientOrMin
+                : isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1 ${quoteTokenSymbol} = ${minRangeDenomByMoneyness} ${baseTokenSymbol}`
+                    : `1 ${baseTokenSymbol} = ${minRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1 ${baseTokenSymbol} = ${ambientOrMin} ${quoteTokenSymbol}`
+                : `1 ${quoteTokenSymbol} = ${ambientOrMin} ${baseTokenSymbol}`,
             explanation: 'The low price boundary of the range',
         },
         {
             title: 'Range Max ',
-            content: ambientOrMax,
+            content: isAmbient
+                ? ambientOrMax
+                : isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1 ${quoteTokenSymbol} = ${maxRangeDenomByMoneyness} ${baseTokenSymbol}`
+                    : `1 ${baseTokenSymbol} = ${maxRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
+                : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
             explanation: 'The high price boundary of the range',
         },
 
