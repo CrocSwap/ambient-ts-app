@@ -433,25 +433,13 @@ function Transactions(props: propsIF) {
         }
     }, [expandTradeTable]);
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
-        <section
+        <div
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 
@@ -464,7 +452,7 @@ function Transactions(props: propsIF) {
             </div>
 
             <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </section>
+        </div>
     );
 }
 

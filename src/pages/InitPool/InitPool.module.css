@@ -98,9 +98,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
-.pool_display img {
-    width: 30px;
-}
+
 .pool_display p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
