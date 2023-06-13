@@ -20,10 +20,7 @@ import {
     formatAmountWithoutDigit,
     formatPoolPriceAxis,
 } from '../../utils/numbers';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
     setIsLinesSwitched,
@@ -56,6 +53,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
