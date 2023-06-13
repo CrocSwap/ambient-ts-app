@@ -84,17 +84,22 @@ export default function Wallet(props: propsIF) {
                 const getPriority = (tkn: TokenIF): number => {
                     // declare an output variable
                     let priority: number;
+                    // canonical token addresses to assign probability
+                    const addresses = {
+                        nativeToken: ZERO_ADDRESS,
+                        USDC: USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase(),
+                    };
                     // logic router to assign numerical priority to output
                     // unlisted tokens get priority 0
                     switch (tkn.address.toLowerCase()) {
                         // native token
-                        case ZERO_ADDRESS:
+                        case addresses.nativeToken:
                             priority = 1000;
                             break;
                         // USDCoin (uses address for current chain)
-                        case USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase():
+                        case addresses.USDC:
                             priority = 900;
                             break;
                         // all non-privileged tokens

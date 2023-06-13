@@ -286,6 +286,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress ?? '',

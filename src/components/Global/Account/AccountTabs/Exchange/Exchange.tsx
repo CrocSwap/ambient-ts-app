@@ -8,8 +8,11 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
+import { USDC } from '../../../../../utils/tokens/exports';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface propsIF {
+    chainId: string;
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string;
     connectedAccountActive: boolean;
@@ -18,6 +21,7 @@ interface propsIF {
 
 export default function Exchange(props: propsIF) {
     const {
+        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,
@@ -74,8 +78,8 @@ export default function Exchange(props: propsIF) {
                 ],
             };
         });
-        const sequencedTokens: TokenIF[] = tokensWithOrigins.sort(
-            (a: TokenIF, b: TokenIF) => {
+        const sequencedTokens: TokenIF[] = tokensWithOrigins
+            .sort((a: TokenIF, b: TokenIF) => {
                 // output value
                 let rank: number;
                 // decision tree to determine sort order
@@ -98,14 +102,45 @@ export default function Exchange(props: propsIF) {
                 function comparePopularity(): number {
                     const getPopularity = (tkn: TokenIF): number =>
                         tkn.listedBy?.length ?? 1;
-                    const popularityTokenA: number = getPopularity(a);
-                    const popularityTokenB: number = getPopularity(b);
-                    return popularityTokenB - popularityTokenA;
+                    return getPopularity(b) - getPopularity(a);
                 }
                 // return the output variable
                 return rank;
-            },
-        );
+            })
+            // promote privileged tokens to the top of the list
+            .sort((a: TokenIF, b: TokenIF) => {
+                // fn to numerically prioritize a token (high = important)
+                const getPriority = (tkn: TokenIF): number => {
+                    // declare an output variable
+                    let priority: number;
+                    // canonical token addresses to assign probability
+                    const addresses = {
+                        nativeToken: ZERO_ADDRESS,
+                        USDC: USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase(),
+                    };
+                    // logic router to assign numerical priority to output
+                    // unlisted tokens get priority 0
+                    switch (tkn.address.toLowerCase()) {
+                        // native token
+                        case addresses.nativeToken:
+                            priority = 1000;
+                            break;
+                        // USDCoin (uses address for current chain)
+                        case addresses.USDC:
+                            priority = 900;
+                            break;
+                        // all non-privileged tokens
+                        default:
+                            priority = 0;
+                    }
+                    // return numerical priority of the token
+                    return priority;
+                };
+                // sort tokens by relative priority level
+                return getPriority(b) - getPriority(a);
+            });
         return sequencedTokens;
     }
 
