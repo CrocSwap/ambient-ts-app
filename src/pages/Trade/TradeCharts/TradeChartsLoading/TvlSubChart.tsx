@@ -6,7 +6,7 @@ import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 
 interface TvlData {
     tvlData: Array<CandleData>;
