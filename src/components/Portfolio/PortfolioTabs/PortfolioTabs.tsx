@@ -130,7 +130,9 @@ export default function PortfolioTabs(props: propsIF) {
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setLookupAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(
+                            updatedPositions.filter((p) => p.positionLiq > 0),
+                        );
                     });
                 }
                 IS_LOCAL_ENV && console.debug('dispatch');

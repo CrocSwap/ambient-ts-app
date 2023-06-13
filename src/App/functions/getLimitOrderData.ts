@@ -82,6 +82,9 @@ export const getLimitOrderData = async (
     newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
     newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
+    newOrder.baseName = (await baseMetadata)?.name ?? '';
+    newOrder.quoteName = (await quoteMetadata)?.name ?? '';
+
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
             token.address.toLowerCase() === baseTokenAddress.toLowerCase(),

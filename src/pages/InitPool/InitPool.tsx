@@ -9,7 +9,6 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
@@ -30,6 +29,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // react functional component
 export default function InitPool() {

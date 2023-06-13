@@ -369,10 +369,6 @@ padding-top: 8px;
     background: linear-gradient(to left, var(--accent1) 34%, var(--accent5) 65%) right;
 background-size: 300% 100%;
 }
-.initialize_link img {
-    width: 20px;
-    height: 20px;
-}
 
 .close_init {
     display: flex;

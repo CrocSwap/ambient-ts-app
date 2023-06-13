@@ -1,6 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { NavLink } from 'react-router-dom';
 import styles from './Orders.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
@@ -8,6 +7,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface Props {
     posHashTruncated: string;
@@ -81,8 +81,6 @@ export const orderRowConstants = (props: Props) => {
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
-
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const tradeLinkPath =
         '/trade/limit/' +
@@ -196,21 +194,18 @@ export const orderRowConstants = (props: Props) => {
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
 
-    const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.baseSymbol?.charAt(0)}
-            width={logoSizes}
+    const baseTokenLogoComponent = (
+        <TokenIcon
+            src={baseTokenLogo}
+            alt={baseTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
-
-    const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.quoteSymbol?.charAt(0)}
-            width={logoSizes}
+    const quoteTokenLogoComponent = (
+        <TokenIcon
+            src={quoteTokenLogo}
+            alt={quoteTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
 
