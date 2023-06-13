@@ -20,7 +20,6 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -31,6 +30,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 // interface for component props
 interface propsIF {
@@ -118,19 +118,11 @@ function LimitCurrencySelector(props: propsIF) {
             aria-label={`Open swap ${fieldId} token modal.`}
             id='limit_token_selector'
         >
-            {thisToken.logoURI ? (
-                <img
-                    className={styles.token_list_img}
-                    src={thisToken.logoURI}
-                    alt={thisToken.name + 'token logo'}
-                    width='30px'
-                />
-            ) : (
-                <NoTokenIcon
-                    tokenInitial={thisToken.symbol?.charAt(0)}
-                    width='30px'
-                />
-            )}
+            <TokenIcon
+                src={thisToken.logoURI}
+                alt={thisToken.name + 'token logo'}
+                size='2xl'
+            />
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
         </button>

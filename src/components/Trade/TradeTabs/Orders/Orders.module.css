@@ -44,6 +44,7 @@
 }
 
 .table_content {
+    min-height: 100px;
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
     overflow: auto; /* Enable scrolling for the content */
 }
@@ -220,9 +221,6 @@
 }
 
 .token_images_account img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
     margin: 0 2px;
 }
 

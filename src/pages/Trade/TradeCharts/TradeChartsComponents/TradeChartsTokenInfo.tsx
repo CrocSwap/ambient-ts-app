@@ -7,7 +7,6 @@ import {
     useAppSelector,
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
-import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
@@ -19,6 +18,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     simplifyVersion?: boolean;
@@ -87,8 +87,6 @@ function TradeChartsTokenInfo(props: propsIF) {
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
-    const logoSizes = smallScrenView ? '18px' : '25px';
-
     const poolPrice =
         poolPriceDisplay === Infinity || poolPriceDisplay === 0
             ? '…'
@@ -98,7 +96,7 @@ function TradeChartsTokenInfo(props: propsIF) {
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
             className={styles.amount}
-            style={{ marginTop: '2.5px', cursor: 'pointer' }}
+            style={{ cursor: 'pointer' }}
             aria-label={poolPrice}
         >
             {poolPrice}
@@ -122,12 +120,10 @@ function TradeChartsTokenInfo(props: propsIF) {
                     isPoolPriceChangePositive
                         ? {
                               color: 'var(--other-green)',
-                              marginTop: '4.5px',
                               fontSize: '15px',
                           }
                         : {
                               color: 'var(--other-red)',
-                              marginTop: '4.5px',
                               fontSize: '15px',
                           }
                 }
@@ -270,22 +266,16 @@ function TradeChartsTokenInfo(props: propsIF) {
                 placement={'right'}
             >
                 <div className={styles.tokens_images} id='trade_token_pair'>
-                    {topTokenLogo ? (
-                        <img src={topTokenLogo} alt={topTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={topTokenSymbol?.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
-                    {bottomTokenLogo ? (
-                        <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={bottomTokenSymbol?.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
+                    <TokenIcon
+                        src={topTokenLogo}
+                        alt={topTokenSymbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
+                    <TokenIcon
+                        src={bottomTokenLogo}
+                        alt={bottomTokenSymbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
                 </div>
             </TextOnlyTooltip>
 
