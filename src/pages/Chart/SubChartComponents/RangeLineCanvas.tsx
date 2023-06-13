@@ -243,8 +243,13 @@ export default function RangeLineCanvas(props: propsIF) {
             let color = 'rgba(235, 235, 255)';
 
             triangle.decorate((context: any, datum: any) => {
-                color = datum.value > passValue ? lineSellColor : lineBuyColor;
-
+                if (
+                    location.pathname.includes('/range') ||
+                    location.pathname.includes('reposition')
+                ) {
+                    color =
+                        datum.value > passValue ? lineSellColor : lineBuyColor;
+                }
                 const rotateDegree = 90;
                 context.rotate((rotateDegree * Math.PI) / 180);
                 context.strokeStyle = color;

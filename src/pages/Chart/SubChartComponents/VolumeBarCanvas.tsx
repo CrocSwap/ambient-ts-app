@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { renderCanvasArray, setCanvasResolution } from '../Chart';
-import { CandleData } from '../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 interface propsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,6 +115,8 @@ export default function VolumeBarCanvas(props: propsIF) {
                 position: 'relative',
                 height: '50%',
                 top: '50%',
+                marginBottom: '0',
+                marginTop: 'auto',
             }}
         ></d3fc-canvas>
     );

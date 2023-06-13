@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
+import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchCandleSeries';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
