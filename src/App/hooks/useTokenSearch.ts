@@ -172,15 +172,13 @@ export const useTokenSearch = (
                 function comparePopularity(): number {
                     const getPopularity = (tkn: TokenIF): number =>
                         tkn.listedBy?.length ?? 1;
-                    const popularityTokenA: number = getPopularity(a);
-                    const popularityTokenB: number = getPopularity(b);
-                    return popularityTokenB - popularityTokenA;
+                    return getPopularity(b) - getPopularity(a);
                 }
                 // return the output variable
                 return rank;
             })
             .sort((a: TokenIF, b: TokenIF) => {
-                function getPriority(tkn: TokenIF): number {
+                const getPriority = (tkn: TokenIF): number => {
                     let priority: number;
                     switch (tkn.address) {
                         case ZERO_ADDRESS:
@@ -193,7 +191,7 @@ export const useTokenSearch = (
                             priority = 0;
                     }
                     return priority;
-                }
+                };
                 return getPriority(b) - getPriority(a);
             });
 
