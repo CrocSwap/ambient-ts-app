@@ -265,9 +265,8 @@ function TradeTabs2(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
-        TransactionIF[]
-    >([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] =
+        useState<TransactionIF[]>();
 
     useEffect(() => {
         if (
