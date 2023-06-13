@@ -7,7 +7,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -31,6 +30,7 @@ import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

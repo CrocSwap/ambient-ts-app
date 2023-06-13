@@ -12,7 +12,7 @@ interface SpinnerPropsIF {
 
 export default function Spinner(props: SpinnerPropsIF) {
     const width = `${props.size}px`;
-    const bg = props.bg ? props.bg : 'var(--body-bg)';
+    const bg = props.bg ? props.bg : 'var(--dark1)';
     const weight = props.weight ? `${props.weight}px` : '3px';
 
     return (
