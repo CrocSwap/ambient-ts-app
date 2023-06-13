@@ -191,12 +191,7 @@ padding-top: 8px;
   
 }
 
-/* .pool_not_initialialized_content h2, 
-.pool_not_initialialized_content h3,
-.pool_not_initialialized_content a,
-.pool_not_initialialized_content button{
-    padding: 0 8px;
-} */
+
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
