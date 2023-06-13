@@ -18,7 +18,6 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
@@ -35,6 +34,7 @@ import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 // interface for React functional component props
 interface propsIF {

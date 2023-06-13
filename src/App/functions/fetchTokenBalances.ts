@@ -7,6 +7,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
+import { FetchContractDetailsFn } from './fetchContractDetails';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -14,7 +15,6 @@ export interface IDepositedTokenBalance {
     decimals: number;
     balance: string;
     balanceDecimalCorrected: number;
-    balanceStorageSlot: string;
 }
 
 export const fetchNativeTokenBalance = async (
@@ -144,6 +144,7 @@ export const fetchErc20TokenBalances = async (
     chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
+    cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
@@ -158,6 +159,8 @@ export const fetchErc20TokenBalances = async (
     const erc20DexBalancesFromCache = await fetchDepositBalances({
         chainId: chain,
         user: address,
+        crocEnv: crocEnv,
+        cachedTokenDetails: cachedTokenDetails,
     });
 
     const combinedErc20Balances: TokenIF[] = [];
@@ -253,7 +256,7 @@ export const fetchErc20TokenBalances = async (
     });
 
     if (erc20DexBalancesFromCache !== undefined) {
-        erc20DexBalancesFromCache.tokens.map(
+        erc20DexBalancesFromCache.map(
             (balanceFromCache: IDepositedTokenBalance) => {
                 if (balanceFromCache.token === ZERO_ADDRESS) return;
 
@@ -329,6 +332,7 @@ export type Erc20TokenBalanceFn = (
     token: string,
     chain: string,
     lastBlock: number,
+    cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
 ) => Promise<TokenIF[]>;
 

@@ -26,7 +26,6 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import {
-    CandleData,
     setChangesByUser,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
@@ -50,6 +49,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { useLocation } from 'react-router-dom';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 interface propsIF {
     filter: CandleData | undefined;
