@@ -30,6 +30,8 @@ interface propsIF {
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenName: string;
+    quoteTokenName: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
@@ -117,7 +119,7 @@ export default function PriceInfo(props: propsIF) {
 
     const orderType = (
         <div className={styles.order_type}>
-            <p>Type:</p>
+            <p>Order Type:</p>
             <p>Limit</p>
         </div>
     );
