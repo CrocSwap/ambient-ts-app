@@ -174,10 +174,16 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         tradeData.isDenomBase,
                     );
 
+                    if (!priceChangeResult) {
+                        setPoolPriceChangePercent(undefined);
+                        setIsPoolPriceChangePositive(true);
+                        return;
+                    }
+
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
                         setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
+                    } else {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
@@ -195,8 +201,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                                       maximumFractionDigits: 2,
                                   }) + '%';
                         setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
                     }
                 } catch (error) {
                     setPoolPriceChangePercent(undefined);

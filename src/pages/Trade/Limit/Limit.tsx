@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, useContext } from 'react';
 import { motion } from 'framer-motion';
-import FocusTrap from 'focus-trap-react';
 
 import {
     tickToPrice,
@@ -594,8 +593,12 @@ export default function Limit() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageLimitCostInGasDrops = 240000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageLimitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
                 '$' +
@@ -695,154 +698,144 @@ export default function Limit() {
     });
 
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <section className={styles.scrollable_container}>
-                {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}{' '}
-                <ContentContainer isOnTradeRoute>
-                    <LimitHeader />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
+        <section className={styles.scrollable_container}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        <LimitCurrencyConverter {...currencyConverterProps} />
-                    </motion.div>
-                    <div className={styles.header_container}></div>
-                    <LimitExtraInfo
-                        isQtyEntered={
-                            tokenAInputQty !== '' || tokenBInputQty !== ''
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}{' '}
+            <ContentContainer isOnTradeRoute>
+                <LimitHeader />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <LimitCurrencyConverter {...currencyConverterProps} />
+                </motion.div>
+                <div className={styles.header_container}></div>
+                <LimitExtraInfo
+                    isQtyEntered={
+                        tokenAInputQty !== '' || tokenBInputQty !== ''
+                    }
+                    orderGasPriceInDollars={orderGasPriceInDollars}
+                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    isTokenABase={isSellTokenBase}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
+                />
+                {isUserConnected === undefined ? null : isUserConnected ===
+                  true ? (
+                    !isTokenAAllowanceSufficient &&
+                    parseFloat(tokenAInputQty) > 0 ? (
+                        approvalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassLimitButton {...bypassLimitProps} />
+                    ) : (
+                        <>
+                            <LimitButton
+                                onClickFn={
+                                    areBothAckd
+                                        ? bypassConfirmLimit.isEnabled
+                                            ? handleLimitButtonClickWithBypass
+                                            : openModal
+                                        : ackAsNeeded
+                                }
+                                limitAllowed={
+                                    isOrderValid &&
+                                    poolPriceNonDisplay !== 0 &&
+                                    limitAllowed
+                                }
+                                limitButtonErrorMessage={
+                                    limitButtonErrorMessage
+                                }
+                                isBypassConfirmEnabled={
+                                    bypassConfirmLimit.isEnabled
+                                }
+                                areBothAckd={areBothAckd}
+                            />
+                            {ackTokenMessage && (
+                                <p
+                                    className={styles.acknowledge_text}
+                                    dangerouslySetInnerHTML={{
+                                        __html: formattedAckTokenMessage,
+                                    }}
+                                ></p>
+                            )}
+                            <div className={styles.acknowledge_etherscan_links}>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={`approve ${tokenA.symbol}`}
+                                    >
+                                        {tokenA.symbol || tokenA.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenB.symbol}
+                                    >
+                                        {tokenB.symbol || tokenB.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )
+                ) : (
+                    loginButton
+                )}
+            </ContentContainer>
+            {isModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title='Limit Confirmation'
+                    centeredTitle
+                >
+                    <ConfirmLimitModal
+                        initiateLimitOrderMethod={sendLimitOrder}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        insideTickDisplayPrice={endDisplayPrice}
+                        newLimitOrderTransactionHash={
+                            newLimitOrderTransactionHash
                         }
-                        orderGasPriceInDollars={orderGasPriceInDollars}
-                        liquidityProviderFeeString={liquidityProviderFeeString}
-                        isTokenABase={isSellTokenBase}
+                        txErrorCode={txErrorCode}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(tokenAInputQty) > 0 ? (
-                            approvalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassLimitButton {...bypassLimitProps} />
-                        ) : (
-                            <>
-                                <LimitButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmLimit.isEnabled
-                                                ? handleLimitButtonClickWithBypass
-                                                : openModal
-                                            : ackAsNeeded
-                                    }
-                                    limitAllowed={
-                                        isOrderValid &&
-                                        poolPriceNonDisplay !== 0 &&
-                                        limitAllowed
-                                    }
-                                    limitButtonErrorMessage={
-                                        limitButtonErrorMessage
-                                    }
-                                    isBypassConfirmEnabled={
-                                        bypassConfirmLimit.isEnabled
-                                    }
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={`approve ${tokenA.symbol}`}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </ContentContainer>
-                {isModalOpen && (
-                    <Modal
-                        onClose={handleModalClose}
-                        title='Limit Confirmation'
-                        centeredTitle
-                    >
-                        <ConfirmLimitModal
-                            initiateLimitOrderMethod={sendLimitOrder}
-                            tokenAInputQty={tokenAInputQty}
-                            tokenBInputQty={tokenBInputQty}
-                            insideTickDisplayPrice={endDisplayPrice}
-                            newLimitOrderTransactionHash={
-                                newLimitOrderTransactionHash
-                            }
-                            txErrorCode={txErrorCode}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            resetConfirmation={resetConfirmation}
-                            startDisplayPrice={startDisplayPrice}
-                            middleDisplayPrice={middleDisplayPrice}
-                            endDisplayPrice={endDisplayPrice}
-                        />
-                    </Modal>
-                )}
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={limitTutorialSteps}
-                />
-            </section>
-        </FocusTrap>
+                </Modal>
+            )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={limitTutorialSteps}
+            />
+        </section>
     );
 }

@@ -110,6 +110,155 @@ export const useProcessOrder = (
     const [finishPriceDisplay, setFinishPriceDisplay] = useState<
         string | undefined
     >();
+    const [initialTokenQty, setInitialTokenQty] = useState<string | undefined>(
+        undefined,
+    );
+
+    const isBid = limitOrder.isBid;
+
+    const priceType =
+        (isDenomBase && !isBid) || (!isDenomBase && isBid)
+            ? 'priceBuy'
+            : 'priceSell';
+
+    const sideType = isAccountView
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? isBid
+                ? 'buy'
+                : 'sell'
+            : isBid
+            ? 'sell'
+            : 'buy'
+        : (isDenomBase && isBid) || (!isDenomBase && !isBid)
+        ? 'sell'
+        : 'buy';
+
+    const type = 'limit';
+
+    const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
+    const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
+
+    const baseTokenAddressTruncated = trimString(
+        baseTokenAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
+    const quoteTokenAddressTruncated = trimString(
+        quoteTokenAddressLowerCase,
+        6,
+        0,
+        '…',
+    );
+
+    const orderMatchesSelectedTokens =
+        selectedBaseToken === baseTokenAddressLowerCase &&
+        selectedQuoteToken === quoteTokenAddressLowerCase;
+
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.claimableLiqBaseDecimalCorrected;
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.claimableLiqQuoteDecimalCorrected;
+
+    const baseQty = !liqBaseNum
+        ? '0'
+        : liqBaseNum < 0.0001
+        ? liqBaseNum.toExponential(2)
+        : liqBaseNum < 2
+        ? liqBaseNum.toPrecision(3)
+        : liqBaseNum >= 100000
+        ? formatAmountOld(liqBaseNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqBaseNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+    const quoteQty = !liqQuoteNum
+        ? '0'
+        : liqQuoteNum < 0.0001
+        ? liqQuoteNum.toExponential(2)
+        : liqQuoteNum < 2
+        ? liqQuoteNum.toPrecision(3)
+        : liqQuoteNum >= 100000
+        ? formatAmountOld(liqQuoteNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqQuoteNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const usdValueNum = limitOrder.totalValueUSD;
+
+    const usdValueTruncated =
+        usdValueNum === undefined
+            ? undefined
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.001
+            ? usdValueNum.toExponential(2) + ' '
+            : usdValueNum >= 99999
+            ? formatAmountOld(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + ' ';
+
+    const usdValueLocaleString =
+        usdValueNum === undefined
+            ? '…'
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.01
+            ? usdValueNum.toPrecision(3)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // -----------------------------------------------------------------------------------------
+
+    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
+
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseQty || '0.00'}`
+        : '…';
+
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteQty || '0.00'}`
+        : '…';
+    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
+
+    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
+    // ------------------------------------------------------------------
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
+    // ----------------------------------------------------------------------
+
+    const positionTime =
+        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+
+    // ----------------------------------------------------------------------
+
+    const ensNameOrOwnerTruncated = ensName
+        ? ensName.length > 15
+            ? trimString(ensName, 9, 3, '…')
+            : ensName
+        : trimString(ownerId, 7, 4, '…');
+
+    const userNameToDisplay = isOwnerActiveAccount
+        ? 'You'
+        : ensNameOrOwnerTruncated;
 
     useEffect(() => {
         if (
@@ -329,154 +478,46 @@ export const useProcessOrder = (
             );
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
+
+            const finalTokenQty = !isBid
+                ? limitOrder.claimableLiqBaseDecimalCorrected
+                : limitOrder.claimableLiqQuoteDecimalCorrected;
+            const intialTokenQtyNum = middlePriceDisplayNum * finalTokenQty;
+            const invIntialTokenQtyNum =
+                (1 / middlePriceDisplayNum) * finalTokenQty;
+            const intialTokenQtyTruncated =
+                intialTokenQtyNum === 0
+                    ? '0'
+                    : intialTokenQtyNum < 0.0001
+                    ? intialTokenQtyNum.toExponential(2)
+                    : intialTokenQtyNum < 2
+                    ? intialTokenQtyNum.toPrecision(3)
+                    : intialTokenQtyNum >= 100000
+                    ? formatAmountOld(intialTokenQtyNum)
+                    : intialTokenQtyNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            const invIntialTokenQtyTruncated =
+                invIntialTokenQtyNum === 0
+                    ? '0'
+                    : invIntialTokenQtyNum < 0.0001
+                    ? invIntialTokenQtyNum.toExponential(2)
+                    : invIntialTokenQtyNum < 2
+                    ? invIntialTokenQtyNum.toPrecision(3)
+                    : invIntialTokenQtyNum >= 100000
+                    ? formatAmountOld(invIntialTokenQtyNum)
+                    : invIntialTokenQtyNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialTokenQty(
+                (isBid && !isDenomBase) || (!isBid && isDenomBase)
+                    ? intialTokenQtyTruncated
+                    : invIntialTokenQtyTruncated,
+            );
         }
     }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
-
-    const isBid = limitOrder.isBid;
-
-    const priceType =
-        (isDenomBase && !isBid) || (!isDenomBase && isBid)
-            ? 'priceBuy'
-            : 'priceSell';
-
-    const sideType = isAccountView
-        ? isBaseTokenMoneynessGreaterOrEqual
-            ? isBid
-                ? 'buy'
-                : 'sell'
-            : isBid
-            ? 'sell'
-            : 'buy'
-        : (isDenomBase && isBid) || (!isDenomBase && !isBid)
-        ? 'sell'
-        : 'buy';
-
-    const type = 'limit';
-
-    const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
-    const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
-
-    const baseTokenAddressTruncated = trimString(
-        baseTokenAddressLowerCase,
-        6,
-        0,
-        '…',
-    );
-    const quoteTokenAddressTruncated = trimString(
-        quoteTokenAddressLowerCase,
-        6,
-        0,
-        '…',
-    );
-
-    const orderMatchesSelectedTokens =
-        selectedBaseToken === baseTokenAddressLowerCase &&
-        selectedQuoteToken === quoteTokenAddressLowerCase;
-
-    const liqBaseNum =
-        limitOrder.positionLiqBaseDecimalCorrected !== 0
-            ? limitOrder.positionLiqBaseDecimalCorrected
-            : limitOrder.claimableLiqBaseDecimalCorrected;
-    const liqQuoteNum =
-        limitOrder.positionLiqQuoteDecimalCorrected !== 0
-            ? limitOrder.positionLiqQuoteDecimalCorrected
-            : limitOrder.claimableLiqQuoteDecimalCorrected;
-
-    const baseQty = !liqBaseNum
-        ? '0'
-        : liqBaseNum < 0.0001
-        ? liqBaseNum.toExponential(2)
-        : liqBaseNum < 2
-        ? liqBaseNum.toPrecision(3)
-        : liqBaseNum >= 100000
-        ? formatAmountOld(liqBaseNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqBaseNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-    const quoteQty = !liqQuoteNum
-        ? '0'
-        : liqQuoteNum < 0.0001
-        ? liqQuoteNum.toExponential(2)
-        : liqQuoteNum < 2
-        ? liqQuoteNum.toPrecision(3)
-        : liqQuoteNum >= 100000
-        ? formatAmountOld(liqQuoteNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqQuoteNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const usdValueNum = limitOrder.totalValueUSD;
-
-    const usdValueTruncated =
-        usdValueNum === undefined
-            ? undefined
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.001
-            ? usdValueNum.toExponential(2) + ' '
-            : usdValueNum >= 99999
-            ? formatAmountOld(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + ' ';
-
-    const usdValueLocaleString =
-        usdValueNum === undefined
-            ? '…'
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.01
-            ? usdValueNum.toPrecision(3)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    // -----------------------------------------------------------------------------------------
-
-    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
-
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
-
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
-    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
-
-    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
-    // ------------------------------------------------------------------
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
-    // ----------------------------------------------------------------------
-
-    const positionTime =
-        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
-
-    const elapsedTimeInSecondsNum = positionTime
-        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
-        : 0;
-
-    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
-
-    // ----------------------------------------------------------------------
-
-    const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 15
-            ? trimString(ensName, 9, 3, '…')
-            : ensName
-        : trimString(ownerId, 7, 4, '…');
-
-    const userNameToDisplay = isOwnerActiveAccount
-        ? 'You'
-        : ensNameOrOwnerTruncated;
 
     return {
         // wallet and id data
@@ -535,5 +576,6 @@ export const useProcessOrder = (
         blockExplorer,
 
         elapsedTimeString,
+        initialTokenQty,
     };
 };

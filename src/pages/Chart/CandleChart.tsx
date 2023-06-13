@@ -9,7 +9,7 @@ import { diffHashSig } from '../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-import { CandleData } from '../../utils/state/graphDataSlice';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;

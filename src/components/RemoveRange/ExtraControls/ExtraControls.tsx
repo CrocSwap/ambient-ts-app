@@ -1,6 +1,7 @@
 import styles from './ExtraControls.module.css';
 import { MdAccountBalanceWallet } from 'react-icons/md';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import ambientLogo from '../../../assets/images/logos/ambient_logo.png';
+
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 

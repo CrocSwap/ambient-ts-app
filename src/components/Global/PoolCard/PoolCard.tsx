@@ -14,6 +14,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 
 interface propsIF {
     pool: topPoolIF;
@@ -24,8 +25,11 @@ export default function PoolCard(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { cachedPoolStatsFetch, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+    const {
+        cachedPoolStatsFetch,
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -151,19 +155,32 @@ export default function PoolCard(props: propsIF) {
                 poolIndex &&
                 chainId &&
                 lastBlockNumber &&
-                shouldInvertDisplay !== undefined
+                shouldInvertDisplay !== undefined &&
+                crocEnv
             ) {
+                const RANGE_WIDTH = 0.1;
+
+                const apyEst = estimateFrom24HrRangeApr(
+                    RANGE_WIDTH,
+                    pool.base.address,
+                    pool.quote.address,
+                    crocEnv,
+                    lastBlockNumber,
+                );
+
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
                     Math.floor(Date.now() / 60000),
+                    crocEnv,
+                    cachedFetchTokenPrice,
                 );
 
-                const tvlResult = poolStats?.tvl;
-                const volumeResult = poolStats?.volume; // display the 24 hour volume
-                const apyResult = poolStats?.apy;
+                const tvlResult = poolStats?.tvlTotalUsd;
+                const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
+                const apyResult = await apyEst;
 
                 if (tvlResult) {
                     const tvlString = formatAmountOld(tvlResult);
@@ -189,13 +206,21 @@ export default function PoolCard(props: propsIF) {
                         poolIndex,
                         shouldInvertDisplay,
                     );
+
+                    if (!priceChangeResult) {
+                        setPoolPriceChangePercent(undefined);
+                        setIsPoolPriceChangePositive(true);
+                        return;
+                    }
+
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
                         setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
+                    } else {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
+
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +
@@ -209,8 +234,6 @@ export default function PoolCard(props: propsIF) {
                                       maximumFractionDigits: 2,
                                   }) + '%';
                         setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
                     }
                 } catch (error) {
                     setPoolPriceChangePercent(undefined);
@@ -274,7 +297,7 @@ export default function PoolCard(props: propsIF) {
         <>
             <div></div>
             <div>
-                <div className={styles.row_title}>24h Vol.</div>
+                <div className={styles.row_title}>Volume</div>
                 <div className={styles.vol}>
                     {poolVolume === undefined ? '…' : `$${poolVolume}`}
                 </div>
