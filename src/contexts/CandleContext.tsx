@@ -9,7 +9,7 @@ import {
 } from 'react';
 import {
     CandleData,
-    fetchCandleSeriesCroc,
+    fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
@@ -145,7 +145,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
 
             setIsFetchingCandle(true);
-            fetchCandleSeriesCroc(
+            fetchCandleSeriesHybrid(
                 true,
                 chainData,
                 candleTimeLocal,
@@ -208,7 +208,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             return;
         }
 
-        fetchCandleSeriesCroc(
+        fetchCandleSeriesHybrid(
             true,
             chainData,
             candleTimeLocal,
