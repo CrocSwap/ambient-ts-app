@@ -31,6 +31,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { Input } from '@material-ui/core';
 
 // react functional component
 export default function InitPool() {
@@ -307,6 +308,51 @@ export default function InitPool() {
         />
     );
 
+    const placeholderText = `e.g. ${placeHolderPrice} (${
+        isDenomBase ? baseToken.symbol : quoteToken.symbol
+    }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isValid =
+            event.target.value === '' || event.target.validity.valid;
+        const targetValue = event.target.value.replaceAll(',', '');
+        const input = targetValue.startsWith('.')
+            ? '0' + targetValue
+            : targetValue;
+        const targetValueNum = parseFloat(input);
+
+        isValid && setValueDisplayString(input);
+
+        if (
+            isValid &&
+            ((!isNaN(targetValueNum) && targetValueNum !== 0) ||
+                event.target.value === '')
+        ) {
+            if (event.target.value === '') {
+                setInitialPrice(undefined);
+            } else {
+                setInitialPrice(targetValueNum);
+            }
+        }
+    };
+
+    const initialPriceInput = (
+        <input
+            id='initial-pool-price-quantity'
+            className={styles.currency_quantity}
+            placeholder={placeholderText}
+            type='string'
+            onChange={handleInputChange}
+            value={valueDisplayString}
+            inputMode='decimal'
+            autoComplete='off'
+            autoCorrect='off'
+            min='0'
+            minLength={1}
+            pattern='^[0-9,]*[.]?[0-9]*$'
+        />
+    );
+
     return (
         <section className={styles.main}>
             {poolExists && (
@@ -374,67 +420,7 @@ export default function InitPool() {
                                 <div className={styles.pool_price_container}>
                                     <span>Initial Price</span>
                                     <section style={{ width: '100%%' }}>
-                                        <input
-                                            id={'initial-pool-price-quantity'}
-                                            className={styles.currency_quantity}
-                                            placeholder={`e.g. ${placeHolderPrice} (${
-                                                isDenomBase
-                                                    ? baseToken.symbol
-                                                    : quoteToken.symbol
-                                            }/${
-                                                isDenomBase
-                                                    ? quoteToken.symbol
-                                                    : baseToken.symbol
-                                            })`}
-                                            type='string'
-                                            onChange={(event) => {
-                                                const isValid =
-                                                    event.target.value === '' ||
-                                                    event.target.validity.valid;
-                                                const targetValue =
-                                                    event.target.value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                    );
-                                                const input =
-                                                    targetValue.startsWith('.')
-                                                        ? '0' + targetValue
-                                                        : targetValue;
-                                                const targetValueNum =
-                                                    parseFloat(input);
-                                                isValid &&
-                                                    setValueDisplayString(
-                                                        input,
-                                                    );
-                                                if (
-                                                    isValid &&
-                                                    ((!isNaN(targetValueNum) &&
-                                                        targetValueNum !== 0) ||
-                                                        event.target.value ===
-                                                            '')
-                                                ) {
-                                                    if (
-                                                        event.target.value ===
-                                                        ''
-                                                    ) {
-                                                        setInitialPrice(
-                                                            undefined,
-                                                        );
-                                                    } else {
-                                                        setInitialPrice(
-                                                            targetValueNum,
-                                                        );
-                                                    }
-                                                }
-                                            }}
-                                            value={valueDisplayString}
-                                            inputMode='decimal'
-                                            autoComplete='off'
-                                            autoCorrect='off'
-                                            min='0'
-                                            minLength={1}
-                                            pattern='^[0-9,]*[.]?[0-9]*$'
-                                        />
+                                        {initialPriceInput}
                                     </section>
                                 </div>
                                 <InitPoolExtraInfo

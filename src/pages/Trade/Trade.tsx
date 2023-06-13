@@ -32,6 +32,7 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { TbRulerOff } from 'react-icons/tb';
 
 // React functional component
 function Trade() {
@@ -242,6 +243,7 @@ function Trade() {
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
     const showPoolNotInitializedContent = isPoolInitialized === false;
+    // const showPoolNotInitializedContent = true;
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
