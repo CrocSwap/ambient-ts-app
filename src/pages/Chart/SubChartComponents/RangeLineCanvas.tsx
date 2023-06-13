@@ -10,6 +10,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { createTriangle } from '../ChartUtils/triangle';
 
 interface propsIF {
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -26,7 +27,6 @@ interface propsIF {
     chainId: string;
     topBoundary: number | undefined;
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    d3Container: any;
     period: number;
     ranges: Array<lineValue>;
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -51,7 +51,6 @@ export default function RangeLineCanvas(props: propsIF) {
         isTokenABase,
         chainId,
         topBoundary,
-        d3Container,
         period,
         ranges,
         setRanges,
@@ -119,25 +118,13 @@ export default function RangeLineCanvas(props: propsIF) {
                     context.fillStyle = '#7371FC1A';
                 });
 
-            const triangle = d3fc
-                .seriesCanvasPoint()
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .crossValue(() => {
-                    return scaleData?.xScale.domain()[0];
-                })
-                .mainValue((d: any) => d.value)
-                .size(180)
-                .type(d3.symbolTriangle)
-                .decorate((context: any) => {
-                    const rotateDegree = 90;
-                    context.rotate((rotateDegree * Math.PI) / 180);
-                    context.strokeStyle = 'rgba(235, 235, 255)';
-                    context.fillStyle = 'rgba(235, 235, 255)';
-                });
+            const triangleRange = createTriangle(
+                scaleData?.xScale,
+                scaleData?.yScale,
+            );
 
             setTriangle(() => {
-                return triangle;
+                return triangleRange;
             });
 
             setHorizontalLine(() => {
@@ -163,31 +150,13 @@ export default function RangeLineCanvas(props: propsIF) {
     }, [location.pathname]);
 
     useEffect(() => {
-        if (
+        const isRange =
             location.pathname.includes('range') ||
-            location.pathname.includes('reposition')
-        ) {
-            d3.select(d3Container.current)
-                .select('.limit')
-                .select('.horizontal')
-                .style('visibility', 'hidden');
-        } else if (location.pathname.includes('/limit')) {
-            d3.select(d3CanvasRangeLine.current)
-                .select('canvas')
-                .style('display', 'none');
-        } else if (location.pathname.includes('market')) {
-            d3.select(d3Container.current)
-                .select('.limit')
-                .style('visibility', 'hidden');
-            d3.select(d3Container.current)
-                .select('.limit')
-                .select('.horizontal')
-                .style('visibility', 'hidden');
+            location.pathname.includes('reposition');
 
-            d3.select(d3CanvasRangeLine.current)
-                .select('canvas')
-                .style('display', 'none');
-        }
+        d3.select(d3CanvasRangeLine.current)
+            .select('canvas')
+            .style('display', isRange ? 'inline' : 'none');
     }, [
         location,
         location.pathname,
