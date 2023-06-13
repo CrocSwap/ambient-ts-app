@@ -177,21 +177,31 @@ export const useTokenSearch = (
                 // return the output variable
                 return rank;
             })
+            // promote privileged tokens to the top of the list
             .sort((a: TokenIF, b: TokenIF) => {
+                // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
+                    // declare an output variable
                     let priority: number;
+                    // logic router to assign numerical priority to output
+                    // unlisted tokens get priority 0
                     switch (tkn.address) {
+                        // native token
                         case ZERO_ADDRESS:
                             priority = 1000;
                             break;
+                        // USDCoin (uses address for current chain)
                         case USDC[chainId as keyof typeof USDC]:
                             priority = 900;
                             break;
+                        // all non-privileged tokens
                         default:
                             priority = 0;
                     }
+                    // return numerical priority of the token
                     return priority;
                 };
+                // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
             });
 
