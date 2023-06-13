@@ -461,18 +461,21 @@ export default function InitPool() {
             {tokenB && <p>{tokenB.name}</p>}
         </div>
     );
+
+    const navigateToMarket = (
+        <Navigate
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: baseToken.address,
+                tokenB: quoteToken.address,
+            })}
+            replace={true}
+        />
+    );
+
     return (
         <section className={styles.main}>
-            {poolExists && (
-                <Navigate
-                    to={linkGenMarket.getFullURL({
-                        chain: chainId,
-                        tokenA: baseToken.address,
-                        tokenB: quoteToken.address,
-                    })}
-                    replace={true}
-                />
-            )}
+            {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
                 <div className={styles.back_button}>
                     <VscClose size={30} onClick={() => navigate(-1)} />
