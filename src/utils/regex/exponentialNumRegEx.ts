@@ -1,2 +1,11 @@
+/* eslint-disable no-useless-escape */
 // RegExp object for an exponential notation number
-export const exponentialNumRegEx = /^[\d]+[.]?[,\d]*[eE]?[+-]?[\d]*[.]?[\d]*/;
+let exponentialNumRegEx;
+
+if (navigator.userAgent.includes('Safari')) {
+    exponentialNumRegEx = /^[\d]+[.]?[,\d]*[eE]?[+\-]?[\d]*[.]?[\d]*/;
+} else {
+    exponentialNumRegEx = /^[\d]+[.]?[,\d]*[eE]?[+-]?[\d]*[.]?[\d]*/;
+}
+
+export { exponentialNumRegEx };
