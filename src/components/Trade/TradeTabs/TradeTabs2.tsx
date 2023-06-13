@@ -265,9 +265,8 @@ function TradeTabs2(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
-        TransactionIF[]
-    >([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] =
+        useState<TransactionIF[]>();
 
     useEffect(() => {
         if (
@@ -517,19 +516,36 @@ function TradeTabs2(props: propsIF) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            {isCandleSelected ? selectedMessageContent : null}
-            {(expandTradeTable || showActiveMobileComponent) && (
-                <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-            )}
-            <TabComponent
-                data={tradeTabData}
-                rightTabOptions={
-                    <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+        <div
+            ref={tabComponentRef}
+            className={styles.trade_tab_container}
+            style={{
+                padding:
+                    expandTradeTable || showActiveMobileComponent
+                        ? '0px'
+                        : '8px',
+            }}
+        >
+            <div
+                className={
+                    !expandTradeTable
+                        ? styles.round_container
+                        : styles.flex_column
                 }
-                setSelectedInsideTab={setSelectedInsideTab}
-                setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
-            />
+            >
+                {isCandleSelected ? selectedMessageContent : null}
+                {(expandTradeTable || showActiveMobileComponent) && (
+                    <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
+                )}
+                <TabComponent
+                    data={tradeTabData}
+                    rightTabOptions={
+                        <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+                    }
+                    setSelectedInsideTab={setSelectedInsideTab}
+                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
+                />
+            </div>
         </div>
     );
 }

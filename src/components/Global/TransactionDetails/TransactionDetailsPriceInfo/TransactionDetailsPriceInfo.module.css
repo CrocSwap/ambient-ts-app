@@ -143,9 +143,6 @@
     align-items: center;
     gap: 8px;
 }
-.token_pair_images img {
-    width: 30px;
-}
 
 .align_center {
     display: flex;
