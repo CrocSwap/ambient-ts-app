@@ -89,7 +89,6 @@ export default function Wallet(props: propsIF) {
                     switch (tkn.address.toLowerCase()) {
                         // native token
                         case ZERO_ADDRESS:
-                            console.log('found native eth');
                             priority = 1000;
                             break;
                         // USDCoin (uses address for current chain)
@@ -108,7 +107,6 @@ export default function Wallet(props: propsIF) {
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
             });
-        console.log({ sequencedTokens });
         return sequencedTokens;
     }
 
