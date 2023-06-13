@@ -3448,7 +3448,7 @@ export default function Chart(props: propsIF) {
         if (triangle !== undefined) {
             let color = 'rgba(235, 235, 255)';
 
-            triangle.decorate((context: any, datum: any) => {
+            triangle.decorate((context: any) => {
                 if (location.pathname.includes('/limit')) {
                     if (checkLimitOrder) {
                         color =

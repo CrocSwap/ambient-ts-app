@@ -2,8 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
-import { CandleData } from '../../../utils/state/graphDataSlice';
+import { lineValue, setCanvasResolution } from '../Chart';
 import { useLocation } from 'react-router-dom';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
@@ -13,6 +12,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 
 interface propsIF {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     scaleData: any;
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -20,13 +20,16 @@ interface propsIF {
     rescale: boolean | undefined;
     currentPoolPriceTick: number;
     poolPriceDisplay: number;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     changeScale: any;
     isTokenABase: boolean;
     chainId: string;
     topBoundary: number | undefined;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     d3Container: any;
     period: number;
     ranges: Array<lineValue>;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     setRanges: any;
     liqMode: string;
     liqTransitionPointforCurve: number;
@@ -68,13 +71,10 @@ export default function RangeLineCanvas(props: propsIF) {
 
     const {
         minRangePrice: minPrice,
-        setMinRangePrice: setMinPrice,
         maxRangePrice: maxPrice,
-        setMaxRangePrice: setMaxPrice,
         rescaleRangeBoundariesWithSlider,
 
         simpleRangeWidth,
-        setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
 
     const tokenADecimals = tokenA.decimals;
@@ -82,10 +82,11 @@ export default function RangeLineCanvas(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const [horizontalLine, setHorizontalLine] = useState<any>();
-
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const [horizontalBand, setHorizontalBand] = useState<any>();
-
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     const [triangle, setTriangle] = useState<any>();
 
     useEffect(() => {
