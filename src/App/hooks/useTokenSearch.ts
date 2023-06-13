@@ -180,8 +180,6 @@ export const useTokenSearch = (
                 return rank;
             })
             .sort((a: TokenIF, b: TokenIF) => {
-                const aPriority: number = getPriority(a);
-                const bPriority: number = getPriority(b);
                 function getPriority(tkn: TokenIF): number {
                     let priority: number;
                     switch (tkn.address) {
@@ -196,7 +194,7 @@ export const useTokenSearch = (
                     }
                     return priority;
                 }
-                return bPriority - aPriority;
+                return getPriority(b) - getPriority(a);
             });
 
         // send found tokens to local state hook
