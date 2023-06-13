@@ -9,10 +9,7 @@ import './TransactionDetailsGraph.css';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import {
-    fetchCandleSeriesCroc,
-    memoizeFetchTransactionGraphData,
-} from '../../../../App/functions/fetchCandleSeries';
+import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -65,8 +62,6 @@ export default function TransactionDetailsGraph(
             : testTokenMap
                   .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
                   ?.split('_')[0];
-
-    const fetchGraphData = memoizeFetchTransactionGraphData();
 
     const [graphData, setGraphData] = useState<any>();
 

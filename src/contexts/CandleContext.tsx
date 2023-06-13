@@ -203,7 +203,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const fetchCandlesByNumDurations = (numDurations: number) => {
         const controller = new AbortController();
         setAbortController(controller);
-        const signal = controller.signal;
 
         if (!crocEnv) {
             return;
