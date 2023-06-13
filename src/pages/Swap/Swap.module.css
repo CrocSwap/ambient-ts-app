@@ -344,7 +344,7 @@ padding-top: 8px;
     text-align: center;
 
     background: transparent;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     color: var(--text1);
     border-radius: 4px;
