@@ -57,10 +57,6 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.tokens_images img {
-    width: 18px;
-}
-
 .denom_toggle_button {
     display: flex;
     flex-direction: row;
@@ -131,9 +127,6 @@
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
         color: var(--text1);
-    }
-    .tokens_images img {
-        width: 25px;
     }
 
     .graph_style {
