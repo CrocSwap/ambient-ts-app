@@ -141,7 +141,7 @@ export default function TabComponent(props: TabPropsIF) {
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
             <ul
-                className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}
+                className={`${styles.tab_ul_left}`}
                 aria-label='Navigation Tabs'
                 role='tablist'
             >

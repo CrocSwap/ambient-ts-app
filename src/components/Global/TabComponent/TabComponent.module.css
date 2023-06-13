@@ -71,7 +71,8 @@
 }
 
 .tab_ul_left li {
-    width: 100%;
+    max-width: 25%;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
