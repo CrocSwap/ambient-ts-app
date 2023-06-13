@@ -79,7 +79,6 @@ export default function Wallet(props: propsIF) {
                 return rank;
             })
             // promote privileged tokens to the top of the list
-            .reverse()
             .sort((a: TokenIF, b: TokenIF) => {
                 // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
