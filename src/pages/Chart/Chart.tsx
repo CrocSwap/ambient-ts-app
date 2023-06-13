@@ -57,6 +57,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
+import { createTriangle } from './ChartUtils/triangle';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -375,7 +376,8 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [limitLine, setLimitLine] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [triangle, setTriangle] = useState<any>();
+    const [triangleLimit, setTriangleLimit] = useState<any>();
+    const [triangleRange, setTriangleRange] = useState<any>();
 
     // Line Joins
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2253,19 +2255,12 @@ export default function Chart(props: propsIF) {
                 }
             };
 
-            const canvasLimit = d3
-                .select(d3CanvasLimitLine.current)
+            const canvas = d3
+                .select(d3CanvasMain.current)
                 .select('canvas')
                 .node() as any;
 
-            const rectLimit = canvasLimit.getBoundingClientRect();
-
-            const canvasRange = d3
-                .select(d3CanvasRangeLine.current)
-                .select('canvas')
-                .node() as any;
-
-            const rectRange = canvasRange.getBoundingClientRect();
+            const rectCanvas = canvas.getBoundingClientRect();
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
@@ -2279,7 +2274,7 @@ export default function Chart(props: propsIF) {
                     d3.select(d3Yaxis.current).style('cursor', 'none');
 
                     const advancedValue = scaleData?.yScale.invert(
-                        event.sourceEvent.clientY - rectRange.top,
+                        event.sourceEvent.clientY - rectCanvas.top,
                     );
 
                     const low = ranges.filter(
@@ -2308,11 +2303,12 @@ export default function Chart(props: propsIF) {
                         setCrosshairActive('none');
                         let dragedValue =
                             scaleData?.yScale.invert(
-                                event.sourceEvent.clientY - rectRange.top,
+                                event.sourceEvent.clientY - rectCanvas.top,
                             ) >= liquidityData?.topBoundary
                                 ? liquidityData?.topBoundary
                                 : scaleData?.yScale.invert(
-                                      event.sourceEvent.clientY - rectRange.top,
+                                      event.sourceEvent.clientY -
+                                          rectCanvas.top,
                                   );
 
                         dragedValue = dragedValue < 0 ? 0 : dragedValue;
@@ -2466,7 +2462,7 @@ export default function Chart(props: propsIF) {
                             }
                         } else {
                             const advancedValue = scaleData?.yScale.invert(
-                                event.sourceEvent.clientY - rectRange.top,
+                                event.sourceEvent.clientY - rectCanvas.top,
                             );
                             highLineMoved = draggingLine === 'Max';
                             lowLineMoved = draggingLine === 'Min';
@@ -2658,7 +2654,7 @@ export default function Chart(props: propsIF) {
                         setIsLineDrag(true);
 
                         newLimitValue = scaleData?.yScale.invert(
-                            event.sourceEvent.clientY - rectLimit.top,
+                            event.sourceEvent.clientY - rectCanvas.top,
                         );
 
                         if (newLimitValue < 0) newLimitValue = 0;
@@ -2902,8 +2898,9 @@ export default function Chart(props: propsIF) {
         context.fontSize = '13';
         context.textAlign = 'center';
         context.textBaseline = 'middle';
-
+        context.letterSpacing = 'normal';
         if (subString) {
+            context.letterSpacing = '1px';
             const textHeight =
                 context.measureText('0.0').actualBoundingBoxAscent +
                 context.measureText('0.0').actualBoundingBoxDescent;
@@ -2979,7 +2976,13 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3Yaxis, d3CanvasMain]);
         }
-    }, [location, zoomUtils, dragLimit, dragRange]);
+    }, [
+        location.pathname,
+        zoomUtils,
+        dragLimit,
+        dragRange,
+        d3CanvasRangeLine?.current,
+    ]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
         if (unparsedCandleData !== undefined) {
@@ -3589,25 +3592,21 @@ export default function Chart(props: propsIF) {
                     context.fillStyle = '#7371FC1A';
                 });
 
-            const triangle = d3fc
-                .seriesCanvasPoint()
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .crossValue(() => {
-                    return scaleData?.xScale.domain()[0];
-                })
-                .mainValue((d: any) => d.value)
-                .size(180)
-                .type(d3.symbolTriangle)
-                .decorate((context: any) => {
-                    const rotateDegree = 90;
-                    context.rotate((rotateDegree * Math.PI) / 180);
-                    context.strokeStyle = 'rgba(235, 235, 255)';
-                    context.fillStyle = 'rgba(235, 235, 255)';
-                });
+            const triangleLimit = createTriangle(
+                scaleData?.xScale,
+                scaleData?.yScale,
+            );
+            const triangleRange = createTriangle(
+                scaleData?.xScale,
+                scaleData?.yScale,
+            );
 
-            setTriangle(() => {
-                return triangle;
+            setTriangleLimit(() => {
+                return triangleLimit;
+            });
+
+            setTriangleRange(() => {
+                return triangleRange;
             });
 
             setHorizontalLine(() => {
@@ -3707,10 +3706,10 @@ export default function Chart(props: propsIF) {
                 ? liquidityData?.liqTransitionPointforCurve
                 : liquidityData?.liqTransitionPointforDepth;
 
-        if (triangle !== undefined) {
+        if (triangleLimit !== undefined) {
             let color = 'rgba(235, 235, 255)';
 
-            triangle.decorate((context: any, datum: any) => {
+            triangleLimit.decorate((context: any) => {
                 if (location.pathname.includes('/limit')) {
                     if (checkLimitOrder) {
                         color =
@@ -3718,11 +3717,24 @@ export default function Chart(props: propsIF) {
                                 ? lineSellColor
                                 : lineBuyColor;
                     }
-                } else {
+                }
+                const rotateDegree = 90;
+                context.rotate((rotateDegree * Math.PI) / 180);
+                context.strokeStyle = color;
+                context.fillStyle = color;
+            });
+        }
+
+        if (triangleRange !== undefined) {
+            let color = 'rgba(235, 235, 255)';
+
+            triangleRange.decorate((context: any, datum: any) => {
+                if (
+                    location.pathname.includes('/range') ||
+                    location.pathname.includes('reposition')
+                ) {
                     color =
-                        datum.value > passValue
-                            ? lineSellColor // lineSellColor
-                            : lineBuyColor;
+                        datum.value > passValue ? lineSellColor : lineBuyColor;
                 }
 
                 const rotateDegree = 90;
@@ -3767,7 +3779,8 @@ export default function Chart(props: propsIF) {
         limitLine,
         horizontalLine,
         ranges,
-        triangle,
+        triangleLimit,
+        triangleRange,
         checkLimitOrder,
         sellOrderStyle,
         location.pathname,
@@ -4265,13 +4278,13 @@ export default function Chart(props: propsIF) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
                             limitLine(limit);
-                            triangle(limit);
+                            triangleLimit(limit);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         limitLine.context(ctx);
-                        triangle.context(ctx);
+                        triangleLimit.context(ctx);
                     });
             }
         }
@@ -4301,14 +4314,14 @@ export default function Chart(props: propsIF) {
                             horizontalBand([
                                 [ranges[0].value, ranges[1].value],
                             ]);
-                            triangle(ranges);
+                            triangleRange(ranges);
                         }
                     })
                     .on('measure', () => {
                         ctx.setLineDash([20, 18]);
                         horizontalLine.context(ctx);
                         horizontalBand.context(ctx);
-                        triangle.context(ctx);
+                        triangleRange.context(ctx);
                     });
             }
         }
@@ -5876,7 +5889,8 @@ export default function Chart(props: propsIF) {
                             style={{
                                 position: 'relative',
                                 height: '50%',
-                                top: '50%',
+                                marginBottom: '0',
+                                marginTop: 'auto',
                             }}
                         ></d3fc-canvas>
 
@@ -5886,7 +5900,7 @@ export default function Chart(props: propsIF) {
                             style={{
                                 position: 'relative',
                                 width: '20%',
-                                left: '80%',
+                                marginLeft: '80%',
                             }}
                         ></d3fc-canvas>
 
@@ -5896,7 +5910,7 @@ export default function Chart(props: propsIF) {
                             style={{
                                 position: 'relative',
                                 width: '20%',
-                                left: '80%',
+                                marginLeft: '80%',
                             }}
                         ></d3fc-canvas>
 
@@ -5906,7 +5920,7 @@ export default function Chart(props: propsIF) {
                             style={{
                                 position: 'relative',
                                 width: '20%',
-                                left: '80%',
+                                marginLeft: '80%',
                             }}
                         ></d3fc-canvas>
                         <d3fc-canvas
@@ -5915,7 +5929,7 @@ export default function Chart(props: propsIF) {
                             style={{
                                 position: 'relative',
                                 width: '20%',
-                                left: '80%',
+                                marginLeft: '80%',
                             }}
                         ></d3fc-canvas>
                         <d3fc-canvas

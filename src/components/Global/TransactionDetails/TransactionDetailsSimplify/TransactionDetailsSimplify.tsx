@@ -7,6 +7,8 @@ import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransac
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -56,6 +58,8 @@ export default function TransactionDetailsSimplify(
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessTransaction(tx, userAddress);
 
+    const { chainData } = useContext(CrocEnvContext);
+
     const isAmbient = tx.positionType === 'ambient';
 
     const isBuy = tx.isBid || tx.isBuy;
@@ -78,7 +82,7 @@ export default function TransactionDetailsSimplify(
         if (txHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddress === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddress}`;
             window.open(adressUrl);
         }
@@ -289,17 +293,15 @@ export default function TransactionDetailsSimplify(
 
     return (
         <div className={styles.tx_details_container}>
-            <div className={styles.main_container}>
-                <div className={styles.info_content}>
-                    {infoContent.map((info, idx) => (
-                        <InfoRow
-                            key={info.title + idx}
-                            title={info.title}
-                            content={info.content}
-                            explanation={info.explanation}
-                        />
-                    ))}
-                </div>
+            <div className={styles.info_content}>
+                {infoContent.map((info, idx) => (
+                    <InfoRow
+                        key={info.title + idx}
+                        title={info.title}
+                        content={info.content}
+                        explanation={info.explanation}
+                    />
+                ))}
             </div>
         </div>
     );

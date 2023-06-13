@@ -289,23 +289,28 @@ export default function OrderDetails(props: propsIF) {
     }, [lastBlockNumber]);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyOrderDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -350,9 +355,9 @@ export default function OrderDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.order_details_container}>
+        <div className={styles.outer_container}>
             <OrderDetailsHeader
-                downloadAsImage={downloadAsImage}
+                copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}
