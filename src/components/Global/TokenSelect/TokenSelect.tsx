@@ -3,7 +3,7 @@ import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
+import TokenIcon from '../TokenIcon/TokenIcon';
 
 interface propsIF {
     token: TokenIF;
@@ -50,19 +50,11 @@ export default function TokenSelect(props: propsIF) {
                 <section className={styles.left_side_container}>
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
-                            {token.logoURI ? (
-                                <img
-                                    src={uriToHttp(token.logoURI)}
-                                    alt={token.symbol?.charAt(0)}
-                                    // alt={`logo for token ${token.name}`}
-                                    width='27px'
-                                />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={token.symbol?.charAt(0)}
-                                    width='27px'
-                                />
-                            )}
+                            <TokenIcon
+                                src={uriToHttp(token.logoURI)}
+                                alt={token.symbol?.charAt(0)}
+                                size='xl'
+                            />
                             <div className={styles.name_container}>
                                 <span className={styles.modal_token_symbol}>
                                     {token.symbol}

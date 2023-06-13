@@ -53,6 +53,8 @@ export default function OrderDetails(props: propsIF) {
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         isDenomBase,
@@ -298,7 +300,7 @@ export default function OrderDetails(props: propsIF) {
             });
             if (blob) {
                 copy(blob);
-                openSnackbar('Order details copied to clipboard', 'info');
+                openSnackbar('Shareable image copied to clipboard', 'info');
             }
         }
     };
@@ -309,9 +311,8 @@ export default function OrderDetails(props: propsIF) {
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -333,6 +334,8 @@ export default function OrderDetails(props: propsIF) {
                         baseTokenLogo={baseTokenLogo}
                         baseTokenSymbol={baseTokenSymbol}
                         quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenName={baseTokenName}
+                        quoteTokenName={quoteTokenName}
                         isFillStarted={isFillStarted}
                         truncatedDisplayPrice={truncatedDisplayPrice}
                         truncatedDisplayPriceDenomByMoneyness={
@@ -356,7 +359,7 @@ export default function OrderDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.order_details_container}>
+        <div className={styles.outer_container}>
             <OrderDetailsHeader
                 copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
                 showShareComponent={showShareComponent}
@@ -383,6 +386,8 @@ export default function OrderDetails(props: propsIF) {
                     baseTokenLogo={baseTokenLogo}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenName={baseTokenName}
+                    quoteTokenName={quoteTokenName}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
                     isAccountView={isAccountView}

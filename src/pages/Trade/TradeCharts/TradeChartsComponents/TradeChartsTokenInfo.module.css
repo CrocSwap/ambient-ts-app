@@ -1,23 +1,22 @@
 .tokens_info {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
 }
 
 .tokens_info_simplify {
-    margin: 0 5px -2px -5px;
     background: var(--dark1);
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
-    /* margin: 0 -5px ; */
-    /* align-items: center; */
 }
 .tokens_info_simplify_content {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    padding: 4px 1rem;
+    align-items: center;
+    padding: 8px;
+    grid-gap: 1rem;
+    gap: 1rem;
     overflow: hidden;
 }
 .tokens_info_simplify section {
@@ -34,9 +33,6 @@
 }
 
 .favorite_button {
-    margin-left: 3px;
-    margin-top: -3px;
-    margin-bottom: 6px;
     background: transparent;
     outline: none;
     border: none;
@@ -55,10 +51,6 @@
 }
 .favorite_button svg {
     transition: all var(--animation-speed) ease-in-out;
-}
-
-.tokens_images img {
-    width: 18px;
 }
 
 .denom_toggle_button {
@@ -131,9 +123,6 @@
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
         color: var(--text1);
-    }
-    .tokens_images img {
-        width: 25px;
     }
 
     .graph_style {

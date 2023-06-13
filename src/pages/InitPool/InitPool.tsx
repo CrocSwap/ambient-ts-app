@@ -10,7 +10,6 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
@@ -32,6 +31,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 // react functional component
 export default function InitPool() {
@@ -337,40 +337,26 @@ export default function InitPool() {
                         <div className={styles.pool_display_container}>
                             <div className={styles.pool_display}>
                                 <div>
-                                    {tokenA &&
-                                        (tokenA.logoURI ? (
-                                            <img
-                                                src={tokenA.logoURI}
-                                                alt={tokenA.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenA.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
+                                    {tokenA && (
+                                        <TokenIcon
+                                            src={tokenA.logoURI}
+                                            alt={tokenA.symbol}
+                                            size='2xl'
+                                        />
+                                    )}
                                     {tokenA && <h3>{tokenA.symbol}</h3>}
                                 </div>
                                 {tokenA && <p>{tokenA.name}</p>}
                             </div>
                             <div className={styles.pool_display}>
                                 <div>
-                                    {tokenB &&
-                                        (tokenB.logoURI ? (
-                                            <img
-                                                src={tokenB.logoURI}
-                                                alt={tokenB.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenB.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
+                                    {tokenB && (
+                                        <TokenIcon
+                                            src={tokenB.logoURI}
+                                            alt={tokenB.symbol}
+                                            size='2xl'
+                                        />
+                                    )}
                                     {tokenB && <h3>{tokenB.symbol}</h3>}
                                 </div>
                                 {tokenB && <p>{tokenB.name}</p>}

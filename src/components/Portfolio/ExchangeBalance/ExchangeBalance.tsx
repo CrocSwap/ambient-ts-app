@@ -65,8 +65,11 @@ export default function ExchangeBalance(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { cachedFetchErc20TokenBalances, cachedFetchNativeTokenBalance } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const { addTokenInfo, setInput } = useContext(TokenContext);
     const {
         globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
@@ -133,6 +136,7 @@ export default function ExchangeBalance(props: propsIF) {
                             userAddress,
                             chainId,
                             lastBlockNumber,
+                            cachedTokenDetails,
                             crocEnv,
                         );
                     const erc20TokensWithLogos = erc20Results.map((token) =>

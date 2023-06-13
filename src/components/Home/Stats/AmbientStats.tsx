@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getChainStats } from '../../../App/functions/getPoolStats';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatAmountOld } from '../../../utils/numbers';
 import styles from './Stats.module.css';
@@ -36,7 +37,10 @@ export default function Stats() {
     } = useContext(AppStateContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { isUserIdle } = useAppSelector((state) => state.userData);
@@ -52,17 +56,25 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle)
-            getChainStatsFresh(chainId).then((dexStats) => {
-                if (dexStats.tvl)
-                    setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
-                if (dexStats.volume)
-                    setTotalVolumeString(
-                        '$' + formatAmountOld(dexStats.volume),
+        if (isServerEnabled && !isUserIdle && crocEnv) {
+            getChainStats(chainId, crocEnv, cachedFetchTokenPrice).then(
+                (dexStats) => {
+                    if (!dexStats) {
+                        return;
+                    }
+
+                    setTotalTvlString(
+                        '$' + formatAmountOld(dexStats.tvlTotalUsd),
                     );
-                if (dexStats.fees)
-                    setTotalFeesString('$' + formatAmountOld(dexStats.fees));
-            });
+                    setTotalVolumeString(
+                        '$' + formatAmountOld(dexStats.volumeTotalUsd),
+                    );
+                    setTotalFeesString(
+                        '$' + formatAmountOld(dexStats.feesTotalUsd),
+                    );
+                },
+            );
+        }
     }, [isServerEnabled, isUserIdle, lastBlockNumber]);
 
     const statCardData = [
