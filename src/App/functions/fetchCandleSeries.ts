@@ -61,7 +61,7 @@ export async function fetchCandleSeriesCroc(
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
-    time: number,
+    startTime: number,
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -72,18 +72,24 @@ export async function fetchCandleSeriesCroc(
 
     const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
 
+    if (startTime == 0) {
+        const presentTime = Math.floor(Date.now() / 1000);
+        startTime = presentTime - nCandles * period;
+    }
+
+    startTime = Math.ceil(startTime / period) * period;
+
     const reqOptions = new URLSearchParams({
         base: baseTokenAddress,
         quote: quoteTokenAddress,
         poolIdx: chainData.poolIndex.toString(),
         period: period.toString(),
         n: capNumDurations(nCandles).toString(),
+        time: startTime.toString(),
         chainId: chainData.chainId,
     });
 
-    if (time > 0) {
-        reqOptions.set('time', time.toString()); // optional
-    }
+    console.log('Fetch Candles', startTime, period, nCandles);
 
     return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
@@ -154,19 +160,19 @@ async function expandPoolStats(
         mainnetQuote.chainId,
     );
 
-    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
-    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
-
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
+
+    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
+    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
 
     return decorateCandleData(
         payload,
         await baseDecimals,
         await quoteDecimals,
-        await basePrice,
-        await quotePrice,
-    );
+        basePrice,
+        quotePrice,
+    ).reverse();
 }
 
 function decorateCandleData(
@@ -197,20 +203,20 @@ function decorateCandleData(
             averageLiquidityFee: (p.feeRateOpen + p.feeRateClose) / 2.0,
             minPriceDecimalCorrected: p.minPrice * priceDecMult,
             maxPriceDecimalCorrected: p.maxPrice * priceDecMult,
-            priceOpenDecimalCorrected: p.priceClose * priceDecMult,
+            priceOpenDecimalCorrected: p.priceOpen * priceDecMult,
             priceCloseDecimalCorrected: p.priceClose * priceDecMult,
             invMinPriceDecimalCorrected: 1 / (p.minPrice * priceDecMult),
             invMaxPriceDecimalCorrected: 1 / (p.maxPrice * priceDecMult),
-            invPriceOpenDecimalCorrected: 1 / (p.priceClose * priceDecMult),
+            invPriceOpenDecimalCorrected: 1 / (p.priceOpen * priceDecMult),
             invPriceCloseDecimalCorrected: 1 / (p.priceClose * priceDecMult),
             minPriceExclMEVDecimalCorrected: p.minPrice * priceDecMult,
             maxPriceExclMEVDecimalCorrected: p.maxPrice * priceDecMult,
-            priceOpenExclMEVDecimalCorrected: p.priceClose * priceDecMult,
+            priceOpenExclMEVDecimalCorrected: p.priceOpen * priceDecMult,
             priceCloseExclMEVDecimalCorrected: p.priceClose * priceDecMult,
             invMinPriceExclMEVDecimalCorrected: 1 / (p.minPrice * priceDecMult),
             invMaxPriceExclMEVDecimalCorrected: 1 / (p.maxPrice * priceDecMult),
             invPriceOpenExclMEVDecimalCorrected:
-                1 / (p.priceClose * priceDecMult),
+                1 / (p.priceOpen * priceDecMult),
             invPriceCloseExclMEVDecimalCorrected:
                 1 / (p.priceClose * priceDecMult),
         };
@@ -228,7 +234,6 @@ export const fetchCandleSeriesUniswap = async (
     time: string,
     candleNeeded: string,
 ) => {
-    console.log('Fetch candle series');
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
         translateMainnetForGraphcache(
             mainnetBaseTokenAddress,

@@ -132,6 +132,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle,
         candleScale?.isFetchForTimeframe,
     ]);
+
     const fetchCandles = () => {
         if (
             isServerEnabled &&
@@ -146,7 +147,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 abortController.abort();
             }
 
-            const candleTime = candleScale?.lastCandleDate || 0;
+            // const candleTime = candleScale?.lastCandleDate || 0;
+            const candleTime = 0;
             const nCandles =
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
 
@@ -288,78 +290,43 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (!crocEnv) {
             return;
         }
-        /* fetchCandleSeriesCroc(true, chainData, candleTimeLocal,
-            baseTokenAddress, quoteTokenAddress, 
+
+        fetchCandleSeriesCroc(
+            true,
+            chainData,
+            candleTimeLocal,
+            baseTokenAddress,
+            quoteTokenAddress,
             minTimeMemo ? minTimeMemo : 0,
-            numDurations, crocEnv, cachedFetchTokenPrice)
-            .then(candles => {
-                setCandleData(candles)
-            }) */
-        /* return fetch(
-            candleSeriesCacheEndpoint +
-                new URLSearchParams({
-                    base: mainnetBaseTokenAddress.toLowerCase(),
-                    quote: mainnetQuoteTokenAddress.toLowerCase(),
-                    poolIdx: (
-                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                    ).toString(),
-                    period: candleTimeLocal.toString(),
-                    time: minTimeMemo ? minTimeMemo.toString() : '0',
-                    // time: debouncedBoundary.toString(),
-                    n: capNumDurations(numDurations),
-                    // page: '0', // nonnegative integer
-                    chainId: mktDataChainId(chainData.chainId),
-                    dex: 'all',
-                    poolStats: 'true',
-                    concise: 'true',
-                    poolStatsChainIdOverride: chainData.chainId,
-                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                    poolStatsPoolIdxOverride: (
-                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                    ).toString(),
-                }),
-            { signal },
+            numDurations,
+            crocEnv,
+            cachedFetchTokenPrice,
         )
-            .then((response) => response?.json())
-            .then((json) => {
-                const fetchedCandles = json?.data;
-                if (fetchedCandles && candleData) {
+            .then((candles) => {
+                if (candles) {
                     const newCandles: CandleData[] = [];
-                    const updatedCandles: CandleData[] = candleData.candles;
 
                     for (
                         let index = 0;
-                        index < fetchedCandles.length;
+                        index < candles.candles.length;
                         index++
                     ) {
-                        const messageCandle = fetchedCandles[index];
-                        const indexOfExistingCandle =
-                            candleData.candles.findIndex(
-                                (savedCandle) =>
-                                    savedCandle.time === messageCandle.time,
-                            );
+                        const messageCandle = candles.candles[index];
+                        const indexOfExistingCandle = candles.candles.findIndex(
+                            (savedCandle) =>
+                                savedCandle.time === messageCandle.time,
+                        );
 
                         if (indexOfExistingCandle === -1) {
                             newCandles.push(messageCandle);
-                        } else if (
-                            diffHashSig(
-                                candleData.candles[indexOfExistingCandle],
-                            ) !== diffHashSig(messageCandle)
-                        ) {
-                            updatedCandles[indexOfExistingCandle] =
+                        } else {
+                            candles.candles[indexOfExistingCandle] =
                                 messageCandle;
                         }
                     }
 
-                    const newCandleData: CandlesByPoolAndDuration = {
-                        pool: candleData.pool,
-
-                        duration: candleData.duration,
-
-                        candles: newCandles.concat(updatedCandles),
-                    };
-                    setCandleData(newCandleData);
+                    (candles.candles = newCandles.concat(candles.candles)),
+                        setCandleData(candles);
                 }
             })
             .catch((e) => {
@@ -369,10 +336,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     console.error(e);
                 }
                 setIsCandleDataNull(false);
-                // setExpandTradeTable(false);
-            }); */
+            });
     };
+
     useEffect(() => {
+        console.log('Num durations', numDurationsNeeded);
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
