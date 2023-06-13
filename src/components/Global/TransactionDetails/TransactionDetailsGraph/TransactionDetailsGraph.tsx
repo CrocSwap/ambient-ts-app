@@ -486,7 +486,15 @@ export default function TransactionDetailsGraph(
             context.fillStyle = 'rgba(189,189,189,0.6)';
             context.font = '10px Lexend Deca';
 
-            const yScaleTicks = yScale.ticks(factor);
+            const yScaleCopy = yScale.copy();
+
+            const domain = yScale.domain();
+
+            const buffer = Math.abs(domain[0] - domain[1]) / (factor * 2);
+
+            yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
+
+            const yScaleTicks = yScaleCopy.ticks(factor);
 
             let switchFormatter = false;
 
@@ -754,7 +762,7 @@ export default function TransactionDetailsGraph(
                 <d3fc-svg
                     id='d3PlotGraph'
                     ref={d3PlotGraph}
-                    style={{ height: '300px', width: '90%' }}
+                    style={{ width: '90%' }}
                 ></d3fc-svg>
 
                 <d3fc-canvas
