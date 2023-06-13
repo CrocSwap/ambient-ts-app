@@ -575,8 +575,7 @@ function Swap(props: propsIF) {
         '/initpool/' +
         formSlugForPairParams(chainId, tokenA.address, tokenB.address);
 
-    // const showPoolNotInitializedContent = isPoolInitialized === false;
-    const showPoolNotInitializedContent = true;
+    const showPoolNotInitializedContent = isPoolInitialized === false;
 
     const navigate = useNavigate();
 
