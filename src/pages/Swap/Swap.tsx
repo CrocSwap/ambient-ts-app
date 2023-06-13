@@ -48,11 +48,11 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { isStablePair } from '../../utils/data/stablePairs';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { VscClose } from 'react-icons/vsc';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../App/hooks/useTradeData';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -589,22 +589,16 @@ function Swap(props: propsIF) {
                 <h3>Do you want to initialize it?</h3>
                 <Link to={initLinkPath} className={styles.initialize_link}>
                     Initialize Pool
-                    {tokenA.logoURI ? (
-                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenA.symbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
-                    {tokenB.logoURI ? (
-                        <img src={tokenB.logoURI} alt={tokenB.symbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenB.symbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
+                    <TokenIcon
+                        src={tokenA.logoURI}
+                        alt={tokenA.symbol}
+                        size='m'
+                    />
+                    <TokenIcon
+                        src={tokenB.logoURI}
+                        alt={tokenB.symbol}
+                        size='m'
+                    />
                 </Link>
                 <button
                     className={styles.no_thanks}

@@ -19,7 +19,6 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../utils/state/graphDataSlice';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
@@ -32,6 +31,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 // React functional component
 function Trade() {
@@ -253,22 +253,16 @@ function Trade() {
                 <h3>Do you want to initialize it?</h3>
                 <Link to={initLinkPath} className={styles.initialize_link}>
                     Initialize Pool
-                    {baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
-                    {quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
+                    <TokenIcon
+                        src={baseTokenLogo}
+                        alt={baseTokenSymbol}
+                        size='m'
+                    />
+                    <TokenIcon
+                        src={quoteTokenLogo}
+                        alt={quoteTokenSymbol}
+                        size='m'
+                    />
                 </Link>
                 <button
                     className={styles.no_thanks}

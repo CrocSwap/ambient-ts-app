@@ -103,9 +103,6 @@
 }
 
 .detail_line img {
-    width: 20px;
-    height: 20px;
-
     border-radius: 50%;
     background: white;
 }
@@ -137,8 +134,5 @@
     height: 1px;
     width: 100%;
 }
-/* .detail_line img {
-    margin: 0 10px;
-} */
 
 /* modal */

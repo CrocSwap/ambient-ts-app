@@ -206,10 +206,6 @@
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
-.initialize_link img {
-    width: 20px;
-    height: 20px;
-}
 
 .close_init {
     cursor: pointer;
