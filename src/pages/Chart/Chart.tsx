@@ -54,11 +54,11 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
-import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import CandleChart from './CandleChart';
 import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
 import RangeLineCanvas from './SubChartComponents/RangeLineCanvas';
+import LimitLineCanvas from './SubChartComponents/LimitLineCanvas';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -257,8 +257,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
     const d3CanvasMain = useRef<HTMLInputElement | null>(null);
 
-    const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
-
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
     const dispatch = useAppDispatch();
@@ -312,7 +310,6 @@ export default function Chart(props: propsIF) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
-    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState<crosshair[]>([
@@ -359,19 +356,7 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // Line Series
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [limitLine, setLimitLine] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [triangleLimit, setTriangleLimit] = useState<any>();
-    const [triangleRange, setTriangleRange] = useState<any>();
-
-    // Line Joins
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     // NoGoZone Joins
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -427,6 +412,8 @@ export default function Chart(props: propsIF) {
         setIsOnCandleOrVolumeMouseLocation,
     ] = useState(false);
     const [yAxisLabels] = useState<yLabel[]>([]);
+
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -1814,30 +1801,6 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        setLimitLineValue();
-    }, [tradeData.limitTick, denomInBase]);
-
-    const setLimitLineValue = () => {
-        if (
-            tradeData.limitTick === undefined ||
-            Array.isArray(tradeData.limitTick) ||
-            isNaN(tradeData.limitTick)
-        )
-            return;
-        const limitDisplayPrice = pool?.toDisplayPrice(
-            tickToPrice(tradeData.limitTick),
-        );
-        limitDisplayPrice?.then((limit) => {
-            setLimit([
-                {
-                    name: 'Limit',
-                    value: denomInBase ? limit : 1 / limit || 0,
-                },
-            ]);
-        });
-    };
-
-    useEffect(() => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
 
@@ -1875,10 +1838,7 @@ export default function Chart(props: propsIF) {
     // Targets
     useEffect(() => {
         setMarketLineValue();
-        if (location.pathname.includes('/limit')) {
-            setLimitLineValue();
-        }
-    }, [location, tradeData.limitTick, denomInBase]);
+    }, [location, denomInBase]);
 
     useEffect(() => {
         if (
@@ -2728,10 +2688,6 @@ export default function Chart(props: propsIF) {
             if (location.pathname.includes('market')) {
                 d3.select(d3Yaxis.current).on('.drag', null);
                 d3.select(d3CanvasMain.current).on('.drag', null);
-
-                d3.select(d3CanvasLimitLine.current)
-                    .select('canvas')
-                    .style('display', 'none');
             }
             if (
                 location.pathname.includes('range') ||
@@ -2739,17 +2695,10 @@ export default function Chart(props: propsIF) {
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
                 d3.select(d3CanvasMain.current).call(dragRange);
-
-                d3.select(d3CanvasLimitLine.current)
-                    .select('canvas')
-                    .style('display', 'none');
             }
             if (location.pathname.includes('/limit')) {
                 d3.select(d3Yaxis.current).call(dragLimit);
                 d3.select(d3CanvasMain.current).call(dragLimit);
-                d3.select(d3CanvasLimitLine.current)
-                    .select('canvas')
-                    .style('display', 'inline');
             }
             renderCanvasArray([d3Yaxis, d3CanvasMain]);
         }
@@ -2759,6 +2708,7 @@ export default function Chart(props: propsIF) {
         dragLimit,
         dragRange,
         d3.select('#range-line-canvas')?.node(),
+        d3.select('#limit-line-canvas')?.node(),
     ]);
 
     const drawYaxis = (context: any, yScale: any, X: any) => {
@@ -3299,19 +3249,6 @@ export default function Chart(props: propsIF) {
     // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
-            const limitLine = d3fc
-                .annotationCanvasLine()
-                .value((d: any) => d.value)
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale);
-
-            limitLine.decorate((context: any) => {
-                context.strokeStyle = 'rgba(235, 235, 255)';
-                context.pointerEvents = 'none';
-                context.lineWidth = 1.5;
-                context.fillStyle = 'transparent';
-            });
-
             const marketLine = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.value)
@@ -3341,29 +3278,8 @@ export default function Chart(props: propsIF) {
                 });
             }
 
-            const triangleLimit = createTriangle(
-                scaleData?.xScale,
-                scaleData?.yScale,
-            );
-            const triangleRange = createTriangle(
-                scaleData?.xScale,
-                scaleData?.yScale,
-            );
-
-            setTriangleLimit(() => {
-                return triangleLimit;
-            });
-
-            setTriangleRange(() => {
-                return triangleRange;
-            });
-
             setMarketLine(() => {
                 return marketLine;
-            });
-
-            setLimitLine(() => {
-                return limitLine;
             });
 
             const lineAskSeries = d3fc
@@ -3436,53 +3352,7 @@ export default function Chart(props: propsIF) {
         diffHashSig(scaleData),
         liquidityDepthScale,
         liquidityScale,
-        lineSellColor,
-        lineBuyColor,
         isUserConnected,
-    ]);
-
-    useEffect(() => {
-        if (triangleLimit !== undefined) {
-            let color = 'rgba(235, 235, 255)';
-
-            triangleLimit.decorate((context: any) => {
-                if (location.pathname.includes('/limit')) {
-                    if (checkLimitOrder) {
-                        color =
-                            sellOrderStyle === 'order_sell'
-                                ? lineSellColor
-                                : lineBuyColor;
-                    }
-                }
-                const rotateDegree = 90;
-                context.rotate((rotateDegree * Math.PI) / 180);
-                context.strokeStyle = color;
-                context.fillStyle = color;
-            });
-        }
-
-        if (limitLine !== undefined && location.pathname.includes('/limit')) {
-            limitLine.decorate((context: any) => {
-                context.strokeStyle = checkLimitOrder
-                    ? sellOrderStyle === 'order_sell'
-                        ? lineSellColor
-                        : lineBuyColor
-                    : 'rgba(235, 235, 255)';
-                context.pointerEvents = 'none';
-                context.lineWidth = 1.5;
-                context.fillStyle = 'transparent';
-            });
-
-            renderCanvasArray([d3CanvasLimitLine]);
-        }
-    }, [
-        limitLine,
-        ranges,
-        triangleLimit,
-        triangleRange,
-        checkLimitOrder,
-        sellOrderStyle,
-        location.pathname,
     ]);
 
     useEffect(() => {
@@ -3574,16 +3444,6 @@ export default function Chart(props: propsIF) {
         rescale,
         location.pathname,
     ]);
-
-    useEffect(() => {
-        if (poolPriceDisplay) {
-            setCheckLimitOrder(
-                sellOrderStyle === 'order_sell'
-                    ? limit[0].value > poolPriceDisplay
-                    : limit[0].value < poolPriceDisplay,
-            );
-        }
-    }, [limit, sellOrderStyle, poolPriceDisplay]);
 
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
@@ -3877,33 +3737,6 @@ export default function Chart(props: propsIF) {
                 });
         }
     }, [market, marketLine]);
-
-    useEffect(() => {
-        if (location.pathname.includes('/limit')) {
-            const canvas = d3
-                .select(d3CanvasLimitLine.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-            if (limitLine) {
-                d3.select(d3CanvasLimitLine.current)
-                    .on('draw', () => {
-                        if (location.pathname.includes('/limit')) {
-                            setCanvasResolution(canvas);
-                            ctx.setLineDash([20, 18]);
-                            limitLine(limit);
-                            triangleLimit(limit);
-                        }
-                    })
-                    .on('measure', () => {
-                        ctx.setLineDash([20, 18]);
-                        limitLine.context(ctx);
-                        triangleLimit.context(ctx);
-                    });
-            }
-        }
-    }, [limit, limitLine, location.pathname]);
 
     useEffect(() => {
         if (liqMode === 'none') {
@@ -5365,6 +5198,21 @@ export default function Chart(props: propsIF) {
         lineBuyColor: lineBuyColor,
     };
 
+    const limitCanvasProps = {
+        scaleData,
+        isDenomBase,
+        period,
+        lineSellColor,
+        lineBuyColor,
+        isUserConnected,
+        setLimit,
+        limit,
+        poolPriceDisplay,
+        sellOrderStyle,
+        checkLimitOrder,
+        setCheckLimitOrder,
+    };
+
     return (
         <div
             ref={d3Container}
@@ -5449,10 +5297,7 @@ export default function Chart(props: propsIF) {
 
                         <RangeLineCanvas {...rangeCanvasProps} />
 
-                        <d3fc-canvas
-                            ref={d3CanvasLimitLine}
-                            className='limit-line-canvas'
-                        ></d3fc-canvas>
+                        <LimitLineCanvas {...limitCanvasProps} />
 
                         <d3fc-canvas
                             ref={d3CanvasMain}
