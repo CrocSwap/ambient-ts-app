@@ -2038,13 +2038,6 @@ export default function Chart(props: propsIF) {
 
             const rectCanvas = canvas.getBoundingClientRect();
 
-            const canvasRange = d3
-                .select('#range-line-canvas')
-                .select('canvas')
-                .node() as any;
-
-            const rectRange = canvasRange.getBoundingClientRect();
-
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
 
