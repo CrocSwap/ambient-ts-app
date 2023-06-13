@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import './i18n/config.ts';
+import { block } from 'million/react';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
@@ -77,13 +78,15 @@ if (!doReload) {
         document.getElementById('root') as HTMLElement,
     );
 
+    const AppBlock = /* @optimize */ block(App);
+
     root.render(
         <React.StrictMode>
             <WagmiConfig client={client}>
                 <Provider store={store}>
                     <BrowserRouter>
                         <GlobalContexts>
-                            <App />
+                            <AppBlock />
                         </GlobalContexts>
                     </BrowserRouter>
                 </Provider>
