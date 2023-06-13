@@ -88,7 +88,9 @@ function TradeChartsTokenInfo(props: propsIF) {
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     const poolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+        poolPriceDisplay === Infinity ||
+        poolPriceDisplay === 0 ||
+        poolPriceDisplay === undefined
             ? '…'
             : `${currencyCharacter}${truncatedPoolPrice}`;
 
