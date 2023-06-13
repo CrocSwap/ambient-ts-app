@@ -197,14 +197,14 @@ export const orderRowConstants = (props: Props) => {
     const baseTokenLogoComponent = (
         <TokenIcon
             src={baseTokenLogo}
-            alt='base token'
+            alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
     const quoteTokenLogoComponent = (
         <TokenIcon
             src={quoteTokenLogo}
-            alt='quote token'
+            alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
