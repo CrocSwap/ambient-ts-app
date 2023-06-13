@@ -4,16 +4,21 @@ export interface User {
     walletID: string;
 }
 
-export function getUserLabel(user: User | null): string {
-    if (user == null) return '';
-
-    if (
+const hasEnsName = (user: User) => {
+    return (
         user.ensName != null &&
         user.ensName != '' &&
         user.ensName != undefined &&
         user.ensName != 'undefined' &&
+        user.ensName != 'defaultValue' &&
         user.ensName != 'null'
-    ) {
+    );
+};
+
+export function getUserLabel(user: User | null): string {
+    if (user == null) return '';
+
+    if (hasEnsName(user)) {
         return user.ensName;
     }
     return (
@@ -21,4 +26,13 @@ export function getUserLabel(user: User | null): string {
         '...' +
         user.walletID.substring(user.walletID.length - 4)
     );
+}
+
+export function userLabelForFilter(user: User | null): string {
+    if (user == null) return '';
+
+    if (hasEnsName(user)) {
+        return user.ensName.toLowerCase();
+    }
+    return user.walletID.toLowerCase();
 }

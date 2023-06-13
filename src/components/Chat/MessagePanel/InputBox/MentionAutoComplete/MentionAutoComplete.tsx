@@ -10,31 +10,9 @@ interface MentionAutoCompleteProps {
 }
 
 export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
-    const userLabelForFilter = (user: User) => {
-        if (
-            user.ensName != null &&
-            user.ensName != '' &&
-            user.ensName != undefined &&
-            user.ensName != 'undefined' &&
-            user.ensName != 'null'
-        ) {
-            return user.ensName.toLowerCase();
-        }
-        return user.walletID.toLowerCase();
-    };
-
     const usersDom = (
         <span>
             {props.userList.map((u, index) => {
-                if (
-                    props.queryStr &&
-                    props.queryStr.length > 0 &&
-                    !userLabelForFilter(u)
-                        .toLowerCase()
-                        .includes(props.queryStr.toLowerCase())
-                ) {
-                    return null;
-                }
                 return (
                     <div
                         key={u._id}

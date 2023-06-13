@@ -11,7 +11,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import { User, getUserLabel } from '../../Model/UserModel';
+import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -47,6 +47,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
     const [mentUser, setMentUser] = useState<User | null>(null);
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
     const roomId = props.room;
 
@@ -69,20 +70,11 @@ export default function MessageInput(props: MessageInputProps) {
         setShowEmojiPicker(false);
     };
 
-    const userLabel = (user: User) => {
-        if (
-            user.ensName != null &&
-            user.ensName != '' &&
-            user.ensName != undefined &&
-            user.ensName != 'undefined' &&
-            user.ensName != 'null'
-        ) {
-            return user.ensName;
-        }
-        return (
-            user.walletID.substring(0, 6) +
-            '...' +
-            user.walletID.substring(user.walletID.length - 4)
+    const filterUsers = (queryStr: string): User[] => {
+        return props.users.filter((u) =>
+            userLabelForFilter(u)
+                .toLowerCase()
+                .includes(queryStr.toLowerCase()),
         );
     };
 
@@ -222,7 +214,8 @@ export default function MessageInput(props: MessageInputProps) {
 
         if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
             setMentPanelActive(true);
-            setMentPanelQueryStr(e.target.value.split('@')[1]);
+            // setMentPanelQueryStr();
+            setFilteredUsers(filterUsers(e.target.value.split('@')[1]));
         } else {
             if (mentPanelActive) setMentPanelActive(false);
             setPossibleMentUser(null);
@@ -231,7 +224,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     const mentionAutoComplete = (
         <MentionAutoComplete
-            userList={props.users}
+            userList={filteredUsers}
             active={mentPanelActive}
             queryStr={mentPanelQueryStr}
             selectedUser={possibleMentUser}
