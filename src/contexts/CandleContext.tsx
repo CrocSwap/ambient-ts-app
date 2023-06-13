@@ -244,7 +244,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     }
 
                     const newSeries = Object.assign({}, candleData, {
-                        candles: newCandles.concat(candleData.candles),
+                        candles: candleData.candles.concat(newCandles),
                     });
                     setCandleData(newSeries);
                 }
