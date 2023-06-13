@@ -2,10 +2,11 @@ import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentTab?: string;

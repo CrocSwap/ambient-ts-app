@@ -35,7 +35,7 @@ export default function TransactionDetails(props: propsIF) {
             });
             if (blob) {
                 copy(blob);
-                openSnackbar('Transaction Details copied to clipboard', 'info');
+                openSnackbar('Shareable image copied to clipboard', 'info');
             }
         }
     };
@@ -55,7 +55,7 @@ export default function TransactionDetails(props: propsIF) {
     }
 
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <TransactionDetailsPriceInfo
@@ -88,7 +88,7 @@ export default function TransactionDetails(props: propsIF) {
     };
 
     return (
-        <div className={styles.tx_details_container}>
+        <div className={styles.outer_container}>
             <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
 
             {showShareComponent ? (

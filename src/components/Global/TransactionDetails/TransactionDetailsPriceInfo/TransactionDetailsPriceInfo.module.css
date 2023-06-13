@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 1rem 0;
 }
 
 .price_info_container {
@@ -13,8 +14,7 @@
 
 .info_container {
     width: 100%;
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+
     /* Note: backdrop-filter has minimal browser support */
     /* background: red; */
     border-radius: 4px;
@@ -36,9 +36,7 @@
     height: 1px;
     margin: 1rem 0;
 
-    /* dark/secondary */
-
-    background: var(--dark2);
+   
 }
 .info_text {
     display: flex;
@@ -62,8 +60,7 @@
     flex-direction: column;
     gap: 4px;
     align-items: center;
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+    
 }
 
 .min_max_price p {
@@ -111,12 +108,11 @@
 .token_pair_details p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text2);
-    font-weight: 100;
+    color: var(--text1);
+    font-weight: 300;
 }
 .tx_details {
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+   
     /* cursor: pointer; */
     display: flex;
     flex-direction: column;
