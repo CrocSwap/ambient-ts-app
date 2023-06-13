@@ -50,11 +50,6 @@
     gap: 8px;
 }
 
-.tokens img {
-    border-radius: 50%;
-    background: white;
-}
-
 .range_display {
     font-size: 14px;
     font-weight: 500;
@@ -89,13 +84,6 @@
     row-gap: 12px;
 }
 
-.detail_line img {
-    width: 20px;
-    height: 20px;
-
-    border-radius: 50%;
-    background: white;
-}
 .detail_line div {
     display: flex;
 
@@ -117,8 +105,3 @@
     align-items: center;
     gap: 10px;
 }
-/* .detail_line img {
-    margin: 0 10px;
-} */
-
-/* modal */

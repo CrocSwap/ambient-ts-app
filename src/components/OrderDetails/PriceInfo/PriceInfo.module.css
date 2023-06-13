@@ -36,9 +36,6 @@
     align-items: center;
     gap: 8px;
 }
-.token_pair_images img {
-    width: 30px;
-}
 
 .align_center {
     display: flex;
@@ -71,10 +68,6 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-}
-.buy_content img,
-.sell_content img {
-    width: 15px;
 }
 
 .price_status_content {

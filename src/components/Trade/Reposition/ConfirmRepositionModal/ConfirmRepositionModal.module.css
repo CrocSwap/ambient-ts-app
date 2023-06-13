@@ -102,10 +102,6 @@
     row-gap: 12px;
 }
 
-.detail_line img {
-    border-radius: 50%;
-    background: white;
-}
 .detail_line div {
     display: flex;
 
@@ -134,5 +130,3 @@
     height: 1px;
     width: 100%;
 }
-
-/* modal */
