@@ -4,7 +4,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
-import { USDC } from '../../utils/tokens/USDC';
+import { USDC } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
@@ -191,7 +191,9 @@ export const useTokenSearch = (
                             priority = 1000;
                             break;
                         // USDCoin (uses address for current chain)
-                        case USDC[chainId.toLowerCase() as keyof typeof USDC]:
+                        case USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase():
                             priority = 900;
                             break;
                         // all non-privileged tokens
