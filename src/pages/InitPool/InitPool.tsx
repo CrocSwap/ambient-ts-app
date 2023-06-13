@@ -429,7 +429,11 @@ export default function InitPool() {
             <div>
                 {tokenA &&
                     (tokenA.logoURI ? (
-                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
+                        <img
+                            src={tokenA.logoURI}
+                            alt={tokenA.symbol}
+                            width='30px'
+                        />
                     ) : (
                         <NoTokenIcon
                             tokenInitial={tokenA.symbol.charAt(0)}
@@ -447,7 +451,11 @@ export default function InitPool() {
             <div>
                 {tokenB &&
                     (tokenB.logoURI ? (
-                        <img src={tokenB.logoURI} alt={tokenB.symbol} />
+                        <img
+                            src={tokenB.logoURI}
+                            alt={tokenB.symbol}
+                            width='30px'
+                        />
                     ) : (
                         <NoTokenIcon
                             tokenInitial={tokenB.symbol.charAt(0)}
