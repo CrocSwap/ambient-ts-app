@@ -7,6 +7,7 @@ import {
     useState,
     useContext,
 } from 'react';
+import { CandleData } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import {
     GRAPHCACHE_URL,
@@ -17,10 +18,7 @@ import { mktDataChainId } from '../utils/data/chains';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { ChartContext } from './ChartContext';
@@ -210,7 +208,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                                         quoteAddress:
                                             quoteTokenAddress.toLowerCase(),
                                         poolIdx: chainData.poolIndex,
-                                        network: chainData.chainId,
+                                        chainId: chainData.chainId,
                                     },
                                     duration: candleTimeLocal,
                                     candles: candles,
