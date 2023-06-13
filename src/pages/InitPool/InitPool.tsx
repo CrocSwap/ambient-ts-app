@@ -353,6 +353,71 @@ export default function InitPool() {
         />
     );
 
+    const ButtonToRender = () => {
+        let buttonContent;
+
+        switch (true) {
+            case poolExists:
+                buttonContent = (
+                    <Button
+                        title='Pool Already Initialized'
+                        disabled={true}
+                        action={() => {
+                            IS_LOCAL_ENV && console.debug('clicked');
+                        }}
+                        flat={true}
+                    />
+                );
+                break;
+
+            case isConnected || !connectButtonDelayElapsed:
+                if (!isTokenAAllowanceSufficient) {
+                    buttonContent = tokenAApprovalButton;
+                } else if (!isTokenBAllowanceSufficient) {
+                    buttonContent = tokenBApprovalButton;
+                } else if (initialPrice === undefined || initialPrice <= 0) {
+                    buttonContent = (
+                        <Button
+                            title='Enter an Initial Price'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else if (isInitPending === true) {
+                    buttonContent = (
+                        <Button
+                            title='Initialization Pending'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else {
+                    buttonContent = (
+                        <Button title='Confirm' action={sendInit} flat={true} />
+                    );
+                }
+                break;
+
+            default:
+                buttonContent = (
+                    <Button
+                        title='Connect Wallet'
+                        action={openWagmiModalWallet}
+                        flat={true}
+                    />
+                );
+                break;
+        }
+
+        return buttonContent;
+    };
+
     return (
         <section className={styles.main}>
             {poolExists && (
@@ -437,57 +502,7 @@ export default function InitPool() {
                             </div>
 
                             <footer>
-                                {poolExists ? (
-                                    <Button
-                                        title='Pool Already Initialized'
-                                        disabled={true}
-                                        action={() => {
-                                            IS_LOCAL_ENV &&
-                                                console.debug('clicked');
-                                        }}
-                                        flat={true}
-                                    />
-                                ) : isConnected ||
-                                  !connectButtonDelayElapsed ? (
-                                    !isTokenAAllowanceSufficient ? (
-                                        tokenAApprovalButton
-                                    ) : !isTokenBAllowanceSufficient ? (
-                                        tokenBApprovalButton
-                                    ) : initialPrice === undefined ||
-                                      initialPrice <= 0 ? (
-                                        <Button
-                                            title='Enter an Initial Price'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : isInitPending === true ? (
-                                        <Button
-                                            title='Initialization Pending'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : (
-                                        <Button
-                                            title='Confirm'
-                                            action={sendInit}
-                                            flat={true}
-                                        />
-                                    )
-                                ) : (
-                                    <Button
-                                        title='Connect Wallet'
-                                        action={openWagmiModalWallet}
-                                        flat={true}
-                                    />
-                                )}
+                                <ButtonToRender />
                             </footer>
                         </div>
                     </ContentContainer>
