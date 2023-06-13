@@ -12,14 +12,7 @@ import {
     fetchCandleSeriesCroc,
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
-import {
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-    OVERRIDE_CANDLE_POOL_ID,
-} from '../constants';
-import { mktDataChainId } from '../utils/data/chains';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
-import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
@@ -171,81 +164,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setIsFetchingCandle(false);
                 }
             });
-
-            /* const reqOptions = new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: (
-                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                ).toString(),
-                period: candleTimeLocal.toString(),
-                // time: '', // optional
-                n: (candleScale?.nCandle > 1000
-                    ? 1000
-                    : candleScale?.nCandle
-                ).toString(), // positive integer: max 1000
-                // page: '0', // nonnegative integer
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: mainnetBaseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: mainnetQuoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: (
-                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                ).toString(),
-            });
-
-            if (candleScale?.lastCandleDate) {
-                reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
-            }
-
-            IS_LOCAL_ENV && console.debug('fetching new candles');
-            try {
-                if (GRAPHCACHE_URL) {
-                    const candleSeriesCacheEndpoint =
-                        GRAPHCACHE_URL + '/candle_series?';
-                    setIsFetchingCandle(true);
-                    fetch(candleSeriesCacheEndpoint + reqOptions)
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-                            if (candles?.length === 0) {
-                                setIsCandleDataNull(true);
-                                // Removing due to design decision to not change trade table size without user input
-                                // setExpandTradeTable(true);
-                            } else if (candles) {
-                                setCandleData({
-                                    pool: {
-                                        baseAddress:
-                                            baseTokenAddress.toLowerCase(),
-                                        quoteAddress:
-                                            quoteTokenAddress.toLowerCase(),
-                                        poolIdx: chainData.poolIndex,
-                                        chainId: chainData.chainId,
-                                    },
-                                    duration: candleTimeLocal,
-                                    candles: candles,
-                                });
-                                setIsCandleDataNull(false);
-                                // setExpandTradeTable(false);
-                            }
-                            return candles?.length;
-                        })
-                        .then((result) => {
-                            if (result !== 0) {
-                                setIsFetchingCandle(false);
-                            }
-                        })
-                        .catch(console.error);
-                }
-            } catch (error) {
-                console.error({ error });
-            } */
         } else {
             setIsCandleDataNull(true);
-            // setExpandTradeTable(true);
         }
     };
     const domainBoundaryInSecondsDebounced = useDebounce(
@@ -265,7 +185,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
-        // IS_LOCAL_ENV && console.debug({ candleDataLength });
 
         const lastDate = new Date(
             (candleDomains?.lastCandleDate as number) / 1000,
@@ -277,7 +196,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
+            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal +
+                1,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
