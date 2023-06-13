@@ -37,6 +37,8 @@ interface OrderDetailsSimplifyPropsIF {
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenName: string;
+    quoteTokenName: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     isAccountView: boolean;
@@ -55,6 +57,8 @@ export default function OrderDetailsSimplify(
         // baseTokenLogo,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         isFillStarted,
         // truncatedDisplayPrice,
         // isDenomBase,
@@ -105,12 +109,7 @@ export default function OrderDetailsSimplify(
         const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
-    // function handleOpenExplorer() {
-    //     if (posHash && blockExplorer) {
-    //         const explorerUrl = `${blockExplorer}tx/${posHash}`;
-    //         window.open(explorerUrl);
-    //     }
-    // }
+
     function handleOpenBaseAddress() {
         if (posHash && blockExplorer) {
             const adressUrl =
@@ -126,15 +125,13 @@ export default function OrderDetailsSimplify(
             window.open(adressUrl);
         }
     }
-    // const txContent = (
-    //     <div className={styles.link_row} onClick={handleOpenExplorer}>
-    //         <p>{posHashTruncated}</p>
-    //         <RiExternalLinkLine />
-    //     </div>
-    // );
 
     const walletContent = (
-        <div className={styles.link_row} onClick={handleOpenWallet}>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenWallet}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{userNameToDisplay}</p>
             <RiExternalLinkLine />
         </div>
@@ -148,13 +145,21 @@ export default function OrderDetailsSimplify(
     );
 
     const baseAddressContent = (
-        <div onClick={handleOpenBaseAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenBaseAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{baseTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
     );
     const quoteAddressContent = (
-        <div onClick={handleOpenQuoteAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenQuoteAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{quoteTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
@@ -173,15 +178,15 @@ export default function OrderDetailsSimplify(
             explanation: 'A limit order is a type of range position ',
         },
         {
+            title: 'Wallet ',
+            content: walletContent,
+            explanation: 'The account of the limit owner',
+        },
+        {
             title: 'Position Slot ID ',
             content: posHashContent,
             // eslint-disable-next-line quotes
             explanation: "A unique identifier for this user's position",
-        },
-        {
-            title: 'Wallet ',
-            content: walletContent,
-            explanation: 'The account of the limit owner',
         },
 
         // { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
@@ -201,7 +206,9 @@ export default function OrderDetailsSimplify(
 
         {
             title: 'From Token ',
-            content: isBid ? baseTokenSymbol : quoteTokenSymbol,
+            content: isBid
+                ? baseTokenSymbol + ' - ' + baseTokenName
+                : quoteTokenSymbol + ' - ' + quoteTokenName,
             explanation: 'The symbol (short name) of the sell token',
         },
 
@@ -227,7 +234,9 @@ export default function OrderDetailsSimplify(
 
         {
             title: 'To Token ',
-            content: isBid ? quoteTokenSymbol : baseTokenSymbol,
+            content: isBid
+                ? quoteTokenSymbol + ' - ' + quoteTokenName
+                : baseTokenSymbol + ' - ' + baseTokenName,
             explanation: 'The symbol (short name) of the buy token',
         },
 
