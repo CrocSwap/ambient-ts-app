@@ -61,7 +61,7 @@ export default function OrderDetailsSimplify(
         quoteTokenName,
         isFillStarted,
         // truncatedDisplayPrice,
-        // isDenomBase,
+        isDenomBase,
         usdValue,
         limitOrder,
         isAccountView,
@@ -90,6 +90,7 @@ export default function OrderDetailsSimplify(
         truncatedDisplayPriceDenomByMoneyness,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const {
@@ -222,16 +223,14 @@ export default function OrderDetailsSimplify(
             title: 'From Qty ',
             content: isBid
                 ? isFillStarted
-                    ? approximateSellQtyTruncated
-                    : baseDisplayFrontend
-                : // : baseDisplayFrontend + ' ' + baseTokenSymbol
-                isFillStarted
-                ? approximateSellQtyTruncated
-                : quoteDisplayFrontend,
+                    ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
+                    : baseDisplayFrontend + ' ' + baseTokenSymbol
+                : isFillStarted
+                ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
+                : quoteDisplayFrontend + ' ' + quoteTokenSymbol,
             explanation:
                 'The quantity of the sell token (scaled by its decimals value)',
         },
-
         {
             title: 'To Token ',
             content: isBid
@@ -250,12 +249,11 @@ export default function OrderDetailsSimplify(
             title: 'To Qty ',
             content: isBid
                 ? isOrderFilled
-                    ? quoteDisplayFrontend
-                    : approximateBuyQtyTruncated
-                : // : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
-                isOrderFilled
-                ? baseDisplayFrontend
-                : approximateBuyQtyTruncated,
+                    ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
+                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
+                : isOrderFilled
+                ? baseDisplayFrontend + ' ' + baseTokenSymbol
+                : approximateBuyQtyTruncated + ' ' + baseTokenSymbol,
             explanation:
                 'The quantity of the to/buy token (scaled by its decimals value)',
         },
@@ -263,23 +261,37 @@ export default function OrderDetailsSimplify(
         {
             title: 'Fill Start ',
             content: isAccountView
-                ? startPriceDisplayDenomByMoneyness
-                : startPriceDisplay,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
             explanation: 'Price at which the limit order fill starts',
         },
         {
             title: 'Fill Middle ',
             content: isAccountView
-                ? middlePriceDisplayDenomByMoneyness
-                : middlePriceDisplay,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${middlePriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
+
             explanation:
                 'The effective price - halfway between start and finish',
         },
         {
             title: 'Fill End ',
             content: isAccountView
-                ? truncatedDisplayPriceDenomByMoneyness
-                : truncatedDisplayPrice,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
+
             explanation: 'Price at which limit order fill ends',
         },
         {
