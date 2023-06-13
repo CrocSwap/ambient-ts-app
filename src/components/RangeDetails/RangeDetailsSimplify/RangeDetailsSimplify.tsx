@@ -117,7 +117,7 @@ export default function RangeDetailsSimplify(
     const posHashContent = (
         <div className={styles.link_row} onClick={handleCopyPositionHash}>
             <p>{posHashTruncated}</p>
-            <FiCopy />
+            <FiCopy style={{ cursor: 'pointer' }} />
         </div>
     );
     const walletContent = (
@@ -132,13 +132,21 @@ export default function RangeDetailsSimplify(
     );
 
     const baseAddressContent = (
-        <div onClick={handleOpenBaseAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenBaseAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{baseTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
     );
     const quoteAddressContent = (
-        <div onClick={handleOpenQuoteAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenQuoteAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{quoteTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
