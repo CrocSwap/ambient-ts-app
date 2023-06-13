@@ -194,10 +194,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
 
     const numDurationsNeeded = useMemo(() => {
-        if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
+        if (!minTimeMemo || !domainBoundaryInSeconds) return;
         return Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal +
-                1,
+            (minTimeMemo - domainBoundaryInSeconds) / candleTimeLocal + 1,
         );
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
