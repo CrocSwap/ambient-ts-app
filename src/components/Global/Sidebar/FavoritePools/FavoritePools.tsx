@@ -5,9 +5,11 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function FavoritePools(props: propsIF) {
@@ -56,6 +58,7 @@ export default function FavoritePools(props: propsIF) {
                         key={idx}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={props.cachedFetchTokenPrice}
                     />
                 ))}
             </div>

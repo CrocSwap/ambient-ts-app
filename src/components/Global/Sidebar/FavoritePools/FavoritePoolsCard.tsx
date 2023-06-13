@@ -11,16 +11,19 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
     pool: PoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function FavoritePoolsCard(props: propsIF) {
-    const { pool, cachedPoolStatsFetch } = props;
+    const { pool, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
 
     const {
+        crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -30,6 +33,8 @@ export default function FavoritePoolsCard(props: propsIF) {
         pool,
         lastBlockNumber,
         cachedPoolStatsFetch,
+        cachedFetchTokenPrice,
+        crocEnv,
     );
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
