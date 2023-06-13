@@ -53,6 +53,8 @@ export default function OrderDetails(props: propsIF) {
     const {
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         isDenomBase,
@@ -332,6 +334,8 @@ export default function OrderDetails(props: propsIF) {
                         baseTokenLogo={baseTokenLogo}
                         baseTokenSymbol={baseTokenSymbol}
                         quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenName={baseTokenName}
+                        quoteTokenName={quoteTokenName}
                         isFillStarted={isFillStarted}
                         truncatedDisplayPrice={truncatedDisplayPrice}
                         truncatedDisplayPriceDenomByMoneyness={
@@ -382,6 +386,8 @@ export default function OrderDetails(props: propsIF) {
                     baseTokenLogo={baseTokenLogo}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenName={baseTokenName}
+                    quoteTokenName={quoteTokenName}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
                     isAccountView={isAccountView}

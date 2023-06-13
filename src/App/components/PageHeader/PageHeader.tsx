@@ -228,6 +228,8 @@ const PageHeader = function () {
                 : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ Ambient`;
         } else if (location.pathname.includes('chat')) {
             document.title = 'Chat ~ Ambient';
+        } else if (location.pathname.includes('initpool')) {
+            document.title = 'Pool Initialization ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {

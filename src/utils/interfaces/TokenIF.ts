@@ -6,7 +6,7 @@ export interface TokenIF {
     chainId: number;
     logoURI: string;
     fromList?: string;
-    fromListArr?: string[];
+    listedBy?: string[];
     walletBalance?: string;
     walletBalanceDisplay?: string;
     walletBalanceDisplayTruncated?: string;

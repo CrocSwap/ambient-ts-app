@@ -71,10 +71,6 @@
     margin-left: 1rem;
 }
 
-.logo_display img {
-    width: 32px;
-}
-
 .limit_row_container {
     width: 100%;
     background: var(--dark2);

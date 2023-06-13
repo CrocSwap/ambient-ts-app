@@ -26,9 +26,11 @@ export interface LimitOrderIF {
     claimableLiqBaseDecimalCorrected: number;
     claimableLiqQuoteDecimalCorrected: number;
     baseSymbol: string;
+    baseName: string;
     baseDecimals: number;
     baseTokenLogoURI: string;
     quoteSymbol: string;
+    quoteName: string;
     quoteDecimals: number;
     quoteTokenLogoURI: string;
     limitPrice: number;
