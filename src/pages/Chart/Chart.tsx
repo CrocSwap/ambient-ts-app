@@ -21,10 +21,7 @@ import {
     formatAmountWithoutDigit,
     formatPoolPriceAxis,
 } from '../../utils/numbers';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
     setIsLinesSwitched,
@@ -58,6 +55,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace

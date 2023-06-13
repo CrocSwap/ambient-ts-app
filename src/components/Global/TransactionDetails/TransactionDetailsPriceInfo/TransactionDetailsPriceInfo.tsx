@@ -120,7 +120,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             className={styles.info_container}
         >
             <Row>
-                <span>Type: </span>
+                <span>Order Type: </span>
                 <div className={styles.info_text}>{typeDisplay}</div>
             </Row>
         </motion.div>
@@ -147,6 +147,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     {buySellQuoteToken}
                 </div>
             </Row>
+            <span className={styles.divider}></span>
 
             <Row>
                 <p>

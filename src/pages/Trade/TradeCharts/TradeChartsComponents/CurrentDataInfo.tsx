@@ -2,7 +2,7 @@ import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;

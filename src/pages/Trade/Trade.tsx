@@ -18,7 +18,6 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../utils/state/graphDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
 import { formSlugForPairParams } from '../../App/functions/urlSlugs';
@@ -32,6 +31,7 @@ import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 
 // React functional component
 function Trade() {

@@ -210,7 +210,7 @@ const PageHeader = function () {
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ ambient.finance';
+            document.title = 'My Account ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const ensNameOrAddressTruncated = isAddressEns
@@ -218,20 +218,20 @@ const PageHeader = function () {
                     ? trimString(pathNoPrefix, 10, 3, '…')
                     : pathNoPrefix
                 : trimString(pathNoPrefix, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
+            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
         ) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ Ambient`
+                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ Ambient`;
         } else if (location.pathname.includes('chat')) {
-            document.title = 'Chat ~ ambient.finance';
+            document.title = 'Chat ~ Ambient';
         } else if (location.pathname.includes('404')) {
-            document.title = '404 ~ ambient.finance';
+            document.title = '404 ~ Ambient';
         } else {
-            document.title = 'Home ~ ambient.finance';
+            document.title = 'Home ~ Ambient';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
