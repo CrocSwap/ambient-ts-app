@@ -3,9 +3,9 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction } from 'react';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
-import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     fieldId: string;
@@ -76,21 +76,11 @@ export default function WithdrawCurrencySelector(props: propsIF) {
                     enterDelay={200}
                 >
                     <div className={styles.token_select} onClick={onClick}>
-                        {selectedToken.logoURI ? (
-                            <img
-                                className={styles.token_list_img}
-                                src={uriToHttp(selectedToken.logoURI)}
-                                alt={selectedToken.symbol?.charAt(0)}
-                                // alt={`logo for token ${token.name}`}
-                                width='30px'
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={selectedToken.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-
+                        <TokenIcon
+                            src={uriToHttp(selectedToken.logoURI)}
+                            alt={selectedToken.symbol?.charAt(0)}
+                            size='2xl'
+                        />
                         <span className={styles.token_list_text}>
                             {selectedToken.symbol}
                         </span>

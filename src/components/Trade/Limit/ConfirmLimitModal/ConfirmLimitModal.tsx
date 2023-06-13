@@ -8,9 +8,9 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -102,14 +102,11 @@ export default function ConfirmLimitModal(props: propsIF) {
             <h2>{localeBuyString}</h2>
 
             <div className={styles.logo_display}>
-                {buyTokenData.logoURI ? (
-                    <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol?.charAt(0)}
-                        width='35px'
-                    />
-                )}
+                <TokenIcon
+                    src={buyTokenData.logoURI}
+                    alt={buyTokenData.symbol}
+                    size='3xl'
+                />
                 <h2>{buyTokenData.symbol}</h2>
             </div>
         </div>
@@ -119,17 +116,11 @@ export default function ConfirmLimitModal(props: propsIF) {
             <h2>{localeSellString}</h2>
 
             <div className={styles.logo_display}>
-                {sellTokenData.logoURI ? (
-                    <img
-                        src={sellTokenData.logoURI}
-                        alt={sellTokenData.symbol}
-                    />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol?.charAt(0)}
-                        width='35px'
-                    />
-                )}
+                <TokenIcon
+                    src={sellTokenData.logoURI}
+                    alt={sellTokenData.symbol}
+                    size='3xl'
+                />
                 <h2>{sellTokenData.symbol}</h2>
             </div>
         </div>

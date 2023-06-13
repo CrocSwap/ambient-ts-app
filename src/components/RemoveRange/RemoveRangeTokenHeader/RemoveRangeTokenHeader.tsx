@@ -1,9 +1,8 @@
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RemoveRangeTokenHeader.module.css';
 import { RiListSettingsLine } from 'react-icons/ri';
-// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
 interface propsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
@@ -16,35 +15,21 @@ interface propsIF {
 }
 
 export default function RemoveRangeTokenHeader(props: propsIF) {
-    // const dispatch = useAppDispatch();
     const { showSettings, setShowSettings } = props;
 
     return (
         <div className={styles.container}>
             <div className={styles.token_info}>
-                {props.baseTokenLogoURI ? (
-                    <img
-                        src={props.baseTokenLogoURI}
-                        alt={props.baseTokenSymbol}
-                    />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={props.baseTokenSymbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
-                {props.quoteTokenLogoURI ? (
-                    <img
-                        src={props.quoteTokenLogoURI}
-                        alt={props.quoteTokenSymbol}
-                    />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={props.quoteTokenSymbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
-
+                <TokenIcon
+                    src={props.baseTokenLogoURI}
+                    alt={props.baseTokenSymbol}
+                    size='2xl'
+                />
+                <TokenIcon
+                    src={props.quoteTokenLogoURI}
+                    alt={props.quoteTokenSymbol}
+                    size='2xl'
+                />
                 <span>
                     {props.baseTokenSymbol} /{props.quoteTokenSymbol}
                 </span>
