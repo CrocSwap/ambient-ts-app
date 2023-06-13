@@ -3,6 +3,8 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { ZERO_ADDRESS } from '../../constants';
+import { USDC } from '../../utils/tokens/USDC';
 
 export const useTokenSearch = (
     chainId: string,
@@ -146,8 +148,8 @@ export const useTokenSearch = (
         }
         // sort to list tokens higher which are recognized by more authorities
         // keep tokens listed by Ambient at the top
-        const sortedTokens: TokenIF[] = foundTokens.sort(
-            (a: TokenIF, b: TokenIF) => {
+        const sortedTokens: TokenIF[] = foundTokens
+            .sort((a: TokenIF, b: TokenIF) => {
                 // output value
                 let rank: number;
                 // decision tree to determine sort order
@@ -176,8 +178,27 @@ export const useTokenSearch = (
                 }
                 // return the output variable
                 return rank;
-            },
-        );
+            })
+            .sort((a: TokenIF, b: TokenIF) => {
+                const aPriority: number = getPriority(a);
+                const bPriority: number = getPriority(b);
+                function getPriority(tkn: TokenIF): number {
+                    let priority: number;
+                    switch (tkn.address) {
+                        case ZERO_ADDRESS:
+                            priority = 1000;
+                            break;
+                        case USDC[chainId as keyof typeof USDC]:
+                            priority = 900;
+                            break;
+                        default:
+                            priority = 0;
+                    }
+                    return priority;
+                }
+                return bPriority - aPriority;
+            });
+
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
         const resultsLimiter = 8;
