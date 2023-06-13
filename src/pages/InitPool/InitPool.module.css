@@ -23,6 +23,7 @@
     margin-top: 64px;
     display: flex;
     flex-direction: column;
+    border-radius: var(--border-radius);
 
     /* gap: 1rem; */
 
@@ -34,6 +35,7 @@
 .top_content {
     display: flex;
     flex-direction: column;
+    border-radius: var(--border-radius);
     /* gap: 1rem; */
 }
 .top_content header {
