@@ -1,7 +1,7 @@
 .range_width_container {
     width: 100%;
     /* margin-bottom: 1rem; */
-    padding: 0 5px;
+    padding-bottom: 16px;
 
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -54,14 +54,19 @@
     align-items: center;
 }
 .percentage_amount {
-    display: flex;
-    justify-content: center;
-    color: var(--text1);
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
-    margin-right: 10px;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
 
-    width: 60px;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+
+    color: var(--text2);
+
+    margin-right: 8px;
 }
 .percentage_options {
     display: flex;

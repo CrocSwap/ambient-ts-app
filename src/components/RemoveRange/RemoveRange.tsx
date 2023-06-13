@@ -501,7 +501,7 @@ export default function RemoveRange(props: propsIF) {
     };
 
     const buttonToDisplay = (
-        <div style={{ padding: '1rem' }}>
+        <div className={styles.button_container}>
             {showSettings ? (
                 <Button
                     title={
@@ -523,7 +523,7 @@ export default function RemoveRange(props: propsIF) {
                 <RemoveRangeButton
                     removeFn={removeFn}
                     disabled={showSettings}
-                    title='Remove Range'
+                    title='Remove Liquidity'
                 />
             ) : (
                 <RemoveRangeButton
@@ -547,10 +547,7 @@ export default function RemoveRange(props: propsIF) {
         />
     ) : (
         <>
-            <div
-                className={styles.header_container}
-                style={{ padding: '1rem' }}
-            >
+            <div className={styles.header_container}>
                 <RemoveRangeTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
@@ -562,30 +559,42 @@ export default function RemoveRange(props: propsIF) {
                     setShowSettings={setShowSettings}
                 />
             </div>
-            <div style={{ padding: '0 1rem' }}>
+            <div>
                 <RemoveRangeWidth
                     removalPercentage={removalPercentage}
                     setRemovalPercentage={setRemovalPercentage}
                 />
-                <RemoveRangeInfo
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                    removalPercentage={removalPercentage}
-                    baseRemovalNum={baseRemovalNum}
-                    quoteRemovalNum={quoteRemovalNum}
-                    isAmbient={props.isAmbient}
-                />
-                <ExtraControls />
-            </div>
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
-                {removalGasPriceinDollars ? removalGasPriceinDollars : '…'}
+                <div className={styles.info_container}>
+                    <RemoveRangeInfo
+                        baseTokenSymbol={props.baseTokenSymbol}
+                        quoteTokenSymbol={props.quoteTokenSymbol}
+                        baseTokenLogoURI={props.baseTokenLogoURI}
+                        quoteTokenLogoURI={props.quoteTokenLogoURI}
+                        posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                        posLiqQuoteDecimalCorrected={
+                            posLiqQuoteDecimalCorrected
+                        }
+                        feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
+                        feeLiqQuoteDecimalCorrected={
+                            feeLiqQuoteDecimalCorrected
+                        }
+                        removalPercentage={removalPercentage}
+                        baseRemovalNum={baseRemovalNum}
+                        quoteRemovalNum={quoteRemovalNum}
+                        isAmbient={props.isAmbient}
+                    />
+                    <ExtraControls />
+                    <div className={styles.extra_info_container}>
+                        <div>
+                            <span>Slippage Tolerange</span>
+                            <span>{currentSlippage}%</span>
+                        </div>
+                        <div>
+                            <span>Network Fee</span>
+                            <span>~{removalGasPriceinDollars ?? '...'}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     );

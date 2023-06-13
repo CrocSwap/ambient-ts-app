@@ -9,14 +9,19 @@
     border: unset;
     min-width: 1rem;
     padding: 4px 6px;
+    margin-right: 4px;
     border-radius: 100px;
     color: var(--text1);
     display: inline-flex;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
     border-radius: 12px;
     -webkit-box-pack: center;
     justify-content: space-between;
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
 }
 
 .range_container {
