@@ -96,7 +96,7 @@ function TradeChartsTokenInfo(props: propsIF) {
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
             className={styles.amount}
-            style={{ marginTop: '2.5px', cursor: 'pointer' }}
+            style={{ cursor: 'pointer' }}
             aria-label={poolPrice}
         >
             {poolPrice}
@@ -120,12 +120,10 @@ function TradeChartsTokenInfo(props: propsIF) {
                     isPoolPriceChangePositive
                         ? {
                               color: 'var(--other-green)',
-                              marginTop: '4.5px',
                               fontSize: '15px',
                           }
                         : {
                               color: 'var(--other-red)',
-                              marginTop: '4.5px',
                               fontSize: '15px',
                           }
                 }
