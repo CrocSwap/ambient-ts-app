@@ -255,23 +255,13 @@ function Leaderboard() {
             showPair={showPair}
         />
     ));
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
 
     return (
         <section
-            className={` ${styles.leaderboard}`}
-            style={{ height: expandStyle }}
+            className={`${styles.leaderboard} ${styles.main_list_container}`}
         >
             <div>{headerColumnsDisplay}</div>
-            <div>{rowItemContent}</div>
+            <div className={styles.table_content}>{rowItemContent}</div>
             <div>{footerDisplay}</div>
         </section>
     );

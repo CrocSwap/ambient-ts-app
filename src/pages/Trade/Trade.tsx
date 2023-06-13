@@ -8,7 +8,6 @@ import {
     NavLink,
     useNavigate,
 } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -308,7 +307,7 @@ function Trade() {
         <section
             className={styles.main_layout_mobile}
             style={{
-                height: 'calc(100vh - 8rem)',
+                height: 'calc(100vh - 56px)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
@@ -329,7 +328,7 @@ function Trade() {
             {activeMobileComponent === 'transactions' && (
                 <div
                     className={styles.full_table_height}
-                    style={{ marginLeft: '2rem' }}
+                    style={{ marginLeft: '2rem', flex: 1 }}
                 >
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
@@ -366,24 +365,7 @@ function Trade() {
                         )}
                     </div>
                 </div>
-
-                <motion.div
-                    className={
-                        expandTradeTable
-                            ? styles.full_table_height
-                            : styles.min_table_height
-                    }
-                >
-                    <div
-                        className={
-                            activeMobileComponent !== 'transactions'
-                                ? styles.hide
-                                : ''
-                        }
-                    >
-                        <TradeTabs2 {...tradeTabsProps} />
-                    </div>
-                </motion.div>
+                <TradeTabs2 {...tradeTabsProps} />
             </div>
             {mainContent}
         </section>
