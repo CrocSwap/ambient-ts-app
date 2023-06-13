@@ -147,8 +147,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 abortController.abort();
             }
 
-            // const candleTime = candleScale?.lastCandleDate || 0;
-            const candleTime = 0;
+            const candleTime = candleScale?.lastCandleDate || 0;
             const nCandles =
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
 
@@ -302,31 +301,34 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             crocEnv,
             cachedFetchTokenPrice,
         )
-            .then((candles) => {
-                if (candles) {
+            .then((incrCandles) => {
+                if (incrCandles && candleData) {
                     const newCandles: CandleData[] = [];
 
                     for (
                         let index = 0;
-                        index < candles.candles.length;
+                        index < incrCandles.candles.length;
                         index++
                     ) {
-                        const messageCandle = candles.candles[index];
-                        const indexOfExistingCandle = candles.candles.findIndex(
-                            (savedCandle) =>
-                                savedCandle.time === messageCandle.time,
-                        );
+                        const messageCandle = incrCandles.candles[index];
+                        const indexOfExistingCandle =
+                            candleData.candles.findIndex(
+                                (savedCandle) =>
+                                    savedCandle.time === messageCandle.time,
+                            );
 
                         if (indexOfExistingCandle === -1) {
                             newCandles.push(messageCandle);
                         } else {
-                            candles.candles[indexOfExistingCandle] =
+                            candleData.candles[indexOfExistingCandle] =
                                 messageCandle;
                         }
                     }
 
-                    (candles.candles = newCandles.concat(candles.candles)),
-                        setCandleData(candles);
+                    const newSeries = Object.assign({}, candleData, {
+                        candles: newCandles.concat(candleData.candles),
+                    });
+                    setCandleData(newSeries);
                 }
             })
             .catch((e) => {
@@ -340,7 +342,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        console.log('Num durations', numDurationsNeeded);
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
             fetchCandlesByNumDurations(numDurationsNeeded);

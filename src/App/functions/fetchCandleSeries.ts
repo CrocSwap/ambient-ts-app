@@ -57,7 +57,7 @@ export async function fetchCandleSeriesCroc(
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
-    startTime: number,
+    endTime: number,
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -68,12 +68,12 @@ export async function fetchCandleSeriesCroc(
 
     const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
 
-    if (startTime == 0) {
-        const presentTime = Math.floor(Date.now() / 1000);
-        startTime = presentTime - nCandles * period;
+    if (endTime == 0) {
+        endTime = Math.floor(Date.now() / 1000);
     }
 
-    startTime = Math.ceil(startTime / period) * period;
+    const startTimeRough = endTime - nCandles * period;
+    const startTime = Math.ceil(startTimeRough / period) * period;
 
     const reqOptions = new URLSearchParams({
         base: baseTokenAddress,
@@ -84,8 +84,6 @@ export async function fetchCandleSeriesCroc(
         time: startTime.toString(),
         chainId: chainData.chainId,
     });
-
-    console.log('Fetch Candles', startTime, period, nCandles);
 
     return fetch(candleSeriesEndpoint + '?' + reqOptions)
         .then((response) => response?.json())
@@ -276,10 +274,10 @@ export const fetchCandleSeriesUniswap = async (
                             };
                         }
                     })
-                    .catch(console.error);
+                    .catch(console.warn);
             }
         } catch (error) {
-            console.error({ error });
+            console.warn({ error });
         }
     }
 };
