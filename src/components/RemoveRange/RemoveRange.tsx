@@ -6,7 +6,7 @@ import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
     concPosSlot,
@@ -36,10 +36,14 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { FaGasPump } from 'react-icons/fa';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     baseTokenAddress: string;
@@ -67,11 +71,19 @@ export default function RemoveRange(props: propsIF) {
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         crocEnv,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+
+    const { tokens } = useContext(TokenContext);
 
     const [removalPercentage, setRemovalPercentage] = useState<number>(100);
 
@@ -84,7 +96,8 @@ export default function RemoveRange(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
-    const positionStatsCacheEndpoint = GRAPHCACHE_URL + '/position_stats?';
+    const positionStatsCacheEndpoint =
+        GRAPHCACHE_SMALL_URL + '/position_stats?';
 
     const dispatch = useAppDispatch();
 
@@ -182,28 +195,38 @@ export default function RemoveRange(props: propsIF) {
                         }),
                 )
                     .then((response) => response.json())
-                    .then((json) => {
-                        setPosLiqBaseDecimalCorrected(
-                            json?.data?.positionLiqBaseDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.positionLiqBaseDecimalCorrected,
-                        );
-                        setPosLiqQuoteDecimalCorrected(
-                            json?.data?.positionLiqQuoteDecimalCorrected ===
-                                null
-                                ? undefined
-                                : json?.data?.positionLiqQuoteDecimalCorrected,
-                        );
-                        setFeeLiqBaseDecimalCorrected(
-                            json?.data?.feesLiqBaseDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.feesLiqBaseDecimalCorrected,
-                        );
-                        setFeeLiqQuoteDecimalCorrected(
-                            json?.data?.feesLiqQuoteDecimalCorrected === null
-                                ? undefined
-                                : json?.data?.feesLiqQuoteDecimalCorrected,
-                        );
+                    .then((json) => json?.data)
+                    .then(async (data: PositionServerIF) => {
+                        if (data && crocEnv) {
+                            const position = await getPositionData(
+                                data,
+                                tokens.tokenUniv,
+                                crocEnv,
+                                chainId,
+                                lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
+                            );
+                            setPosLiqBaseDecimalCorrected(
+                                position.positionLiqBaseDecimalCorrected,
+                            );
+                            setPosLiqQuoteDecimalCorrected(
+                                position.positionLiqQuoteDecimalCorrected,
+                            );
+                            setFeeLiqBaseDecimalCorrected(
+                                position.feesLiqBaseDecimalCorrected,
+                            );
+                            setFeeLiqQuoteDecimalCorrected(
+                                position.feesLiqQuoteDecimalCorrected,
+                            );
+                        } else {
+                            setPosLiqBaseDecimalCorrected(undefined);
+                            setPosLiqQuoteDecimalCorrected(undefined);
+                            setFeeLiqBaseDecimalCorrected(undefined);
+                            setFeeLiqQuoteDecimalCorrected(undefined);
+                        }
                     })
                     .catch((error) => console.error({ error }));
             })();
@@ -315,9 +338,9 @@ export default function RemoveRange(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = position.positionLiq;
+            const positionLiq = currentLiquidity;
 
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+            const liquidityToBurn = BigNumber.from(positionLiq)
                 .mul(removalPercentage)
                 .div(100);
             IS_LOCAL_ENV &&
@@ -356,45 +379,6 @@ export default function RemoveRange(props: propsIF) {
                 console.debug('unsupported position type for removal');
         }
 
-        const newLiqChangeCacheEndpoint = GRAPHCACHE_URL + '/new_liqchange?';
-        if (tx?.hash) {
-            if (position.positionType === 'ambient') {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: position.chainId,
-                            tx: tx.hash,
-                            user: position.user,
-                            base: position.base,
-                            quote: position.quote,
-                            poolIdx: position.poolIdx.toString(),
-                            positionType: 'ambient',
-                            changeType: 'burn',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: position.chainId,
-                            tx: tx.hash,
-                            user: position.user,
-                            base: position.base,
-                            quote: position.quote,
-                            poolIdx: position.poolIdx.toString(),
-                            positionType: 'concentrated',
-                            bidTick: position.bidTick.toString(),
-                            askTick: position.askTick.toString(),
-                            changeType: 'burn',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
-        }
-
         let receipt;
 
         try {
@@ -411,45 +395,6 @@ export default function RemoveRange(props: propsIF) {
                 setNewRemovalTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (newTransactionHash) {
-                    if (position.positionType === 'ambient') {
-                        fetch(
-                            newLiqChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: position.chainId,
-                                    tx: newTransactionHash,
-                                    user: position.user,
-                                    base: position.base,
-                                    quote: position.quote,
-                                    poolIdx: position.poolIdx.toString(),
-                                    positionType: 'ambient',
-                                    changeType: 'burn',
-                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    } else {
-                        fetch(
-                            newLiqChangeCacheEndpoint +
-                                new URLSearchParams({
-                                    chainId: position.chainId,
-                                    tx: newTransactionHash,
-                                    user: position.user,
-                                    base: position.base,
-                                    quote: position.quote,
-                                    poolIdx: position.poolIdx.toString(),
-                                    positionType: 'concentrated',
-                                    bidTick: position.bidTick.toString(),
-                                    askTick: position.askTick.toString(),
-                                    changeType: 'burn',
-                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                                }),
-                        );
-                    }
-                }
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

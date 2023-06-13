@@ -34,9 +34,11 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
-import { memoizePoolStats } from '../../functions/getPoolStats';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 function Sidebar() {
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -46,7 +48,6 @@ function Sidebar() {
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
-    const cachedPoolStatsFetch = memoizePoolStats();
 
     const poolList = usePoolList(chainId, poolIndex);
 
@@ -73,7 +74,9 @@ function Sidebar() {
         graphData.limitOrdersByUser.limitOrders.filter(filterFn);
 
     const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser
+        .filter((p) => p.positionLiq > 0)
+        .slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
@@ -81,7 +84,12 @@ function Sidebar() {
             name: 'Recent Pools',
             icon: recentPoolsImage,
 
-            data: <RecentPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <RecentPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
     const topPoolsSection = [
@@ -89,7 +97,12 @@ function Sidebar() {
             name: 'Top Pools',
             icon: topPoolsImage,
 
-            data: <TopPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <TopPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -116,7 +129,12 @@ function Sidebar() {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
 
-            data: <FavoritePools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <FavoritePools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -398,6 +416,7 @@ function Sidebar() {
                         <SidebarSearchResults
                             searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ) : (
                         regularSidebarDisplay

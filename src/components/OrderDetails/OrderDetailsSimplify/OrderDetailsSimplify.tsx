@@ -10,6 +10,7 @@ import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -36,6 +37,8 @@ interface OrderDetailsSimplifyPropsIF {
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenName: string;
+    quoteTokenName: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     isAccountView: boolean;
@@ -54,13 +57,17 @@ export default function OrderDetailsSimplify(
         // baseTokenLogo,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         isFillStarted,
         // truncatedDisplayPrice,
-        // isDenomBase,
+        isDenomBase,
         usdValue,
         limitOrder,
         isAccountView,
     } = props;
+
+    const { chainData } = useContext(CrocEnvContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -70,44 +77,20 @@ export default function OrderDetailsSimplify(
         userNameToDisplay,
         posHashTruncated,
         posHash,
-        // blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        // usdValue,
-        // baseTokenSymbol,
-        // quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        // isOrderFilled,
-
-        // isDenomBase,
-        // baseTokenLogo,
-        // quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseDisplay,
-        // quoteDisplay,
         blockExplorer,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,
-
-        // truncatedLowDisplayPrice,
-        // truncatedHighDisplayPrice,
         startPriceDisplay,
         middlePriceDisplay,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
-        // truncatedLowDisplayPriceDenomByMoneyness,
-        // truncatedHighDisplayPriceDenomByMoneyness,
-        // truncatedDisplayPriceDenomByMoneyness,
-        // isBaseTokenMoneynessGreaterOrEqual,
-        // positionLiquidity,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const {
@@ -127,17 +110,12 @@ export default function OrderDetailsSimplify(
         const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
-    // function handleOpenExplorer() {
-    //     if (posHash && blockExplorer) {
-    //         const explorerUrl = `${blockExplorer}tx/${posHash}`;
-    //         window.open(explorerUrl);
-    //     }
-    // }
+
     function handleOpenBaseAddress() {
         if (posHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -148,15 +126,13 @@ export default function OrderDetailsSimplify(
             window.open(adressUrl);
         }
     }
-    // const txContent = (
-    //     <div className={styles.link_row} onClick={handleOpenExplorer}>
-    //         <p>{posHashTruncated}</p>
-    //         <RiExternalLinkLine />
-    //     </div>
-    // );
 
     const walletContent = (
-        <div className={styles.link_row} onClick={handleOpenWallet}>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenWallet}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{userNameToDisplay}</p>
             <RiExternalLinkLine />
         </div>
@@ -170,13 +146,21 @@ export default function OrderDetailsSimplify(
     );
 
     const baseAddressContent = (
-        <div onClick={handleOpenBaseAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenBaseAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{baseTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
     );
     const quoteAddressContent = (
-        <div onClick={handleOpenQuoteAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenQuoteAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{quoteTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
@@ -185,7 +169,6 @@ export default function OrderDetailsSimplify(
     const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
         'MM/DD/YYYY HH:mm',
     );
-    // const fillTime = moment(limitOrder.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const status = isOrderFilled ? 'Filled' : 'Not Filled';
 
@@ -196,15 +179,15 @@ export default function OrderDetailsSimplify(
             explanation: 'A limit order is a type of range position ',
         },
         {
+            title: 'Wallet ',
+            content: walletContent,
+            explanation: 'The account of the limit owner',
+        },
+        {
             title: 'Position Slot ID ',
             content: posHashContent,
             // eslint-disable-next-line quotes
             explanation: "A unique identifier for this user's position",
-        },
-        {
-            title: 'Wallet ',
-            content: walletContent,
-            explanation: 'The account of the limit owner',
         },
 
         // { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
@@ -224,7 +207,9 @@ export default function OrderDetailsSimplify(
 
         {
             title: 'From Token ',
-            content: isBid ? baseTokenSymbol : quoteTokenSymbol,
+            content: isBid
+                ? baseTokenSymbol + ' - ' + baseTokenName
+                : quoteTokenSymbol + ' - ' + quoteTokenName,
             explanation: 'The symbol (short name) of the sell token',
         },
 
@@ -238,19 +223,19 @@ export default function OrderDetailsSimplify(
             title: 'From Qty ',
             content: isBid
                 ? isFillStarted
-                    ? approximateSellQtyTruncated
-                    : baseDisplayFrontend
-                : // : baseDisplayFrontend + ' ' + baseTokenSymbol
-                isFillStarted
-                ? approximateSellQtyTruncated
-                : quoteDisplayFrontend,
+                    ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
+                    : baseDisplayFrontend + ' ' + baseTokenSymbol
+                : isFillStarted
+                ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
+                : quoteDisplayFrontend + ' ' + quoteTokenSymbol,
             explanation:
                 'The quantity of the sell token (scaled by its decimals value)',
         },
-
         {
             title: 'To Token ',
-            content: isBid ? quoteTokenSymbol : baseTokenSymbol,
+            content: isBid
+                ? quoteTokenSymbol + ' - ' + quoteTokenName
+                : baseTokenSymbol + ' - ' + baseTokenName,
             explanation: 'The symbol (short name) of the buy token',
         },
 
@@ -264,12 +249,11 @@ export default function OrderDetailsSimplify(
             title: 'To Qty ',
             content: isBid
                 ? isOrderFilled
-                    ? quoteDisplayFrontend
-                    : approximateBuyQtyTruncated
-                : // : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
-                isOrderFilled
-                ? baseDisplayFrontend
-                : approximateBuyQtyTruncated,
+                    ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
+                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
+                : isOrderFilled
+                ? baseDisplayFrontend + ' ' + baseTokenSymbol
+                : approximateBuyQtyTruncated + ' ' + baseTokenSymbol,
             explanation:
                 'The quantity of the to/buy token (scaled by its decimals value)',
         },
@@ -277,23 +261,37 @@ export default function OrderDetailsSimplify(
         {
             title: 'Fill Start ',
             content: isAccountView
-                ? startPriceDisplayDenomByMoneyness
-                : startPriceDisplay,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
             explanation: 'Price at which the limit order fill starts',
         },
         {
             title: 'Fill Middle ',
             content: isAccountView
-                ? middlePriceDisplayDenomByMoneyness
-                : middlePriceDisplay,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${middlePriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
+
             explanation:
                 'The effective price - halfway between start and finish',
         },
         {
             title: 'Fill End ',
             content: isAccountView
-                ? truncatedDisplayPriceDenomByMoneyness
-                : truncatedDisplayPrice,
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1  ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
+
             explanation: 'Price at which limit order fill ends',
         },
         {

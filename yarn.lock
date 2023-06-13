@@ -1131,10 +1131,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@crocswap-libs/sdk@^0.2.71":
-  version "0.2.71"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.71.tgz#2295b799cbd02509009cd2c61db50990f402c66a"
-  integrity sha512-cGJtf/WCsflx31mDpclb+3Nz4yOsaAPD2rL89j4de8DayU1EDCxSiS5npnx43CrpuRKrl6uTJPEhWuKHbcIwWQ==
+"@crocswap-libs/sdk@^0.2.75":
+  version "0.2.75"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.75.tgz#6f8fa532c2e7f83038d4e43edc60a298ee3a945f"
+  integrity sha512-nNFuRgSKrD4cEZ5dCD+SpCj/Szw0baNke1v4p8gzCOzeA0Ibd5owzf2MHlsc7u/n0JhZ+dv6HH1JDz97H0PN0w==
   dependencies:
     ethers "^5.5.3"
 
@@ -5509,9 +5509,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001400:
-  version "1.0.30001441"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001441.tgz#987437b266260b640a23cd18fbddb509d7f69f3e"
-  integrity sha512-OyxRR4Vof59I3yGWXws6i908EtGbMzVUi3ganaZQHmydk1iwDhRnvaPG2WaR0KcqrDFKrxVZHULT396LEPhXfg==
+  version "1.0.30001502"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001502.tgz"
+  integrity sha512-AZ+9tFXw1sS0o0jcpJQIXvFTOB/xGiQ4OQ2t98QX3NDn2EZTSRBC801gxrsGgViuq2ak/NLkNgSNEPtCr5lfKg==
 
 capture-exit@^2.0.0:
   version "2.0.0"

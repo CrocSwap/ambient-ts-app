@@ -4,14 +4,14 @@ import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import useDebounce from '../App/hooks/useDebounce';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
+import { PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
 import {
-    resetConnectedUserDataLoadingStatus,
     resetUserGraphData,
     setChangesByUser,
     setDataLoadingStatus,
@@ -25,6 +25,7 @@ import {
     setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -39,6 +40,12 @@ export const UserDataContextProvider = (props: {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
@@ -55,7 +62,12 @@ export const UserDataContextProvider = (props: {
     }, [isConnected, isLoggedIn, userAddress]);
 
     const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_URL + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+
+    // Wait 2 seconds before refreshing to give cache server time to sync from
+    // last block
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
     useEffect(() => {
         if (
             isServerEnabled &&
@@ -65,12 +77,10 @@ export const UserDataContextProvider = (props: {
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
-            dispatch(resetConnectedUserDataLoadingStatus());
-
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
             const userPositionsCacheEndpoint =
-                GRAPHCACHE_URL + '/user_positions?';
+                GRAPHCACHE_SMALL_URL + '/user_positions?';
 
             try {
                 fetch(
@@ -87,30 +97,34 @@ export const UserDataContextProvider = (props: {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
-
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserRangeData',
-                                loadingStatus: false,
-                            }),
-                        );
-
                         if (userPositions && crocEnv) {
                             Promise.all(
-                                userPositions.map((position: PositionIF) => {
-                                    return getPositionData(
-                                        position,
-                                        tokens.tokenUniv,
-                                        crocEnv,
-                                        chainData.chainId,
-                                        lastBlockNumber,
-                                    );
-                                }),
+                                userPositions.map(
+                                    (position: PositionServerIF) => {
+                                        return getPositionData(
+                                            position,
+                                            tokens.tokenUniv,
+                                            crocEnv,
+                                            chainData.chainId,
+                                            lastBlockNumber,
+                                            cachedFetchTokenPrice,
+                                            cachedQuerySpotPrice,
+                                            cachedTokenDetails,
+                                            cachedEnsResolve,
+                                        );
+                                    },
+                                ),
                             ).then((updatedPositions) => {
                                 dispatch(
                                     setPositionsByUser({
                                         dataReceived: true,
                                         positions: updatedPositions,
+                                    }),
+                                );
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'connectedUserRangeData',
+                                        loadingStatus: false,
                                     }),
                                 );
                             });
@@ -135,19 +149,20 @@ export const UserDataContextProvider = (props: {
                 .then((response) => response?.json())
                 .then((json) => {
                     const userLimitOrderStates = json?.data;
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'connectedUserOrderData',
-                            loadingStatus: false,
-                        }),
-                    );
                     if (userLimitOrderStates) {
                         Promise.all(
                             userLimitOrderStates.map(
-                                (limitOrder: LimitOrderIF) => {
+                                (limitOrder: LimitOrderServerIF) => {
                                     return getLimitOrderData(
                                         limitOrder,
                                         tokens.tokenUniv,
+                                        crocEnv,
+                                        chainData.chainId,
+                                        lastBlockNumber,
+                                        cachedFetchTokenPrice,
+                                        cachedQuerySpotPrice,
+                                        cachedTokenDetails,
+                                        cachedEnsResolve,
                                     );
                                 },
                             ),
@@ -156,6 +171,12 @@ export const UserDataContextProvider = (props: {
                                 setLimitOrdersByUser({
                                     dataReceived: true,
                                     limitOrders: updatedLimitOrderStates,
+                                }),
+                            );
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'connectedUserOrderData',
+                                    loadingStatus: false,
                                 }),
                             );
                         });
@@ -173,15 +194,15 @@ export const UserDataContextProvider = (props: {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
+                    crocEnv: crocEnv,
+                    lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserTxData',
-                                loadingStatus: false,
-                            }),
-                        );
                         if (updatedTransactions) {
                             dispatch(
                                 setChangesByUser({
@@ -243,6 +264,13 @@ export const UserDataContextProvider = (props: {
                             }
                             dispatch(setRecentTokens(result));
                         }
+
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserTxData',
+                                loadingStatus: false,
+                            }),
+                        );
                     })
                     .catch(console.error);
             } catch (error) {
@@ -255,6 +283,7 @@ export const UserDataContextProvider = (props: {
         isConnected,
         userAddress,
         chainData.chainId,
+        lastBlockNumWait,
         !!crocEnv,
     ]);
 

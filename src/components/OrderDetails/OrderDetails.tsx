@@ -11,10 +11,16 @@ import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import { getLimitOrderData } from '../../App/functions/getLimitOrderData';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { TokenContext } from '../../contexts/TokenContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import printDomToImage from '../../utils/functions/printDomToImage';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -23,22 +29,32 @@ interface propsIF {
 }
 
 export default function OrderDetails(props: propsIF) {
+    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
+        props;
+
     const [showShareComponent, setShowShareComponent] = useState(true);
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-
-    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
-        props;
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-    const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
+
     const {
-        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         isDenomBase,
@@ -47,7 +63,6 @@ export default function OrderDetails(props: propsIF) {
         isOrderFilled,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
-        // posHashTruncated,
         posHash,
     } = useProcessOrder(limitOrder, userAddress);
 
@@ -71,6 +86,7 @@ export default function OrderDetails(props: propsIF) {
     const user = limitOrder.user;
     const bidTick = limitOrder.bidTick;
     const askTick = limitOrder.askTick;
+    const pivotTime = limitOrder.pivotTime;
     const baseTokenAddress = limitOrder.base;
     const quoteTokenAddress = limitOrder.quote;
     const positionType = 'knockout';
@@ -145,14 +161,12 @@ export default function OrderDetails(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
-
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
+            GRAPHCACHE_SMALL_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
-        if (positionType) {
+        if (positionType && crocEnv) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
@@ -164,6 +178,7 @@ export default function OrderDetails(props: propsIF) {
                         quote: quoteTokenAddress,
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
+                        pivotTime: pivotTime.toString(),
                         positionType: positionType,
                         addValue: 'true',
                         omitAPY: 'false',
@@ -171,7 +186,20 @@ export default function OrderDetails(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
-                    const positionStats = json?.data;
+                    const positionPayload = json?.data as LimitOrderServerIF;
+                    return getLimitOrderData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
+                })
+                .then((positionStats: LimitOrderIF) => {
                     IS_LOCAL_ENV && console.debug({ positionStats });
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
@@ -182,7 +210,7 @@ export default function OrderDetails(props: propsIF) {
                     const claimableQuoteNum =
                         positionStats.claimableLiqQuoteDecimalCorrected;
 
-                    const isOrderClaimable = positionStats.claimableLiq !== '0';
+                    const isOrderClaimable = positionStats.claimableLiq !== 0;
                     setIsClaimable(isOrderClaimable);
 
                     const liqBaseDisplay = liqBaseNum
@@ -260,26 +288,31 @@ export default function OrderDetails(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlock]);
+    }, [lastBlockNumber]);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyOrderDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -301,6 +334,8 @@ export default function OrderDetails(props: propsIF) {
                         baseTokenLogo={baseTokenLogo}
                         baseTokenSymbol={baseTokenSymbol}
                         quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenName={baseTokenName}
+                        quoteTokenName={quoteTokenName}
                         isFillStarted={isFillStarted}
                         truncatedDisplayPrice={truncatedDisplayPrice}
                         truncatedDisplayPriceDenomByMoneyness={
@@ -324,9 +359,9 @@ export default function OrderDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.order_details_container}>
+        <div className={styles.outer_container}>
             <OrderDetailsHeader
-                downloadAsImage={downloadAsImage}
+                copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}
@@ -351,6 +386,8 @@ export default function OrderDetails(props: propsIF) {
                     baseTokenLogo={baseTokenLogo}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenName={baseTokenName}
+                    quoteTokenName={quoteTokenName}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
                     isAccountView={isAccountView}

@@ -30,6 +30,8 @@ interface TabPropsIF {
     setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
+    isModalView?: boolean;
+    shouldSyncWithTradeModules?: boolean;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -39,6 +41,8 @@ export default function TabComponent(props: TabPropsIF) {
         setSelectedInsideTab,
         rightTabOptions,
         setShowPositionsOnlyToggle,
+        isModalView = false,
+        shouldSyncWithTradeModules = true,
     } = props;
     const { outsideControl, setOutsideControl, selectedOutsideTab } =
         useContext(TradeTableContext);
@@ -99,8 +103,13 @@ export default function TabComponent(props: TabPropsIF) {
     }
 
     useEffect(() => {
-        handleOutside2();
-    }, [selectedTab, selectedOutsideTab, outsideControl]);
+        if (shouldSyncWithTradeModules) handleOutside2();
+    }, [
+        selectedTab,
+        selectedOutsideTab,
+        outsideControl,
+        shouldSyncWithTradeModules,
+    ]);
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
@@ -132,7 +141,7 @@ export default function TabComponent(props: TabPropsIF) {
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
             <ul
-                className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}
+                className={`${styles.tab_ul_left}`}
                 aria-label='Navigation Tabs'
                 role='tablist'
             >
@@ -244,6 +253,10 @@ export default function TabComponent(props: TabPropsIF) {
         </ul>
     );
 
+    const tabAlignStyle = isModalView
+        ? styles.justify_content_center
+        : styles.justify_content_flex_start;
+
     return (
         <div
             className={styles.tab_window}
@@ -251,12 +264,12 @@ export default function TabComponent(props: TabPropsIF) {
             aria-orientation='horizontal'
             aria-label=''
         >
-            <nav className={styles.tab_nav}>
+            <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
                 <AnimateSharedLayout>
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
             </nav>
-            <section className={styles.main_tab_content}>
+            <div className={styles.main_tab_content}>
                 <AnimateSharedLayout>
                     <motion.div
                         key={selectedTab ? selectedTab.label : 'empty'}
@@ -266,12 +279,13 @@ export default function TabComponent(props: TabPropsIF) {
                         transition={{ duration: 0.2 }}
                         role='tabpanel'
                         tabIndex={0}
+                        style={{ height: '100%' }}
                         hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>
                 </AnimateSharedLayout>
-            </section>
+            </div>
         </div>
     );
 }

@@ -7,7 +7,6 @@ import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
-import FocusTrap from 'focus-trap-react';
 
 import '../../../App.css';
 import styles from './NavbarDropdownMenu.module.css';
@@ -118,96 +117,86 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
 
     return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
+        <div
+            className={styles.dropdown}
+            ref={dropdownRef}
+            aria-label={ariaLabel}
         >
-            <div
-                className={styles.dropdown}
-                ref={dropdownRef}
-                aria-label={ariaLabel}
+            <CSSTransition
+                in={true}
+                unmountOnExit
+                timeout={300}
+                classNames='menu-primary'
             >
-                <CSSTransition
-                    in={true}
-                    unmountOnExit
-                    timeout={300}
-                    classNames='menu-primary'
+                {/* Menu with each drop down item */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className={styles.menu}
+                    tabIndex={0}
                 >
-                    {/* Menu with each drop down item */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className={styles.menu}
-                        tabIndex={0}
+                    <NavbarDropdownItem
+                        rightIcon={<BsBook size={18} />}
+                        onClick={handleDocsClick}
                     >
-                        <NavbarDropdownItem
-                            rightIcon={<BsBook size={18} />}
-                            onClick={handleDocsClick}
-                        >
-                            Docs
-                        </NavbarDropdownItem>
-                        <NavbarDropdownItem
-                            rightIcon={<AiFillTwitterCircle size={20} />}
-                            onClick={handleTwitterClick}
-                        >
-                            Twitter
-                        </NavbarDropdownItem>
-                        <NavbarDropdownItem
-                            rightIcon={<FaDiscord size={20} />}
-                            onClick={handleDiscordClick}
-                        >
-                            Discord
-                        </NavbarDropdownItem>
-                        <NavbarDropdownItem
-                            rightIcon={<BsMedium size={20} />}
-                            onClick={handleMediumClick}
-                        >
-                            Medium
-                        </NavbarDropdownItem>
-                        <NavbarDropdownItem
-                            rightIcon={<IoDocumentTextSharp size={20} />}
-                            onClick={handleLegalPrivacyClick}
-                        >
-                            Privacy
-                        </NavbarDropdownItem>
-                        <NavbarDropdownItem
-                            rightIcon={<IoDocumentTextSharp size={20} />}
-                            onClick={handleTOSClick}
-                        >
-                            Terms of Service
-                        </NavbarDropdownItem>
-                        {isUserLoggedIn ? (
-                            <div
-                                className={`${styles.navbar_logout_container}`}
+                        Docs
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<AiFillTwitterCircle size={20} />}
+                        onClick={handleTwitterClick}
+                    >
+                        Twitter
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<FaDiscord size={20} />}
+                        onClick={handleDiscordClick}
+                    >
+                        Discord
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<BsMedium size={20} />}
+                        onClick={handleMediumClick}
+                    >
+                        Medium
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<IoDocumentTextSharp size={20} />}
+                        onClick={handleLegalPrivacyClick}
+                    >
+                        Privacy
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<IoDocumentTextSharp size={20} />}
+                        onClick={handleTOSClick}
+                    >
+                        Terms of Service
+                    </NavbarDropdownItem>
+                    {isUserLoggedIn ? (
+                        <div className={`${styles.navbar_logout_container}`}>
+                            <NavbarDropdownItem
+                                isLogoutButton
+                                onClick={() => {
+                                    clickLogout();
+                                    closeMenu ? closeMenu() : null;
+                                }}
                             >
-                                <NavbarDropdownItem
-                                    isLogoutButton
-                                    onClick={() => {
-                                        clickLogout();
-                                        closeMenu ? closeMenu() : null;
-                                    }}
-                                >
-                                    Logout
-                                </NavbarDropdownItem>
-                            </div>
-                        ) : (
-                            <div
-                                className={`${styles.navbar_logout_container}`}
+                                Logout
+                            </NavbarDropdownItem>
+                        </div>
+                    ) : (
+                        <div className={`${styles.navbar_logout_container}`}>
+                            <NavbarDropdownItem
+                                isLogoutButton
+                                onClick={openWagmiModal}
                             >
-                                <NavbarDropdownItem
-                                    isLogoutButton
-                                    onClick={openWagmiModal}
-                                >
-                                    Connect Wallet
-                                </NavbarDropdownItem>
-                            </div>
-                        )}
-                    </motion.div>
-                </CSSTransition>
-            </div>
-        </FocusTrap>
+                                Connect Wallet
+                            </NavbarDropdownItem>
+                        </div>
+                    )}
+                </motion.div>
+            </CSSTransition>
+        </div>
     );
 }
 

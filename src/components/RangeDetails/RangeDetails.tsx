@@ -11,10 +11,14 @@ import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDet
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -69,20 +73,32 @@ export default function RangeDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyRangeDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+
+    const { tokens } = useContext(TokenContext);
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
@@ -105,6 +121,8 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
@@ -116,8 +134,7 @@ export default function RangeDetails(props: propsIF) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
-        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
 
         if (position.positionType) {
             fetch(
@@ -136,12 +153,33 @@ export default function RangeDetails(props: propsIF) {
                     }),
             )
                 .then((response) => response?.json())
-                .then((json) => {
-                    const positionStats = json?.data;
+                .then(async (json) => {
+                    if (!crocEnv || !json?.data) {
+                        setBaseCollateralDisplay(undefined);
+                        setQuoteCollateralDisplay(undefined);
+                        setUsdValue(undefined);
+                        setBaseFeesDisplay(undefined);
+                        setQuoteFeesDisplay(undefined);
+                        return;
+                    }
+
+                    const positionPayload = json?.data as PositionServerIF;
+                    const positionStats = await getPositionData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
+
                     const liqBaseDisplay =
                         liqBaseNum !== undefined
                             ? liqBaseNum === 0
@@ -223,33 +261,9 @@ export default function RangeDetails(props: propsIF) {
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);
-
-            fetch(
-                apyCacheEndpoint +
-                    new URLSearchParams({
-                        user: user,
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        positionType: position.positionType,
-                        concise: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const results = json?.data.results;
-                    const apr = results.apy;
-
-                    if (apr) {
-                        setUpdatedPositionApy(apr);
-                    }
-                })
-                .catch(console.error);
         }
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, crocEnv, chainId]);
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },
@@ -277,9 +291,8 @@ export default function RangeDetails(props: propsIF) {
     //         ))}
     //     </div>
     // ) : null;
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -310,19 +323,17 @@ export default function RangeDetails(props: propsIF) {
                         }
                         isAccountView={isAccountView}
                     />
-                    {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
-                {/* <RangeDetailsActions /> */}
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.outer_container}>
             <RangeDetailsHeader
                 onClose={closeGlobalModal}
-                downloadAsImage={downloadAsImage}
+                copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}

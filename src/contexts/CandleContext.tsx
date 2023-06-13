@@ -7,15 +7,18 @@ import {
     useState,
     useContext,
 } from 'react';
+import { CandleData } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../constants';
+import {
+    GRAPHCACHE_URL,
+    IS_LOCAL_ENV,
+    OVERRIDE_CANDLE_POOL_ID,
+} from '../constants';
 import { mktDataChainId } from '../utils/data/chains';
+import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { ChartContext } from './ChartContext';
@@ -54,11 +57,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         baseToken: {
             address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
+            mainnetAddress: mainnetCanonBase,
         },
         quoteToken: {
             address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
+            mainnetAddress: mainnetCanonQuote,
         },
     } = useContext(TradeTokenContext);
 
@@ -91,19 +94,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     // local logic to determine current chart period
     // this is situation-dependant but used in this file
     const candleTimeLocal = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
+        return chartSettings.candleTime.global.time;
+    }, [chartSettings.candleTime.global.time, location.pathname]);
 
     const candleContext = {
         candleData,
@@ -120,6 +112,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleScale,
         candleTimeLocal,
     };
+
+    const {
+        baseToken: mainnetBaseTokenAddress,
+        quoteToken: mainnetQuoteTokenAddress,
+    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
         isChartEnabled && !isUserIdle && fetchCandles();
@@ -143,26 +140,47 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 abortController.abort();
             }
 
-            const reqOptions = new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                period: candleTimeLocal.toString(),
-                // time: '', // optional
-                n: (candleScale?.nCandle > 1000
-                    ? 1000
-                    : candleScale?.nCandle
-                ).toString(), // positive integer: max 1000
-                // page: '0', // nonnegative integer
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-            });
+            const reqOptions =
+                chainData.chainId === '0x1'
+                    ? new URLSearchParams({
+                          base: mainnetBaseTokenAddress.toLowerCase(),
+                          quote: mainnetQuoteTokenAddress.toLowerCase(),
+                          poolIdx: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                          period: candleTimeLocal.toString(),
+                          n: (candleScale?.nCandle > 1000
+                              ? 1000
+                              : candleScale?.nCandle
+                          ).toString(), // positive integer: max 1000
+                          chainId: mktDataChainId(chainData.chainId),
+                          dex: 'all',
+                          poolStats: 'true',
+                          concise: 'true',
+                      })
+                    : new URLSearchParams({
+                          base: mainnetBaseTokenAddress.toLowerCase(),
+                          quote: mainnetQuoteTokenAddress.toLowerCase(),
+                          poolIdx: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                          period: candleTimeLocal.toString(),
+                          n: (candleScale?.nCandle > 1000
+                              ? 1000
+                              : candleScale?.nCandle
+                          ).toString(), // positive integer: max 1000
+                          chainId: mktDataChainId(chainData.chainId),
+                          dex: 'all',
+                          poolStats: 'true',
+                          concise: 'true',
+                          poolStatsChainIdOverride: chainData.chainId,
+                          poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                          poolStatsQuoteOverride:
+                              quoteTokenAddress.toLowerCase(),
+                          poolStatsPoolIdxOverride: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                      });
 
             if (candleScale?.lastCandleDate) {
                 reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
@@ -190,7 +208,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                                         quoteAddress:
                                             quoteTokenAddress.toLowerCase(),
                                         poolIdx: chainData.poolIndex,
-                                        network: chainData.chainId,
+                                        chainId: chainData.chainId,
                                     },
                                     duration: candleTimeLocal,
                                     candles: candles,
@@ -272,7 +290,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 new URLSearchParams({
                     base: mainnetBaseTokenAddress.toLowerCase(),
                     quote: mainnetQuoteTokenAddress.toLowerCase(),
-                    poolIdx: chainData.poolIndex.toString(),
+                    poolIdx: (
+                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                    ).toString(),
                     period: candleTimeLocal.toString(),
                     time: minTimeMemo ? minTimeMemo.toString() : '0',
                     // time: debouncedBoundary.toString(),
@@ -285,7 +305,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     poolStatsChainIdOverride: chainData.chainId,
                     poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
                     poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                    poolStatsPoolIdxOverride: (
+                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                    ).toString(),
                 }),
             { signal },
         )
@@ -332,7 +354,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             })
             .catch((e) => {
                 if (e.name === 'AbortError') {
-                    console.log('Zoom request cancelled');
+                    console.warn('Zoom request cancelled');
                 } else {
                     console.error(e);
                 }

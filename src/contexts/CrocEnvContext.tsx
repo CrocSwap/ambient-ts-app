@@ -1,13 +1,15 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
-import { memoizeTokenPrice } from '../App/functions/fetchTokenPrice';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
+import { CachedDataContext } from './CachedDataContext';
+import { useMainnetProvider } from '../App/functions/useMainnetProvider';
+import { Provider } from '@ethersproject/providers';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -22,8 +24,8 @@ interface CrocEnvContextIF {
     isChainSupported: boolean;
     topPools: topPoolIF[];
     ethMainnetUsdPrice: number | undefined;
-    setEthMainnetUsdPrice: (val: number) => void;
     defaultUrlParams: UrlRoutesTemplate;
+    mainnetProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -33,7 +35,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 export const CrocEnvContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const cachedFetchTokenPrice = memoizeTokenPrice();
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const { address: userAddress, isConnected } = useAccount();
     const provider = useProvider();
@@ -60,6 +62,9 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
+    const mainnetProvider =
+        chainData.chainId === '0x1' ? useProvider() : useMainnetProvider();
+
     const crocEnvContext = {
         crocEnv,
         setCrocEnv,
@@ -67,8 +72,8 @@ export const CrocEnvContextProvider = (props: {
         isChainSupported,
         topPools,
         ethMainnetUsdPrice,
-        setEthMainnetUsdPrice,
         defaultUrlParams,
+        mainnetProvider,
     };
 
     useBlacklist(userAddress);
@@ -122,6 +127,7 @@ export const CrocEnvContextProvider = (props: {
         chainData.chainId,
         signer,
     ]);
+
     useEffect(() => {
         if (provider) {
             (async () => {

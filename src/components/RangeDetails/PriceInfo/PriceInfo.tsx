@@ -1,12 +1,9 @@
 import styles from './PriceInfo.module.css';
 
-// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { useLocation } from 'react-router-dom';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 
 interface IPriceInfoProps {
     usdValue: string;
@@ -28,7 +25,6 @@ interface IPriceInfoProps {
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
-    // const dispatch = useAppDispatch();
     const {
         usdValue,
         lowRangeDisplay,
@@ -52,15 +48,11 @@ export default function PriceInfo(props: IPriceInfoProps) {
 
     const isOnTradeRoute = pathname.includes('trade');
 
-    const baseTokenLogoDisplay = baseTokenLogoURI ? (
-        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
-    ) : (
-        <NoTokenIcon tokenInitial={baseTokenSymbol?.charAt(0)} width='15px' />
+    const baseTokenLogoDisplay = (
+        <TokenIcon src={baseTokenLogoURI} alt={baseTokenSymbol} size='xs' />
     );
-    const quoteTokenLogoDisplay = quoteTokenLogoURI ? (
-        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
-    ) : (
-        <NoTokenIcon tokenInitial={quoteTokenSymbol?.charAt(0)} width='15px' />
+    const quoteTokenLogoDisplay = (
+        <TokenIcon src={quoteTokenLogoURI} alt={quoteTokenSymbol} size='xs' />
     );
 
     const totalValue = (
@@ -124,12 +116,19 @@ export default function PriceInfo(props: IPriceInfoProps) {
     );
 
     const tokenPairDetails = (
-        <div
-            className={styles.token_pair_details_container}
-            onClick={() => {
-                // dispatch(toggleDidUserFlipDenom());
-            }}
-        >
+        <div className={styles.token_pair_details}>
+            <div className={styles.token_pair_images}>
+                <TokenIcon
+                    src={baseTokenLogoURI}
+                    alt={baseTokenSymbol}
+                    size='2xl'
+                />
+                <TokenIcon
+                    src={quoteTokenLogoURI}
+                    alt={quoteTokenSymbol}
+                    size='2xl'
+                />
+            </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}

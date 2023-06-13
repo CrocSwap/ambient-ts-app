@@ -1,11 +1,11 @@
 // import sum from 'hash-sum';
 
+import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
+import { LimitOrderIF } from '../interfaces/LimitOrderIF';
+import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-    LiquidityData,
-} from '../state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../state/graphDataSlice';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function diffHashSig(x: any): string {
@@ -48,7 +48,7 @@ export function diffHashSigChart(chartData?: CandleData[]) {
     });
 }
 
-export function diffHashSigLiquidity(liquidity?: LiquidityData) {
+export function diffHashSigLiquidity(liquidity?: LiquidityDataIF) {
     if (!liquidity) {
         return 'null';
     }
@@ -57,7 +57,7 @@ export function diffHashSigLiquidity(liquidity?: LiquidityData) {
     }
 
     return diffHashSig({
-        time: liquidity.time,
+        time: liquidity,
         tick: liquidity.currentTick,
         curveState: liquidity.curveState,
         ranges: liquidity.ranges.map((r) => r.activeLiq),
@@ -68,5 +68,27 @@ export function diffHashSigTxs(txs?: TransactionIF[]) {
     if (!txs) {
         return 'null';
     }
-    return diffHashSig(txs.map((x) => x.tx));
+    return diffHashSig(txs.map((x) => x.txId));
+}
+
+export function diffHashSigLimits(txs?: LimitOrderIF[]) {
+    if (!txs) {
+        return 'null';
+    }
+    return diffHashSig(
+        txs.map((x) => {
+            x.limitOrderId, x.latestUpdateTime;
+        }),
+    );
+}
+
+export function diffHashSigPostions(txs?: PositionIF[]) {
+    if (!txs) {
+        return 'null';
+    }
+    return diffHashSig(
+        txs.map((x) => {
+            x.positionId, x.latestUpdateTime;
+        }),
+    );
 }

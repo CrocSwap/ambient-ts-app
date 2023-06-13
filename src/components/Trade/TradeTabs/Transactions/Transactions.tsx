@@ -1,27 +1,21 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import { useSortedTransactions } from '../useSortedTxs';
+import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSigTxs } from '../../../../utils/functions/diffHashSig';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import useDebounce from '../../../../App/hooks/useDebounce';
 
 interface propsIF {
     activeAccountTransactionData?: TransactionIF[];
@@ -56,128 +50,77 @@ function Transactions(props: propsIF) {
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
 
-    const dispatch = useAppDispatch();
-
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const changesByUser = graphData?.changesByUser?.changes;
-    const changesByPool = graphData?.changesByPool?.changes;
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
-
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
-
-    const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    const changesByPoolWithoutFills = changesByPool.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    const [transactionData, setTransactionData] = useState(
-        isAccountView
-            ? activeAccountTransactionData || []
-            : changesByPoolWithoutFills,
-    );
-
-    const isConnectedUserTxDataLoading =
-        dataLoadingStatus?.isConnectedUserTxDataLoading;
-    const isLookupUserTxDataLoading =
-        dataLoadingStatus?.isLookupUserTxDataLoading;
-    const isPoolTxDataLoading = dataLoadingStatus?.isPoolTxDataLoading;
-
-    const isTxDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserTxDataLoading) ||
-        (!connectedAccountActive && isLookupUserTxDataLoading);
-
-    const isTxDataLoadingForTradeTable =
-        !isCandleSelected &&
-        ((showAllData && isPoolTxDataLoading) ||
-            (!showAllData && isConnectedUserTxDataLoading));
-
-    const shouldDisplayLoadingAnimation =
-        (isAccountView && isTxDataLoadingForPortfolio) ||
-        (!isAccountView && isTxDataLoadingForTradeTable);
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        1000,
-    );
-
-    const shouldDisplayNoTableData =
-        !debouncedShouldDisplayLoadingAnimation && !transactionData.length;
-
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions(
-            'time',
-            showAllData && !isCandleSelected
-                ? changesByPoolWithoutFills
-                : transactionData,
-        );
-
-    function handleUserSelected() {
-        setTransactionData(changesByUserMatchingSelectedTokens);
-    }
-    function handlePoolSelected() {
-        if (!isAccountView) {
-            setTransactionData(changesByPoolWithoutFills);
-        }
-    }
+    const [transactionData, setTransactionData] = useState<TransactionIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (isAccountView && activeAccountTransactionData) {
-            setTransactionData(activeAccountTransactionData);
-        }
-    }, [isAccountView, diffHashSigTxs(activeAccountTransactionData)]);
-
-    // update tx table content when candle selected or underlying data changes
-    useEffect(() => {
-        if (!isAccountView) {
-            if (isCandleSelected) {
-                if (changesInSelectedCandle !== undefined) {
-                    setTransactionData(changesInSelectedCandle);
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'candleData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
-            } else if (showAllData) {
-                handlePoolSelected();
-            } else {
-                handleUserSelected();
-            }
+        if (isAccountView)
+            setTransactionData(activeAccountTransactionData || []);
+        else if (isCandleSelected && changesInSelectedCandle)
+            setTransactionData(changesInSelectedCandle);
+        else if (!showAllData)
+            setTransactionData(
+                graphData?.changesByUser?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
+        else {
+            setTransactionData(
+                graphData?.changesByPool?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
         }
     }, [
-        isAccountView,
-        isCandleSelected,
-        isCandleSelected ? diffHashSigTxs(changesInSelectedCandle) : '',
-        changesByPoolWithoutFills.length,
-        changesByPoolWithoutFills.at(0)?.poolHash,
-        changesByUserMatchingSelectedTokens.length,
-        changesByUserMatchingSelectedTokens.at(0)?.user,
         showAllData,
+        isCandleSelected,
+        changesInSelectedCandle,
+        activeAccountTransactionData,
+        graphData?.changesByUser,
+        graphData?.changesByPool,
     ]);
+
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+            );
+        else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+    }, [
+        showAllData,
+        connectedAccountActive,
+        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+        graphData?.dataLoadingStatus.isPoolTxDataLoading,
+    ]);
+
+    const shouldDisplayNoTableData = !isLoading && !transactionData.length;
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
+        useSortedTxs('time', transactionData);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
@@ -221,7 +164,6 @@ function Transactions(props: propsIF) {
             slug: 'pool',
             sortable: true,
         },
-
         {
             name: 'ID',
 
@@ -231,22 +173,19 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Wallet',
-
             show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: showAllData,
+            sortable: true,
         },
         {
             name: walID,
-
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: !isAccountView,
             alignCenter: false,
         },
         {
             name: 'Price',
-
             show: !ipadView,
             slug: 'price',
             sortable: false,
@@ -254,7 +193,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Side',
-
             show: !showColumns,
             slug: 'side',
             sortable: false,
@@ -262,7 +200,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Type',
-
             show: !showColumns,
             slug: 'type',
             sortable: false,
@@ -270,7 +207,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
@@ -278,7 +214,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Value (USD)',
-
             show: true,
             slug: 'value',
             sortable: true,
@@ -294,7 +229,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
@@ -302,26 +236,20 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-
             show: !isAccountView && showColumns,
-
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-
             show: isAccountView && showColumns,
-
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
-
         {
             name: '',
-
             show: true,
             slug: 'menu',
             sortable: false,
@@ -497,30 +425,26 @@ function Transactions(props: propsIF) {
         }
     }, [mobileView]);
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
 
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
-        <section
+        <div
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {shouldDisplayLoadingAnimation ? (
+                {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     transactionDataOrNull
@@ -528,7 +452,7 @@ function Transactions(props: propsIF) {
             </div>
 
             <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </section>
+        </div>
     );
 }
 

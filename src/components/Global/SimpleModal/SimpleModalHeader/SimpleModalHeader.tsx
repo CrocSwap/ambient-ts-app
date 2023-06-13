@@ -7,7 +7,6 @@ interface SimpleModalHeaderPropsIF {
 export default function SimpleModalHeader(props: SimpleModalHeaderPropsIF) {
     return (
         <header className={styles.header_container}>
-            <div></div>
             <h2>{props.title}</h2>
             <button onClick={props.onClose} className={styles.close_button}>
                 <VscClose

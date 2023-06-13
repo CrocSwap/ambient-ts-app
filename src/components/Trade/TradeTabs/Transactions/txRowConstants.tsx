@@ -1,7 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 import {
     DefaultTooltip,
@@ -13,6 +11,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface Props {
     txHashTruncated: string;
@@ -116,8 +115,6 @@ export const txRowConstants = (props: Props) => {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
@@ -126,7 +123,10 @@ export const txRowConstants = (props: Props) => {
                     className={styles.id_tooltip_style}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <span onClick={handleOpenExplorer}> {tx.tx + 'ㅤ'}</span>
+                    <span onClick={handleOpenExplorer}>
+                        {' '}
+                        {tx.txHash + 'ㅤ'}
+                    </span>
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
                         size={'12px'}
@@ -231,64 +231,50 @@ export const txRowConstants = (props: Props) => {
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <p>
-                        {tx.baseSymbol}
-                        {`${tx.baseSymbol === 'ETH' ? '' : ': ' + tx.base}`}
-                    </p>
-                }
-                placement={'left'}
-                disableHoverListener={!isAccountView}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${tx.baseSymbol}: ${tx.base}`}
-                placement='bottom'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.baseSymbol?.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    const baseTokenLogoComponent = (
+        <DefaultTooltip
+            interactive
+            title={
+                <p>
+                    {tx.baseSymbol}
+                    {`${tx.baseSymbol === 'ETH' ? '' : ': ' + tx.base}`}
+                </p>
+            }
+            placement={'left'}
+            disableHoverListener={!isAccountView}
+            arrow
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <TokenIcon
+                src={baseTokenLogo}
+                alt='base token'
+                size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+            />
+        </DefaultTooltip>
+    );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <div>
-                        {tx.quoteSymbol}: {tx.quote}
-                    </div>
-                }
-                placement={'left'}
-                disableHoverListener={!isAccountView}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${tx.quoteSymbol}: ${tx.quote}`}
-                placement='right'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.quoteSymbol?.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    const quoteTokenLogoComponent = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    {tx.quoteSymbol}: {tx.quote}
+                </div>
+            }
+            placement={'left'}
+            disableHoverListener={!isAccountView}
+            arrow
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <TokenIcon
+                src={quoteTokenLogo}
+                alt='quote token'
+                size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+            />
+        </DefaultTooltip>
+    );
 
     const pair =
         tx.base !== ZERO_ADDRESS
@@ -330,7 +316,7 @@ export const txRowConstants = (props: Props) => {
                         cursor: 'pointer',
                     }}
                 >
-                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
                 </p>
             }
             placement={'right'}
@@ -410,7 +396,9 @@ export const txRowConstants = (props: Props) => {
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
-            {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+            {tx.entityType === 'liqchange' ||
+            tx.changeType === 'burn' ||
+            tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
         </li>
@@ -499,7 +487,9 @@ export const txRowConstants = (props: Props) => {
         >
             <p>{type}</p>
             <p>
-                {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                {tx.entityType === 'liqchange' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'recover'
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>

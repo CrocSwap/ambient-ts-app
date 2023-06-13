@@ -7,12 +7,10 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 // import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
-import { LiquidityDataLocal } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -31,6 +29,8 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { candleScale } from '../../../utils/state/tradeDataSlice';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LiquidityDataLocal } from './TradeCharts';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -73,7 +73,6 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    isMarketOrLimitModule: boolean;
 }
 
 type chartItemStates = {
@@ -84,7 +83,7 @@ type chartItemStates = {
 };
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, isMarketOrLimitModule } = props;
+    const { selectedDate, setSelectedDate } = props;
 
     const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
         useContext(CandleContext);
@@ -96,20 +95,10 @@ function TradeCandleStickChart(props: propsIF) {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const period = useMemo(() => {
-        if (
-            location.pathname.startsWith('/trade/range') ||
-            location.pathname.startsWith('/trade/reposition')
-        ) {
-            return chartSettings.candleTime.range.time;
-        } else {
-            return chartSettings.candleTime.market.time;
-        }
-    }, [
-        chartSettings.candleTime.range.time,
-        chartSettings.candleTime.market.time,
-        location.pathname,
-    ]);
+    const period = useMemo(
+        () => chartSettings.candleTime.global.time,
+        [chartSettings.candleTime.global.time, location.pathname],
+    );
 
     const unparsedCandleData = candleData?.candles;
 
@@ -170,13 +159,9 @@ function TradeCandleStickChart(props: propsIF) {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const candleTimeInSeconds: number = isMarketOrLimitModule
-        ? chartSettings.candleTime.market.time
-        : chartSettings.candleTime.range.time;
-
     useEffect(() => {
         setIsLoading(true);
-    }, [candleTimeInSeconds, denominationsInBase]);
+    }, [period, denominationsInBase]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
@@ -298,49 +283,47 @@ function TradeCandleStickChart(props: propsIF) {
 
             const domainLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : Infinity;
+                    return o.activeLiq !== undefined ? o.activeLiq : Infinity;
                 }),
             );
             const domainRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined
-                        ? parseFloat(o.activeLiq)
-                        : 0;
+                    return o.activeLiq !== undefined ? o.activeLiq : 0;
                 }),
             );
 
             const depthBidLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : Infinity;
                 }),
             );
+
             const depthBidRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumBidLiq !== undefined && o.cumBidLiq !== '0'
-                        ? parseFloat(o.cumBidLiq)
+                    return o.cumBidLiq !== undefined && o.cumBidLiq !== 0
+                        ? o.cumBidLiq
                         : 0;
                 }),
             );
 
             const depthAskLeft = Math.min(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                        ? parseFloat(o.cumAskLiq)
+                    return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                        ? o.cumAskLiq
                         : Infinity;
                 }),
             );
+
             const depthAskRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {
                     const price = denominationsInBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
                     if (price > barThreshold / 10 && price < limitBoundary) {
-                        return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
-                            ? parseFloat(o.cumAskLiq)
+                        return o.cumAskLiq !== undefined && o.cumAskLiq !== 0
+                            ? o.cumAskLiq
                             : 0;
                     }
                     return 0;
@@ -862,7 +845,6 @@ function TradeCandleStickChart(props: propsIF) {
                 {!isLoading &&
                 candleData !== undefined &&
                 prevPeriod === period &&
-                candleTimeInSeconds === period &&
                 !isFetchingCandle ? (
                     <Chart
                         isTokenABase={isTokenABase}
@@ -876,7 +858,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
                         prevPeriod={prevPeriod}
-                        candleTimeInSeconds={candleTimeInSeconds}
+                        candleTimeInSeconds={period}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
@@ -891,11 +873,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setShowTooltip={props.setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
-                        candleTime={
-                            isMarketOrLimitModule
-                                ? chartSettings.candleTime.market
-                                : chartSettings.candleTime.range
-                        }
+                        candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
                     />
                 ) : (

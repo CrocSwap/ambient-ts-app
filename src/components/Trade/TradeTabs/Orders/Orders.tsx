@@ -13,15 +13,12 @@ import OrderRow from './OrderTable/OrderRow';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import NoTableData from '../NoTableData/NoTableData';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
-import useDebounce from '../../../../App/hooks/useDebounce';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -39,10 +36,6 @@ function Orders(props: propsIF) {
         connectedAccountActive,
         isAccountView,
     } = props;
-
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
     const {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
@@ -61,91 +54,63 @@ function Orders(props: propsIF) {
         (state) => state.userData,
     );
 
-    const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders.filter(
-        (x) => x.chainId === chainId,
-    );
-    const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders.filter(
-        (x) => x.chainId === chainId,
-    );
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
-
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
-
-    const isConnectedUserOrderDataLoading =
-        dataLoadingStatus?.isConnectedUserOrderDataLoading;
-    const isLookupUserOrderDataLoading =
-        dataLoadingStatus?.isLookupUserOrderDataLoading;
-    const isPoolOrderDataLoading = dataLoadingStatus?.isPoolOrderDataLoading;
-
-    const isOrderDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserOrderDataLoading) ||
-        (!connectedAccountActive && isLookupUserOrderDataLoading);
-
-    const isOrderDataLoadingForTradeTable =
-        (showAllData && isPoolOrderDataLoading) ||
-        (!showAllData && isConnectedUserOrderDataLoading);
-
-    const shouldDisplayLoadingAnimation =
-        (isAccountView && isOrderDataLoadingForPortfolio) ||
-        (!isAccountView && isOrderDataLoadingForTradeTable);
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        1000,
-    );
-
-    const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter(
-        (tx) => {
-            if (
-                tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-                tx.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-    );
-
-    // const isDenomBase = tradeData.isDenomBase;
-
-    const [limitOrderData, setLimitOrderData] = useState(
-        isAccountView ? activeAccountLimitOrderData || [] : limitOrdersByPool,
-    );
-    const shouldDisplayNoTableData =
-        !debouncedShouldDisplayLoadingAnimation && !limitOrderData.length;
+    const [limitOrderData, setLimitOrderData] = useState<LimitOrderIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (isAccountView) {
-            setLimitOrderData(activeAccountLimitOrderData || []);
-        } else if (!showAllData) {
-            setLimitOrderData(ordersByUserMatchingSelectedTokens);
-        } else if (limitOrdersByPool) {
-            setLimitOrderData(limitOrdersByPool);
+        if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
+        else if (!showAllData)
+            setLimitOrderData(
+                graphData?.limitOrdersByUser?.limitOrders.filter(
+                    (order) =>
+                        order.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        order.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase() &&
+                        (order.positionLiq != 0 || order.claimableLiq !== 0),
+                ),
+            );
+        else {
+            setLimitOrderData(graphData?.limitOrdersByPool.limitOrders);
         }
     }, [
         showAllData,
-        connectedAccountActive,
-        diffHashSig(activeAccountLimitOrderData),
-        diffHashSig(ordersByUserMatchingSelectedTokens),
-        diffHashSig(limitOrdersByPool),
+        activeAccountLimitOrderData,
+        graphData?.limitOrdersByUser,
+        graphData?.limitOrdersByPool,
     ]);
 
-    const nonEmptyOrders = showAllData
-        ? limitOrdersByPool.filter(
-              (limitOrder) => limitOrder.totalValueUSD !== 0,
-          )
-        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
+            );
+        else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
+    }, [
+        showAllData,
+        connectedAccountActive,
+        graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
+        graphData?.dataLoadingStatus.isPoolOrderDataLoading,
+    ]);
+
+    const shouldDisplayNoTableData = !isLoading && !limitOrderData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
-        useSortedLimits('time', nonEmptyOrders);
+        useSortedLimits('time', limitOrderData);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
@@ -208,7 +173,7 @@ function Orders(props: propsIF) {
             className: 'wallet_it',
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: !isAccountView,
         },
         {
             name: 'Limit Price',
@@ -474,31 +439,26 @@ function Orders(props: propsIF) {
         }
     }, [mobileView]);
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
 
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
-        <section
+        <div
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 
             <div className={styles.table_content}>
-                {shouldDisplayLoadingAnimation ? (
+                {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     orderDataOrNull
@@ -506,7 +466,7 @@ function Orders(props: propsIF) {
             </div>
 
             <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </section>
+        </div>
     );
 }
 
