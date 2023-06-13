@@ -484,9 +484,6 @@ export default function InitPool() {
             {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
                 <div className={styles.top_content}>
-                    {/* <div className={styles.back_button}>
-                </div> */}
-
                     <header>
                         <p />
                         <h1>Initialize Pool</h1>
