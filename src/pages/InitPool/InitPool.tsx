@@ -174,7 +174,7 @@ export default function InitPool() {
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
-                // The user used "speed up" or something similar
+                // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
@@ -237,7 +237,7 @@ export default function InitPool() {
                     } catch (e) {
                         const error = e as TransactionError;
                         console.error({ error });
-                        // The user used "speed up" or something similar
+                        // The user used 'speed up' or something similar
                         // in their client, but we now have the updated info
                         if (isTransactionReplacedError(error)) {
                             IS_LOCAL_ENV && console.debug('repriced');
@@ -358,6 +358,7 @@ export default function InitPool() {
 
         switch (true) {
             case poolExists:
+                // Display button for an already initialized pool
                 buttonContent = (
                     <Button
                         title='Pool Already Initialized'
@@ -371,11 +372,15 @@ export default function InitPool() {
                 break;
 
             case isConnected || !connectButtonDelayElapsed:
+                // Display different buttons based on various conditions
                 if (!isTokenAAllowanceSufficient) {
+                    // Display token A approval button
                     buttonContent = tokenAApprovalButton;
                 } else if (!isTokenBAllowanceSufficient) {
+                    // Display token B approval button
                     buttonContent = tokenBApprovalButton;
                 } else if (initialPrice === undefined || initialPrice <= 0) {
+                    // Display button to enter an initial price
                     buttonContent = (
                         <Button
                             title='Enter an Initial Price'
@@ -387,6 +392,7 @@ export default function InitPool() {
                         />
                     );
                 } else if (isInitPending === true) {
+                    // Display button for pending initialization
                     buttonContent = (
                         <Button
                             title='Initialization Pending'
@@ -398,6 +404,7 @@ export default function InitPool() {
                         />
                     );
                 } else {
+                    // Display confirm button for final step
                     buttonContent = (
                         <Button title='Confirm' action={sendInit} flat={true} />
                     );
@@ -405,6 +412,7 @@ export default function InitPool() {
                 break;
 
             default:
+                // Display button to connect wallet if no conditions match
                 buttonContent = (
                     <Button
                         title='Connect Wallet'
@@ -418,6 +426,41 @@ export default function InitPool() {
         return buttonContent;
     };
 
+    const tokenADisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenA &&
+                    (tokenA.logoURI ? (
+                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenA && <h3>{tokenA.symbol}</h3>}
+            </div>
+            {tokenA && <p>{tokenA.name}</p>}
+        </div>
+    );
+
+    const tokenBDisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenB &&
+                    (tokenB.logoURI ? (
+                        <img src={tokenB.logoURI} alt={tokenB.symbol} />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenB && <h3>{tokenB.symbol}</h3>}
+            </div>
+            {tokenB && <p>{tokenB.name}</p>}
+        </div>
+    );
     return (
         <section className={styles.main}>
             {poolExists && (
@@ -440,47 +483,8 @@ export default function InitPool() {
                             <h1>INITIALIZE POOL</h1>
                         </header>
                         <div className={styles.pool_display_container}>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {/* <img src={tokenA.logoURI} alt='token a' /> */}
-                                    {tokenA &&
-                                        (tokenA.logoURI ? (
-                                            <img
-                                                src={tokenA.logoURI}
-                                                alt={tokenA.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenA.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenA && <h3>{tokenA.symbol}</h3>}
-                                </div>
-                                {tokenA && <p>{tokenA.name}</p>}
-                            </div>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {tokenB &&
-                                        (tokenB.logoURI ? (
-                                            <img
-                                                src={tokenB.logoURI}
-                                                alt={tokenB.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenB.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenB && <h3>{tokenB.symbol}</h3>}
-                                </div>
-                                {tokenB && <p>{tokenB.name}</p>}
-                            </div>
+                            {tokenADisplay}
+                            {tokenBDisplay}
                             <div className={styles.padding_center}>
                                 <div className={styles.pool_price_container}>
                                     <span>Initial Price</span>
