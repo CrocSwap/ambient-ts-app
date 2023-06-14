@@ -1,16 +1,14 @@
-import styles from './HarvestPositionHeader.module.css';
+import styles from './RangeActionHeader.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 
 import { VscClose } from 'react-icons/vsc';
-interface HarvestPositionHeaderPropsIF {
+interface RangeActionHeaderIF {
     title: string;
     onClose: () => void;
     onBackButton: () => void;
     showBackButton: boolean;
 }
-export default function HarvestPositionHeader(
-    props: HarvestPositionHeaderPropsIF,
-) {
+export default function RangeActionHeader(props: RangeActionHeaderIF) {
     return (
         <header className={styles.header_container}>
             {props.showBackButton ? (

@@ -1,9 +1,9 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import styles from './RemoveRangeTokenHeader.module.css';
+import styles from './RangeActionTokenHeader.module.css';
 import { RiListSettingsLine } from 'react-icons/ri';
 
-interface propsIF {
+interface RangeActionTokenHeaderIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
@@ -14,7 +14,9 @@ interface propsIF {
     showSettings: boolean;
 }
 
-export default function RemoveRangeTokenHeader(props: propsIF) {
+export default function RangeActionTokenHeader(
+    props: RangeActionTokenHeaderIF,
+) {
     const { showSettings, setShowSettings } = props;
 
     return (

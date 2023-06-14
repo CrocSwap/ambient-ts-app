@@ -1,21 +1,21 @@
 import Button from '../../Global/Button/Button';
 
-interface IRemoveRangeButtonProps {
-    removeFn: () => void;
+interface RangeActionButtonIF {
+    onClick: () => void;
     title: string;
     disabled?: boolean;
 }
 
-export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
-    const { removeFn, title } = props;
+export default function RangeActionButton(props: RangeActionButtonIF) {
+    const { onClick, title } = props;
 
     return (
         <div>
             <Button
                 title={title}
                 disabled={props.disabled}
-                action={removeFn}
-                flat={true}
+                action={onClick}
+                flat
             />
         </div>
     );

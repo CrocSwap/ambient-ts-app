@@ -1,4 +1,4 @@
-import styles from './HarvestPositionInfo.module.css';
+import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmountOld } from '../../../utils/numbers';
@@ -122,43 +122,6 @@ export default function HarvestPositionInfo(props: IHarvestPositionInfoProps) {
     return (
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
-                {/* <Row>
-                    <span>Pooled {baseTokenSymbol}</span>
-                    <div className={styles.token_price}>
-                        {liqBaseDisplay !== undefined ? liqBaseDisplay : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
-                    </div>
-                </Row> */}
-                {/*  */}
-                {/* <Row>
-                    <span>Pooled {quoteTokenSymbol}</span>
-                    <div className={styles.token_price}>
-                        {liqQuoteDisplay !== undefined ? liqQuoteDisplay : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
-                    </div>
-                </Row> */}
-                {/*  */}
-                {/* <DividerDark /> */}
-                <Row>
-                    <span>{baseTokenSymbol} Rewards Earned</span>
-                    <div className={styles.token_price}>
-                        {feeLiqBaseDisplay !== undefined
-                            ? feeLiqBaseDisplay
-                            : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
-                    </div>
-                </Row>
-                {/*  */}
-                <Row>
-                    <span>{quoteTokenSymbol} Rewards Earned</span>
-                    <div className={styles.token_price}>
-                        {feeLiqQuoteDisplay !== undefined
-                            ? feeLiqQuoteDisplay
-                            : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
-                    </div>
-                </Row>
-                <DividerDark />
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
