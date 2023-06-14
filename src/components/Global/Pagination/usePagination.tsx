@@ -21,9 +21,13 @@ function usePagination<T>(
     isScreenShort: boolean,
     isScreenTall: boolean,
 ): PaginationResult<T> {
-    const [rowsPerPage, setRowsPerPage] = useState<number>(
-        isScreenShort ? 5 : isScreenTall ? 20 : 10,
-    );
+    const DEFAULT_PAGE_COUNT: number = isScreenShort
+        ? 5
+        : isScreenTall
+        ? 20
+        : 10;
+
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
 
     const count = Math.ceil(data.length / rowsPerPage);
 
