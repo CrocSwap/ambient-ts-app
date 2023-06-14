@@ -1,5 +1,5 @@
 .main_container{
-    padding: 0 1rem 0 32px;
+    padding: 0 25px 0 32px;
 }
 
 .extra_info_content {
@@ -45,8 +45,9 @@
 
 .extra_details {
     /* background-color: var(--dark2); */
+    padding: 8px;
     border: 1px solid var(--dark3);
-    margin: 10px 5px;
+  
 
     border-radius: var(--border-radius);
 
@@ -96,12 +97,7 @@
         text-align: end;
     }
 
-    .extra_details {
-        padding: 0.1rem 1rem;
-    }
-    .price_impact {
-        padding: 0.1rem 1rem;
-    }
+
 
     .extra_row {
         flex-direction: row;
