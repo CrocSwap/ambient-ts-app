@@ -620,6 +620,12 @@ export default function RangeActionModal(props: propsIF) {
             removalPercentage) /
         100;
 
+    const baseHarvestNum =
+        ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+
+    const quoteHarvestNum =
+        ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
+
     const confirmationContent = (
         <div className={styles.confirmation_container}>
             <RangeActionHeader
@@ -754,21 +760,8 @@ export default function RangeActionModal(props: propsIF) {
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
                             quoteTokenLogoURI={props.quoteTokenLogoURI}
-                            posLiqBaseDecimalCorrected={
-                                position.positionLiqBaseDecimalCorrected
-                            }
-                            posLiqQuoteDecimalCorrected={
-                                position.positionLiqQuoteDecimalCorrected
-                            }
-                            feeLiqBaseDecimalCorrected={
-                                feeLiqBaseDecimalCorrected
-                            }
-                            feeLiqQuoteDecimalCorrected={
-                                feeLiqQuoteDecimalCorrected
-                            }
-                            baseRemovalNum={baseRemovalNum}
-                            quoteRemovalNum={quoteRemovalNum}
-                            removalPercentage={removalPercentage}
+                            baseHarvestNum={baseHarvestNum}
+                            quoteHarvestNum={quoteHarvestNum}
                         />
                     )}
                     <ExtraControls />
