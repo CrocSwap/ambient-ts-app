@@ -119,13 +119,13 @@
 }
 
 .swapbox_bottom {
-    margin: 6px 10px;
+    margin: 6px 0px;
     height: 33px;
 
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    padding: 0 2rem;
+    padding: 0 1rem;
 }
 
 .token_select_button {

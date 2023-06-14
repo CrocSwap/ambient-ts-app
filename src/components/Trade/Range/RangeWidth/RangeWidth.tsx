@@ -112,7 +112,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.explanation_button}
                     aria-label='Open range width explanation popup.'
                 >
-                    <AiOutlineInfoCircle color='#ffffff' />
+                    <AiOutlineInfoCircle color='var(--text2)' />
                 </button>
             </div>
         </>

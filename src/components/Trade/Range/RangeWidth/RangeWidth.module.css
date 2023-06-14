@@ -53,6 +53,7 @@
     color: var(--text1);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
+    font-weight: 100;
 }
 .percentage_options {
     display: flex;
@@ -75,8 +76,8 @@
     margin-top: -5px;
 }
 .percentage_option_buttons {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 
     overflow: hidden;
 

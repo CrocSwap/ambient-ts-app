@@ -117,10 +117,10 @@ function ExtraInfo(props: propsIF) {
             data: isDenomBase
                 ? `${getDisplayableEffectivePriceString(
                       effectivePriceWithDenom,
-                  )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                  )}  ${baseTokenSymbol}`
                 : `${getDisplayableEffectivePriceString(
                       effectivePriceWithDenom,
-                  )} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                  )}  ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
         {
