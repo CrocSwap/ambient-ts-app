@@ -27,7 +27,32 @@ function usePagination<T>(
         ? 20
         : 10;
 
-    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
+    const ROWS_PER_PAGE_LS_KEY = 'table_rows_per_page';
+
+    function checkLocalStorageRPP(): number {
+        const persistedData: string | null =
+            localStorage.getItem(ROWS_PER_PAGE_LS_KEY);
+        let output: number;
+        if (persistedData) {
+            try {
+                output = parseInt(persistedData);
+            } catch {
+                console.warn(
+                    'localStorage value corrupt, clearing data for: ',
+                    ROWS_PER_PAGE_LS_KEY,
+                );
+                localStorage.removeItem(ROWS_PER_PAGE_LS_KEY);
+                output = 0;
+            }
+        } else {
+            output = 0;
+        }
+        return output;
+    }
+
+    const [rowsPerPage, setRowsPerPage] = useState<number>(
+        checkLocalStorageRPP() || DEFAULT_PAGE_COUNT,
+    );
 
     const count = Math.ceil(data.length / rowsPerPage);
 
