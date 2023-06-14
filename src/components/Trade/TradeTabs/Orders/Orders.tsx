@@ -291,7 +291,7 @@ function Orders(props: propsIF) {
         totalItems,
         setCurrentPage,
         rowsPerPage,
-        setRowsPerPage,
+        changeRowsPerPage,
         count,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
@@ -304,7 +304,7 @@ function Orders(props: propsIF) {
             | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        changeRowsPerPage(parseInt(event.target.value, 10));
     };
 
     const tradePageCheck = expandTradeTable && limitOrderData.length > 10;

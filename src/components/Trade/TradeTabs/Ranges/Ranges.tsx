@@ -139,7 +139,7 @@ function Ranges(props: propsIF) {
         totalItems,
         setCurrentPage,
         rowsPerPage,
-        setRowsPerPage,
+        changeRowsPerPage,
         count,
     } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
@@ -152,7 +152,7 @@ function Ranges(props: propsIF) {
             | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        changeRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
 

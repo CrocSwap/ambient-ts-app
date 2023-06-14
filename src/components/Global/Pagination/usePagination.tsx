@@ -12,7 +12,7 @@ interface PaginationResult<T> {
     totalItems: number;
     setCurrentPage: Dispatch<SetStateAction<number>>;
     rowsPerPage: number;
-    setRowsPerPage: Dispatch<SetStateAction<number>>;
+    changeRowsPerPage(newVal: number): void;
     count: number;
 }
 
@@ -53,6 +53,11 @@ function usePagination<T>(
     const [rowsPerPage, setRowsPerPage] = useState<number>(
         checkLocalStorageRPP() || DEFAULT_PAGE_COUNT,
     );
+
+    function changeRowsPerPage(newVal: number): void {
+        setRowsPerPage(newVal);
+        localStorage.setItem(ROWS_PER_PAGE_LS_KEY, JSON.stringify(newVal));
+    }
 
     const count = Math.ceil(data.length / rowsPerPage);
 
@@ -98,7 +103,7 @@ function usePagination<T>(
         totalItems,
         setCurrentPage,
         rowsPerPage,
-        setRowsPerPage,
+        changeRowsPerPage,
         count,
     };
 }
