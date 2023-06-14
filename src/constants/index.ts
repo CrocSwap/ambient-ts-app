@@ -67,3 +67,7 @@ export const OVERRIDE_CANDLE_POOL_ID = 36000;
 // Localstorage keys
 export const LS_KEY_CHART_SETTINGS = 'chart_settings';
 export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
+
+// Icon archive
+export const ETH_ICON_URL =
+    'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png';

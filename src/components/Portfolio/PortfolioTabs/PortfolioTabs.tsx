@@ -130,7 +130,9 @@ export default function PortfolioTabs(props: propsIF) {
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setLookupAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(
+                            updatedPositions.filter((p) => p.positionLiq > 0),
+                        );
                     });
                 }
                 IS_LOCAL_ENV && console.debug('dispatch');
@@ -277,6 +279,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress ?? '',
@@ -285,6 +288,7 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Exchange/> React Element
     const exchangeProps = {
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress ?? '',
