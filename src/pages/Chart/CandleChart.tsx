@@ -155,8 +155,6 @@ export default function CandleChart(props: candlePropsIF) {
                 .on('measure', (event: any) => {
                     scaleData?.xScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
-                    scaleData?.xScaleCopy.range([0, event.detail.width]);
-
                     candlestick.context(ctx);
                 });
         }
