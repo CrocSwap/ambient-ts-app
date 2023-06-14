@@ -23,34 +23,18 @@ export const RowsPerPageDropdown = ({
     setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
     const generateOptions = (count: number): JSX.Element[] => {
-        const DEFAULT_OPTIONS: number[] = [5, 10, 25, 50, 100];
+        // default pagination values (more may be added below)
+        const options: number[] = [5, 10, 15, 20];
 
-        const maxOptions = 10;
-        const increment: number = Math.ceil(count / maxOptions / 5) * 5;
-        let options: number[] = [];
+        // last value in `options` array, used to break loop
+        let lastOption: number = options[options.length - 1];
 
-        if (count < 1) {
-            options = DEFAULT_OPTIONS;
-        } else {
-            for (
-                let i = increment;
-                i <= count && options.length < maxOptions;
-                i += increment
-            ) {
-                options.push(i);
-            }
-            // Add 5 and 10 to the options if they are not already included
-            if (!options.includes(5)) {
-                options.push(5);
-            }
-            if (!options.includes(10)) {
-                options.push(10);
-            }
+        // add options counting by 10 until highest option > number of items
+        while (lastOption < count && lastOption < 100) {
+            const nextOption = lastOption + 10;
+            options.push(nextOption);
+            lastOption = nextOption;
         }
-
-        // Sort the options in ascending order
-        // must sort BEFORE finding index for default selection
-        options.sort((a, b) => a - b);
 
         // index of the last option <= user rows per page preference
         // necessary if persisted preference > current list size
