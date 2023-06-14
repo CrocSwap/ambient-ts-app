@@ -47,6 +47,9 @@ export const useProcessRange = (
     const baseTokenSymbol = position.baseSymbol;
     const quoteTokenSymbol = position.quoteSymbol;
 
+    const baseTokenName = position.baseName;
+    const quoteTokenName = position.quoteName;
+
     const quoteTokenLogo = position.quoteTokenLogoURI;
     const baseTokenLogo = position.baseTokenLogoURI;
 
@@ -117,13 +120,13 @@ export const useProcessRange = (
     const baseTokenAddressTruncated = trimString(
         tokenAAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
     const quoteTokenAddressTruncated = trimString(
         tokenBAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
 
@@ -167,8 +170,7 @@ export const useProcessRange = (
     //     ? quoteTokenCharacter + position.highRangeDisplayInBase
     //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientOrMin =
-        position.positionType === 'ambient' ? '0.00' : minRange;
+    const ambientOrMin = position.positionType === 'ambient' ? '0' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const width = (position.askTick - position.bidTick) / 100;
@@ -178,14 +180,14 @@ export const useProcessRange = (
     const usdValueTruncated = !usdValueNum
         ? '0'
         : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + ' '
+        ? usdValueNum.toExponential(2)
         : usdValueNum >= 100000
         ? formatAmountOld(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          }) + ' ';
+          });
 
     const usdValueLocaleString = !usdValueNum
         ? '…'
@@ -200,12 +202,12 @@ export const useProcessRange = (
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
     const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseTokenCharacter}${baseQty || '0.00'}`
+        ? `${baseQty || '0.00'}`
         : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+        ? `${quoteQty || '0.00'}`
         : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
@@ -279,6 +281,8 @@ export const useProcessRange = (
         quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplay,
         quoteDisplay,
         tokenAAddressLowerCase,
