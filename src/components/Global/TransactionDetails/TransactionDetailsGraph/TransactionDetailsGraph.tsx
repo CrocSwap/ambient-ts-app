@@ -84,6 +84,7 @@ export default function TransactionDetailsGraph(
     const [lineSeries, setLineSeries] = useState<any>();
     const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
+    const [triangle, setTriangle] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
 
     const [yAxis, setYaxis] = useState<any>();
@@ -253,6 +254,42 @@ export default function TransactionDetailsGraph(
                 return priceLine;
             });
 
+            const triangle = d3fc
+                .seriesSvgPoint()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .crossValue(() => {
+                    return scaleData.xScale.domain()[0];
+                })
+                .mainValue((d: any) => d)
+                .size(90)
+                .type(d3.symbolTriangle)
+                .decorate((context: any, d: any) => {
+                    context.nodes().forEach((selection: any, index: number) => {
+                        const lastPx = scaleData.xScale(
+                            scaleData.xScale.domain()[1],
+                        );
+
+                        d3.select(selection)
+                            .attr(
+                                'transform',
+                                'translate(' +
+                                    (index % 2 ? 0 : lastPx) +
+                                    ',' +
+                                    scaleData?.yScale(d[index]) +
+                                    ') rotate(' +
+                                    (index % 2 ? 90 : 270) +
+                                    ')',
+                            )
+                            .style('stroke', 'rgba(97, 71, 247, 0.8)')
+                            .style('fill', 'rgba(97, 71, 247, 0.8)');
+                    });
+                });
+
+            setTriangle(() => {
+                return triangle;
+            });
+
             const crossPoint = d3fc
                 .seriesSvgPoint()
                 .xScale(scaleData?.xScale)
@@ -356,7 +393,7 @@ export default function TransactionDetailsGraph(
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 4;
+                        ) / 8;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -406,7 +443,7 @@ export default function TransactionDetailsGraph(
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 4;
+                        ) / 8;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -450,22 +487,24 @@ export default function TransactionDetailsGraph(
                 .select('canvas')
                 .node() as HTMLCanvasElement;
 
-            const d3YaxisContext = d3YaxisCanvas.getContext(
-                '2d',
-            ) as CanvasRenderingContext2D;
+            if (d3YaxisCanvas) {
+                const d3YaxisContext = d3YaxisCanvas.getContext(
+                    '2d',
+                ) as CanvasRenderingContext2D;
 
-            d3.select(d3Yaxis.current).on('draw', function () {
-                if (yAxis) {
-                    setCanvasResolution(d3YaxisCanvas);
-                    drawYaxis(
-                        d3YaxisContext,
-                        scaleData?.yScale,
-                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
-                    );
-                }
-            });
+                d3.select(d3Yaxis.current).on('draw', function () {
+                    if (yAxis) {
+                        setCanvasResolution(d3YaxisCanvas);
+                        drawYaxis(
+                            d3YaxisContext,
+                            scaleData?.yScale,
+                            d3YaxisCanvas.width / (2 * window.devicePixelRatio),
+                        );
+                    }
+                });
 
-            renderCanvasArray([d3Yaxis]);
+                renderCanvasArray([d3Yaxis]);
+            }
         }
     }, [yAxis, scaleData, d3Yaxis]);
 
@@ -490,9 +529,11 @@ export default function TransactionDetailsGraph(
 
             const domain = yScale.domain();
 
-            const buffer = Math.abs(domain[0] - domain[1]) / (factor * 2);
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
 
-            yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
+            yScaleCopy.domain([domain[0] + textHeight, domain[1] - textHeight]);
 
             const yScaleTicks = yScaleCopy.ticks(factor);
 
@@ -573,6 +614,7 @@ export default function TransactionDetailsGraph(
             lineSeries !== undefined &&
             crossPoint !== undefined &&
             horizontalBand !== undefined &&
+            triangle !== undefined &&
             priceLine !== undefined
         ) {
             drawChart(
@@ -582,6 +624,7 @@ export default function TransactionDetailsGraph(
                 priceLine,
                 crossPoint,
                 horizontalBand,
+                triangle,
             );
         }
     }, [
@@ -592,6 +635,7 @@ export default function TransactionDetailsGraph(
         crossPoint,
         transactionType,
         horizontalBand,
+        triangle,
     ]);
 
     const drawChart = useCallback(
@@ -602,6 +646,7 @@ export default function TransactionDetailsGraph(
             priceLine: any,
             crossPoint: any,
             horizontalBand: any,
+            triangle: any,
         ) => {
             if (graphData.length > 0) {
                 const buffer =
@@ -634,6 +679,9 @@ export default function TransactionDetailsGraph(
 
                 const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
                 const horizontalBandData: any[] = [];
+
+                const rangelinesJoin = d3fc.dataJoin('g', 'rangeLines');
+                const triangleJoin = d3fc.dataJoin('g', 'triangle');
 
                 d3.select(d3PlotGraph.current).on(
                     'measure',
@@ -683,26 +731,44 @@ export default function TransactionDetailsGraph(
                             tx !== undefined
                         ) {
                             if (tx.positionType !== 'ambient') {
-                                horizontalBandData[0] = [
-                                    (
-                                        !isAccountView
-                                            ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.bidTickInvPriceDecimalCorrected
-                                        : tx.bidTickPriceDecimalCorrected,
-                                    (
-                                        !isAccountView
-                                            ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.askTickInvPriceDecimalCorrected
-                                        : tx.askTickPriceDecimalCorrected,
+                                const bidLine = (
+                                    !isAccountView
+                                        ? denominationsInBase
+                                        : !isBaseTokenMoneynessGreaterOrEqual
+                                )
+                                    ? tx.bidTickInvPriceDecimalCorrected
+                                    : tx.bidTickPriceDecimalCorrected;
+
+                                const askLine = (
+                                    !isAccountView
+                                        ? denominationsInBase
+                                        : !isBaseTokenMoneynessGreaterOrEqual
+                                )
+                                    ? tx.askTickInvPriceDecimalCorrected
+                                    : tx.askTickPriceDecimalCorrected;
+
+                                horizontalBandData[0] = [bidLine, askLine];
+
+                                const rangeLinesData = [bidLine, askLine];
+
+                                const triangleData = [
+                                    bidLine,
+                                    bidLine,
+                                    askLine,
+                                    askLine,
                                 ];
 
                                 horizontalBandJoin(svg, [
                                     horizontalBandData,
                                 ]).call(horizontalBand);
+
+                                rangelinesJoin(svg, [rangeLinesData]).call(
+                                    priceLine,
+                                );
+
+                                triangleJoin(svg, [triangleData]).call(
+                                    triangle,
+                                );
                             }
                         }
 
