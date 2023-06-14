@@ -22,49 +22,54 @@ export const RowsPerPageDropdown = ({
     resetPageToFirst: () => void;
     setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
-    const generateOptions = (count: number) => {
-        if (count < 1) {
-            return [5, 10, 25, 50, 100];
-        }
+    const generateOptions = (count: number): JSX.Element[] => {
+        const DEFAULT_OPTIONS: number[] = [5, 10, 25, 50, 100];
 
         const maxOptions = 10;
-        const increment = Math.ceil(count / maxOptions / 5) * 5;
-        const options = [];
+        const increment: number = Math.ceil(count / maxOptions / 5) * 5;
+        let options: number[] = [];
 
-        for (
-            let i = increment;
-            i <= count && options.length < maxOptions;
-            i += increment
-        ) {
-            options.push(i);
-        }
-
-        // Add 5 and 10 to the options if they are not already included
-        if (!options.includes(5)) {
-            options.push(5);
-        }
-        if (!options.includes(10)) {
-            options.push(10);
+        if (count < 1) {
+            options = DEFAULT_OPTIONS;
+        } else {
+            for (
+                let i = increment;
+                i <= count && options.length < maxOptions;
+                i += increment
+            ) {
+                options.push(i);
+            }
+            // Add 5 and 10 to the options if they are not already included
+            if (!options.includes(5)) {
+                options.push(5);
+            }
+            if (!options.includes(10)) {
+                options.push(10);
+            }
         }
 
         // Sort the options in ascending order
+        // must sort BEFORE finding index for default selection
         options.sort((a, b) => a - b);
 
+        // index of the last option <= user rows per page preference
+        // necessary if persisted preference > current list size
+        // in such cases code will use the final option in the array
         const defaultOptionIndex: number = options.findLastIndex(
             (option: number) => option <= rowsPerPage,
         );
 
-        return options.map((option: number, idx: number) => {
-            return (
-                <option
-                    key={option}
-                    value={option}
-                    selected={defaultOptionIndex === idx}
-                >
-                    {option}
-                </option>
-            );
-        });
+        // create and return JSX components
+        // will mark the relevant option as the default
+        return options.map((option: number, idx: number) => (
+            <option
+                key={option}
+                value={option}
+                selected={defaultOptionIndex === idx}
+            >
+                {option}
+            </option>
+        ));
     };
 
     const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
