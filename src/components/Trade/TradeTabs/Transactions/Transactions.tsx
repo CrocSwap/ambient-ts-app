@@ -420,7 +420,7 @@ function Transactions(props: propsIF) {
             <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
-                        value={rowsPerPage}
+                        rowsPerPage={rowsPerPage}
                         onChange={handleChangeRowsPerPage}
                         itemCount={sortedTransactions.length}
                         setCurrentPage={setCurrentPage}

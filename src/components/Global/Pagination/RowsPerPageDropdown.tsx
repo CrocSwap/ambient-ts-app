@@ -10,13 +10,13 @@ const dropdownStyles = {
 };
 
 export const RowsPerPageDropdown = ({
-    value,
+    rowsPerPage,
     onChange,
     itemCount,
     resetPageToFirst,
     setCurrentPage,
 }: {
-    value: number;
+    rowsPerPage: number;
     onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
     itemCount: number;
     resetPageToFirst: () => void;
@@ -50,10 +50,23 @@ export const RowsPerPageDropdown = ({
         // Sort the options in ascending order
         options.sort((a, b) => a - b);
 
-        return options;
-    };
+        const defaultOptionIndex: number = options.findLastIndex(
+            (option: number) => option < rowsPerPage,
+        );
+        console.log(defaultOptionIndex);
 
-    const rowsPerPageOptions = generateOptions(itemCount);
+        return options.map((option: number, idx: number) => {
+            return (
+                <option
+                    key={option}
+                    value={option}
+                    selected={defaultOptionIndex === idx}
+                >
+                    {option}
+                </option>
+            );
+        });
+    };
 
     const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
         onChange(event);
@@ -74,15 +87,10 @@ export const RowsPerPageDropdown = ({
             <label htmlFor='rows-per-page-select'>Rows per page:</label>
             <select
                 id='rows-per-page-select'
-                value={value}
                 onChange={handleSelectChange}
                 style={dropdownStyles}
             >
-                {rowsPerPageOptions.map((option) => (
-                    <option key={option} value={option}>
-                        {option}
-                    </option>
-                ))}
+                {generateOptions(itemCount)}
             </select>
         </div>
     );
