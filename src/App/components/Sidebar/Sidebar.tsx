@@ -24,7 +24,8 @@ import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import unlock from '../../../assets/images/sidebarImages/unlock.svg';
+import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
+import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import upDownChevrons from '../../../assets/images/sidebarImages/chevrons-up-down.svg';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
@@ -262,6 +263,8 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
+    const controlIconStyle = { margin: 'auto' };
+
     const searchContainerDisplay = (
         <div
             className={` ${styles.sidebar_link_search} ${
@@ -276,20 +279,32 @@ function Sidebar() {
                     <DefaultTooltip
                         title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
                     >
-                        <img
-                            src={isLocked ? unlock : unlock}
-                            alt='Lock/Unlock Sidebar'
-                            onClick={toggleLockSidebar}
-                        />
+                        {isLocked ? (
+                            <AiFillLock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        ) : (
+                            <AiFillUnlock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        )}
                     </DefaultTooltip>
                     <DefaultTooltip
                         title={openAllDefault ? 'Collapse All' : 'Expand All'}
                     >
-                        <img
-                            src={upDownChevrons}
-                            alt='Collapse/Expand All'
-                            onClick={toggleExpandCollapseAll}
-                        />
+                        {openAllDefault ? (
+                            <BsChevronContract
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        ) : (
+                            <BsChevronExpand
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        )}
                     </DefaultTooltip>
                     <DefaultTooltip
                         title={
