@@ -33,6 +33,9 @@ export const useProcessOrder = (
     const baseTokenSymbol = limitOrder.baseSymbol;
     const quoteTokenSymbol = limitOrder.quoteSymbol;
 
+    const baseTokenName = limitOrder.baseName;
+    const quoteTokenName = limitOrder.quoteName;
+
     const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
     const baseTokenLogo = limitOrder.baseTokenLogoURI;
 
@@ -141,13 +144,13 @@ export const useProcessOrder = (
     const baseTokenAddressTruncated = trimString(
         baseTokenAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
     const quoteTokenAddressTruncated = trimString(
         quoteTokenAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
 
@@ -335,7 +338,6 @@ export const useProcessOrder = (
             limitOrder.baseDecimals,
             limitOrder.quoteDecimals,
         );
-
         if (
             askTickPrice &&
             askTickInvPrice &&
@@ -344,8 +346,8 @@ export const useProcessOrder = (
         ) {
             const startPriceDisplayNum = isDenomBase
                 ? isBid
-                    ? askTickInvPrice
-                    : bidTickInvPrice
+                    ? bidTickInvPrice
+                    : askTickInvPrice
                 : isBid
                 ? askTickPrice
                 : bidTickPrice;
@@ -373,8 +375,8 @@ export const useProcessOrder = (
                         ? askTickPrice
                         : bidTickPrice
                     : isBid
-                    ? askTickInvPrice
-                    : bidTickInvPrice;
+                    ? bidTickInvPrice
+                    : askTickInvPrice;
 
             const startPriceDisplayDenomByMoneyness =
                 startPriceDenomByMoneyness === 0
@@ -554,6 +556,8 @@ export const useProcessOrder = (
         quoteDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         isDenomBase,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,

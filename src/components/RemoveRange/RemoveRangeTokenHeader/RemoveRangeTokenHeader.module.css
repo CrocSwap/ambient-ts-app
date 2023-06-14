@@ -20,8 +20,3 @@
     align-items: center;
     gap: 0.8rem;
 }
-
-.token_info img {
-    aspect-ratio: 1;
-    width: 30px;
-}

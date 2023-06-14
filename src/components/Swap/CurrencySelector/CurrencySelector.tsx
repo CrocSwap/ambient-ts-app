@@ -1,7 +1,7 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-// import Toggle from '../../Global/Toggle/Toggle';
+
 import {
     useState,
     ChangeEvent,
@@ -17,7 +17,6 @@ import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
@@ -29,6 +28,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -527,19 +527,11 @@ function CurrencySelector(props: propsIF) {
                     aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
                 >
-                    {thisToken.logoURI ? (
-                        <img
-                            className={styles.token_list_img}
-                            src={thisToken.logoURI}
-                            alt={thisToken.name}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={thisToken.symbol?.charAt(0)}
-                            width='30px'
-                        />
-                    )}
+                    <TokenIcon
+                        src={thisToken.logoURI}
+                        alt={thisToken.name}
+                        size='2xl'
+                    />
                     {tokenSymbol}
                     <RiArrowDownSLine size={27} />
                 </button>
