@@ -1,6 +1,7 @@
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { formatAmountOld } from '../../../../../utils/numbers';
 
+// TODO: consolidate duplicate usd formatting
 export const getLimitValue = (limitOrder: LimitOrderIF): string => {
     const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum

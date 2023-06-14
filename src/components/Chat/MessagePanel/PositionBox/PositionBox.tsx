@@ -12,6 +12,7 @@ import {
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     message: string;
@@ -136,35 +137,14 @@ export default function PositionBox(props: propsIF) {
                     const invPriceDecimalCorrected =
                         position.swapInvPriceDecimalCorrected;
 
-                    const nonInvertedPriceTruncated =
-                        priceDecimalCorrected === 0
-                            ? '0.00'
-                            : priceDecimalCorrected < 0.0001
-                            ? priceDecimalCorrected.toExponential(2)
-                            : priceDecimalCorrected < 2
-                            ? priceDecimalCorrected.toPrecision(3)
-                            : priceDecimalCorrected >= 100000
-                            ? formatAmount(priceDecimalCorrected)
-                            : priceDecimalCorrected.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    const invertedPriceTruncated =
-                        invPriceDecimalCorrected === 0
-                            ? '0.00'
-                            : invPriceDecimalCorrected < 0.0001
-                            ? invPriceDecimalCorrected.toExponential(2)
-                            : invPriceDecimalCorrected < 2
-                            ? invPriceDecimalCorrected.toPrecision(3)
-                            : invPriceDecimalCorrected >= 100000
-                            ? formatAmount(invPriceDecimalCorrected)
-                            : invPriceDecimalCorrected.toLocaleString(
-                                  undefined,
-                                  {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  },
-                              );
+                    const nonInvertedPriceTruncated = getFormattedTokenBalance({
+                        balance: priceDecimalCorrected,
+                        formatSecondaryBalance: formatAmount,
+                    });
+                    const invertedPriceTruncated = getFormattedTokenBalance({
+                        balance: invPriceDecimalCorrected,
+                        formatSecondaryBalance: formatAmount,
+                    });
 
                     const truncatedDisplayPrice = tradeData.isDenomBase
                         ? (position.quoteSymbol

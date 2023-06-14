@@ -7,6 +7,7 @@ import { formatAmountOld } from '../../../../../../utils/numbers';
  */
 
 // TODO (#1531): unit test coverage for this function.
+// TODO: consolidate duplicates
 export const getTxValue = (tx: TransactionIF): string => {
     const totalValueUSD = tx.totalValueUSD;
 

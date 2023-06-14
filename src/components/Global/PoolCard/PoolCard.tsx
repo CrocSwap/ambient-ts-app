@@ -95,6 +95,7 @@ export default function PoolCard(props: propsIF) {
                         ? 1 / displayPrice
                         : displayPrice;
 
+                    // TODO: consolidate formatting
                     const displayPriceWithFormatting: string | undefined =
                         displayPriceWithInversion === undefined
                             ? undefined

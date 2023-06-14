@@ -1,5 +1,6 @@
 import { formatAmountOld } from '../../../../../utils/numbers';
 
+// TODO: consolidate duplicate usd formatting
 export const getPositionValue = (value: number): string => {
     const usdValueTruncated = !value
         ? '0.00'

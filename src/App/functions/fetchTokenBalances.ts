@@ -7,6 +7,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
+import { getFormattedTokenBalance } from './getFormattedTokenBalance';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -74,16 +75,16 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-    const combinedBalanceDisplayTruncated = getFormattedTokenBalance(
-        combinedBalanceDisplayNum,
-        nativeWalletBalanceDisplayNum,
-    );
-    const nativeDexBalanceDisplayTruncated = getFormattedTokenBalance(
-        nativeDexBalanceDisplayNum,
-    );
-    const nativeWalletBalanceDisplayTruncated = getFormattedTokenBalance(
-        nativeWalletBalanceDisplayNum,
-    );
+    const combinedBalanceDisplayTruncated = getFormattedTokenBalance({
+        balance: combinedBalanceDisplayNum,
+        secondaryBalance: nativeWalletBalanceDisplayNum,
+    });
+    const nativeDexBalanceDisplayTruncated = getFormattedTokenBalance({
+        balance: nativeDexBalanceDisplayNum,
+    });
+    const nativeWalletBalanceDisplayTruncated = getFormattedTokenBalance({
+        balance: nativeWalletBalanceDisplayNum,
+    });
 
     const updatedNativeToken: TokenIF = {
         chainId: parseInt(chain),

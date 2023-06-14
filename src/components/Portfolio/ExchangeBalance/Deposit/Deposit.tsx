@@ -32,6 +32,7 @@ import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -94,16 +95,9 @@ export default function Deposit(props: propsIF) {
         ? parseFloat(tokenWalletBalanceDisplay)
         : undefined;
 
-    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
-        ? tokenWalletBalanceDisplayNum < 0.0001
-            ? 0.0
-            : tokenWalletBalanceDisplayNum < 2
-            ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenWalletBalanceTruncated = getFormattedTokenBalance({
+        balance: tokenWalletBalanceDisplayNum,
+    });
 
     const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
         string | undefined

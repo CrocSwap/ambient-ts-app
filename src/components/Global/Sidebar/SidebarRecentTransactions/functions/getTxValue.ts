@@ -1,6 +1,7 @@
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { formatAmountOld } from '../../../../../utils/numbers';
 
+// TODO: consolidate duplicate usd formatting
 export const getTxValue = (tx: TransactionIF): string => {
     const totalValueUSDTruncated = !tx.totalValueUSD
         ? undefined

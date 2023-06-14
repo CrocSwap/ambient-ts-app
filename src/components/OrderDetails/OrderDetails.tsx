@@ -21,6 +21,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -117,19 +118,10 @@ export default function OrderDetails(props: propsIF) {
         ? baseDisplayFrontendNum * parsedLimitPriceNum
         : baseDisplayFrontendNum / parsedLimitPriceNum;
 
-    const approximateSellQtyTruncated =
-        approximateSellQty === 0
-            ? '0'
-            : approximateSellQty < 0.0001
-            ? approximateSellQty.toExponential(2)
-            : approximateSellQty < 2
-            ? approximateSellQty.toPrecision(3)
-            : approximateSellQty >= 100000
-            ? formatAmountOld(approximateSellQty)
-            : approximateSellQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const approximateSellQtyTruncated = getFormattedTokenBalance({
+        balance: approximateSellQty,
+        zeroDisplay: '0',
+    });
 
     const approximateBuyQty = isFillStarted
         ? isBid
@@ -147,19 +139,10 @@ export default function OrderDetails(props: propsIF) {
         ? quoteDisplayFrontendNum / parsedLimitPriceNum
         : quoteDisplayFrontendNum * parsedLimitPriceNum;
 
-    const approximateBuyQtyTruncated =
-        approximateBuyQty === 0
-            ? '0'
-            : approximateBuyQty < 0.0001
-            ? approximateBuyQty.toExponential(2)
-            : approximateBuyQty < 2
-            ? approximateBuyQty.toPrecision(3)
-            : approximateBuyQty >= 100000
-            ? formatAmountOld(approximateBuyQty)
-            : approximateBuyQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const approximateBuyQtyTruncated = getFormattedTokenBalance({
+        balance: approximateBuyQty,
+        zeroDisplay: '0',
+    });
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
