@@ -108,13 +108,13 @@ function LimitExtraInfo(props: propsIF) {
           });
 
     const extraInfoData = [
-        {
-            title: 'Spot Price',
-            tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: isDenomBase
-                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
+        // {
+        //     title: 'Spot Price',
+        //     tooltipTitle: 'Current Price of the Selected Token Pool',
+        //     data: isDenomBase
+        //         ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+        //         : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        // },
         // {
         //     title: 'Limit Price',
         //     tooltipTitle: 'limit price explanation',
@@ -130,14 +130,14 @@ function LimitExtraInfo(props: propsIF) {
                 ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
-        {
-            title: 'Fill Middle',
-            tooltipTitle:
-                'Average price at which the limit order will be filled',
-            data: isDenomBase
-                ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
+        // {
+        //     title: 'Fill Middle',
+        //     tooltipTitle:
+        //         'Average price at which the limit order will be filled',
+        //     data: isDenomBase
+        //         ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+        //         : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        // },
         {
             title: 'Fill End',
             tooltipTitle:

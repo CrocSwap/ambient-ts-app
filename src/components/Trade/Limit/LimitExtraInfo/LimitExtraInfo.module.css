@@ -70,15 +70,13 @@
         gap: 5px;
         text-align: start;
     }
-    .extra_info_content {
-        padding: 0 2%;
-    }
+
     .data {
         text-align: end;
     }
 
     .extra_details {
-        padding: 1rem;
+        padding: 8px;
     }
 
     .extra_row {
