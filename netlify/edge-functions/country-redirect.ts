@@ -13,13 +13,12 @@ export default async (request: Request, context: Context) => {
     );
     const invertertGeofence = !!invertGeofenceArg;
 
-    console.log(invertGeofenceArg, invertertGeofence, geofenceArg, geofenced);
     if (invertertGeofence) {
         // If geofence is whitelis, show website if the user is in the country list
         if (geofenced.includes(context.geo.country.code)) {
             return;
         }
-
+    } else {
         // if user not in geofenced country, show website
         if (!geofenced.includes(context.geo.country.code)) {
             return;
