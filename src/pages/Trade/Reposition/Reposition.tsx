@@ -56,6 +56,7 @@ import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { formatAmountOld } from '../../../utils/numbers';
 
 function Reposition() {
     // current URL parameter string
@@ -177,11 +178,12 @@ function Reposition() {
     );
 
     const truncatedCurrentPoolDisplayPriceInBase = currentPoolDisplayPriceInBase
-        ? currentPoolDisplayPriceInBase < 2
-            ? currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+        ? currentPoolDisplayPriceInBase < 0.0001
+            ? currentPoolDisplayPriceInBase.toExponential(2)
+            : currentPoolDisplayPriceInBase < 2
+            ? currentPoolDisplayPriceInBase.toPrecision(3)
+            : currentPoolDisplayPriceInBase >= 10000
+            ? formatAmountOld(currentPoolDisplayPriceInBase, 1)
             : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -190,11 +192,12 @@ function Reposition() {
 
     const truncatedCurrentPoolDisplayPriceInQuote =
         currentPoolDisplayPriceInQuote
-            ? currentPoolDisplayPriceInQuote < 2
-                ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            ? currentPoolDisplayPriceInQuote < 0.0001
+                ? currentPoolDisplayPriceInQuote.toExponential(2)
+                : currentPoolDisplayPriceInQuote < 2
+                ? currentPoolDisplayPriceInQuote.toPrecision(3)
+                : currentPoolDisplayPriceInQuote >= 10000
+                ? formatAmountOld(currentPoolDisplayPriceInQuote, 1)
                 : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
