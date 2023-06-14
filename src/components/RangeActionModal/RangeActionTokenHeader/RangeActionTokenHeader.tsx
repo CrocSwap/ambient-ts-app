@@ -49,6 +49,7 @@ export default function RangeActionTokenHeader(
                     isInRange={props.isPositionInRange}
                     isEmpty={false}
                     isAmbient={props.isAmbient}
+                    size='s'
                 />
                 <div
                     onClick={() => setShowSettings(!showSettings)}

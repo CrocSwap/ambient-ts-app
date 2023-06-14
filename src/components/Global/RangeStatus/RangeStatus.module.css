@@ -31,24 +31,18 @@
 }
 
 .range_text_positive {
-    width: 8px;
-    height: 8px;
     padding: 1px;
     border-radius: 50%;
     background: var(--positive);
     box-shadow: 0 0 0 2px var(--text3);
 }
 .range_text_negative {
-    width: 8px;
-    height: 8px;
     padding: 1px;
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--text3);
     background: var(--negative);
 }
 .range_text_ambient {
-    width: 18px;
-    height: 18px;
     padding: 1px;
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--text3);
@@ -65,6 +59,16 @@
     border-radius: 50%;
     background: var(--dark2);
     border: var(--grey-light-border);
+}
+
+.small {
+    width: 8px;
+    height: 8px;
+}
+
+.large {
+    width: 18px;
+    height: 18px;
 }
 
 /* 
