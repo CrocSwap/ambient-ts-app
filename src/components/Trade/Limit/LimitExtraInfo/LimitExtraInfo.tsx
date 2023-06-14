@@ -127,8 +127,8 @@ function LimitExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Price at which the limit order will begin to be filled',
             data: isDenomBase
-                ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${startPriceString}  ${baseTokenSymbol}`
+                : `${startPriceString}  ${quoteTokenSymbol}`,
         },
         // {
         //     title: 'Fill Middle',
@@ -143,8 +143,8 @@ function LimitExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Price at which the limit order will finish being filled and become claimable',
             data: isDenomBase
-                ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${endPriceString}  ${baseTokenSymbol}`
+                : `${endPriceString}  ${quoteTokenSymbol}`,
         },
         {
             title: 'Minimum Rebate Rate',
