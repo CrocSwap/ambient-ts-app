@@ -5,7 +5,7 @@ import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
-import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { decimalNumRegEx } from '../../../../../utils/regex/exports';
 import TokenIcon from '../../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
@@ -57,7 +57,7 @@ function TransferCurrencySelector(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={exponentialNumRegEx.source}
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>
