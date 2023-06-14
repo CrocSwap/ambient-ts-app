@@ -14,6 +14,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 
 interface propsIF {
     pool: topPoolIF;
@@ -24,8 +25,11 @@ export default function PoolCard(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { cachedPoolStatsFetch, cachedQuerySpotPrice } =
-        useContext(CachedDataContext);
+    const {
+        cachedPoolStatsFetch,
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -151,19 +155,32 @@ export default function PoolCard(props: propsIF) {
                 poolIndex &&
                 chainId &&
                 lastBlockNumber &&
-                shouldInvertDisplay !== undefined
+                shouldInvertDisplay !== undefined &&
+                crocEnv
             ) {
+                const RANGE_WIDTH = 0.1;
+
+                const apyEst = estimateFrom24HrRangeApr(
+                    RANGE_WIDTH,
+                    pool.base.address,
+                    pool.quote.address,
+                    crocEnv,
+                    lastBlockNumber,
+                );
+
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
                     Math.floor(Date.now() / 60000),
+                    crocEnv,
+                    cachedFetchTokenPrice,
                 );
 
-                const tvlResult = poolStats?.tvl;
-                const volumeResult = poolStats?.volume; // display the 24 hour volume
-                const apyResult = poolStats?.apy;
+                const tvlResult = poolStats?.tvlTotalUsd;
+                const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
+                const apyResult = await apyEst;
 
                 if (tvlResult) {
                     const tvlString = formatAmountOld(tvlResult);
@@ -189,13 +206,21 @@ export default function PoolCard(props: propsIF) {
                         poolIndex,
                         shouldInvertDisplay,
                     );
+
+                    if (!priceChangeResult) {
+                        setPoolPriceChangePercent(undefined);
+                        setIsPoolPriceChangePositive(true);
+                        return;
+                    }
+
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
                         setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
+                    } else {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
+
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +
@@ -209,8 +234,6 @@ export default function PoolCard(props: propsIF) {
                                       maximumFractionDigits: 2,
                                   }) + '%';
                         setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
                     }
                 } catch (error) {
                     setPoolPriceChangePercent(undefined);
@@ -228,71 +251,6 @@ export default function PoolCard(props: propsIF) {
         lastBlockNumber,
         shouldInvertDisplay,
     ]);
-
-    const tokenImagesDisplay = (
-        <div className={styles.token_images}>
-            <img
-                src={
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }`}
-            />
-            <img
-                src={
-                    shouldInvertDisplay ? pool.quote.logoURI : pool.base.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.quote.name : pool.base.name
-                }`}
-            />
-        </div>
-    );
-
-    const tokenNamesDisplay = (
-        <div className={styles.tokens_name}>
-            {shouldInvertDisplay
-                ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                : `${pool.quote.symbol} / ${pool.base.symbol}`}
-        </div>
-    );
-
-    const apyDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h APR</div>
-                <div className={styles.apr}>
-                    {poolApy === undefined ? '…' : `${poolApy}%`}
-                </div>
-            </div>
-        </>
-    );
-
-    const volumeDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h Vol.</div>
-                <div className={styles.vol}>
-                    {poolVolume === undefined ? '…' : `$${poolVolume}`}
-                </div>
-            </div>
-        </>
-    );
-
-    const tvlDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>
-                    {poolTvl === undefined ? '…' : `$${poolTvl}`}
-                </div>
-            </div>
-        </>
-    );
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
@@ -346,16 +304,67 @@ export default function PoolCard(props: propsIF) {
             aria-label={ariaDescription}
         >
             <div className={styles.main_container}>
-                <div className={styles.row}>
-                    {tokenImagesDisplay}
-                    {tokenNamesDisplay}
+                <div className={styles.row} style={{ padding: '4px' }}>
+                    <div className={styles.token_images}>
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }`}
+                        />
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.quote.logoURI
+                                    : pool.base.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.quote.name
+                                    : pool.base.name
+                            }`}
+                        />
+                    </div>
+                    <div className={styles.tokens_name}>
+                        {shouldInvertDisplay
+                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                            : `${pool.quote.symbol} / ${pool.base.symbol}`}
+                    </div>
                 </div>
-                <div className={styles.row}>{volumeDisplay}</div>
-                <div className={styles.row}>{apyDisplay}</div>
-                <div className={styles.row}>{tvlDisplay}</div>
-                <div className={styles.column}>
-                    {poolPriceChangeDisplay}
-                    {poolPriceDisplayDOM}
+                <div className={styles.row}>
+                    <div className={styles.column}>
+                        {poolPriceChangeDisplay}
+                        {poolPriceDisplayDOM}
+                    </div>
+                    <div className={styles.column}>
+                        <div className={styles.row}></div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>24h Vol.</div>
+                            <div className={styles.vol}>
+                                {poolVolume === undefined
+                                    ? '…'
+                                    : `$${poolVolume}`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>24h APR</div>
+                            <div className={styles.apr}>
+                                {poolApy === undefined ? '…' : `${poolApy}%`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>TVL</div>
+                            <div className={styles.vol}>
+                                {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Link>

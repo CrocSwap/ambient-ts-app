@@ -126,9 +126,10 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
-        currentLocation !== '/tos' &&
+        currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
+        !currentLocation.includes('/initpool') &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
@@ -142,7 +143,7 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
-        currentLocation == '/tos' ||
+        currentLocation == '/terms' ||
         currentLocation == '/privacy' ||
         currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
@@ -302,7 +303,7 @@ export default function App() {
                             }
                         />
                         <Route path='swap/:params' element={<Swap />} />
-                        <Route path='tos' element={<TermsOfService />} />
+                        <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
@@ -322,7 +323,7 @@ export default function App() {
             <div className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
-                    currentLocation !== '/tos' &&
+                    currentLocation !== '/terms' &&
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}

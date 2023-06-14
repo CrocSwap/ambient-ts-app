@@ -4,15 +4,19 @@ import RecentPoolsCard from './RecentPoolsCard';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { memo, useContext } from 'react';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 function RecentPools(props: propsIF) {
-    const { cachedPoolStatsFetch } = props;
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
 
     const { recentPools } = useContext(SidebarContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     return (
         <div className={styles.container}>
@@ -27,6 +31,8 @@ function RecentPools(props: propsIF) {
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        crocEnv={crocEnv}
                     />
                 ))}
             </div>

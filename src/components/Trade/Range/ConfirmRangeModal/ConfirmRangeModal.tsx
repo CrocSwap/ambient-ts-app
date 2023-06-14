@@ -8,7 +8,6 @@ import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConf
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import SelectedRange from './SelectedRange/SelectedRange';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 
@@ -17,6 +16,7 @@ import styles from './ConfirmRangeModal.module.css';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -120,22 +120,16 @@ function ConfirmRangeModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {tokenA.logoURI ? (
-                            <img src={tokenA.logoURI} alt={tokenA.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenA.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {tokenB.logoURI ? (
-                            <img src={tokenB.logoURI} alt={tokenB.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenB.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={tokenA.logoURI}
+                            alt={tokenA.name}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            src={tokenB.logoURI}
+                            alt={tokenB.name}
+                            size='2xl'
+                        />
                     </div>
                     <span className={styles.token_symbol}>
                         {tokenA.symbol}/{tokenB.symbol}
@@ -151,14 +145,11 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.fee_tier_container}>
                     <div className={styles.detail_line}>
                         <div>
-                            {tokenA.logoURI ? (
-                                <img src={tokenA.logoURI} alt={tokenA.name} />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={tokenA.symbol?.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
+                            <TokenIcon
+                                src={tokenA.logoURI}
+                                alt={tokenA.name}
+                                size='m'
+                            />
                             <span>{tokenA.symbol}</span>
                         </div>
                         <span>
@@ -169,14 +160,11 @@ function ConfirmRangeModal(props: propsIF) {
                     </div>
                     <div className={styles.detail_line}>
                         <div>
-                            {tokenB.logoURI ? (
-                                <img src={tokenB.logoURI} alt={tokenB.name} />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={tokenB.symbol?.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
+                            <TokenIcon
+                                src={tokenB.logoURI}
+                                alt={tokenB.name}
+                                size='m'
+                            />
                             <span>{tokenB.symbol}</span>
                         </div>
                         <span>

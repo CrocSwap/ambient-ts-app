@@ -1,10 +1,10 @@
 import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import TokenIcon from '../TokenIcon/TokenIcon';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
@@ -31,15 +31,6 @@ export default function SoloTokenImport(props: propsIF) {
     if (!customToken) return tokenNotFound;
     if (customToken === 'querying') return tokenQuerying;
 
-    const tokenLogo = customToken?.logoURI ? (
-        <img src={customToken.logoURI} alt='' width='30px' />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={customToken?.symbol?.charAt(0) || '?'}
-            width='30px'
-        />
-    );
-
     return (
         <div className={styles.main_container}>
             <div className={styles.match_text_container}>
@@ -49,7 +40,11 @@ export default function SoloTokenImport(props: propsIF) {
 
             <div className={styles.token_display}>
                 <div>
-                    {tokenLogo}
+                    <TokenIcon
+                        src={customToken.logoURI}
+                        alt={customToken.name}
+                        size='2xl'
+                    />
                     <h2>{customToken?.symbol}</h2>
                 </div>
                 <h6>{customToken?.name}</h6>

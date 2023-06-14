@@ -7,7 +7,7 @@
 
     transition: width var(--animation-speed) ease;
 
-    background-color: var(--body-bg);
+    background-color: var(--dark1);
     height: 64px;
     display: none;
 }

@@ -38,7 +38,8 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -84,7 +85,12 @@ function Sidebar() {
             name: 'Recent Pools',
             icon: recentPoolsImage,
 
-            data: <RecentPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <RecentPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
     const topPoolsSection = [
@@ -92,7 +98,12 @@ function Sidebar() {
             name: 'Top Pools',
             icon: topPoolsImage,
 
-            data: <TopPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <TopPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -119,7 +130,12 @@ function Sidebar() {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
 
-            data: <FavoritePools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <FavoritePools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -404,6 +420,7 @@ function Sidebar() {
                         <SidebarSearchResults
                             searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ) : (
                         regularSidebarDisplay

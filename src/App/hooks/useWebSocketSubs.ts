@@ -6,10 +6,8 @@ import { mktDataChainId } from '../../utils/data/chains';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import isJsonString from '../../utils/functions/isJsonString';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
+import { CandleData } from '../functions/fetchCandleSeries';
 
 export interface WebSockerPropsIF {
     crocEnv?: CrocEnv;

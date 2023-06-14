@@ -7,6 +7,7 @@ import {
     useState,
     useContext,
 } from 'react';
+import { CandleData } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import {
     GRAPHCACHE_URL,
@@ -17,10 +18,7 @@ import { mktDataChainId } from '../utils/data/chains';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { ChartContext } from './ChartContext';
@@ -142,30 +140,47 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 abortController.abort();
             }
 
-            const reqOptions = new URLSearchParams({
-                base: mainnetBaseTokenAddress.toLowerCase(),
-                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: (
-                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                ).toString(),
-                period: candleTimeLocal.toString(),
-                // time: '', // optional
-                n: (candleScale?.nCandle > 1000
-                    ? 1000
-                    : candleScale?.nCandle
-                ).toString(), // positive integer: max 1000
-                // page: '0', // nonnegative integer
-                chainId: mktDataChainId(chainData.chainId),
-                dex: 'all',
-                poolStats: 'true',
-                concise: 'true',
-                poolStatsChainIdOverride: chainData.chainId,
-                poolStatsBaseOverride: mainnetBaseTokenAddress.toLowerCase(),
-                poolStatsQuoteOverride: mainnetQuoteTokenAddress.toLowerCase(),
-                poolStatsPoolIdxOverride: (
-                    OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                ).toString(),
-            });
+            const reqOptions =
+                chainData.chainId === '0x1'
+                    ? new URLSearchParams({
+                          base: mainnetBaseTokenAddress.toLowerCase(),
+                          quote: mainnetQuoteTokenAddress.toLowerCase(),
+                          poolIdx: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                          period: candleTimeLocal.toString(),
+                          n: (candleScale?.nCandle > 1000
+                              ? 1000
+                              : candleScale?.nCandle
+                          ).toString(), // positive integer: max 1000
+                          chainId: mktDataChainId(chainData.chainId),
+                          dex: 'all',
+                          poolStats: 'true',
+                          concise: 'true',
+                      })
+                    : new URLSearchParams({
+                          base: mainnetBaseTokenAddress.toLowerCase(),
+                          quote: mainnetQuoteTokenAddress.toLowerCase(),
+                          poolIdx: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                          period: candleTimeLocal.toString(),
+                          n: (candleScale?.nCandle > 1000
+                              ? 1000
+                              : candleScale?.nCandle
+                          ).toString(), // positive integer: max 1000
+                          chainId: mktDataChainId(chainData.chainId),
+                          dex: 'all',
+                          poolStats: 'true',
+                          concise: 'true',
+                          poolStatsChainIdOverride: chainData.chainId,
+                          poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                          poolStatsQuoteOverride:
+                              quoteTokenAddress.toLowerCase(),
+                          poolStatsPoolIdxOverride: (
+                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
+                          ).toString(),
+                      });
 
             if (candleScale?.lastCandleDate) {
                 reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
@@ -193,7 +208,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                                         quoteAddress:
                                             quoteTokenAddress.toLowerCase(),
                                         poolIdx: chainData.poolIndex,
-                                        network: chainData.chainId,
+                                        chainId: chainData.chainId,
                                     },
                                     duration: candleTimeLocal,
                                     candles: candles,
