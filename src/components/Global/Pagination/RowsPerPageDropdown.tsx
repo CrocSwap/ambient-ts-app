@@ -53,7 +53,6 @@ export const RowsPerPageDropdown = ({
         const defaultOptionIndex: number = options.findLastIndex(
             (option: number) => option <= rowsPerPage,
         );
-        console.log(defaultOptionIndex);
 
         return options.map((option: number, idx: number) => {
             return (
