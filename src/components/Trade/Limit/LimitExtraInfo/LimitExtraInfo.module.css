@@ -1,4 +1,6 @@
-
+.main_container{
+    padding: 0 2rem;
+}
 .extra_info_content {
     width: 100%;
     display: flex;
@@ -9,15 +11,16 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    min-height: 33px;
+    height: 33px;
 
     background: transparent;
     outline: none;
     border: none;
     border-radius: var(--border-radius);
+
 }
 
-.extra_info_content:hover,
+
 .extra_info_content:focus-visible {
     background: var(--dark2);
 }

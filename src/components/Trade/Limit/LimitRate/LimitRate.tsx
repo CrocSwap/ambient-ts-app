@@ -152,6 +152,7 @@ export default function LimitRate(props: propsIF) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    height: '19px',
                 }}
             >
                 <p>Price</p>
