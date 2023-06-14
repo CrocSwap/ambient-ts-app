@@ -56,7 +56,7 @@ function usePagination<T>(
 
     function changeRowsPerPage(newVal: number): void {
         setRowsPerPage(newVal);
-        localStorage.setItem(ROWS_PER_PAGE_LS_KEY, JSON.stringify(newVal));
+        localStorage.setItem(ROWS_PER_PAGE_LS_KEY, newVal.toString());
     }
 
     const count = Math.ceil(data.length / rowsPerPage);
