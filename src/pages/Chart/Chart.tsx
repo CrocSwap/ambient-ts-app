@@ -229,8 +229,9 @@ export default function Chart(props: propsIF) {
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
-    const [liqDataHoverEvent, setLiqDataHoverEvent] =
-        useState<MouseEvent<HTMLDivElement>>();
+    const [liqDataHoverEvent, setLiqDataHoverEvent] = useState<
+        MouseEvent<HTMLDivElement> | undefined
+    >(undefined);
     const [mouseLeaveEvent, setMouseLeaveEvent] =
         useState<MouseEvent<HTMLDivElement>>();
 
@@ -4630,7 +4631,7 @@ export default function Chart(props: propsIF) {
                 (event: MouseEvent<HTMLDivElement>) => {
                     setCrosshairActive('none');
                     setMouseLeaveEvent(event);
-
+                    setLiqDataHoverEvent(undefined);
                     if (unparsedCandleData) {
                         const lastData = unparsedCandleData.find(
                             (item: any) =>
@@ -4671,6 +4672,7 @@ export default function Chart(props: propsIF) {
 
             d3.select(d3CanvasMain.current).on('mouseleave', (event: any) => {
                 mouseLeaveCanvas();
+                setLiqDataHoverEvent(undefined);
                 setMouseLeaveEvent(event);
             });
 

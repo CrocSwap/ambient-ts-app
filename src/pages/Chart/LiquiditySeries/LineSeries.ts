@@ -26,7 +26,6 @@ export function createLineSeries(
                 } else {
                     context.strokeStyle = lineBuyColor;
                 }
-                context.lineWidth = 2;
             },
         );
 }
