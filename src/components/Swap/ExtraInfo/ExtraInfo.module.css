@@ -1,3 +1,7 @@
+.main_container{
+    padding: 0 1rem 0 32px;
+}
+
 .extra_info_content {
     width: 100%;
     display: flex;

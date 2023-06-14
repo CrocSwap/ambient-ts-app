@@ -227,10 +227,10 @@ function LimitExtraInfo(props: propsIF) {
         </button>
     );
     return (
-        <>
+        <div className={styles.main_container}>
             {extraInfoSectionOrNull}
             {extraDetailsOrNull}
-        </>
+        </div>
     );
 }
 
