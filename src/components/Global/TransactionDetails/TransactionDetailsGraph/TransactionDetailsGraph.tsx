@@ -356,7 +356,7 @@ export default function TransactionDetailsGraph(
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 4;
+                        ) / 8;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -406,7 +406,7 @@ export default function TransactionDetailsGraph(
                         Math.abs(
                             Math.min(yExtent(graphData)[0], lowBoundary) -
                                 Math.max(yExtent(graphData)[1], topBoundary),
-                        ) / 4;
+                        ) / 8;
 
                     const boundaries = [
                         Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
@@ -450,22 +450,24 @@ export default function TransactionDetailsGraph(
                 .select('canvas')
                 .node() as HTMLCanvasElement;
 
-            const d3YaxisContext = d3YaxisCanvas.getContext(
-                '2d',
-            ) as CanvasRenderingContext2D;
+            if (d3YaxisCanvas) {
+                const d3YaxisContext = d3YaxisCanvas.getContext(
+                    '2d',
+                ) as CanvasRenderingContext2D;
 
-            d3.select(d3Yaxis.current).on('draw', function () {
-                if (yAxis) {
-                    setCanvasResolution(d3YaxisCanvas);
-                    drawYaxis(
-                        d3YaxisContext,
-                        scaleData?.yScale,
-                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
-                    );
-                }
-            });
+                d3.select(d3Yaxis.current).on('draw', function () {
+                    if (yAxis) {
+                        setCanvasResolution(d3YaxisCanvas);
+                        drawYaxis(
+                            d3YaxisContext,
+                            scaleData?.yScale,
+                            d3YaxisCanvas.width / (2 * window.devicePixelRatio),
+                        );
+                    }
+                });
 
-            renderCanvasArray([d3Yaxis]);
+                renderCanvasArray([d3Yaxis]);
+            }
         }
     }, [yAxis, scaleData, d3Yaxis]);
 
@@ -490,9 +492,11 @@ export default function TransactionDetailsGraph(
 
             const domain = yScale.domain();
 
-            const buffer = Math.abs(domain[0] - domain[1]) / (factor * 2);
+            const textHeight =
+                context.measureText('0.0').actualBoundingBoxAscent +
+                context.measureText('0.0').actualBoundingBoxDescent;
 
-            yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
+            yScaleCopy.domain([domain[0] + textHeight, domain[1] - textHeight]);
 
             const yScaleTicks = yScaleCopy.ticks(factor);
 
