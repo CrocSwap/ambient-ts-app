@@ -26,7 +26,6 @@ import { MdClose } from 'react-icons/md';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
-import upDownChevrons from '../../../assets/images/sidebarImages/chevrons-up-down.svg';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
