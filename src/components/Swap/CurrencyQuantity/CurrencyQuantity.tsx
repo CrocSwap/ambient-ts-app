@@ -132,9 +132,6 @@ function CurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
-                onBlur={() =>
-                    setDisplayValue(parseFloat(displayValue).toString())
-                }
                 value={isLoading ? '' : displayValue}
                 type='text'
                 inputMode='decimal'

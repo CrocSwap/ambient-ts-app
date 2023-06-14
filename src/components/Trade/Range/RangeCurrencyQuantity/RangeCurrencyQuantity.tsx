@@ -29,11 +29,9 @@ function RangeCurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         updateOtherQuantity(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
-
         setDisplayValue(input);
     };
 
@@ -52,7 +50,6 @@ function RangeCurrencyQuantity(props: propsIF) {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
     };
     return (
