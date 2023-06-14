@@ -248,7 +248,7 @@ export const txRowConstants = (props: Props) => {
         >
             <TokenIcon
                 src={baseTokenLogo}
-                alt='base token'
+                alt={tx.baseSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
             />
         </DefaultTooltip>
@@ -270,7 +270,7 @@ export const txRowConstants = (props: Props) => {
         >
             <TokenIcon
                 src={quoteTokenLogo}
-                alt='quote token'
+                alt={tx.quoteSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
             />
         </DefaultTooltip>

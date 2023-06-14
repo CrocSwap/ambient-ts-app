@@ -14,6 +14,8 @@ export interface PositionIF {
     ensResolution: string;
     baseSymbol: string;
     quoteSymbol: string;
+    baseName: string;
+    quoteName: string;
     poolPriceInTicks: number;
     isPositionInRange: boolean;
     lowRangeDisplayInBase: string;

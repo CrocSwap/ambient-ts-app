@@ -62,8 +62,6 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
-    const pooledContent = <div className={styles.pooled_container}></div>;
-
     const earnedContent = isAmbient ? (
         <div className={styles.ambi_info_text}>
             Ambient position rewards are compounded back into the original
@@ -141,7 +139,6 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {totalValue}
-                {pooledContent}
                 <div className={styles.earned_container}>
                     <section>
                         <div>

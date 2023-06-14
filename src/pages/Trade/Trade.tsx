@@ -241,6 +241,7 @@ function Trade() {
         formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
 
     const showPoolNotInitializedContent = isPoolInitialized === false;
+    // const showPoolNotInitializedContent = true;
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>

@@ -714,26 +714,20 @@ function TradeCandleStickChart(props: propsIF) {
             ) {
                 const domain = scaleData.xScale.domain();
 
-                const prevnCandle =
-                    (domain[1] - firtCandleTimeState * 1000) /
-                    (prevPeriod * 1000);
-
-                const currentTime = Date.now();
-
                 const diffDomain = Math.abs(domain[1] - domain[0]);
                 const factorDomain = diffDomain / (prevPeriod * 1000);
 
+                const domainCenter =
+                    Math.max(domain[1], domain[0]) - diffDomain / 2;
+
                 const newDiffDomain = period * 1000 * factorDomain;
 
-                const firsShownDomain =
-                    currentTime + prevnCandle * period * 1000;
+                const d1 = domainCenter + newDiffDomain / 2;
+                const d0 = domainCenter - newDiffDomain / 2;
 
-                const lastShownCandle = firsShownDomain - newDiffDomain;
+                const fethcingCandles = d1 > Date.now() ? Date.now() : d1;
 
-                const fethcingCandles =
-                    firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
-
-                scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
+                scaleData.xScale.domain([d0, d1]);
 
                 const diffResetLeft = Math.abs(
                     Date.now() - scaleData.xScaleCopy.domain()[0],
@@ -762,9 +756,9 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const firstTime = Math.floor(fethcingCandles / 1000);
 
-                if (firstTime > minDate && fethcingCandles > lastShownCandle) {
+                if (firstTime > minDate && fethcingCandles > d0) {
                     const nCandle = Math.floor(
-                        (fethcingCandles - lastShownCandle) / (period * 1000),
+                        (fethcingCandles - d0) / (period * 1000),
                     );
 
                     setCandleScale((prev: candleScale) => {
@@ -794,6 +788,7 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevPeriod(() => period);
         }
     }, [period, diffHashSig(unparsedCandleData)]);
+
     // resetting Chart
     useEffect(() => {
         if (isCandleDataNull && scaleData && scaleData?.xScaleCopy) {
