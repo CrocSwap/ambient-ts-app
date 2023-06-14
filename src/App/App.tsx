@@ -75,6 +75,7 @@ export default function App() {
         currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
+        !currentLocation.includes('/initpool') &&
         !fullScreenChart && (
             // isChainSupported &&
             <Sidebar />
