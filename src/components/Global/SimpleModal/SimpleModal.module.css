@@ -34,7 +34,7 @@
     /* min-height: 300px; */
     min-width: 300px;
     top: 1rem;
-    border-radius: var(--border-radius);
+   
     position: relative;
     /* max-height: 80vh; */
     color: var(--text1);
@@ -71,7 +71,8 @@
 
 .modal_content {
     background: var(--dark1);
-    border-radius: var(--border-radius);
+ 
+    
 
     /* min-height: 300px; */
 }

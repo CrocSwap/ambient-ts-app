@@ -48,7 +48,7 @@ const BASE_URL_PATHS = {
     limit: '/trade/limit',
     range: '/trade/range',
     reposition: '/trade/reposition',
-    tos: '/tos',
+    tos: '/terms',
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',

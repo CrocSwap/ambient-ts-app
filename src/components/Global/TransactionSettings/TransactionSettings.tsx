@@ -61,7 +61,6 @@ export default function TransactionSettings(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        // <FocusTrap>
         <section>
             <div className={styles.settings_title}>
                 <div />
@@ -126,6 +125,5 @@ export default function TransactionSettings(props: propsIF) {
                 </div>
             </div>
         </section>
-        // </FocusTrap>
     );
 }

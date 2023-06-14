@@ -85,7 +85,7 @@ cursor: pointer;
     left: 6px;
     right: 6px;
     bottom: 6px;
-    background: var(--body-bg);
+    background: var(--dark1);
     border-radius: 50%;
     z-index: 2;
 }
