@@ -168,7 +168,49 @@ function Transactions(props: propsIF) {
     const showColumns =
         (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
 
-    // update candle transactions
+    const getCandleData = () =>
+        crocEnv &&
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBase,
+            quote: selectedQuote,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            annotate: true,
+            addValue: true,
+            simpleCalc: true,
+            annotateMEV: false,
+            ensResolution: true,
+            n: 80,
+            period: candleTime.time,
+            time: filter?.time,
+            crocEnv: crocEnv,
+            lastBlockNumber,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((selectedCandleChangesJson) => {
+                IS_LOCAL_ENV && console.debug({ selectedCandleChangesJson });
+                if (selectedCandleChangesJson) {
+                    const selectedCandleChangesWithoutFills =
+                        selectedCandleChangesJson.filter((tx) => {
+                            if (tx.changeType !== 'fill') {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    setTransactionData(selectedCandleChangesWithoutFills);
+                }
+                setOutsideControl(true);
+                setSelectedInsideTab && setSelectedInsideTab(0);
+                setIsLoading(false);
+            })
+            .catch(console.error);
+
+    // update candle transactions on fresh load
     useEffect(() => {
         if (
             isServerEnabled &&
@@ -178,54 +220,14 @@ function Transactions(props: propsIF) {
             crocEnv
         ) {
             setIsLoading(true);
-            fetchPoolRecentChanges({
-                tokenList: tokens.tokenUniv,
-                base: selectedBase,
-                quote: selectedQuote,
-                poolIdx: poolIndex,
-                chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 80,
-                period: candleTime.time,
-                time: filter?.time,
-                crocEnv: crocEnv,
-                lastBlockNumber,
-                cachedFetchTokenPrice: cachedFetchTokenPrice,
-                cachedQuerySpotPrice: cachedQuerySpotPrice,
-                cachedTokenDetails: cachedTokenDetails,
-                cachedEnsResolve: cachedEnsResolve,
-            })
-                .then((selectedCandleChangesJson) => {
-                    IS_LOCAL_ENV &&
-                        console.debug({ selectedCandleChangesJson });
-                    if (selectedCandleChangesJson) {
-                        const selectedCandleChangesWithoutFills =
-                            selectedCandleChangesJson.filter((tx) => {
-                                if (tx.changeType !== 'fill') {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                        setTransactionData(selectedCandleChangesWithoutFills);
-                    }
-                    setOutsideControl(true);
-                    setSelectedInsideTab && setSelectedInsideTab(0);
-                    setIsLoading(false);
-                })
-                .catch(console.error);
+            getCandleData();
         }
-    }, [
-        isServerEnabled,
-        isCandleSelected,
-        filter?.time,
-        candleTime.time,
-        lastBlockNumWait,
-    ]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, candleTime.time]);
+
+    // update candle transactions on last block num change
+    useEffect(() => {
+        if (isCandleSelected) getCandleData();
+    }, [lastBlockNumWait]);
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
