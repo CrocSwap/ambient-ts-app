@@ -121,10 +121,7 @@ export default function Wallet(props: propsIF) {
     // TODO:   ... and make sure that it is a <header> semantic element  --Emily
 
     return (
-        <div
-            className={styles.container}
-            style={{ height: 'calc(100vh - 19.5rem' }}
-        >
+        <div className={styles.container}>
             <WalletHeader />
             <div className={styles.item_container}>
                 {userTokens && userTokens.length > 0 ? (

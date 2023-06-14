@@ -5,7 +5,6 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
@@ -30,8 +29,8 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
-import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 // react functional component
 export default function InitPool() {
@@ -119,16 +118,8 @@ export default function InitPool() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isInitPending, setIsInitPending] = useState(false);
 
-    const [initialPriceDOM, setInitialPriceDOM] = useState<
-        string | undefined
-    >();
-    useEffect(
-        () => setInitialPriceforContract(parseFloat(initialPriceDOM ?? '0')),
-        [initialPriceDOM],
-    );
-    const [initialPriceForContract, setInitialPriceforContract] = useState<
-        number | undefined
-    >();
+    const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
     const defaultInitialPrice = 2000;
@@ -136,26 +127,30 @@ export default function InitPool() {
     const [placeHolderPrice, setPlaceholderPrice] =
         useState<number>(defaultInitialPrice);
 
+    // const [valueDisplayString, setValueDisplayString] = useState<string>('');
+
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
-        if (initialPriceForContract) {
-            setInitialPriceforContract(1 / initialPriceForContract);
-        }
+        if (initialPrice) setInitialPrice(1 / initialPrice);
         setPlaceholderPrice(1 / placeHolderPrice);
-        initialPriceDOM &&
-            setInitialPriceDOM((1 / parseFloat(initialPriceDOM)).toString());
     };
 
+    // useEffect(() => {
+    //     if (initialPrice !== undefined) {
+    //         setValueDisplayString(initialPrice.toString() || '');
+    //     }
+    // }, [initialPrice]);
+
     useEffect(() => {
-        if (initialPriceForContract) {
+        if (initialPrice) {
             if (isDenomBase) {
-                setInitialPriceInBaseDenom(initialPriceForContract);
+                setInitialPriceInBaseDenom(initialPrice);
             } else {
-                setInitialPriceInBaseDenom(1 / initialPriceForContract);
+                setInitialPriceInBaseDenom(1 / initialPrice);
             }
         }
-    }, [isDenomBase, initialPriceForContract]);
+    }, [isDenomBase, initialPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -179,7 +174,7 @@ export default function InitPool() {
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
-                // The user used "speed up" or something similar
+                // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
@@ -242,7 +237,7 @@ export default function InitPool() {
                     } catch (e) {
                         const error = e as TransactionError;
                         console.error({ error });
-                        // The user used "speed up" or something similar
+                        // The user used 'speed up' or something similar
                         // in their client, but we now have the updated info
                         if (isTransactionReplacedError(error)) {
                             IS_LOCAL_ENV && console.debug('repriced');
@@ -313,196 +308,218 @@ export default function InitPool() {
         />
     );
 
+    const placeholderText = `e.g. ${placeHolderPrice} (${
+        isDenomBase ? baseToken.symbol : quoteToken.symbol
+    }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isValid =
+            event.target.value === '' || event.target.validity.valid;
+        const targetValue = event.target.value.replaceAll(',', '');
+        const input = targetValue.startsWith('.')
+            ? '0' + targetValue
+            : targetValue;
+        const targetValueNum = parseFloat(input);
+
+        isValid && setInitialPriceForDOM(input);
+
+        if (
+            isValid &&
+            ((!isNaN(targetValueNum) && targetValueNum !== 0) ||
+                event.target.value === '')
+        ) {
+            if (event.target.value === '') {
+                setInitialPrice(undefined);
+            } else {
+                setInitialPrice(targetValueNum);
+            }
+        }
+    };
+
+    const ButtonToRender = () => {
+        let buttonContent;
+
+        switch (true) {
+            case poolExists:
+                // Display button for an already initialized pool
+                buttonContent = (
+                    <Button
+                        title='Pool Already Initialized'
+                        disabled={true}
+                        action={() => {
+                            IS_LOCAL_ENV && console.debug('clicked');
+                        }}
+                        flat={true}
+                    />
+                );
+                break;
+
+            case isConnected || !connectButtonDelayElapsed:
+                // Display different buttons based on various conditions
+                if (!isTokenAAllowanceSufficient) {
+                    // Display token A approval button
+                    buttonContent = tokenAApprovalButton;
+                } else if (!isTokenBAllowanceSufficient) {
+                    // Display token B approval button
+                    buttonContent = tokenBApprovalButton;
+                } else if (initialPrice === undefined || initialPrice <= 0) {
+                    // Display button to enter an initial price
+                    buttonContent = (
+                        <Button
+                            title='Enter an Initial Price'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else if (isInitPending === true) {
+                    // Display button for pending initialization
+                    buttonContent = (
+                        <Button
+                            title='Initialization Pending'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else {
+                    // Display confirm button for final step
+                    buttonContent = (
+                        <Button title='Confirm' action={sendInit} flat={true} />
+                    );
+                }
+                break;
+
+            default:
+                // Display button to connect wallet if no conditions match
+                buttonContent = (
+                    <Button
+                        title='Connect Wallet'
+                        action={openWagmiModalWallet}
+                        flat={true}
+                    />
+                );
+                break;
+        }
+
+        return buttonContent;
+    };
+
+    const tokenADisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenA &&
+                    (tokenA.logoURI ? (
+                        <img
+                            src={tokenA.logoURI}
+                            alt={tokenA.symbol}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenA && <h3>{tokenA.symbol}</h3>}
+            </div>
+            {tokenA && <p>{tokenA.name}</p>}
+        </div>
+    );
+
+    const tokenBDisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenB &&
+                    (tokenB.logoURI ? (
+                        <img
+                            src={tokenB.logoURI}
+                            alt={tokenB.symbol}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenB && <h3>{tokenB.symbol}</h3>}
+            </div>
+            {tokenB && <p>{tokenB.name}</p>}
+        </div>
+    );
+
+    const navigateToMarket = (
+        <Navigate
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: baseToken.address,
+                tokenB: quoteToken.address,
+            })}
+            replace={true}
+        />
+    );
+
     return (
         <section className={styles.main}>
-            {poolExists && (
-                <Navigate
-                    to={linkGenMarket.getFullURL({
-                        chain: chainId,
-                        tokenA: baseToken.address,
-                        tokenB: quoteToken.address,
-                    })}
-                    replace={true}
-                />
-            )}
+            {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
-                <div className={styles.back_button}>
-                    <VscClose size={30} onClick={() => navigate(-1)} />
-                </div>
                 <div className={styles.top_content}>
-                    <ContentContainer>
-                        <header>
-                            <h1>INITIALIZE POOL</h1>
-                        </header>
-                        <div className={styles.pool_display_container}>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {tokenA && (
-                                        <TokenIcon
-                                            src={tokenA.logoURI}
-                                            alt={tokenA.symbol}
-                                            size='2xl'
-                                        />
-                                    )}
-                                    {tokenA && <h3>{tokenA.symbol}</h3>}
-                                </div>
-                                {tokenA && <p>{tokenA.name}</p>}
-                            </div>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {tokenB && (
-                                        <TokenIcon
-                                            src={tokenB.logoURI}
-                                            alt={tokenB.symbol}
-                                            size='2xl'
-                                        />
-                                    )}
-                                    {tokenB && <h3>{tokenB.symbol}</h3>}
-                                </div>
-                                {tokenB && <p>{tokenB.name}</p>}
-                            </div>
-                            <div className={styles.padding_center}>
-                                <div className={styles.pool_price_container}>
-                                    <span>Initial Price</span>
-                                    <section style={{ width: '100%%' }}>
-                                        <input
-                                            id={'initial-pool-price-quantity'}
-                                            className={styles.currency_quantity}
-                                            placeholder={`e.g. ${placeHolderPrice} (${
-                                                isDenomBase
-                                                    ? baseToken.symbol
-                                                    : quoteToken.symbol
-                                            }/${
-                                                isDenomBase
-                                                    ? quoteToken.symbol
-                                                    : baseToken.symbol
-                                            })`}
-                                            type='string'
-                                            onBlur={(e) => {
-                                                e.target.value !== ''
-                                                    ? setInitialPriceDOM(
-                                                          parseFloat(
-                                                              e.target.value,
-                                                          ).toString(),
-                                                      )
-                                                    : null;
-                                            }}
-                                            onChange={(event) => {
-                                                const isValid =
-                                                    event.target.value === '' ||
-                                                    event.target.validity.valid;
-                                                const targetValue =
-                                                    event.target.value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                    );
-                                                const input =
-                                                    targetValue.startsWith('.')
-                                                        ? '0' + targetValue
-                                                        : targetValue;
-
-                                                if (
-                                                    isValid &&
-                                                    ((!isNaN(
-                                                        parseFloat(input),
-                                                    ) &&
-                                                        parseFloat(input) !==
-                                                            0) ||
-                                                        event.target.value ===
-                                                            '')
-                                                ) {
-                                                    if (
-                                                        event.target.value ===
-                                                        ''
-                                                    ) {
-                                                        setInitialPriceDOM(
-                                                            undefined,
-                                                        );
-                                                    } else {
-                                                        setInitialPriceDOM(
-                                                            input,
-                                                        );
-                                                    }
-                                                }
-                                            }}
-                                            value={initialPriceDOM}
-                                            inputMode='decimal'
-                                            autoComplete='off'
-                                            autoCorrect='off'
-                                            min='0'
-                                            minLength={1}
-                                            pattern={exponentialNumRegEx.source}
-                                        />
-                                    </section>
-                                </div>
-                                <InitPoolExtraInfo
-                                    initialPrice={initialPriceForContract}
-                                    isDenomBase={isDenomBase}
-                                    initGasPriceinDollars={
-                                        initGasPriceinDollars
-                                    }
-                                    baseToken={baseToken}
-                                    quoteToken={quoteToken}
-                                    setIsDenomBase={setIsDenomBase}
-                                    invertInitialPrice={invertInitialPrice}
-                                />
-                            </div>
-
-                            <footer>
-                                {poolExists ? (
-                                    <Button
-                                        title='Pool Already Initialized'
-                                        disabled={true}
-                                        action={() => {
-                                            IS_LOCAL_ENV &&
-                                                console.debug('clicked');
-                                        }}
-                                        flat={true}
+                    <header>
+                        <p />
+                        <h1>Initialize Pool</h1>
+                        <VscClose size={25} onClick={() => navigate(-1)} />
+                    </header>
+                    <div className={styles.pool_display_container}>
+                        {tokenADisplay}
+                        {tokenBDisplay}
+                        <div className={styles.padding_center}>
+                            <div className={styles.pool_price_container}>
+                                <span>Initial Price</span>
+                                <section style={{ width: '100%' }}>
+                                    <input
+                                        id='initial-pool-price-quantity'
+                                        className={styles.currency_quantity}
+                                        placeholder={placeholderText}
+                                        type='string'
+                                        onChange={handleInputChange}
+                                        onBlur={() =>
+                                            initialPrice &&
+                                            setInitialPriceForDOM(
+                                                parseFloat(
+                                                    initialPrice.toString(),
+                                                ).toString(),
+                                            )
+                                        }
+                                        value={initialPriceForDOM}
+                                        inputMode='decimal'
+                                        autoComplete='off'
+                                        autoCorrect='off'
+                                        min='0'
+                                        minLength={1}
+                                        pattern={exponentialNumRegEx.source}
                                     />
-                                ) : isConnected ||
-                                  !connectButtonDelayElapsed ? (
-                                    !isTokenAAllowanceSufficient ? (
-                                        tokenAApprovalButton
-                                    ) : !isTokenBAllowanceSufficient ? (
-                                        tokenBApprovalButton
-                                    ) : initialPriceForContract === undefined ||
-                                      initialPriceForContract <= 0 ? (
-                                        <Button
-                                            title='Enter an Initial Price'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : isInitPending === true ? (
-                                        <Button
-                                            title='Initialization Pending'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : (
-                                        <Button
-                                            title='Confirm'
-                                            action={sendInit}
-                                            flat={true}
-                                        />
-                                    )
-                                ) : (
-                                    <Button
-                                        title='Connect Wallet'
-                                        action={openWagmiModalWallet}
-                                        flat={true}
-                                    />
-                                )}
-                            </footer>
+                                </section>
+                            </div>
+                            <InitPoolExtraInfo
+                                initialPrice={initialPrice}
+                                isDenomBase={isDenomBase}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                baseToken={baseToken}
+                                quoteToken={quoteToken}
+                                setIsDenomBase={setIsDenomBase}
+                                invertInitialPrice={invertInitialPrice}
+                            />
                         </div>
-                    </ContentContainer>
+
+                        <footer>
+                            <ButtonToRender />
+                        </footer>
+                    </div>
                 </div>
             </div>
         </section>
