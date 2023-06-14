@@ -124,12 +124,25 @@ export default function PriceInfo(props: IPriceInfoProps) {
     );
 
     const tokenPairDetails = (
-        <div
-            className={styles.token_pair_details_container}
-            onClick={() => {
-                // dispatch(toggleDidUserFlipDenom());
-            }}
-        >
+        <div className={styles.token_pair_details}>
+            <div className={styles.token_pair_images}>
+                {baseTokenLogoURI ? (
+                    <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+                ) : (
+                    <NoTokenIcon
+                        tokenInitial={baseTokenSymbol?.charAt(0)}
+                        width='30px'
+                    />
+                )}
+                {quoteTokenLogoURI ? (
+                    <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+                ) : (
+                    <NoTokenIcon
+                        tokenInitial={quoteTokenSymbol?.charAt(0)}
+                        width='30px'
+                    />
+                )}
+            </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}

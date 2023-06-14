@@ -16,8 +16,6 @@ import {
     setLimitOrdersByPool,
     setLiquidity,
     setLiquidityPending,
-    setPoolTvlSeries,
-    setPoolVolumeSeries,
     setPositionsByPool,
 } from '../../utils/state/graphDataSlice';
 import {
@@ -31,17 +29,14 @@ import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolRecentChanges } from '../functions/fetchPoolRecentChanges';
 import { TokenPriceFn } from '../functions/fetchTokenPrice';
 import { getLimitOrderData } from '../functions/getLimitOrderData';
-import { getLiquidityFee } from '../functions/getLiquidityFee';
 import { fetchPoolLiquidity } from '../functions/fetchPoolLiquidity';
 import { getPositionData } from '../functions/getPositionData';
-import { getTvlSeries } from '../functions/getTvlSeries';
-import { getVolumeSeries } from '../functions/getVolumeSeries';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
+import { getLiquidityFee } from '../functions/getPoolStats';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
-    httpGraphCacheServerDomain: string;
     pathname: string;
     chainData: ChainSpec;
     searchableTokens: TokenIF[];
@@ -193,7 +188,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 );
 
                 // retrieve pool liquidity provider fee
-                if (props.isServerEnabled && props.httpGraphCacheServerDomain) {
+                if (props.isServerEnabled) {
                     getLiquidityFee(
                         sortedTokens[0],
                         sortedTokens[1],
@@ -203,81 +198,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((liquidityFeeNum) => {
                             if (liquidityFeeNum)
                                 dispatch(setLiquidityFee(liquidityFeeNum));
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool TVL series
-                    getTvlSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        props.chainData.poolIndex,
-                        props.chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((tvlSeries) => {
-                            if (
-                                tvlSeries &&
-                                tvlSeries.base &&
-                                tvlSeries.quote &&
-                                tvlSeries.poolIdx &&
-                                tvlSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolTvlSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: tvlSeries.base,
-                                                    quote: tvlSeries.quote,
-                                                    poolIdx: tvlSeries.poolIdx,
-                                                    chainId:
-                                                        props.chainData.chainId,
-                                                },
-                                                tvlData: tvlSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
-                        })
-                        .catch(console.error);
-
-                    // retrieve pool volume series
-                    getVolumeSeries(
-                        sortedTokens[0],
-                        sortedTokens[1],
-                        props.chainData.poolIndex,
-                        props.chainData.chainId,
-                        600, // 10 minute resolution
-                    )
-                        .then((volumeSeries) => {
-                            if (
-                                volumeSeries &&
-                                volumeSeries.base &&
-                                volumeSeries.quote &&
-                                volumeSeries.poolIdx &&
-                                volumeSeries.seriesData
-                            )
-                                dispatch(
-                                    setPoolVolumeSeries({
-                                        dataReceived: true,
-                                        pools: [
-                                            {
-                                                dataReceived: true,
-                                                pool: {
-                                                    base: volumeSeries.base,
-                                                    quote: volumeSeries.quote,
-                                                    poolIdx:
-                                                        volumeSeries.poolIdx,
-                                                    chainId:
-                                                        props.chainData.chainId,
-                                                },
-                                                volumeData: volumeSeries,
-                                            },
-                                        ],
-                                    }),
-                                );
                         })
                         .catch(console.error);
 
@@ -528,7 +448,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.chainData.chainId,
         props.chainData.poolIndex,
         props.searchableTokens,
-        props.httpGraphCacheServerDomain,
         lastBlockNumWait,
         !!props.crocEnv,
     ]);

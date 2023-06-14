@@ -712,7 +712,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 style={{
                     position: 'relative',
                     width: '20%',
-                    left: '80%',
+                    marginLeft: '80%',
                 }}
             ></d3fc-canvas>
             <d3fc-canvas
@@ -721,7 +721,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 style={{
                     position: 'relative',
                     width: '20%',
-                    left: '80%',
+                    marginLeft: '80%',
                 }}
             ></d3fc-canvas>
         </>

@@ -33,7 +33,6 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
             role='dialog'
             aria-modal='true'
         >
-            {/* <FocusTrap> */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -43,18 +42,20 @@ export default function SimpleModal(props: SimpleModalPropsIF) {
                 ${noBackground ? styles.no_background_modal : null}
                 `}
                 onMouseDown={(e) => e.stopPropagation()}
-                style={{ justifyContent: 'flex-start' }}
+                style={{ justifyContent: 'flex-start', borderRadius: '4px' }}
                 tabIndex={0}
                 aria-label={`${title} modal`}
             >
-                <section className={styles.modal_content}>
+                <section
+                    className={styles.modal_content}
+                    style={{ borderRadius: '4px' }}
+                >
                     {title && (
                         <SimpleModalHeader title={title} onClose={onClose} />
                     )}
                     {children}
                 </section>
             </motion.div>
-            {/* </FocusTrap> */}
         </aside>
     );
 }
