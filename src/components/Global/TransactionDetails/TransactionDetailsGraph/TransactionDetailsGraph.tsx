@@ -533,7 +533,9 @@ export default function TransactionDetailsGraph(
                 context.measureText('0.0').actualBoundingBoxAscent +
                 context.measureText('0.0').actualBoundingBoxDescent;
 
-            yScaleCopy.domain([domain[0] + textHeight, domain[1] - textHeight]);
+            const buffer = yScale.invert(textHeight) / 100;
+
+            yScaleCopy.domain([domain[0] + buffer, domain[1] - buffer]);
 
             const yScaleTicks = yScaleCopy.ticks(factor);
 
