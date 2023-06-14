@@ -51,7 +51,7 @@ export const RowsPerPageDropdown = ({
         options.sort((a, b) => a - b);
 
         const defaultOptionIndex: number = options.findLastIndex(
-            (option: number) => option < rowsPerPage,
+            (option: number) => option <= rowsPerPage,
         );
         console.log(defaultOptionIndex);
 
