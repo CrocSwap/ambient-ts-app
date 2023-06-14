@@ -112,6 +112,7 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
     gap: 4px;
+    height: 40px;
 }
 
 .button_controls button {

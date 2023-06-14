@@ -4,8 +4,8 @@
     overflow: hidden;
     flex-direction: column;
     overflow-y: hidden;
-    padding: 5px;
-    color: white;
+   
+    color: var(--text1);
 }
 
 .modalSwapbox {
