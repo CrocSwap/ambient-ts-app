@@ -62,7 +62,9 @@ export const SidebarContextProvider = (props: {
 
     const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
     function toggleSidebarBasedOnRoute() {
-        if (
+        if (sidebar.getStoredStatus() === 'open') {
+            sidebar.open(true);
+        } else if (
             currentLocation === '/' ||
             currentLocation === '/swap' ||
             currentLocation.includes('/account')

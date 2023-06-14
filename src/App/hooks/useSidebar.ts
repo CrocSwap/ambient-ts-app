@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 export interface sidebarMethodsIF {
     status: string;
@@ -7,17 +8,22 @@ export interface sidebarMethodsIF {
     open: (persist?: boolean) => void;
     close: (persist?: boolean) => void;
     toggle: (persist?: boolean) => void;
+    getStoredStatus: () => string | null;
+    resetStoredStatus: () => void;
 }
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // local storage key for persisted data
     const localStorageKey = 'sidebarStatus';
+    const getStoredSidebarStatus = () =>
+        getLocalStorageItem<string>(localStorageKey);
+    const resetPersist = () => localStorage.setItem(localStorageKey, 'close');
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
     const [sidebar, setSidebar] = useState<string>(
-        localStorage.getItem(localStorageKey) || 'open',
+        getStoredSidebarStatus() || 'open',
     );
 
     // reusable logic to update state and optionally persist data in local storage
@@ -68,6 +74,8 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
             open: openSidebar,
             close: closeSidebar,
             toggle: toggleSidebar,
+            getStoredStatus: getStoredSidebarStatus,
+            resetStoredStatus: resetPersist,
         }),
         [sidebar, hidden, pathname],
     );

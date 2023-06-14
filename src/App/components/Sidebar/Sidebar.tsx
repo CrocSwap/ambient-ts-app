@@ -251,7 +251,11 @@ function Sidebar() {
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
 
-    const toggleLockSidebar = () => setIsLocked(!isLocked);
+    const toggleLockSidebar = () => {
+        sidebar.open(!isLocked);
+        isLocked && sidebar.resetStoredStatus();
+        setIsLocked(!isLocked);
+    };
 
     const toggleExpandCollapseAll = () => {
         setIsDefaultOverridden(true);
@@ -273,9 +277,8 @@ function Sidebar() {
                         title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
                     >
                         <img
-                            // TODO: add locked image
                             src={isLocked ? unlock : unlock}
-                            alt='Lock/Unlock All'
+                            alt='Lock/Unlock Sidebar'
                             onClick={toggleLockSidebar}
                         />
                     </DefaultTooltip>
