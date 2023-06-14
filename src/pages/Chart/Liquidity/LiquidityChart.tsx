@@ -1,4 +1,11 @@
-import { MouseEvent, useContext, useEffect, useRef, useState } from 'react';
+import {
+    MouseEvent,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import * as d3 from 'd3';
 import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
@@ -94,7 +101,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     const liqDataBid = liquidityData?.liqBidData;
 
-    const liqDataDepthBid = liquidityData?.depthLiqBidData;
+    const liqDataDepthBid = useMemo<LiquidityDataLocal[]>(() => {
+        return tradeData.advancedMode
+            ? liquidityData?.depthLiqBidData
+            : liquidityData?.depthLiqBidData.filter(
+                  (d: LiquidityDataLocal) =>
+                      d.liqPrices <= liquidityData?.topBoundary,
+              );
+    }, [tradeData.advancedMode, liquidityData?.depthLiqBidData]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
