@@ -4,34 +4,42 @@ interface PaginationResult<T> {
     next: () => void;
     prev: () => void;
     jump: (page: number) => void;
-
     currentData: T[];
     currentPage: number;
     maxPage: number;
-
     showingFrom: number;
     showingTo: number;
     totalItems: number;
     setCurrentPage: Dispatch<SetStateAction<number>>;
+    rowsPerPage: number;
+    setRowsPerPage: Dispatch<SetStateAction<number>>;
+    count: number;
 }
 
 function usePagination<T>(
     data: T[],
-    itemsPerPage: number,
+    isScreenShort: boolean,
+    isScreenTall: boolean,
 ): PaginationResult<T> {
+    const [rowsPerPage, setRowsPerPage] = useState<number>(
+        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    );
+
+    const count = Math.ceil(data.length / rowsPerPage);
+
     const [currentPage, setCurrentPage] = useState<number>(1);
 
-    const maxPage: number = Math.ceil(data.length / itemsPerPage);
-    const showingFrom: number = (currentPage - 1) * itemsPerPage + 1;
+    const maxPage: number = Math.ceil(data.length / rowsPerPage);
+    const showingFrom: number = (currentPage - 1) * rowsPerPage + 1;
     const showingTo: number = Math.min(
-        showingFrom + itemsPerPage - 1,
+        showingFrom + rowsPerPage - 1,
         data.length,
     );
     const totalItems: number = data.length;
 
     const currentData = (): T[] => {
-        const begin: number = (currentPage - 1) * itemsPerPage;
-        const end: number = begin + itemsPerPage;
+        const begin: number = (currentPage - 1) * rowsPerPage;
+        const end: number = begin + rowsPerPage;
         return data.slice(begin, end);
     };
 
@@ -60,6 +68,9 @@ function usePagination<T>(
         showingTo,
         totalItems,
         setCurrentPage,
+        rowsPerPage,
+        setRowsPerPage,
+        count,
     };
 }
 
