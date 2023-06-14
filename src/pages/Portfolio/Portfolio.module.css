@@ -148,6 +148,8 @@
     .full_layout_container {
         display: grid;
         grid-template-columns: auto 50px;
+
+        flex: 1;
     }
 
     .tabs_exchange_balance_container {
