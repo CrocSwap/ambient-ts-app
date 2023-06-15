@@ -165,6 +165,9 @@ export default function LimitLineCanvas(props: propsIF) {
     ]);
 
     useEffect(() => {
+        renderCanvasArray([d3CanvasLimitLine]);
+    }, [limit]);
+    useEffect(() => {
         d3.select(d3CanvasLimitLine.current)
             .select('canvas')
             .style(

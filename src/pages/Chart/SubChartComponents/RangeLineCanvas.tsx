@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { lineValue, setCanvasResolution } from '../Chart';
+import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { useLocation } from 'react-router-dom';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
@@ -200,7 +200,7 @@ export default function RangeLineCanvas(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, location.pathname]);
+    }, [diffHashSig(ranges), horizontalLine, location.pathname]);
 
     useEffect(() => {
         const passValue =
@@ -366,6 +366,10 @@ export default function RangeLineCanvas(props: propsIF) {
             }
         }
     };
+
+    useEffect(() => {
+        renderCanvasArray([d3CanvasRangeLine]);
+    }, [ranges]);
 
     const setDefaultRangeData = () => {
         if (scaleData) {

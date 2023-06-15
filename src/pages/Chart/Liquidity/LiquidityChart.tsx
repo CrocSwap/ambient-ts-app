@@ -721,7 +721,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         if (scaleData !== undefined) {
             renderCanvasArray([d3CanvasLiq]);
         }
-    }, [scaleData, liquidityData, location]);
+    }, [scaleData, liquidityData, location, ranges]);
 
     return (
         <>
