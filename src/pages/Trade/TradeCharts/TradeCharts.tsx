@@ -122,7 +122,9 @@ function TradeCharts(props: propsIF) {
         isVolumeSubchartEnabled: boolean;
         isTvlSubchartEnabled: boolean;
         isFeeRateSubchartEnabled: boolean;
-    } | null = JSON.parse(getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '');
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
 
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
