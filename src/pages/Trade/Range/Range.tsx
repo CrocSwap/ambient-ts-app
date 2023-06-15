@@ -1432,7 +1432,7 @@ function Range() {
                 </div>
             )}
 
-            <ContentContainer isOnTradeRoute>
+            <ContentContainer isOnTradeRoute padding='0.25rem 1rem 1rem'>
                 <RangeHeader
                     mintSlippage={mintSlippage}
                     isTokenABase={isTokenABase}

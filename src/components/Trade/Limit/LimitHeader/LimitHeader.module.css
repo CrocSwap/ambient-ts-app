@@ -1,7 +1,3 @@
-.settings_container svg {
-    margin: 0 5px;
-}
-
 .token_info {
     cursor: pointer;
     font-size: var(--header1-size);

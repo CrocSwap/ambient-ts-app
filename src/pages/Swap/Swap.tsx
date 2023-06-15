@@ -636,7 +636,7 @@ function Swap(props: propsIF) {
                 {poolNotInitializedContent}
                 <ContentContainer
                     isOnTradeRoute={isOnTradeRoute}
-                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
+                    padding='0.25rem 1rem 1rem'
                 >
                     <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                     {navigationMenu}

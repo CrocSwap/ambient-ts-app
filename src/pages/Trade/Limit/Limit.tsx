@@ -709,7 +709,7 @@ export default function Limit() {
                     </button>
                 </div>
             )}{' '}
-            <ContentContainer isOnTradeRoute>
+            <ContentContainer isOnTradeRoute padding='0.25rem 1rem 1rem'>
                 <LimitHeader />
                 {navigationMenu}
                 <motion.div
