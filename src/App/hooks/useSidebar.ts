@@ -17,7 +17,7 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
     const localStorageKey = 'sidebarStatus';
     const getStoredSidebarStatus = () =>
         getLocalStorageItem<string>(localStorageKey);
-    const resetPersist = () => localStorage.setItem(localStorageKey, 'close');
+    const resetPersist = () => localStorage.setItem(localStorageKey, 'closed');
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
