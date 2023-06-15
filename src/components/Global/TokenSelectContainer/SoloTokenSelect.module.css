@@ -4,7 +4,7 @@
     min-height: 250px;
     display: flex;
     flex-direction: column;
-    padding: 1rem 0;
+    padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
 }
@@ -25,10 +25,6 @@
     margin-bottom: 8px;
     border-radius: 4px;
     /* text-align: center; */
-}
-
-.container > * {
-    padding: 0 1rem;
 }
 
 .scrollable_container {
