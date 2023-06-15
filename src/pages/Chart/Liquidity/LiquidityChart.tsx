@@ -263,16 +263,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     };
 
     const liqDataHover = (event: MouseEvent<HTMLDivElement>) => {
-        if (scaleData && liquidityDepthScale && liquidityScale) {
-            const liqDataBid =
-                liqMode === 'depth'
-                    ? liquidityData?.depthLiqBidData
-                    : liquidityData?.liqBidData;
-            const liqDataAsk =
-                liqMode === 'depth'
-                    ? liquidityData?.depthLiqAskData
-                    : liquidityData?.liqAskData;
-
+        if (
+            scaleData !== undefined &&
+            liquidityDepthScale !== undefined &&
+            liquidityScale !== undefined
+        ) {
             const allData = liqDataBid.concat(liqDataAsk);
 
             if (!allData || allData.length === 0) return;
@@ -280,7 +275,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 allData,
             ) as nearestLiquidity;
 
-            if (min) {
+            if (min !== undefined) {
                 let filteredAllData = allData.filter(
                     (item: LiquidityDataLocal) =>
                         min <= item.liqPrices &&
@@ -336,6 +331,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     liqDataAsk,
                     (d: LiquidityDataLocal) => d.liqPrices,
                 );
+                console.log('hey');
 
                 if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
                     if (
@@ -474,7 +470,15 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     highlightedAreaSeries.context(ctx);
                 });
         }
-    }, [highlightedAreaSeries, liquidityMouseMoveActive, liqDataHoverEvent]);
+    }, [
+        highlightedAreaSeries,
+        liquidityMouseMoveActive,
+        liqDataHoverEvent,
+        liqDataDepthAsk,
+        liqDataAsk,
+        liqDataDepthBid,
+        liqDataBid,
+    ]);
 
     useEffect(() => {
         if (
