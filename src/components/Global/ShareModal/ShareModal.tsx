@@ -48,24 +48,24 @@ export default function ShareModal() {
     const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
         {
-            name: 'Telegram',
-            icon: <FaTelegram size={50} />,
-            link: `https://telegram.me/share/url?url=ambient-finance.netlify.app${currentPathname}`,
-        },
-        {
             name: 'Twitter',
             icon: <AiFillTwitterCircle size={50} />,
             link: `https://twitter.com/intent/tweet?text=ambient-finance.netlify.app${currentPathname}`,
         },
         {
-            name: 'Facebook',
-            icon: <FaFacebook size={50} />,
-            link: `https://www.facebook.com/sharer/sharer.php?u=ambient-finance.netlify.app${currentPathname}`,
-        },
-        {
             name: 'Discord',
             icon: <FaDiscord size={50} />,
             link: `ambient-finance.netlify.app${currentPathname}`,
+        },
+        {
+            name: 'Telegram',
+            icon: <FaTelegram size={50} />,
+            link: `https://telegram.me/share/url?url=ambient-finance.netlify.app${currentPathname}`,
+        },
+        {
+            name: 'Facebook',
+            icon: <FaFacebook size={50} />,
+            link: `https://www.facebook.com/sharer/sharer.php?u=ambient-finance.netlify.app${currentPathname}`,
         },
     ];
 
@@ -108,7 +108,7 @@ export default function ShareModal() {
                     tabIndex={0}
                     aria-label='Copy to clipboard'
                 >
-                    <FiCopy color='#cdc1ff' size={25} />
+                    <FiCopy size={25} />
                 </button>
             </p>
         </div>

@@ -238,10 +238,10 @@ function ExtraInfo(props: propsIF) {
             : null;
 
     return (
-        <>
+        <div className={styles.extra_info_details_container}>
             {extraDetailsDropdown}
             {extraDetailsOrNull}
-        </>
+        </div>
     );
 }
 

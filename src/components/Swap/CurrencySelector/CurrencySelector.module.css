@@ -5,7 +5,6 @@
     flex-direction: column;
     overflow-y: hidden;
     color: white;
-    padding: 5px;
 }
 
 .modalSwapbox {
@@ -35,45 +34,27 @@
 }
 
 .swapbox_bottom {
-    margin: 6px 10px;
-    height: 33px;
-
     display: grid;
     gap: 4px;
-
-    padding: 0 4px;
+    padding: 16px;
 }
+
 .wallet_container,
 .surplus_container,
 .surplus_toggle {
     width: 100%;
-    /* background: red; */
     display: flex;
     flex-direction: row;
     align-items: center;
-
-    /* align-items: center; */
-    /* flex: 1;; */
     gap: 4px;
-
-    /* background: rgb(8, 21, 94); */
-    /* width: calc(100%/3) */
 }
 
 .wallet_container {
     justify-content: space-between;
-    /* background: rgb(2, 2, 34); */
 }
 .surplus_container {
-    /* justify-content: flex-start; */
     justify-content: flex-end;
-    /* background: rgb(2, 2, 34); */
-    /* text-align: end; */
 }
-
-/* .surplus_toggle { 
-    justify-content: flex-end;
-} */
 
 .balance_column {
     display: flex;
@@ -102,25 +83,16 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    /* align-items: center; */
-    /* padding: 0.5rem 0; */
     min-height: 40px;
 
     display: grid;
     grid-template-columns: 1fr 120px;
-    /* height: 40px; */
 }
 
-/* .swap_input {
-    width: 65%;
-} */
 .token_select {
-    /* background: var(--dark2); */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* gap: 4px; */
-    /* width: 35%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 

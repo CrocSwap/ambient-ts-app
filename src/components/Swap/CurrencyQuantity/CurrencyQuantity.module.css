@@ -30,7 +30,7 @@
 /* shimmer animation effects */
 
 .currency_quantity::placeholder {
-    color: var(--text3);
+    color: var(--text2);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
