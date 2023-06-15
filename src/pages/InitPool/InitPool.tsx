@@ -127,20 +127,26 @@ export default function InitPool() {
     const [placeHolderPrice, setPlaceholderPrice] =
         useState<number>(defaultInitialPrice);
 
-    // const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
-        if (initialPrice) setInitialPrice(1 / initialPrice);
+        if (initialPrice) {
+            const invertedPriceNum = 1 / initialPrice;
+
+            const invertedPriceTruncated =
+                invertedPriceNum < 0.0001
+                    ? invertedPriceNum.toExponential(2)
+                    : invertedPriceNum < 2
+                    ? invertedPriceNum.toPrecision(3)
+                    : invertedPriceNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialPrice(invertedPriceNum);
+            setInitialPriceForDOM(invertedPriceTruncated);
+        }
         setPlaceholderPrice(1 / placeHolderPrice);
     };
-
-    // useEffect(() => {
-    //     if (initialPrice !== undefined) {
-    //         setValueDisplayString(initialPrice.toString() || '');
-    //     }
-    // }, [initialPrice]);
 
     useEffect(() => {
         if (initialPrice) {
