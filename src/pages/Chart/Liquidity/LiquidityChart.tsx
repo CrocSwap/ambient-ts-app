@@ -172,7 +172,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         ctx.clip();
     };
 
-    const clipAskHighlightedLines = (canvas: HTMLCanvasElement) => {
+    const clipHighlightedLines = (canvas: HTMLCanvasElement) => {
         const _low = ranges.filter(
             (target: lineValue) => target.name === 'Min',
         )[0].value;
@@ -199,7 +199,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             location.pathname.includes('range') ||
             location.pathname.includes('reposition');
         if (isRange) {
-            clipAskHighlightedLines(canvas);
+            clipHighlightedLines(canvas);
             lineLiqSeries(liqDataAsk);
             lineLiqSeries(liqDataBid);
         }
@@ -210,7 +210,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             location.pathname.includes('range') ||
             location.pathname.includes('reposition');
         if (isRange) {
-            clipAskHighlightedLines(canvas);
+            clipHighlightedLines(canvas);
             lineBidDepthSeries(liqDataDepthAsk);
 
             lineBidDepthSeries(liqDataDepthBid);
