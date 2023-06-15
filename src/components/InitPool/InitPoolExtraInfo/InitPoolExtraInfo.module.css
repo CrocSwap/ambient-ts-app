@@ -34,18 +34,21 @@
 .extra_details {
     border: 1px solid var(--border);
 
-    margin-top: 10px;
+   
     border-radius: var(--border-radius);
 
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    display: flex;
+    flex-direction: column;
+   justify-content: space-between;
 }
 
 .extra_row {
     display: flex;
     flex-direction: column;
-    padding: 5px 0;
+  
     justify-content: space-between;
     align-items: center;
 }
@@ -74,7 +77,8 @@
     }
 
     .extra_details {
-        padding: 1rem;
+        padding: 8px;
+        height: 84px;
     }
 
     .extra_row {

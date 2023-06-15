@@ -1,4 +1,8 @@
 export const getLocalStorageItem = <T>(localStorageKey: string): T | null => {
     const data = localStorage.getItem(localStorageKey);
-    return data ? (JSON.parse(data) as T) : null;
+    if (typeof data === 'string') {
+        return data as T;
+    } else {
+        return data ? (JSON.parse(data) as T) : null;
+    }
 };
