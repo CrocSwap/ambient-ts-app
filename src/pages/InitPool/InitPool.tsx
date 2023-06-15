@@ -487,7 +487,11 @@ export default function InitPool() {
                     <header>
                         <p />
                         <h1>Initialize Pool</h1>
-                        <VscClose size={25} onClick={() => navigate(-1)} />
+                        <VscClose
+                            size={25}
+                            onClick={() => navigate(-1)}
+                            style={{ cursor: 'pointer' }}
+                        />
                     </header>
                     <div className={styles.pool_display_container}>
                         {tokenADisplay}
