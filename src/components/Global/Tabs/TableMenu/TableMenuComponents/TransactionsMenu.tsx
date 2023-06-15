@@ -60,6 +60,10 @@ export default function TransactionsMenu(props: propsIF) {
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? useMediaQuery('(max-width: 1650px)')
+        : useMediaQuery('(max-width: 1450px)');
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -201,7 +205,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : tx.entityType === 'limitOrder' ? (
             <button
@@ -229,7 +233,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : (
             <button
@@ -253,7 +257,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         );
 

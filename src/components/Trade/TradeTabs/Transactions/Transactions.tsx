@@ -162,11 +162,13 @@ function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1600px)');
-    const max1700px = useMediaQuery('(max-width: 1800px)');
+    const showTimestamp = useMediaQuery('(min-width: 1000px)');
+    const max1300px = useMediaQuery('(max-width: 1500px)');
+    const max1850px = useMediaQuery('(max-width: 1850px)');
 
-    const showColumns =
-        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
+    const showColumns = isAccountView
+        ? (max1300px && !isSidebarOpen) || (max1850px && isSidebarOpen)
+        : (max1300px && !isSidebarOpen) || (max1850px && isSidebarOpen);
 
     const getCandleData = () =>
         crocEnv &&
@@ -249,7 +251,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: !showColumns,
+            show: showTimestamp,
 
             slug: 'time',
             sortable: true,
@@ -449,6 +451,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -459,6 +462,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
