@@ -196,8 +196,6 @@ function TradeCharts(props: propsIF) {
                     <AiOutlineFullscreen
                         size={20}
                         id='trade_chart_full_screen_button'
-                        role='button'
-                        tabIndex={0}
                         aria-label='Full screen chart button'
                     />
                 </button>
@@ -214,8 +212,6 @@ function TradeCharts(props: propsIF) {
                     <FiCopy
                         size={20}
                         id='trade_chart_save_image'
-                        role='button'
-                        tabIndex={0}
                         aria-label='Copy chart image button'
                     />
                 </button>
