@@ -268,7 +268,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             liquidityDepthScale !== undefined &&
             liquidityScale !== undefined
         ) {
-            const allData = liqDataBid.concat(liqDataAsk);
+            const allData =
+                liqMode === 'curve'
+                    ? liqDataBid.concat(liqDataAsk)
+                    : liqDataDepthBid.concat(liqDataDepthAsk);
 
             if (!allData || allData.length === 0) return;
             const { min }: { min: number | undefined } = findLiqNearest(
@@ -305,11 +308,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
                 const rect = canvas.getBoundingClientRect();
 
-                const leftSpaceRelativeToMainCanvas =
-                    rect.left - canvas.width * 4;
-                const x = event.clientX - leftSpaceRelativeToMainCanvas;
+                const x = event.clientX - rect.left;
                 const y = event.clientY - rect.top;
-
                 const currentDataY = scaleData?.yScale.invert(y);
                 const currentDataX =
                     liqMode === 'depth'
