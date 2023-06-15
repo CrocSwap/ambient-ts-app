@@ -1,11 +1,11 @@
-import styles from './ExtraControls.module.css';
+import styles from './RangeActionExtraControls.module.css';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.png';
 
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
-export default function ExtraControls() {
+export default function RangeActionExtraControls() {
     const { dexBalRange } = useContext(UserPreferenceContext);
 
     return (

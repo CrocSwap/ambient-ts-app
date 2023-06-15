@@ -1,14 +1,14 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
-import styles from './RemoveRangeSettings.module.css';
+import styles from './RangeActionSettings.module.css';
 
-interface propsIF {
+interface RangeActionSettingsIF {
     persistedSlippage: number;
     setCurrentSlippage: Dispatch<SetStateAction<number>>;
     presets: number[];
 }
 
-export default function RemoveRangeSettings(props: propsIF) {
+export default function RangeActionSettings(props: RangeActionSettingsIF) {
     const { persistedSlippage, setCurrentSlippage, presets } = props;
 
     const [slip, takeNewSlippage] = useSlippageInput(
@@ -26,7 +26,7 @@ export default function RemoveRangeSettings(props: propsIF) {
                     <div className={styles.slippage_content}>
                         <div className={styles.input_container}>
                             <input
-                                id='remove_range_slippage_tolerance_input_field'
+                                id='range_action_slippage_tolerance_input_field'
                                 onChange={(e) =>
                                     takeNewSlippage(e.target.value)
                                 }

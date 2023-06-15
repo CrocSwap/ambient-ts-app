@@ -1,4 +1,4 @@
-import styles from './RemoveRangeInfo.module.css';
+import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 // import { formatAmountOld } from '../../../utils/numbers';
@@ -120,7 +120,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
             : '0';
 
     const rewardsEarnedSection = !isAmbient ? (
-        <div>
+        <>
             <DividerDark />
             <Row>
                 <span>{baseTokenSymbol} Rewards Earned</span>
@@ -139,7 +139,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>
-        </div>
+        </>
     ) : (
         <div>
             <DividerDark />
