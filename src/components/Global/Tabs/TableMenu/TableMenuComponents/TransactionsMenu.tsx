@@ -62,7 +62,9 @@ export default function TransactionsMenu(props: propsIF) {
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? useMediaQuery('(max-width: 1650px)')
-        : useMediaQuery('(max-width: 1450px)');
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
