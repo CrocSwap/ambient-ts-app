@@ -5,10 +5,10 @@ import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 // interface for shape of data held in local storage
 interface chartSettingsIF {
     marketOverlay: string;
-    rangeOverlay: string;
+    poolOverlay: string;
     candleTimeGlobal: number;
     candleTimeMarket: number;
-    candleTimeRange: number;
+    candleTimePool: number;
 }
 
 // interface for class to manage a given chart overlay
@@ -39,11 +39,11 @@ type OverlayType = 'depth' | 'curve' | 'none';
 // interface for return value of this hook
 export interface chartSettingsMethodsIF {
     marketOverlay: overlayIF;
-    rangeOverlay: overlayIF;
+    poolOverlay: overlayIF;
     candleTime: {
         global: candleTimeIF;
         market: candleTimeIF;
-        range: candleTimeIF;
+        pool: candleTimeIF;
     };
 }
 
@@ -53,7 +53,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     // will return `undefined` if the value does not exist yet
     // value of `undefined` will be handled downstream
     const getOverlay = (
-        overlayFor: 'market' | 'limit' | 'range',
+        overlayFor: 'market' | 'limit' | 'pool',
     ): OverlayType | undefined => {
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
@@ -67,8 +67,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             case 'limit':
                 output = chartSettings?.marketOverlay ?? 'depth';
                 break;
-            case 'range':
-                output = chartSettings?.rangeOverlay ?? 'curve';
+            case 'pool':
+                output = chartSettings?.poolOverlay ?? 'curve';
                 break;
             default:
                 return;
@@ -77,7 +77,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     };
 
     const getCandleTime = (
-        timeFor: 'global' | 'market' | 'limit' | 'range',
+        timeFor: 'global' | 'market' | 'limit' | 'pool',
     ): TimeInSecondsType | undefined => {
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
@@ -87,7 +87,7 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             case 'global':
             case 'market':
             case 'limit':
-            case 'range':
+            case 'pool':
                 time = chartSettings?.candleTimeGlobal;
                 break;
             default:
@@ -99,8 +99,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
     );
-    const [rangeOverlay, setRangeOverlay] = useState<OverlayType>(
-        getOverlay('range') ?? 'curve',
+    const [poolOverlay, setPoolOverlay] = useState<OverlayType>(
+        getOverlay('pool') ?? 'curve',
     );
     const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
         getCandleTime('global') ?? 3600, // 1 hr default
@@ -108,8 +108,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
         getCandleTime('market') ?? 900,
     );
-    const [candleTimeRange, setCandleTimeRange] = useState<TimeInSecondsType>(
-        getCandleTime('range') ?? 900, // switched from 86400 (1 day)
+    const [candleTimePool, setCandleTimePool] = useState<TimeInSecondsType>(
+        getCandleTime('pool') ?? 900, // switched from 86400 (1 day)
     );
 
     // hook to update local storage any time one of the preference primitives changes
@@ -119,17 +119,17 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
             LS_KEY_CHART_SETTINGS,
             JSON.stringify({
                 marketOverlay,
-                rangeOverlay,
+                poolOverlay,
                 candleTimeGlobal,
                 candleTimeMarket,
-                candleTimeRange,
+                candleTimePool,
             }),
         );
     }, [
         marketOverlay,
-        rangeOverlay,
+        poolOverlay,
         candleTimeMarket,
-        candleTimeRange,
+        candleTimePool,
         candleTimeGlobal,
     ]);
 
@@ -184,19 +184,19 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const chartSettings = useMemo<chartSettingsMethodsIF>(() => {
         return {
             marketOverlay: new Overlay(marketOverlay, setMarketOverlay),
-            rangeOverlay: new Overlay(rangeOverlay, setRangeOverlay),
+            poolOverlay: new Overlay(poolOverlay, setPoolOverlay),
             candleTime: {
                 global: new CandleTime(candleTimeGlobal, setCandleTimeGlobal),
                 market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
-                range: new CandleTime(candleTimeRange, setCandleTimeRange),
+                pool: new CandleTime(candleTimePool, setCandleTimePool),
             },
         };
     }, [
         candleTimeMarket,
-        candleTimeRange,
+        candleTimePool,
         candleTimeGlobal,
         marketOverlay,
-        rangeOverlay,
+        poolOverlay,
     ]);
 
     return chartSettings;

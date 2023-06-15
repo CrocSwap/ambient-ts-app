@@ -23,6 +23,13 @@ interface poolParamsIF {
     highTick?: string;
     lowTick?: string;
 }
+
+interface initParamsIF {
+    chain: string;
+    tokenA: string;
+    tokenB: string;
+}
+
 interface repoParamsIF {
     chain: string;
     tokenA: string;
@@ -37,6 +44,7 @@ type anyParamsIF =
     | marketParamsIF
     | limitParamsIF
     | poolParamsIF
+    | initParamsIF
     | repoParamsIF;
 
 // index of all base URL pathways in the Ambient app
@@ -47,6 +55,7 @@ const BASE_URL_PATHS = {
     market: '/trade/market',
     limit: '/trade/limit',
     pool: '/trade/pool',
+    initpool: '/initpool',
     reposition: '/trade/reposition',
     tos: '/terms',
     testpage: '/testpage',
@@ -59,7 +68,7 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 
 export interface linkGenMethodsIF {
     baseURL: string;
-    getFullURL: (paramsObj?: anyParamsIF) => string;
+    getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
     redirect: (paramsObj?: anyParamsIF) => void;
 }
@@ -91,6 +100,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'limit';
         } else if (pathname.startsWith(BASE_URL_PATHS.pool)) {
             pageName = 'pool';
+        } else if (pathname.startsWith(BASE_URL_PATHS.initpool)) {
+            pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
@@ -115,7 +126,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         let paramsSlug = '';
         if (paramsObj) {
             if (typeof paramsObj === 'string') {
-                paramsSlug = paramsObj;
+                paramsSlug = '/' + paramsObj;
             } else {
                 paramsSlug =
                     '/' +

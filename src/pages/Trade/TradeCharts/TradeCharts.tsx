@@ -141,11 +141,11 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.poolOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.rangeOverlay,
+        chartSettings.poolOverlay,
         showTvl,
         showVolume,
         showFeeRate,
@@ -257,7 +257,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
         </div>
     );
