@@ -188,15 +188,17 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
 
+                        const priceChangePercent = priceChangeResult * 100;
+
                         const priceChangeString =
                             priceChangeResult > 0
                                 ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangeResult.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';
