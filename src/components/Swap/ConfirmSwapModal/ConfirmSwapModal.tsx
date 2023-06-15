@@ -15,7 +15,6 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 // START: Import Other Local Files
@@ -26,6 +25,7 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -177,15 +177,11 @@ export default function ConfirmSwapModal(props: propsIF) {
             <h2>{localeBuyString}</h2>
 
             <div className={styles.logo_display}>
-                {buyTokenData.logoURI ? (
-                    <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
-
+                <TokenIcon
+                    src={buyTokenData.logoURI}
+                    alt={buyTokenData.symbol}
+                    size='2xl'
+                />
                 <h2>{buyTokenData.symbol}</h2>
             </div>
         </div>
@@ -222,18 +218,11 @@ export default function ConfirmSwapModal(props: propsIF) {
         <div className={styles.currency_row_container}>
             <h2>{localeSellString}</h2>
             <div className={styles.logo_display}>
-                {sellTokenData.logoURI ? (
-                    <img
-                        src={sellTokenData.logoURI}
-                        alt={sellTokenData.symbol}
-                    />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
-
+                <TokenIcon
+                    src={sellTokenData.logoURI}
+                    alt={sellTokenData.symbol}
+                    size='2xl'
+                />
                 <h2>{sellTokenData.symbol}</h2>
             </div>
         </div>

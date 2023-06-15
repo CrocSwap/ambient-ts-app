@@ -122,7 +122,10 @@ function TradeCharts(props: propsIF) {
         isVolumeSubchartEnabled: boolean;
         isTvlSubchartEnabled: boolean;
         isFeeRateSubchartEnabled: boolean;
-    } | null = getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS);
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
+
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
@@ -196,8 +199,6 @@ function TradeCharts(props: propsIF) {
                     <AiOutlineFullscreen
                         size={20}
                         id='trade_chart_full_screen_button'
-                        role='button'
-                        tabIndex={0}
                         aria-label='Full screen chart button'
                     />
                 </button>
@@ -214,8 +215,6 @@ function TradeCharts(props: propsIF) {
                     <FiCopy
                         size={20}
                         id='trade_chart_save_image'
-                        role='button'
-                        tabIndex={0}
                         aria-label='Copy chart image button'
                     />
                 </button>

@@ -131,14 +131,17 @@ function Ranges(props: propsIF) {
         (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
         (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const [rowsPerPage, setRowsPerPage] = useState(
-        isScreenShort ? 5 : isScreenTall ? 20 : 10,
-    );
+    const _DATA = usePagination(sortedPositions, isScreenShort, isScreenTall);
 
-    const count = Math.ceil(sortedPositions.length / rowsPerPage);
-    const _DATA = usePagination(sortedPositions, rowsPerPage);
-
-    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
@@ -149,7 +152,7 @@ function Ranges(props: propsIF) {
             | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        changeRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
@@ -162,7 +165,7 @@ function Ranges(props: propsIF) {
             <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
-                        value={rowsPerPage}
+                        rowsPerPage={rowsPerPage}
                         onChange={handleChangeRowsPerPage}
                         itemCount={sortedPositions.length}
                         setCurrentPage={setCurrentPage}
@@ -382,17 +385,6 @@ function Ranges(props: propsIF) {
         }
     }, [expandTradeTable]);
 
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
-
     const shouldDisplayNoTableData = !isLoading && !rangeData.length;
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
@@ -428,7 +420,6 @@ function Ranges(props: propsIF) {
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 
