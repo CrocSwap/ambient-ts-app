@@ -1,40 +1,18 @@
-/* 
-
-/* .swap{
-    height: 100vh;
-    width: 100vw;
-} */
-
-/* .footer{
-    position: relative;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-} */
-
-/* .container{
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-} */
-
 .swap_page {
-    /* height: calc(100vh - var(--footer-height));  */
     height: 100%;
-
-
     background: url(../../assets/images/backgrounds/swap_bg.png) no-repeat
       ;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-
+    background-color: var(--dark2);
 }
 
 .swap_page_container {
     margin-top: 64px;
 }
+
 .scrollable_container {
     height: auto;
     overflow-y: scroll;
@@ -46,9 +24,7 @@
 }
 
 .price_impact {
-    border: 1px solid var(--border);
-    margin: 5px 5px;
-
+    border: 1px solid var(--dark3);
     border-radius: var(--border-radius);
 
     font-size: var(--body-size);
@@ -56,6 +32,8 @@
     font-weight: 300;
 
     color: var(--other-red) !important;
+    padding: 0 1rem;
+    margin-top: 0.5rem;
 }
 
 .price_impact svg {
@@ -277,21 +255,12 @@
 }
 
 .pool_not_initialialized_content {
-  
-
-  
 
 padding-top: 8px;
     border-radius: var(--border-radius);
-   
-  
-
-   
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
     display: flex;
     flex-direction: column;
-  
-
    width: 100%;
    height: 100%;
     background: var(--dark1)
@@ -299,10 +268,6 @@ padding-top: 8px;
 .pool_not_init_inner{
 
     border-radius: var(--border-radius);
-   
-  
-
-   
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -350,7 +315,6 @@ padding-top: 8px;
     border-radius: 4px;
     transition: all var(--animation-speed) ease-out;
 
-
     background: linear-gradient(
         90deg,
         rgba(115, 113, 252, 0) 0%,
@@ -362,12 +326,9 @@ padding-top: 8px;
 }
 
 .initialize_link:hover {
-    
-
     color: var(--dark1);
- 
     background: linear-gradient(to left, var(--accent1) 34%, var(--accent5) 65%) right;
-background-size: 300% 100%;
+    background-size: 300% 100%;
 }
 
 .close_init {
@@ -376,10 +337,6 @@ background-size: 300% 100%;
     justify-content: flex-end;
     cursor: pointer;
     padding: 0 1rem;
-   
- 
-  
-   
 }
 
 .no_thanks {
@@ -411,9 +368,6 @@ background-size: 300% 100%;
     }
 
     .extra_details {
-        padding: 0.1rem 1rem;
-    }
-    .price_impact {
         padding: 0.1rem 1rem;
     }
 
