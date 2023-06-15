@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
-import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -25,7 +24,8 @@ import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
+import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -35,13 +35,13 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    const { crocEnv: crocEnv, chainData: chainData } =
+        useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
@@ -49,7 +49,7 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(chainId, poolIndex);
+    const poolList = usePoolList(cachedTokenDetails, tokens.tokenUniv, crocEnv);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
@@ -65,7 +65,7 @@ function Sidebar() {
     }, [overflowSidebarMQ, sidebar.isOpen]);
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainId;
+        x.chainId === chainData.chainId;
 
     const positionsByUser =
         graphData.positionsByUser.positions.filter(filterFn);
@@ -249,33 +249,22 @@ function Sidebar() {
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
-    const openAllButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                if (!sidebar.isOpen) {
-                    sidebar.open();
-                }
-                setOpenAllDefault(true);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {openAllDefault ? 'Collapse All' : 'Expand All'}
-        </button>
-    );
+    const getInitialSidebarLockedStatus = () =>
+        sidebar.getStoredStatus() === 'open';
+    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
 
-    const collapseButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                setOpenAllDefault(false);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
-        </button>
-    );
+    const toggleLockSidebar = () => {
+        sidebar.open(!isLocked);
+        isLocked && sidebar.resetStoredStatus();
+        setIsLocked(!isLocked);
+    };
+
+    const toggleExpandCollapseAll = () => {
+        setIsDefaultOverridden(true);
+        setOpenAllDefault(!openAllDefault);
+    };
+
+    const controlIconStyle = { margin: 'auto' };
 
     const searchContainerDisplay = (
         <div
@@ -287,22 +276,56 @@ function Sidebar() {
                 ? AnalyticsSearchContainer
                 : searchContainer}
             {sidebar.isOpen ? (
-                <DefaultTooltip
-                    interactive
-                    title={!openAllDefault ? openAllButton : collapseButton}
-                    placement={'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
+                <div style={{ cursor: 'pointer', display: 'flex' }}>
+                    <DefaultTooltip
+                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                    >
+                        {isLocked ? (
+                            <AiFillLock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        ) : (
+                            <AiFillUnlock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
+                    >
+                        {openAllDefault ? (
+                            <BsChevronContract
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        ) : (
+                            <BsChevronExpand
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={
+                            isLocked
+                                ? 'Sidebar locked'
+                                : sidebar.isOpen
+                                ? 'Close Sidebar'
+                                : 'Open Sidebar'
+                        }
+                    >
+                        <input
+                            type='image'
                             src={closeSidebarImage}
                             alt='close sidebar'
                             onClick={() => sidebar.close(true)}
+                            disabled={isLocked}
+                            style={{ opacity: isLocked ? 0.5 : 1 }}
                         />
-                    </div>
-                </DefaultTooltip>
+                    </DefaultTooltip>
+                </div>
             ) : (
                 <BiSearch
                     size={18}

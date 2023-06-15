@@ -1,7 +1,6 @@
 import styles from './LandingSections.module.css';
-
-import row2Image from '../../../assets/images/newHome/row2.png';
-import row3Image from '../../../assets/images/newHome/row3.png';
+import liquidityImage from '../../../assets/images/home/liquidity.png';
+import orderImage from '../../../assets/images/home/orders.png';
 import Investors from './Investors';
 import Footer from '../../Footer/Footer';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -34,7 +33,7 @@ export default function LandingSections() {
         <div className={`${styles.slide_container} ${styles.height_large}`}>
             <div className={`${styles.row_container} ${styles.column_reverse}`}>
                 <img
-                    src={row2Image}
+                    src={liquidityImage}
                     alt='concentrated and ambient liquidity'
                     width='331px'
                     height='420px'
@@ -72,7 +71,7 @@ export default function LandingSections() {
                     </p>
                 </section>
                 <img
-                    src={row3Image}
+                    src={orderImage}
                     alt='range and limit orders'
                     width='240px'
                     height='420px'
