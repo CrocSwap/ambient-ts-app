@@ -249,7 +249,10 @@ function Sidebar() {
 
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
-    const [isLocked, setIsLocked] = useState(false);
+
+    const getInitialSidebarLockedStatus = () =>
+        sidebar.getStoredStatus() === 'open';
+    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
 
     const toggleLockSidebar = () => {
         sidebar.open(!isLocked);
