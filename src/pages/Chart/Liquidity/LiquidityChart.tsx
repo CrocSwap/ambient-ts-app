@@ -305,7 +305,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
                 const rect = canvas.getBoundingClientRect();
 
-                const x = event.clientX - rect.left;
+                const leftSpaceRelativeToMainCanvas =
+                    rect.left - canvas.width * 4;
+                const x = event.clientX - leftSpaceRelativeToMainCanvas;
                 const y = event.clientY - rect.top;
 
                 const currentDataY = scaleData?.yScale.invert(y);
@@ -331,8 +333,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     liqDataAsk,
                     (d: LiquidityDataLocal) => d.liqPrices,
                 );
-                console.log('hey');
-
                 if (liqMaxActiveLiq && currentDataX <= liqMaxActiveLiq) {
                     if (
                         bidMinBoudnary !== undefined &&
