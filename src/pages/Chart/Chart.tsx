@@ -2597,7 +2597,14 @@ export default function Chart(props: propsIF) {
     }
 
     useEffect(() => {
-        if (yAxis && xAxis) {
+        if (
+            yAxis &&
+            xAxis &&
+            zoomUtils &&
+            zoomUtils?.zoom &&
+            zoomUtils?.xAxisZoom &&
+            zoomUtils?.yAxisZoom
+        ) {
             d3.select(d3CanvasMain.current).call(zoomUtils?.zoom);
             d3.select(d3Xaxis.current).call(zoomUtils?.xAxisZoom);
 
@@ -3749,21 +3756,10 @@ export default function Chart(props: propsIF) {
 
     // Call drawChart()
     useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            zoomUtils !== undefined &&
-            liqTooltip !== undefined
-        ) {
-            drawChart(scaleData, zoomUtils, selectedDate);
+        if (scaleData !== undefined) {
+            drawChart(scaleData, selectedDate);
         }
-    }, [
-        zoomUtils,
-        denomInBase,
-        liqTooltip,
-        selectedDate,
-        isSidebarOpen,
-        liqMode,
-    ]);
+    }, [denomInBase, selectedDate, isSidebarOpen, liqMode]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData?.xScale.invert(
@@ -3985,7 +3981,7 @@ export default function Chart(props: propsIF) {
 
     // Draw Chart
     const drawChart = useCallback(
-        (scaleData: any, zoomUtils: any, selectedDate: any) => {
+        (scaleData: any, selectedDate: any) => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
             const onClickCanvas = (event: any) => {
@@ -4052,17 +4048,6 @@ export default function Chart(props: propsIF) {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
                 setCrosshairActive('none');
             });
-
-            d3.select(d3Xaxis.current).on(
-                'measure.range',
-                function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
-
-                    svg.call(zoomUtils.xAxisZoom)
-                        .on('dblclick.zoom', null)
-                        .on('dblclick.drag', null);
-                },
-            );
 
             render();
 
