@@ -1,7 +1,8 @@
 .range_width_container {
     width: 100%;
     /* margin-bottom: 1rem; */
-    padding-bottom: 16px;
+    padding: 16px;
+    padding-top: 0px;
 
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
