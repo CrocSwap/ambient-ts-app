@@ -1,11 +1,17 @@
+.sidebar_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .sidebar {
     position: fixed;
     background-color: var(--dark1);
     transition: all var(--animation-speed) ease-in-out;
 
-    overflow: scroll;
     padding: 0 4px;
-
+overflow: auto;
     z-index: 9999;
 }
 
@@ -44,6 +50,8 @@
 
 .sidebar_item {
     width: 100%;
+    margin: 8px 0;
+    border-bottom: 1px solid var(--dark3);
 }
 
 .close_icon {
@@ -58,12 +66,7 @@
 
 .sidebar_link {
     display: flex;
-
     align-items: center;
-    height: 28px;
-    border-bottom: 1px solid var(--dark3);
-    /* padding: 4px 0; */
-
     cursor: pointer;
 }
 
@@ -72,9 +75,6 @@
     flex-direction: row;
     align-items: center;
     width: 90%;
-}
-.sidebar_link:first-of-type {
-    margin-top: 4px;
 }
 
 .open_link {
@@ -221,7 +221,7 @@ input:-webkit-autofill:active {
 .search__box {
     width: 0;
     background: transparent;
-    color: white;
+    color: var(--text1);
     outline: none;
     border: none;
     opacity: 1;
@@ -245,11 +245,12 @@ input:-webkit-autofill:active {
 /* @media only screen and (min-width: 500px) { */
 .sidebar {
     top: 0;
-    width: 1.938rem;
+    width: 32px;
     height: 100vh;
     margin-top: 56px;
     border-top: 1px solid var(--dark2);
     padding-top: 4px;
+    padding-bottom: 8px;
 }
 
 .sidebar::-webkit-scrollbar-track {
@@ -263,6 +264,7 @@ input:-webkit-autofill:active {
 .sidebar_active {
     width: 296px;
     padding-top: 4px;
+    padding-bottom: 16px;
     border-top: 1px solid var(--dark2);
 }
 
@@ -305,6 +307,7 @@ input:-webkit-autofill:active {
 .main_search_container {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
     gap: 4px;
 }

@@ -116,7 +116,14 @@ export default function SidebarAccordion(props: propsIF) {
                 onClick={() => handleAccordionClick()}
             >
                 <div>
-                    <div className={styles.sidebar_link}>
+                    <div
+                        className={styles.sidebar_link}
+                        style={{
+                            justifyContent: !sidebar.isOpen
+                                ? 'center'
+                                : 'flex-start',
+                        }}
+                    >
                         {sidebar.isOpen && (
                             <MdPlayArrow
                                 size={12}

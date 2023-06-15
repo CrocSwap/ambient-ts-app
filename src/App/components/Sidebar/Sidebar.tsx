@@ -227,7 +227,10 @@ function Sidebar() {
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
@@ -329,7 +332,7 @@ function Sidebar() {
                 </div>
             ) : (
                 <BiSearch
-                    size={18}
+                    size={20}
                     color='#CDC1FF'
                     onClick={() => sidebar.open(true)}
                 />
@@ -426,7 +429,7 @@ function Sidebar() {
     );
 
     return (
-        <div ref={sidebarRef}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
