@@ -111,24 +111,28 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to build a URL for a given page including parameters
-    function getFullURL(paramsObj?: anyParamsIF): string {
+    function getFullURL(paramsObj?: anyParamsIF | string): string {
         let paramsSlug = '';
         if (paramsObj) {
-            paramsSlug =
-                '/' +
-                Object.entries(paramsObj)
-                    .map((tup: string[]) => tup.join('='))
-                    .join('&');
+            if (typeof paramsObj === 'string') {
+                paramsSlug = paramsObj;
+            } else {
+                paramsSlug =
+                    '/' +
+                    Object.entries(paramsObj)
+                        .map((tup: string[]) => tup.join('='))
+                        .join('&');
+            }
         }
         return baseURL + paramsSlug;
     }
 
     // fn to build a full URL including params AND navigate the user
-    function navigateUser(paramsObj?: anyParamsIF): void {
+    function navigateUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj));
     }
 
-    function redirectUser(paramsObj?: anyParamsIF): void {
+    function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
