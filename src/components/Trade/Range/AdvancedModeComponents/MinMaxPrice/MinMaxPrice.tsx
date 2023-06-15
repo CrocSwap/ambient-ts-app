@@ -16,6 +16,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -81,9 +82,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+            const isValid = exponentialNumRegEx.test(input);
+
             if (isValid) {
                 handleSetMinTarget(targetValue);
             }
@@ -94,9 +98,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+
+            const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 handleSetMaxTarget(targetValue);
             }
