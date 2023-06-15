@@ -58,14 +58,14 @@ export default function PositionsSearchResults(props: propsIF) {
     } = useContext(TradeTableContext);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.lastMintTx);
         setShowAllData(false);
-        linkGenRange.navigate({
+        linkGenPool.navigate({
             chain: chainId,
             tokenA: position.base,
             tokenB: position.quote,

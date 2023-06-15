@@ -16,7 +16,7 @@ interface limitParamsIF {
     tokenB: string;
     limitTick?: number;
 }
-interface rangeParamsIF {
+interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
@@ -36,7 +36,7 @@ type anyParamsIF =
     | swapParamsIF
     | marketParamsIF
     | limitParamsIF
-    | rangeParamsIF
+    | poolParamsIF
     | repoParamsIF;
 
 // index of all base URL pathways in the Ambient app
@@ -46,7 +46,7 @@ const BASE_URL_PATHS = {
     swap: '/swap',
     market: '/trade/market',
     limit: '/trade/limit',
-    range: '/trade/range',
+    pool: '/trade/pool',
     reposition: '/trade/reposition',
     tos: '/terms',
     testpage: '/testpage',
@@ -89,8 +89,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'market';
         } else if (pathname.startsWith(BASE_URL_PATHS.limit)) {
             pageName = 'limit';
-        } else if (pathname.startsWith(BASE_URL_PATHS.range)) {
-            pageName = 'range';
+        } else if (pathname.startsWith(BASE_URL_PATHS.pool)) {
+            pageName = 'pool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
