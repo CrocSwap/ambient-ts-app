@@ -55,8 +55,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const getOverlay = (
         overlayFor: 'market' | 'limit' | 'range',
     ): OverlayType | undefined => {
-        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
-            LS_KEY_CHART_SETTINGS,
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
@@ -79,8 +79,8 @@ export const useChartSettings = (): chartSettingsMethodsIF => {
     const getCandleTime = (
         timeFor: 'global' | 'market' | 'limit' | 'range',
     ): TimeInSecondsType | undefined => {
-        const chartSettings: chartSettingsIF | null = getLocalStorageItem(
-            LS_KEY_CHART_SETTINGS,
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
         let time: number | undefined;
         switch (timeFor) {
