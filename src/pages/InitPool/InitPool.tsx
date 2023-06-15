@@ -314,7 +314,9 @@ export default function InitPool() {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const isValid =
-            event.target.value === '' || event.target.validity.valid;
+            event.target.value === '' ||
+            event.target.value === '.' ||
+            event.target.validity.valid;
         const targetValue = event.target.value.replaceAll(',', '');
         const input = targetValue.startsWith('.')
             ? '0' + targetValue

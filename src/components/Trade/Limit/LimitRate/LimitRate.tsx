@@ -106,10 +106,12 @@ export default function LimitRate(props: propsIF) {
                         onChange={(event) => {
                             const isValid =
                                 event.target.value === '' ||
+                                event.target.value === '.' ||
                                 event.target.validity.valid;
-                            isValid
-                                ? setDisplayPrice(event.target.value)
-                                : null;
+                            const input = event.target.value.startsWith('.')
+                                ? '0' + event.target.value
+                                : event.target.value;
+                            isValid ? setDisplayPrice(input) : null;
                         }}
                         className={styles.currency_quantity}
                         placeholder='0.0'
