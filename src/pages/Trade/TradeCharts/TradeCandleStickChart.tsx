@@ -719,33 +719,51 @@ function TradeCandleStickChart(props: propsIF) {
             ) {
                 const domain = scaleData.xScale.domain();
 
-                const prevnCandle =
-                    (domain[1] - firtCandleTimeState * 1000) /
-                    (prevPeriod * 1000);
-
-                const currentTime = Date.now();
-
                 const diffDomain = Math.abs(domain[1] - domain[0]);
                 const factorDomain = diffDomain / (prevPeriod * 1000);
 
+                const domainCenter =
+                    Math.max(domain[1], domain[0]) - diffDomain / 2;
+
                 const newDiffDomain = period * 1000 * factorDomain;
 
-                const firsShownDomain =
-                    currentTime + prevnCandle * period * 1000;
+                const d1 = domainCenter + newDiffDomain / 2;
+                const d0 = domainCenter - newDiffDomain / 2;
 
-                const lastShownCandle = firsShownDomain - newDiffDomain;
+                const fethcingCandles = d1 > Date.now() ? Date.now() : d1;
 
-                const fethcingCandles =
-                    firsShownDomain > Date.now() ? Date.now() : firsShownDomain;
+                scaleData.xScale.domain([d0, d1]);
 
-                scaleData.xScale.domain([lastShownCandle, firsShownDomain]);
+                const diffResetLeft = Math.abs(
+                    Date.now() - scaleData.xScaleCopy.domain()[0],
+                );
+                const factorResetLeft = diffResetLeft / (prevPeriod * 1000);
+                const newPeriodxScaleCopyFactor =
+                    period * 1000 * factorResetLeft;
+                const xScaleCopyLeftDomain =
+                    Date.now() - newPeriodxScaleCopyFactor;
+
+                const diffResetRight = Math.abs(
+                    scaleData.xScaleCopy.domain()[1] - Date.now(),
+                );
+                const factorResetRigh = diffResetRight / (prevPeriod * 1000);
+                const newPeriodxScaleCopyFactorRight =
+                    period * 1000 * factorResetRigh;
+                const xScaleCopyRightDomain =
+                    Date.now() + newPeriodxScaleCopyFactorRight;
+
+                scaleData.xScaleCopy.domain([
+                    xScaleCopyLeftDomain,
+                    xScaleCopyRightDomain,
+                ]);
+
                 const minDate = 1657868400; // 15 July 2022
 
                 const firstTime = Math.floor(fethcingCandles / 1000);
 
-                if (firstTime > minDate && fethcingCandles > lastShownCandle) {
+                if (firstTime > minDate && fethcingCandles > d0) {
                     const nCandle = Math.floor(
-                        (fethcingCandles - lastShownCandle) / (period * 1000),
+                        (fethcingCandles - d0) / (period * 1000),
                     );
 
                     setCandleScale((prev: candleScale) => {

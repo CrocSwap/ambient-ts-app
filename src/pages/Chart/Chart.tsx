@@ -549,7 +549,7 @@ export default function Chart(props: propsIF) {
     const canUserDragRange = useMemo<boolean>(() => {
         if (
             mouseLocationY &&
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
             !(!tradeData.advancedMode && simpleRangeWidth === 100) &&
             scaleData
@@ -1272,35 +1272,7 @@ export default function Chart(props: propsIF) {
                             }
                         }
 
-                        const latestCandleTime = d3.max(
-                            unparsedCandleData,
-                            (d) => d.time * 1000,
-                        );
-
-                        if (latestCandleTime !== undefined) {
-                            if (
-                                !showLatest &&
-                                latestCandleTime &&
-                                (scaleData?.xScale.domain()[1] <
-                                    latestCandleTime ||
-                                    scaleData?.xScale.domain()[0] >
-                                        latestCandleTime)
-                            ) {
-                                setShowLatest(true);
-                            } else if (
-                                showLatest &&
-                                !(
-                                    scaleData?.xScale.domain()[1] <
-                                    latestCandleTime
-                                ) &&
-                                !(
-                                    scaleData?.xScale.domain()[0] >
-                                    latestCandleTime
-                                )
-                            ) {
-                                setShowLatest(false);
-                            }
-                        }
+                        showLatestActive();
 
                         props.setShowTooltip(true);
                     })
@@ -1607,35 +1579,7 @@ export default function Chart(props: propsIF) {
                         setZoomAndYdragControl(event);
                     })
                     .on('end', () => {
-                        const latestCandleTime = d3.max(
-                            unparsedCandleData,
-                            (d) => d.time * 1000,
-                        );
-
-                        if (latestCandleTime) {
-                            if (
-                                !showLatest &&
-                                latestCandleTime &&
-                                (scaleData?.xScale.domain()[1] <
-                                    latestCandleTime ||
-                                    scaleData?.xScale.domain()[0] >
-                                        latestCandleTime)
-                            ) {
-                                setShowLatest(true);
-                            } else if (
-                                showLatest &&
-                                !(
-                                    scaleData?.xScale.domain()[1] <
-                                    latestCandleTime
-                                ) &&
-                                !(
-                                    scaleData?.xScale.domain()[0] >
-                                    latestCandleTime
-                                )
-                            ) {
-                                setShowLatest(false);
-                            }
-                        }
+                        showLatestActive();
                     });
 
                 setZoomUtils(() => {
@@ -1669,8 +1613,29 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('timeframe changed');
-        setShowLatest(false);
+        showLatestActive();
     }, [period]);
+
+    const showLatestActive = () => {
+        const today = new Date();
+
+        if (today !== undefined && scaleData !== undefined) {
+            if (
+                !showLatest &&
+                today &&
+                (scaleData?.xScale.domain()[1] < today.getTime() ||
+                    scaleData?.xScale.domain()[0] > today.getTime())
+            ) {
+                setShowLatest(true);
+            } else if (
+                showLatest &&
+                !(scaleData?.xScale.domain()[1] < today.getTime()) &&
+                !(scaleData?.xScale.domain()[0] > today.getTime())
+            ) {
+                setShowLatest(false);
+            }
+        }
+    };
 
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
@@ -1678,7 +1643,7 @@ export default function Chart(props: propsIF) {
                 changeScale();
 
                 if (
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                 ) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
@@ -1761,7 +1726,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
             tradeData.advancedMode
         ) {
@@ -2616,7 +2581,7 @@ export default function Chart(props: propsIF) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('range') ||
+                location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
@@ -2778,7 +2743,7 @@ export default function Chart(props: propsIF) {
                 }
 
                 if (
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                 ) {
                     const {
@@ -3671,7 +3636,7 @@ export default function Chart(props: propsIF) {
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')
                     ) {
                         const min = ranges.filter(
@@ -3996,7 +3961,7 @@ export default function Chart(props: propsIF) {
                 setCrosshairActive('none');
 
                 if (
-                    (location.pathname.includes('range') ||
+                    (location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')) &&
                     scaleData !== undefined &&
                     !isHoverCandleOrVolumeData

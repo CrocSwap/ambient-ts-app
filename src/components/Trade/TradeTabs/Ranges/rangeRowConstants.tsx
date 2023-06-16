@@ -1,7 +1,6 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import styles from './Ranges.module.css';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../constants';
@@ -12,6 +11,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 interface Props {
     posHashTruncated: string;
     usdValue: string;
@@ -85,8 +85,6 @@ export default function rangeRowConstants(props: Props) {
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
-
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const IDWithTooltip = (
         <TextOnlyTooltip
@@ -192,25 +190,22 @@ export default function rangeRowConstants(props: Props) {
     const walletWithTooltip = isOwnerActiveAccount
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.baseSymbol?.charAt(0)}
-                width={logoSizes}
-            />
-        );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.quoteSymbol?.charAt(0)}
-                width={logoSizes}
-            />
-        );
+    const baseTokenLogoComponent = (
+        <TokenIcon
+            src={baseTokenLogo}
+            alt={baseTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+        />
+    );
+
+    const quoteTokenLogoComponent = (
+        <TokenIcon
+            src={quoteTokenLogo}
+            alt={quoteTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+        />
+    );
 
     const pair =
         position.base !== ZERO_ADDRESS
@@ -223,7 +218,7 @@ export default function rangeRowConstants(props: Props) {
     const tip = pair.join('\n');
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const tokenPair = (
         <li
@@ -233,7 +228,7 @@ export default function rangeRowConstants(props: Props) {
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink
-                to={linkGenRange.getFullURL({
+                to={linkGenPool.getFullURL({
                     chain: position.chainId,
                     tokenA: position.quote,
                     tokenB: position.base,

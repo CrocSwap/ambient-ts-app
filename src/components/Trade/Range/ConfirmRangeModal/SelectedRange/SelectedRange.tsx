@@ -2,6 +2,7 @@ import styles from './SelectedRange.module.css';
 import { memo, useContext, useState } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -48,11 +49,12 @@ function SelectedRange(props: propsIF) {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
+            : displayPriceWithDenom < 0.0001
+            ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+            ? displayPriceWithDenom.toPrecision(3)
+            : displayPriceWithDenom >= 100000
+            ? formatAmountOld(displayPriceWithDenom, 1)
             : displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
