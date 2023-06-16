@@ -43,8 +43,8 @@ export default function TopPoolsCard(props: propsIF) {
             output = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
             output = 'limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            output = 'range';
+        } else if (pathname.startsWith('/trade/pool')) {
+            output = 'pool';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',

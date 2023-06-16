@@ -268,7 +268,7 @@ const PageHeader = function () {
         },
         {
             title: t('common:poolTitle'),
-            destination: '/trade/range/' + paramsSlug,
+            destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
@@ -283,8 +283,8 @@ const PageHeader = function () {
 
     function isActive(linkDestination: string, locationPathname: string) {
         if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/range')) {
-                return locationPathname.includes('/trade/range')
+            if (linkDestination.includes('/pool')) {
+                return locationPathname.includes('/trade/pool')
                     ? styles.active
                     : styles.inactive;
             } else {
@@ -306,8 +306,8 @@ const PageHeader = function () {
     function isUnderlined(linkDestination: string, locationPathname: string) {
         return (
             (linkDestination.includes('/trade') &&
-                (linkDestination.includes('/trade/range')
-                    ? locationPathname.includes('/trade/range')
+                (linkDestination.includes('/trade/pool')
+                    ? locationPathname.includes('/trade/pool')
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
