@@ -71,24 +71,24 @@ function ExtraInfo(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const finalPriceWithDenom = !isDenomBase
-        ? 1 / (priceImpact?.finalPrice || 1)
-        : priceImpact?.finalPrice || 1;
+    // const finalPriceWithDenom = !isDenomBase
+    //     ? 1 / (priceImpact?.finalPrice || 1)
+    //     : priceImpact?.finalPrice || 1;
 
-    const finalPriceString =
-        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
-            ? '…'
-            : finalPriceWithDenom < 0.0001
-            ? finalPriceWithDenom.toExponential(2)
-            : finalPriceWithDenom < 2
-            ? finalPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : finalPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    // const finalPriceString =
+    //     finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
+    //         ? '…'
+    //         : finalPriceWithDenom < 0.0001
+    //         ? finalPriceWithDenom.toExponential(2)
+    //         : finalPriceWithDenom < 2
+    //         ? finalPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : finalPriceWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
 
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined

@@ -12,8 +12,7 @@ import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
-import AprExplanation from '../../../Global/Informational/AprExplanation';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
@@ -53,6 +52,7 @@ function RangePriceInfo(props: propsIF) {
         isAmbient,
     } = props;
     const {
+        // eslint-disable-next-line
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -114,7 +114,7 @@ function RangePriceInfo(props: propsIF) {
 
     const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
         useState<string>('');
-
+    // eslint-disable-next-line
     const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
         useState<string>('');
 
@@ -131,15 +131,15 @@ function RangePriceInfo(props: propsIF) {
         ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
-    const maxPrice = userFlippedMaxMinDisplay
-        ? isAmbient
-            ? '$∞'
-            : maxPriceUsdEquivalent
-        : isAmbient
-        ? '∞'
-        : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
-        : '...';
+    // const maxPrice = userFlippedMaxMinDisplay
+    //     ? isAmbient
+    //         ? '$∞'
+    //         : maxPriceUsdEquivalent
+    //     : isAmbient
+    //     ? '∞'
+    //     : pinnedDisplayPrices
+    //     ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+    //     : '...';
 
     const isDenomTokenA =
         (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);

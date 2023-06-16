@@ -30,7 +30,7 @@ function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         startDisplayPrice,
-        middleDisplayPrice,
+        // middleDisplayPrice,
         endDisplayPrice,
         isQtyEntered,
         liquidityProviderFeeString,
@@ -79,19 +79,19 @@ function LimitExtraInfo(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 0.0001
-        ? middleDisplayPrice.toExponential(2)
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    // const middlePriceString = !middleDisplayPrice
+    //     ? '…'
+    //     : middleDisplayPrice < 0.0001
+    //     ? middleDisplayPrice.toExponential(2)
+    //     : middleDisplayPrice < 2
+    //     ? middleDisplayPrice.toLocaleString(undefined, {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 6,
+    //       })
+    //     : middleDisplayPrice.toLocaleString(undefined, {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       });
 
     const endPriceString = !endDisplayPrice
         ? '…'
