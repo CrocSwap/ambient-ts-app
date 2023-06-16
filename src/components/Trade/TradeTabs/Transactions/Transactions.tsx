@@ -162,11 +162,15 @@ function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1600px)');
-    const max1700px = useMediaQuery('(max-width: 1800px)');
+    const showTimestamp = useMediaQuery('(min-width: 1000px)');
 
-    const showColumns =
-        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
+    const showColumns = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1850px)')
+            : useMediaQuery('(max-width: 1500px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1850px)')
+        : useMediaQuery('(max-width: 1600px)');
 
     const getCandleData = () =>
         crocEnv &&
@@ -249,7 +253,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: !showColumns,
+            show: showTimestamp,
 
             slug: 'time',
             sortable: true,
@@ -383,14 +387,21 @@ function Transactions(props: propsIF) {
         (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
         (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const [rowsPerPage, setRowsPerPage] = useState(
-        isScreenShort ? 5 : isScreenTall ? 20 : 10,
+    const _DATA = usePagination(
+        sortedTransactions,
+        isScreenShort,
+        isScreenTall,
     );
 
-    const count = Math.ceil(sortedTransactions.length / rowsPerPage);
-    const _DATA = usePagination(sortedTransactions, rowsPerPage);
-
-    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
@@ -401,7 +412,7 @@ function Transactions(props: propsIF) {
             | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        changeRowsPerPage(parseInt(event.target.value, 10));
     };
     const tradePageCheck = expandTradeTable && transactionData.length > 30;
 
@@ -413,7 +424,7 @@ function Transactions(props: propsIF) {
             <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
-                        value={rowsPerPage}
+                        rowsPerPage={rowsPerPage}
                         onChange={handleChangeRowsPerPage}
                         itemCount={sortedTransactions.length}
                         setCurrentPage={setCurrentPage}
@@ -442,6 +453,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -452,6 +464,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -496,7 +509,6 @@ function Transactions(props: propsIF) {
             <ul ref={listRef} id='current_row_scroll'>
                 {currentRowItemContent}
             </ul>
-
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
             {!expandTradeTable &&
                 !isAccountView &&

@@ -1,27 +1,39 @@
 import { useMemo, useState } from 'react';
+import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 export interface sidebarMethodsIF {
-    status: string;
+    status: SidebarStoredStatus;
     isOpen: boolean;
     isHiddenOnRoute: boolean;
     open: (persist?: boolean) => void;
     close: (persist?: boolean) => void;
     toggle: (persist?: boolean) => void;
+    getStoredStatus: () => SidebarStoredStatus | null;
+    resetStoredStatus: () => void;
 }
+
+export type SidebarStoredStatus = 'open' | 'closed';
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // local storage key for persisted data
     const localStorageKey = 'sidebarStatus';
+    const getStoredSidebarStatus = () =>
+        getLocalStorageItem<SidebarStoredStatus>(localStorageKey);
+
+    const resetPersist = () => localStorage.setItem(localStorageKey, 'closed');
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
-    const [sidebar, setSidebar] = useState<string>(
-        localStorage.getItem(localStorageKey) || 'open',
+    const [sidebar, setSidebar] = useState<SidebarStoredStatus>(
+        getStoredSidebarStatus() || 'open',
     );
 
     // reusable logic to update state and optionally persist data in local storage
-    const changeSidebar = (newStatus: string, persist: boolean): void => {
+    const changeSidebar = (
+        newStatus: SidebarStoredStatus,
+        persist: boolean,
+    ): void => {
         setSidebar(newStatus);
         persist && localStorage.setItem(localStorageKey, newStatus);
     };
@@ -68,6 +80,8 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
             open: openSidebar,
             close: closeSidebar,
             toggle: toggleSidebar,
+            getStoredStatus: getStoredSidebarStatus,
+            resetStoredStatus: resetPersist,
         }),
         [sidebar, hidden, pathname],
     );
