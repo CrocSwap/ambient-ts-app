@@ -657,7 +657,7 @@ export default function Chart(props: propsIF) {
     const canUserDragRange = useMemo<boolean>(() => {
         if (
             mouseLocationY &&
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
             !(!tradeData.advancedMode && simpleRangeWidth === 100)
         ) {
@@ -766,7 +766,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition')
         ) {
             d3.select(d3Container.current)
@@ -1816,7 +1816,7 @@ export default function Chart(props: propsIF) {
                 changeScale();
 
                 if (
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                 ) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
@@ -2104,7 +2104,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
             tradeData.advancedMode
         ) {
@@ -2955,7 +2955,7 @@ export default function Chart(props: propsIF) {
                     .style('display', 'none');
             }
             if (
-                location.pathname.includes('range') ||
+                location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
@@ -3117,7 +3117,7 @@ export default function Chart(props: propsIF) {
                 );
 
                 if (
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                 ) {
                     const {
@@ -3555,7 +3555,7 @@ export default function Chart(props: propsIF) {
 
             horizontalLine.decorate((context: any) => {
                 context.visibility =
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                         ? 'visible'
                         : 'hidden';
@@ -3728,7 +3728,7 @@ export default function Chart(props: propsIF) {
 
             triangleRange.decorate((context: any, datum: any) => {
                 if (
-                    location.pathname.includes('/range') ||
+                    location.pathname.includes('/pool') ||
                     location.pathname.includes('reposition')
                 ) {
                     color =
@@ -3757,12 +3757,12 @@ export default function Chart(props: propsIF) {
             renderCanvasArray([d3CanvasLimitLine]);
         } else if (
             horizontalLine !== undefined &&
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition'))
         ) {
             horizontalLine.decorate((context: any, datum: any) => {
                 context.visibility =
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                         ? 'visible'
                         : 'hidden';
@@ -4290,7 +4290,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition')
         ) {
             const canvas = d3
@@ -4303,7 +4303,7 @@ export default function Chart(props: propsIF) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
-                            location.pathname.includes('range') ||
+                            location.pathname.includes('pool') ||
                             location.pathname.includes('reposition')
                         ) {
                             setCanvasResolution(canvas);
@@ -4490,7 +4490,7 @@ export default function Chart(props: propsIF) {
     const displayHorizontalLines = () => {
         if (
             location.pathname.includes('reposition') ||
-            location.pathname.includes('range')
+            location.pathname.includes('pool')
         ) {
             if (tradeData.advancedMode || simpleRangeWidth !== 100) {
                 d3.select(d3CanvasRangeLine.current)
@@ -4667,7 +4667,7 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqAskSeries(liquidityData?.liqAskData);
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         (location.pathname.includes('reposition') &&
                             lineAskSeries)
                     ) {
@@ -4696,7 +4696,7 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvasDepth);
                     liqAskDepthSeries(liquidityData?.depthLiqAskData);
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         (location.pathname.includes('reposition') &&
                             lineAskDepthSeries)
                     ) {
@@ -4751,7 +4751,7 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     liqBidSeries(liquidityData?.liqBidData);
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         (location.pathname.includes('reposition') &&
                             lineBidSeries)
                     ) {
@@ -4789,7 +4789,7 @@ export default function Chart(props: propsIF) {
                     );
 
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         (location.pathname.includes('reposition') &&
                             lineBidDepthSeries)
                     ) {
@@ -4934,7 +4934,7 @@ export default function Chart(props: propsIF) {
                 if (minYBoundary && maxYBoundary) {
                     const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
                     if (
-                        location.pathname.includes('range') ||
+                        location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')
                     ) {
                         const min = ranges.filter(
@@ -5557,7 +5557,7 @@ export default function Chart(props: propsIF) {
                 setCrosshairActive('none');
 
                 if (
-                    (location.pathname.includes('range') ||
+                    (location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')) &&
                     scaleData !== undefined &&
                     !isHoverCandleOrVolumeData

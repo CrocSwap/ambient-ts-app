@@ -60,7 +60,7 @@ export const SidebarContextProvider = (props: {
         recentPools,
     };
 
-    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
+    const showSidebarByDefault = useMediaQuery('(min-width: 1850px)');
     function toggleSidebarBasedOnRoute() {
         if (sidebar.getStoredStatus() === 'open') {
             sidebar.open(true);
