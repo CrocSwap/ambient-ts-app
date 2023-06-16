@@ -60,6 +60,14 @@ export default function TransactionsMenu(props: propsIF) {
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -69,7 +77,7 @@ export default function TransactionsMenu(props: propsIF) {
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
         if (tx.entityType === 'swap') {
@@ -189,7 +197,7 @@ export default function TransactionsMenu(props: propsIF) {
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    linkGenRange.navigate({
+                    linkGenPool.navigate({
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
@@ -201,7 +209,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : tx.entityType === 'limitOrder' ? (
             <button
@@ -229,7 +237,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : (
             <button
@@ -253,7 +261,7 @@ export default function TransactionsMenu(props: propsIF) {
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         );
 

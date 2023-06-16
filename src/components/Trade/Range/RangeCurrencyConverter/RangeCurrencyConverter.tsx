@@ -328,13 +328,13 @@ function RangeCurrencyConverter(props: propsIF) {
     const rangeTicksCopied = tradeData.rangeTicksCopied;
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const reverseTokens = (): void => {
         resetTokenQuantities();
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
         if (!rangeTicksCopied) {
-            linkGenRange.navigate({
+            linkGenPool.navigate({
                 chain: chainId,
                 tokenA: tradeData.tokenB.address,
                 tokenB: tradeData.tokenA.address,

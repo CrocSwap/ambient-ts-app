@@ -69,7 +69,7 @@ export function getPinnedPriceValuesFromTicks(
         : highPriceDisplayInQuote;
 
     const lowPriceDisplayTruncated =
-        lowPriceDisplay < 0.00001
+        lowPriceDisplay < 0.0001
             ? lowPriceDisplay.toExponential(2)
             : lowPriceDisplay < 2
             ? lowPriceDisplay > 0.1
@@ -78,7 +78,7 @@ export function getPinnedPriceValuesFromTicks(
             : truncateDecimals(lowPriceDisplay, 2);
 
     const highPriceDisplayTruncated =
-        highPriceDisplay < 0.00001
+        highPriceDisplay < 0.0001
             ? highPriceDisplay.toExponential(2)
             : highPriceDisplay < 2
             ? highPriceDisplay > 0.1
@@ -88,7 +88,7 @@ export function getPinnedPriceValuesFromTicks(
 
     const lowPriceDisplayTruncatedWithCommas: string = !lowPriceDisplay
         ? ''
-        : lowPriceDisplay < 0.00001
+        : lowPriceDisplay < 0.0001
         ? lowPriceDisplay.toExponential(2)
         : lowPriceDisplay < 2
         ? lowPriceDisplay.toPrecision(3)
@@ -101,7 +101,7 @@ export function getPinnedPriceValuesFromTicks(
 
     const highPriceDisplayTruncatedWithCommas: string = !highPriceDisplay
         ? ''
-        : highPriceDisplay < 0.00001
+        : highPriceDisplay < 0.0001
         ? highPriceDisplay.toExponential(2)
         : highPriceDisplay < 2
         ? highPriceDisplay.toPrecision(3)

@@ -122,7 +122,10 @@ function TradeCharts(props: propsIF) {
         isVolumeSubchartEnabled: boolean;
         isTvlSubchartEnabled: boolean;
         isFeeRateSubchartEnabled: boolean;
-    } | null = getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS);
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
+
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
@@ -138,11 +141,11 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.poolOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.rangeOverlay,
+        chartSettings.poolOverlay,
         showTvl,
         showVolume,
         showFeeRate,
@@ -254,7 +257,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
         </div>
     );
