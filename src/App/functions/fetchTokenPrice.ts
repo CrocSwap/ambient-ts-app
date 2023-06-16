@@ -2,7 +2,7 @@ import Moralis from 'moralis';
 import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 import { memoizePromiseFn } from './memoizePromiseFn';
-const randomNum = Math.random();
+// const randomNum = Math.random();
 
 export const fetchTokenPrice = async (
     address: string,
@@ -49,9 +49,9 @@ export type TokenPriceFn = (
 >;
 
 // Refresh USD prices in 15 minute windows
-const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
+// const PRICE_WINDOW_GRANULARITY = 15 * 60 * 1000;
 
-const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
+// const randomOffset = PRICE_WINDOW_GRANULARITY * randomNum;
 
 export function memoizeTokenPrice(): TokenPriceFn {
     const memoFn = memoizePromiseFn(fetchTokenPrice);
@@ -59,6 +59,7 @@ export function memoizeTokenPrice(): TokenPriceFn {
         memoFn(
             address,
             chain,
-            Math.floor((Date.now() + randomOffset) / PRICE_WINDOW_GRANULARITY),
+            1, // temporarily removing refetch
+            // Math.floor((Date.now() + randomOffset) / PRICE_WINDOW_GRANULARITY),
         );
 }
