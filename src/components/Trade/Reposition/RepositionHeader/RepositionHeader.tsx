@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RiSettings5Line } from 'react-icons/ri';
+import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
@@ -43,15 +43,16 @@ function RepositionHeader(props: propsIF) {
 
     return (
         <ContentHeader>
-            <div
+            <img
+                className={styles.settings_icon}
+                src={settingsIcon}
+                alt='settings'
                 onClick={() => openModal()}
-                style={{ cursor: 'pointer', marginLeft: '5px' }}
-            >
-                <RiSettings5Line />
-            </div>
-            <div className={styles.title}>
-                Reposition: {trimString(positionHash, 6, 4, '…')}
-            </div>
+            />
+            <p className={styles.title}>
+                {' '}
+                Reposition: {trimString(positionHash, 5, 4, '…')}
+            </p>
             {isModalOpen && (
                 <Modal
                     noHeader
@@ -67,7 +68,8 @@ function RepositionHeader(props: propsIF) {
                     />
                 </Modal>
             )}
-            <div
+            <VscClose
+                className={styles.close_icon}
                 onClick={() => {
                     dispatch(setAdvancedMode(false));
                     setRangeWidthPercentage(10);
@@ -75,10 +77,7 @@ function RepositionHeader(props: propsIF) {
                     navigate(exitPath, { replace: true });
                     resetTxHash();
                 }}
-                style={{ cursor: 'pointer', marginRight: '10px' }}
-            >
-                <VscClose size={30} />
-            </div>
+            />
         </ContentHeader>
     );
 }
