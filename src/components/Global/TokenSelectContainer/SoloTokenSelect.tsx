@@ -269,7 +269,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
-            {handleWETH.check(validatedInput) && <p>{handleWETH.message}</p>}
+            {handleWETH.check(validatedInput) && (
+                <p className={styles.weth_text}>{handleWETH.message}</p>
+            )}
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
