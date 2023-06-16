@@ -99,7 +99,7 @@ export const TradeTableContextProvider = (props: {
             } else if (currentLocation.includes('/limit')) {
                 setSelectedOutsideTab(1);
             } else if (
-                currentLocation.includes('/range') ||
+                currentLocation.includes('/pool') ||
                 currentLocation.includes('reposition') ||
                 currentLocation.includes('add')
             ) {

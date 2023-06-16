@@ -45,10 +45,10 @@ export default function RecentPoolsCard(props: propsIF) {
         } else if (pathname.startsWith('/trade/limit')) {
             page = 'limit';
         } else if (
-            pathname.startsWith('/trade/range') ||
+            pathname.startsWith('/trade/pool') ||
             pathname.startsWith('/trade/reposition')
         ) {
-            page = 'range';
+            page = 'pool';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',

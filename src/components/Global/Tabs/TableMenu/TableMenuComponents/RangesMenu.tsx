@@ -124,7 +124,7 @@ export default function RangesMenu(props: propsIF) {
     };
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
     const repositionButton = (
@@ -153,7 +153,7 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={linkGenRange.getFullURL({
+            to={linkGenPool.getFullURL({
                 chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,
@@ -170,7 +170,7 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={linkGenRange.getFullURL({
+            to={linkGenPool.getFullURL({
                 chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,

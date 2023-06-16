@@ -21,7 +21,7 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Swaps'
         : pathname.includes('market')
         ? 'Swaps'
-        : pathname.includes('range')
+        : pathname.includes('pool')
         ? 'Pool Orders'
         : pathname.includes('reposition')
         ? 'Repositions'
