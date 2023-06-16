@@ -1,7 +1,7 @@
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import styles from './RangeStatus.module.css';
 
-interface RangeStatusProps {
+interface propsIF {
     isInRange: boolean;
     isAmbient: boolean;
     isEmpty: boolean;
@@ -10,7 +10,7 @@ interface RangeStatusProps {
     size?: 's' | 'l';
 }
 
-export default function RangeStatus(props: RangeStatusProps) {
+export default function RangeStatus(props: propsIF) {
     const { isInRange, isAmbient, fullText, isEmpty, size = 'l' } = props;
 
     const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Range';

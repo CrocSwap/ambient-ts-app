@@ -15,7 +15,7 @@ interface UrlRoutesTemplate {
     swap: string;
     market: string;
     limit: string;
-    range: string;
+    pool: string;
 }
 interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
@@ -54,7 +54,7 @@ export const CrocEnvContextProvider = (props: {
         return {
             swap: `/swap/${pairSlug}`,
             market: `/trade/market/${pairSlug}`,
-            range: `/trade/range/${pairSlug}`,
+            pool: `/trade/pool/${pairSlug}`,
             limit: `/trade/limit/${pairSlug}`,
         };
     }

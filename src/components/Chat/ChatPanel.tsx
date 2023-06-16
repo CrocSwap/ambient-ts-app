@@ -15,7 +15,6 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
-import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
@@ -239,17 +238,6 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const convertCurreny = (currencyPair: string) => {
-        if (currencyPair === 'Global') {
-            return 'global';
-        } else {
-            const [currencyA, currencyB] = currencyPair.split('/');
-            const lowercaseA = currencyA.trim().toLowerCase();
-            const lowercaseB = currencyB.trim().toLowerCase();
-            return `${lowercaseA}&${lowercaseB}`;
-        }
-    };
-
     const header = (
         <div
             className={styles.chat_header}
@@ -257,22 +245,6 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Chat</h2>
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !isChatOpen ? (
-                    <></>
-                ) : (
-                    <div
-                        className={styles.open_full_button}
-                        onClick={() =>
-                            window.open('/chat/' + convertCurreny(room))
-                        }
-                        aria-label='Open chat in full screen'
-                    >
-                        <img
-                            src={ExpandChatIcon}
-                            alt='Open chat in full screen'
-                        />
-                    </div>
-                )}
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
