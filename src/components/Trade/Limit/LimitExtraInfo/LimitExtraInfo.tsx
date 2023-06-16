@@ -30,7 +30,7 @@ function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         startDisplayPrice,
-        // middleDisplayPrice,
+        middleDisplayPrice,
         endDisplayPrice,
         isQtyEntered,
         liquidityProviderFeeString,
@@ -79,19 +79,19 @@ function LimitExtraInfo(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    // const middlePriceString = !middleDisplayPrice
-    //     ? '…'
-    //     : middleDisplayPrice < 0.0001
-    //     ? middleDisplayPrice.toExponential(2)
-    //     : middleDisplayPrice < 2
-    //     ? middleDisplayPrice.toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 6,
-    //       })
-    //     : middleDisplayPrice.toLocaleString(undefined, {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       });
+    const middlePriceString = !middleDisplayPrice
+        ? '…'
+        : middleDisplayPrice < 0.0001
+        ? middleDisplayPrice.toExponential(2)
+        : middleDisplayPrice < 2
+        ? middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const endPriceString = !endDisplayPrice
         ? '…'
@@ -108,13 +108,13 @@ function LimitExtraInfo(props: propsIF) {
           });
 
     const extraInfoData = [
-        // {
-        //     title: 'Spot Price',
-        //     tooltipTitle: 'Current Price of the Selected Token Pool',
-        //     data: isDenomBase
-        //         ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-        //         : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        // },
+        {
+            title: 'Spot Price',
+            tooltipTitle: 'Current Price of the Selected Token Pool',
+            data: isDenomBase
+                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
         // {
         //     title: 'Limit Price',
         //     tooltipTitle: 'limit price explanation',
@@ -127,24 +127,24 @@ function LimitExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Price at which the limit order will begin to be filled',
             data: isDenomBase
-                ? `${startPriceString}  ${baseTokenSymbol}`
-                : `${startPriceString}  ${quoteTokenSymbol}`,
+                ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
-        // {
-        //     title: 'Fill Middle',
-        //     tooltipTitle:
-        //         'Average price at which the limit order will be filled',
-        //     data: isDenomBase
-        //         ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-        //         : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        // },
+        {
+            title: 'Fill Middle',
+            tooltipTitle:
+                'Average price at which the limit order will be filled',
+            data: isDenomBase
+                ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
         {
             title: 'Fill End',
             tooltipTitle:
                 'Price at which the limit order will finish being filled and become claimable',
             data: isDenomBase
-                ? `${endPriceString}  ${baseTokenSymbol}`
-                : `${endPriceString}  ${quoteTokenSymbol}`,
+                ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Minimum Rebate Rate',

@@ -131,15 +131,15 @@ function RangePriceInfo(props: propsIF) {
         ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
-    // const maxPrice = userFlippedMaxMinDisplay
-    //     ? isAmbient
-    //         ? '$∞'
-    //         : maxPriceUsdEquivalent
-    //     : isAmbient
-    //     ? '∞'
-    //     : pinnedDisplayPrices
-    //     ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
-    //     : '...';
+    const maxPrice = userFlippedMaxMinDisplay
+        ? isAmbient
+            ? '$∞'
+            : maxPriceUsdEquivalent
+        : isAmbient
+        ? '∞'
+        : pinnedDisplayPrices
+        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        : '...';
 
     const isDenomTokenA =
         (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase);
@@ -344,32 +344,32 @@ function RangePriceInfo(props: propsIF) {
         );
 
     // JSX frag for highest price in range
-    // const maximumPrice =
-    //     nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-    //         <DefaultTooltip
-    //             interactive
-    //             title={`${maxPriceUsdEquivalent} USD per ${
-    //                 isDenomBase ? baseToken.symbol : quoteToken.symbol
-    //             } `}
-    //             placement={'bottom'}
-    //             arrow
-    //             enterDelay={100}
-    //             leaveDelay={200}
-    //         >
-    //             <div
-    //                 className={styles.price_display}
-    //                 onClick={handleMinMaxPriceClick}
-    //             >
-    //                 <h4 className={styles.price_title}>Max Price</h4>
-    //                 <span className={styles.max_price}>{maxPrice}</span>
-    //             </div>
-    //         </DefaultTooltip>
-    //     ) : (
-    //         <div className={styles.price_display} style={{ cursor: 'default' }}>
-    //             <h4 className={styles.price_title}>Max Price</h4>
-    //             <span className={styles.max_price}>{maxPrice}</span>
-    //         </div>
-    //     );
+    const maximumPrice =
+        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
+            <DefaultTooltip
+                interactive
+                title={`${maxPriceUsdEquivalent} USD per ${
+                    isDenomBase ? baseToken.symbol : quoteToken.symbol
+                } `}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div
+                    className={styles.price_display}
+                    onClick={handleMinMaxPriceClick}
+                >
+                    <h4 className={styles.price_title}>Max Price</h4>
+                    <span className={styles.max_price}>{maxPrice}</span>
+                </div>
+            </DefaultTooltip>
+        ) : (
+            <div className={styles.price_display} style={{ cursor: 'default' }}>
+                <h4 className={styles.price_title}>Max Price</h4>
+                <span className={styles.max_price}>{maxPrice}</span>
+            </div>
+        );
 
     // JSX frag for current pool price
     const currentPoolPrice =
@@ -421,6 +421,7 @@ function RangePriceInfo(props: propsIF) {
             <div className={styles.price_info_content}>
                 {aprDisplay}
                 {minimumPrice}
+                {maximumPrice}
                 {currentPoolPrice}
             </div>
         </div>

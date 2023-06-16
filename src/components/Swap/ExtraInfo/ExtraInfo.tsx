@@ -71,24 +71,24 @@ function ExtraInfo(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    // const finalPriceWithDenom = !isDenomBase
-    //     ? 1 / (priceImpact?.finalPrice || 1)
-    //     : priceImpact?.finalPrice || 1;
+    const finalPriceWithDenom = !isDenomBase
+        ? 1 / (priceImpact?.finalPrice || 1)
+        : priceImpact?.finalPrice || 1;
 
-    // const finalPriceString =
-    //     finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
-    //         ? '…'
-    //         : finalPriceWithDenom < 0.0001
-    //         ? finalPriceWithDenom.toExponential(2)
-    //         : finalPriceWithDenom < 2
-    //         ? finalPriceWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : finalPriceWithDenom.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
+    const finalPriceString =
+        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
+            ? '…'
+            : finalPriceWithDenom < 0.0001
+            ? finalPriceWithDenom.toExponential(2)
+            : finalPriceWithDenom < 2
+            ? finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined
@@ -112,15 +112,15 @@ function ExtraInfo(props: propsIF) {
 
     const extraInfoData = [
         {
-            title: 'Effective Output',
+            title: 'Conversion Rate',
             tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
                 ? `${getDisplayableEffectivePriceString(
                       effectivePriceWithDenom,
-                  )}  ${baseTokenSymbol}`
+                  )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${getDisplayableEffectivePriceString(
                       effectivePriceWithDenom,
-                  )}  ${quoteTokenSymbol}`,
+                  )} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
         {
@@ -131,14 +131,14 @@ function ExtraInfo(props: propsIF) {
             data: `${getPriceImpactString(priceImpactNum)} %`,
             placement: 'bottom',
         },
-        // {
-        //     title: 'Final Price',
-        //     tooltipTitle: 'Expected Price After Swap',
-        //     data: isDenomBase
-        //         ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-        //         : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        //     placement: 'bottom',
-        // },
+        {
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            placement: 'bottom',
+        },
     ];
 
     const extraInfoDetails = (
