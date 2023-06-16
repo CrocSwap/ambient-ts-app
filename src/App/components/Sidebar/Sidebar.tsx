@@ -345,12 +345,6 @@ function Sidebar() {
         ? styles.sidebar_active
         : styles.sidebar;
 
-    const topElementsDisplay = <div style={{ width: '100%' }}></div>;
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}></div>
-    );
-
     const regularSidebarDisplay = (
         <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
