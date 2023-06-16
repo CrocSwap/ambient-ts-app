@@ -98,7 +98,7 @@ export default function RangeLineCanvas(props: propsIF) {
 
             horizontalLine.decorate((context: any) => {
                 context.visibility =
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                         ? 'visible'
                         : 'hidden';
@@ -151,7 +151,7 @@ export default function RangeLineCanvas(props: propsIF) {
 
     useEffect(() => {
         const isRange =
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
 
         d3.select(d3CanvasRangeLine.current)
@@ -167,7 +167,7 @@ export default function RangeLineCanvas(props: propsIF) {
 
     useEffect(() => {
         if (
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition')
         ) {
             const canvas = d3
@@ -180,7 +180,7 @@ export default function RangeLineCanvas(props: propsIF) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
-                            location.pathname.includes('range') ||
+                            location.pathname.includes('pool') ||
                             location.pathname.includes('reposition')
                         ) {
                             setCanvasResolution(canvas);
@@ -212,13 +212,7 @@ export default function RangeLineCanvas(props: propsIF) {
             let color = 'rgba(235, 235, 255)';
 
             triangle.decorate((context: any, datum: any) => {
-                if (
-                    location.pathname.includes('/range') ||
-                    location.pathname.includes('reposition')
-                ) {
-                    color =
-                        datum.value > passValue ? lineSellColor : lineBuyColor;
-                }
+                color = datum.value > passValue ? lineSellColor : lineBuyColor;
                 const rotateDegree = 90;
                 context.rotate((rotateDegree * Math.PI) / 180);
                 context.strokeStyle = color;
@@ -228,12 +222,12 @@ export default function RangeLineCanvas(props: propsIF) {
 
         if (
             horizontalLine !== undefined &&
-            (location.pathname.includes('range') ||
+            (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition'))
         ) {
             horizontalLine.decorate((context: any, datum: any) => {
                 context.visibility =
-                    location.pathname.includes('range') ||
+                    location.pathname.includes('pool') ||
                     location.pathname.includes('reposition')
                         ? 'visible'
                         : 'hidden';
@@ -253,7 +247,7 @@ export default function RangeLineCanvas(props: propsIF) {
     const displayHorizontalLines = () => {
         if (
             location.pathname.includes('reposition') ||
-            location.pathname.includes('range')
+            location.pathname.includes('pool')
         ) {
             if (tradeData.advancedMode || simpleRangeWidth !== 100) {
                 d3.select(d3CanvasRangeLine.current)

@@ -3690,7 +3690,7 @@ export default function Chart(props: propsIF) {
                         scaleData?.yScale.domain(domain);
                     }
 
-                    renderCanvasArray([d3Yaxis]);
+                    render();
                 }
             }
         }

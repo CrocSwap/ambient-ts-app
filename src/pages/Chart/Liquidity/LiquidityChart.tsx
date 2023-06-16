@@ -196,7 +196,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     const drawCurveLines = (canvas: HTMLCanvasElement) => {
         const isRange =
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
         if (isRange) {
             clipHighlightedLines(canvas);
@@ -207,7 +207,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     const drawDepthLines = (canvas: HTMLCanvasElement) => {
         const isRange =
-            location.pathname.includes('range') ||
+            location.pathname.includes('pool') ||
             location.pathname.includes('reposition');
         if (isRange) {
             clipHighlightedLines(canvas);
@@ -386,7 +386,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     if (liqMode === 'curve') {
                         liqSeries(liqDataAsk);
                         liqSeries(liqDataBid);
-
                         drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
