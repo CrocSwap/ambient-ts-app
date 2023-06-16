@@ -65,7 +65,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
 
     return (
         <div className={styles.range_width_container}>
-            <span className={styles.title}>Removal Percentage</span>
+            <span className={styles.title}>Amount</span>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
                 <div className={styles.range_width_input}>

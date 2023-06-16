@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
 
     color: var(--text1);
     font-size: var(--header2-size);
@@ -11,7 +10,7 @@
     letter-spacing: -0.02em;
 }
 
-.settings_button {
+.settings_icon {
     cursor: pointer;
 }
 

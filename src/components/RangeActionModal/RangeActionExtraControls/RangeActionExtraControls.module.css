@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 0 16px;
 }
 
 .wallet_container,
@@ -13,9 +14,9 @@
 }
 
 .wallet_container {
-    height: 33px;
     margin-top: 10px;
     margin-bottom: 10px;
+    height: 33px;
 }
 
 .wallet_section,
