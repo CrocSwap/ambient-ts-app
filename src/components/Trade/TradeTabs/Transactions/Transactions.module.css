@@ -213,6 +213,9 @@
     color: var(--text1);
 }
 
+.base_color {
+    color: var(--text1);
+}
 .mono_font {
     font-family: var(--roboto);
 }

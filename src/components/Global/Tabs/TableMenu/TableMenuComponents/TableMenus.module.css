@@ -91,7 +91,7 @@
 }
 
 .dropdown_menu button:hover {
-    color: var(--text1);
+    color: var(--accent1);
 }
 
 .actions_menu {
@@ -106,8 +106,12 @@
     gap: 4px;
 }
 
-.example_menu {
-    position: relative;
+.menu_column button {
+    border: 1px solid transparent; 
+}
+
+.menu_column .option_button:hover svg {
+    color: var(--accent1) !important;
 }
 
 .dropdown_button {
@@ -115,22 +119,20 @@
     outline: none;
     border: none;
     cursor: pointer;
-
-   
 }
 .dropdown_button:focus-visible {
-    border: 1px solid var(--text1);
+    border: 1px solid var(--accent1);
 }
 .dropdown_button path {
     color: var(--dark3);
 }
 .dropdown_button:hover{
     cursor: pointer;
-
 }
 
-.dropdown_button:hover path{
-    color: var(--text1);
+.dropdown_button:hover path, 
+.dropdown_button:hover circle {
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
 }
 .dropdown_wrapper,
