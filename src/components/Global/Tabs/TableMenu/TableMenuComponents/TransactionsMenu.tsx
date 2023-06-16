@@ -61,7 +61,9 @@ export default function TransactionsMenu(props: propsIF) {
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const showAbbreviatedCopyTradeButton = isAccountView
-        ? useMediaQuery('(max-width: 1650px)')
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
         : isSidebarOpen
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
