@@ -1,8 +1,8 @@
-import styles from './RemoveRange.module.css';
+import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
-import RemoveRangeTokenHeader from './RemoveRangeTokenHeader/RemoveRangeTokenHeader';
-import RemoveRangeInfo from './RemoveRangeInfo/RemoveRangeInfo';
-import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
+import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
+import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
+import RangeActionButton from './RangeActionButton/RangeActionButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -13,9 +13,9 @@ import {
     CrocPositionView,
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
-import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
-import ExtraControls from './ExtraControls/ExtraControls';
+import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
+import RangeActionHeader from './RangeActionHeader/RangeActionHeader';
+import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
     addPendingTx,
     addPositionPendingUpdate,
@@ -35,7 +35,6 @@ import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
 import { isStablePair } from '../../utils/data/stablePairs';
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
-import { FaGasPump } from 'react-icons/fa';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -44,8 +43,10 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 
 interface propsIF {
+    type: 'Remove' | 'Harvest';
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isPositionInRange: boolean;
@@ -59,8 +60,9 @@ interface propsIF {
     handleModalClose: () => void;
 }
 
-export default function RemoveRange(props: propsIF) {
+export default function RangeActionModal(props: propsIF) {
     const {
+        type,
         position,
         baseTokenAddress,
         quoteTokenAddress,
@@ -96,6 +98,10 @@ export default function RemoveRange(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
+    const areFeesAvailableToWithdraw =
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
+        0;
+
     const positionStatsCacheEndpoint =
         GRAPHCACHE_SMALL_URL + '/position_stats?';
 
@@ -109,7 +115,7 @@ export default function RemoveRange(props: propsIF) {
         string | undefined
     >();
 
-    const averageGasUnitsForRemovalTx = 94500;
+    const averageGasUnitsForRemovalTx = type === 'Remove' ? 94500 : 92500;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
@@ -133,11 +139,6 @@ export default function RemoveRange(props: propsIF) {
     const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined
     >();
-
-    const positionHasLiquidity = useMemo(
-        () => !currentLiquidity?.isZero(),
-        [currentLiquidity],
-    );
 
     const liquidityToBurn = useMemo(
         () => currentLiquidity?.mul(removalPercentage).div(100),
@@ -233,16 +234,85 @@ export default function RemoveRange(props: propsIF) {
         }
     }, [lastBlockNumber]);
 
+    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
+    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
+    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
+    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
+        useState<string>('');
+
+    // useEffect to update selected token balances
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && position.user && position.base && position.quote) {
+                crocEnv
+                    .token(position.base)
+                    .walletDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting base token wallet balance',
+                                );
+                            setBaseTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(position.base)
+                    .balanceDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== baseTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting base token dex balance');
+                            setBaseTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(position.quote)
+                    .walletDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug('setting quote token balance');
+
+                            setQuoteTokenBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+                crocEnv
+                    .token(position.quote)
+                    .balanceDisplay(position.user)
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenDexBalance) {
+                            IS_LOCAL_ENV &&
+                                console.debug(
+                                    'setting quote token dex balance',
+                                );
+
+                            setQuoteTokenDexBalance(bal);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })();
+    }, [
+        crocEnv,
+        position.user,
+        position.base,
+        position.quote,
+        lastBlockNumber,
+    ]);
+
     const [showSettings, setShowSettings] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [newRemovalTransactionHash, setNewRemovalTransactionHash] =
-        useState('');
+    const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setNewRemovalTransactionHash('');
+        setNewTransactionHash('');
         setTxErrorCode('');
     };
 
@@ -305,7 +375,7 @@ export default function RemoveRange(props: propsIF) {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
-                    setNewRemovalTransactionHash(tx?.hash);
+                    setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
                         error.reason ===
@@ -324,7 +394,7 @@ export default function RemoveRange(props: propsIF) {
                         highLimit,
                     ]);
                     IS_LOCAL_ENV && console.debug(tx?.hash);
-                    setNewRemovalTransactionHash(tx?.hash);
+                    setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
                         error.reason ===
@@ -338,14 +408,6 @@ export default function RemoveRange(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = currentLiquidity;
-
-            const liquidityToBurn = BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
-            IS_LOCAL_ENV &&
-                console.debug(`${removalPercentage}% to be removed.`);
-
             try {
                 tx = await pool.burnRangeLiq(
                     liquidityToBurn,
@@ -355,7 +417,7 @@ export default function RemoveRange(props: propsIF) {
                 );
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
-                setNewRemovalTransactionHash(tx?.hash);
+                setNewTransactionHash(tx?.hash);
                 if (tx?.hash)
                     dispatch(
                         addTransactionByType({
@@ -392,7 +454,7 @@ export default function RemoveRange(props: propsIF) {
                 IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
-                setNewRemovalTransactionHash(newTransactionHash);
+                setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
@@ -407,41 +469,121 @@ export default function RemoveRange(props: propsIF) {
             dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
-    const removalDenied = (
+
+    const harvestFn = async () => {
+        setShowConfirmation(true);
+        if (!crocEnv) return;
+        const env = crocEnv;
+        const pool = env.pool(position.base, position.quote);
+        const spotPrice = await pool.displayPrice();
+
+        const lowLimit = spotPrice * (1 - persistedSlippage / 100);
+        const highLimit = spotPrice * (1 + persistedSlippage / 100);
+
+        let tx;
+        if (position.positionType === 'concentrated') {
+            try {
+                IS_LOCAL_ENV && console.debug('Harvesting 100% of fees.');
+                dispatch(addPositionPendingUpdate(posHash as string));
+                tx = await pool.harvestRange(
+                    [position.bidTick, position.askTick],
+                    [lowLimit, highLimit],
+                    { surplus: dexBalRange.outputToDexBal.isEnabled },
+                );
+                IS_LOCAL_ENV && console.debug(tx?.hash);
+                dispatch(addPendingTx(tx?.hash));
+                setNewTransactionHash(tx?.hash);
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                        }),
+                    );
+            } catch (error) {
+                console.error({ error });
+                dispatch(removePositionPendingUpdate(posHash as string));
+                setTxErrorCode(error?.code);
+                dispatch(removePositionPendingUpdate(posHash as string));
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
+                    location.reload();
+                }
+            }
+        } else {
+            console.error('unsupported position type for harvest');
+        }
+
+        let receipt;
+
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.error({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                IS_LOCAL_ENV && console.debug('repriced');
+                dispatch(removePendingTx(error.hash));
+                const newTransactionHash = error.replacement.hash;
+                setNewTransactionHash(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
+            } else if (isTransactionFailedError(error)) {
+                receipt = error.receipt;
+            }
+        }
+        if (receipt) {
+            IS_LOCAL_ENV && console.debug('dispatching receipt');
+            IS_LOCAL_ENV && console.debug({ receipt });
+            dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
+            dispatch(removePositionPendingUpdate(posHash as string));
+        }
+    };
+
+    const transactionDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
     );
 
-    const removalSuccess = (
+    const transactionSuccess = (
         <TxSubmittedSimplify
-            hash={newRemovalTransactionHash}
-            content='Removal Transaction Successfully Submitted'
+            hash={newTransactionHash}
+            content={`${
+                type === 'Remove' ? 'Removal' : 'Harvest'
+            } Transaction Successfully Submitted!`}
         />
     );
 
-    const removalPending = (
+    const transactionPending = (
         <WaitingConfirmation
-            content={`Submitting removal transaction for ${position.baseSymbol} and ${position.quoteSymbol}.`}
+            content={`Submitting ${
+                type === 'Remove' ? 'removal' : 'harvest'
+            } transaction for ${position.baseSymbol} and ${
+                position.quoteSymbol
+            }.`}
         />
     );
 
     const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(removalPending);
+        useState(transactionPending);
 
-    const transactionApproved = newRemovalTransactionHash !== '';
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isRemovalDenied;
+    const transactionApproved = newTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const transactionException = (
         <TransactionException resetConfirmation={resetConfirmation} />
     );
 
     function handleConfirmationChange(): void {
-        setCurrentConfirmationData(removalPending);
+        setCurrentConfirmationData(transactionPending);
 
         if (transactionApproved) {
-            setCurrentConfirmationData(removalSuccess);
-        } else if (isRemovalDenied) {
-            setCurrentConfirmationData(removalDenied);
+            setCurrentConfirmationData(transactionSuccess);
+        } else if (isTransactionDenied) {
+            setCurrentConfirmationData(transactionDenied);
         } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }
@@ -451,10 +593,10 @@ export default function RemoveRange(props: propsIF) {
         handleConfirmationChange();
     }, [
         transactionApproved,
-        newRemovalTransactionHash,
+        newTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const baseRemovalNum =
@@ -469,14 +611,28 @@ export default function RemoveRange(props: propsIF) {
             removalPercentage) /
         100;
 
+    const baseHarvestNum =
+        feeLiqBaseDecimalCorrected !== undefined
+            ? ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100
+            : undefined;
+
+    const quoteHarvestNum =
+        feeLiqBaseDecimalCorrected !== undefined
+            ? ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100
+            : undefined;
+
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            <RemoveRangeHeader
+            <RangeActionHeader
                 onClose={handleModalClose}
                 title={
                     showSettings
-                        ? 'Remove Position Settings'
-                        : 'Remove Position'
+                        ? `${
+                              type === 'Remove' ? 'Remove Position' : 'Harvest'
+                          } Settings`
+                        : type === 'Remove'
+                        ? 'Remove Position'
+                        : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();
@@ -501,7 +657,7 @@ export default function RemoveRange(props: propsIF) {
     };
 
     const buttonToDisplay = (
-        <div style={{ padding: '1rem' }}>
+        <div className={styles.button_container}>
             {showSettings ? (
                 <Button
                     title={
@@ -514,29 +670,30 @@ export default function RemoveRange(props: propsIF) {
                     disabled={!(currentSlippage > 0)}
                 />
             ) : isPositionPendingUpdate ? (
-                <RemoveRangeButton
-                    removeFn={removeFn}
+                <RangeActionButton
+                    onClick={type === 'Remove' ? removeFn : harvestFn}
                     disabled={true}
                     title='Position Update Pending…'
                 />
-            ) : positionHasLiquidity ? (
-                <RemoveRangeButton
-                    removeFn={removeFn}
-                    disabled={showSettings}
-                    title='Remove Range'
-                />
             ) : (
-                <RemoveRangeButton
-                    removeFn={removeFn}
-                    disabled={true}
-                    title='…'
+                <RangeActionButton
+                    onClick={type === 'Remove' ? removeFn : harvestFn}
+                    disabled={
+                        (type === 'Remove'
+                            ? liquidityToBurn === undefined ||
+                              liquidityToBurn.isZero()
+                            : !areFeesAvailableToWithdraw) || showSettings
+                    }
+                    title={
+                        type === 'Remove' ? 'Remove Liquidity' : 'Harvest Fees'
+                    }
                 />
             )}
         </div>
     );
 
     const mainModalContent = showSettings ? (
-        <RemoveRangeSettings
+        <RangeActionSettings
             persistedSlippage={persistedSlippage}
             setCurrentSlippage={setCurrentSlippage}
             presets={
@@ -547,11 +704,8 @@ export default function RemoveRange(props: propsIF) {
         />
     ) : (
         <>
-            <div
-                className={styles.header_container}
-                style={{ padding: '1rem' }}
-            >
-                <RemoveRangeTokenHeader
+            <div className={styles.header_container}>
+                <RangeActionTokenHeader
                     isPositionInRange={props.isPositionInRange}
                     isAmbient={props.isAmbient}
                     baseTokenSymbol={props.baseTokenSymbol}
@@ -562,30 +716,60 @@ export default function RemoveRange(props: propsIF) {
                     setShowSettings={setShowSettings}
                 />
             </div>
-            <div style={{ padding: '0 1rem' }}>
-                <RemoveRangeWidth
-                    removalPercentage={removalPercentage}
-                    setRemovalPercentage={setRemovalPercentage}
-                />
-                <RemoveRangeInfo
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
-                    posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
-                    feeLiqBaseDecimalCorrected={feeLiqBaseDecimalCorrected}
-                    feeLiqQuoteDecimalCorrected={feeLiqQuoteDecimalCorrected}
-                    removalPercentage={removalPercentage}
-                    baseRemovalNum={baseRemovalNum}
-                    quoteRemovalNum={quoteRemovalNum}
-                    isAmbient={props.isAmbient}
-                />
-                <ExtraControls />
-            </div>
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
-                {removalGasPriceinDollars ? removalGasPriceinDollars : '…'}
+            <div>
+                {type === 'Remove' && (
+                    <RemoveRangeWidth
+                        removalPercentage={removalPercentage}
+                        setRemovalPercentage={setRemovalPercentage}
+                    />
+                )}
+                <div className={styles.info_container}>
+                    {type === 'Remove' && (
+                        <RemoveRangeInfo
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            baseTokenLogoURI={props.baseTokenLogoURI}
+                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            posLiqBaseDecimalCorrected={
+                                posLiqBaseDecimalCorrected
+                            }
+                            posLiqQuoteDecimalCorrected={
+                                posLiqQuoteDecimalCorrected
+                            }
+                            feeLiqBaseDecimalCorrected={
+                                feeLiqBaseDecimalCorrected
+                            }
+                            feeLiqQuoteDecimalCorrected={
+                                feeLiqQuoteDecimalCorrected
+                            }
+                            removalPercentage={removalPercentage}
+                            baseRemovalNum={baseRemovalNum}
+                            quoteRemovalNum={quoteRemovalNum}
+                            isAmbient={props.isAmbient}
+                        />
+                    )}
+                    {type === 'Harvest' && (
+                        <HarvestPositionInfo
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            baseTokenLogoURI={props.baseTokenLogoURI}
+                            quoteTokenLogoURI={props.quoteTokenLogoURI}
+                            baseHarvestNum={baseHarvestNum}
+                            quoteHarvestNum={quoteHarvestNum}
+                        />
+                    )}
+                    <ExtraControls />
+                    <div className={styles.extra_info_container}>
+                        <div>
+                            <span>Slippage Tolerange</span>
+                            <span>{currentSlippage}%</span>
+                        </div>
+                        <div>
+                            <span>Network Fee</span>
+                            <span>~{removalGasPriceinDollars ?? '...'}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     );
@@ -593,12 +777,16 @@ export default function RemoveRange(props: propsIF) {
     if (showConfirmation) return confirmationContent;
     return (
         <>
-            <RemoveRangeHeader
+            <RangeActionHeader
                 onClose={handleModalClose}
                 title={
                     showSettings
-                        ? 'Remove Position Settings'
-                        : 'Remove Position'
+                        ? `${
+                              type === 'Remove' ? 'Remove Position' : 'Harvest'
+                          } Settings`
+                        : type === 'Remove'
+                        ? 'Remove Position'
+                        : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();
