@@ -98,6 +98,10 @@ export default function RangeActionModal(props: propsIF) {
     const [feeLiqQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] =
         useState<number | undefined>();
 
+    const areFeesAvailableToWithdraw =
+        (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) >
+        0;
+
     const positionStatsCacheEndpoint =
         GRAPHCACHE_SMALL_URL + '/position_stats?';
 
@@ -135,11 +139,6 @@ export default function RangeActionModal(props: propsIF) {
     const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined
     >();
-
-    const positionHasLiquidity = useMemo(
-        () => !currentLiquidity?.isZero(),
-        [currentLiquidity],
-    );
 
     const liquidityToBurn = useMemo(
         () => currentLiquidity?.mul(removalPercentage).div(100),
@@ -409,14 +408,6 @@ export default function RangeActionModal(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = currentLiquidity;
-
-            const liquidityToBurn = BigNumber.from(positionLiq)
-                .mul(removalPercentage)
-                .div(100);
-            IS_LOCAL_ENV &&
-                console.debug(`${removalPercentage}% to be removed.`);
-
             try {
                 tx = await pool.burnRangeLiq(
                     liquidityToBurn,
@@ -621,10 +612,14 @@ export default function RangeActionModal(props: propsIF) {
         100;
 
     const baseHarvestNum =
-        ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100;
+        feeLiqBaseDecimalCorrected !== undefined
+            ? ((feeLiqBaseDecimalCorrected || 0) * removalPercentage) / 100
+            : undefined;
 
     const quoteHarvestNum =
-        ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100;
+        feeLiqBaseDecimalCorrected !== undefined
+            ? ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100
+            : undefined;
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
@@ -680,19 +675,18 @@ export default function RangeActionModal(props: propsIF) {
                     disabled={true}
                     title='Position Update Pending…'
                 />
-            ) : positionHasLiquidity ? (
-                <RangeActionButton
-                    onClick={type === 'Remove' ? removeFn : harvestFn}
-                    disabled={showSettings}
-                    title={
-                        type === 'Remove' ? 'Remove Liquidity' : 'Harvest Fees'
-                    }
-                />
             ) : (
                 <RangeActionButton
                     onClick={type === 'Remove' ? removeFn : harvestFn}
-                    disabled={true}
-                    title='…'
+                    disabled={
+                        (type === 'Remove'
+                            ? liquidityToBurn === undefined ||
+                              liquidityToBurn.isZero()
+                            : !areFeesAvailableToWithdraw) || showSettings
+                    }
+                    title={
+                        type === 'Remove' ? 'Remove Liquidity' : 'Harvest Fees'
+                    }
                 />
             )}
         </div>

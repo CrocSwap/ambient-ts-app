@@ -12,7 +12,7 @@ export default function RangeActionButton(props: RangeActionButtonIF) {
     return (
         <div>
             <Button
-                title={title}
+                title={!props.disabled ? title : '...'}
                 disabled={props.disabled}
                 action={onClick}
                 flat
