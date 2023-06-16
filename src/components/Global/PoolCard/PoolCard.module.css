@@ -71,6 +71,7 @@
     font-weight: 300;
     font-size: 12px;
     color: var(--text1);
+    margin-left: 2px;
 }
 
 .row_title {
@@ -128,7 +129,7 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
+    margin-top: 2px;
     letter-spacing: -0.02em;
 
     /* other/positive */
