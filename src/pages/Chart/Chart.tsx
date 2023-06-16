@@ -1407,35 +1407,7 @@ export default function Chart(props: propsIF) {
                             }
                         }
 
-                        const latestCandleTime = d3.max(
-                            unparsedCandleData,
-                            (d) => d.time * 1000,
-                        );
-
-                        if (latestCandleTime !== undefined) {
-                            if (
-                                !showLatest &&
-                                latestCandleTime &&
-                                (scaleData?.xScale.domain()[1] <
-                                    latestCandleTime ||
-                                    scaleData?.xScale.domain()[0] >
-                                        latestCandleTime)
-                            ) {
-                                setShowLatest(true);
-                            } else if (
-                                showLatest &&
-                                !(
-                                    scaleData?.xScale.domain()[1] <
-                                    latestCandleTime
-                                ) &&
-                                !(
-                                    scaleData?.xScale.domain()[0] >
-                                    latestCandleTime
-                                )
-                            ) {
-                                setShowLatest(false);
-                            }
-                        }
+                        showLatestActive();
 
                         props.setShowTooltip(true);
                     })
@@ -1744,35 +1716,7 @@ export default function Chart(props: propsIF) {
                         setZoomAndYdragControl(event);
                     })
                     .on('end', () => {
-                        const latestCandleTime = d3.max(
-                            unparsedCandleData,
-                            (d) => d.time * 1000,
-                        );
-
-                        if (latestCandleTime) {
-                            if (
-                                !showLatest &&
-                                latestCandleTime &&
-                                (scaleData?.xScale.domain()[1] <
-                                    latestCandleTime ||
-                                    scaleData?.xScale.domain()[0] >
-                                        latestCandleTime)
-                            ) {
-                                setShowLatest(true);
-                            } else if (
-                                showLatest &&
-                                !(
-                                    scaleData?.xScale.domain()[1] <
-                                    latestCandleTime
-                                ) &&
-                                !(
-                                    scaleData?.xScale.domain()[0] >
-                                    latestCandleTime
-                                )
-                            ) {
-                                setShowLatest(false);
-                            }
-                        }
+                        showLatestActive();
                     });
 
                 setZoomUtils(() => {
@@ -1807,8 +1751,29 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('timeframe changed');
-        setShowLatest(false);
+        showLatestActive();
     }, [period]);
+
+    const showLatestActive = () => {
+        const today = new Date();
+
+        if (today !== undefined) {
+            if (
+                !showLatest &&
+                today &&
+                (scaleData?.xScale.domain()[1] < today ||
+                    scaleData?.xScale.domain()[0] > today)
+            ) {
+                setShowLatest(true);
+            } else if (
+                showLatest &&
+                !(scaleData?.xScale.domain()[1] < today) &&
+                !(scaleData?.xScale.domain()[0] > today)
+            ) {
+                setShowLatest(false);
+            }
+        }
+    };
 
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
