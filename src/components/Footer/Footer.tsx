@@ -50,7 +50,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Keep up with the latest on twitter',
-            link: 'https://twitter.com/ambient_finance',
+            link: TWITTER_LINK,
         },
         {
             title: (
@@ -59,7 +59,7 @@ export default function Footer() {
                 </>
             ),
             content: 'Join the community ',
-            link: 'https://discord.com/invite/ambient-finance',
+            link: DISCORD_LINK,
         },
         {
             title: (
