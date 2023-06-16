@@ -216,8 +216,8 @@ function CurrencyConverter(props: propsIF) {
             locationSlug = '/trade/market/';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit/';
-        } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range/';
+        } else if (pathname.startsWith('/trade/pool')) {
+            locationSlug = '/trade/pool/';
         } else if (pathname.startsWith('/swap')) {
             locationSlug = '/swap/';
         }

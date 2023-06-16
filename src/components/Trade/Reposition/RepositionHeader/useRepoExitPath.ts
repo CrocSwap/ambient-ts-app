@@ -9,7 +9,7 @@ export const useRepoExitPath = (): string => {
     const { params } = useParams();
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // generate a nav path for clicking the exit button
     // regenerate value every time the URL params change (virtually never)
@@ -37,7 +37,7 @@ export const useRepoExitPath = (): string => {
             return paramTuple ? paramTuple[1] : '';
         };
         // generate and return nav path
-        return linkGenRange.getFullURL({
+        return linkGenPool.getFullURL({
             chain: findParam('chain'),
             tokenA: findParam('tokenA'),
             tokenB: findParam('tokenB'),
