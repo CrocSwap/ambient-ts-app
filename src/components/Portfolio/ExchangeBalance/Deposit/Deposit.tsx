@@ -192,6 +192,7 @@ export default function Deposit(props: propsIF) {
         isDepositPending,
         isTokenAllowanceSufficient,
         isWalletBalanceSufficientToCoverDeposit,
+        isWalletBalanceSufficientToCoverGas,
         isDepositQtyValid,
         selectedToken.symbol,
     ]);
