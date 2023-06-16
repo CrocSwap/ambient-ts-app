@@ -77,7 +77,7 @@ export default function TransactionsMenu(props: propsIF) {
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
         if (tx.entityType === 'swap') {
@@ -197,7 +197,7 @@ export default function TransactionsMenu(props: propsIF) {
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    linkGenRange.navigate({
+                    linkGenPool.navigate({
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,

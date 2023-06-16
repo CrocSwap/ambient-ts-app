@@ -206,7 +206,7 @@ export default function InitPool() {
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const sendInit = () => {
         IS_LOCAL_ENV &&
@@ -255,7 +255,7 @@ export default function InitPool() {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenRange.navigate({
+                        linkGenPool.navigate({
                             chain: chainId,
                             tokenA: baseToken.address,
                             tokenB: quoteToken.address,

@@ -19,7 +19,6 @@ import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
-import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -31,6 +30,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 // React functional component
 function Trade() {
@@ -61,7 +61,7 @@ function Trade() {
             name: 'Limit',
         },
         {
-            path: '/range',
+            path: '/pool',
             name: 'Pool',
         },
     ];
@@ -236,12 +236,9 @@ function Trade() {
         tradeData.quoteToken.name,
     ]);
 
-    const initLinkPath =
-        '/initpool/' +
-        formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
+    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const showPoolNotInitializedContent = isPoolInitialized === false;
-    // const showPoolNotInitializedContent = true;
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
@@ -257,7 +254,11 @@ function Trade() {
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
                         <Link
-                            to={initLinkPath}
+                            to={linkGenInitPool.getFullURL({
+                                chain: chainId,
+                                tokenA: baseTokenAddress,
+                                tokenB: quoteTokenAddress,
+                            })}
                             className={styles.initialize_link}
                         >
                             Initialize Pool
