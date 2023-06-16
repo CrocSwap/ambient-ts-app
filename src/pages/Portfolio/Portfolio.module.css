@@ -134,6 +134,7 @@
 
     .tabs_exchange_balance_container {
         width: 100%;
+        flex: 1;
         grid-template-columns: auto auto;
         margin-left: 4px;
         /* grid-template-columns: auto 380px; */
@@ -147,6 +148,8 @@
     .full_layout_container {
         display: grid;
         grid-template-columns: auto 50px;
+
+        flex: 1;
     }
 
     .tabs_exchange_balance_container {

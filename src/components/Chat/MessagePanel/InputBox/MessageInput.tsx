@@ -230,6 +230,7 @@ export default function MessageInput(props: MessageInputProps) {
                 walletExplorer={
                     props.ensName === undefined ? address : props.ensName
                 }
+                connectedAccountActive={address as string}
             />
 
             <div

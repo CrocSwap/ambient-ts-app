@@ -56,13 +56,13 @@
     width: auto;
     min-width: 3.5rem;
 
-    margin-right: 8px;
-    border: 1px solid var(--border);
+    margin-left: 4px;
+    border: 1px solid var(--dark3);
     border-radius: 50px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text2);
+    color: var(--text1);
 
     padding: 0.5rem 1rem;
     transition: all var(--animation-speed) ease-in-out;

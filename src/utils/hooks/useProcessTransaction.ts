@@ -218,20 +218,20 @@ export const useProcessTransaction = (
                           },
                       );
             truncatedLowDisplayPrice = isDenomBase
-                ? `${invertedAskPriceTruncated}`
+                ? `${invertedBidPriceTruncated}`
                 : `${nonInvertedBidPriceTruncated}`;
             truncatedHighDisplayPrice = isDenomBase
-                ? `${invertedBidPriceTruncated}`
+                ? `${invertedAskPriceTruncated}`
                 : `${nonInvertedAskPriceTruncated}`;
 
             truncatedLowDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedAskPriceTruncated}`
-                    : `${invertedAskPriceTruncated}`;
-            truncatedHighDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedBidPriceTruncated}`
                     : `${invertedBidPriceTruncated}`;
+            truncatedHighDisplayPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? `${nonInvertedAskPriceTruncated}`
+                    : `${invertedAskPriceTruncated}`;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
@@ -374,7 +374,17 @@ export const useProcessTransaction = (
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
-                ? 'add'
+                ? isAccountView
+                    ? isBaseTokenMoneynessGreaterOrEqual
+                        ? isBuy
+                            ? 'buy'
+                            : 'sell'
+                        : isBuy
+                        ? 'sell'
+                        : 'buy'
+                    : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+                    ? 'sell'
+                    : 'buy'
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'

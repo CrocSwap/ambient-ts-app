@@ -73,10 +73,6 @@
     cursor: pointer;
 }
 
-.token_select img {
-    max-width: 100%;
-}
-
 .token_list_text {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);

@@ -17,7 +17,6 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { TransactionIF } from '../../../utils/interfaces/exports';
 import leaderboard from '../../../assets/images/leaderboard.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
@@ -25,17 +24,11 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import {
-    CandleData,
-    setChangesByUser,
-} from '../../../utils/state/graphDataSlice';
-import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
+import { setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
-import { candleTimeIF } from '../../../App/hooks/useChartSettings';
-import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -47,6 +40,10 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { CandleContext } from '../../../contexts/CandleContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -62,7 +59,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    candleTime: candleTimeIF;
     showActiveMobileComponent?: boolean;
 }
 
@@ -78,17 +74,33 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        candleTime,
         showActiveMobileComponent,
     } = props;
 
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const { chartSettings } = useContext(ChartContext);
+
+    const candleTime = chartSettings.candleTime.global;
+
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const { isCandleSelected } = useContext(CandleContext);
+
     const {
         crocEnv,
-        chainData: { chainId, poolIndex },
+        chainData: { chainId },
     } = useContext(CrocEnvContext);
+
     const { lastBlockNumber } = useContext(ChainDataContext);
+
     const { tokens } = useContext(TokenContext);
+
     const {
         showAllData,
         setShowAllData,
@@ -96,7 +108,6 @@ function TradeTabs2(props: propsIF) {
         setCurrentTxActiveInTransactions,
         expandTradeTable,
         outsideControl,
-        setOutsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
 
@@ -104,12 +115,6 @@ function TradeTabs2(props: propsIF) {
     const tradeData = useAppSelector((state) => state?.tradeData);
     const { isLoggedIn: isUserConnected, addressCurrent: userAddress } =
         useAppSelector((state) => state.userData);
-
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
 
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
@@ -251,52 +256,6 @@ function TradeTabs2(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<
-        TransactionIF[]
-    >([]);
-
-    useEffect(() => {
-        if (isServerEnabled && isCandleSelected && filter?.time && crocEnv) {
-            fetchPoolRecentChanges({
-                tokenList: tokens.tokenUniv,
-                base: selectedBase,
-                quote: selectedQuote,
-                poolIdx: poolIndex,
-                chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 80,
-                period: candleTime.time,
-                time: filter?.time,
-                crocEnv: crocEnv,
-                lastBlockNumber,
-            })
-                .then((selectedCandleChangesJson) => {
-                    IS_LOCAL_ENV &&
-                        console.debug({ selectedCandleChangesJson });
-                    if (selectedCandleChangesJson) {
-                        const selectedCandleChangesWithoutFills =
-                            selectedCandleChangesJson.filter((tx) => {
-                                if (tx.changeType !== 'fill') {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                        setChangesInSelectedCandle(
-                            selectedCandleChangesWithoutFills,
-                        );
-                    }
-                    setOutsideControl(true);
-                    setSelectedInsideTab(0);
-                })
-                .catch(console.error);
-        }
-    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumWait]);
-
     useEffect(() => {
         if (userAddress && isServerEnabled && !showAllData && crocEnv) {
             try {
@@ -312,6 +271,10 @@ function TradeTabs2(props: propsIF) {
                     n: 100, // fetch last 100 changes,
                     crocEnv,
                     lastBlockNumber,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
@@ -339,11 +302,11 @@ function TradeTabs2(props: propsIF) {
 
     // Props for <Transactions/> React Element
     const transactionsProps = {
-        changesInSelectedCandle,
         filter,
         changeState,
         setSelectedDate,
         isAccountView: false,
+        setSelectedInsideTab,
     };
 
     // Props for <Orders/> React Element
@@ -477,19 +440,36 @@ function TradeTabs2(props: propsIF) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            {isCandleSelected ? selectedMessageContent : null}
-            {(expandTradeTable || showActiveMobileComponent) && (
-                <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-            )}
-            <TabComponent
-                data={tradeTabData}
-                rightTabOptions={
-                    <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+        <div
+            ref={tabComponentRef}
+            className={styles.trade_tab_container}
+            style={{
+                padding:
+                    expandTradeTable || showActiveMobileComponent
+                        ? '0px'
+                        : '8px',
+            }}
+        >
+            <div
+                className={
+                    !expandTradeTable
+                        ? styles.round_container
+                        : styles.flex_column
                 }
-                setSelectedInsideTab={setSelectedInsideTab}
-                setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
-            />
+            >
+                {isCandleSelected ? selectedMessageContent : null}
+                {(expandTradeTable || showActiveMobileComponent) && (
+                    <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
+                )}
+                <TabComponent
+                    data={tradeTabData}
+                    rightTabOptions={
+                        <PositionsOnlyToggle {...positionsOnlyToggleProps} />
+                    }
+                    setSelectedInsideTab={setSelectedInsideTab}
+                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
+                />
+            </div>
         </div>
     );
 }

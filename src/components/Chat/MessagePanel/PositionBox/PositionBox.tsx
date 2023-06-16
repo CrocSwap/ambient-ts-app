@@ -81,22 +81,88 @@ export default function PositionBox(props: propsIF) {
 
     useEffect(() => {
         updateIsPosition();
+        console.log('ddd ', posFingerprint);
     }, [message, posFingerprint, txFingerprint]);
 
+    useEffect(() => {
+        console.log(
+            'aaaaaakdxsnbşljmnfc ',
+            transactionsData.find(
+                (item) =>
+                    item.txHash ===
+                    '0x42e90fa2db7ccffae0e6164b6daa43103ea6a38658601a59ba50372f57ad8105',
+            ),
+        );
+    }, [message]);
+
     function financial(x: any) {
-        return Number.parseFloat(x).toFixed(2);
+        console.log(x);
+        if (position?.entityType === 'limitOrder') {
+            return position.bidTickInvPriceDecimalCorrected.toFixed(2);
+        } else {
+            if (position?.entityType === 'swap') {
+                return position.askTickPriceDecimalCorrected.toFixed(2);
+            } else if (position?.entityType === 'liqchange') {
+                return 'p2222';
+            }
+        }
     }
 
-    const sideType =
-        position &&
-        (position.entityType === 'swap' || position.entityType === 'limitOrder'
-            ? (tradeData.isDenomBase && !position.isBuy) ||
-              (!tradeData.isDenomBase && position.isBuy)
-                ? 'Buy'
-                : 'Sell'
-            : position.changeType === 'burn'
-            ? 'Sell'
-            : 'Buy');
+    function returnSideType(position: TransactionIF) {
+        if (position) {
+            if (position.entityType === 'liqchange') {
+                if (position.changeType === 'burn') {
+                    return 'Remove';
+                } else {
+                    return 'Add';
+                }
+            } else {
+                if (position.entityType === 'limitOrder') {
+                    if (position.changeType === 'mint') {
+                        if (position?.isBuy) {
+                            return 'Buy';
+                        } else {
+                            return 'Sell';
+                        }
+                    } else {
+                        if (position.changeType === 'recover') {
+                            return 'Claim';
+                        } else {
+                            return 'Remove';
+                        }
+                    }
+                } else if (position.entityType === 'liqchange') {
+                    if (position.changeType === 'burn') {
+                        return 'Remove';
+                    } else {
+                        return 'Add';
+                    }
+                } else if (position.entityType === 'swap') {
+                    if (position?.isBuy) {
+                        return 'Buy';
+                    } else {
+                        return 'Sell';
+                    }
+                }
+            }
+        }
+    }
+    function returnTransactionTypeSide(position: TransactionIF) {
+        if (position?.entityType === 'liqchange') {
+            return 'Range';
+        } else {
+            if (position?.entityType === 'swap') {
+                return 'Market';
+            } else if (position?.entityType === 'limitOrder') {
+                return 'Limit';
+            }
+        }
+    }
+    const sideType = returnSideType(position as TransactionIF);
+
+    const transactionTypeSide = returnTransactionTypeSide(
+        position as TransactionIF,
+    );
 
     useEffect(() => {
         if (sPositions) {
@@ -120,13 +186,10 @@ export default function PositionBox(props: propsIF) {
                     const invPriceDecimalCorrected =
                         position.invLimitPriceDecimalCorrected;
 
-                    setTruncatedDisplayPrice(
-                        financial(
-                            position.askTickPriceDecimalCorrected,
-                        ).toString(),
-                    );
+                    setTruncatedDisplayPrice(financial(position));
                 }
             } else {
+                // In range-remove or range-add here
                 if (
                     position.swapPriceDecimalCorrected &&
                     position.swapInvPriceDecimalCorrected
@@ -252,15 +315,15 @@ export default function PositionBox(props: propsIF) {
                         </div>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_type}>
-                                {sideType} Price
+                                {transactionTypeSide} {sideType} Price
                             </div>
 
                             <div
-                                className={
-                                    sideType === 'Buy'
-                                        ? styles.buy_price
-                                        : styles.sell_price
-                                }
+                            // className={
+                            //     sideType === 'Buy'
+                            //         ? styles.buy_price
+                            //         : styles.sell_price
+                            // }
                             >
                                 {truncatedDisplayPrice}
                             </div>

@@ -18,6 +18,7 @@ import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -72,17 +73,28 @@ export default function RangeDetails(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyRangeDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current, '#0d1117', {
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
                 background: `url(${modalBackground}) no-repeat`,
                 backgroundSize: 'cover',
             });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
 
@@ -158,6 +170,10 @@ export default function RangeDetails(props: propsIF) {
                         crocEnv,
                         chainId,
                         lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
                     );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
@@ -275,9 +291,8 @@ export default function RangeDetails(props: propsIF) {
     //         ))}
     //     </div>
     // ) : null;
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
@@ -308,19 +323,17 @@ export default function RangeDetails(props: propsIF) {
                         }
                         isAccountView={isAccountView}
                     />
-                    {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
-                {/* <RangeDetailsActions /> */}
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.outer_container}>
             <RangeDetailsHeader
                 onClose={closeGlobalModal}
-                downloadAsImage={downloadAsImage}
+                copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}

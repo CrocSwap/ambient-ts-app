@@ -51,6 +51,8 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { CandleContext } from '../contexts/CandleContext';
 import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
+import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
@@ -124,9 +126,14 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/terms' &&
+        currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
-        isChainSupported && <Sidebar />;
+        !currentLocation.includes('/initpool') &&
+        !fullScreenChart && (
+            // isChainSupported &&
+            <Sidebar />
+        );
 
     const sidebarDislayStyle = isSidebarOpen
         ? 'sidebar_content_layout'
@@ -136,6 +143,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/terms' ||
+        currentLocation == '/privacy' ||
         currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
@@ -151,7 +160,7 @@ export default function App() {
         S: '/swap',
         T: '/trade',
         M: 'trade/market',
-        R: 'trade/range',
+        R: 'trade/pool',
         L: 'trade/limit',
         P: '/account',
         C: '/chat',
@@ -191,6 +200,7 @@ export default function App() {
     return (
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
+                {!isChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
@@ -234,20 +244,20 @@ export default function App() {
                             />
                             <Route path='limit/:params' element={<Limit />} />
                             <Route
-                                path='range'
+                                path='pool'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }
                             />
-                            <Route path='range/:params' element={<Range />} />
+                            <Route path='pool/:params' element={<Range />} />
                             <Route
                                 path='reposition'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }
@@ -293,7 +303,8 @@ export default function App() {
                             }
                         />
                         <Route path='swap/:params' element={<Swap />} />
-                        <Route path='tos' element={<TermsOfService />} />
+                        <Route path='terms' element={<TermsOfService />} />
+                        <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -311,6 +322,9 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
+                    currentLocation !== '/404' &&
+                    currentLocation !== '/terms' &&
+                    currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>

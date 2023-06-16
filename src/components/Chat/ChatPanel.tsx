@@ -15,7 +15,6 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
-import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
@@ -258,6 +257,19 @@ function ChatPanel(props: propsIF) {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleWheel = (e: any) => {
+        if (
+            e.nativeEvent.wheelDelta > 0 &&
+            messageEnd.current?.scrollHeight !==
+                messageEnd.current?.scrollHeight
+        ) {
+            setScrollDirection('Scroll Up');
+            setIsScrollToBottomButtonPressed(false);
+        }
+        if (0 <= messageEnd.current?.scrollTop) {
+            setScrollDirection('Scroll Down');
+        }
+    };
 
     const convertCurreny = (currencyPair: string) => {
         if (currencyPair === 'Global') {

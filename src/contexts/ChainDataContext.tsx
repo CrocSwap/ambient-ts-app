@@ -10,10 +10,6 @@ import React, {
 import useWebSocket from 'react-use-websocket';
 import { useAccount } from 'wagmi';
 import {
-    memoizeFetchNativeTokenBalance,
-    memoizeFetchErc20TokenBalances,
-} from '../App/functions/fetchTokenBalances';
-import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
 } from '../constants';
@@ -22,6 +18,7 @@ import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { setLastBlock } from '../utils/state/graphDataSlice';
 import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
+import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 
@@ -39,14 +36,16 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const {
+        cachedFetchErc20TokenBalances,
+        cachedFetchNativeTokenBalance,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
-
-    const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
-    const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -190,6 +189,7 @@ export const ChainDataContextProvider = (props: {
                             userAddress,
                             chainData.chainId,
                             everyEigthBlock,
+                            cachedTokenDetails,
                             crocEnv,
                         );
                     const erc20TokensWithLogos = erc20Results.map((token) => {

@@ -10,15 +10,10 @@ import {
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
-import { memoizeFetchEnsAddress } from './fetchAddress';
-import { memoizeFetchContractDetails } from './fetchContractDetails';
-import { memoizeTokenPrice } from './fetchTokenPrice';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
-
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedTokenDetails = memoizeFetchContractDetails();
-const cachedEnsResolve = memoizeFetchEnsAddress();
-const cachedFetchTokenPrice = memoizeTokenPrice();
+import { FetchAddrFn } from './fetchAddress';
+import { FetchContractDetailsFn } from './fetchContractDetails';
+import { TokenPriceFn } from './fetchTokenPrice';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -26,6 +21,10 @@ export const getLimitOrderData = async (
     crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
+    cachedFetchTokenPrice: TokenPriceFn,
+    cachedQuerySpotPrice: SpotPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    cachedEnsResolve: FetchAddrFn,
 ): Promise<LimitOrderIF> => {
     const newOrder = { ...order } as LimitOrderIF;
 
@@ -82,6 +81,9 @@ export const getLimitOrderData = async (
 
     newOrder.baseSymbol = (await baseMetadata)?.symbol ?? '';
     newOrder.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
+
+    newOrder.baseName = (await baseMetadata)?.name ?? '';
+    newOrder.quoteName = (await quoteMetadata)?.name ?? '';
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>

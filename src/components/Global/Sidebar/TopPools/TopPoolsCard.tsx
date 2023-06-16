@@ -12,14 +12,19 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface propsIF {
     pool: topPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
+    crocEnv: CrocEnv | undefined;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { pool, cachedPoolStatsFetch } = props;
+    const { pool, cachedPoolStatsFetch, crocEnv, cachedFetchTokenPrice } =
+        props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -38,8 +43,8 @@ export default function TopPoolsCard(props: propsIF) {
             output = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
             output = 'limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            output = 'range';
+        } else if (pathname.startsWith('/trade/pool')) {
+            output = 'pool';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
@@ -57,27 +62,32 @@ export default function TopPoolsCard(props: propsIF) {
 
     const fetchPoolStats = () => {
         (async () => {
+            if (!crocEnv) {
+                return;
+            }
             const poolStatsFresh = await cachedPoolStatsFetch(
                 pool.chainId,
                 pool.base.address,
                 pool.quote.address,
                 pool.poolId,
                 Math.floor(Date.now() / 60000),
+                crocEnv,
+                cachedFetchTokenPrice,
             );
-            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
+            const volume = poolStatsFresh?.volumeTotalUsd; // display the total volume for all time
             const volumeString = volume
                 ? '$' + formatAmountOld(volume)
                 : undefined;
             setPoolVolume(volumeString);
-            const tvl = poolStatsFresh?.tvl;
+            const tvl = poolStatsFresh?.tvlTotalUsd;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
     };
 
     useEffect(() => {
-        fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [lastBlockNumber]);
+        fetchPoolStats();
+    }, [lastBlockNumber, crocEnv, pool]);
 
     const tokenAString =
         pool.base.address.toLowerCase() ===

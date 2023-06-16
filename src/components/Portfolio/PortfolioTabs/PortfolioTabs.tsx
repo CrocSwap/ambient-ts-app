@@ -40,17 +40,15 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { memoizeTokenPrice } from '../../../App/functions/fetchTokenPrice';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 // interface for React functional component props
 interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
-    resolvedAddress: string;
+    resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
     openTokenModal: () => void;
 }
-
-const cachedFetchTokenPrice = memoizeTokenPrice();
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
@@ -62,6 +60,12 @@ export default function PortfolioTabs(props: propsIF) {
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
@@ -119,21 +123,21 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setLookupAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(
+                            updatedPositions.filter((p) => p.positionLiq > 0),
+                        );
                     });
                 }
                 IS_LOCAL_ENV && console.debug('dispatch');
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserRangeData',
-                        loadingStatus: false,
-                    }),
-                );
             })
-            .catch(() => {
+            .finally(() => {
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserRangeData',
@@ -165,6 +169,10 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     chainId,
                                     lastBlockNumber,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
                                 );
                             },
                         ),
@@ -172,14 +180,8 @@ export default function PortfolioTabs(props: propsIF) {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });
                 }
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserOrderData',
-                        loadingStatus: false,
-                    }),
-                );
             })
-            .catch(() => {
+            .finally(() => {
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserOrderData',
@@ -202,20 +204,17 @@ export default function PortfolioTabs(props: propsIF) {
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 lastBlockNumber: lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
                 .then((updatedTransactions) => {
                     if (updatedTransactions) {
                         setLookupAccountTransactionData(updatedTransactions);
                     }
-
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
-                    );
                 })
-                .catch(() => {
+                .finally(() => {
                     dispatch(
                         setDataLoadingStatus({
                             datasetName: 'lookupUserTxData',
@@ -238,9 +237,12 @@ export default function PortfolioTabs(props: propsIF) {
                     console.debug(
                         'querying user tx/order/positions because address changed',
                     );
-                await getLookupUserTransactions(resolvedAddress);
-                await getLookupUserLimitOrders(resolvedAddress);
-                await getLookupUserPositions(resolvedAddress);
+
+                await Promise.all([
+                    getLookupUserTransactions(resolvedAddress),
+                    getLookupUserLimitOrders(resolvedAddress),
+                    getLookupUserPositions(resolvedAddress),
+                ]);
             }
         })();
     }, [
@@ -277,17 +279,19 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        resolvedAddress: resolvedAddress,
+        resolvedAddress: resolvedAddress ?? '',
         cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Exchange/> React Element
     const exchangeProps = {
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        resolvedAddress: resolvedAddress,
+        resolvedAddress: resolvedAddress ?? '',
         openTokenModal: openTokenModal,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
     };

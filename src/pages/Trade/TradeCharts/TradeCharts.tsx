@@ -8,11 +8,8 @@ import {
     memo,
     useMemo,
 } from 'react';
-import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
+import { AiOutlineFullscreen } from 'react-icons/ai';
+import { FiCopy } from 'react-icons/fi';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -21,7 +18,6 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
@@ -35,6 +31,10 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
+import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 // interface for React functional component props
 interface propsIF {
@@ -102,20 +102,38 @@ function TradeCharts(props: propsIF) {
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
     const canvasRef = useRef(null);
-    const downloadAsImage = () => {
+    const [, copy] = useCopyToClipboard();
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
+    const copyChartToClipboard = async () => {
         if (canvasRef.current) {
-            printDomToImage(canvasRef.current, '#171d27');
+            const blob = await printDomToImage(canvasRef.current, '#171d27');
+            if (blob) {
+                copy(blob);
+                openSnackbar('Chart image copied to clipboard', 'info');
+            }
         }
     };
 
     // CHART SETTINGS------------------------------------------------------------
-    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const subchartState: {
+        isVolumeSubchartEnabled: boolean;
+        isTvlSubchartEnabled: boolean;
+        isFeeRateSubchartEnabled: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
+
+    const [showTvl, setShowTvl] = useState(
+        subchartState?.isTvlSubchartEnabled ?? false,
+    );
     const [showFeeRate, setShowFeeRate] = useState(
-        chartSettings.feeRateSubchart.isEnabled,
+        subchartState?.isFeeRateSubchartEnabled ?? false,
     );
     const [showVolume, setShowVolume] = useState(
-        chartSettings.volumeSubchart.isEnabled,
+        subchartState?.isVolumeSubchartEnabled ?? true,
     );
 
     const chartItemStates = useMemo(() => {
@@ -123,11 +141,11 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.poolOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.rangeOverlay,
+        chartSettings.poolOverlay,
         showTvl,
         showVolume,
         showFeeRate,
@@ -150,13 +168,13 @@ function TradeCharts(props: propsIF) {
     const saveImageContent = (
         <div
             className={styles.save_image_content}
-            onClick={downloadAsImage}
+            onClick={copyChartToClipboard}
             role='button'
             tabIndex={0}
             aria-label='Download chart image button'
         >
-            Save Chart Image
-            <AiOutlineDownload />
+            Copy to Clipboard
+            <FiCopy />
         </div>
     );
 
@@ -181,8 +199,6 @@ function TradeCharts(props: propsIF) {
                     <AiOutlineFullscreen
                         size={20}
                         id='trade_chart_full_screen_button'
-                        role='button'
-                        tabIndex={0}
                         aria-label='Full screen chart button'
                     />
                 </button>
@@ -193,15 +209,13 @@ function TradeCharts(props: propsIF) {
                 enterDelay={500}
             >
                 <button
-                    onClick={downloadAsImage}
+                    onClick={copyChartToClipboard}
                     className={styles.fullscreen_button}
                 >
-                    <AiOutlineCamera
+                    <FiCopy
                         size={20}
                         id='trade_chart_save_image'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Save chart image button'
+                        aria-label='Copy chart image button'
                     />
                 </button>
             </DefaultTooltip>
@@ -216,13 +230,7 @@ function TradeCharts(props: propsIF) {
                 className={styles.chart_overlay_container}
                 id='trade_charts_time_frame'
             >
-                <TimeFrame
-                    candleTime={
-                        isMarketOrLimitModule
-                            ? chartSettings.candleTime.market
-                            : chartSettings.candleTime.range
-                    }
-                />
+                <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
             <div
                 style={{
@@ -249,7 +257,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
         </div>
     );
@@ -296,11 +304,6 @@ function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        // <FocusTrap
-        //     focusTrapOptions={{
-        //         clickOutsideDeactivates: true,
-        //     }}
-        // >
         <div
             className={styles.main_container_chart}
             style={{
@@ -356,7 +359,6 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>
             )}
@@ -366,7 +368,6 @@ function TradeCharts(props: propsIF) {
                 steps={tradeChartTutorialSteps}
             />
         </div>
-        // </FocusTrap>
     );
 }
 

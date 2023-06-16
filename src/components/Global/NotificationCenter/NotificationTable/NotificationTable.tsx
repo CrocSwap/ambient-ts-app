@@ -1,7 +1,6 @@
 import styles from './NotificationTable.module.css';
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
-import FocusTrap from 'focus-trap-react';
 
 import {
     useAppDispatch,
@@ -76,32 +75,28 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     if (!showNotificationTable) return null;
     return (
-        <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
-            <div className={styles.main_container}>
-                <div ref={notificationItemRef} className={styles.container}>
-                    <section className={styles.header}>
-                        Recent Transactions
-                    </section>
+        <div className={styles.main_container}>
+            <div ref={notificationItemRef} className={styles.container}>
+                <section className={styles.header}>Recent Transactions</section>
 
-                    <section className={styles.content}>
-                        {pendingTransactionsDisplay}
-                        {failedTransactionsDisplay}
-                        {successfulTransactionsDisplay}
-                    </section>
+                <section className={styles.content}>
+                    {pendingTransactionsDisplay}
+                    {failedTransactionsDisplay}
+                    {successfulTransactionsDisplay}
+                </section>
 
-                    <section className={styles.footer}>
-                        <button
-                            onClick={() => {
-                                dispatch(resetReceiptData());
-                            }}
-                            aria-label='Clear all'
-                        >
-                            Clear all
-                        </button>
-                    </section>
-                </div>
+                <section className={styles.footer}>
+                    <button
+                        onClick={() => {
+                            dispatch(resetReceiptData());
+                        }}
+                        aria-label='Clear all'
+                    >
+                        Clear all
+                    </button>
+                </section>
             </div>
-        </FocusTrap>
+        </div>
     );
 };
 
