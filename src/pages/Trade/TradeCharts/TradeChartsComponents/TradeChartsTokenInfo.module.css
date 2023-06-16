@@ -78,10 +78,14 @@
 
 .mono_space_tooltip {
     color: var(--text1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 340px;
+    padding: 8px;
     border-radius: 4px;
-    padding: 12px;
     white-space: nowrap;
-    width: 350px;
     background: var(--dark3);
 }
 
