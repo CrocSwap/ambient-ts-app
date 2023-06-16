@@ -735,7 +735,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             ></d3fc-canvas>
             <d3fc-canvas
                 ref={d3CanvasLiq}
-                className='liq-bid-canvas'
                 style={{
                     position: 'relative',
                     width: '20%',
