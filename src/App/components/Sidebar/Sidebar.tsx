@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useRef, useContext, memo } from 'react';
+import { useState, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
@@ -28,7 +28,6 @@ import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -54,16 +53,6 @@ function Sidebar() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
-
-    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
-
-    useEffect(() => {
-        overflowSidebarMQ
-            ? sidebar.close()
-            : sidebar.isOpen
-            ? sidebar.open()
-            : null;
-    }, [overflowSidebarMQ, sidebar.isOpen]);
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
