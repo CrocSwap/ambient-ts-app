@@ -21,8 +21,8 @@ function AdvancedPriceInfo(props: propsIF) {
         (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
     const currentPriceValue = reverseDisplay
-        ? `${poolPriceDisplay}  ${tokenB.symbol}`
-        : `${poolPriceDisplay}  per ${tokenA.symbol}`;
+        ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+        : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`;
 
     const currentPrice = (
         <div
@@ -54,7 +54,7 @@ function AdvancedPriceInfo(props: propsIF) {
             tabIndex={aprPercentage ? 0 : -1}
             aria-label={`Estimated APR is ${aprPercentageString} percent.`}
         >
-            <p className={styles.row_label}>Est.APY </p>
+            <p className={styles.row_label}>Est. APR </p>
             {estimatedAPRValue}
         </div>
     );

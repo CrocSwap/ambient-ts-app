@@ -75,7 +75,7 @@ function RangePriceInfo(props: propsIF) {
 
     const aprDisplay = (
         <div className={styles.price_display}>
-            <h4 className={styles.price_title}>Est.APY</h4>
+            <h4 className={styles.price_title}>Est. APR</h4>
             <span
                 className={styles.apr_price}
                 onClick={() => {
