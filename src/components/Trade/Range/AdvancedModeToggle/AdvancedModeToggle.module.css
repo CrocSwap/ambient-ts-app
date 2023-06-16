@@ -7,4 +7,6 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     gap: 6px;
+
+    height: 33px;
 }

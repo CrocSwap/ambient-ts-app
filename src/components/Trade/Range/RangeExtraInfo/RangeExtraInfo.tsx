@@ -154,10 +154,10 @@ function RangeExtraInfo(props: propsIF) {
     );
 
     return (
-        <>
+        <div className={styles.main_container}>
             {extraInfoSection}
             {extraDetailsOrNull}
-        </>
+        </div>
     );
 }
 

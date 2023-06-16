@@ -66,17 +66,25 @@ function RangePriceInfo(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+        ? `${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
     // JSX frag for estimated APR of position
 
-    const apr = (
-        <span className={styles.apr}>
-            {aprPercentageString}{' '}
-            <AiOutlineQuestionCircle
+    const aprDisplay = (
+        <div className={styles.price_display}>
+            <h4 className={styles.price_title}>Est.APY</h4>
+            <span
+                className={styles.apr_price}
+                onClick={() => {
+                    dispatch(toggleDidUserFlipDenom());
+                    setUserFlippedMaxMinDisplay(false);
+                }}
+            >
+                {aprPercentageString}
+                {/* <AiOutlineQuestionCircle
                 size={14}
                 onClick={() =>
                     openGlobalPopup(
@@ -86,8 +94,9 @@ function RangePriceInfo(props: propsIF) {
                         'right',
                     )
                 }
-            />
-        </span>
+            /> */}
+            </span>
+        </div>
     );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
@@ -335,32 +344,32 @@ function RangePriceInfo(props: propsIF) {
         );
 
     // JSX frag for highest price in range
-    const maximumPrice =
-        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${maxPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div
-                    className={styles.price_display}
-                    onClick={handleMinMaxPriceClick}
-                >
-                    <h4 className={styles.price_title}>Max Price</h4>
-                    <span className={styles.max_price}>{maxPrice}</span>
-                </div>
-            </DefaultTooltip>
-        ) : (
-            <div className={styles.price_display} style={{ cursor: 'default' }}>
-                <h4 className={styles.price_title}>Max Price</h4>
-                <span className={styles.max_price}>{maxPrice}</span>
-            </div>
-        );
+    // const maximumPrice =
+    //     nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
+    //         <DefaultTooltip
+    //             interactive
+    //             title={`${maxPriceUsdEquivalent} USD per ${
+    //                 isDenomBase ? baseToken.symbol : quoteToken.symbol
+    //             } `}
+    //             placement={'bottom'}
+    //             arrow
+    //             enterDelay={100}
+    //             leaveDelay={200}
+    //         >
+    //             <div
+    //                 className={styles.price_display}
+    //                 onClick={handleMinMaxPriceClick}
+    //             >
+    //                 <h4 className={styles.price_title}>Max Price</h4>
+    //                 <span className={styles.max_price}>{maxPrice}</span>
+    //             </div>
+    //         </DefaultTooltip>
+    //     ) : (
+    //         <div className={styles.price_display} style={{ cursor: 'default' }}>
+    //             <h4 className={styles.price_title}>Max Price</h4>
+    //             <span className={styles.max_price}>{maxPrice}</span>
+    //         </div>
+    //     );
 
     // JSX frag for current pool price
     const currentPoolPrice =
@@ -409,11 +418,10 @@ function RangePriceInfo(props: propsIF) {
 
     return (
         <div className={styles.price_info_container}>
-            {apr}
             <div className={styles.price_info_content}>
+                {aprDisplay}
                 {minimumPrice}
                 {currentPoolPrice}
-                {maximumPrice}
             </div>
         </div>
     );
