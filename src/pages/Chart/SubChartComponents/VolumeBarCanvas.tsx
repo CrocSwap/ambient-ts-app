@@ -48,7 +48,7 @@ export default function VolumeBarCanvas(props: propsIF) {
                             : 'rgba(115,113,252, 0.5)';
 
                     context.strokeStyle =
-                        d.volumeUSD === null
+                        d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
