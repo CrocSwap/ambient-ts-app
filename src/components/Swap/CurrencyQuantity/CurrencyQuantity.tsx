@@ -96,7 +96,9 @@ function CurrencyQuantity(props: propsIF) {
         const targetValue = event.target.value.replace(',', '.');
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(targetValue) > thisToken.decimals;
-        const isUserInputValid = true;
+        const isUserInputValid =
+            !isPrecisionGreaterThanDecimals &&
+            (event.target.value === '' || event.target.validity.valid);
         if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
             let valueWithDecimal = targetValue;
             if (valueWithDecimal.includes(',')) {
