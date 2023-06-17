@@ -123,9 +123,11 @@ export default function Deposit(props: propsIF) {
 
     const isWalletBalanceSufficientToCoverGas = useMemo(
         () =>
-            tokenWalletBalance
-                ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
-                : false,
+            isTokenEth
+                ? tokenWalletBalance
+                    ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+                    : false
+                : true,
 
         [tokenWalletBalance, amountToReduceEth],
     );
