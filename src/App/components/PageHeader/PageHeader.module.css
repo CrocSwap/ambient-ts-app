@@ -42,6 +42,9 @@
     color: orange;
 }
 
+.right_side {
+    margin-left: auto;
+}
 
 .active,
 .inactive {
@@ -122,9 +125,7 @@
 .account {
     display: flex;
     align-items: center;
-    padding: 0 1rem;
     gap: 8px;
-  
 }
 
 .authenticate_button {
@@ -138,7 +139,8 @@
     border-radius: 4px;
 
     border-radius: var(--border-radius);
-    width: 155px;
+    min-width: 120px;
+    max-width: 180px;
     height: 28px;
     transition: box-shadow var(--animation-speed) ease-in-out;
 }

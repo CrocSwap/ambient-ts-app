@@ -21,11 +21,11 @@
     gap: 1rem;
 }
 
-.row5,
-.row4,
-.row2,
 .row1,
+.row2,
 .row3,
+.row4,
+.row5,
 .row6,
 .row7 {
     display: flex;
@@ -35,6 +35,13 @@
     justify-content: center;
     align-items: center;
     place-items: center;
+}
+
+.row1 img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* Desktop screen Sizes */

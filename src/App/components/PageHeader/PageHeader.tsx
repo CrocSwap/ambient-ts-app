@@ -142,7 +142,6 @@ const PageHeader = function () {
     const connectWagmiButton = (
         <button
             className={styles.authenticate_button}
-            style={!desktopScreen ? { width: '140px' } : undefined}
             onClick={() => openWagmiModal()}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
@@ -395,11 +394,9 @@ const PageHeader = function () {
                 {show ? (
                     <div
                         style={{
-                            width: '380px',
                             display: 'flex',
                             justifyContent: 'flex-end',
                             alignItems: 'center',
-                            padding: '0 1rem',
                         }}
                     >
                         <TradeNowButton inNav />{' '}

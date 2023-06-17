@@ -30,8 +30,7 @@
     max-height: 2rem;
     /* width: 238px; */
     height: 54px;
-
-
+    margin-right: 1rem;
 }
 .content_container{
     width: 100%;
@@ -48,6 +47,7 @@
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
+    padding: 0 8px;
 
     background: var(--title-gradient);
     -webkit-background-clip: text;

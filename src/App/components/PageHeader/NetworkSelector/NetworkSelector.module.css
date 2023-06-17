@@ -1,5 +1,5 @@
 .dropdown_menu_container {
-    min-width: 100px;
+    min-width: 75px;
     z-index: 99999;
     background-color: var(--dark2);
    
