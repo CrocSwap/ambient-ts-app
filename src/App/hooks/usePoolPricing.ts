@@ -179,9 +179,11 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         setIsPoolPriceChangePositive(true);
                         return;
                     }
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
+                    if (
+                        priceChangeResult > -0.0001 &&
+                        priceChangeResult < 0.0001
+                    ) {
+                        setPoolPriceChangePercent('No Change'); // display 'No Change' if price has moved less than .01%
                         setIsPoolPriceChangePositive(true);
                     } else {
                         priceChangeResult > 0
