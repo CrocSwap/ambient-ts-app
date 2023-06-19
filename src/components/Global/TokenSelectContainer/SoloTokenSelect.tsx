@@ -270,7 +270,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
-            {handleWETH.check(validatedInput) && <p>{handleWETH.message}</p>}
+            {handleWETH.check(validatedInput) && (
+                <p className={styles.weth_text}>{handleWETH.message}</p>
+            )}
             {handleWETH.check(validatedInput) &&
                 [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                     (token: TokenIF) => (
@@ -282,6 +284,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                         />
                     ),
                 )}
+
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
