@@ -345,13 +345,13 @@ export default function PoolCard(props: propsIF) {
                     <div className={styles.column}>
                         <div className={styles.row}></div>
                         <div className={styles.row}>
-                            <div className={styles.row_title}>APR</div>
+                            <div className={styles.row_title}>24h APR</div>
                             <div className={styles.apr}>
                                 {poolApy === undefined ? '…' : `${poolApy}%`}
                             </div>
                         </div>
                         <div className={styles.row}>
-                            <div className={styles.row_title}>Vol.</div>
+                            <div className={styles.row_title}>Volume</div>
                             <div className={styles.vol}>
                                 {poolVolume === undefined
                                     ? '…'

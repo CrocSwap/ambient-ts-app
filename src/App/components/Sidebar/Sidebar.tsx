@@ -216,7 +216,10 @@ function Sidebar() {
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
@@ -318,7 +321,7 @@ function Sidebar() {
                 </div>
             ) : (
                 <BiSearch
-                    size={18}
+                    size={20}
                     color='#CDC1FF'
                     onClick={() => sidebar.open(true)}
                 />
@@ -331,8 +334,8 @@ function Sidebar() {
         ? styles.sidebar_active
         : styles.sidebar;
 
-    const topElementsDisplay = (
-        <div style={{ width: '100%' }}>
+    const regularSidebarDisplay = (
+        <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -366,11 +369,7 @@ function Sidebar() {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
-    );
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}>
+            <div style={{ margin: 'auto' }} />
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -407,15 +406,8 @@ function Sidebar() {
         </div>
     );
 
-    const regularSidebarDisplay = (
-        <>
-            {topElementsDisplay}
-            {bottomElementsDisplay}
-        </>
-    );
-
     return (
-        <div ref={sidebarRef}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
