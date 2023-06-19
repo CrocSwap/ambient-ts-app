@@ -20,8 +20,6 @@ import {
     setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
-
 // START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
 import LimitRate from '../LimitRate/LimitRate';

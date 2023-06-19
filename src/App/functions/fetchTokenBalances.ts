@@ -147,9 +147,9 @@ export const fetchErc20TokenBalances = async (
             moralisErc20BalanceDisplay,
         );
 
-        const moralisErc20BalanceDisplayTruncated = getFormattedTokenBalance(
-            moralisErc20BalanceDisplayNum,
-        );
+        const moralisErc20BalanceDisplayTruncated = getFormattedTokenBalance({
+            balance: moralisErc20BalanceDisplayNum,
+        });
 
         return {
             chainId: parseInt(chain),
@@ -178,9 +178,9 @@ export const fetchErc20TokenBalances = async (
         const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
             ? parseFloat(erc20DexBalanceDisplay)
             : undefined;
-        const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
-            ? getFormattedTokenBalance(erc20DexBalanceDisplayNum)
-            : undefined;
+        const erc20DexBalanceDisplayTruncated = getFormattedTokenBalance({
+            balance: erc20DexBalanceDisplayNum,
+        });
 
         return {
             chainId: parseInt(chain),
@@ -242,7 +242,9 @@ export const fetchErc20TokenBalances = async (
                     );
 
                     const combinedBalanceDisplayTruncated =
-                        getFormattedTokenBalance(combinedBalanceDisplayNum);
+                        getFormattedTokenBalance({
+                            balance: combinedBalanceDisplayNum,
+                        });
 
                     updatedToken.dexBalance = newToken.dexBalance;
                     updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;

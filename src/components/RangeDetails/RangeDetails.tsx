@@ -2,7 +2,6 @@ import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
-import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';

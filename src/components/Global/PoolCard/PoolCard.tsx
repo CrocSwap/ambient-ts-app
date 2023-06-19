@@ -96,7 +96,7 @@ export default function PoolCard(props: propsIF) {
                         ? 1 / displayPrice
                         : displayPrice;
 
-                    // TODO: consolidate formatting
+                    // TODO: confirm precision case for 0.5 > x > 2 here is okay
                     const displayPriceWithFormatting = getFormattedTokenBalance(
                         { balance: displayPriceWithInversion },
                     );

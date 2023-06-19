@@ -21,7 +21,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { calcImpact } from '../../../App/functions/calcImpact';
