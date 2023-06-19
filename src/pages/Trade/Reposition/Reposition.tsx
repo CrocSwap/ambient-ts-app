@@ -404,11 +404,12 @@ function Reposition() {
 
     function truncateString(qty?: number): string {
         return qty
-            ? qty < 2
-                ? qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            ? qty < 0.0001
+                ? qty.toExponential(2)
+                : qty < 2
+                ? qty.toPrecision(3)
+                : qty >= 100000
+                ? formatAmountOld(qty, 1)
                 : qty.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
