@@ -254,7 +254,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     onChange={(e) => setInput(e.target.value)}
                     style={{
                         color: showSoloSelectTokenButtons
-                            ? 'var(--text1)'
+                            ? 'var(--text2)'
                             : 'var(--text3)',
                     }}
                 />

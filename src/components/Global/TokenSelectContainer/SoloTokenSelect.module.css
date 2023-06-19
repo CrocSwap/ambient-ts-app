@@ -19,10 +19,10 @@
     width: 100%;
     height: 30px;
     background: var(--dark2);
-    color: var(--text1);
     outline: none;
     border: none;
     padding: 0 4px;
+    margin-bottom: 8px;
     border-radius: 4px;
     /* text-align: center; */
 }

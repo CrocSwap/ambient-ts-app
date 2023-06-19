@@ -56,6 +56,8 @@ import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { formatAmountOld } from '../../../utils/numbers';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 function Reposition() {
     // current URL parameter string
@@ -103,8 +105,7 @@ function Reposition() {
     const dispatch = useAppDispatch();
 
     // redirect path to use in this module
-    // will try to preserve current params, will use default path otherwise
-    const redirectPath = '/trade/range/' + (params ?? '');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
@@ -118,7 +119,7 @@ function Reposition() {
         );
         // IMPORTANT!! we must use this pathway, other implementations will not immediately
         // ... stop code in the rest of the file from running
-        return <Navigate to={redirectPath} replace />;
+        return <Navigate to={linkGenPool.getFullURL(params ?? '')} replace />;
     }
 
     // position data from the locationHook object
@@ -177,11 +178,12 @@ function Reposition() {
     );
 
     const truncatedCurrentPoolDisplayPriceInBase = currentPoolDisplayPriceInBase
-        ? currentPoolDisplayPriceInBase < 2
-            ? currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
+        ? currentPoolDisplayPriceInBase < 0.0001
+            ? currentPoolDisplayPriceInBase.toExponential(2)
+            : currentPoolDisplayPriceInBase < 2
+            ? currentPoolDisplayPriceInBase.toPrecision(3)
+            : currentPoolDisplayPriceInBase >= 10000
+            ? formatAmountOld(currentPoolDisplayPriceInBase, 1)
             : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -190,11 +192,12 @@ function Reposition() {
 
     const truncatedCurrentPoolDisplayPriceInQuote =
         currentPoolDisplayPriceInQuote
-            ? currentPoolDisplayPriceInQuote < 2
-                ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            ? currentPoolDisplayPriceInQuote < 0.0001
+                ? currentPoolDisplayPriceInQuote.toExponential(2)
+                : currentPoolDisplayPriceInQuote < 2
+                ? currentPoolDisplayPriceInQuote.toPrecision(3)
+                : currentPoolDisplayPriceInQuote >= 10000
+                ? formatAmountOld(currentPoolDisplayPriceInQuote, 1)
                 : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

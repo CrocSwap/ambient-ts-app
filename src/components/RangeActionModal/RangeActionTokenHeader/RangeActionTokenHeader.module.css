@@ -1,0 +1,22 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    color: var(--text1);
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 200;
+    letter-spacing: -0.02em;
+}
+
+.settings_icon {
+    cursor: pointer;
+}
+
+.token_info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.8rem;
+}

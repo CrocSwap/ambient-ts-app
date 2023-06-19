@@ -12,8 +12,8 @@ export const useLocationSlug = (): string => {
             slug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             slug = '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            slug = '/trade/range';
+        } else if (pathname.startsWith('/trade/pool')) {
+            slug = '/trade/pool';
         } else if (pathname.startsWith('/swap')) {
             slug = '/swap';
         }

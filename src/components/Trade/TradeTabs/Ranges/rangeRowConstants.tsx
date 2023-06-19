@@ -218,7 +218,7 @@ export default function rangeRowConstants(props: Props) {
     const tip = pair.join('\n');
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const tokenPair = (
         <li
@@ -228,7 +228,7 @@ export default function rangeRowConstants(props: Props) {
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink
-                to={linkGenRange.getFullURL({
+                to={linkGenPool.getFullURL({
                     chain: position.chainId,
                     tokenA: position.quote,
                     tokenB: position.base,

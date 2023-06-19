@@ -49,10 +49,10 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { isStablePair } from '../../utils/data/stablePairs';
 import { VscClose } from 'react-icons/vsc';
-import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../App/hooks/useTradeData';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -571,9 +571,7 @@ function Swap(props: propsIF) {
         maximumFractionDigits: 2,
     });
 
-    const initLinkPath =
-        '/initpool/' +
-        formSlugForPairParams(chainId, tokenA.address, tokenB.address);
+    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const showPoolNotInitializedContent = isPoolInitialized === false;
 
@@ -593,7 +591,11 @@ function Swap(props: propsIF) {
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
                         <Link
-                            to={initLinkPath}
+                            to={linkGenInitPool.getFullURL({
+                                chain: chainId,
+                                tokenA: tokenA.address,
+                                tokenB: tokenB.address,
+                            })}
                             className={styles.initialize_link}
                         >
                             Initialize Pool

@@ -78,8 +78,18 @@
 }
 @media only screen and (min-width: 500px) {
     .modal_body {
-        top: 10rem;
+        /* top: 10rem; */
 
         min-width: 407px;
+
+       
+    }
+
+    .outside_modal{
+width: 100vw;
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
     }
 }

@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 // START: Import Local Files
 import { TransactionIF } from '../../../../utils/interfaces/exports';
-import styles from './SidebarRecentTransactions.module.css';
+import styles from '../SidebarTable.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
@@ -95,12 +95,15 @@ export default function SidebarRecentTransactions(props: propsIF) {
                         handleClick={handleCardClick}
                     />
                 ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserConnected && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }
