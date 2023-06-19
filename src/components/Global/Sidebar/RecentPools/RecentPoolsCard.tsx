@@ -13,14 +13,19 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface propsIF {
     pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
+    crocEnv: CrocEnv | undefined;
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { pool, cachedPoolStatsFetch } = props;
+    const { pool, cachedPoolStatsFetch, cachedFetchTokenPrice, crocEnv } =
+        props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -40,10 +45,10 @@ export default function RecentPoolsCard(props: propsIF) {
         } else if (pathname.startsWith('/trade/limit')) {
             page = 'limit';
         } else if (
-            pathname.startsWith('/trade/range') ||
+            pathname.startsWith('/trade/pool') ||
             pathname.startsWith('/trade/reposition')
         ) {
-            page = 'range';
+            page = 'pool';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
@@ -61,20 +66,25 @@ export default function RecentPoolsCard(props: propsIF) {
 
     const fetchPoolStatsAsync = () => {
         (async () => {
+            if (!crocEnv) {
+                return;
+            }
             const poolStatsFresh = await cachedPoolStatsFetch(
                 chainId,
                 pool.baseToken.address,
                 pool.quoteToken.address,
                 lookupChain(chainId).poolIndex,
                 Math.floor(Date.now() / 60000),
+                crocEnv,
+                cachedFetchTokenPrice,
             );
             // display the total volume for all time
-            const volume = poolStatsFresh?.volumeTotal;
+            const volume = poolStatsFresh?.volumeTotalUsd;
             const volumeString = volume
                 ? '$' + formatAmountOld(volume)
                 : undefined;
             setPoolVolume(volumeString);
-            const tvl = poolStatsFresh?.tvl;
+            const tvl = poolStatsFresh?.tvlTotalUsd;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();

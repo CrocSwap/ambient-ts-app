@@ -14,6 +14,7 @@ import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { FiAlertTriangle } from 'react-icons/fi';
 
 // interface for component props
 interface propsIF {
@@ -60,7 +61,6 @@ export default function TransactionSettings(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        // <FocusTrap>
         <section>
             <div className={styles.settings_title}>
                 <div />
@@ -84,6 +84,17 @@ export default function TransactionSettings(props: propsIF) {
                             }
                         />
                     )}
+                    {module === 'Swap' && currentSlippage > 1 && (
+                        <div className={styles.frontrun_warning}>
+                            <FiAlertTriangle size={28} color='var(--accent2)' />
+                            <div>
+                                <p>
+                                    Your transaction may be frontrun and result
+                                    in an unfavorable trade
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
@@ -95,7 +106,7 @@ export default function TransactionSettings(props: propsIF) {
                         <Button
                             title={
                                 currentSlippage > 0
-                                    ? 'Confirm'
+                                    ? 'Submit'
                                     : 'Enter a Valid Slippage'
                             }
                             action={updateSettings}
@@ -105,7 +116,7 @@ export default function TransactionSettings(props: propsIF) {
                         />
                     ) : (
                         <Button
-                            title='Confirm Settings'
+                            title='Submit Settings'
                             action={updateSettings}
                             flat
                             customAriaLabel={confirmAriaLabel}
@@ -114,6 +125,5 @@ export default function TransactionSettings(props: propsIF) {
                 </div>
             </div>
         </section>
-        // </FocusTrap>
     );
 }

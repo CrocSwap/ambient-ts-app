@@ -7,55 +7,44 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    cursor: default;
+
+    width: 100vw;
 
     display: flex;
     justify-content: center;
-}
-
-.back_button {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.back_button svg {
-    background: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--dark2);
-    padding: 8px;
-    border-radius: 50%;
 }
 
 .init_pool_container {
     margin-top: 64px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    border-radius: var(--border-radius);
+    /* gap: 1rem; */
 }
 
 .top_content {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    border-radius: var(--border-radius);
+    /* gap: 1rem; */
 }
 .top_content header {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 41px;
+    /* gap: 4px; */
 }
 .top_content header h1 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
+    font-weight: 200;
     color: var(--text1);
-    text-transform: uppercase;
+    text-transform: capitalize;
     text-align: center;
-    padding: 0.5rem;
+    /* padding: 0.5rem; */
 }
 .top_content header p {
     display: flex;
@@ -68,14 +57,15 @@
     cursor: pointer;
 }
 .top_content footer {
-    padding: 0.5rem 1rem;
-    margin-top: 2rem;
+    padding: 0 1rem;
 }
 
 .pool_display_container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+
+    height: 100%;
+    justify-content: space-between;
 }
 
 .pool_display {
@@ -83,6 +73,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    height: 40px;
 }
 .pool_display div {
     display: flex;
@@ -95,54 +86,51 @@
     color: var(--text1);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
+    font-weight: 200;
 }
-.pool_display img {
-    width: 30px;
-}
+
 .pool_display p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text3);
+    font-weight: 200;
 }
 .pool_price_container {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 10px;
 
     justify-content: center;
+    padding: 16px 0;
     /* align-items: center; */
 }
 
 .pool_price_container span {
-    padding: 0.4.5px 0;
-    margin: 4px 0;
-    text-align: center;
-
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    color: var(--text1);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text2);
 }
 
 .currency_quantity {
     width: 100%;
-    padding: 0px 32px;
+
     font-weight: 200;
-    height: 35px;
+    height: 31px;
+    padding: 4px 16px;
+
     font-size: 18px;
     line-height: 22px;
-    color: white;
+    color: var(--text1);
     text-align: start;
 
     border: none;
-    border-radius: 0.25rem;
+    border-radius: var(--border-radius);
     outline: 0;
-    background-color: transparent;
+    background-color: var(--dark2);
     background-clip: padding-box;
 
     transition: border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
-
-    border: 1px solid var(--accent2);
 }
 
 .currency_quantity::placeholder {
@@ -159,8 +147,23 @@
 
 @media only screen and (min-width: 768px) {
     .top_content {
-        display: flex;
+        /* display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: center; */
+
+        background-color: var(--dark1);
+    }
+
+    .init_pool_container {
+        background: var(--title-gradient);
+        width: 375px;
+        height: 376px;
+        padding: 1px;
+    }
+
+    .top_content {
+        padding: 8px 16px 16px;
+        width: 100%;
+        height: 100%;
     }
 }

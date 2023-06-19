@@ -21,6 +21,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
+    setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useModal } from '../../../Modal/useModal';
 import Modal from '../../../Modal/Modal';
@@ -107,6 +108,7 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
+        dispatch(setRangeTicksCopied(true));
         handlePulseAnimation('range');
 
         if (position.positionType === 'ambient') {
@@ -122,7 +124,7 @@ export default function RangesMenu(props: propsIF) {
     };
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
     const repositionButton = (
@@ -151,7 +153,7 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={linkGenRange.getFullURL({
+            to={linkGenPool.getFullURL({
                 chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,
@@ -168,7 +170,7 @@ export default function RangesMenu(props: propsIF) {
         <Link
             style={{ opacity: '1' }}
             className={styles.option_button}
-            to={linkGenRange.getFullURL({
+            to={linkGenPool.getFullURL({
                 chain: chainId,
                 tokenA: position.base,
                 tokenB: position.quote,

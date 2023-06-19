@@ -15,7 +15,7 @@ export const fetchEnsAddress = async (
     }
 };
 
-type FetchAddrFn = (
+export type FetchAddrFn = (
     provider: ethers.providers.Provider,
     address: string,
     chainId: string,

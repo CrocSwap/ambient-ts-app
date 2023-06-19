@@ -104,7 +104,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 }`}
             >
                 {txUrlOnBlockExplorer && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
+                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
                     ? null
                     : addToMetaMaskButton}
             </div>

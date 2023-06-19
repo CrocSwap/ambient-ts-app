@@ -29,6 +29,8 @@ interface MessageInputProps {
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
+    isLinkInCrocodileLabsLinks(word: string): boolean;
+    isLink(url: string): boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -93,36 +95,52 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
-        handleSendMsg(message, roomId);
-        setMessage('');
-        setMentUser(null);
-        setPossibleMentUser(null);
-        dontShowEmojiPanel();
+        if (
+            props.isLink(message) &&
+            !props.isLinkInCrocodileLabsLinks(message)
+        ) {
+            // console.log('--------------------------DONT-------------------');
+        } else {
+            handleSendMsg(message, roomId);
+            setMessage('');
+            setMentUser(null);
+            setPossibleMentUser(null);
+            dontShowEmojiPanel();
+        }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
-            // send msg if ment panel is not active
-            if (!mentPanelActive) {
-                handleSendMsg(e.target.value, roomId);
-                setMentUser(null);
-                setPossibleMentUser(null);
-                setMessage('');
-                dontShowEmojiPanel();
-            }
-            // assign user for ment
-            else {
-                console.log('>>>>>>>>>>>>>>>>>assigning user for ment');
-                setMentUser(possibleMentUser);
+            if (
+                props.isLink(message) &&
+                !props.isLinkInCrocodileLabsLinks(message)
+            ) {
+                // console.log(
+                //     '--------------------------DONT-------------------',
+                // );
+            } else {
+                // send msg if ment panel is not active
+                if (!mentPanelActive) {
+                    handleSendMsg(e.target.value, roomId);
+                    setMentUser(null);
+                    setPossibleMentUser(null);
+                    setMessage('');
+                    dontShowEmojiPanel();
+                }
+                // assign user for ment
+                else {
+                    console.log('>>>>>>>>>>>>>>>>>assigning user for ment');
+                    setMentUser(possibleMentUser);
 
-                const reg = /@([^\s]*)/g;
-                const newMessage = message.replace(
-                    reg,
-                    '@' + getUserLabel(possibleMentUser) + ' ',
-                );
-                setMessage(newMessage);
-                setMentPanelActive(false);
+                    const reg = /@([^\s]*)/g;
+                    const newMessage = message.replace(
+                        reg,
+                        '@' + getUserLabel(possibleMentUser) + ' ',
+                    );
+                    setMessage(newMessage);
+                    setMentPanelActive(false);
+                }
             }
         } else if (
             mentPanelActive &&
@@ -260,6 +278,7 @@ export default function MessageInput(props: MessageInputProps) {
                 walletExplorer={
                     props.ensName === undefined ? address : props.ensName
                 }
+                connectedAccountActive={address as string}
             />
 
             <div

@@ -1,14 +1,10 @@
 import styles from '../Transactions.module.css';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
@@ -23,10 +19,19 @@ interface propsIF {
     ipadView: boolean;
     showPair: boolean;
     showColumns: boolean;
+    showTimestamp: boolean;
+
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const { showColumns, ipadView, tx, isAccountView, showPair } = props;
+    const {
+        showColumns,
+        showTimestamp,
+        ipadView,
+        tx,
+        isAccountView,
+        showPair,
+    } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -82,8 +87,6 @@ function TransactionRow(props: propsIF) {
 
     // only show all data when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
-
-    const dispatch = useAppDispatch();
 
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
@@ -165,18 +168,12 @@ function TransactionRow(props: propsIF) {
     }
 
     const handleWalletClick = () => {
-        if (!isAccountView)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
-
-        const accountUrl = `/${
-            isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-        }`;
-        window.open(accountUrl);
+        if (!isAccountView) {
+            const accountUrl = `/${
+                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+            }`;
+            window.open(accountUrl);
+        }
     };
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
@@ -268,7 +265,7 @@ function TransactionRow(props: propsIF) {
             tabIndex={0}
             onKeyDown={handleKeyPress}
         >
-            {!showColumns && TxTimeWithTooltip}
+            {showTimestamp && TxTimeWithTooltip}
             {isAccountView && showPair && tokenPair}
             {!showColumns && <li>{IDWithTooltip}</li>}
             {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}

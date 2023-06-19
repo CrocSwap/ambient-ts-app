@@ -15,9 +15,7 @@ import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
-import ExpandChatIcon from '../../assets/images/icons/expand.svg';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import MentionAutoComplete from './MessagePanel/InputBox/MentionAutoComplete/MentionAutoComplete';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -46,7 +44,9 @@ function ChatPanel(props: propsIF) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-    const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
+    const [userCurrentPool, setUserCurrentPool] = useState(
+        currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
+    );
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -74,6 +74,26 @@ function ChatPanel(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
+
+    function isLink(url: string) {
+        const urlPattern =
+            /.*(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+        return urlPattern.test(url);
+    }
+
+    const crocodileLabsLinks = [
+        'https://www.crocswap.com/',
+        'https://twitter.com/CrocSwap',
+        'https://crocswap.medium.com/',
+        'https://www.linkedin.com/company/crocodile-labs/',
+        'https://github.com/CrocSwap',
+        'https://discord.com/invite/CrocSwap', // etherscan , ambient.finance //remove http
+        'https://www.crocswap.com/whitepaper',
+    ];
+
+    function isLinkInCrocodileLabsLinks(word: string) {
+        return crocodileLabsLinks.includes(word);
+    }
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -239,13 +259,14 @@ function ChatPanel(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
         if (
-            e.target.scrollHeight - e.target.scrollTop !==
-            e.target.clientHeight
+            e.nativeEvent.wheelDelta > 0 &&
+            messageEnd.current?.scrollHeight !==
+                messageEnd.current?.scrollHeight
         ) {
             setScrollDirection('Scroll Up');
-        } else {
-            setNotification(0);
             setIsScrollToBottomButtonPressed(false);
+        }
+        if (0 <= messageEnd.current?.scrollTop) {
             setScrollDirection('Scroll Down');
         }
     };
@@ -271,18 +292,19 @@ function ChatPanel(props: propsIF) {
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
-                    <div
-                        className={styles.open_full_button}
-                        onClick={() =>
-                            window.open('/chat/' + convertCurreny(room))
-                        }
-                        aria-label='Open chat in full screen'
-                    >
-                        <img
-                            src={ExpandChatIcon}
-                            alt='Open chat in full screen'
-                        />
-                    </div>
+                    // <<div
+                    //     className={styles.open_full_button}
+                    //     onClick={() =>
+                    //         window.open('/chat/' + convertCurreny(room))
+                    //     }
+                    //     aria-label='Open chat in full screen'
+                    // >
+                    //     <img
+                    //         src={ExpandChatIcon}
+                    //         alt='Open chat in full screen'
+                    //     />
+                    // </div>>
+                    <></>
                 )}
                 {isFullScreen || !isChatOpen ? (
                     <></>
@@ -313,7 +335,6 @@ function ChatPanel(props: propsIF) {
             ref={messageEnd}
             className={styles.scrollable_div}
             onScroll={handleScroll}
-            onWheel={handleWheel}
             id='chatmessage'
         >
             {messages &&
@@ -336,6 +357,7 @@ function ChatPanel(props: propsIF) {
                         }
                         previousMessage={i === 0 ? null : messages[i - 1]}
                         deleteMsgFromList={deleteMsgFromList}
+                        isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
                     />
                 ))}
         </div>
@@ -444,6 +466,8 @@ function ChatPanel(props: propsIF) {
             sendMsg={sendMsg}
             inputListener={messageInputListener}
             users={users}
+            isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
+            isLink={isLink}
         />
     );
 

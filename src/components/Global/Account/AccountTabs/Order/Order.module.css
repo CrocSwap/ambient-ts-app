@@ -1,8 +1,3 @@
-.container {
-    height: 100%;
-    height: calc(100vh - 19.5rem);
-}
-
 .item_container {
     height: 100%;
     overflow-y: scroll;

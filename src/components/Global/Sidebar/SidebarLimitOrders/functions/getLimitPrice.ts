@@ -1,6 +1,7 @@
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,
@@ -22,11 +23,12 @@ export const getLimitPrice = (
     if (isDenomBase) {
         const nonTruncatedPrice = limitOrder.invLimitPriceDecimalCorrected;
         const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            nonTruncatedPrice < 0.0001
+                ? nonTruncatedPrice.toExponential(2)
+                : nonTruncatedPrice < 2
+                ? nonTruncatedPrice.toPrecision(3)
+                : nonTruncatedPrice >= 10000
+                ? formatAmountOld(nonTruncatedPrice, 1)
                 : nonTruncatedPrice.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -35,11 +37,12 @@ export const getLimitPrice = (
     } else {
         const nonTruncatedPrice = limitOrder.limitPriceDecimalCorrected;
         const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            nonTruncatedPrice < 0.0001
+                ? nonTruncatedPrice.toExponential(2)
+                : nonTruncatedPrice < 2
+                ? nonTruncatedPrice.toPrecision(3)
+                : nonTruncatedPrice >= 10000
+                ? formatAmountOld(nonTruncatedPrice, 1)
                 : nonTruncatedPrice.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

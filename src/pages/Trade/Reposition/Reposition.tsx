@@ -55,11 +55,19 @@ import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
 
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { blockExplorer },
@@ -96,8 +104,7 @@ function Reposition() {
     const dispatch = useAppDispatch();
 
     // redirect path to use in this module
-    // will try to preserve current params, will use default path otherwise
-    const redirectPath = '/trade/range/' + (params ?? '');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
     // ... this value will be truthy if the user arrived here by clicking a link
@@ -111,7 +118,7 @@ function Reposition() {
         );
         // IMPORTANT!! we must use this pathway, other implementations will not immediately
         // ... stop code in the rest of the file from running
-        return <Navigate to={redirectPath} replace />;
+        return <Navigate to={linkGenPool.getFullURL(params ?? '')} replace />;
     }
 
     // position data from the locationHook object
@@ -291,10 +298,7 @@ function Reposition() {
     }
 
     const sendRepositionTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         let tx;
         setTxErrorCode('');
 
@@ -450,6 +454,10 @@ function Reposition() {
                     crocEnv,
                     position.chainId,
                     lastBlockNumber,
+                    cachedFetchTokenPrice,
+                    cachedQuerySpotPrice,
+                    cachedTokenDetails,
+                    cachedEnsResolve,
                 );
                 const liqBaseNum =
                     positionStats.positionLiqBaseDecimalCorrected;

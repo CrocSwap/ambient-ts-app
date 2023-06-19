@@ -16,7 +16,8 @@ import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { memoizeTokenPrice } from '../../../../App/functions/fetchTokenPrice';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ZERO_ADDRESS } from '../../../../constants';
 
 // interface for component props
 interface propsIF {
@@ -54,14 +55,13 @@ function RangePriceInfo(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
-
-    const cachedFetchTokenPrice = memoizeTokenPrice();
 
     const dispatch = useAppDispatch();
 
@@ -156,7 +156,6 @@ function RangePriceInfo(props: propsIF) {
 
     const updatePoolPriceUsdEquivalent = () => {
         const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-
         if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
 
         let poolPriceNum;
@@ -195,24 +194,24 @@ function RangePriceInfo(props: propsIF) {
 
     const updateMainnetPricesAsync = async () => {
         const tokenAMainnetEquivalent =
-            chainId === '0x1'
+            chainId === '0x1' && tokenAAddress !== ZERO_ADDRESS
                 ? tokenAAddress
                 : testTokenMap
                       .get(tokenAAddress.toLowerCase() + '_' + chainId)
                       ?.split('_')[0];
         const tokenBMainnetEquivalent =
-            chainId === '0x1'
+            chainId === '0x1' && tokenBAddress !== ZERO_ADDRESS
                 ? tokenBAddress
                 : testTokenMap
                       .get(tokenBAddress.toLowerCase() + '_' + chainId)
                       ?.split('_')[0];
 
         if (tokenAMainnetEquivalent) {
-            const tokenAMainnetEthPrice = await cachedFetchTokenPrice(
+            const tokenAMainnetPrice = await cachedFetchTokenPrice(
                 tokenAMainnetEquivalent,
                 '0x1',
             );
-            const usdPrice = tokenAMainnetEthPrice?.usdPrice;
+            const usdPrice = tokenAMainnetPrice?.usdPrice;
 
             setTokenAMainnetPrice(usdPrice);
         } else {
@@ -220,11 +219,11 @@ function RangePriceInfo(props: propsIF) {
         }
 
         if (tokenBMainnetEquivalent) {
-            const tokenBMainnetEthPrice = await cachedFetchTokenPrice(
+            const tokenBMainnetPrice = await cachedFetchTokenPrice(
                 tokenBMainnetEquivalent,
                 '0x1',
             );
-            const usdPrice = tokenBMainnetEthPrice?.usdPrice;
+            const usdPrice = tokenBMainnetPrice?.usdPrice;
             setTokenBMainnetPrice(usdPrice);
         } else {
             setTokenBMainnetPrice(undefined);

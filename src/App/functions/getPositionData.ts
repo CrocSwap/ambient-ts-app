@@ -9,17 +9,12 @@ import {
 } from '@crocswap-libs/sdk';
 import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
-import { memoizeQuerySpotPrice } from './querySpotPrice';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
-import { memoizeFetchContractDetails } from './fetchContractDetails';
-import { memoizeFetchEnsAddress } from './fetchAddress';
-import { memoizeTokenPrice } from './fetchTokenPrice';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
-
-const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedTokenDetails = memoizeFetchContractDetails();
-const cachedEnsResolve = memoizeFetchEnsAddress();
-const cachedFetchTokenPrice = memoizeTokenPrice();
+import { FetchAddrFn } from './fetchAddress';
+import { FetchContractDetailsFn } from './fetchContractDetails';
+import { TokenPriceFn } from './fetchTokenPrice';
+import { SpotPriceFn } from './querySpotPrice';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -27,6 +22,10 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
+    cachedFetchTokenPrice: TokenPriceFn,
+    cachedQuerySpotPrice: SpotPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    cachedEnsResolve: FetchAddrFn,
 ): Promise<PositionIF> => {
     const newPosition = { ...position } as PositionIF;
 
@@ -97,6 +96,9 @@ export const getPositionData = async (
     newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
     newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
 
+    newPosition.baseName = (await baseMetadata)?.name ?? '';
+    newPosition.quoteName = (await quoteMetadata)?.name ?? '';
+
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
 
@@ -146,7 +148,7 @@ export const getPositionData = async (
             : lowerPriceDisplayInBase < 2
             ? lowerPriceDisplayInBase.toPrecision(3)
             : lowerPriceDisplayInBase >= 1000000
-            ? lowerPriceDisplayInBase.toExponential(2)
+            ? formatAmountOld(lowerPriceDisplayInBase, 1)
             : lowerPriceDisplayInBase.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -157,7 +159,7 @@ export const getPositionData = async (
             : upperPriceDisplayInBase < 2
             ? upperPriceDisplayInBase.toPrecision(3)
             : upperPriceDisplayInBase >= 1000000
-            ? upperPriceDisplayInBase.toExponential(2)
+            ? formatAmountOld(upperPriceDisplayInBase, 1)
             : upperPriceDisplayInBase.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -169,7 +171,7 @@ export const getPositionData = async (
             : lowerPriceDisplayInQuote < 2
             ? lowerPriceDisplayInQuote.toPrecision(3)
             : lowerPriceDisplayInQuote >= 1000000
-            ? lowerPriceDisplayInQuote.toExponential(2)
+            ? formatAmountOld(lowerPriceDisplayInQuote, 1)
             : lowerPriceDisplayInQuote.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -180,7 +182,7 @@ export const getPositionData = async (
             : upperPriceDisplayInQuote < 2
             ? upperPriceDisplayInQuote.toPrecision(3)
             : upperPriceDisplayInQuote >= 1000000
-            ? upperPriceDisplayInQuote.toExponential(2)
+            ? formatAmountOld(upperPriceDisplayInQuote, 1)
             : upperPriceDisplayInQuote.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,

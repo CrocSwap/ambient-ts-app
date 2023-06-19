@@ -1,13 +1,11 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { memo, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, memo, useEffect, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 
 interface SentMessageProps {
     message: Message;
@@ -19,17 +17,15 @@ interface SentMessageProps {
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
     moderator: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    room: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    isMessageDeleted: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setIsMessageDeleted: any;
+    room: string;
+    isMessageDeleted: boolean;
+    setIsMessageDeleted: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
     deleteMsgFromList: (id: string) => void;
+    isLinkInCrocodileLabsLinks(word: string): boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -38,20 +34,10 @@ function SentMessagePanel(props: SentMessageProps) {
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
-
-    const crocodileLabsLinks = [
-        'https://www.crocswap.com/',
-        'https://twitter.com/CrocSwap',
-        'https://crocswap.medium.com/',
-        'https://www.linkedin.com/company/crocodile-labs/',
-        'https://github.com/CrocSwap',
-        'https://discord.com/invite/CrocSwap',
-        'https://www.crocswap.com/whitepaper',
-    ];
+    const [ok, setOk] = useState(false);
 
     const { deleteMessage } = useChatApi();
 
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -75,6 +61,7 @@ function SentMessagePanel(props: SentMessageProps) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
                 setShowAvatar(false);
                 setShowName(false);
+                setOk(true);
                 if (
                     nextCurrentDiffInMs < 10 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
@@ -109,7 +96,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
-    }, [props.message, props.nextMessage]);
+    }, [props.message, props.nextMessage, props.previousMessage]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -172,10 +159,6 @@ function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
-    function isLinkInCrocodileLabsLinks(word: string) {
-        return crocodileLabsLinks.includes(word);
-    }
-
     function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
@@ -184,13 +167,13 @@ function SentMessagePanel(props: SentMessageProps) {
                     {words.map((word, index) => (
                         <span
                             onClick={() =>
-                                isLinkInCrocodileLabsLinks(word)
+                                props.isLinkInCrocodileLabsLinks(word)
                                     ? handleOpenExplorer(word)
                                     : ''
                             }
                             key={index}
                             style={
-                                isLinkInCrocodileLabsLinks(word)
+                                props.isLinkInCrocodileLabsLinks(word)
                                     ? { color: '#ab7de7', cursor: 'pointer' }
                                     : { color: 'white', cursor: 'default' }
                             }
@@ -201,7 +184,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 </>
             );
         } else {
-            if (isLinkInCrocodileLabsLinks(url)) {
+            if (props.isLinkInCrocodileLabsLinks(url)) {
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
@@ -303,15 +286,20 @@ function SentMessagePanel(props: SentMessageProps) {
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    return (
-        <div
-            className={styles.msg_bubble_container}
-            style={
-                hasSeparator
-                    ? { width: '90%', marginBottom: 4 }
-                    : { width: '90%', marginBottom: -10 }
+    function messageStyle() {
+        if (ok) {
+            if (!hasSeparator) {
+                return { width: '90%', marginBottom: -15 };
+            } else {
+                return { width: '90%', marginBottom: 0 };
             }
-        >
+        } else {
+            return { width: '90%', marginBottom: -7 };
+        }
+    }
+
+    return (
+        <div className={styles.msg_bubble_container} style={messageStyle()}>
             <div>
                 {daySeparator === '' ? (
                     ''
@@ -367,17 +355,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                             : props.message.ensName
                                     }`
                                 ) {
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'lookupUserTxData',
-                                            loadingStatus: true,
-                                        }),
-                                    );
-
                                     navigate(
                                         `/${
-                                            props.message.ensName ===
-                                            'defaultValue'
+                                            props.isCurrentUser
+                                                ? 'account'
+                                                : props.message.ensName ===
+                                                  'defaultValue'
                                                 ? props.message.walletID
                                                 : props.message.ensName
                                         }`,
@@ -395,6 +378,9 @@ function SentMessagePanel(props: SentMessageProps) {
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
                             showAvatar={showAvatar}
+                            connectedAccountActive={
+                                props.connectedAccountActive
+                            }
                         />
                         {!isPosition && mentionedMessage()}
                     </div>

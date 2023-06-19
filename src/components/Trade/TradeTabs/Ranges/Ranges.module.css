@@ -30,11 +30,11 @@
 .main_list_container {
     display: grid;
     overflow-y: hidden;
-    grid-template-rows: auto 1fr ;
+    grid-template-rows: auto 1fr;
     padding: 0 4px;
-    }
-    
-.main_list_expanded{
+}
+
+.main_list_expanded {
     display: grid;
     grid-template-rows: auto 1fr 70px;
     overflow-y: hidden;
@@ -53,6 +53,7 @@
 }
 
 .table_content {
+    min-height: 100px;
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
     overflow: auto; /* Enable scrolling for the content */
 }
@@ -187,9 +188,6 @@
 }
 
 .token_images_account img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
     margin: 0 2px;
 }
 .main_list_container > ul:nth-child(1),

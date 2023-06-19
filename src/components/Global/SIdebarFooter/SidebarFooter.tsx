@@ -25,8 +25,8 @@ function SidebarFooter() {
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
         ? '/trade/limit/'
-        : location.pathname.includes('trade/range')
-        ? '/trade/range/'
+        : location.pathname.includes('trade/pool')
+        ? '/trade/pool/'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit/'
         : '/trade/market/';

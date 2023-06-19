@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
@@ -38,7 +37,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { isChainSupported, setCrocEnv } = useContext(CrocEnvContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -211,7 +210,7 @@ const PageHeader = function () {
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ ambient.finance';
+            document.title = 'My Account ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const ensNameOrAddressTruncated = isAddressEns
@@ -219,20 +218,22 @@ const PageHeader = function () {
                     ? trimString(pathNoPrefix, 10, 3, '…')
                     : pathNoPrefix
                 : trimString(pathNoPrefix, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
+            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
         ) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ Ambient`
+                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ Ambient`;
         } else if (location.pathname.includes('chat')) {
-            document.title = 'Chat ~ ambient.finance';
+            document.title = 'Chat ~ Ambient';
+        } else if (location.pathname.includes('initpool')) {
+            document.title = 'Pool Initialization ~ Ambient';
         } else if (location.pathname.includes('404')) {
-            document.title = '404 ~ ambient.finance';
+            document.title = '404 ~ Ambient';
         } else {
-            document.title = 'Home ~ ambient.finance';
+            document.title = 'Home ~ Ambient';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
@@ -267,7 +268,7 @@ const PageHeader = function () {
         },
         {
             title: t('common:poolTitle'),
-            destination: '/trade/range/' + paramsSlug,
+            destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
@@ -282,8 +283,8 @@ const PageHeader = function () {
 
     function isActive(linkDestination: string, locationPathname: string) {
         if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/range')) {
-                return locationPathname.includes('/trade/range')
+            if (linkDestination.includes('/pool')) {
+                return locationPathname.includes('/trade/pool')
                     ? styles.active
                     : styles.inactive;
             } else {
@@ -305,8 +306,8 @@ const PageHeader = function () {
     function isUnderlined(linkDestination: string, locationPathname: string) {
         return (
             (linkDestination.includes('/trade') &&
-                (linkDestination.includes('/trade/range')
-                    ? locationPathname.includes('/trade/range')
+                (linkDestination.includes('/trade/pool')
+                    ? locationPathname.includes('/trade/pool')
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
@@ -352,7 +353,6 @@ const PageHeader = function () {
     const { switchNetwork } = useSwitchNetwork();
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
-    const [showNotificationTable, setShowNotificationTable] = useState(false);
     const [show, handleShow] = useState(false);
 
     useEffect(() => {
@@ -419,16 +419,10 @@ const PageHeader = function () {
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            <NotificationCenter
-                                showNotificationTable={showNotificationTable}
-                                setShowNotificationTable={
-                                    setShowNotificationTable
-                                }
-                            />
+                            <NotificationCenter />
                         </div>
                     </div>
                 )}
-                {isChainSupported || <SwitchNetwork />}
             </div>
         </header>
     );

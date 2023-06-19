@@ -27,6 +27,7 @@ interface propsIF {
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
+    isQtyEntered: boolean;
 }
 
 // central react functional component
@@ -37,14 +38,12 @@ function ExtraInfo(props: propsIF) {
         slippageTolerance,
         liquidityProviderFeeString,
         swapGasPriceinDollars,
-        isOnTradeRoute,
+        isQtyEntered,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
 
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
-        isOnTradeRoute ? false : false,
-    );
+    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -185,35 +184,15 @@ function ExtraInfo(props: propsIF) {
         </div>
     );
 
-    const dropDownOrNull = priceImpact ? (
-        <div style={{ cursor: 'pointer', marginTop: '4px' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
+    const dropDownOrNull =
+        priceImpact && isQtyEntered ? (
+            <div style={{ cursor: 'pointer', marginTop: '4px' }}>
+                {!showExtraDetails && <RiArrowDownSLine size={22} />}
+                {showExtraDetails && <RiArrowUpSLine size={22} />}
+            </div>
+        ) : null;
 
     const dispatch = useAppDispatch();
-
-    // const updateShowExtraDetails = () => {
-    //     if (
-    //         !showExtraDetails &&
-    //         priceImpact?.percentChange &&
-    //         Math.abs(priceImpact?.percentChange) > 0.02
-    //     ) {
-    //         setShowExtraDetails(true);
-    //     } else if (
-    //         showExtraDetails &&
-    //         (!priceImpact ||
-    //             (priceImpact?.percentChange && Math.abs(priceImpact?.percentChange) <= 0.02)) &&
-    //         !hasUserChosenToDisplayExtraInfo
-    //     ) {
-    //         setShowExtraDetails(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     updateShowExtraDetails();
-    // }, [priceImpact?.percentChange]);
 
     const conversionRateDisplay = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
@@ -238,7 +217,6 @@ function ExtraInfo(props: propsIF) {
             <div className={styles.gas_pump}>
                 <FaGasPump size={12} />{' '}
                 {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
-                {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
             <div
                 className={styles.token_amount}
@@ -249,33 +227,18 @@ function ExtraInfo(props: propsIF) {
             >
                 {conversionRateDisplay}
             </div>
-            {/* <DenominationSwitch /> */}
 
             {dropDownOrNull}
         </button>
     );
-    // const extraDetailsNoDropdown = (
-    //     <div className={styles.extra_info_content} style={{ cursor: 'default' }}>
-    //         <div className={styles.gas_pump}>
-    //             <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
-    //         </div>
-    //         <div className={styles.token_amount}>
-    //             {isDenomBase
-    //                 ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-    //                 : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-    //         </div>
-    //         <DenominationSwitch />
 
-    //     </div>
-    // );
-    // const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
-    // const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
     const extraDetailsOrNull =
-        showExtraDetails && priceImpact ? extraInfoDetails : null;
+        showExtraDetails && isQtyEntered && priceImpact
+            ? extraInfoDetails
+            : null;
 
     return (
         <>
-            {/* {extraDetailsNoDropDownOrNull} */}
             {extraDetailsDropdown}
             {extraDetailsOrNull}
         </>

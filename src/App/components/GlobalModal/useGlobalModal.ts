@@ -2,7 +2,7 @@ import { ReactNode, useMemo, useState } from 'react';
 
 export interface globalModalMethodsIF {
     isOpen: boolean;
-    open: (content: ReactNode, title?: string) => void;
+    open: (content: ReactNode, title?: string, bd?: string) => void;
     close: () => void;
     currentContent: ReactNode;
     title: string;
@@ -27,6 +27,7 @@ export const useGlobalModal = (initialMode = false) => {
             setTitle(title);
         }
     };
+
     const close = () => {
         setCurrentContent('');
         setTitle('');

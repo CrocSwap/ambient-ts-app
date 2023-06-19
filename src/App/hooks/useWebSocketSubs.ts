@@ -1,14 +1,13 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import useWebSocket from 'react-use-websocket';
+import { OVERRIDE_CANDLE_POOL_ID } from '../../constants';
 import { mktDataChainId } from '../../utils/data/chains';
 import { diffHashSig } from '../../utils/functions/diffHashSig';
 import isJsonString from '../../utils/functions/isJsonString';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-} from '../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
+import { CandleData } from '../functions/fetchCandleSeries';
 
 export interface WebSockerPropsIF {
     crocEnv?: CrocEnv;
@@ -41,7 +40,9 @@ export default function useWebSocketSubs(props: WebSockerPropsIF) {
             new URLSearchParams({
                 base: props.mainnetBaseTokenAddress.toLowerCase(),
                 quote: props.mainnetQuoteTokenAddress.toLowerCase(),
-                poolIdx: props.chainData.poolIndex.toString(),
+                poolIdx: (
+                    OVERRIDE_CANDLE_POOL_ID || props.chainData.poolIndex
+                ).toString(),
                 period: props.candleTimeLocal.toString(),
                 chainId: mktDataChainId(props.chainData.chainId),
                 dex: 'all',

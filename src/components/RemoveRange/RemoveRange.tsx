@@ -6,7 +6,7 @@ import RemoveRangeButton from './RemoveRangeButton/RemoveRangeButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import {
     ambientPosSlot,
     concPosSlot,
@@ -43,6 +43,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
     baseTokenAddress: string;
@@ -69,6 +70,12 @@ export default function RemoveRange(props: propsIF) {
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
@@ -197,6 +204,10 @@ export default function RemoveRange(props: propsIF) {
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
                             setPosLiqBaseDecimalCorrected(
                                 position.positionLiqBaseDecimalCorrected,
@@ -327,9 +338,9 @@ export default function RemoveRange(props: propsIF) {
                 }
             }
         } else if (position.positionType === 'concentrated') {
-            const positionLiq = position.positionLiq;
+            const positionLiq = currentLiquidity;
 
-            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+            const liquidityToBurn = BigNumber.from(positionLiq)
                 .mul(removalPercentage)
                 .div(100);
             IS_LOCAL_ENV &&

@@ -7,9 +7,7 @@ import {
     Link,
     NavLink,
     useNavigate,
-    useLocation,
 } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -19,11 +17,8 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { CandleData } from '../../utils/state/graphDataSlice';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
-import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -33,6 +28,9 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 // React functional component
 function Trade() {
@@ -47,6 +45,7 @@ function Trade() {
     const { tokens } = useContext(TokenContext);
     const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
+
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -62,19 +61,15 @@ function Trade() {
             name: 'Limit',
         },
         {
-            path: '/range',
+            path: '/pool',
             name: 'Pool',
         },
     ];
 
     const navigate = useNavigate();
-    const { pathname } = useLocation();
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
-
-    const isMarketOrLimitModule =
-        pathname.includes('market') || pathname.includes('limit');
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
@@ -233,57 +228,59 @@ function Trade() {
         setIsCandleSelected(false);
     }, []);
 
-    const activeCandleDuration = isMarketOrLimitModule
-        ? chartSettings.candleTime.market.time
-        : chartSettings.candleTime.range.time;
-
     useEffect(() => {
         unselectCandle();
     }, [
-        activeCandleDuration,
+        chartSettings.candleTime.global.time,
         tradeData.baseToken.name,
         tradeData.quoteToken.name,
     ]);
 
-    const initLinkPath =
-        '/initpool/' +
-        formSlugForPairParams(chainId, baseTokenAddress, quoteTokenAddress);
+    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const showPoolNotInitializedContent = isPoolInitialized === false;
 
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
-            <div className={styles.pool_not_initialialized_content}>
-                <div className={styles.close_init} onClick={() => navigate(-1)}>
-                    <VscClose size={25} />
+            <div className={styles.pool_init_bg}>
+                <div className={styles.pool_not_initialialized_content}>
+                    <div
+                        className={styles.close_init}
+                        onClick={() => navigate(-1)}
+                    >
+                        <VscClose size={28} />
+                    </div>
+                    <div className={styles.pool_not_init_inner}>
+                        <h2>This pool has not been initialized.</h2>
+                        <h3>Do you want to initialize it?</h3>
+                        <Link
+                            to={linkGenInitPool.getFullURL({
+                                chain: chainId,
+                                tokenA: baseTokenAddress,
+                                tokenB: quoteTokenAddress,
+                            })}
+                            className={styles.initialize_link}
+                        >
+                            Initialize Pool
+                            <TokenIcon
+                                src={baseTokenLogo}
+                                alt={baseTokenSymbol}
+                                size='m'
+                            />
+                            <TokenIcon
+                                src={quoteTokenLogo}
+                                alt={quoteTokenSymbol}
+                                size='m'
+                            />
+                        </Link>
+                        <button
+                            className={styles.no_thanks}
+                            onClick={() => navigate(-1)}
+                        >
+                            No, take me back.
+                        </button>
+                    </div>
                 </div>
-                <h2>This pool has not been initialized.</h2>
-                <h3>Do you want to initialize it?</h3>
-                <Link to={initLinkPath} className={styles.initialize_link}>
-                    Initialize Pool
-                    {baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
-                    {quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol?.charAt(0)}
-                            width='20px'
-                        />
-                    )}
-                </Link>
-                <button
-                    className={styles.no_thanks}
-                    onClick={() => navigate(-1)}
-                >
-                    No, take me back.
-                </button>
             </div>
         </div>
     ) : null;
@@ -307,9 +304,8 @@ function Trade() {
         unselectCandle: unselectCandle,
         isCandleArrived: isCandleArrived,
         setIsCandleDataArrived: setIsCandleDataArrived,
-        candleTime: isMarketOrLimitModule
-            ? chartSettings.candleTime.market
-            : chartSettings.candleTime.range,
+        candleTime: chartSettings.candleTime.global,
+        tokens,
         showActiveMobileComponent: showActiveMobileComponent,
     };
 
@@ -317,7 +313,7 @@ function Trade() {
         <section
             className={styles.main_layout_mobile}
             style={{
-                height: 'calc(100vh - 8rem)',
+                height: 'calc(100vh - 56px)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
@@ -338,7 +334,7 @@ function Trade() {
             {activeMobileComponent === 'transactions' && (
                 <div
                     className={styles.full_table_height}
-                    style={{ marginLeft: '2rem' }}
+                    style={{ marginLeft: '2rem', flex: 1 }}
                 >
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
@@ -375,24 +371,7 @@ function Trade() {
                         )}
                     </div>
                 </div>
-
-                <motion.div
-                    className={
-                        expandTradeTable
-                            ? styles.full_table_height
-                            : styles.min_table_height
-                    }
-                >
-                    <div
-                        className={
-                            activeMobileComponent !== 'transactions'
-                                ? styles.hide
-                                : ''
-                        }
-                    >
-                        <TradeTabs2 {...tradeTabsProps} />
-                    </div>
-                </motion.div>
+                <TradeTabs2 {...tradeTabsProps} />
             </div>
             {mainContent}
         </section>
