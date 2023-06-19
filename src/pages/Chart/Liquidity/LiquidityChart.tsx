@@ -33,6 +33,8 @@ interface liquidityPropsIF {
         | undefined;
     mouseLeaveEvent: MouseEvent<HTMLDivElement> | undefined;
     isActiveDragOrZoom: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mainCanvasBoundingClientRect: any;
 }
 
 type nearestLiquidity = {
@@ -88,6 +90,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqTooltip,
         mouseLeaveEvent,
         isActiveDragOrZoom,
+        mainCanvasBoundingClientRect,
     } = props;
 
     const currentPoolPriceTick =
@@ -544,7 +547,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .node() as HTMLCanvasElement;
 
         const rect = canvas.getBoundingClientRect();
-        const leftSpaceRelativeToMainCanvas = rect.left - canvas.width * 4;
+        const leftSpaceRelativeToMainCanvas = mainCanvasBoundingClientRect.left;
         const offsetY = event.clientY - rect.top;
         const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
 
@@ -604,7 +607,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .node() as HTMLCanvasElement;
 
         const rect = canvas.getBoundingClientRect();
-        const leftSpaceRelativeToMainCanvas = rect.left - canvas.width * 4;
+        const leftSpaceRelativeToMainCanvas = mainCanvasBoundingClientRect.left;
         const offsetY = event.clientY - rect.top;
         const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
 
@@ -688,7 +691,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             liqDataHover(liqDataHoverEvent);
             renderCanvasArray([d3CanvasLiqHover]);
         }
-    }, [liqDataHoverEvent]);
+    }, [liqDataHoverEvent, mainCanvasBoundingClientRect]);
 
     useEffect(() => {
         if (liquidityMouseMoveActive !== 'none') {

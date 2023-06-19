@@ -364,6 +364,8 @@ export default function Chart(props: propsIF) {
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
     const [bandwidth, setBandwidth] = useState(5);
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
+    const [mainCanvasBoundingClientRect, setMainCanvasBoundingClientRect] =
+        useState<any>();
 
     const [
         isOnCandleOrVolumeMouseLocation,
@@ -3508,6 +3510,8 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3CanvasMain.current) as any;
 
             const resizeObserver = new ResizeObserver(() => {
+                const canvas = canvasDiv.select('canvas').node() as any;
+                setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
                 render();
             });
 
@@ -4283,6 +4287,9 @@ export default function Chart(props: propsIF) {
                                 liqTooltip={liqTooltip}
                                 mouseLeaveEvent={mouseLeaveEvent}
                                 isActiveDragOrZoom={isChartZoom || isLineDrag}
+                                mainCanvasBoundingClientRect={
+                                    mainCanvasBoundingClientRect
+                                }
                             />
                         )}
                         <d3fc-canvas
