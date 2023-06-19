@@ -1,3 +1,13 @@
+.container {
+    height: 100%;
+    
+    display: flex;
+    flex-direction: column;
+
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .header {
     width: 100%;
     display: grid;
@@ -12,6 +22,22 @@
     border-bottom: 1px solid var(--dark2);
 }
 
+.view_more {
+    display: flex;
+    justify-content: center;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--accent4);
+    cursor: pointer;
+
+    white-space: nowrap;
+    overflow: hidden;
+}
+.view_more:hover {
+    color: var(--accent1);
+    transition: all var(--animation-speed) ease-in-out;
+}
+
 .header div {
     display: flex;
 
@@ -20,31 +46,14 @@
 }
 
 .content {
-    /* background-color: yellow; */
-
-    /* background-color: var(--dark2); */
     background-repeat: no-repeat;
     background-attachment: local, local, scroll, scroll;
     background-size: 100% 81px, 100% 81px, 100% 27px, 100% 27px;
 
-    height: 100px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     transition: all var(--animation-speed)
         cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.view_more {
-    display: flex;
-    justify-content: center;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--accent4);
-    cursor: pointer;
-}
-.view_more:hover {
-    color: var(--accent1);
-    transition: all var(--animation-speed) ease-in-out;
 }
 
 .content::-webkit-scrollbar {
