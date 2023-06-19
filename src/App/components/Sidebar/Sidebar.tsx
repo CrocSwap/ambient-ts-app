@@ -1,15 +1,7 @@
 // START: Import React and Dongles
-import {
-    MouseEvent,
-    SetStateAction,
-    Dispatch,
-    useState,
-    useEffect,
-    useRef,
-} from 'react';
+import { useState, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
-import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -28,112 +20,53 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
-import {
-    LimitOrderIF,
-    PositionIF,
-    TokenIF,
-    TokenPairIF,
-    TempPoolIF,
-    TransactionIF,
-} from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { memoizePoolStats } from '../../functions/getPoolStats';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
+import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch } from './useSidebarSearch';
-import { recentPoolsMethodsIF } from '../../hooks/useRecentPools';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { favePoolsMethodsIF } from '../../hooks/useFavePools';
-import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
-import { topPoolsMethodsIF } from '../../hooks/useTopPools';
+import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { usePoolList } from '../../hooks/usePoolList';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
-const cachedPoolStatsFetch = memoizePoolStats();
-
-// interface for component props
-interface propsIF {
-    tradeData: tradeData;
-    isDenomBase: boolean;
-    showSidebar: boolean;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
-    toggleSidebar: (
-        event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>,
-    ) => void;
-    chainId: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    analyticsSearchInput: string;
-    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
-    lastBlockNumber: number;
-    favePools: favePoolsMethodsIF;
-    selectedOutsideTab: number;
-    outsideControl: boolean;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    poolList: TempPoolIF[];
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    tokenPair: TokenPairIF;
-    recentPools: recentPoolsMethodsIF;
-    isConnected: boolean;
-    positionsByUser: PositionIF[];
-    txsByUser: TransactionIF[];
-    limitsByUser: LimitOrderIF[];
-    ackTokens: ackTokensMethodsIF;
-    topPools: topPoolsMethodsIF;
-}
-
-export default function Sidebar(props: propsIF) {
+function Sidebar() {
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        useContext(CachedDataContext);
     const {
-        tradeData,
-        isDenomBase,
-        toggleSidebar,
-        showSidebar,
-        chainId,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        setCurrentPositionActive,
-        isShowAllEnabled,
-        setIsShowAllEnabled,
-        expandTradeTable,
-        setExpandTradeTable,
-        tokenMap,
-        lastBlockNumber,
-        favePools,
-        setShowSidebar,
-        setAnalyticsSearchInput,
-        openModalWallet,
-        poolList,
-        verifyToken,
-        getTokenByAddress,
-        tokenPair,
-        recentPools,
-        isConnected,
-        positionsByUser,
-        setOutsideControl,
-        setSelectedOutsideTab,
-        txsByUser,
-        limitsByUser,
-        ackTokens,
-        topPools
-    } = props;
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+    const { sidebar } = useContext(SidebarContext);
 
     const location = useLocation();
 
+    const graphData = useAppSelector((state) => state.graphData);
+
+    const poolList = usePoolList(chainId, poolIndex);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+
+    const filterFn = <T extends { chainId: string }>(x: T) =>
+        x.chainId === chainId;
+
+    const positionsByUser =
+        graphData.positionsByUser.positions.filter(filterFn);
+    const txsByUser = graphData.changesByUser.changes.filter(filterFn);
+    const limitsByUser =
+        graphData.limitOrdersByUser.limitOrders.filter(filterFn);
+
     const mostRecentTxs = txsByUser.slice(0, 4);
-    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser
+        .filter((p) => p.positionLiq > 0)
+        .slice(0, 4);
     const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPoolsData = [
@@ -143,11 +76,8 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <RecentPools
-                    tradeData={tradeData}
-                    chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    recentPools={recentPools}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                 />
             ),
         },
@@ -159,12 +89,8 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <TopPools
-                    tradeData={tradeData}
-                    chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    poolList={poolList}
-                    topPools={topPools}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                 />
             ),
         },
@@ -174,19 +100,7 @@ export default function Sidebar(props: propsIF) {
         {
             name: 'Range Positions',
             icon: rangePositionsImage,
-            data: (
-                <SidebarRangePositions
-                    chainId={chainId}
-                    userPositions={mostRecentPositions}
-                    isDenomBase={isDenomBase}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    setShowSidebar={setShowSidebar}
-                    isUserLoggedIn={isConnected}
-                />
-            ),
+            data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
     ];
 
@@ -195,23 +109,7 @@ export default function Sidebar(props: propsIF) {
             name: 'Limit Orders',
             icon: openOrdersImage,
             data: (
-                <SidebarLimitOrders
-                    isDenomBase={isDenomBase}
-                    tokenMap={tokenMap}
-                    chainId={chainId}
-                    limitOrderByUser={mostRecentLimitOrders}
-                    selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    outsideControl={props.outsideControl}
-                    setOutsideControl={setOutsideControl}
-                    isShowAllEnabled={isShowAllEnabled}
-                    setCurrentPositionActive={setCurrentPositionActive}
-                    setIsShowAllEnabled={props.setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
-                    isUserLoggedIn={isConnected}
-                    setShowSidebar={setShowSidebar}
-                />
+                <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
         },
     ];
@@ -223,10 +121,8 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <FavoritePools
-                    favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    lastBlockNumber={lastBlockNumber}
-                    chainId={chainId}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
                 />
             ),
         },
@@ -236,57 +132,30 @@ export default function Sidebar(props: propsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
-
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
-                    coinGeckoTokenMap={tokenMap}
-                    currentTxActiveInTransactions={
-                        currentTxActiveInTransactions
-                    }
-                    setCurrentTxActiveInTransactions={
-                        setCurrentTxActiveInTransactions
-                    }
-                    chainId={chainId}
-                    isShowAllEnabled={isShowAllEnabled}
-                    setIsShowAllEnabled={setIsShowAllEnabled}
-                    expandTradeTable={expandTradeTable}
-                    setExpandTradeTable={setExpandTradeTable}
-                    selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
-                    outsideControl={props.outsideControl}
-                    isUserLoggedIn={isConnected}
-                    setShowSidebar={setShowSidebar}
                 />
             ),
         },
     ];
 
-    const [
-        setRawInput,
-        isInputValid,
-        searchedPools,
-        searchedPositions,
-        searchedTxs,
-        searchedLimitOrders,
-    ] = useSidebarSearch(
+    const searchData: sidebarSearchIF = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
-        verifyToken,
-        ackTokens,
+        tokens,
     );
 
-    const [searchInput, setSearchInput] = useState<string[][]>();
+    const [searchInput, setSearchInput] = useState<string>('');
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
-        setSearchInput([]);
+        setSearchInput('');
         setSearchMode(false);
         const currentInput = document.getElementById(
             'search_input',
@@ -314,7 +183,10 @@ export default function Sidebar(props: propsIF) {
     };
     const AnalyticsSearchContainer = (
         <div className={styles.search_container}>
-            <div className={styles.search__icon} onClick={toggleSidebar}>
+            <div
+                className={styles.search__icon}
+                onClick={() => sidebar.toggle()}
+            >
                 <BiSearch size={18} color='#CDC1FF' />
             </div>
             <input
@@ -324,7 +196,7 @@ export default function Sidebar(props: propsIF) {
                 className={styles.search__box}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {searchInput !== undefined && (
+            {!searchInput && (
                 <div
                     onClick={handleInputClearAnalytics}
                     className={styles.close_icon}
@@ -336,31 +208,30 @@ export default function Sidebar(props: propsIF) {
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
 
-    const inputContent = document.getElementById(
-        'search_input',
-    ) as HTMLInputElement;
-
-    // TODO (#1516): we consider introducing a maximum length for searchable text
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
-        setRawInput(e.target.value);
+        searchData.setInput(e.target.value);
+        setSearchInput(e.target.value);
     };
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
                 id='search_input'
                 ref={searchInputRef}
-                placeholder='Search anything...'
+                placeholder='Search...'
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
                 autoFocus
             />
-            {inputContent?.value && (
+            {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
                     <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
@@ -371,233 +242,194 @@ export default function Sidebar(props: propsIF) {
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
-    const openAllButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                if (!showSidebar) {
-                    setShowSidebar(true);
-                }
-                setOpenAllDefault(true);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {!showSidebar || !openAllDefault ? 'Expand All' : 'Collapse All'}
-        </button>
-    );
+    const getInitialSidebarLockedStatus = () =>
+        sidebar.getStoredStatus() === 'open';
+    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
 
-    const collapseButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                setOpenAllDefault(false);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {'Collapse All'}
-        </button>
-    );
+    const toggleLockSidebar = () => {
+        sidebar.open(!isLocked);
+        isLocked && sidebar.resetStoredStatus();
+        setIsLocked(!isLocked);
+    };
+
+    const toggleExpandCollapseAll = () => {
+        setIsDefaultOverridden(true);
+        setOpenAllDefault(!openAllDefault);
+    };
+
+    const controlIconStyle = { margin: 'auto' };
 
     const searchContainerDisplay = (
         <div
-            className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}
+            className={` ${styles.sidebar_link_search} ${
+                styles.main_search_container
+            } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
             {location.pathname.includes('analytics')
                 ? AnalyticsSearchContainer
                 : searchContainer}
-            {showSidebar ? (
-                <DefaultTooltip
-                    interactive
-                    title={!openAllDefault ? openAllButton : collapseButton}
-                    // placement={'bottom'}
-                    placement={showSidebar ? 'right' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
+            {sidebar.isOpen ? (
+                <div style={{ cursor: 'pointer', display: 'flex' }}>
+                    <DefaultTooltip
+                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                    >
+                        {isLocked ? (
+                            <AiFillLock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        ) : (
+                            <AiFillUnlock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
+                    >
+                        {openAllDefault ? (
+                            <BsChevronContract
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        ) : (
+                            <BsChevronExpand
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={
+                            isLocked
+                                ? 'Sidebar locked'
+                                : sidebar.isOpen
+                                ? 'Close Sidebar'
+                                : 'Open Sidebar'
+                        }
+                    >
+                        <input
+                            type='image'
                             src={closeSidebarImage}
                             alt='close sidebar'
-                            onClick={toggleSidebar}
+                            onClick={() => sidebar.close(true)}
+                            disabled={isLocked}
+                            style={{ opacity: isLocked ? 0.5 : 1 }}
                         />
-                    </div>
-                </DefaultTooltip>
+                    </DefaultTooltip>
+                </div>
             ) : (
-                <DefaultTooltip
-                    interactive
-                    title={openAllButton}
-                    // placement={'bottom'}
-                    placement={showSidebar ? 'bottom' : 'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', rotate: '180deg' }}>
-                        <img
-                            src={closeSidebarImage}
-                            alt='open sidebar'
-                            onClick={toggleSidebar}
-                        />
-                    </div>
-                </DefaultTooltip>
+                <BiSearch
+                    size={20}
+                    color='#CDC1FF'
+                    onClick={() => sidebar.open(true)}
+                />
             )}
         </div>
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1700px)');
+    const sidebarStyle = sidebar.isOpen
+        ? styles.sidebar_active
+        : styles.sidebar;
 
-    useEffect(() => {
-        if (overflowSidebarMQ) {
-            setShowSidebar(false);
-        } else setShowSidebar(true);
-    }, [overflowSidebarMQ]);
-
-    function handleSidebarClickOutside() {
-        if (!overflowSidebarMQ) return;
-
-        setShowSidebar(false);
-    }
-
-    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
-
-    const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
-
-    const topElementsDisplay = (
-        <div style={{ width: '100%' }}>
+    const regularSidebarDisplay = (
+        <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
-                    showSidebar={showSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
-                    toggleSidebar={toggleSidebar}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
             {recentPoolsData.map((item, idx) => (
                 <SidebarAccordion
-                    showSidebar={showSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
-                    toggleSidebar={toggleSidebar}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
-    );
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}>
+            <div style={{ margin: 'auto' }} />
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
+                    sidebar={sidebar}
                     shouldDisplayContentWhenUserNotLoggedIn={false}
-                    showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                    setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
         </div>
     );
 
-    const regularSidebarDisplay = (
-        <>
-            {topElementsDisplay}
-            {bottomElementsDisplay}
-        </>
-    );
-
     return (
-        <div ref={sidebarRef}>
-            <nav className={`${styles.sidebar} ${sidebarStyle}`}>
-                <ul className={styles.sidebar_nav}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
+            <nav
+                className={`${styles.sidebar} ${sidebarStyle}`}
+                onClick={() => {
+                    sidebar.isOpen || sidebar.open(true);
+                }}
+                style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
+            >
+                <div className={styles.sidebar_nav}>
                     {searchContainerDisplay}
-                    {isInputValid && showSidebar && searchMode ? (
+                    {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
-                            searchedPools={searchedPools}
-                            getTokenByAddress={getTokenByAddress}
-                            tokenPair={tokenPair}
-                            isDenomBase={isDenomBase}
-                            chainId={chainId}
-                            isConnected={isConnected}
+                            searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            searchedPositions={searchedPositions}
-                            setOutsideControl={setOutsideControl}
-                            setSelectedOutsideTab={setSelectedOutsideTab}
-                            setCurrentPositionActive={setCurrentPositionActive}
-                            setCurrentTxActiveInTransactions={
-                                setCurrentTxActiveInTransactions
-                            }
-                            setIsShowAllEnabled={setIsShowAllEnabled}
-                            searchedTxs={searchedTxs}
-                            searchedLimitOrders={searchedLimitOrders}
-                            ackTokens={ackTokens}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ) : (
                         regularSidebarDisplay
                     )}
-                </ul>
+                </div>
             </nav>
         </div>
     );
 }
+
+export default memo(Sidebar);

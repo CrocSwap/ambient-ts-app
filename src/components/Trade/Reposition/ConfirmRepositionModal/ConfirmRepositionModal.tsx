@@ -1,59 +1,44 @@
 import styles from './ConfirmRepositionModal.module.css';
 import Button from '../../../Global/Button/Button';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
-    onClose: () => void;
-    crocEnv: CrocEnv | undefined;
     position: PositionIF;
     newRepositionTransactionHash: string;
-    tokenPair: TokenPairIF;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
-    rangeWidthPercentage: number;
-    currentPoolPriceTick: number;
-    currentPoolPriceDisplay: string;
     onSend: () => void;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     txErrorCode: string;
-    txErrorMessage: string;
     minPriceDisplay: string;
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
     currentQuoteQtyDisplayTruncated: string;
+    isAmbient: boolean;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    poolPriceDisplayNum: number;
     newBaseQtyDisplay: string;
     newQuoteQtyDisplay: string;
-    isDenomBase: boolean;
     isTokenABase: boolean;
     isPositionInRange: boolean;
-    bypassConfirm: allSkipConfirmMethodsIF;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
     const {
-        tokenPair,
-        poolPriceDisplayNum,
+        isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
@@ -64,19 +49,24 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newRepositionTransactionHash,
         resetConfirmation,
         txErrorCode,
-        minPriceDisplay,
-        maxPriceDisplay,
         currentBaseQtyDisplayTruncated,
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
         newQuoteQtyDisplay,
-        isDenomBase,
         isTokenABase,
         isPositionInRange,
-        bypassConfirm,
     } = props;
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
-    const { dataTokenA, dataTokenB } = tokenPair;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+
+    const baseToken = isTokenABase ? tokenA : tokenB;
+    const quoteToken = isTokenABase ? tokenB : tokenA;
 
     const txApproved = newRepositionTransactionHash !== '';
     const isTxDenied: boolean = txErrorCode === 'ACTION_REJECTED';
@@ -86,10 +76,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
     const txSubmitted = (
         <TransactionSubmitted
             hash={newRepositionTransactionHash}
-            tokenBSymbol={dataTokenB.symbol}
-            tokenBAddress={dataTokenB.address}
-            tokenBDecimals={dataTokenB.decimals}
-            tokenBImage={dataTokenB.logoURI}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+            chainId={tokenB.chainId}
+            reposition
         />
     );
 
@@ -119,36 +111,24 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        <span>Current {dataTokenA.symbol} Collateral</span>
+                        <TokenIcon
+                            src={baseToken.logoURI}
+                            alt={baseToken.name}
+                            size='m'
+                        />
+                        <span>Current {baseToken.symbol} Collateral</span>
                     </div>
                     <span>{currentBaseQtyDisplayTruncated}</span>
                 </div>
 
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        <span> {dataTokenA.symbol} After Reposition</span>
+                        <TokenIcon
+                            src={baseToken.logoURI}
+                            alt={baseToken.name}
+                            size='m'
+                        />
+                        <span> {baseToken.symbol} After Reposition</span>
                     </div>
                     <span>{newBaseQtyDisplay}</span>
                 </div>
@@ -156,35 +136,23 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        <span>Current {dataTokenB.symbol} Collateral</span>
+                        <TokenIcon
+                            src={quoteToken.logoURI}
+                            alt={quoteToken.name}
+                            size='m'
+                        />
+                        <span>Current {quoteToken.symbol} Collateral</span>
                     </div>
                     <span>{currentQuoteQtyDisplayTruncated}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
-                                width='20px'
-                            />
-                        )}
-                        <span>{dataTokenB.symbol} After Reposition</span>
+                        <TokenIcon
+                            src={quoteToken.logoURI}
+                            alt={quoteToken.name}
+                            size='m'
+                        />
+                        <span>{quoteToken.symbol} After Reposition</span>
                     </div>
                     <span>{newQuoteQtyDisplay}</span>
                 </div>
@@ -202,31 +170,19 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={tokenA.logoURI}
+                            alt={tokenA.name}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            src={tokenA.logoURI}
+                            alt={tokenA.name}
+                            size='2xl'
+                        />
                     </div>
                     <span className={styles.token_symbol}>
-                        {dataTokenA.symbol}/{dataTokenB.symbol}
+                        {tokenA.symbol}/{tokenB.symbol}
                     </span>
                 </div>
                 <RangeStatus
@@ -236,27 +192,24 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 />
             </section>
             {tokenAmountDisplay}
-            <SelectedRange
-                minPriceDisplay={minPriceDisplay}
-                maxPriceDisplay={maxPriceDisplay}
-                poolPriceDisplayNum={poolPriceDisplayNum}
-                tokenPair={tokenPair}
-                denominationsInBase={isDenomBase}
-                isTokenABase={isTokenABase}
-                isAmbient={false}
-                pinnedMinPriceDisplayTruncatedInBase={
-                    pinnedMinPriceDisplayTruncatedInBase
-                }
-                pinnedMinPriceDisplayTruncatedInQuote={
-                    pinnedMinPriceDisplayTruncatedInQuote
-                }
-                pinnedMaxPriceDisplayTruncatedInBase={
-                    pinnedMaxPriceDisplayTruncatedInBase
-                }
-                pinnedMaxPriceDisplayTruncatedInQuote={
-                    pinnedMaxPriceDisplayTruncatedInQuote
-                }
-            />
+            {isAmbient || (
+                <SelectedRange
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                />
+            )}
             <ConfirmationModalControl
                 tempBypassConfirm={currentSkipConfirm}
                 setTempBypassConfirm={setCurrentSkipConfirm}
@@ -280,10 +233,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             // if user enables bypass, update all settings in parallel
                             // otherwise do not not make any change to persisted preferences
                             if (currentSkipConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             setShowConfirmation(false);
                             onSend();

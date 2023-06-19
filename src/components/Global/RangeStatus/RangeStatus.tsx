@@ -1,18 +1,19 @@
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import styles from './RangeStatus.module.css';
 
-interface RangeStatusProps {
+interface propsIF {
     isInRange: boolean;
     isAmbient: boolean;
     isEmpty: boolean;
     fullText?: boolean;
     justSymbol?: boolean;
+    size?: 's' | 'l';
 }
 
-export default function RangeStatus(props: RangeStatusProps) {
-    const { isInRange, isAmbient, fullText, isEmpty } = props;
+export default function RangeStatus(props: propsIF) {
+    const { isInRange, isAmbient, fullText, isEmpty, size = 'l' } = props;
 
-    const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Rng';
+    const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Range';
 
     const ambientWithTooltip = (
         <DefaultTooltip
@@ -23,7 +24,11 @@ export default function RangeStatus(props: RangeStatusProps) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <div className={styles.range_text_ambient} />
+            <div
+                className={`${styles.range_text_ambient} ${
+                    size === 's' ? styles.small : styles.large
+                }`}
+            />
         </DefaultTooltip>
     );
     const emptyWithTooltip = (
@@ -35,7 +40,11 @@ export default function RangeStatus(props: RangeStatusProps) {
             enterDelay={400}
             leaveDelay={200}
         >
-            <div className={styles.non_filled} />
+            <div
+                className={`${styles.non_filled} ${
+                    size === 's' ? styles.small : styles.large
+                }`}
+            />
         </DefaultTooltip>
     );
     const rangeWithTooltip = (
@@ -48,11 +57,12 @@ export default function RangeStatus(props: RangeStatusProps) {
             leaveDelay={200}
         >
             <span
-                className={
+                className={`${
                     isInRange
                         ? styles.range_text_positive
                         : styles.range_text_negative
                 }
+                        ${size === 's' ? styles.small : styles.large}`}
             />
         </DefaultTooltip>
     );

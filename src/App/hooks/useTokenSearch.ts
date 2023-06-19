@@ -1,19 +1,16 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
+import { tokenMethodsIF } from './useTokens';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { ZERO_ADDRESS } from '../../constants';
+import { USDC } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
-    verifyToken: (addr: string, chn: string) => boolean,
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[],
-    defaultTokens: TokenIF[],
+    tokens: tokenMethodsIF,
     walletTokens: TokenIF[],
-    recentTokens: TokenIF[],
+    getRecentTokens: () => TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
@@ -75,105 +72,26 @@ export const useTokenSearch = (
     useEffect(() => {
         // fn to run a token search by contract address
         function searchAsAddress(): TokenIF[] {
-            // declare an output variable
-            // fn will never return null, this is used for gatekeeping the return
-            let foundToken: TokenIF | null = null;
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
-            const tokenExistsOnList = verifyToken(validatedInput, chainId);
-            // if token exists in an imported list, send it to the output value
-            if (tokenExistsOnList) {
-                // get the token for the given address and chain
-                // value can be technically be undefined but gatekeeping prevents that
-                foundToken = getTokenByAddress(
-                    validatedInput,
-                    chainId,
-                ) as TokenIF;
-                // if token is not on an imported list, check tokens in user data
-                // if token is not on an imported list, check tokens in user data
-            } else if (!tokenExistsOnList) {
-                // retrieve and parse user data object from local storage
-                // isolate tokens listed in user data
-                // return one that has an address matching user input on current chain
-                foundToken = JSON.parse(
-                    localStorage.getItem('user') as string,
-                ).tokens.find(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() ===
-                            validatedInput.toLowerCase() &&
-                        tkn.chainId === parseInt(chainId),
-                );
-                foundToken = JSON.parse(
-                    localStorage.getItem('user') as string,
-                ).tokens.find(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() ===
-                            validatedInput.toLowerCase() &&
-                        tkn.chainId === parseInt(chainId),
-                );
-            }
-            // return token in an array if found, or an empty array if not
-            return foundToken ? [foundToken] : [];
+            const tokenLookup: TokenIF | undefined =
+                tokens.getTokenByAddress(validatedInput);
+            return tokenLookup ? [tokenLookup] : [];
         }
 
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
-            const exactOnly = validatedInput.length === 2;
+            const exactOnly: boolean = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            const foundTokens = getTokensByName(
-                validatedInput,
-                chainId,
-                exactOnly,
-            );
-            // get array of tokens in local storage on user data object
-            // these are needed for tokens user previously imported but not on lists
-            JSON.parse(localStorage.getItem('user') as string)
-                .tokens // iterate over array of tokens on user data object
-                .forEach((tkn: TokenIF) => {
-                    // this logic runs when matches need NOT be exact
-                    // if the token name or symbol INCLUDES validated input and was not
-                    // ... already found on an imported list, add it to the search results
-                    if (
-                        !exactOnly &&
-                        (tkn.name
-                            .toLowerCase()
-                            .includes(validatedInput.toLowerCase()) ||
-                            tkn.symbol
-                                .toLowerCase()
-                                .includes(validatedInput.toLowerCase())) &&
-                        tkn.chainId === parseInt(chainId) &&
-                        !foundTokens
-                            .map((tok: TokenIF) => tok.address.toLowerCase())
-                            .includes(tkn.address.toLowerCase())
-                    ) {
-                        foundTokens.push(tkn);
-                        // this logic runs when matches MUST be exact
-                        // if the token name or symbol EQUALS validated input and was not
-                        // ... already found on an imported list, add it to the search results
-                    } else if (
-                        exactOnly &&
-                        (tkn.name.toLowerCase() ===
-                            validatedInput.toLowerCase() ||
-                            tkn.symbol.toLowerCase() ===
-                                validatedInput.toLowerCase()) &&
-                        tkn.chainId === parseInt(chainId) &&
-                        !foundTokens
-                            .map((tok: TokenIF) => tok.address.toLowerCase())
-                            .includes(tkn.address.toLowerCase())
-                    ) {
-                        foundTokens.push(tkn);
-                    }
-                });
-            // return accumulated array of matched tokens
-            return foundTokens;
+            return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = defaultTokens;
+            const outputTokens: TokenIF[] = tokens.defaultTokens;
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
@@ -193,10 +111,7 @@ export const useTokenSearch = (
                     );
                     // check if token is recognized from a list (if necessary)
                     const isTokenKnown = verificationNeeded
-                        ? verifyToken(
-                              newTokens[i].address,
-                              '0x' + newTokens[i].chainId.toString(16),
-                          )
+                        ? tokens.verifyToken(newTokens[i].address)
                         : true;
                     // add token to output if not already there and limiter is below max
                     if (!isInArray && isTokenKnown && limiter < maxToAdd) {
@@ -210,7 +125,7 @@ export const useTokenSearch = (
             // add tokens from recent txs to output array
             addTokensToOutput(recentTxTokens ?? [], false, 2);
             // add recent tokens to output array
-            addTokensToOutput(recentTokens, false, 2);
+            addTokensToOutput(getRecentTokens(), false, 2);
             // remove off-chain tokens from output array
             const ouputTokensOnChain = outputTokens.filter(
                 (tk: TokenIF) => tk.chainId === parseInt(chainId),
@@ -219,29 +134,95 @@ export const useTokenSearch = (
         }
 
         // declare an output variable
-        let tokens: TokenIF[];
+        let foundTokens: TokenIF[];
         // logic router to assign search results to output based on input type
         switch (searchAs) {
             case 'address':
-                tokens = searchAsAddress();
+                foundTokens = searchAsAddress();
                 break;
             case 'nameOrSymbol':
-                tokens = searchAsNameOrSymbol();
+                foundTokens = searchAsNameOrSymbol();
                 break;
             default:
-                tokens = noSearch();
+                foundTokens = noSearch();
         }
+        // sort to list tokens higher which are recognized by more authorities
+        // keep tokens listed by Ambient at the top
+        const sortedTokens: TokenIF[] = foundTokens
+            .sort((a: TokenIF, b: TokenIF) => {
+                // output value
+                let rank: number;
+                // decision tree to determine sort order
+                // sort ambient-listed token higher if only one is listed by us
+                // otherwise sort by number of lists featuring the token overall
+                if (isOnAmbientList(a) && isOnAmbientList(b)) {
+                    rank = comparePopularity();
+                } else if (isOnAmbientList(a)) {
+                    rank = -1;
+                } else if (isOnAmbientList(b)) {
+                    rank = 1;
+                } else {
+                    rank = comparePopularity();
+                }
+                // fn to determine if a given token is on the ambient list
+                function isOnAmbientList(t: TokenIF): boolean {
+                    return !!t.listedBy?.includes(tokenListURIs.ambient);
+                }
+                // fn to determine which of the two tokens is more popular
+                function comparePopularity(): number {
+                    const getPopularity = (tkn: TokenIF): number =>
+                        tkn.listedBy?.length ?? 1;
+                    return getPopularity(b) - getPopularity(a);
+                }
+                // return the output variable
+                return rank;
+            })
+            // promote privileged tokens to the top of the list
+            .sort((a: TokenIF, b: TokenIF) => {
+                // fn to numerically prioritize a token (high = important)
+                const getPriority = (tkn: TokenIF): number => {
+                    // declare an output variable
+                    let priority: number;
+                    // canonical token addresses to assign probability
+                    const addresses = {
+                        nativeToken: ZERO_ADDRESS,
+                        USDC: USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase(),
+                    };
+                    // logic router to assign numerical priority to output
+                    // unlisted tokens get priority 0
+                    switch (tkn.address.toLowerCase()) {
+                        // native token
+                        case addresses.nativeToken:
+                            priority = 1000;
+                            break;
+                        // USDCoin (uses address for current chain)
+                        case addresses.USDC:
+                            priority = 900;
+                            break;
+                        // all non-privileged tokens
+                        default:
+                            priority = 0;
+                    }
+                    // return numerical priority of the token
+                    return priority;
+                };
+                // sort tokens by relative priority level
+                return getPriority(b) - getPriority(a);
+            });
+
         // send found tokens to local state hook
         // this will be the array of tokens returned by the hook
-        setOutputTokens(tokens);
-
+        const resultsLimiter = 8;
+        setOutputTokens(sortedTokens.slice(0, resultsLimiter));
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        defaultTokens.length,
+        tokens.defaultTokens,
         walletTokens.length,
-        recentTokens.length,
+        getRecentTokens().length,
         validatedInput,
     ]);
 

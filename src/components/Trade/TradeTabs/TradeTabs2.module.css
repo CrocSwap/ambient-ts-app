@@ -11,22 +11,21 @@
     align-items: center;
     gap: 4px;
     padding: 4px 0;
-    margin-left: -5px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .option_button {
-    background: var(--dark3);
+    background: var(--dark2);
     width: 40px;
     border: none;
     outline: none;
     display: flex;
     /* justify-content: center; */
     align-items: center;
-    /* border: 1px solid #242f3f; */
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    /* border: 1px solid var(--dark3); */
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
 
     height: 23px;
@@ -36,9 +35,21 @@
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .option_button:hover {
     opacity: 0.8;
+}
+
+.round_container {
+    border-radius: 4px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.flex_column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }

@@ -12,12 +12,11 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     /* padding: 20px; */
 }
 
 .animation_container {
-    min-height: 150px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -27,11 +26,17 @@
 }
 
 .animation_container h2 {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .animation_container p {
-    color: var(--text-grey-light);
+    color: var(--text2);
 
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.removal_pending_bypass button {
+    padding: 3px 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }

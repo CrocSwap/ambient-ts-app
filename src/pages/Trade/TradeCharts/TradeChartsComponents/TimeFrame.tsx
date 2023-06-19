@@ -1,5 +1,5 @@
 import styles from './TimeFrame.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
@@ -8,7 +8,7 @@ interface propsIF {
     candleTime: candleTimeIF;
 }
 
-export default function TimeFrame(props: propsIF) {
+function TimeFrame(props: propsIF) {
     const { candleTime } = props;
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
@@ -31,8 +31,10 @@ export default function TimeFrame(props: propsIF) {
             <button
                 className={styles.time_frame_mobile_button}
                 onClick={() => setShowTimeFrameDropdown(!showTimeFrameDropdown)}
+                tabIndex={0}
+                aria-label='Open time frame dropdown.'
             >
-                {candleTime.readableTime}
+                Candle Duration
             </button>
 
             <div className={wrapperStyle}>
@@ -48,6 +50,8 @@ export default function TimeFrame(props: propsIF) {
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
+                            tabIndex={0}
+                            aria-label={`Set time frame to ${option.readable}.`}
                         >
                             {option.readable}
                         </button>
@@ -70,6 +74,8 @@ export default function TimeFrame(props: propsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        tabIndex={0}
+                        aria-label={`Set time frame to ${option.readable}.`}
                     >
                         {option.readable}
                     </button>
@@ -78,3 +84,5 @@ export default function TimeFrame(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TimeFrame);

@@ -4,11 +4,9 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import useSocket from './Service/useSocket';
-import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
-import { TbTableExport } from 'react-icons/tb';
-import { useParams } from 'react-router-dom';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
+import useChatSocket from './Service/useChatSocket';
+import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -16,43 +14,28 @@ import { useAccount, useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
-import { favePoolsMethodsIF } from '../../App/hooks/useFavePools';
-import { topPoolsMethodsIF } from '../../App/hooks/useTopPools';
-
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitTick: number | undefined;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-}
+import NotFound from '../../pages/NotFound/NotFound';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface propsIF {
-    isChatOpen: boolean;
-    setIsChatOpen: Dispatch<SetStateAction<boolean>>;
-    onClose: () => void;
-    favePools: favePoolsMethodsIF;
-    currentPool: currentPoolInfo;
     isFullScreen: boolean;
-    fullScreen?: boolean;
-    userImageData: string[];
     appPage?: boolean;
-    username?: string | null;
-    topPools: topPoolsMethodsIF;
 }
 
-export default function ChatPanel(props: propsIF) {
-    const { isFullScreen, favePools, currentPool, setIsChatOpen, topPools } = props;
+function ChatPanel(props: propsIF) {
+    const { isFullScreen } = props;
+    const {
+        chat: {
+            isEnabled: isChatEnabled,
+            isOpen: isChatOpen,
+            setIsOpen: setIsChatOpen,
+        },
+        subscriptions: { isEnabled: isSubscriptionsEnabled },
+    } = useContext(AppStateContext);
+
+    const currentPool = useAppSelector((state) => state.tradeData);
+
+    if (!isChatEnabled) return <NotFound />;
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
@@ -61,7 +44,7 @@ export default function ChatPanel(props: propsIF) {
     const [moderator, setModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
-    const [userCurrentPool, setUserCurrentPool] = useState('ETH/USDC');
+    const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -74,21 +57,17 @@ export default function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
+        room,
+        isSubscriptionsEnabled,
+        isChatOpen,
+    );
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
-
-    const secondaryImageData = userData.secondaryImageData || '';
-
-    const { address: addressFromParams } = useParams();
-
-    const connectedAccountActive =
-        !addressFromParams ||
-        resolvedAddress?.toLowerCase() === address?.toLowerCase();
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
@@ -98,7 +77,7 @@ export default function ChatPanel(props: propsIF) {
     // eslint-disable-next-line
     function openChatPanel(e: any) {
         if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
-            setIsChatOpen(!props.isChatOpen);
+            setIsChatOpen(!isChatOpen);
         }
     }
 
@@ -189,51 +168,14 @@ export default function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, props.isChatOpen, isFullScreen, userCurrentPool]);
+    }, [ens, address, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
         getMsg();
-    }, [room]);
-
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            if (result?.status === 'OK') {
-                result.userData.isModerator === true
-                    ? setModerator(true)
-                    : setModerator(false);
-                setCurrentUser(result.userData._id);
-                setUserCurrentPool(result.userData.userCurrentPool);
-                if (result.userData.ensName !== ensName) {
-                    // eslint-disable-next-line
-                    updateUser(
-                        currentUser as string,
-                        ensName,
-                        userCurrentPool,
-                    ).then(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (result: any) => {
-                            if (result.status === 'OK') {
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                updateMessageUser(
-                                    currentUser as string,
-                                    ensName,
-                                ).then(
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    (result: any) => {
-                                        return result;
-                                    },
-                                );
-                            }
-                        },
-                    );
-                }
-            }
-        });
-    }, [userCurrentPool]);
+    }, [room, isChatOpen === false]);
 
     useEffect(() => {
         if (isMessageDeleted === true) {
@@ -246,10 +188,10 @@ export default function ChatPanel(props: propsIF) {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
         setNotification(0);
-    }, [props.isChatOpen]);
+    }, [isChatOpen]);
 
     function handleCloseChatPanel() {
-        props.setIsChatOpen(false);
+        setIsChatOpen(false);
     }
 
     const scrollToBottomButton = async () => {
@@ -299,27 +241,11 @@ export default function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
-            onClick={() => setIsChatOpen(!props.isChatOpen)}
+            onClick={() => setIsChatOpen(!isChatOpen)}
         >
             <h2 className={styles.chat_title}>Chat</h2>
             <section style={{ paddingRight: '10px' }}>
-                {isFullScreen || !props.isChatOpen ? (
-                    <></>
-                ) : (
-                    <TbTableExport
-                        size={18}
-                        className={styles.open_full_button}
-                        onClick={() =>
-                            window.open(
-                                '/chat/' + room.replace('/', '&').toLowerCase(),
-                            )
-                        }
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Open chat in full screen'
-                    />
-                )}
-                {isFullScreen || !props.isChatOpen ? (
+                {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
@@ -331,7 +257,7 @@ export default function ChatPanel(props: propsIF) {
                         aria-label='hide chat button'
                     />
                 )}
-                {!props.isChatOpen && (
+                {!isChatOpen && (
                     <IoIosArrowUp
                         size={22}
                         role='button'
@@ -359,11 +285,6 @@ export default function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         isCurrentUser={item.sender === currentUser}
                         currentUser={currentUser}
-                        userImageData={
-                            connectedAccountActive
-                                ? props.userImageData
-                                : secondaryImageData
-                        }
                         resolvedAddress={resolvedAddress}
                         connectedAccountActive={address}
                         moderator={moderator}
@@ -391,7 +312,11 @@ export default function ChatPanel(props: propsIF) {
                             style={{ marginTop: '-18px', cursor: 'pointer' }}
                             onClick={() => scrollToBottomButton()}
                         >
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
@@ -402,13 +327,18 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
                 ) : (
                     <div className={styles.chat_notification}>
                         <span onClick={() => scrollToBottomButton()}>
-                            <BsChatLeftFill size={25} color='#7371fc' />
+                            <BsChatLeftFill
+                                size={25}
+                                color='#7371fc'
+                                style={{ cursor: 'pointer' }}
+                            />
                             <span className={styles.text}>{notification}</span>
                         </span>
                         <span>
@@ -419,6 +349,7 @@ export default function ChatPanel(props: propsIF) {
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
+                                style={{ cursor: 'pointer' }}
                             />
                         </span>
                     </div>
@@ -435,6 +366,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 ) : (
@@ -446,6 +378,7 @@ export default function ChatPanel(props: propsIF) {
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                 )
@@ -462,7 +395,7 @@ export default function ChatPanel(props: propsIF) {
             room={
                 room === 'Current Pool'
                     ? currentPool.baseToken.symbol +
-                      '/' +
+                      ' / ' +
                       currentPool.quoteToken.symbol
                     : room
             }
@@ -471,14 +404,14 @@ export default function ChatPanel(props: propsIF) {
         />
     );
 
-    const contentHeight = props.isChatOpen ? '479px' : '30px';
+    const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
             <FullChat
                 messageList={messageList}
+                setIsChatOpen={setIsChatOpen}
                 chatNotification={chatNotification}
                 messageInput={messageInput}
-                room={room}
                 userName={
                     ens === null || ens === ''
                         ? trimString(address as string, 6, 0, '…')
@@ -488,11 +421,9 @@ export default function ChatPanel(props: propsIF) {
                 setIsCurrentPool={setIsCurrentPool}
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
-                favePools={favePools}
                 userCurrentPool={userCurrentPool}
                 favoritePoolsArray={favoritePoolsArray}
                 setFavoritePoolsArray={setFavoritePoolsArray}
-                topPools={topPools}
             />
         );
 
@@ -510,10 +441,8 @@ export default function ChatPanel(props: propsIF) {
                     {header}
 
                     <Room
-                        favePools={favePools}
                         selectedRoom={room}
                         setRoom={setRoom}
-                        currentPool={currentPool}
                         isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}
@@ -526,7 +455,6 @@ export default function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
-                        topPools={topPools}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
@@ -542,3 +470,5 @@ export default function ChatPanel(props: propsIF) {
         </div>
     );
 }
+
+export default memo(ChatPanel);

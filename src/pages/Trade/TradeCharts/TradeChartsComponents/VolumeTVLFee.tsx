@@ -1,21 +1,19 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef } from 'react';
+import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { chartSettingsMethodsIF } from '../../../../App/hooks/useChartSettings';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../../constants';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;
     setShowTvl: Dispatch<SetStateAction<boolean>>;
     setShowFeeRate: Dispatch<SetStateAction<boolean>>;
-    chartSettings: chartSettingsMethodsIF;
     showVolume: boolean;
     showTvl: boolean;
     showFeeRate: boolean;
 }
-export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
+function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const {
-        chartSettings,
         setShowVolume,
         setShowTvl,
         setShowFeeRate,
@@ -24,6 +22,17 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         showFeeRate,
     } = props;
 
+    const updateSubChartToggles = (newStatus: {
+        isVolumeSubchartEnabled: boolean;
+        isTvlSubchartEnabled: boolean;
+        isFeeRateSubchartEnabled: boolean;
+    }) => {
+        localStorage.setItem(
+            LS_KEY_SUBCHART_SETTINGS,
+            JSON.stringify({ ...newStatus }),
+        );
+    };
+
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
         useState(false);
 
@@ -31,16 +40,28 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
 
     const handleVolumeToggle = () => {
         setShowVolume(!showVolume);
-        chartSettings.volumeSubchart.toggle();
+        updateSubChartToggles({
+            isVolumeSubchartEnabled: !showVolume,
+            isTvlSubchartEnabled: showTvl,
+            isFeeRateSubchartEnabled: showFeeRate,
+        });
     };
 
     const handleTvlToggle = () => {
         setShowTvl(!showTvl);
-        chartSettings.tvlSubchart.toggle();
+        updateSubChartToggles({
+            isVolumeSubchartEnabled: showVolume,
+            isTvlSubchartEnabled: !showTvl,
+            isFeeRateSubchartEnabled: showFeeRate,
+        });
     };
     const handleFeeRateToggle = () => {
         setShowFeeRate(!showFeeRate);
-        chartSettings.feeRateSubchart.toggle();
+        updateSubChartToggles({
+            isVolumeSubchartEnabled: showVolume,
+            isTvlSubchartEnabled: showTvl,
+            isFeeRateSubchartEnabled: !showFeeRate,
+        });
     };
 
     const volumeTvlAndFeeData = [
@@ -75,6 +96,8 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                 onClick={() =>
                     setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)
                 }
+                tabIndex={0}
+                aria-label='Open volume and tvl dropdown.'
             >
                 {showVolume
                     ? 'Volume'
@@ -97,6 +120,7 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                                     ? styles.active_selected_button
                                     : styles.non_active_selected_button
                             }
+                            aria-label={`Show ${button.name}.`}
                         >
                             {button.name}
                         </button>
@@ -125,6 +149,9 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
+                        aria-label={`${button.selected ? 'hide' : 'show'} ${
+                            button.name
+                        }.`}
                     >
                         {button.name}
                     </button>
@@ -133,3 +160,5 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         </div>
     );
 }
+
+export default memo(VolumeTVLFee);

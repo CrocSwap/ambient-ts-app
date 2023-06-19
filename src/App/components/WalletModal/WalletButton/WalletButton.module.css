@@ -1,7 +1,7 @@
 .container {
     cursor: pointer;
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     outline: none;
     border: none;
     display: flex;
@@ -16,12 +16,13 @@
     margin: 4px 0;
 }
 
-.container:hover, .container:focus-visible{
+.container:hover,
+.container:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-    0px 0px 2px rgba(205, 193, 255, 0.2);
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .container img {

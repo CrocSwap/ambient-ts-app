@@ -8,6 +8,7 @@
     "homeTitle": "Home",
     "swapTitle": "Swap",
     "tradeTitle": "Trade",
+    "poolTitle": "Pool",
     "analyticsTitle": "Analytics",
     "accountTitle": "Account",
     "topPools": "Top Pools",
@@ -29,6 +30,6 @@
     "slide6": {
         "part1": "something something gas savings..."
     },
-    "homeStatsTitle": "DEX Stats",
+    "homeStatsTitle": "Ambient Finance Stats",
     "ourInvestorsTitle": "Our Investors"
 }

@@ -1,43 +1,44 @@
-import { Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedTxs: TransactionIF[];
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TxSearchResults(props: propsIF) {
+    const { searchedTxs } = props;
     const {
-        chainId,
-        searchedTxs,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const {
+        setCurrentTxActiveInTransactions,
+        setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-    } = props;
+    } = useContext(TradeTableContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(0);
-        setIsShowAllEnabled(false);
-        setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        setShowAllData(false);
+        setCurrentTxActiveInTransactions(tx.txId);
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote,
+        });
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element

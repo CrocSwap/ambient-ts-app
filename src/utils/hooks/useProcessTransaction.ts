@@ -4,19 +4,22 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
+import { getChainExplorer } from '../data/chains';
+import moment from 'moment';
+import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
+import { getElapsedTime } from '../../App/functions/getElapsedTime';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
-    account: string,
-    isOnPortfolioPage = false,
+    account = '',
+    isAccountView = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
-    // const blockExplorer = chainData?.blockExplorer;
+    const blockExplorer = getChainExplorer(tx.chainId);
 
     const isDenomBase = tradeData.isDenomBase;
 
-    const txHash = tx.tx;
+    const txHash = tx.txHash;
     const ownerId = tx.user;
     const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
@@ -32,33 +35,11 @@ export const useProcessTransaction = (
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
-    // const baseAddressLowerCase = baseAddress.toLowerCase();
-    // const quoteAddressLowerCase = quoteAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
         getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
             getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
         0;
-
-    // const isBaseTokenMoneynessGreaterOrEqual = useMemo(
-    //     () =>
-    //         getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-    //             getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-    //         0,
-    //     [tx.base, tx.base, tx.chainId],
-    // );
-
-    // useEffect(() => {
-    //     console.log({ isBaseTokenMoneynessGreaterOrEqual });
-    // }, [isBaseTokenMoneynessGreaterOrEqual]);
-    // const baseMoneyness = getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId);
-    // useEffect(() => {
-    //     console.log({ baseMoneyness });
-    // }, [baseMoneyness]);
-    // const quoteMoneyness = getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId);
-    // useEffect(() => {
-    //     console.log({ quoteMoneyness });
-    // }, [quoteMoneyness]);
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
@@ -70,8 +51,6 @@ export const useProcessTransaction = (
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
-    // console.log({ quoteTokenLogo });
-    // console.log({ baseTokenLogo });
 
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -239,72 +218,68 @@ export const useProcessTransaction = (
                           },
                       );
             truncatedLowDisplayPrice = isDenomBase
-                ? `${invertedAskPriceTruncated}`
+                ? `${invertedBidPriceTruncated}`
                 : `${nonInvertedBidPriceTruncated}`;
             truncatedHighDisplayPrice = isDenomBase
-                ? `${invertedBidPriceTruncated}`
+                ? `${invertedAskPriceTruncated}`
                 : `${nonInvertedAskPriceTruncated}`;
 
             truncatedLowDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
-                    ? `${nonInvertedAskPriceTruncated}`
-                    : `${invertedAskPriceTruncated}`;
-            truncatedHighDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedBidPriceTruncated}`
                     : `${invertedBidPriceTruncated}`;
+            truncatedHighDisplayPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? `${nonInvertedAskPriceTruncated}`
+                    : `${invertedAskPriceTruncated}`;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
         }
     } else {
-        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
-            const priceDecimalCorrected = tx.priceDecimalCorrected;
-            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+        const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
+        const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0.00'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 0.8
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(5)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmountOld(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const nonInvertedPriceTruncated =
+            priceDecimalCorrected === 0
+                ? '0.00'
+                : priceDecimalCorrected < 0.0001
+                ? priceDecimalCorrected.toExponential(2)
+                : priceDecimalCorrected < 0.8
+                ? priceDecimalCorrected.toPrecision(3)
+                : priceDecimalCorrected < 2
+                ? priceDecimalCorrected.toPrecision(5)
+                : priceDecimalCorrected >= 100000
+                ? formatAmountOld(priceDecimalCorrected)
+                : priceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0.00'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 0.8
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(5)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmountOld(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+        const invertedPriceTruncated =
+            invPriceDecimalCorrected === 0
+                ? '0.00'
+                : invPriceDecimalCorrected < 0.0001
+                ? invPriceDecimalCorrected.toExponential(2)
+                : invPriceDecimalCorrected < 0.8
+                ? invPriceDecimalCorrected.toPrecision(3)
+                : invPriceDecimalCorrected < 2
+                ? invPriceDecimalCorrected.toPrecision(5)
+                : invPriceDecimalCorrected >= 100000
+                ? formatAmountOld(invPriceDecimalCorrected)
+                : invPriceDecimalCorrected.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
 
-            truncatedDisplayPriceDenomByMoneyness =
-                isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+        truncatedDisplayPriceDenomByMoneyness =
+            isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
 
-            truncatedDisplayPrice = isDenomBase
-                ? invertedPriceTruncated
-                : nonInvertedPriceTruncated;
-        } else {
-            truncatedDisplayPrice = undefined;
-        }
+        truncatedDisplayPrice = isDenomBase
+            ? invertedPriceTruncated
+            : nonInvertedPriceTruncated;
     }
 
     if (
@@ -316,38 +291,34 @@ export const useProcessTransaction = (
         isBaseFlowPositive = baseFlowDisplayNum > 0;
         const baseFlowDisplayTruncatedShort =
             baseFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : baseFlowAbsNum < 0.0001
-                ? baseFlowAbsNum.toExponential(2)
+                ? baseFlowAbsNum.toExponential(2) + ' '
                 : baseFlowAbsNum < 0.1
-                ? baseFlowAbsNum.toPrecision(3)
+                ? baseFlowAbsNum.toPrecision(3) + ' '
                 : baseFlowAbsNum >= 10000
-                ? formatAmountOld(baseFlowAbsNum)
+                ? formatAmountOld(baseFlowAbsNum) + ' '
                 : // ? baseLiqDisplayNum.toExponential(2)
                   baseFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringShort =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedShort}`;
         baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
 
         const baseFlowDisplayTruncatedLong =
             baseFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : baseFlowAbsNum < 0.0001
-                ? baseFlowAbsNum.toExponential(2)
+                ? baseFlowAbsNum.toExponential(2) + ' '
                 : baseFlowAbsNum < 0.1
-                ? baseFlowAbsNum.toPrecision(3)
+                ? baseFlowAbsNum.toPrecision(3) + ' '
                 : baseFlowAbsNum >= 1000000000
-                ? formatAmountOld(baseFlowAbsNum)
+                ? formatAmountOld(baseFlowAbsNum) + ' '
                 : // ? baseLiqDisplayNum.toExponential(2)
                   baseFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   }) + ' ';
-        // const baseFlowDisplayStringLong =
-        //     tx.entityType !== 'liqchange' && `${baseFlowDisplayTruncatedLong}`;
         baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (
@@ -359,13 +330,13 @@ export const useProcessTransaction = (
         isQuoteFlowPositive = quoteFlowDisplayNum > 0;
         const quoteFlowDisplayTruncatedShort =
             quoteFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : quoteFlowAbsNum < 0.0001
-                ? quoteFlowAbsNum.toExponential(2)
+                ? quoteFlowAbsNum.toExponential(2) + ' '
                 : quoteFlowAbsNum < 0.1
-                ? quoteFlowAbsNum.toPrecision(3)
+                ? quoteFlowAbsNum.toPrecision(3) + ' '
                 : quoteFlowAbsNum >= 10000
-                ? formatAmountOld(quoteFlowAbsNum)
+                ? formatAmountOld(quoteFlowAbsNum) + ' '
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   quoteFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -374,13 +345,13 @@ export const useProcessTransaction = (
         quoteFlowDisplayShort = quoteFlowDisplayTruncatedShort;
         const quoteFlowDisplayTruncatedLong =
             quoteFlowAbsNum === 0
-                ? '0.00 '
+                ? '0 '
                 : quoteFlowAbsNum < 0.0001
-                ? quoteFlowAbsNum.toExponential(2)
+                ? quoteFlowAbsNum.toExponential(2) + ' '
                 : quoteFlowAbsNum < 0.1
-                ? quoteFlowAbsNum.toPrecision(3)
+                ? quoteFlowAbsNum.toPrecision(3) + ' '
                 : quoteFlowAbsNum >= 1000000000
-                ? formatAmountOld(quoteFlowAbsNum)
+                ? formatAmountOld(quoteFlowAbsNum) + ' '
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   quoteFlowAbsNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -403,11 +374,21 @@ export const useProcessTransaction = (
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
-                ? 'add'
+                ? isAccountView
+                    ? isBaseTokenMoneynessGreaterOrEqual
+                        ? isBuy
+                            ? 'buy'
+                            : 'sell'
+                        : isBuy
+                        ? 'sell'
+                        : 'buy'
+                    : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+                    ? 'sell'
+                    : 'buy'
                 : tx.changeType === 'recover'
                 ? 'claim'
                 : 'remove'
-            : isOnPortfolioPage
+            : isAccountView
             ? isBaseTokenMoneynessGreaterOrEqual
                 ? isBuy
                     ? 'buy'
@@ -419,15 +400,6 @@ export const useProcessTransaction = (
             ? 'sell'
             : 'buy';
 
-    // const sideType =
-    //     tx.entityType === 'swap' || tx.entityType === 'limitOrder'
-    //         ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
-    //             ? 'buy'
-    //             : 'sell'
-    //         : tx.changeType === 'burn'
-    //         ? 'sell'
-    //         : 'buy';
-
     const transactionTypeSide =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'mint'
@@ -436,14 +408,6 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const transactionTypeSide =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'rangeRemove'
-    //         : 'rangeAdd';
 
     const type =
         tx.entityType === 'liqchange'
@@ -453,18 +417,12 @@ export const useProcessTransaction = (
             : tx.entityType === 'limitOrder'
             ? 'limit'
             : 'market';
-    // const type =
-    //     tx.entityType === 'swap'
-    //         ? 'market'
-    //         : tx.entityType === 'limitOrder'
-    //         ? 'limit'
-    //         : tx.changeType === 'burn'
-    //         ? 'Remove'
-    //         : 'Add';
 
-    const usdValueNum = tx.valueUSD;
+    const sideTypeStyle = `${sideType}_style`;
+
+    const usdValueNum = tx.totalValueUSD;
     const totalValueUSD = tx.totalValueUSD;
-    const totalFlowUSD = tx.totalFlowUSD;
+    const totalFlowUSD = tx.totalValueUSD;
     const totalFlowAbsNum =
         totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
 
@@ -473,7 +431,7 @@ export const useProcessTransaction = (
         : usdValueNum < 0.01
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum, 2)
+        ? formatAmountOld(usdValueNum, 2) + ' '
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -538,28 +496,6 @@ export const useProcessTransaction = (
 
     // --------------------------------------------------------
 
-    const quantitiesAvailable =
-        baseFlowDisplayShort !== undefined ||
-        quoteFlowDisplayShort !== undefined;
-
-    const baseQuantityDisplayLong = quantitiesAvailable
-        ? baseFlowDisplayLong || '0.00'
-        : '…';
-
-    const quoteQuantityDisplayLong = quantitiesAvailable
-        ? quoteFlowDisplayLong || '0.00'
-        : '…';
-
-    const baseQuantityDisplayShort = quantitiesAvailable
-        ? `${baseFlowDisplayShort || '0.00'}`
-        : '…';
-
-    const quoteQuantityDisplayShort = quantitiesAvailable
-        ? `${quoteFlowDisplayShort || '0.00'}`
-        : '…';
-
-    // --------------------------------------------------------
-
     const usdValue =
         totalFlowUSDTruncated !== undefined
             ? '$' + totalFlowUSDTruncated
@@ -576,7 +512,28 @@ export const useProcessTransaction = (
         : usdValueLocaleString
         ? '$' + usdValueLocaleString
         : '…';
-    // --------------------OWNER AND ID WALLET DATA
+
+    const quantitiesAvailable =
+        baseFlowDisplayShort !== undefined ||
+        quoteFlowDisplayShort !== undefined;
+
+    const baseQuantityDisplayLong = quantitiesAvailable
+        ? baseFlowDisplayLong || '0'
+        : '…';
+
+    const quoteQuantityDisplayLong = quantitiesAvailable
+        ? quoteFlowDisplayLong || '0'
+        : '…';
+
+    const baseQuantityDisplayShort = quantitiesAvailable
+        ? `${baseFlowDisplayShort || '0'}`
+        : '…';
+
+    const quoteQuantityDisplayShort = quantitiesAvailable
+        ? `${quoteFlowDisplayShort || '0'}`
+        : '…';
+
+    // --------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 13
@@ -589,6 +546,56 @@ export const useProcessTransaction = (
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
         : ensNameOrOwnerTruncated;
+
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        tx.txTime * 1000,
+        'seconds',
+    );
+
+    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+
+    // -------------------------------------------
+    const sideCharacter = isAccountView
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? quoteTokenCharacter
+            : baseTokenCharacter
+        : isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    const priceCharacter = isAccountView
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
+    // -----------------------------------------------
+    const valueArrows = tx.entityType !== 'liqchange';
+
+    const positiveArrow = '↑';
+    const negativeArrow = '↓';
+
+    const isSellQtyZero =
+        (isBuy && tx.baseFlow === 0) || (!isBuy && tx.quoteFlow === 0);
+    const isBuyQtyZero =
+        (!isBuy && tx.baseFlow === 0) || (isBuy && tx.quoteFlow === 0);
+    const isOrderRemove =
+        tx.entityType === 'limitOrder' && sideType === 'remove';
+
+    const positiveDisplayStyle =
+        baseQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
+            ? styles.light_grey
+            : styles.positive_value;
+    const negativeDisplayStyle =
+        quoteQuantityDisplayShort === '0' ||
+        !valueArrows ||
+        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
+            ? styles.light_grey
+            : styles.negative_value;
 
     // if (!tx) return null;
     return {
@@ -611,10 +618,21 @@ export const useProcessTransaction = (
         sideType,
         transactionTypeSide,
         type,
+        sideTypeStyle,
+
+        sideCharacter,
+        priceCharacter,
+        isBuy,
+        positiveDisplayStyle,
+        negativeDisplayStyle,
 
         // Value data
         usdValue,
         txUsdValueLocaleString,
+
+        positiveArrow,
+        negativeArrow,
+        valueArrows,
 
         // Token Qty data
         baseTokenCharacter,
@@ -644,5 +662,8 @@ export const useProcessTransaction = (
         // transaction matches select token data
         transactionMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
+
+        //
+        elapsedTimeString,
     } as const;
 };

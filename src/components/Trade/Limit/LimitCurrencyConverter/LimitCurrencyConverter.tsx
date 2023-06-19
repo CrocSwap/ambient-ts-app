@@ -2,21 +2,19 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
+    useContext,
     useEffect,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { ethers } from 'ethers';
 import {
-    // reverseTokensInRTK,
     setIsTokenAPrimary,
     setLimitTick,
-    // setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantity,
     setShouldLimitDirectionReverse,
@@ -30,14 +28,16 @@ import LimitRate from '../LimitRate/LimitRate';
 
 // START: Import Local Files
 import styles from './LimitCurrencyConverter.module.css';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
-// import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
-import { CrocPoolView } from '@crocswap-libs/sdk';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // interface for component props
 interface propsIF {
@@ -45,27 +45,12 @@ interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
-    provider?: ethers.providers.Provider;
-    pool: CrocPoolView | undefined;
-    gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
-    tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    chainId: string;
-    poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
-    setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -73,65 +58,21 @@ interface propsIF {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    // priceInputOnBlur: () => void;
-    isDenominationInBase: boolean;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | undefined;
-    gasPriceInGwei: number | undefined;
-
-    isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
+    isOrderValid: boolean;
+    setTokenAQtyCoveredByWalletBalance: Dispatch<SetStateAction<number>>;
 }
 
 // central react functional component
-export default function LimitCurrencyConverter(props: propsIF) {
+function LimitCurrencyConverter(props: propsIF) {
     const {
         displayPrice,
         previousDisplayPrice,
         setDisplayPrice,
         setPreviousDisplayPrice,
-        provider,
-        pool,
-        gridSize,
         setPriceInputFieldBlurred,
-        isUserLoggedIn,
-        tokenPair,
-        tokensBank,
-        setImportedTokens,
-        chainId,
-        poolPriceNonDisplay,
         limitTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
         tokenAInputQty,
         tokenBInputQty,
         setTokenAInputQty,
@@ -141,32 +82,30 @@ export default function LimitCurrencyConverter(props: propsIF) {
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        // priceInputOnBlur,
-        isDenominationInBase,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
-        poolExists,
-        gasPriceInGwei,
-
-        isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
-        importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        acknowledgeToken,
-        setResetLimitTick,
-        openGlobalPopup,
-        dexBalancePrefs,
+        isOrderValid,
+        setTokenAQtyCoveredByWalletBalance,
     } = props;
 
     const dispatch = useAppDispatch();
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const {
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -182,35 +121,32 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
         : quoteTokenBalance;
-    const tokenBBalance = isSellTokenBase
-        ? quoteTokenBalance
-        : baseTokenBalance;
     const tokenADexBalance = isSellTokenBase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
-    const tokenBDexBalance = isSellTokenBase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
-    const tokenASurplusMinusTokenAQtyNum =
-        tokenASurplusMinusTokenARemainderNum >= 0
-            ? tokenASurplusMinusTokenARemainderNum
-            : 0;
-    const tokenAWalletMinusTokenAQtyNum = isSellTokenEth
-        ? isWithdrawFromDexChecked
-            ? parseFloat(tokenABalance || '0')
-            : parseFloat(tokenABalance || '0') -
-              parseFloat(tokenAQtyLocal || '0')
-        : isWithdrawFromDexChecked && tokenASurplusMinusTokenARemainderNum < 0
-        ? parseFloat(tokenABalance || '0') +
-          tokenASurplusMinusTokenARemainderNum
-        : isWithdrawFromDexChecked
-        ? parseFloat(tokenABalance || '0')
-        : parseFloat(tokenABalance || '0') - parseFloat(tokenAQtyLocal || '0');
-    // TODO: pass tokenPair to <LimitRate /> as a prop such that we can use a dynamic
-    // TODO: ... logo instead of the hardcoded one it contains
+
+    const [
+        userOverrodeSurplusWithdrawalDefault,
+        setUserOverrodeSurplusWithdrawalDefault,
+    ] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (
+            !isWithdrawFromDexChecked &&
+            !userOverrodeSurplusWithdrawalDefault &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+        ) {
+            setIsWithdrawFromDexChecked(true);
+        }
+    }, [
+        isWithdrawFromDexChecked,
+        userOverrodeSurplusWithdrawalDefault,
+        tokenADexBalance,
+    ]);
 
     useEffect(() => {
         if (tradeData) {
@@ -226,7 +162,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     useEffect(() => {
-        console.log({ disableReverseTokens });
         if (disableReverseTokens) {
             const timer = setTimeout(() => {
                 setDisableReverseTokens(false);
@@ -235,35 +170,34 @@ export default function LimitCurrencyConverter(props: propsIF) {
         }
     }, [disableReverseTokens]);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+
+    const limitTickCopied = tradeData.limitTickCopied;
 
     const reverseTokens = (): void => {
         if (disableReverseTokens) {
             return;
         } else {
             setDisableReverseTokens(true);
-            // dispatch(reverseTokensInRTK());
-            // console.log('reversing');
-            console.log({ isTokenAPrimaryLocal });
-            navigate(
-                '/trade/limit/chain=0x5&tokenA=' +
-                    tokenPair.dataTokenB.address +
-                    '&tokenB=' +
-                    tokenPair.dataTokenA.address,
-            );
+            if (!location.pathname.includes('limitTick')) {
+                dispatch(setLimitTick(undefined));
+                dispatch(setPoolPriceNonDisplay(0));
+            }
+
+            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+            if (!limitTickCopied) {
+                linkGenLimit.navigate({
+                    chain: chainId,
+                    tokenA: tradeData.tokenB.address,
+                    tokenB: tradeData.tokenA.address,
+                });
+            }
             if (!isTokenAPrimaryLocal) {
-                // console.log('setting a to' + tradeData.primaryQuantity);
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
             } else {
-                // console.log('setting b to' + tradeData.primaryQuantity);
-                // setTokenBQtyLocal(tradeData.primaryQuantity);
                 setTokenBInputQty(tradeData.primaryQuantity);
-            }
-            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-            dispatch(setPoolPriceNonDisplay(0));
-            if (!tradeData.shouldLimitDirectionReverse) {
-                dispatch(setLimitTick(undefined));
             }
         }
     };
@@ -283,71 +217,58 @@ export default function LimitCurrencyConverter(props: propsIF) {
             ? handleTokenAChangeEvent()
             : handleTokenBChangeEvent();
     }, [
-        poolExists,
+        isPoolInitialized,
         limitTickDisplayPrice,
         isSellTokenBase,
         isTokenAPrimaryLocal,
         tokenABalance,
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
+        isUserConnected,
+        isOrderValid,
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (!poolExists) {
+        if (!isPoolInitialized) {
             setLimitAllowed(false);
-            if (poolExists === undefined) setLimitButtonErrorMessage('...');
-            if (poolExists === false)
+            if (isPoolInitialized === undefined)
+                setLimitButtonErrorMessage('...');
+            if (isPoolInitialized === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
+        } else if (!isOrderValid) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage(
+                `Limit ${
+                    (isSellTokenBase && !tradeData.isDenomBase) ||
+                    (!isSellTokenBase && tradeData.isDenomBase)
+                        ? 'Above Maximum'
+                        : 'Below Minimum'
+                }  Price`,
+            );
         } else {
-            if (isSellTokenEth) {
-                if (isWithdrawFromDexChecked) {
-                    const roundedTokenADexBalance =
-                        Math.floor(parseFloat(tokenADexBalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenADexBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+            if (isWithdrawFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
                 } else {
-                    const roundedTokenAWalletBalance =
-                        Math.floor(parseFloat(tokenABalance) * 1000) / 1000;
-                    if (tokenAAmount >= roundedTokenAWalletBalance) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Must Be Less Than Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             } else {
-                if (isWithdrawFromDexChecked) {
-                    if (
-                        tokenAAmount >
-                        parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                    ) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Combined Wallet and Exchange Surplus Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
                 } else {
-                    if (tokenAAmount > parseFloat(tokenABalance)) {
-                        setLimitAllowed(false);
-                        setLimitButtonErrorMessage(
-                            `${tokenPair.dataTokenA.symbol} Amount Exceeds Wallet Balance`,
-                        );
-                    } else {
-                        setLimitAllowed(true);
-                    }
+                    setLimitAllowed(true);
                 }
             }
         }
@@ -355,26 +276,20 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty: number;
-        // console.log({ isSellTokenBase });
 
         if (evt) {
-            // const tokenAInputField = document.getElementById('sell-limit-quantity');
-
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
 
-            // if (tokenAInputField) {
-            //     (tokenAInputField as HTMLInputElement).value = input;
-            // }
             const parsedInput = parseFloat(input);
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
                 setLimitButtonErrorMessage('Enter an Amount');
+                setTokenAQtyLocal('');
+                setTokenAInputQty(input);
                 if (input !== '') return;
             }
-
-            // console.log({ input });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -382,7 +297,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
 
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) * parseFloat(input)
                     : limitTickDisplayPrice * parseFloat(input);
@@ -391,15 +306,13 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(input)
                     : limitTickDisplayPrice * parseFloat(input);
             }
-
             handleLimitButtonMessage(parseFloat(input));
         } else {
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) *
                       parseFloat(tradeData.primaryQuantity)
-                    : // ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
-                      limitTickDisplayPrice *
+                    : limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenBQty = !isSellTokenBase
@@ -408,7 +321,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                     : limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity);
             }
-            handleLimitButtonMessage(parseFloat(tradeData.primaryQuantity));
+            handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
 
         const truncatedTokenBQty = rawTokenBQty
@@ -417,15 +330,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        // console.log({ isSellTokenBase });
-        // console.log({ truncatedTokenBQty });
-        // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
-        // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        // if (buyQtyField) {
-        //     buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        // }
     };
 
     const handleTokenAChangeClick = (value: string) => {
@@ -441,7 +346,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
         dispatch(setIsTokenAPrimary(true));
         dispatch(setPrimaryQuantity(input));
 
-        if (!isDenominationInBase) {
+        if (!tradeData.isDenomBase) {
             rawTokenBQty = isSellTokenBase
                 ? (1 / limitTickDisplayPrice) * parseFloat(input)
                 : limitTickDisplayPrice * parseFloat(input);
@@ -451,55 +356,41 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 : limitTickDisplayPrice * parseFloat(input);
         }
 
-        // handleLimitButtonMessage(parseFloat(input));
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
                 ? rawTokenBQty.toPrecision(3)
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
-
-        // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
         handleLimitButtonMessage(parseFloat(input));
-        // console.log({ truncatedTokenBQty });
 
-        // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
-
-        // setTokenBInputQty(truncatedTokenBQty);
-        // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-
-        // if (buyQtyField) {
-        //     buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        // }
     };
+
+    const [userSetTokenBToZero, setUserSetTokenBToZero] =
+        useState<boolean>(false);
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
-        // console.log({ evt });
         if (evt) {
-            // const tokenBInputField = document.getElementById('buy-limit-quantity');
-
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
 
-            // if (tokenBInputField) {
-            //     (tokenBInputField as HTMLInputElement).value = input;
-            // }
             const parsedInput = parseFloat(input);
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
                 setLimitButtonErrorMessage('Enter an Amount');
+                setUserSetTokenBToZero(true);
                 if (input !== '') return;
             }
-            // console.log({ input });
-            // setTokenBQtyLocal(input);
+            setUserSetTokenBToZero(false);
+
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(input)
                     : (1 / limitTickDisplayPrice) * parseFloat(input);
@@ -510,13 +401,8 @@ export default function LimitCurrencyConverter(props: propsIF) {
             }
 
             handleLimitButtonMessage(rawTokenAQty);
-            // handleLimitButtonMessage(parseFloat(input));
-
-            // rawTokenAQty = isDenominationInBase
-            //     ? (1 / limitTickDisplayPrice) * parseFloat(input)
-            //     : limitTickDisplayPrice * parseFloat(input);
         } else {
-            if (!isDenominationInBase) {
+            if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice *
                       parseFloat(tradeData.primaryQuantity)
@@ -531,7 +417,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
                       parseFloat(tradeData.primaryQuantity);
             }
 
-            handleLimitButtonMessage(rawTokenAQty);
+            handleLimitButtonMessage(userSetTokenBToZero ? 0 : rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
@@ -541,17 +427,7 @@ export default function LimitCurrencyConverter(props: propsIF) {
 
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
-        // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-        // if (sellQtyField) {
-        //     sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
-        // }
     };
-
-    const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum >= 0
-            ? parseFloat(tokenAQtyLocal || '0')
-            : parseFloat(tokenADexBalance || '0')
-        : 0;
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
@@ -559,67 +435,32 @@ export default function LimitCurrencyConverter(props: propsIF) {
             : 0
         : parseFloat(tokenAQtyLocal || '0');
 
+    useEffect(() => {
+        setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
+    }, [tokenAQtyCoveredByWalletBalance]);
+
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
-                provider={provider}
-                isUserLoggedIn={isUserLoggedIn}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                chainId={chainId}
                 tokenAInputQty={tokenAInputQty}
                 tokenBInputQty={tokenBInputQty}
-                setTokenAInputQty={setTokenAInputQty}
-                setTokenBInputQty={setTokenBInputQty}
                 fieldId='sell'
                 sellToken
                 isSellTokenEth={isSellTokenEth}
-                direction='From: '
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
                 reverseTokens={reverseTokens}
                 tokenABalance={tokenABalance}
-                tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
-                tokenBDexBalance={tokenBDexBalance}
-                tokenAQtyCoveredByWalletBalance={
-                    tokenAQtyCoveredByWalletBalance
-                }
-                tokenAQtyCoveredBySurplusBalance={
-                    tokenAQtyCoveredBySurplusBalance
-                }
-                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                tokenASurplusMinusTokenARemainderNum={
-                    tokenASurplusMinusTokenARemainderNum
-                }
                 isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                 setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                 isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={
-                    indicateActiveTokenListsChanged
-                }
-                gasPriceInGwei={gasPriceInGwei}
-                isOrderCopied={isOrderCopied}
-                verifyToken={verifyToken}
-                getTokensByName={getTokensByName}
-                getTokenByAddress={getTokenByAddress}
-                importedTokensPlus={importedTokensPlus}
-                getRecentTokens={getRecentTokens}
-                addRecentToken={addRecentToken}
                 tokenAorB={'A'}
-                outputTokens={outputTokens}
-                validatedInput={validatedInput}
-                setInput={setInput}
-                searchType={searchType}
-                acknowledgeToken={acknowledgeToken}
-                openGlobalPopup={openGlobalPopup}
-                dexBalancePrefs={dexBalancePrefs}
+                setUserOverrodeSurplusWithdrawalDefault={
+                    setUserOverrodeSurplusWithdrawalDefault
+                }
             />
-
             <div
                 className={
                     disableReverseTokens
@@ -628,7 +469,6 @@ export default function LimitCurrencyConverter(props: propsIF) {
                 }
                 onClick={() => {
                     if (!disableReverseTokens) {
-                        setResetLimitTick((value) => !value);
                         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
                         reverseTokens();
                     }
@@ -640,83 +480,34 @@ export default function LimitCurrencyConverter(props: propsIF) {
             </div>
             <div id='limit_currency_converter'>
                 <LimitCurrencySelector
-                    isUserLoggedIn={isUserLoggedIn}
-                    tokenPair={tokenPair}
-                    tokensBank={tokensBank}
-                    setImportedTokens={setImportedTokens}
-                    chainId={chainId}
                     tokenAInputQty={tokenAInputQty}
                     tokenBInputQty={tokenBInputQty}
-                    setTokenAInputQty={setTokenAInputQty}
-                    setTokenBInputQty={setTokenBInputQty}
                     fieldId='buy'
-                    direction='To: '
                     handleChangeEvent={handleTokenBChangeEvent}
                     reverseTokens={reverseTokens}
                     tokenABalance={tokenABalance}
-                    tokenBBalance={tokenBBalance}
                     tokenADexBalance={tokenADexBalance}
-                    tokenBDexBalance={tokenBDexBalance}
-                    tokenAQtyCoveredByWalletBalance={
-                        tokenAQtyCoveredByWalletBalance
-                    }
-                    tokenAQtyCoveredBySurplusBalance={
-                        tokenAQtyCoveredBySurplusBalance
-                    }
-                    tokenAWalletMinusTokenAQtyNum={
-                        tokenAWalletMinusTokenAQtyNum
-                    }
-                    tokenASurplusMinusTokenAQtyNum={
-                        tokenASurplusMinusTokenAQtyNum
-                    }
-                    tokenASurplusMinusTokenARemainderNum={
-                        tokenASurplusMinusTokenARemainderNum
-                    }
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={
-                        indicateActiveTokenListsChanged
-                    }
-                    gasPriceInGwei={gasPriceInGwei}
-                    isOrderCopied={isOrderCopied}
-                    verifyToken={verifyToken}
-                    getTokensByName={getTokensByName}
-                    getTokenByAddress={getTokenByAddress}
-                    importedTokensPlus={importedTokensPlus}
-                    getRecentTokens={getRecentTokens}
-                    addRecentToken={addRecentToken}
                     tokenAorB={'B'}
-                    outputTokens={outputTokens}
-                    validatedInput={validatedInput}
-                    setInput={setInput}
-                    searchType={searchType}
-                    acknowledgeToken={acknowledgeToken}
-                    openGlobalPopup={openGlobalPopup}
-                    dexBalancePrefs={dexBalancePrefs}
+                    setUserOverrodeSurplusWithdrawalDefault={
+                        setUserOverrodeSurplusWithdrawalDefault
+                    }
                 />
             </div>
-            {/* <DividerDark addMarginTop /> */}
             <LimitRate
                 previousDisplayPrice={previousDisplayPrice}
                 displayPrice={displayPrice}
                 setDisplayPrice={setDisplayPrice}
                 setPreviousDisplayPrice={setPreviousDisplayPrice}
-                pool={pool}
-                gridSize={gridSize}
                 isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                chainId={chainId}
                 fieldId='limit-rate'
-                reverseTokens={reverseTokens}
-                poolPriceNonDisplay={poolPriceNonDisplay}
-                limitTickDisplayPrice={limitTickDisplayPrice}
-                isOrderCopied={isOrderCopied}
             />
         </section>
     );
 }
+
+export default memo(LimitCurrencyConverter);

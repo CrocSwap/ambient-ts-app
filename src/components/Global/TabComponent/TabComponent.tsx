@@ -7,6 +7,7 @@ import {
     cloneElement,
     ReactNode,
     ReactElement,
+    useContext,
 } from 'react';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -14,6 +15,8 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 import styles from './TabComponent.module.css';
 import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 type tabData = {
     label: string;
@@ -26,13 +29,9 @@ interface TabPropsIF {
     data: tabData[];
     setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    showPositionsOnlyToggle?: boolean;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
-
+    isModalView?: boolean;
+    shouldSyncWithTradeModules?: boolean;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -40,18 +39,17 @@ export default function TabComponent(props: TabPropsIF) {
     const {
         data,
         setSelectedInsideTab,
-        selectedOutsideTab,
         rightTabOptions,
-        outsideControl,
-        setOutsideControl,
-        // showPositionsOnlyToggle,
         setShowPositionsOnlyToggle,
+        isModalView = false,
+        shouldSyncWithTradeModules = true,
     } = props;
+    const { outsideControl, setOutsideControl, selectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     function handleSelectedTab(item: tabData) {
-        // console.log({ item });
         if (setSelectedInsideTab) {
             switch (item.label) {
                 case 'Transactions':
@@ -105,8 +103,13 @@ export default function TabComponent(props: TabPropsIF) {
     }
 
     useEffect(() => {
-        handleOutside2();
-    }, [selectedTab, selectedOutsideTab, outsideControl]);
+        if (shouldSyncWithTradeModules) handleOutside2();
+    }, [
+        selectedTab,
+        selectedOutsideTab,
+        outsideControl,
+        shouldSyncWithTradeModules,
+    ]);
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
@@ -133,25 +136,47 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
+    const mobileView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <div className={styles.tab_with_option_container}>
-            <ul className={`${styles.tab_ul_left} ${styles.desktop_tabs} `}>
+            <ul
+                className={`${styles.tab_ul_left}`}
+                aria-label='Navigation Tabs'
+                role='tablist'
+            >
                 {data.map((item) => (
                     <li
                         key={item.label}
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
-                                : ''
+                                : styles.non_selected
                         }
                         onClick={() => handleSelectedTab(item)}
+                        aria-describedby={
+                            item.label === selectedTab.label
+                                ? 'current-tab'
+                                : ''
+                        }
+                        tabIndex={0}
                     >
                         {item.icon
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        <div className={styles.item_label}> {item.label}</div>
+                        {mobileView && (
+                            <button
+                                onClick={() => handleSelectedTab(item)}
+                                className={styles.label_button}
+                                role='tab'
+                                aria-selected={item.label === selectedTab.label}
+                                tabIndex={0}
+                            >
+                                {' '}
+                                {item.label}
+                            </button>
+                        )}
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
@@ -173,7 +198,10 @@ export default function TabComponent(props: TabPropsIF) {
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
 
     const fullTabs = (
-        <ul className={`${styles.tab_ul} ${styles.desktop_tabs}`}>
+        <ul
+            className={`${styles.tab_ul} ${styles.desktop_tabs}`}
+            aria-label='Navigation Tabs'
+        >
             {data.map((item) => {
                 return (
                     <li
@@ -181,19 +209,42 @@ export default function TabComponent(props: TabPropsIF) {
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
-                                : ''
+                                : styles.non_selected
                         }
                         onClick={() => handleSelectedTab(item)}
+                        role='tablist'
+                        aria-describedby={
+                            item.label === selectedTab.label
+                                ? 'current-tab'
+                                : ''
+                        }
                     >
                         {item.icon
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
-                        <div className={styles.item_label}> {item.label}</div>
+                        {mobileView && (
+                            <button
+                                className={`${styles.item_label} ${
+                                    item.label === selectedTab.label
+                                        ? styles.selected
+                                        : ''
+                                }`}
+                                onClick={() => handleSelectedTab(item)}
+                                role='tab'
+                                aria-selected={item.label === selectedTab.label}
+
+                                // tabIndex={item.label === selectedTab.label ? 0 : -1}
+                            >
+                                {' '}
+                                {item.label}
+                            </button>
+                        )}
 
                         {item.label === selectedTab.label && (
                             <motion.div
                                 className={styles.underline}
                                 layoutId='underline'
+                                role='presentation'
                             />
                         )}
                     </li>
@@ -202,14 +253,23 @@ export default function TabComponent(props: TabPropsIF) {
         </ul>
     );
 
+    const tabAlignStyle = isModalView
+        ? styles.justify_content_center
+        : styles.justify_content_flex_start;
+
     return (
-        <div className={styles.tab_window}>
-            <nav className={styles.tab_nav}>
+        <div
+            className={styles.tab_window}
+            role='tablist'
+            aria-orientation='horizontal'
+            aria-label=''
+        >
+            <nav className={`${styles.tab_nav} ${tabAlignStyle}`}>
                 <AnimateSharedLayout>
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
             </nav>
-            <section className={styles.main_tab_content}>
+            <div className={styles.main_tab_content}>
                 <AnimateSharedLayout>
                     <motion.div
                         key={selectedTab ? selectedTab.label : 'empty'}
@@ -217,11 +277,15 @@ export default function TabComponent(props: TabPropsIF) {
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -10, opacity: 0 }}
                         transition={{ duration: 0.2 }}
+                        role='tabpanel'
+                        tabIndex={0}
+                        style={{ height: '100%' }}
+                        hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>
                 </AnimateSharedLayout>
-            </section>
+            </div>
         </div>
     );
 }

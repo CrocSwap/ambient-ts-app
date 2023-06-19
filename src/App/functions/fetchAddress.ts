@@ -1,21 +1,26 @@
 import { ethers } from 'ethers';
 import { memoizeProviderFn } from './memoizePromiseFn';
 
-export const fetchAddress = async (
+export const fetchEnsAddress = async (
     provider: ethers.providers.Provider,
     address: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
 ) => {
-    return provider.lookupAddress(address);
+    try {
+        return provider.lookupAddress(address);
+    } catch (e) {
+        console.warn(e);
+        return null;
+    }
 };
 
-type FetchAddrFn = (
+export type FetchAddrFn = (
     provider: ethers.providers.Provider,
     address: string,
     chainId: string,
 ) => Promise<string | undefined>;
 
-export function memoizeFetchAddress(): FetchAddrFn {
-    return memoizeProviderFn(fetchAddress) as FetchAddrFn;
+export function memoizeFetchEnsAddress(): FetchAddrFn {
+    return memoizeProviderFn(fetchEnsAddress) as FetchAddrFn;
 }

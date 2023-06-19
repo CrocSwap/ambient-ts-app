@@ -2,324 +2,197 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    ReactNode,
-    useEffect,
-    useState,
-} from 'react';
-import { ethers } from 'ethers';
+import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import JSX Components
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import {
-    addPositionsByPool,
-    addPositionsByUser,
-    graphData,
-} from '../../../../utils/state/graphDataSlice';
-import Pagination from '../../../Global/Pagination/Pagination';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { Pagination } from '@mui/material';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { updatePositionStats } from '../../../../App/functions/getPositionData';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import TableSkeletons from '../TableSkeletons/TableSkeletons';
-import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
-import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../../App/hooks/useSlippage';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
+
+const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
+// NOTE: this is done to improve rendering speed for this page.
 
 // interface for props
 interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
-    chainData: ChainSpec;
-    provider: ethers.providers.Provider | undefined;
-    account: string;
-    chainId: string;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    notOnTradeRoute?: boolean;
-    graphData: graphData;
-    lastBlockNumber: number;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    expandTradeTable: boolean;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    portfolio?: boolean;
-    importedTokens: TokenIF[];
-    openGlobalModal: (content: ReactNode) => void;
-    closeGlobalModal: () => void;
-    showSidebar: boolean;
-    isOnPortfolioPage: boolean;
-    setLeader?: Dispatch<SetStateAction<string>>;
-    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation?: (type: string) => void;
-    cachedQuerySpotPrice: SpotPriceFn;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
+    isAccountView: boolean;
 }
 
 // react functional component
-export default function Ranges(props: propsIF) {
-    const {
-        activeAccountPositionData,
-        connectedAccountActive,
-        isUserLoggedIn,
-        crocEnv,
-        chainData,
-        provider,
-        chainId,
-        isShowAllEnabled,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        graphData,
-        lastBlockNumber,
-        expandTradeTable,
-        currentPositionActive,
-        setCurrentPositionActive,
-        account,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        setIsShowAllEnabled,
-        showSidebar,
-        cachedQuerySpotPrice,
-        setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-    } = props;
+function Ranges(props: propsIF) {
+    const { activeAccountPositionData, connectedAccountActive, isAccountView } =
+        props;
 
+    const {
+        showAllData: showAllDataSelection,
+        expandTradeTable: expandTradeTableSelection,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
-
-    const isConnectedUserRangeDataLoading =
-        dataLoadingStatus?.isConnectedUserRangeDataLoading;
-    const isLookupUserRangeDataLoading =
-        dataLoadingStatus?.isLookupUserRangeDataLoading;
-    const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
-
-    const isRangeDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserRangeDataLoading) ||
-        (!connectedAccountActive && isLookupUserRangeDataLoading);
-
-    const isRangeDataLoadingForTradeTable =
-        (isShowAllEnabled && isPoolRangeDataLoading) ||
-        (!isShowAllEnabled && isConnectedUserRangeDataLoading);
-
-    const shouldDisplayLoadingAnimation =
-        (isOnPortfolioPage && isRangeDataLoadingForPortfolio) ||
-        (!isOnPortfolioPage && isRangeDataLoadingForTradeTable);
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        1000,
-    ); // debounce 1/4 second
-
-    const positionsByPool = graphData.positionsByPool?.positions;
-
-    const positionsByUserMatchingSelectedTokens =
-        graphData?.positionsByUser?.positions.filter((position) => {
-            if (
-                position.base.toLowerCase() === baseTokenAddressLowerCase &&
-                position.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-    const userPositionsToDisplayOnTrade =
-        positionsByUserMatchingSelectedTokens.filter((position) => {
-            if (position.positionLiq !== '0' || position.source === 'manual') {
-                return true;
-            } else {
-                return false;
-            }
-        });
-
-    const [rangeData, setRangeData] = useState(
-        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
-    );
+    const [rangeData, setRangeData] = useState<PositionIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (
-            isOnPortfolioPage &&
-            activeAccountPositionData &&
-            JSON.stringify(activeAccountPositionData) !==
-                JSON.stringify(rangeData)
-        ) {
-            setRangeData(activeAccountPositionData);
-        } else if (!isShowAllEnabled && !isOnPortfolioPage) {
-            setRangeData(userPositionsToDisplayOnTrade);
-        } else if (positionsByPool && !isOnPortfolioPage) {
-            setRangeData(positionsByPool);
+        if (isAccountView) setRangeData(activeAccountPositionData || []);
+        else if (!showAllData)
+            setRangeData(
+                graphData?.positionsByUser?.positions.filter(
+                    (position) =>
+                        position.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        position.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase() &&
+                        position.positionLiq != 0,
+                ),
+            );
+        else {
+            setRangeData(graphData?.positionsByPool.positions);
         }
     }, [
-        isOnPortfolioPage,
-        isShowAllEnabled,
+        showAllData,
+        activeAccountPositionData,
+        graphData?.positionsByUser,
+        graphData?.positionsByPool,
+    ]);
+
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
+            );
+        else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+    }, [
+        showAllData,
         connectedAccountActive,
-        JSON.stringify(activeAccountPositionData),
-        JSON.stringify(userPositionsToDisplayOnTrade),
-        JSON.stringify(positionsByPool),
+        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
 
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        const topThreePositions = sortedPositions.slice(0, 3);
-
-        if (topThreePositions) {
-            Promise.all(
-                topThreePositions.map((position: PositionIF) => {
-                    return updatePositionStats(position);
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (!isOnPortfolioPage) {
-                        if (isShowAllEnabled) {
-                            if (updatedPositions)
-                                dispatch(addPositionsByPool(updatedPositions));
-                        } else {
-                            const updatedPositionsMatchingUser =
-                                updatedPositions.filter(
-                                    (position) =>
-                                        position.user.toLowerCase() ===
-                                        account.toLowerCase(),
-                                );
-                            if (updatedPositionsMatchingUser.length)
-                                // console.log({ updatedPositionsMatchingUser });
-                                dispatch(
-                                    addPositionsByUser(
-                                        updatedPositionsMatchingUser,
-                                    ),
-                                );
-                        }
-                    } else {
-                        // console.log({ updatedPositions });
-                        // console.log({ sortedPositions });
-                        const newArray = updatedPositions.concat(
-                            sortedPositions.slice(3),
-                        );
-                        setRangeData(newArray);
-                    }
-                })
-                .catch(console.log);
-        }
-    }, [
-        JSON.stringify({
-            id0: sortedPositions[0]?.positionId,
-            id1: sortedPositions[1]?.positionId,
-            id2: sortedPositions[2]?.positionId,
-        }),
-        lastBlockNumber,
-        isShowAllEnabled,
-        isOnPortfolioPage,
-    ]);
-
     // ---------------------
-    const [currentPage, setCurrentPage] = useState(1);
     // transactions per page media queries
     const showColumns = useMediaQuery('(max-width: 1900px)');
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
-    const { height } = useWindowDimensions();
-    // const ordersPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    const regularRangesItems = Math.round((height - 250) / 36);
-    const showColumnRangesItems = Math.round((height - 250) / 60);
-    const rangesPerPage = showColumns
-        ? showColumnRangesItems
-        : regularRangesItems;
-
     useEffect(() => {
         setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
+    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
 
-    // Get current tranges
-    const indexOfLastRanges = currentPage * rangesPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRanges = sortedPositions?.slice(
-        indexOfFirstRanges,
-        indexOfLastRanges,
-    );
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+
+    const _DATA = usePagination(sortedPositions, isScreenShort, isScreenTall);
+
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
     };
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
 
-    const usePaginateDataOrNull =
-        expandTradeTable && !isOnPortfolioPage && largeScreenView
-            ? currentRanges
-            : sortedPositions;
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        changeRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && rangeData.length > 10;
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {expandTradeTable && sortedPositions.length > 30 && (
-                <Pagination
-                    itemsPerPage={rangesPerPage}
-                    totalItems={sortedPositions.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </div>
-    );
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && rangeData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        rowsPerPage={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedPositions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
-
-    const baseTokenCharacter = baseTokenSymbol
-        ? getUnicodeCharacter(baseTokenSymbol)
-        : '';
-    const quoteTokenCharacter = quoteTokenSymbol
-        ? getUnicodeCharacter(quoteTokenSymbol)
-        : '';
 
     const walID = (
         <>
@@ -333,26 +206,26 @@ export default function Ranges(props: propsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = isOnPortfolioPage ? (
+    const tokens = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+            <p>{`${baseTokenSymbol}`}</p>
+            <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
     const headerColumns = [
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: showPair,
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && showPair,
+            show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
@@ -366,16 +239,16 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns && !isOnPortfolioPage,
+            show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: isShowAllEnabled,
+            sortable: showAllData,
         },
         {
             name: walID,
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: isShowAllEnabled,
+            sortable: !isAccountView,
         },
         {
             name: 'Min',
@@ -409,7 +282,7 @@ export default function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
+            name: isAccountView ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -417,7 +290,7 @@ export default function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
+            name: isAccountView ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -447,6 +320,7 @@ export default function Ranges(props: propsIF) {
             slug: 'status',
             sortable: true,
         },
+
         {
             name: '',
             className: '',
@@ -456,7 +330,7 @@ export default function Ranges(props: propsIF) {
         },
     ];
 
-    const headerStyle = isOnPortfolioPage
+    const headerStyle = isAccountView
         ? styles.portfolio_header
         : styles.trade_header;
 
@@ -474,76 +348,92 @@ export default function Ranges(props: propsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
+    const sortedRowItemContent = sortedPositions.map((position, idx) => (
         <RangesRow
-            cachedQuerySpotPrice={cachedQuerySpotPrice}
-            account={account}
             key={idx}
-            // key={`Ranges-Row-wefwewa4564f-${JSON.stringify(position)}`}
             position={position}
-            currentPositionActive={currentPositionActive}
-            setCurrentPositionActive={setCurrentPositionActive}
-            openGlobalModal={props.openGlobalModal}
-            closeGlobalModal={props.closeGlobalModal}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            showSidebar={showSidebar}
-            isUserLoggedIn={isUserLoggedIn}
-            crocEnv={crocEnv}
-            chainData={chainData}
-            provider={provider}
-            chainId={chainId}
-            baseTokenBalance={baseTokenBalance}
-            quoteTokenBalance={quoteTokenBalance}
-            baseTokenDexBalance={baseTokenDexBalance}
-            quoteTokenDexBalance={quoteTokenDexBalance}
-            lastBlockNumber={lastBlockNumber}
-            isOnPortfolioPage={isOnPortfolioPage}
-            idx={idx}
-            handlePulseAnimation={handlePulseAnimation}
+            isAccountView={isAccountView}
             showPair={showPair}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            dexBalancePrefs={dexBalancePrefs}
-            slippage={slippage}
-            gasPriceInGwei={gasPriceInGwei}
-            ethMainnetUsdPrice={ethMainnetUsdPrice}
         />
     ));
 
+    const currentRowItemContent = _DATA.currentData.map((position, idx) => (
+        <RangesRow
+            key={idx}
+            position={position}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            isAccountView={isAccountView}
+            showPair={showPair}
+        />
+    ));
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
 
-    const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
-        : mobileViewHeight;
-    const portfolioPageStyle = props.isOnPortfolioPage
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
-    const rangeDataOrNull = rangeData.length ? (
-        rowItemContent
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
+
+    const shouldDisplayNoTableData = !isLoading && !rangeData.length;
+
+    const rangeDataOrNull = !shouldDisplayNoTableData ? (
+        <div>
+            <ul ref={listRef}>{currentRowItemContent}</ul>
+            {
+                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
+                // TODO (#1804): we should instead be adding results to RTK
+                !expandTradeTable &&
+                    !props.isAccountView &&
+                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                        <div className={styles.view_more_container}>
+                            <button
+                                className={styles.view_more_button}
+                                onClick={() => {
+                                    setExpandTradeTable(true);
+                                }}
+                            >
+                                View More
+                            </button>
+                        </div>
+                    )
+            }
+        </div>
     ) : (
-        <NoTableData
-            isShowAllEnabled={isShowAllEnabled}
-            type='ranges'
-            isOnPortfolioPage={isOnPortfolioPage}
-            setIsShowAllEnabled={setIsShowAllEnabled}
-        />
+        <NoTableData type='ranges' isAccountView={isAccountView} />
     );
+
+    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <section
-            className={`${styles.main_list_container} `}
-            style={{ height: portfolioPageStyle }}
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TableSkeletons />
-            ) : (
-                rangeDataOrNull
-            )}
-            {footerDisplay}
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {isLoading ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                ) : (
+                    rangeDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
         </section>
     );
 }
+
+export default memo(Ranges);

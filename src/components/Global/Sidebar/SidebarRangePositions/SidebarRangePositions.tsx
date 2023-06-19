@@ -1,36 +1,45 @@
-import styles from './SidebarRangePositions.module.css';
+import styles from '../SidebarTable.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { SetStateAction, Dispatch } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useContext } from 'react';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
-    isDenomBase: boolean;
     userPositions?: PositionIF[];
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: propsIF) {
+    const { userPositions } = props;
+
     const {
-        chainId,
-        isDenomBase,
-        userPositions,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
         setCurrentPositionActive,
-        isUserLoggedIn,
-        setShowSidebar,
+        setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
-        setIsShowAllEnabled,
-    } = props;
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { close: closeSidebar },
+    } = useContext(SidebarContext);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -39,29 +48,26 @@ export default function SidebarRangePositions(props: propsIF) {
 
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleRangePositionClick = (pos: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setCurrentPositionActive(pos.positionStorageSlot);
-        setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                pos.base +
-                '&tokenB=' +
-                pos.quote,
-        );
+        setCurrentPositionActive(pos.firstMintTx);
+        setShowAllData(false);
+        linkGenPool.navigate({
+            chain: chainId,
+            tokenA: pos.base,
+            tokenB: pos.quote,
+        });
     };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setShowSidebar(false);
+        closeSidebar();
     };
 
     return (
@@ -77,16 +83,18 @@ export default function SidebarRangePositions(props: propsIF) {
                         <SidebarRangePositionsCard
                             key={idx}
                             position={position}
-                            isDenomBase={isDenomBase}
                             handleClick={handleRangePositionClick}
                         />
                     ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserLoggedIn && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }

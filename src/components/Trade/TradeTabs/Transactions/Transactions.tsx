@@ -1,452 +1,240 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
-
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
-import {
-    addChangesByPool,
-    CandleData,
-    graphData,
-    setChangesByPool,
-    setDataLoadingStatus,
-} from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import Pagination from '../../../Global/Pagination/Pagination';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import useWebSocket from 'react-use-websocket';
-// import useDebounce from '../../../../App/hooks/useDebounce';
-import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { useSortedTransactions } from '../useSortedTxs';
-import useDebounce from '../../../../App/hooks/useDebounce';
+import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { getTransactionData } from '../../../../App/functions/getTransactionData';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-// import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { IS_LOCAL_ENV } from '../../../../constants';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    importedTokens: TokenIF[];
-    isTokenABase: boolean;
+    filter?: CandleData | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    isShowAllEnabled: boolean;
-    portfolio?: boolean;
-    tokenList: TokenIF[];
-
-    changesInSelectedCandle: TransactionIF[] | undefined;
-    graphData: graphData;
-    chainData: ChainSpec;
-    blockExplorer?: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    account: string;
-    expandTradeTable: boolean;
-    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    isCandleSelected: boolean | undefined;
-    filter?: CandleData | undefined;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
-    handlePulseAnimation?: (type: string) => void;
-    showSidebar: boolean;
-    isOnPortfolioPage: boolean;
-    setSelectedDate?: Dispatch<Date | undefined>;
-    // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
+    setSelectedDate?: Dispatch<number | undefined>;
+    setSelectedInsideTab?: Dispatch<number>;
 }
-export default function Transactions(props: propsIF) {
+function Transactions(props: propsIF) {
     const {
-        // importedTokens,
-        isTokenABase,
+        filter,
         activeAccountTransactionData,
         connectedAccountActive,
-        isShowAllEnabled,
-        account,
-        changesInSelectedCandle,
-        graphData,
-        tokenList,
-        chainData,
-        blockExplorer,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        expandTradeTable,
-        isCandleSelected,
-        filter,
-        showSidebar,
-        openGlobalModal,
-        closeGlobalModal,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        setIsShowAllEnabled,
-        // setIsCandleSelected,
-        changeState,
         setSelectedDate,
-        // setExpandTradeTable,
-        setSimpleRangeWidth,
+        setSelectedInsideTab,
+        isAccountView,
     } = props;
 
-    const dispatch = useAppDispatch();
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { isCandleSelected } = useContext(CandleContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { chartSettings } = useContext(ChartContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const {
+        showAllData: showAllDataSelection,
+        expandTradeTable: expandTradeTableSelection,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { setOutsideControl } = useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
 
-    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
+    const candleTime = chartSettings.candleTime.global;
 
-    const changesByUser = graphData?.changesByUser?.changes;
-    const changesByPool = graphData?.changesByPool?.changes;
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
+    // only show all data and expand when on trade tab page
+    const showAllData = !isAccountView && showAllDataSelection;
+    const expandTradeTable = !isAccountView && expandTradeTableSelection;
 
+    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+    // NOTE: this is done to improve rendering speed for this page.
+
+    const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
+    const selectedBase = tradeData.baseToken.address;
+    const selectedQuote = tradeData.quoteToken.address;
 
-    const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
+    const [transactionData, setTransactionData] = useState<TransactionIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+
+    useEffect(() => {
+        // handled in useEffect below
+        if (isCandleSelected) return;
+        if (isAccountView)
+            setTransactionData(activeAccountTransactionData || []);
+        else if (!showAllData)
+            setTransactionData(
+                graphData?.changesByUser?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
+        else {
+            setTransactionData(
+                graphData?.changesByPool?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
         }
-    });
+    }, [
+        showAllData,
+        isCandleSelected,
+        activeAccountTransactionData,
+        graphData?.changesByUser,
+        graphData?.changesByPool,
+    ]);
 
-    // const changesByUserWithoutFills = changesByUser.filter((tx) => {
-    //     if (tx.changeType !== 'fill') {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // });
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+            );
+        else if (isCandleSelected) {
+            setIsLoading(graphData?.dataLoadingStatus.isCandleDataLoading);
+        } else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+    }, [
+        showAllData,
+        connectedAccountActive,
+        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+        graphData?.dataLoadingStatus.isPoolTxDataLoading,
+        graphData?.dataLoadingStatus.isCandleDataLoading,
+    ]);
 
-    const changesByPoolWithoutFills = changesByPool.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    const [transactionData, setTransactionData] = useState(
-        isOnPortfolioPage
-            ? activeAccountTransactionData || []
-            : changesByPoolWithoutFills,
-    );
-
-    const isConnectedUserTxDataLoading =
-        dataLoadingStatus?.isConnectedUserTxDataLoading;
-    const isLookupUserTxDataLoading =
-        dataLoadingStatus?.isLookupUserTxDataLoading;
-    const isPoolTxDataLoading = dataLoadingStatus?.isPoolTxDataLoading;
-
-    const isTxDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserTxDataLoading) ||
-        (!connectedAccountActive && isLookupUserTxDataLoading);
-
-    const isTxDataLoadingForTradeTable =
-        !isCandleSelected &&
-        ((isShowAllEnabled && isPoolTxDataLoading) ||
-            (!isShowAllEnabled && isConnectedUserTxDataLoading));
-
-    const shouldDisplayLoadingAnimation =
-        (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
-        (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
-
-    const shouldDisplayNoTableData = !transactionData.length;
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        2000,
-    ); // debounce 1 second
-    const debouncedShouldDisplayNoTableData = useDebounce(
-        shouldDisplayNoTableData,
-        1000,
-    ); // debounce 1 second
-
-    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] =
-        useState(false);
+    const shouldDisplayNoTableData = !isLoading && !transactionData.length;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions(
-            'time',
-            isShowAllEnabled && !isCandleSelected
-                ? changesByPoolWithoutFills
-                : transactionData,
-        );
-
-    function handleUserSelected() {
-        // console.log({ changesByUserMatchingSelectedTokens });
-        setTransactionData(changesByUserMatchingSelectedTokens);
-        // setDataToDisplay(changesByUserMatchingSelectedTokens?.length > 0);
-    }
-    function handlePoolSelected() {
-        if (!isOnPortfolioPage) {
-            // console.log({ changesByPoolWithoutFills });
-            setTransactionData(changesByPoolWithoutFills);
-            // setDataToDisplay(changesByPoolWithoutFills?.length > 0);
-        }
-    }
-
-    useEffect(() => {
-        if (isOnPortfolioPage && activeAccountTransactionData) {
-            setTransactionData(activeAccountTransactionData);
-            // setDataToDisplay(true);
-        }
-    }, [isOnPortfolioPage, JSON.stringify(activeAccountTransactionData)]);
-
-    // update tx table content when candle selected or underlying data changes
-    useEffect(() => {
-        if (!isOnPortfolioPage) {
-            if (isCandleSelected) {
-                if (changesInSelectedCandle !== undefined) {
-                    setTransactionData(changesInSelectedCandle);
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'candleData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
-                // setIsDataLoading(false);
-            } else if (isShowAllEnabled) {
-                handlePoolSelected();
-            } else {
-                handleUserSelected();
-            }
-        }
-    }, [
-        isOnPortfolioPage,
-        isShowAllEnabled,
-        isCandleSelected,
-        filter,
-        JSON.stringify(changesInSelectedCandle),
-        JSON.stringify(changesByUserMatchingSelectedTokens),
-        JSON.stringify(changesByPoolWithoutFills),
-    ]);
+        useSortedTxs('time', transactionData);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !showSidebar;
-    const max1400px = useMediaQuery('(max-width: 1400px)');
-    const max1700px = useMediaQuery('(max-width: 1700px)');
+    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
+    const showTimestamp = useMediaQuery('(min-width: 1000px)');
 
-    const showColumns =
-        (max1400px && !showSidebar) || (max1700px && showSidebar);
-    const view2 = useMediaQuery('(max-width: 1568px)');
+    const showColumns = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1850px)')
+            : useMediaQuery('(max-width: 1500px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1850px)')
+        : useMediaQuery('(max-width: 1600px)');
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
-
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { height } = useWindowDimensions();
-
-    // const transactionsPerPage = Math.round(((0.7 * height) / 33) )
-    // height => current height of the viewport
-    // 250 => Navbar, header, and footer. Everything that adds to the height not including the pagination contents
-    // 30 => Height of each paginated row item
-
-    // const regularTransactionItems = Math.round((height - 250) / 30);
-    const showColumnTransactionItems = showColumns
-        ? Math.round((height - 250) / 50)
-        : Math.round((height - 250) / 38);
-    const transactionsPerPage = showColumnTransactionItems;
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [
-        account,
-        isShowAllEnabled,
-        JSON.stringify({ baseTokenAddress, quoteTokenAddress }),
-    ]);
-
-    // Get current transactions
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction =
-        indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = sortedTransactions?.slice(
-        indexOfFirstTransaction,
-        indexOfLastTransaction,
-    );
-
-    // Change page
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
-    const usePaginateDataOrNull =
-        expandTradeTable && largeScreenView
-            ? currentTransactions
-            : sortedTransactions;
-
-    // wait 5 seconds to open a subscription to pool changes
-    useEffect(() => {
-        const handler = setTimeout(
-            () => setDebouncedIsShowAllEnabled(isShowAllEnabled),
-            5000,
-        );
-        return () => clearTimeout(handler);
-    }, [isShowAllEnabled]);
-
-    useEffect(() => {
-        if (isServerEnabled && isShowAllEnabled) {
-            fetchPoolRecentChanges({
-                tokenList: tokenList,
-                base: baseTokenAddress,
-                quote: quoteTokenAddress,
-                poolIdx: chainData.poolIndex,
-                chainId: chainData.chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
-                n: 100,
+    const getCandleData = () =>
+        crocEnv &&
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBase,
+            quote: selectedQuote,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            annotate: true,
+            addValue: true,
+            simpleCalc: true,
+            annotateMEV: false,
+            ensResolution: true,
+            n: 80,
+            period: candleTime.time,
+            time: filter?.time,
+            crocEnv: crocEnv,
+            lastBlockNumber,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((selectedCandleChangesJson) => {
+                IS_LOCAL_ENV && console.debug({ selectedCandleChangesJson });
+                if (selectedCandleChangesJson) {
+                    const selectedCandleChangesWithoutFills =
+                        selectedCandleChangesJson.filter((tx) => {
+                            if (tx.changeType !== 'fill') {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    setTransactionData(selectedCandleChangesWithoutFills);
+                }
+                setOutsideControl(true);
+                setSelectedInsideTab && setSelectedInsideTab(0);
+                setIsLoading(false);
             })
-                .then((poolChangesJsonData) => {
-                    if (poolChangesJsonData) {
-                        dispatch(
-                            setChangesByPool({
-                                dataReceived: true,
-                                changes: poolChangesJsonData,
-                            }),
-                        );
-                    }
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'poolTxData',
-                            loadingStatus: false,
-                        }),
-                    );
-                })
-                .catch(console.log);
-        }
-    }, [isServerEnabled, isShowAllEnabled]);
+            .catch(console.error);
 
-    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
-
-    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
-        () =>
-            wssGraphCacheServerDomain +
-            '/subscribe_pool_recent_changes?' +
-            new URLSearchParams({
-                base: baseTokenAddress.toLowerCase(),
-                quote: quoteTokenAddress.toLowerCase(),
-                poolIdx: chainData.poolIndex.toString(),
-                chainId: chainData.chainId,
-                ensResolution: 'true',
-                annotate: 'true',
-                //  addCachedAPY: 'true',
-                //  omitKnockout: 'true',
-                addValue: 'true',
-            }),
-        [
-            baseTokenAddress,
-            quoteTokenAddress,
-            chainData.chainId,
-            chainData.poolIndex,
-        ],
-    );
-
-    const {
-        //  sendMessage,
-        lastMessage: lastPoolChangeMessage,
-        //  readyState
-    } = useWebSocket(
-        poolRecentChangesCacheSubscriptionEndpoint,
-        {
-            // share:  true,
-            onOpen: () => {
-                console.log('pool recent changes subscription opened');
-
-                // repeat fetch with the interval of 30 seconds
-                // const timerId = setInterval(() => {
-                //     fetchPoolRecentChanges({
-                //         tokensOnActiveLists: tokenMap,
-
-                //         base: baseTokenAddress,
-                //         quote: quoteTokenAddress,
-                //         poolIdx: chainData.poolIndex,
-                //         chainId: chainData.chainId,
-                //         annotate: true,
-                //         addValue: true,
-                //         simpleCalc: true,
-                //         annotateMEV: false,
-                //         ensResolution: true,
-                //         n: 100,
-                //     })
-                //         .then((poolChangesJsonData) => {
-                //             if (poolChangesJsonData) {
-                //                 dispatch(addChangesByPool(poolChangesJsonData));
-                //             }
-                //         })
-                //         .catch(console.log);
-                // }, 30000);
-
-                // // after 90 seconds stop
-                // setTimeout(() => {
-                //     clearInterval(timerId);
-                // }, 90000);
-            },
-            onClose: (event: CloseEvent) => console.log({ event }),
-            // onClose: () => console.log('allPositions websocket connection closed'),
-            // Will attempt to reconnect on all close events, such as server shutting down
-            shouldReconnect: () => true,
-        },
-        // only connect if user is viewing pool changes
-        isServerEnabled && debouncedIsShowAllEnabled,
-    );
-
+    // update candle transactions on fresh load
     useEffect(() => {
-        if (lastPoolChangeMessage !== null) {
-            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
-            // console.log({ lastMessageData });
-            if (lastMessageData) {
-                Promise.all(
-                    lastMessageData.map((tx: TransactionIF) => {
-                        return getTransactionData(tx, tokenList);
-                    }),
-                )
-                    .then((updatedTransactions) => {
-                        // console.log({ updatedTransactions });
-                        dispatch(addChangesByPool(updatedTransactions));
-                    })
-                    .catch(console.log);
-            }
+        if (
+            isServerEnabled &&
+            isCandleSelected &&
+            candleTime.time &&
+            filter?.time &&
+            crocEnv
+        ) {
+            setIsLoading(true);
+            getCandleData();
         }
-    }, [lastPoolChangeMessage]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, candleTime.time]);
 
-    // const [expanded, setExpanded] = useState<false | number>(false);
-
-    // const sidebarOpen = false;
+    // update candle transactions on last block num change
+    useEffect(() => {
+        if (isCandleSelected) getCandleData();
+    }, [lastBlockNumWait]);
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
-
-    // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
-
-    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -465,26 +253,18 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: !showColumns,
-            // && !showSidebar
-            //   &&  !isOnPortfolioPage,
+            show: showTimestamp,
+
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && showPair,
+            show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
-        // {
-        //     name: 'Pool',
-        //     className: '',
-        //     show: isOnPortfolioPage && !showSidebar,
-        //     slug: 'pool',
-        //     sortable: false,
-        // },
         {
             name: 'ID',
 
@@ -494,22 +274,19 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Wallet',
-
-            show: !showColumns && !isOnPortfolioPage,
+            show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: isShowAllEnabled,
+            sortable: true,
         },
         {
             name: walID,
-
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: !isAccountView,
             alignCenter: false,
         },
         {
             name: 'Price',
-
             show: !ipadView,
             slug: 'price',
             sortable: false,
@@ -517,7 +294,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Side',
-
             show: !showColumns,
             slug: 'side',
             sortable: false,
@@ -525,7 +301,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Type',
-
             show: !showColumns,
             slug: 'type',
             sortable: false,
@@ -533,7 +308,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
@@ -541,15 +315,13 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Value (USD)',
-
             show: true,
             slug: 'value',
             sortable: true,
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
-            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -557,9 +329,7 @@ export default function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
-
+            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
@@ -567,33 +337,27 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-
-            show: !isOnPortfolioPage && showColumns,
-
+            show: !isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-
-            show: isOnPortfolioPage && showColumns,
-
+            show: isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
-
         {
             name: '',
-
             show: true,
             slug: 'menu',
             sortable: false,
         },
     ];
 
-    const headerStyle = isOnPortfolioPage
+    const headerStyle = isAccountView
         ? styles.portfolio_header
         : styles.trade_header;
 
@@ -612,82 +376,193 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {expandTradeTable && transactionData.length > 30 && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </div>
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+
+    const _DATA = usePagination(
+        sortedTransactions,
+        isScreenShort,
+        isScreenTall,
     );
 
-    const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        changeRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && transactionData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        rowsPerPage={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedTransactions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
+
+    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
-            tradeData={tradeData}
-            isTokenABase={isTokenABase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
+            showTimestamp={showTimestamp}
             showPair={showPair}
-            showSidebar={showSidebar}
-            blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
-            isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handlePulseAnimation}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
+            isAccountView={isAccountView}
         />
     ));
+    const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
+        <TransactionRow
+            key={idx}
+            tx={tx}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showTimestamp={showTimestamp}
+            showPair={showPair}
+            isAccountView={isAccountView}
+        />
+    ));
+    const handleKeyDownViewTransaction = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ) => {
+        // Opens a modal which displays the contents of a transaction and some other information
+        const { key } = event;
 
-    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                event.preventDefault();
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
+
+    const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
-            isShowAllEnabled={isShowAllEnabled}
-            setIsShowAllEnabled={setIsShowAllEnabled}
             setSelectedDate={setSelectedDate}
-            // setIsCandleSelected={setIsCandleSelected}
-            changeState={changeState}
             type='transactions'
-            isOnPortfolioPage={isOnPortfolioPage}
+            isAccountView={isAccountView}
         />
     ) : (
-        rowItemContent
+        <div onKeyDown={handleKeyDownViewTransaction}>
+            <ul ref={listRef} id='current_row_scroll'>
+                {currentRowItemContent}
+            </ul>
+            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
+            {!expandTradeTable &&
+                !isAccountView &&
+                sortedRowItemContent.length >
+                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
+                    <div className={styles.view_more_container}>
+                        <button
+                            className={styles.view_more_button}
+                            onClick={() => setExpandTradeTable(true)}
+                        >
+                            View More
+                        </button>
+                    </div>
+                )}
+        </div>
     );
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
 
-    const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
-        : mobileViewHeight;
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
 
-    const portfolioPageStyle = props.isOnPortfolioPage
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
+    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
-        <section
-            className={styles.main_list_container}
-            style={{ height: portfolioPageStyle }}
+        <div
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TransactionsSkeletons />
-            ) : (
-                transactionDataOrNull
-            )}
-            {footerDisplay}
-        </section>
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {isLoading ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                ) : (
+                    transactionDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
+        </div>
     );
 }
+
+export default memo(Transactions);

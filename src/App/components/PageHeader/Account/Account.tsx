@@ -1,76 +1,64 @@
-import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import styles from './Account.module.css';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
-import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import { ChainSpec } from '@crocswap-libs/sdk';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import trimString from '../../../../utils/functions/trimString';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
 
-interface AccountPropsIF {
-    isUserLoggedIn: boolean | undefined;
+interface propsIF {
     nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    chainId: string;
-    isAppOverlayActive: boolean;
-    ethMainnetUsdPrice?: number;
-
-    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-
-    switchTheme: () => void;
-    theme: string;
-    chainData: ChainSpec;
-    lastBlockNumber: number;
+    walletDropdownTokenData:
+        | {
+              logo: string;
+              symbol: string;
+              value: string | undefined;
+              amount: string | undefined;
+          }[]
+        | null;
+    openWagmiModal: () => void;
 }
 
-export default function Account(props: AccountPropsIF) {
+export default function Account(props: propsIF) {
     const {
         nativeBalance,
-        ethMainnetUsdPrice,
         clickLogout,
         ensName,
-        chainId,
-        isAppOverlayActive,
-        setIsAppOverlayActive,
-        switchTheme,
-        theme,
-        lastBlockNumber,
-        chainData,
+        walletDropdownTokenData,
+        openWagmiModal,
     } = props;
 
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
         copy(props.accountAddressFull);
-        setOpenSnackbar(true);
+        openSnackbar(`${props.accountAddressFull} copied`, 'info');
     }
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
+    const connectedEnsOrAddressTruncated = ensName
+        ? trimString(ensName, 10, 3, '…')
+        : trimString(props.accountAddressFull, 5, 3, '…');
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
@@ -139,9 +127,9 @@ export default function Account(props: AccountPropsIF) {
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
                 aria-label={ariaLabel}
             >
-                <MdAccountBalanceWallet color='var(--text-grey-white)' />
+                <MdAccountBalanceWallet color='var(--text1)' />
                 <p className={styles.wallet_name}>
-                    {ensName !== '' ? ensName : props.accountAddress}
+                    {connectedEnsOrAddressTruncated || '...'}
                 </p>
             </button>
             {showWalletDropdown ? (
@@ -161,32 +149,17 @@ export default function Account(props: AccountPropsIF) {
                     }
                     ethValue={`${ethMainnetUsdValueTruncated}`}
                     accountAddressFull={props.accountAddressFull}
-                    showWalletDropdown={showWalletDropdown}
-                    setShowWalletDropdown={setShowWalletDropdown}
+                    walletDropdownTokenData={walletDropdownTokenData}
+                    clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}
         </section>
     );
 
-    const blockNumberDisplay = (
-        <DefaultTooltip
-            interactive
-            title={`Latest block number on ${chainData.displayName}`}
-            placement={'bottom'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            <div className={styles.block_number_div}>
-                <div className={styles.page_block_sign} />
-                <span>{lastBlockNumber}</span>
-            </div>
-        </DefaultTooltip>
-    );
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
-            {isUserLoggedIn && blockNumberDisplay}
+            {isConnected && <ExchangeBalanceModal />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
@@ -195,17 +168,10 @@ export default function Account(props: AccountPropsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    chainId={chainId}
-                    isAppOverlayActive={isAppOverlayActive}
-                    setIsAppOverlayActive={setIsAppOverlayActive}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
-                    switchTheme={switchTheme}
-                    theme={theme}
-                    isTutorialMode={props.isTutorialMode}
-                    setIsTutorialMode={props.setIsTutorialMode}
+                    openWagmiModal={openWagmiModal}
                 />
             </NavItem>
-            {snackbarContent}
         </div>
     );
 }

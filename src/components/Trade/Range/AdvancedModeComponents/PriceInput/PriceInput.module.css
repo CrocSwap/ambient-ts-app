@@ -15,12 +15,12 @@
     background: transparent;
 }
 
-.sign:focus-visible{
+.sign:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-    0px 0px 2px rgba(205, 193, 255, 0.2);
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 /* .overlay_container{
     width: 100%;
@@ -28,7 +28,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,19 +44,19 @@
 
 .warning_text{
     font-weight: 300;
-    color: #7371fc;
+    color: var(--accent1);
 } */
 
 .title,
 .percentage {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 5px;
 }
 
 .percentage {
-    color: var(--light-blue);
+    color: var(--accent5);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
@@ -64,7 +64,7 @@
 .price_input_container {
     display: grid;
     grid-template-columns: 18px 1fr 18px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     text-align: center;
@@ -79,7 +79,7 @@
     overflow: hidden;
     width: 100%;
     padding: 0;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-align: center;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -92,7 +92,7 @@
     appearance: textfield;
 }
 .currency_quantity::placeholder {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
 }

@@ -11,17 +11,15 @@ interface propsIF {
     thisToken: TokenIF;
 }
 
-export default function LimitCurrencyQuantity(props: propsIF) {
+function LimitCurrencyQuantity(props: propsIF) {
     const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
-        // console.log(`setting display value for ${fieldId} to: ${value}`);
         setDisplayValue(value);
     }, [value]);
 
-    // console.log({ fieldId });
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         // if (event && fieldId === 'sell') {
         //     setTokenBInputQty('');
@@ -72,9 +70,9 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
-                autoFocus={fieldId === 'sell'}
-                required
             />
         </div>
     );
 }
+
+export default LimitCurrencyQuantity;

@@ -1,16 +1,6 @@
 import styles from './TransactionFailed.module.css';
-// import Animation from '../Animation/Animation';
-// import NotFound from '../../../assets/animations/NotFound.json';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Button/Button';
-
-// interface TransactionSubmittedProps {
-//     hash: string;
-//     tokenBAddress: string;
-//     tokenBSymbol: string;
-//     tokenBDecimals: number;
-//     tokenBImage: string;
-// }
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
@@ -30,10 +20,7 @@ export default function TransactionFailed(props: TransactionSubmittedProps) {
                 {!noAnimation && <CircleLoaderFailed size='8rem' />}
                 <h2>Transaction Failed.</h2>
             </div>
-            <p>
-                Please check your wallet for notifications, or click &quot;Try
-                Again&quot;.
-            </p>
+            <p>Please check your wallet for notifications or try again.</p>
             <Button
                 title='Try Again'
                 action={() => {

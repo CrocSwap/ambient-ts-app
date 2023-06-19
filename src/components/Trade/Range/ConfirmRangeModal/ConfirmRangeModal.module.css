@@ -3,9 +3,11 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
 }
 
-.modal_footer{
+.modal_footer {
     padding: 0 1rem;
 }
 
@@ -29,7 +31,7 @@
     line-height: var(--header2-lh);
 
     font-weight: 200;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .fee_tier {
     font-size: 14px;
@@ -46,14 +48,6 @@
 
     align-items: center;
     gap: 8px;
-}
-
-.tokens img {
-    width: 30px;
-    height: 30px;
-
-    border-radius: 50%;
-    background: white;
 }
 
 .range_display {
@@ -81,7 +75,7 @@
 
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    background-color: var(--dark3);
+    background-color: var(--dark2);
 }
 .fee_tier_container {
     display: grid;
@@ -90,13 +84,6 @@
     row-gap: 12px;
 }
 
-.detail_line img {
-    width: 20px;
-    height: 20px;
-
-    border-radius: 50%;
-    background: white;
-}
 .detail_line div {
     display: flex;
 
@@ -118,8 +105,3 @@
     align-items: center;
     gap: 10px;
 }
-/* .detail_line img {
-    margin: 0 10px;
-} */
-
-/* modal */

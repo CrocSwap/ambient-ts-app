@@ -9,7 +9,6 @@ import {
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
@@ -20,7 +19,6 @@ import TransactionFailed from '../../../Global/TransactionFailed/TransactionFail
 interface propsIF {
     newRangeTransactionHash: string;
     txErrorCode: string;
-    tokenPair: TokenPairIF;
     resetConfirmation: () => void;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendTransaction: () => Promise<void>;
@@ -31,7 +29,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const {
         newRangeTransactionHash,
         txErrorCode,
-        tokenPair,
         resetConfirmation,
         setShowBypassConfirmButton,
         sendTransaction,
@@ -41,8 +38,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const tokenAQty = (
         document.getElementById('A-range-quantity') as HTMLInputElement
@@ -83,7 +79,6 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         <TransactionException
             resetConfirmation={handleReset}
             initiateTx={sendTransaction}
-            noAnimation
         />
     );
 
@@ -105,6 +100,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             tokenBAddress={tokenA.address}
             tokenBDecimals={tokenA.decimals}
             tokenBImage={tokenA.logoURI}
+            chainId={tokenA.chainId}
             noAnimation
         />
     );
@@ -124,7 +120,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         ? 'var(--negative)'
         : transactionApproved
         ? 'var(--positive)'
-        : 'var(--text-highlight-dark)';
+        : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -158,8 +154,8 @@ export default function BypassConfirmRangeButton(props: propsIF) {
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div style={{ color: buttonColor }}>
-                        {animationDisplay}
-                        {buttonText}
+                        <div style={{ width: '35px' }}>{animationDisplay}</div>
+                        <div>{buttonText}</div>
                     </div>
                     {showExtraInfo ? (
                         <RiArrowUpSLine size={20} />

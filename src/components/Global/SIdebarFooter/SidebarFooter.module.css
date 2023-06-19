@@ -4,11 +4,10 @@
     z-index: 999;
     width: 100vw;
     bottom: 0;
-    /* position: sticky; */
-    /* background-color: var(--dark1); */
+
     transition: width var(--animation-speed) ease;
 
-    background-color: var(--body-bg);
+    background-color: var(--dark1);
     height: 64px;
     display: none;
 }
@@ -48,7 +47,7 @@
 }
 
 /* Small screens */
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
     .sidebar {
         display: none;
 

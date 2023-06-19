@@ -1,12 +1,15 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
 import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
-import { VscClose } from 'react-icons/vsc';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+    Dispatch,
+    useState,
+    useEffect,
+    useRef,
+    useContext,
+    memo,
+    useMemo,
+} from 'react';
+import { AiOutlineFullscreen } from 'react-icons/ai';
+import { FiCopy } from 'react-icons/fi';
 
 // START: Import JSX Components
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
@@ -15,20 +18,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 
-import { candleDomain } from '../../../utils/state/tradeDataSlice';
-import {
-    CandleData,
-    CandlesByPoolAndDuration,
-    LiquidityData,
-} from '../../../utils/state/graphDataSlice';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import { get24hChange } from '../../../App/functions/getPoolStats';
-import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
-import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
-// import { formatAmountOld } from '../../../utils/numbers';
-import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
@@ -37,106 +27,23 @@ import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
-import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { chartSettingsMethodsIF } from '../../../App/hooks/useChartSettings';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChartContext } from '../../../contexts/ChartContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import Spinner from '../../../components/Global/Spinner/Spinner';
+import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
+import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 // interface for React functional component props
 interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    pool: CrocPoolView | undefined;
-    // poolPriceTick: number | undefined;
-    chainData: ChainSpec;
-    chainId: string;
-    lastBlockNumber: number;
-    poolPriceDisplay: number;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    isTokenABase: boolean;
-    fullScreenChart: boolean;
-    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
-    candleData: CandlesByPoolAndDuration | undefined;
-    limitTick: number | undefined;
-    favePools: favePoolsMethodsIF;
-    liquidityData: LiquidityData;
-    isAdvancedModeActive: boolean | undefined;
-    simpleRangeWidth: number | undefined;
-    upBodyColor: string;
-    upBorderColor: string;
-    downBodyColor: string;
-    downBorderColor: string;
-    upVolumeColor: string;
-    downVolumeColor: string;
-    baseTokenAddress: string;
-    poolPriceNonDisplay: number | undefined;
-    selectedDate: Date | undefined;
-    setSelectedDate: Dispatch<Date | undefined>;
-    TradeSettingsColor: JSX.Element;
-
-    poolPriceChangePercent: string | undefined;
-
-    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
-    isPoolPriceChangePositive: boolean;
-
-    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
-    handlePulseAnimation: (type: string) => void;
-    fetchingCandle: boolean;
-    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
-    minPrice: number;
-    maxPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: React.Dispatch<
-        React.SetStateAction<boolean>
-    >;
-    showSidebar: boolean;
-
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-    setCandleDomains: React.Dispatch<React.SetStateAction<candleDomain>>;
-    chartSettings: chartSettingsMethodsIF;
-    setSimpleRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    setRepositionRangeWidth: React.Dispatch<React.SetStateAction<number>>;
-    repositionRangeWidth: number;
-    setChartTriggeredBy: React.Dispatch<React.SetStateAction<string>>;
-    chartTriggeredBy: string;
-}
-
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
-
-export interface TvlChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-    linearValue: number;
-}
-
-export interface VolumeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
-    volume: number;
-    color: string;
-}
-export interface FeeChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    time: any;
-    value: number;
+    selectedDate: number | undefined;
+    setSelectedDate: Dispatch<number | undefined>;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,6 +54,10 @@ export interface LiquidityDataLocal {
     deltaAverageUSD: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cumAverageUSD: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    upperBound: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lowerBound: any;
 }
 
 export interface LiqSnap {
@@ -159,42 +70,18 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: propsIF) {
+function TradeCharts(props: propsIF) {
+    const { selectedDate, setSelectedDate } = props;
+
     const {
-        isUserLoggedIn,
-        pool,
-        chainData,
-        isTokenABase,
-        poolPriceDisplay,
-        fullScreenChart,
-        setFullScreenChart,
-        lastBlockNumber,
-        chainId,
-        favePools,
-        expandTradeTable,
-        selectedDate,
-        setSelectedDate,
-        TradeSettingsColor,
-        poolPriceChangePercent,
-        setPoolPriceChangePercent,
-        isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive,
-        handlePulseAnimation,
-        fetchingCandle,
-        setFetchingCandle,
-        minPrice,
-        maxPrice,
-        setMaxPrice,
-        setMinPrice,
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-        showSidebar,
-        setCandleDomains,
-        setSimpleRangeWidth,
+        tutorial: { isActive: isTutorialActive },
+    } = useContext(AppStateContext);
+    const {
         chartSettings,
-        setChartTriggeredBy,
-        chartTriggeredBy,
-    } = props;
+        isFullScreen: isChartFullScreen,
+        setIsFullScreen: setIsChartFullScreen,
+    } = useContext(ChartContext);
+    const { expandTradeTable } = useContext(TradeTableContext);
 
     const { pathname } = useLocation();
 
@@ -202,15 +89,8 @@ export default function TradeCharts(props: propsIF) {
         pathname.includes('market') || pathname.includes('limit');
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
-    const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
-            : true;
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
-
-    const { tradeData } = useAppSelector((state) => state);
-    const { poolIndex } = lookupChain(chainId);
 
     const [rescale, setRescale] = useState(true);
     const [latest, setLatest] = useState(false);
@@ -218,80 +98,64 @@ export default function TradeCharts(props: propsIF) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
 
-    const denomInBase = tradeData.isDenomBase;
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
-
-    const truncatedPoolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '…'
-            : poolPriceDisplay < 2
-            ? poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
     // GRAPH SETTINGS CONTENT------------------------------------------------------
     const canvasRef = useRef(null);
-    const downloadAsImage = () => {
+    const [, copy] = useCopyToClipboard();
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
+    const copyChartToClipboard = async () => {
         if (canvasRef.current) {
-            printDomToImage(canvasRef.current);
+            const blob = await printDomToImage(canvasRef.current, '#171d27');
+            if (blob) {
+                copy(blob);
+                openSnackbar('Chart image copied to clipboard', 'info');
+            }
         }
     };
-    const saveImageContent = (
-        <div className={styles.save_image_container}>
-            <div
-                className={styles.save_image_content}
-                onClick={downloadAsImage}
-                role='button'
-                tabIndex={0}
-                aria-label='Download chart image button'
-            >
-                <AiOutlineDownload />
-                Save Chart Image
-            </div>
-        </div>
-    );
+
     // CHART SETTINGS------------------------------------------------------------
-    // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
-    const [showTvl, setShowTvl] = useState(chartSettings.tvlSubchart.isEnabled);
+    const subchartState: {
+        isVolumeSubchartEnabled: boolean;
+        isTvlSubchartEnabled: boolean;
+        isFeeRateSubchartEnabled: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
+
+    const [showTvl, setShowTvl] = useState(
+        subchartState?.isTvlSubchartEnabled ?? false,
+    );
     const [showFeeRate, setShowFeeRate] = useState(
-        chartSettings.feeRateSubchart.isEnabled,
+        subchartState?.isFeeRateSubchartEnabled ?? false,
     );
     const [showVolume, setShowVolume] = useState(
-        chartSettings.volumeSubchart.isEnabled,
+        subchartState?.isVolumeSubchartEnabled ?? true,
     );
 
-    // const [liqMode, setLiqMode] = useState('Curve'); // TODO: switch default back to depth once depth mode is fixed
-
-    // useEffect(() => {
-    //     if (isMarketOrLimitModule) {
-    //         // setLiqMode('Depth'); // TODO: the following code will be uncommented once depth mode is fixed
-    //     } else {
-    //         setLiqMode('Curve');
-    //     }
-    // }, [isMarketOrLimitModule]);
-
-    const chartItemStates = {
-        showFeeRate,
+    const chartItemStates = useMemo(() => {
+        return {
+            showFeeRate,
+            showTvl,
+            showVolume,
+            liqMode: chartSettings.poolOverlay.overlay,
+        };
+    }, [
+        isMarketOrLimitModule,
+        chartSettings.poolOverlay,
         showTvl,
         showVolume,
-        liqMode: isMarketOrLimitModule
-            ? chartSettings.marketOverlay.overlay
-            : chartSettings.rangeOverlay.overlay,
-    };
+        showFeeRate,
+    ]);
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
-        if ((e.charCode || e.keyCode) === 27) setFullScreenChart(false);
+        if ((e.charCode || e.keyCode) === 27) setIsChartFullScreen(false);
     }
 
     useEffect(() => {
@@ -300,164 +164,73 @@ export default function TradeCharts(props: propsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
-    const chartSettingsRef = useRef<HTMLDivElement>(null);
 
-    const chartSettingsOutsideClickHandler = () => {
-        setShowChartSettings(false);
-    };
-    UseOnClickOutside(chartSettingsRef, chartSettingsOutsideClickHandler);
-
-    const exDataContent = (
-        <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Perferendis, doloremque.
-        </div>
-    );
-    const chartSettingsData = [
-        { icon: '🍅', label: 'Tomato', content: exDataContent },
-        { icon: '🥬', label: 'Lettuce', content: exDataContent },
-        { icon: '🥕', label: 'Carrot', content: exDataContent },
-        { icon: '🫐', label: 'Blueberries', content: exDataContent },
-        { icon: '🥂 ', label: 'Colors', content: TradeSettingsColor },
-    ];
-
-    const [showChartSettings, setShowChartSettings] = useState(false);
-    const [selectedChartSetting, setSelectedChartSetting] = useState(
-        chartSettingsData[0],
-    );
-    const chartSettingNavs = (
-        <ul className={styles.chart_settings_nav}>
-            {chartSettingsData.map((item, idx) => (
-                <li
-                    key={idx}
-                    className={
-                        item.label === selectedChartSetting.label
-                            ? styles.setting_active
-                            : styles.setting
-                    }
-                    onClick={() => setSelectedChartSetting(item)}
-                >
-                    <IconWithTooltip title={item.label} placement='left'>
-                        {item.icon}
-                    </IconWithTooltip>
-                </li>
-            ))}
-        </ul>
-    );
-
-    const mainChartSettingsContent = (
+    const saveImageContent = (
         <div
-            className={`${styles.main_settings_container} ${
-                showChartSettings && styles.main_settings_container_active
-            }`}
+            className={styles.save_image_content}
+            onClick={copyChartToClipboard}
+            role='button'
+            tabIndex={0}
+            aria-label='Download chart image button'
         >
-            <header>
-                <p />
-                <h2>Chart Settings</h2>
-                <div onClick={() => setShowChartSettings(false)}>
-                    <VscClose size={24} />
-                </div>
-            </header>
-            <div className={styles.chart_settings_inner}>
-                {chartSettingNavs}
-                <section className={styles.main_chart_settings_content}>
-                    <h1>{selectedChartSetting.label}</h1>
-                    {selectedChartSetting.content}
-                </section>
-            </div>
+            Copy to Clipboard
+            <FiCopy />
         </div>
     );
+
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
-            <AiOutlineFullscreen
-                size={20}
-                onClick={() => setFullScreenChart(!fullScreenChart)}
-                id='trade_chart_full_screen_button'
-                role='button'
-                tabIndex={0}
-                aria-label='Full screen chart button'
-            />
-
-            <DefaultTooltip interactive title={saveImageContent}>
-                <AiOutlineCamera
-                    size={20}
-                    id='trade_chart_save_image'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Save chart image button'
-                />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div
+                        className={styles.save_image_content}
+                        onClick={() => setIsChartFullScreen(!isChartFullScreen)}
+                    >
+                        Toggle Full Screen Chart
+                    </div>
+                }
+                enterDelay={500}
+            >
+                <button
+                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
+                    className={styles.fullscreen_button}
+                >
+                    <AiOutlineFullscreen
+                        size={20}
+                        id='trade_chart_full_screen_button'
+                        aria-label='Full screen chart button'
+                    />
+                </button>
+            </DefaultTooltip>
+            <DefaultTooltip
+                interactive
+                title={saveImageContent}
+                enterDelay={500}
+            >
+                <button
+                    onClick={copyChartToClipboard}
+                    className={styles.fullscreen_button}
+                >
+                    <FiCopy
+                        size={20}
+                        id='trade_chart_save_image'
+                        aria-label='Copy chart image button'
+                    />
+                </button>
             </DefaultTooltip>
         </div>
     );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
-    const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
-
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && tokenAAddress && tokenBAddress) {
-                try {
-                    const priceChangeResult = await get24hChange(
-                        chainId,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        poolIndex,
-                        denomInBase,
-                    );
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('No Change');
-                        setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
-                        priceChangeResult > 0
-                            ? setIsPoolPriceChangePositive(true)
-                            : setIsPoolPriceChangePositive(false);
-
-                        const priceChangeString =
-                            priceChangeResult > 0
-                                ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) +
-                                  '%'
-                                : priceChangeResult.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }) + '%';
-                        setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
-                    }
-                } catch (error) {
-                    setPoolPriceChangePercent(undefined);
-                }
-            }
-        })();
-    }, [
-        isServerEnabled,
-        denomInBase,
-        baseTokenAddress,
-        quoteTokenAddress,
-        lastBlockNumber,
-    ]);
-
-    // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div
                 className={styles.chart_overlay_container}
                 id='trade_charts_time_frame'
             >
-                <TimeFrame
-                    candleTime={
-                        isMarketOrLimitModule
-                            ? chartSettings.candleTime.market
-                            : chartSettings.candleTime.range
-                    }
-                />
+                <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
             <div
                 style={{
@@ -474,7 +247,6 @@ export default function TradeCharts(props: propsIF) {
                     showVolume={showVolume}
                     showTvl={showTvl}
                     showFeeRate={showFeeRate}
-                    chartSettings={chartSettings}
                 />
             </div>
             <div
@@ -485,13 +257,7 @@ export default function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth
-                    overlayMethods={
-                        isMarketOrLimitModule
-                            ? chartSettings.marketOverlay
-                            : chartSettings.rangeOverlay
-                    }
-                />
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
         </div>
     );
@@ -499,9 +265,7 @@ export default function TradeCharts(props: propsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<
-        CandleChartData | undefined
-    >();
+    const [currentData, setCurrentData] = useState<CandleData | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();
@@ -510,14 +274,7 @@ export default function TradeCharts(props: propsIF) {
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <TradeChartsTokenInfo
-                isPoolPriceChangePositive={isPoolPriceChangePositive}
-                poolPriceDisplay={poolPriceDisplay}
-                poolPriceChangePercent={poolPriceChangePercent}
-                setPoolPriceChangePercent={setPoolPriceChangePercent}
-                favePools={favePools}
-                chainId={chainId}
-            />
+            <TradeChartsTokenInfo />
             <div
                 style={{
                     display: 'flex',
@@ -533,7 +290,7 @@ export default function TradeCharts(props: propsIF) {
     );
     // END OF TOKEN INFO----------------------------------------------------------------
 
-    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
 
     const [graphIsLoading, setGraphIsLoading] = useState(true);
 
@@ -550,14 +307,13 @@ export default function TradeCharts(props: propsIF) {
         <div
             className={styles.main_container_chart}
             style={{
-                padding: fullScreenChart ? '1rem' : '0',
-                background: fullScreenChart ? 'var(--dark2)' : '',
+                padding: isChartFullScreen ? '1rem' : '0',
+                background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
             ref={canvasRef}
         >
-            {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
-                {props.isTutorialMode && (
+                {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
                             className={styles.tutorial_button}
@@ -567,6 +323,7 @@ export default function TradeCharts(props: propsIF) {
                         </button>
                     </div>
                 )}
+
                 {tokenInfo}
                 {timeFrameContent}
 
@@ -583,34 +340,14 @@ export default function TradeCharts(props: propsIF) {
                 />
             </div>
             {graphIsLoading ? (
-                <TradeChartsLoading />
+                <Spinner size={100} bg='var(--dark2)' centered />
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
-                        isUserLoggedIn={isUserLoggedIn}
-                        pool={pool}
-                        chainData={chainData}
-                        expandTradeTable={expandTradeTable}
-                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        limitTick={props.limitTick}
-                        liquidityData={props.liquidityData}
-                        isAdvancedModeActive={props.isAdvancedModeActive}
-                        simpleRangeWidth={props.simpleRangeWidth}
-                        poolPriceDisplay={poolPriceDisplay}
-                        truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
                         setCurrentVolumeData={setCurrentVolumeData}
-                        upBodyColor={props.upBodyColor}
-                        upBorderColor={props.upBorderColor}
-                        downBodyColor={props.downBodyColor}
-                        downBorderColor={props.downBorderColor}
-                        upVolumeColor={props.upVolumeColor}
-                        downVolumeColor={props.downVolumeColor}
-                        baseTokenAddress={props.baseTokenAddress}
-                        chainId={chainId}
-                        poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                         rescale={rescale}
@@ -622,28 +359,6 @@ export default function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         setShowTooltip={setShowTooltip}
-                        handlePulseAnimation={handlePulseAnimation}
-                        fetchingCandle={fetchingCandle}
-                        setFetchingCandle={setFetchingCandle}
-                        minPrice={minPrice}
-                        maxPrice={maxPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                        rescaleRangeBoundariesWithSlider={
-                            rescaleRangeBoundariesWithSlider
-                        }
-                        setRescaleRangeBoundariesWithSlider={
-                            setRescaleRangeBoundariesWithSlider
-                        }
-                        showSidebar={showSidebar}
-                        setCandleDomains={setCandleDomains}
-                        setSimpleRangeWidth={setSimpleRangeWidth}
-                        setRepositionRangeWidth={props.setRepositionRangeWidth}
-                        repositionRangeWidth={props.repositionRangeWidth}
-                        setChartTriggeredBy={setChartTriggeredBy}
-                        chartTriggeredBy={chartTriggeredBy}
-                        chartSettings={chartSettings}
-                        isMarketOrLimitModule={isMarketOrLimitModule}
                     />
                 </div>
             )}
@@ -655,3 +370,5 @@ export default function TradeCharts(props: propsIF) {
         </div>
     );
 }
+
+export default memo(TradeCharts);

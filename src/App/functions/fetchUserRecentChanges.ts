@@ -1,5 +1,11 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
+import { FetchAddrFn } from './fetchAddress';
+import { FetchContractDetailsFn } from './fetchContractDetails';
+import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData } from './getTransactionData';
+import { SpotPriceFn } from './querySpotPrice';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -13,6 +19,12 @@ interface argsIF {
     ensResolution: boolean;
     n?: number;
     page?: number;
+    crocEnv: CrocEnv;
+    lastBlockNumber: number;
+    cachedFetchTokenPrice: TokenPriceFn;
+    cachedQuerySpotPrice: SpotPriceFn;
+    cachedTokenDetails: FetchContractDetailsFn;
+    cachedEnsResolve: FetchAddrFn;
 }
 
 export const fetchUserRecentChanges = (args: argsIF) => {
@@ -26,12 +38,17 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         annotateMEV,
         ensResolution,
         n,
+        crocEnv,
+        lastBlockNumber,
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
     } = args;
 
-    const userRecentChangesCacheEndpoint =
-        'https://809821320828123.de:5000' + '/user_recent_changes?';
+    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/user_txs?';
 
-    console.log('fetching user recent changes');
+    IS_LOCAL_ENV && console.debug('fetching user recent changes');
 
     const poolChanges = fetch(
         userRecentChangesCacheEndpoint +
@@ -51,16 +68,30 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         .then((json) => {
             const userTransactions = json?.data;
 
+            if (!userTransactions) {
+                return [] as TransactionIF[];
+            }
+
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: TransactionIF) => {
-                    return getTransactionData(tx, tokenList);
+                    return getTransactionData(
+                        tx,
+                        tokenList,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;
             });
             return updatedTransactions;
         })
-        .catch(console.log);
+        .catch(console.error);
 
     return poolChanges;
 };

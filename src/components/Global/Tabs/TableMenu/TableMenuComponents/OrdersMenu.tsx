@@ -1,84 +1,74 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect } from 'react';
-// import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
-
+import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
-// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
-import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
+import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
-    setIsTokenAPrimary,
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
+import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitConverterUpdate,
-    tradeData,
+    setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useNavigate } from 'react-router-dom';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    chainData: ChainSpec;
-    tradeData: tradeData;
-    crocEnv: CrocEnv | undefined;
     limitOrder: LimitOrderIF;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
-    isShowAllEnabled: boolean;
-    showSidebar: boolean;
     isOrderFilled: boolean;
-    handlePulseAnimation?: (type: string) => void;
-    // orderDetailsProps: any;
-    account: string;
-    lastBlockNumber: number;
-    showHighlightedButton: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    handleAccountClick: () => void;
 }
 
 // React functional component
 export default function OrdersMenu(props: propsIF) {
+    const {
+        limitOrder,
+        isOrderFilled,
+        isOwnerActiveAccount,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView,
+        handleAccountClick,
+    } = props;
+
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        // isShowAllEnabled,
-        crocEnv,
-        chainData,
-        tradeData,
-        limitOrder,
-        openGlobalModal,
-        isOrderFilled,
-        isOwnerActiveAccount,
-        closeGlobalModal,
-        showSidebar,
-        handlePulseAnimation,
-        lastBlockNumber,
-        account,
-        isBaseTokenMoneynessGreaterOrEqual,
-        // showHighlightedButton,
-        isOnPortfolioPage,
-    } = props;
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
+    const { chainData } = useContext(CrocEnvContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
-    const [
-        isModalOpen,
-        //  openModal,
-        closeModal,
-    ] = useModal();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const [isModalOpen, closeModal] = useModal();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -86,87 +76,21 @@ export default function OrdersMenu(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const navigate = useNavigate();
-
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
-        handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
+        handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
-        // console.log('limit order copy clicked');
-        console.log({ tradeData });
-        console.log({ limitOrder });
-        const shouldMovePrimaryQuantity =
+
+        const shouldReverse =
             tradeData.tokenA.address.toLowerCase() ===
             (limitOrder.isBid
                 ? limitOrder.quote.toLowerCase()
                 : limitOrder.base.toLowerCase());
 
-        console.log({ shouldMovePrimaryQuantity });
-        const shouldClearNonPrimaryQty =
-            tradeData.limitTick !== limitOrder.askTick &&
-            (tradeData.isTokenAPrimary
-                ? tradeData.tokenA.address.toLowerCase() ===
-                  (limitOrder.isBid
-                      ? limitOrder.base.toLowerCase()
-                      : limitOrder.quote.toLowerCase())
-                    ? true
-                    : false
-                : tradeData.tokenB.address.toLowerCase() ===
-                  (limitOrder.isBid
-                      ? limitOrder.quote.toLowerCase()
-                      : limitOrder.base.toLowerCase())
-                ? true
-                : false);
-        if (shouldMovePrimaryQuantity) {
-            console.log('flipping primary');
-            // setTimeout(() => {
-            const sellQtyField = document.getElementById(
-                'sell-limit-quantity',
-            ) as HTMLInputElement;
-            const buyQtyField = document.getElementById(
-                'buy-limit-quantity',
-            ) as HTMLInputElement;
-
-            if (tradeData.isTokenAPrimary) {
-                if (buyQtyField) {
-                    buyQtyField.value = sellQtyField.value;
-                }
-                if (sellQtyField) {
-                    sellQtyField.value = '';
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                }
-            } else {
-                if (sellQtyField) {
-                    sellQtyField.value = buyQtyField.value;
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                }
-                if (buyQtyField) {
-                    buyQtyField.value = '';
-                }
-            }
-            // }, 500);
-            dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-            dispatch(setShouldLimitConverterUpdate(true));
-        } else if (shouldClearNonPrimaryQty) {
-            if (!tradeData.isTokenAPrimary) {
-                const sellQtyField = document.getElementById(
-                    'sell-limit-quantity',
-                ) as HTMLInputElement;
-                if (sellQtyField) {
-                    sellQtyField.value = '';
-                    // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                }
-            } else {
-                const buyQtyField = document.getElementById(
-                    'buy-limit-quantity',
-                ) as HTMLInputElement;
-                if (buyQtyField) {
-                    buyQtyField.value = '';
-                }
-            }
-            console.log('resetting');
-            // dispatch(setPrimaryQuantity(''));
+        if (shouldReverse) {
+            dispatch(setShouldLimitDirectionReverse(true));
         }
+
         setTimeout(() => {
             dispatch(
                 setLimitTick(
@@ -175,57 +99,28 @@ export default function OrdersMenu(props: propsIF) {
             );
         }, 500);
 
-        // dispatch(
-        //     setIsTokenAPrimary((limitOrder.isBid && limitOrder.inBaseQty) || (!limitOrder.isBid && !limitOrder.inBaseQty)),
-        // );
-
         setShowDropdownMenu(false);
     }
 
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value}
-    //     </SnackbarComponent>
-    // );
     // -----------------END OF SNACKBAR----------------
 
     const openRemoveModal = () =>
         openGlobalModal(
-            <OrderRemoval
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
-                limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-            />,
+            <LimitActionModal limitOrder={limitOrder} type='Remove' />,
         );
     const openClaimModal = () =>
         openGlobalModal(
-            <ClaimOrder
-                account={account}
-                chainData={chainData}
-                crocEnv={crocEnv}
-                limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-            />,
+            <LimitActionModal limitOrder={limitOrder} type='Claim' />,
         );
 
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
 
@@ -240,13 +135,10 @@ export default function OrdersMenu(props: propsIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const minView = useMediaQuery('(min-width: 720px)');
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
     const view2WithNoSidebar =
-        useMediaQuery('(min-width: 1680px)') && !showSidebar;
+        useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
     const removeButtonOnClick = () => {
         setShowDropdownMenu(false);
@@ -262,6 +154,21 @@ export default function OrdersMenu(props: propsIF) {
         openDetailsModal();
     };
 
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={handleAccountClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
             <button
@@ -281,30 +188,25 @@ export default function OrdersMenu(props: propsIF) {
             </button>
         ) : null;
     const copyButton = limitOrder ? (
-        // limitOrder && isShowAllEnabled && !isOwnerActiveAccount ? (
         <button
             style={{ opacity: '1' }}
-            // style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
-                dispatch(setLimitTick(undefined));
-                navigate(
-                    '/trade/limit/' +
-                        'chain=' +
-                        limitOrder.chainId +
-                        '&tokenA=' +
-                        (limitOrder.isBid
-                            ? limitOrder.base
-                            : limitOrder.quote) +
-                        '&tokenB=' +
-                        (limitOrder.isBid
-                            ? limitOrder.quote
-                            : limitOrder.base) +
-                        '&limitTick=' +
-                        (limitOrder.isBid
-                            ? limitOrder.bidTick
-                            : limitOrder.askTick),
+                linkGenLimit.navigate(
+                    limitOrder.isBid
+                        ? {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.base,
+                              tokenB: limitOrder.quote,
+                              limitTick: limitOrder.bidTick,
+                          }
+                        : {
+                              chain: chainData.chainId,
+                              tokenA: limitOrder.quote,
+                              tokenB: limitOrder.base,
+                              limitTick: limitOrder.askTick,
+                          },
                 );
                 handleCopyOrder();
             }}
@@ -320,14 +222,10 @@ export default function OrdersMenu(props: propsIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
+            {(view3 || view2WithNoSidebar) && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {/* {view1 && removeButton} */}
-            {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
-            {(view3 || view2WithNoSidebar) && detailsButton}
             {!isOwnerActiveAccount && copyButton}
-            {/* {view1 && !isOwnerActiveAccount && copyButton} */}
-            {/* {view1 && !isOrderFilled && copyButton} */}
         </div>
     );
 
@@ -335,9 +233,8 @@ export default function OrdersMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {detailsButton}
             {isOwnerActiveAccount && copyButton}
-            {/* {!view1 && copyButton} */}
-            {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {!minView && removeButton}
+            {walletButton}
         </div>
     );
 
@@ -354,8 +251,11 @@ export default function OrdersMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownOrdersMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
+            <div
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
+                <CiCircleMore size={25} color='var(--text1)' />
             </div>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
@@ -370,11 +270,13 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}
-            {/* {snackbarContent} */}
         </div>
     );
 }

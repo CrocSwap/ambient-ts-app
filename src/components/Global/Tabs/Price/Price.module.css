@@ -1,11 +1,11 @@
 .buy_style {
-    color: #7371fc;
+    color: var(--accent1);
 }
 .sell_style {
     color: #3480ff;
 }
 .add_style {
-    color: #5ffff2;
+    color: var(--accent3);
 }
 .min_max {
     display: flex;

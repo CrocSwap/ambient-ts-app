@@ -1,18 +1,21 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { getLimitPrice, getLimitValue } from './functions/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
-    isDenomBase: boolean;
-    tokenMap: Map<string, TokenIF>;
     order: LimitOrderIF;
     handleClick: (limitOrder: LimitOrderIF) => void;
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
-    const { tokenMap, order, isDenomBase, handleClick } = props;
+    const { order, handleClick } = props;
+    const { tokens } = useContext(TokenContext);
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // human-readable limit price to display in the DOM
-    const price = getLimitPrice(order, tokenMap, isDenomBase);
+    const price = getLimitPrice(order, tokens, isDenomBase);
 
     // human-readable limit order value to display in the DOM
     const value = getLimitValue(order);

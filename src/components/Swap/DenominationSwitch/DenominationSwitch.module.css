@@ -8,18 +8,18 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: right;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .denomination_switch button {
     cursor: pointer;
-    background: var(--dark3);
+    background: var(--dark2);
     min-width: 1.5rem;
     /* padding: 0.1rem; */
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     outline: none;
     border: solid 0.2px transparent;
     border-radius: 50px;
@@ -37,12 +37,12 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .denomination_switch .active_button {
     background: transparent;
-    border: 1px solid var(--text-highlight-dark);
+    border: 1px solid var(--accent1);
     transition: box-shadow var(--animation-speed) ease-in-out;
 }

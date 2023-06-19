@@ -1,7 +1,9 @@
 .main_container {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 4px;
+    padding: 1rem 0;
 }
 
 .price_info_container {
@@ -10,26 +12,42 @@
     gap: 4px;
 }
 
-.token_pair_details_container {
+
+/* TOKEN PAIR DETAILS */
+.token_pair_details {
     display: flex;
-    width: 100%;
+    flex-direction: row;
     justify-content: center;
-
-    font-family: var(--font-logo);
-
-    font-weight: 100;
-    font-size: 24px;
-    line-height: 30px;
-
-    color: var(--text-grey-light);
+    gap: 1rem;
+    align-items: center;
+    cursor: default;
 }
 
+.token_pair_details p {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+    font-weight: 300;
+}
+
+.token_pair_images {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.align_center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
 .order_type,
 .buy_content,
 .sell_content,
 .price_status_content {
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+   
     padding: 8px;
 }
 .order_type,
@@ -41,7 +59,7 @@
     justify-content: space-between;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .buy_content p,
@@ -50,10 +68,6 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-}
-.buy_content img,
-.sell_content img {
-    width: 15px;
 }
 
 .price_status_content {
@@ -74,14 +88,14 @@
 .price_status_content p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .price_status_content h2 {
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 /* .order_type{
     display: flex;
@@ -90,7 +104,7 @@
     justify-content: space-between;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light)
+    color: var(--text2)
 } */
 
 @media only screen and (min-width: 768px) {

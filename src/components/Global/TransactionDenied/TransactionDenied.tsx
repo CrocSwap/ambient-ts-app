@@ -1,16 +1,6 @@
 import styles from './TransactionDenied.module.css';
-// import Animation from '../Animation/Animation';
-// import NotFound from '../../../assets/animations/NotFound.json';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Button/Button';
-
-// interface TransactionSubmittedProps {
-//     hash: string;
-//     tokenBAddress: string;
-//     tokenBSymbol: string;
-//     tokenBDecimals: number;
-//     tokenBImage: string;
-// }
 
 interface TransactionSubmittedProps {
     resetConfirmation: () => void;
@@ -23,17 +13,19 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
 
     return (
         <div
-            className={styles.removal_pending}
+            className={`${styles.removal_pending} ${
+                noAnimation && styles.removal_pending_bypass
+            }`}
             style={{ height: noAnimation ? 'auto' : '300px' }}
         >
-            <div className={styles.animation_container}>
+            <div
+                className={styles.animation_container}
+                style={{ minHeight: noAnimation ? 'auto' : '180px' }}
+            >
                 {!noAnimation && <CircleLoaderFailed size='8rem' />}
                 <h2>Transaction Denied in Wallet</h2>
             </div>
-            <p>
-                Please check your wallet for notifications, or click &quot;Try
-                Again&quot;.
-            </p>
+            <p>Please check your wallet for notifications or try again.</p>
             <Button
                 title='Try Again'
                 action={() => {

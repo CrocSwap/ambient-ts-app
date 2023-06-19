@@ -1,22 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import {
-    useState,
-    useEffect,
-    useMemo,
-    Dispatch,
-    SetStateAction,
-    ReactNode,
-} from 'react';
-import { ethers } from 'ethers';
+import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
-import {
-    concDepositSkew,
-    capitalConcFactor,
-    CrocEnv,
-} from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import FocusTrap from 'focus-trap-react';
+import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
@@ -34,7 +20,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiCopy } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -53,8 +39,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF, TokenIF } from '../../../utils/interfaces/exports';
-import { useTradeData } from '../Trade';
+import { PositionIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
@@ -68,158 +53,61 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { graphData } from '../../../utils/state/graphDataSlice';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import {
     rangeTutorialSteps,
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
 import { formatAmountOld } from '../../../utils/numbers';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { isStablePair } from '../../../utils/data/stablePairs';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 
-interface propsIF {
-    account: string | undefined;
-    crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean | undefined;
-    importedTokens: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    mintSlippage: SlippageMethodsIF;
-    isPairStable: boolean;
-    provider?: ethers.providers.Provider;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice?: number;
-    lastBlockNumber: number;
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    poolPriceDisplay: string;
-    poolPriceNonDisplay: number | undefined;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    chainId: string;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    ambientApy: number | undefined;
-    dailyVol: number | undefined;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
-    poolExists: boolean | undefined;
-    graphData: graphData;
-    isRangeCopied: boolean;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
-    setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
-    setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    isTutorialMode: boolean;
-    setIsTutorialMode: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    simpleRangeWidth: number;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-    minPrice: number;
-    maxPrice: number;
-    rescaleRangeBoundariesWithSlider: boolean;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-    setChartTriggeredBy: Dispatch<SetStateAction<string>>;
-    chartTriggeredBy: string;
-}
-
-export default function Range(props: propsIF) {
+function Range() {
     const {
-        account,
-        crocEnv,
-        isUserLoggedIn,
-        importedTokens,
-        setImportedTokens,
-        mintSlippage,
-        isPairStable,
-        provider,
-        baseTokenAddress,
-        quoteTokenAddress,
-        poolPriceDisplay,
-        poolPriceNonDisplay,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        tokenAAllowance,
-        setRecheckTokenAApproval,
-        tokenBAllowance,
-        setRecheckTokenBApproval,
-        gasPriceInGwei,
+        tutorial: { isActive: isTutorialActive },
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { chainId, gridSize, blockExplorer },
         ethMainnetUsdPrice,
-        chainId,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
-        openModalWallet,
-        ambientApy,
-        dailyVol,
-        openGlobalModal,
-        poolExists,
-        graphData,
-        isRangeCopied,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
-        importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        acknowledgeToken,
-        openGlobalPopup,
-        bypassConfirm,
-        dexBalancePrefs,
-        setSimpleRangeWidth,
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
+        useContext(PoolContext);
+    const {
         simpleRangeWidth,
-        setMaxPrice,
-        setMinPrice,
-        setRescaleRangeBoundariesWithSlider,
-        minPrice,
-        maxPrice,
+        setSimpleRangeWidth,
+        minRangePrice: minPrice,
+        maxRangePrice: maxPrice,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
         setChartTriggeredBy,
         chartTriggeredBy,
-    } = props;
+        setRescaleRangeBoundariesWithSlider,
+    } = useContext(RangeContext);
+    const { tokens } = useContext(TokenContext);
+    const {
+        baseToken: { address: baseTokenAddress },
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+    } = useContext(TradeTokenContext);
+    const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
+        UserPreferenceContext,
+    );
 
     const [
         isConfirmationModalOpen,
@@ -227,7 +115,20 @@ export default function Range(props: propsIF) {
         closeConfirmationModal,
     ] = useModal();
 
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
+    const [
+        tokenBQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
     const [isAmbient, setIsAmbient] = useState(false);
+
+    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
+    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
 
@@ -235,70 +136,68 @@ export default function Range(props: propsIF) {
     // ... wallet funds, this layer of logic matters because the DOM may need
     // ... to use wallet funds without switching the persisted preference
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
-        useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
-        useState<boolean>(dexBalancePrefs.range.drawFromDexBal.isEnabled);
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
 
+    const { crocEnv } = useContext(CrocEnvContext);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
+    const userPositions = useAppSelector(
+        (state) => state.graphData,
+    ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
-    const userPositions = graphData.positionsByUser.positions;
-    const [isAdd, setIsAdd] = useState<boolean>(false);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    const { tradeData, receiptData } = useAppSelector((state) => state);
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const {
+        tradeData: {
+            isDenomBase,
+            isTokenAPrimaryRange,
+            isLinesSwitched,
+            tokenA,
+            tokenB,
+            poolPriceNonDisplay,
+            baseToken,
+            quoteToken,
+            advancedHighTick,
+            advancedLowTick,
+            advancedMode,
+            liquidityFee,
+        },
+        receiptData,
+    } = useAppSelector((state) => state);
 
     const { navigationMenu } = useTradeData();
-
-    const tokenPair = {
-        dataTokenA: tradeData.tokenA,
-        dataTokenB: tradeData.tokenB,
-    };
-
-    const denominationsInBase = tradeData.isDenomBase;
-    const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-
-    const isLinesSwitched = tradeData.isLinesSwitched;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
-    const isTokenABase = tradeData.tokenA.address === baseTokenAddress;
+    const isTokenABase = tokenA.address === baseTokenAddress;
 
-    const slippageTolerancePercentage = isPairStable
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
         ? mintSlippage.stable
         : mintSlippage.volatile;
 
-    const poolPriceDisplayNum = parseFloat(poolPriceDisplay);
-
-    const displayPriceWithDenom = denominationsInBase
-        ? 1 / poolPriceDisplayNum
-        : poolPriceDisplayNum;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
-            : displayPriceWithDenom < 0.00001
+            : displayPriceWithDenom < 0.0001
             ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toPrecision(3)
@@ -309,15 +208,12 @@ export default function Range(props: propsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const { tokenA, tokenB } = tradeData;
-    const { baseToken, quoteToken } = tradeData;
-
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const poolPriceCharacter = denominationsInBase
+    const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
@@ -366,15 +262,15 @@ export default function Range(props: propsIF) {
 
     const shouldResetAdvancedLowTick =
         !ticksInParams &&
-        (tradeData.advancedLowTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+        (advancedLowTick === 0 ||
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
 
     const shouldResetAdvancedHighTick =
         !ticksInParams &&
-        (tradeData.advancedHighTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick - 100000);
+        (advancedHighTick === 0 ||
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
 
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo(() => {
@@ -382,15 +278,11 @@ export default function Range(props: propsIF) {
             ? roundDownTick(
                   currentPoolPriceTick +
                       defaultMinPriceDifferencePercentage * 100,
-                  lookupChain(chainId).gridSize,
+                  gridSize,
               )
-            : tradeData.advancedLowTick;
+            : advancedLowTick;
         return value;
-    }, [
-        tradeData.advancedLowTick,
-        currentPoolPriceTick,
-        shouldResetAdvancedLowTick,
-    ]);
+    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo(() => {
@@ -398,24 +290,41 @@ export default function Range(props: propsIF) {
             ? roundUpTick(
                   currentPoolPriceTick +
                       defaultMaxPriceDifferencePercentage * 100,
-                  lookupChain(chainId).gridSize,
+                  gridSize,
               )
-            : tradeData.advancedHighTick;
+            : advancedHighTick;
         return value;
-    }, [
-        tradeData.advancedHighTick,
-        currentPoolPriceTick,
-        shouldResetAdvancedHighTick,
-    ]);
+    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
     useEffect(() => {
-        const isAdd = userPositions.some(selectedRangeMatchesOpenPosition);
-        if (isAdd) {
-            setIsAdd(true);
+        setNewRangeTransactionHash('');
+        setShowBypassConfirmButton(false);
+        setPinnedDisplayPrices(undefined);
+    }, [baseToken.address + quoteToken.address]);
+
+    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
+        if (isAmbient && position.positionType === 'ambient') {
+            return true;
+        } else if (
+            !isAmbient &&
+            defaultLowTick === position.bidTick &&
+            defaultHighTick === position.askTick
+        ) {
+            return true;
         } else {
-            setIsAdd(false);
+            return false;
         }
-    }, [userPositions.length, isAmbient, defaultLowTick, defaultHighTick]);
+    };
+
+    const isAdd = useMemo(
+        () => userPositions.some(selectedRangeMatchesOpenPosition),
+        [
+            diffHashSig(userPositions),
+            isAmbient,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
@@ -438,15 +347,61 @@ export default function Range(props: propsIF) {
         | undefined
     >();
 
+    const updatePinnedDisplayPrices = () => {
+        if (
+            Math.abs(currentPoolPriceTick) === Infinity ||
+            Math.abs(currentPoolPriceTick) === 0
+        )
+            return;
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            isDenomBase,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lowTick,
+            highTick,
+            gridSize,
+        );
+
+        setPinnedDisplayPrices(pinnedDisplayPrices);
+
+        setRangeLowBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+        );
+        setRangeHighBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+        );
+
+        setPinnedMinPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+        );
+        setPinnedMaxPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+        );
+
+        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+        setMaxPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+        );
+        setMinPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+        );
+    };
+
     useEffect(() => {
-        if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
+        if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
             setRangeLowBoundNonDisplayPrice(0);
             setRangeHighBoundNonDisplayPrice(Infinity);
-        } else if (tradeData.advancedMode) {
+        } else if (advancedMode) {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
+            updatePinnedDisplayPrices();
             if (
                 Math.abs(currentPoolPriceTick) === Infinity ||
                 Math.abs(currentPoolPriceTick) === 0
@@ -456,12 +411,12 @@ export default function Range(props: propsIF) {
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 lowTick,
                 highTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
             setPinnedDisplayPrices(pinnedDisplayPrices);
@@ -492,11 +447,10 @@ export default function Range(props: propsIF) {
         }
     }, [
         rangeWidthPercentage,
-        tradeData.advancedMode,
-        denominationsInBase,
-        baseTokenDecimals,
-        quoteTokenDecimals,
+        advancedMode,
+        isDenomBase,
         currentPoolPriceTick,
+        baseToken.address + quoteToken.address,
     ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
@@ -507,29 +461,26 @@ export default function Range(props: propsIF) {
     const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
 
-    const isOutOfRange = !tradeData.advancedMode
+    const isOutOfRange = !advancedMode
         ? false
         : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
 
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
     useEffect(() => {
-        // console.log({ poolExists });
-        if (poolExists === undefined || poolPriceNonDisplay === undefined) {
+        if (
+            isPoolInitialized === undefined ||
+            poolPriceNonDisplay === undefined
+        ) {
             setRangeButtonErrorMessage('…');
-        } else if (!poolExists) {
+        } else if (!isPoolInitialized) {
             setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
         } else if (!isQtyEntered) {
             setRangeButtonErrorMessage('Enter an Amount');
         }
-    }, [isQtyEntered, poolExists, isInvalidRange, poolPriceNonDisplay]);
-
-    const minimumSpan =
-        rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
-            ? rangeSpanAboveCurrentPrice
-            : rangeSpanBelowCurrentPrice;
+    }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
     const [isTokenADisabled, setIsTokenADisabled] = useState(false);
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
@@ -577,7 +528,7 @@ export default function Range(props: propsIF) {
         currentPoolPriceTick,
         defaultLowTick,
         defaultHighTick,
-        denominationsInBase,
+        isDenomBase,
     ]);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
@@ -606,7 +557,6 @@ export default function Range(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setTxErrorMessage('');
     };
 
     const [showBypassConfirmButton, setShowBypassConfirmButton] =
@@ -616,14 +566,11 @@ export default function Range(props: propsIF) {
 
     const pendingTransactions = receiptData.pendingTransactions;
 
-    const receiveReceiptHashes: Array<string> = [];
-    // eslint-disable-next-line
-    function handleParseReceipt(receipt: any) {
-        const parseReceipt = JSON.parse(receipt);
-        receiveReceiptHashes.push(parseReceipt?.transactionHash);
-    }
+    let receiveReceiptHashes: Array<string> = [];
 
-    sessionReceipts.map((receipt) => handleParseReceipt(receipt));
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
@@ -646,23 +593,15 @@ export default function Range(props: propsIF) {
     ]);
 
     useEffect(() => {
-        setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
-    }, [
-        JSON.stringify({ base: baseToken.address, quote: quoteToken.address }),
-    ]);
-
-    useEffect(() => {
-        if (tradeData.advancedMode) {
+        if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
-            console.log({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
@@ -693,7 +632,7 @@ export default function Range(props: propsIF) {
                 Math.abs(lowTickDiff) < 200
                     ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
                     : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
-            denominationsInBase
+            isDenomBase
                 ? setMaxPriceDifferencePercentage(
                       -lowGeometricDifferencePercentage,
                   )
@@ -701,7 +640,7 @@ export default function Range(props: propsIF) {
                       highGeometricDifferencePercentage,
                   );
 
-            denominationsInBase
+            isDenomBase
                 ? setMinPriceDifferencePercentage(
                       -highGeometricDifferencePercentage,
                   )
@@ -737,10 +676,10 @@ export default function Range(props: propsIF) {
         currentPoolPriceTick,
         defaultLowTick,
         defaultHighTick,
-        denominationsInBase,
+        isDenomBase,
         baseTokenDecimals,
         quoteTokenDecimals,
-        tradeData.advancedMode,
+        advancedMode,
     ]);
 
     useEffect(() => {
@@ -753,15 +692,15 @@ export default function Range(props: propsIF) {
             const targetMaxValue = maxPrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 targetMinValue?.toString() ?? '0',
                 targetMaxValue?.toString() ?? '0',
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
-            !denominationsInBase
+            !isDenomBase
                 ? setRangeLowBoundNonDisplayPrice(
                       pinnedDisplayPrices.pinnedMinPriceNonDisplay,
                   )
@@ -769,7 +708,7 @@ export default function Range(props: propsIF) {
                       pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
                   );
 
-            !denominationsInBase
+            !isDenomBase
                 ? dispatch(
                       setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
                   )
@@ -777,7 +716,7 @@ export default function Range(props: propsIF) {
                       setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
                   );
 
-            !denominationsInBase
+            !isDenomBase
                 ? setMinPrice(
                       parseFloat(
                           pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
@@ -790,7 +729,7 @@ export default function Range(props: propsIF) {
                   );
 
             if (isLinesSwitched) {
-                denominationsInBase
+                isDenomBase
                     ? dispatch(
                           setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
                       )
@@ -816,7 +755,7 @@ export default function Range(props: propsIF) {
                     0,
                 ),
             );
-            denominationsInBase
+            isDenomBase
                 ? setMinPriceDifferencePercentage(
                       -highGeometricDifferencePercentage,
                   )
@@ -832,7 +771,7 @@ export default function Range(props: propsIF) {
                 rangeLowBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
             } else {
-                console.log('low bound field not found');
+                IS_LOCAL_ENV && console.debug('low bound field not found');
             }
 
             setRangeLowBoundFieldBlurred(false);
@@ -851,15 +790,15 @@ export default function Range(props: propsIF) {
             const targetMinValue = minPrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                denominationsInBase,
+                isDenomBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 targetMinValue?.toString() ?? '0',
                 targetMaxValue?.toString() ?? '0',
-                lookupChain(chainId).gridSize,
+                gridSize,
             );
 
-            denominationsInBase
+            isDenomBase
                 ? setRangeLowBoundNonDisplayPrice(
                       pinnedDisplayPrices.pinnedMinPriceNonDisplay,
                   )
@@ -867,7 +806,7 @@ export default function Range(props: propsIF) {
                       pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
                   );
 
-            denominationsInBase
+            isDenomBase
                 ? setMinPrice(
                       parseFloat(
                           pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
@@ -879,7 +818,7 @@ export default function Range(props: propsIF) {
                       ),
                   );
 
-            denominationsInBase
+            isDenomBase
                 ? dispatch(
                       setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
                   )
@@ -887,7 +826,7 @@ export default function Range(props: propsIF) {
                       setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
                   );
             if (isLinesSwitched) {
-                !denominationsInBase
+                !isDenomBase
                     ? dispatch(
                           setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
                       )
@@ -913,7 +852,7 @@ export default function Range(props: propsIF) {
                     0,
                 ),
             );
-            denominationsInBase
+            isDenomBase
                 ? setMaxPriceDifferencePercentage(
                       -lowGeometricDifferencePercentage,
                   )
@@ -929,7 +868,7 @@ export default function Range(props: propsIF) {
                 rangeHighBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
             } else {
-                console.log('high bound field not found');
+                IS_LOCAL_ENV && console.debug('high bound field not found');
             }
 
             setRangeHighBoundFieldBlurred(false);
@@ -987,10 +926,7 @@ export default function Range(props: propsIF) {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
 
         resetConfirmation();
         setIsWaitingForWallet(true);
@@ -1005,7 +941,7 @@ export default function Range(props: propsIF) {
         let tx;
         try {
             tx = await (isAmbient
-                ? isTokenAPrimary
+                ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
                           tokenAInputQty,
                           [minPrice, maxPrice],
@@ -1026,7 +962,7 @@ export default function Range(props: propsIF) {
                               ],
                           },
                       )
-                : isTokenAPrimary
+                : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
                       tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
@@ -1065,52 +1001,9 @@ export default function Range(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
             setTxErrorCode(error?.code);
-            setTxErrorMessage(error?.message);
             setIsWaitingForWallet(false);
-        }
-
-        const newLiqChangeCacheEndpoint =
-            'https://809821320828123.de:5000/new_liqchange?';
-        if (tx?.hash) {
-            if (isAmbient) {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: account ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: lookupChain(chainId).poolIndex.toString(),
-                            positionType: 'ambient',
-                            // bidTick: '0',
-                            // askTick: '0',
-                            changeType: 'mint',
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            } else {
-                fetch(
-                    newLiqChangeCacheEndpoint +
-                        new URLSearchParams({
-                            chainId: chainId,
-                            tx: tx.hash,
-                            user: account ?? '',
-                            base: baseTokenAddress,
-                            quote: quoteTokenAddress,
-                            poolIdx: lookupChain(chainId).poolIndex.toString(),
-                            positionType: 'concentrated',
-                            changeType: 'mint',
-                            bidTick: defaultLowTick.toString(),
-                            askTick: defaultHighTick.toString(),
-                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                            liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                        }),
-                );
-            }
         }
 
         let receipt;
@@ -1118,42 +1011,16 @@ export default function Range(props: propsIF) {
             if (tx) receipt = await tx.wait();
         } catch (e) {
             const error = e as TransactionError;
-            console.log({ error });
+            console.error({ error });
             // The user used "speed up" or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
-                console.log('repriced');
+                IS_LOCAL_ENV && console.debug('repriced');
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
-                console.log({ newTransactionHash });
-                receipt = error.receipt;
-
-                if (tx?.hash) {
-                    fetch(
-                        newLiqChangeCacheEndpoint +
-                            new URLSearchParams({
-                                chainId: chainId,
-                                tx: newTransactionHash,
-                                user: account ?? '',
-                                base: baseTokenAddress,
-                                quote: quoteTokenAddress,
-                                poolIdx:
-                                    lookupChain(chainId).poolIndex.toString(),
-                                positionType: isAmbient
-                                    ? 'ambient'
-                                    : 'concentrated',
-                                changeType: 'mint',
-                                bidTick: defaultLowTick.toString(),
-                                askTick: defaultHighTick.toString(),
-                                isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
-                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
-                            }),
-                    );
-                }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -1165,8 +1032,12 @@ export default function Range(props: propsIF) {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageRangeCostInGasDrops = 140000;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageRangeCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
                 '$' +
@@ -1182,24 +1053,21 @@ export default function Range(props: propsIF) {
     // TODO:  ... component used in the Market and Limit modules
     const advancedModeToggle = (
         <div className={styles.denomination_switch_container}>
-            <AdvancedModeToggle advancedMode={tradeData.advancedMode} />
+            <AdvancedModeToggle advancedMode={advancedMode} />
         </div>
     );
-
-    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
-        tokenPair: tokenPair,
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
         isTokenABase: isTokenABase,
-        didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,
+        isAmbient: isAmbient,
     };
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
@@ -1210,8 +1078,8 @@ export default function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1228,8 +1096,8 @@ export default function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1246,8 +1114,8 @@ export default function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1264,8 +1132,8 @@ export default function Range(props: propsIF) {
                 quoteTokenDecimals,
                 defaultLowTick,
                 defaultHighTick,
-                lookupChain(chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1288,7 +1156,6 @@ export default function Range(props: propsIF) {
     const bypassConfirmButtonProps = {
         newRangeTransactionHash: newRangeTransactionHash,
         txErrorCode: txErrorCode,
-        tokenPair: tokenPair,
         resetConfirmation: resetConfirmation,
         sendTransaction: sendTransaction,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
@@ -1297,23 +1164,9 @@ export default function Range(props: propsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
-        poolExists: poolExists,
-        provider: provider,
-        isUserLoggedIn: isUserLoggedIn,
-        poolPriceNonDisplay: poolPriceNonDisplay,
-        chainId: chainId ?? '0x2a',
-        tokensBank: importedTokens,
-        setImportedTokens: setImportedTokens,
-        tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
-        gasPriceInGwei: gasPriceInGwei,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        isTokenAPrimaryLocal: isTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -1327,53 +1180,43 @@ export default function Range(props: propsIF) {
         isOutOfRange: isOutOfRange,
         rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
-        activeTokenListsChanged: activeTokenListsChanged,
-        indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         tokenAInputQty: tokenAInputQty,
         tokenBInputQty: tokenBInputQty,
-        isRangeCopied: isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
-        verifyToken: verifyToken,
-        getTokensByName: getTokensByName,
-        getTokenByAddress: getTokenByAddress,
-        importedTokensPlus: importedTokensPlus,
-        getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
-        openGlobalPopup: openGlobalPopup,
-        dexBalancePrefs: dexBalancePrefs,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
     };
 
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
-        isRangeCopied: isRangeCopied,
-        openGlobalPopup: openGlobalPopup,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
     };
     // props for <RangeExtraInfo/> React element
 
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
-        tokenPair: tokenPair,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
         slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFee: 0.3,
+        liquidityProviderFeeString: liquidityProviderFeeString,
         quoteTokenIsBuy: true,
-        isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
         showExtraInfoDropdown: showExtraInfoDropdown,
-        isBalancedMode: !tradeData.advancedMode,
+        isBalancedMode: !advancedMode,
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
@@ -1384,7 +1227,6 @@ export default function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode={false}
             />
-            {/* <DividerDark addMarginTop /> */}
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1403,8 +1245,6 @@ export default function Range(props: propsIF) {
                 {...rangeCurrencyConverterProps}
                 isAdvancedMode
             />
-            {/* <DividerDark addMarginTop /> */}
-
             {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1418,46 +1258,38 @@ export default function Range(props: propsIF) {
                     maxPriceInputString={maxPriceInputString}
                     setMinPriceInputString={setMinPriceInputString}
                     setMaxPriceInputString={setMaxPriceInputString}
-                    isDenomBase={denominationsInBase}
+                    isDenomBase={isDenomBase}
                     highBoundOnBlur={highBoundOnBlur}
                     lowBoundOnBlur={lowBoundOnBlur}
                     rangeLowTick={defaultLowTick}
                     rangeHighTick={defaultHighTick}
-                    disable={isInvalidRange || !poolExists}
-                    chainId={chainId.toString()}
+                    disable={isInvalidRange || !isPoolInitialized}
                     maxPrice={maxPrice}
                     minPrice={minPrice}
                     setMaxPrice={setMaxPrice}
                     setMinPrice={setMinPrice}
-                    isRangeCopied={isRangeCopied}
                 />
             </motion.div>
             <DividerDark addMarginTop />
 
             <AdvancedPriceInfo
-                tokenPair={tokenPair}
                 poolPriceDisplay={displayPriceString}
-                isDenomBase={denominationsInBase}
                 isTokenABase={isTokenABase}
-                minimumSpan={minimumSpan}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
-                daysInRange={daysInRange}
             />
             <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
+        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     const loginButton = (
-        <button
-            onClick={openModalWallet}
-            className={styles.authenticate_button}
-        >
+        <button onClick={openWagmiModal} className={styles.authenticate_button}>
             Connect Wallet
         </button>
     );
@@ -1465,10 +1297,7 @@ export default function Range(props: propsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) {
-            location.reload();
-            return;
-        }
+        if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
@@ -1485,20 +1314,19 @@ export default function Range(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
+                console.error({ error });
                 // The user used "speed up" or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
                     receipt = error.receipt;
                 }
             }
@@ -1510,7 +1338,7 @@ export default function Range(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -1522,15 +1350,12 @@ export default function Range(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(
-                    tokenPair.dataTokenA.address,
-                    tokenPair.dataTokenA.symbol,
-                );
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat={true}
         />
@@ -1540,208 +1365,217 @@ export default function Range(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenB.symbol}`
-                    : `${tokenPair.dataTokenB.symbol} Approval Pending`
+                    ? `Approve ${tokenB.symbol}`
+                    : `${tokenB.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(
-                    tokenPair.dataTokenB.address,
-                    tokenPair.dataTokenB.symbol,
-                );
+                await approve(tokenB.address, tokenB.symbol);
             }}
             flat={true}
         />
     );
-    // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
-    const [shareOptions, setShareOptions] = useState([
-        { slug: 'first', name: 'Include Range 1', checked: false },
-        { slug: 'second', name: 'Include Range 2', checked: false },
-        { slug: 'third', name: 'Include Range 3', checked: false },
-        { slug: 'fourth', name: 'Include Range 4', checked: false },
-    ]);
 
-    const handleShareOptionChange = (slug: string) => {
-        const copyShareOptions = [...shareOptions];
-        const modifiedShareOptions = copyShareOptions.map((option) => {
-            if (slug === option.slug) {
-                option.checked = !option.checked;
-            }
-
-            return option;
-        });
-
-        setShareOptions(modifiedShareOptions);
-    };
-
-    const shareOptionsDisplay = (
-        <div className={styles.option_control_container}>
-            <div className={styles.options_control_display_container}>
-                <p className={styles.control_title}>Options</p>
-                <ul>
-                    {shareOptions.map((option, idx) => (
-                        <RangeShareControl
-                            key={idx}
-                            option={option}
-                            handleShareOptionChange={handleShareOptionChange}
-                        />
-                    ))}
-                </ul>
-            </div>
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div style={{ cursor: 'pointer' }}>
-                    <FiCopy color='#cdc1ff' />
-                </div>
-            </p>
-        </div>
-    );
-
-    // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
-    return (
-        <FocusTrap
-            focusTrapOptions={{
-                clickOutsideDeactivates: true,
-            }}
-        >
-            <section
-                data-testid={'range'}
-                className={styles.scrollable_container}
-            >
-                {props.isTutorialMode && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
-                            onClick={() => setIsTutorialEnabled(true)}
-                        >
-                            Tutorial Mode
-                        </button>
-                    </div>
-                )}
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
 
-                <ContentContainer isOnTradeRoute>
-                    <RangeHeader
-                        chainId={chainId}
-                        tokenPair={tokenPair}
-                        mintSlippage={mintSlippage}
-                        isPairStable={isPairStable}
-                        isDenomBase={tradeData.isDenomBase}
-                        isTokenABase={isTokenABase}
-                        openGlobalModal={openGlobalModal}
-                        shareOptionsDisplay={shareOptionsDisplay}
-                        bypassConfirm={bypassConfirm}
-                    />
-                    {navigationMenu}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5 }}
+    // token acknowledgement needed message (empty string if none needed)
+    const ackTokenMessage = useMemo<string>(() => {
+        // !Important   any changes to verbiage in this code block must be approved
+        // !Important   ... by Doug, get in writing by email or request specific
+        // !Important   ... review for a pull request on GitHub
+        let text: string;
+        if (needConfirmTokenA && needConfirmTokenB) {
+            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
+                tokenB.symbol || tokenB.name
+            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA) {
+            text = `The token ${
+                tokenA.symbol || tokenA.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenB) {
+            text = `The token ${
+                tokenB.symbol || tokenB.name
+            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else {
+            text = '';
+        }
+        return text;
+    }, [needConfirmTokenA, needConfirmTokenB]);
+    const formattedAckTokenMessage = ackTokenMessage.replace(
+        /\b(not)\b/g,
+        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
+    };
+
+    return (
+        <section data-testid={'range'} className={styles.scrollable_container}>
+            {isTutorialActive && (
+                <div className={styles.tutorial_button_container}>
+                    <button
+                        className={styles.tutorial_button}
+                        onClick={() => setIsTutorialEnabled(true)}
                     >
-                        {tradeData.advancedMode
-                            ? advancedModeContent
-                            : baseModeContent}
-                    </motion.div>
-                    {isUserLoggedIn === undefined ? null : isUserLoggedIn ===
-                      true ? (
-                        poolPriceNonDisplay !== 0 &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        !isTokenAAllowanceSufficient ? (
-                            tokenAApprovalButton
-                        ) : poolPriceNonDisplay !== 0 &&
-                          parseFloat(tokenBInputQty) > 0 &&
-                          !isTokenBAllowanceSufficient ? (
-                            tokenBApprovalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassConfirmRangeButton
-                                {...bypassConfirmButtonProps}
-                            />
-                        ) : (
+                        Tutorial Mode
+                    </button>
+                </div>
+            )}
+
+            <ContentContainer isOnTradeRoute>
+                <RangeHeader
+                    mintSlippage={mintSlippage}
+                    isTokenABase={isTokenABase}
+                />
+                {navigationMenu}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {advancedMode ? advancedModeContent : baseModeContent}
+                </motion.div>
+                {isUserConnected === undefined ? null : isUserConnected ===
+                  true ? (
+                    poolPriceNonDisplay !== 0 &&
+                    parseFloat(tokenAInputQty) > 0 &&
+                    !isTokenAAllowanceSufficient ? (
+                        tokenAApprovalButton
+                    ) : poolPriceNonDisplay !== 0 &&
+                      parseFloat(tokenBInputQty) > 0 &&
+                      !isTokenBAllowanceSufficient ? (
+                        tokenBApprovalButton
+                    ) : showBypassConfirmButton ? (
+                        <BypassConfirmRangeButton
+                            {...bypassConfirmButtonProps}
+                        />
+                    ) : (
+                        <>
                             <RangeButton
                                 onClickFn={
-                                    bypassConfirm.range.isEnabled
-                                        ? handleRangeButtonClickWithBypass
-                                        : openConfirmationModal
+                                    areBothAckd
+                                        ? bypassConfirmRange.isEnabled
+                                            ? handleRangeButtonClickWithBypass
+                                            : openConfirmationModal
+                                        : ackAsNeeded
                                 }
                                 rangeAllowed={
-                                    poolExists === true &&
+                                    isPoolInitialized === true &&
                                     rangeAllowed &&
                                     !isInvalidRange
                                 }
                                 rangeButtonErrorMessage={
                                     rangeButtonErrorMessage
                                 }
-                                isBypassConfirmEnabled={
-                                    bypassConfirm.range.isEnabled
-                                }
                                 isAmbient={isAmbient}
                                 isAdd={isAdd}
+                                areBothAckd={areBothAckd}
                             />
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </ContentContainer>
-                {isConfirmationModalOpen && (
-                    <Modal
-                        onClose={handleModalClose}
-                        title={
-                            isAmbient
-                                ? 'Ambient Confirmation'
-                                : 'Range Confirmation'
-                        }
-                        centeredTitle
-                    >
-                        <ConfirmRangeModal
-                            tokenPair={tokenPair}
-                            spotPriceDisplay={displayPriceString}
-                            poolPriceDisplayNum={poolPriceDisplayNum}
-                            denominationsInBase={denominationsInBase}
-                            isTokenABase={isTokenABase}
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                            maxPriceDisplay={maxPriceDisplay}
-                            minPriceDisplay={minPriceDisplay}
-                            sendTransaction={sendTransaction}
-                            closeModal={handleModalClose}
-                            newRangeTransactionHash={newRangeTransactionHash}
-                            setNewRangeTransactionHash={
-                                setNewRangeTransactionHash
-                            }
-                            resetConfirmation={resetConfirmation}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
-                            isInRange={!isOutOfRange}
-                            pinnedMinPriceDisplayTruncatedInBase={
-                                pinnedMinPriceDisplayTruncatedInBase
-                            }
-                            pinnedMinPriceDisplayTruncatedInQuote={
-                                pinnedMinPriceDisplayTruncatedInQuote
-                            }
-                            pinnedMaxPriceDisplayTruncatedInBase={
-                                pinnedMaxPriceDisplayTruncatedInBase
-                            }
-                            pinnedMaxPriceDisplayTruncatedInQuote={
-                                pinnedMaxPriceDisplayTruncatedInQuote
-                            }
-                            bypassConfirm={bypassConfirm}
-                        />
-                    </Modal>
+                            {ackTokenMessage && (
+                                <p
+                                    className={styles.acknowledge_text}
+                                    dangerouslySetInnerHTML={{
+                                        __html: formattedAckTokenMessage,
+                                    }}
+                                ></p>
+                            )}
+
+                            <div className={styles.acknowledge_etherscan_links}>
+                                {needConfirmTokenA && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenA.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenA.symbol}
+                                    >
+                                        {tokenA.symbol || tokenA.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                                {needConfirmTokenB && (
+                                    <a
+                                        href={
+                                            blockExplorer +
+                                            'token/' +
+                                            tokenB.address
+                                        }
+                                        rel={'noopener noreferrer'}
+                                        target='_blank'
+                                        aria-label={tokenB.symbol}
+                                    >
+                                        {tokenB.symbol || tokenB.name}{' '}
+                                        <FiExternalLink />
+                                    </a>
+                                )}
+                            </div>
+                        </>
+                    )
+                ) : (
+                    loginButton
                 )}
-                <TutorialOverlay
-                    isTutorialEnabled={isTutorialEnabled}
-                    setIsTutorialEnabled={setIsTutorialEnabled}
-                    steps={
-                        !tradeData.advancedMode
-                            ? rangeTutorialStepsAdvanced
-                            : rangeTutorialSteps
-                    }
-                />
-            </section>
-        </FocusTrap>
+            </ContentContainer>
+            {isConfirmationModalOpen && (
+                <Modal
+                    onClose={handleModalClose}
+                    title={'Pool Confirmation'}
+                    centeredTitle
+                >
+                    <ConfirmRangeModal
+                        tokenAQtyLocal={tokenAQtyLocal}
+                        tokenBQtyLocal={tokenBQtyLocal}
+                        spotPriceDisplay={displayPriceString}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        txErrorCode={txErrorCode}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                    />
+                </Modal>
+            )}
+            <TutorialOverlay
+                isTutorialEnabled={isTutorialEnabled}
+                setIsTutorialEnabled={setIsTutorialEnabled}
+                steps={
+                    !advancedMode
+                        ? rangeTutorialStepsAdvanced
+                        : rangeTutorialSteps
+                }
+            />
+        </section>
     );
 }
+
+export default memo(Range);

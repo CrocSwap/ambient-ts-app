@@ -10,7 +10,7 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 
@@ -19,7 +19,7 @@
 }
 
 .content_header svg {
-    color: var(--text-grey-light);
+    color: var(--text2);
     height: 20px;
     width: 20px;
 }

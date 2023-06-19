@@ -1,6 +1,7 @@
 import {
     ChangeEvent,
     Dispatch,
+    memo,
     SetStateAction,
     useEffect,
     useState,
@@ -8,6 +9,7 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
+import Spinner from '../../Global/Spinner/Spinner';
 
 interface propsIF {
     disable?: boolean;
@@ -18,9 +20,12 @@ interface propsIF {
     setBuyQtyString: Dispatch<SetStateAction<string>>;
     thisToken: TokenIF;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
+    setIsSellLoading: Dispatch<SetStateAction<boolean>>;
+    setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
+    isLoading: boolean;
 }
 
-export default function CurrencyQuantity(props: propsIF) {
+function CurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,
@@ -30,7 +35,11 @@ export default function CurrencyQuantity(props: propsIF) {
         setSellQtyString,
         setBuyQtyString,
         setDisableReverseTokens,
+        setIsBuyLoading,
+        setIsSellLoading,
+        isLoading,
     } = props;
+    // let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -45,33 +54,40 @@ export default function CurrencyQuantity(props: propsIF) {
         setDisplayValue(valueWithLeadingZero);
     }, [value]);
 
-    const debouncedLastEvent = useDebounce(lastEvent, 750); // debounce 3/4 second
+    // Let input rest 3/4 of a second before triggering an update
+    const debouncedLastEvent = useDebounce(lastEvent, 750);
 
     useEffect(() => {
         if (debouncedLastEvent) handleChangeEvent(debouncedLastEvent);
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        if (event && fieldId === 'sell') {
+        // if (timeoutId) clearTimeout(timeoutId);
+
+        const { value } = event.target;
+        const inputValue = value.startsWith('.') ? '0' + value : value;
+
+        if (fieldId === 'sell') {
             setBuyQtyString('');
-            const valueWithLeadingZero = event.target.value.startsWith('.')
-                ? '0' + event.target.value
-                : event.target.value;
-            setSellQtyString(valueWithLeadingZero);
-        } else if (event && fieldId === 'buy') {
+            if (inputValue) {
+                setIsBuyLoading(true);
+                setSellQtyString(inputValue);
+            }
+            if (!value) setIsBuyLoading(false);
+
+            // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
+        } else if (fieldId === 'buy') {
             setSellQtyString('');
-            const valueWithLeadingZero = event.target.value.startsWith('.')
-                ? '0' + event.target.value
-                : event.target.value;
-            setBuyQtyString(valueWithLeadingZero);
+            if (inputValue) {
+                setIsSellLoading(true);
+                setBuyQtyString(inputValue);
+            }
+            if (!value) setIsSellLoading(false);
+
+            // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
         }
 
-        const input = event.target.value.startsWith('.')
-            ? '0' + event.target.value
-            : event.target.value;
-
-        setDisplayValue(input);
-
+        setDisplayValue(inputValue);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };
@@ -84,40 +100,67 @@ export default function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
-    const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
-    return (
-        <div className={styles.token_amount}>
-            <input
-                id={`${fieldId}-quantity`}
-                autoFocus={fieldId === 'sell'}
-                className={styles.currency_quantity}
-                placeholder='0.0'
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    const targetValue = event.target.value.replaceAll(',', '');
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(targetValue) > thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (targetValue === '' || event.target.validity.valid);
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const targetValue = event.target.value.replace(',', '.');
+        //  I know this seems a bit much here so I will leave a little explanation
+        //  \d*\.?\d* matches any number with an optional decimal point in the middle
+        // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
+        // can be tested here => https://regex101.com/
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(targetValue) > thisToken.decimals;
 
-                    if (isValid) {
-                        handleEventLocal(event);
-                    }
-                }}
-                value={displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
-                disabled={disable}
-                required
-            />
+        const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
+            targetValue,
+        );
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+            let valueWithDecimal = targetValue;
+            if (valueWithDecimal.includes(',')) {
+                const parts = valueWithDecimal.split(',');
+                const lastPart = parts.pop();
+                const firstPart = parts.join('');
+                valueWithDecimal = `${firstPart}.${lastPart}`;
+            }
+            handleEventLocal({
+                ...event,
+                target: { ...event.target, value: valueWithDecimal },
+            });
+        }
+    };
+
+    const ariaLive = fieldId === 'sell' ? 'polite' : 'off';
+
+    const progressDisplay = (
+        <div className={styles.circular_progress}>
+            <Spinner size={24} bg='var(--dark2)' weight={2} />
+        </div>
+    );
+    return (
+        <div className={`${styles.token_amount} `}>
+            <>
+                {isLoading && progressDisplay}
+                <input
+                    id={`${fieldId}-quantity`}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='text'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern='^[0-9]*\.?[0-9]*$'
+                    disabled={disable}
+                />
+            </>
         </div>
     );
 }
+
+export default memo(CurrencyQuantity);

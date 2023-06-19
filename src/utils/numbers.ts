@@ -43,6 +43,35 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
     });
 };
 
+export const formatPoolPriceAxis = (
+    num: number | undefined,
+    digits: undefined | number = undefined,
+) => {
+    const digit = digits
+        ? digits
+        : num != undefined
+        ? num.toString().length
+        : 0;
+    if (num === 0) return '0.00';
+    if (num === undefined) return '-';
+    if (!num) return '-';
+    if (num < 0.001 && digit <= 3) {
+        return '<0.001';
+    }
+
+    return num > 99999
+        ? numbro(num).format({
+              average: true,
+              mantissa: 2,
+              // mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
+              abbreviations: {
+                  million: 'M',
+                  billion: 'B',
+              },
+          })
+        : num.toString();
+};
+
 // using a currency library here in case we want to add more in future
 export const formatAmountChartData = (
     num: number | undefined,
@@ -120,7 +149,7 @@ export const formatAmountWithoutDigit = (
     return a;
 };
 
-export const formatAmountOld = (num: number | undefined, digits = 2) => {
+export const formatAmountOld = (num: number | undefined, digits = 1) => {
     if (num === 0) return '0';
     if (!num) return '-';
     if (num < 0.001) {

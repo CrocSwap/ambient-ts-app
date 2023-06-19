@@ -1,20 +1,18 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
-// import { Link } from 'react-router-dom';
-import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
-
+import { useState, useRef, useEffect, useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-// import Modal from '../../../../Global/Modal/Modal';
-// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-// import { useModal } from '../../../../Global/Modal/useModal';
-// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -22,103 +20,98 @@ import {
     setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
-    // setPrimaryQuantity,
-    setShouldLimitConverterUpdate,
-    tradeData,
+    setShouldSwapDirectionReverse,
+    setShouldLimitDirectionReverse,
+    setShouldRangeDirectionReverse,
+    setPrimaryQuantityRange,
+    setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    account: string;
-    tradeData: tradeData;
-    userPosition: boolean | undefined; // position belongs to active user
-    isTokenABase: boolean;
     tx: TransactionIF;
-    blockExplorer?: string;
-    showSidebar: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
-    handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
+    isAccountView: boolean;
+    handleWalletClick: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const menuItemRef = useRef<HTMLDivElement>(null);
+    const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
     const {
-        account,
-        tradeData,
-        // isTokenABase,
-        // userPosition,
-        isBaseTokenMoneynessGreaterOrEqual,
-        tx,
-        blockExplorer,
-        showSidebar,
-        openGlobalModal,
-        closeGlobalModal,
-        handlePulseAnimation,
-        isOnPortfolioPage,
-        setSimpleRangeWidth,
-        chainData,
-    } = props;
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer, chainId },
+    } = useContext(CrocEnvContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
 
-    // const [value, copy] = useCopyToClipboard();
-    // const [openSnackbar, setOpenSnackbar] = useState(false);
-    // const [isModalOpen, openModal, closeModal] = useModal();
-    // const [currentModal, setCurrentModal] = useState('edit');
-    // ---------------------MODAL FUNCTIONALITY----------------
-    // let modalContent: ReactNode;
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
 
-    // let modalTitle;
+    const tradeData = useAppSelector((state) => state.tradeData);
 
-    // function openRemoveModal() {
-    //     setCurrentModal('remove');
-    //     openModal();
-    // }
+    const menuItemRef = useRef<HTMLDivElement>(null);
 
-    // function openDetailsModal() {
-    //     setCurrentModal('details');
-    //     openModal();
-    // }
-    // function openHarvestModal() {
-    //     setCurrentModal('harvest');
-    //     openModal();
-    // }
-
-    // -----------------SNACKBAR----------------
-    // function handleCopyAddress() {
-    //     copy('Not Yet Implemented');
-
-    //     setOpenSnackbar(true);
-    // }
     const dispatch = useAppDispatch();
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
     const handleCopyClick = () => {
-        // console.log('copy clicked');
-        if (handlePulseAnimation) {
-            if (tx.entityType === 'swap') {
-                handlePulseAnimation('swap');
-            } else if (tx.entityType === 'limitOrder') {
-                handlePulseAnimation('limitOrder');
-            } else if (tx.entityType === 'liqchange') {
-                handlePulseAnimation('range');
-            }
+        if (tx.entityType === 'swap') {
+            handlePulseAnimation('swap');
+        } else if (tx.entityType === 'limitOrder') {
+            handlePulseAnimation('limitOrder');
+        } else if (tx.entityType === 'liqchange') {
+            handlePulseAnimation('range');
         }
 
         if (tx.positionType === 'ambient') {
+            dispatch(setRangeTicksCopied(true));
             setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
+            const shouldReverse =
+                tradeData.tokenA.address.toLowerCase() !==
+                tx.base.toLowerCase();
+            if (shouldReverse) {
+                dispatch(setPrimaryQuantityRange(''));
+                dispatch(setShouldRangeDirectionReverse(true));
+            }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
+                dispatch(setRangeTicksCopied(true));
                 dispatch(setAdvancedLowTick(tx.bidTick));
                 dispatch(setAdvancedHighTick(tx.askTick));
                 dispatch(setAdvancedMode(true));
+                const shouldReverse =
+                    tradeData.tokenA.address.toLowerCase() !==
+                    tx.base.toLowerCase();
+                if (shouldReverse) {
+                    dispatch(setPrimaryQuantityRange(''));
+                    dispatch(setShouldRangeDirectionReverse(true));
+                }
             }, 1000);
         } else if (tx.entityType === 'swap') {
             dispatch(
@@ -126,191 +119,97 @@ export default function TransactionsMenu(props: propsIF) {
                     (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
                 ),
             );
+            const shouldReverse =
+                tradeData.tokenA.address.toLowerCase() ===
+                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+            if (shouldReverse) {
+                dispatch(setShouldSwapDirectionReverse(true));
+            }
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            // console.log('limit order copy clicked');
-            console.log({ tradeData });
-            console.log({ tx });
-            const shouldMovePrimaryQuantity =
+            linkGenLimit.navigate(
+                tx.isBuy
+                    ? {
+                          chain: chainId,
+                          tokenA: tx.base,
+                          tokenB: tx.quote,
+                          limitTick: tx.bidTick,
+                      }
+                    : {
+                          chain: chainId,
+                          tokenA: tx.quote,
+                          tokenB: tx.base,
+                          limitTick: tx.askTick,
+                      },
+            );
+            const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
-                (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
-
-            console.log({ shouldMovePrimaryQuantity });
-            const shouldClearNonPrimaryQty =
-                tradeData.limitTick !== tx.askTick &&
-                (tradeData.isTokenAPrimary
-                    ? tradeData.tokenA.address.toLowerCase() ===
-                      (tx.isBid
-                          ? tx.base.toLowerCase()
-                          : tx.quote.toLowerCase())
-                        ? true
-                        : false
-                    : tradeData.tokenB.address.toLowerCase() ===
-                      (tx.isBid
-                          ? tx.quote.toLowerCase()
-                          : tx.base.toLowerCase())
-                    ? true
-                    : false);
-            if (shouldMovePrimaryQuantity) {
-                console.log('flipping primary');
-                // setTimeout(() => {
-                const sellQtyField = document.getElementById(
-                    'sell-limit-quantity',
-                ) as HTMLInputElement;
-                const buyQtyField = document.getElementById(
-                    'buy-limit-quantity',
-                ) as HTMLInputElement;
-
-                if (tradeData.isTokenAPrimary) {
-                    if (buyQtyField) {
-                        buyQtyField.value = sellQtyField.value;
-                    }
-                    if (sellQtyField) {
-                        sellQtyField.value = '';
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                    }
-                } else {
-                    if (sellQtyField) {
-                        sellQtyField.value = buyQtyField.value;
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                    }
-                    if (buyQtyField) {
-                        buyQtyField.value = '';
-                    }
-                }
-                // }, 500);
-                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-                dispatch(setShouldLimitConverterUpdate(true));
-            } else if (shouldClearNonPrimaryQty) {
-                if (!tradeData.isTokenAPrimary) {
-                    const sellQtyField = document.getElementById(
-                        'sell-limit-quantity',
-                    ) as HTMLInputElement;
-                    if (sellQtyField) {
-                        sellQtyField.value = '';
-                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                    }
-                } else {
-                    const buyQtyField = document.getElementById(
-                        'buy-limit-quantity',
-                    ) as HTMLInputElement;
-                    if (buyQtyField) {
-                        buyQtyField.value = '';
-                    }
-                }
-                console.log('resetting');
-                // dispatch(setPrimaryQuantity(''));
+                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+            if (shouldReverse) {
+                dispatch(setShouldLimitDirectionReverse(true));
             }
             setTimeout(() => {
-                dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+                dispatch(setLimitTick(tx.isBuy ? tx.bidTick : tx.askTick));
             }, 500);
-
-            // dispatch(
-            //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
-            // );
         }
         setShowDropdownMenu(false);
-
-        // dispatch(setRangeModuleTriggered(true));
     };
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            const explorerUrl = `${blockExplorer}tx/${tx.txHash}`;
             window.open(explorerUrl);
         }
     }
 
-    // const snackbarContent = (
-    //     <SnackbarComponent
-    //         severity='info'
-    //         setOpenSnackbar={setOpenSnackbar}
-    //         openSnackbar={openSnackbar}
-    //     >
-    //         {value}
-    //     </SnackbarComponent>
-    // );
-    // -----------------END OF SNACKBAR----------------
-
-    // TODO:  @Junior please add a `default` to this with debugging code
-    // switch (currentModal) {
-    //     case 'remove':
-    //         modalContent = 'Remove';
-    //         modalTitle = 'Remove Position';
-    //         break;
-
-    //     case 'details':
-    //         modalContent = 'details';
-    //         modalTitle = '';
-    //         break;
-    //     case 'harvest':
-    //         modalContent = 'harvest';
-    //         modalTitle = 'Harvest';
-    //         break;
-    // }
-
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
 
-    // const mainModal = (
-    //     <Modal onClose={closeModal} title={modalTitle}>
-    //         {modalContent}
-    //     </Modal>
-    // );
+    const isTxCopiable = true;
 
-    // const modalOrNull = isModalOpen ? mainModal : null;
-
-    // const removeButton = userPosition ? (
-    //     <button className={styles.option_button} onClick={openRemoveModal}>
-    //         Remove
-    //     </button>
-    // ) : null;
-
-    // const copyButton = (
-    //     <button className={styles.option_button} onClick={handleCopyClick}>
-    //         Copy
-    //     </button>
-    // );
-
-    const isTxCopiable = tx.source !== 'manual';
-    // tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
-
-    const navigate = useNavigate();
+    const walletButton = (
+        <button
+            className={styles.option_button}
+            tabIndex={0}
+            aria-label='View wallet.'
+            onClick={props.handleWalletClick}
+        >
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </button>
+    );
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    navigate(
-                        '/trade/range/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBid ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBid ? tx.quote : tx.base) +
-                            '&lowTick=' +
-                            tx.bidTick +
-                            '&highTick=' +
-                            tx.askTick,
-                    );
+                    linkGenPool.navigate({
+                        chain: chainId,
+                        tokenA: tx.isBid ? tx.base : tx.quote,
+                        tokenB: tx.isBid ? tx.quote : tx.base,
+                        lowTick: tx.bidTick.toString(),
+                        highTick: tx.askTick.toString(),
+                    });
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : tx.entityType === 'limitOrder' ? (
             <button
@@ -318,45 +217,61 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
-
-                    navigate(
-                        '/trade/limit/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBid ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBid ? tx.quote : tx.base) +
-                            '&limitTick=' +
-                            (tx.isBid ? tx.bidTick : tx.askTick),
+                    linkGenLimit.navigate(
+                        tx.isBid
+                            ? {
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                                  limitTick: tx.bidTick,
+                              }
+                            : {
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                                  limitTick: tx.askTick,
+                              },
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : (
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    navigate(
-                        '/trade/market/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBuy ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBuy ? tx.quote : tx.base),
+                    linkGenMarket.navigate(
+                        tx.isBuy
+                            ? {
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                              }
+                            : {
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                              },
                     );
                     handleCopyClick();
                 }}
+                tabIndex={0}
+                aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         );
 
     const explorerButton = (
-        <button className={styles.option_button} onClick={handleOpenExplorer}>
+        <button
+            className={styles.option_button}
+            onClick={handleOpenExplorer}
+            tabIndex={0}
+            aria-label='Open explorer.'
+        >
             Explorer
             <FiExternalLink
                 size={15}
@@ -369,55 +284,29 @@ export default function TransactionsMenu(props: propsIF) {
         <button
             className={styles.option_button}
             onClick={() => openDetailsModal()}
+            tabIndex={0}
+            aria-label='Open details modal.'
         >
             Details
         </button>
     );
-    // const harvestButton = userPosition ? (
-    //     <button className={styles.option_button} onClick={openHarvestModal}>
-    //         Harvest
-    //     </button>
-    // ) : null;
-    // const editButton = userPosition ? (
-    //     <Link className={styles.option_button} to={'/trade/edit'}>
-    //         Edit
-    //     </Link>
-    // ) : null;
 
-    // --------------------------------
-
-    // const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
-    // const view3 = useMediaQuery('(min-width: 2300px)');
     // eslint-disable-next-line
-    const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    const view1NoSidebar =
+        useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
     const desktopView = useMediaQuery('(min-width: 768px)');
 
-    // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
-    // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
-
     // --------------------------------
-    // const notRelevantButton = false;
     const transactionsMenu = (
-        <div className={styles.actions_menu}>
-            {/* {notRelevantButton && editButton} */}
-            {/* {notRelevantButton && removeButton} */}
-            {/* {notRelevantButton && harvestButton} */}
-            {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
-            {/* {view2 && explorerButton} */}
-            {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
-            {isTxCopiable && copyButton}
-        </div>
+        <div className={styles.actions_menu}>{isTxCopiable && copyButton}</div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {/* {editButton} */}
-            {/* {removeButton} */}
-            {/* {harvestButton} */}
             {detailsButton}
             {explorerButton}
             {!desktopView && copyButton}
+            {walletButton}
         </div>
     );
 
@@ -446,21 +335,23 @@ export default function TransactionsMenu(props: propsIF) {
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
-            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
-                <FiMoreHorizontal />
-            </div>
+            <button
+                onClick={() => setShowDropdownMenu(!showDropdownMenu)}
+                className={styles.dropdown_button}
+            >
+                <CiCircleMore size={25} color='var(--text1)' />
+            </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {desktopView && transactionsMenu}
-
             {dropdownTransactionsMenu}
-
-            {/* {modalOrNull} */}
-            {/* {snackbarContent} */}
         </div>
     );
 }

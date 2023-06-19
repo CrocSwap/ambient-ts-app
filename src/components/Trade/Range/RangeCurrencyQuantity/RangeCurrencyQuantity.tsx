@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
@@ -11,7 +11,7 @@ interface propsIF {
     isAdvancedMode: boolean;
     thisToken: TokenIF;
 }
-export default function RangeCurrencyQuantity(props: propsIF) {
+function RangeCurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,
@@ -20,7 +20,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         fieldId,
         isAdvancedMode,
     } = props;
-    // console.log({ disable });
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -57,7 +56,6 @@ export default function RangeCurrencyQuantity(props: propsIF) {
         // String Does Not Contain Decimal
         return 0;
     };
-    console.log(fieldId);
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -85,9 +83,9 @@ export default function RangeCurrencyQuantity(props: propsIF) {
                 minLength={1}
                 pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
-                required
-                autoFocus={fieldId === 'A'}
             />
         </div>
     );
 }
+
+export default memo(RangeCurrencyQuantity);

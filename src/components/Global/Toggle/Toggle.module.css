@@ -32,8 +32,8 @@
     border-radius: 24px;
     padding: 1.5px;
     background: var(--title-gradient);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(white 0 0) content-box,
+        linear-gradient(white 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
 }
@@ -49,7 +49,7 @@
       height: 20px; */
 
     border-radius: 45px;
-    background: #fff;
+    background: white;
     box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
 }
 

@@ -1,6 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { goerliETH, goerliUSDC } from '../data/defaultTokens';
+import { getDefaultChainId } from '../data/chains';
+import { getDefaultPairForChain } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
 export interface targetData {
@@ -13,7 +14,13 @@ export interface candleDomain {
     domainBoundry: number | undefined;
 }
 
-export interface tradeData {
+export interface candleScale {
+    lastCandleDate: number | undefined;
+    nCandle: number;
+    isFetchForTimeframe: boolean;
+}
+
+export interface TradeDataIF {
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;
@@ -23,7 +30,9 @@ export interface tradeData {
     didUserFlipDenom: boolean;
     shouldSwapConverterUpdate: boolean;
     shouldLimitConverterUpdate: boolean;
+    shouldSwapDirectionReverse: boolean;
     shouldLimitDirectionReverse: boolean;
+    shouldRangeDirectionReverse: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
     isTokenAPrimary: boolean;
@@ -32,6 +41,7 @@ export interface tradeData {
     primaryQuantityRange: string;
     limitTick: number | undefined;
     limitTickCopied: boolean;
+    rangeTicksCopied: boolean;
     poolPriceNonDisplay: number;
     advancedLowTick: number;
     advancedHighTick: number;
@@ -50,17 +60,27 @@ export interface tradeData {
     mainnetQuoteTokenAddress: string;
 }
 
-const initialState: tradeData = {
-    tokenA: goerliUSDC,
-    tokenB: goerliETH,
-    baseToken: goerliETH,
-    quoteToken: goerliUSDC,
+// Have to set these values to something on load, so we use default pair
+// for default chain. Don't worry if user is coming in to another chain,
+// since these will get updated by useUrlParams() in any context where a
+// pair is necessary at load time
+const dfltChainId = getDefaultChainId();
+const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
+const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
+
+const initialState: TradeDataIF = {
+    tokenA: dfltTokenA,
+    tokenB: dfltTokenB,
+    baseToken: dfltTokenA, // We sort these in the next line
+    quoteToken: dfltTokenB,
     isTokenABase: true,
     liquidityFee: 0,
     didUserFlipDenom: false,
     shouldSwapConverterUpdate: false,
     shouldLimitConverterUpdate: false,
+    shouldSwapDirectionReverse: false,
     shouldLimitDirectionReverse: false,
+    shouldRangeDirectionReverse: false,
     isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
@@ -69,6 +89,7 @@ const initialState: tradeData = {
     primaryQuantityRange: '',
     limitTick: undefined,
     limitTickCopied: false,
+    rangeTicksCopied: false,
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
@@ -78,7 +99,10 @@ const initialState: tradeData = {
         { name: 'Min', value: undefined },
         { name: 'Max', value: undefined },
     ],
-    candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
+    candleDomains: {
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+    },
     pinnedMaxPriceDisplayTruncated: undefined,
     pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,
@@ -90,53 +114,49 @@ const initialState: tradeData = {
     mainnetQuoteTokenAddress: '',
 };
 
+sortTokens(initialState);
+
+function sortTokens(state: TradeDataIF) {
+    const [baseTokenAddress] = sortBaseQuoteTokens(
+        state.tokenA.address,
+        state.tokenB.address,
+    );
+
+    if (state.tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
+        state.baseToken = state.tokenA;
+        state.quoteToken = state.tokenB;
+        state.isTokenABase = true;
+    } else {
+        state.baseToken = state.tokenB;
+        state.quoteToken = state.tokenA;
+        state.isTokenABase = false;
+    }
+}
+
 export const tradeDataSlice = createSlice({
     name: 'tradeData',
     initialState,
     reducers: {
+        setChainId: (state, action: PayloadAction<string>) => {
+            const chainNum = parseInt(action.payload);
+
+            // If token pair isn't set to a chain token, always reset to default
+            // pair for the chain
+            if (state.tokenA.chainId !== chainNum) {
+                const [tokenA, tokenB] = getDefaultPairForChain(action.payload);
+                state.tokenA = tokenA;
+                state.tokenB = tokenB;
+                sortTokens(state);
+            }
+        },
+
         setTokenA: (state, action: PayloadAction<TokenIF>) => {
             state.tokenA = action.payload;
-            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
-                action.payload.address,
-                state.tokenB.address,
-            );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
-                state.baseToken = action.payload;
-                state.quoteToken = state.tokenB;
-                state.isTokenABase = true;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
-                state.quoteToken = action.payload;
-                state.baseToken = state.tokenB;
-                state.isTokenABase = false;
-            }
+            sortTokens(state);
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
             state.tokenB = action.payload;
-            const [baseTokenAddress, quoteTokenAddress] = sortBaseQuoteTokens(
-                action.payload.address,
-                state.tokenA.address,
-            );
-            if (
-                action.payload.address.toLowerCase() ===
-                baseTokenAddress.toLowerCase()
-            ) {
-                state.baseToken = action.payload;
-                state.quoteToken = state.tokenA;
-                state.isTokenABase = false;
-            } else if (
-                action.payload.address.toLowerCase() ===
-                quoteTokenAddress.toLowerCase()
-            ) {
-                state.quoteToken = action.payload;
-                state.baseToken = state.tokenA;
-                state.isTokenABase = true;
-            }
+            sortTokens(state);
         },
         setLiquidityFee: (state, action: PayloadAction<number>) => {
             state.liquidityFee = action.payload;
@@ -156,11 +176,23 @@ export const tradeDataSlice = createSlice({
         ) => {
             state.shouldLimitConverterUpdate = action.payload;
         },
+        setShouldSwapDirectionReverse: (
+            state,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.shouldSwapDirectionReverse = action.payload;
+        },
         setShouldLimitDirectionReverse: (
             state,
             action: PayloadAction<boolean>,
         ) => {
             state.shouldLimitDirectionReverse = action.payload;
+        },
+        setShouldRangeDirectionReverse: (
+            state,
+            action: PayloadAction<boolean>,
+        ) => {
+            state.shouldRangeDirectionReverse = action.payload;
         },
         toggleDidUserFlipDenom: (state) => {
             state.didUserFlipDenom = !state.didUserFlipDenom;
@@ -198,6 +230,9 @@ export const tradeDataSlice = createSlice({
         setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
             state.limitTickCopied = action.payload;
         },
+        setRangeTicksCopied: (state, action: PayloadAction<boolean>) => {
+            state.rangeTicksCopied = action.payload;
+        },
         setPoolPriceNonDisplay: (state, action: PayloadAction<number>) => {
             state.poolPriceNonDisplay = action.payload;
         },
@@ -215,12 +250,6 @@ export const tradeDataSlice = createSlice({
         },
         setTargetData: (state, action: PayloadAction<targetData[]>) => {
             state.targetData = action.payload;
-        },
-        resetTokens: (state, action: PayloadAction<string>) => {
-            if (action.payload === '0x5') {
-                state.tokenA = initialState.tokenA;
-                state.tokenB = initialState.tokenB;
-            }
         },
         reverseTokensInRTK: (state) => {
             state.tokenA = state.tokenB;
@@ -241,18 +270,6 @@ export const tradeDataSlice = createSlice({
         setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
             state.rescaleRangeBoundaries = action.payload;
         },
-        setMainnetBaseTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
-            state.mainnetBaseTokenAddress = action.payload;
-        },
-        setMainnetQuoteTokenReduxAddress: (
-            state,
-            action: PayloadAction<string>,
-        ) => {
-            state.mainnetQuoteTokenAddress = action.payload;
-        },
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
@@ -269,6 +286,7 @@ export const tradeDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setChainId,
     setTokenA,
     setTokenB,
     setLiquidityFee,
@@ -276,7 +294,9 @@ export const {
     toggleDidUserFlipDenom,
     setShouldSwapConverterUpdate,
     setShouldLimitConverterUpdate,
+    setShouldSwapDirectionReverse,
     setShouldLimitDirectionReverse,
+    setShouldRangeDirectionReverse,
     setDenomInBase,
     toggleDenomInBase,
     setAdvancedMode,
@@ -288,13 +308,13 @@ export const {
     setPrimaryQuantityRange,
     setLimitTick,
     setLimitTickCopied,
+    setRangeTicksCopied,
     setPoolPriceNonDisplay,
     setAdvancedLowTick,
     setAdvancedHighTick,
     setSimpleRangeWidth,
     setSlippageTolerance,
     resetTradeData,
-    resetTokens,
     reverseTokensInRTK,
     setPinnedMaxPrice,
     setPinnedMinPrice,
@@ -305,48 +325,6 @@ export const {
     setRangeHighLineTriggered,
     setRescaleRangeBoundaries,
     setCandleDomains,
-    setMainnetBaseTokenReduxAddress,
-    setMainnetQuoteTokenReduxAddress,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
-
-// ETH:   0x0000000000000000000000000000000000000000
-// DAI:   0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa
-// USDC:  0xb7a4F3E9097C08dA09517b5aB877F7a917224ede
-
-// ETH
-/*
-{
-    name: 'Native Ether',
-    address: '0x0000000000000000000000000000000000000000',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 42,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png'
-}
-*/
-
-// DAI
-/*
-{
-    name: 'Dai Stablecoin',
-    address: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
-    symbol: 'DAI',
-    decimals: 18,
-    chainId: 42,
-    logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png'
-}
-*/
-
-// USDC
-/*
-{
-    name: 'USDCoin',
-    address: '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede',
-    symbol: 'USDC',
-    decimals: 6,
-    chainId: 42,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png'
-}
-*/

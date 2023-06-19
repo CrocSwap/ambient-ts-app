@@ -4,7 +4,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 export const DefaultTooltip = withStyles({
     tooltip: {
         color: '#ffffff',
-        backgroundColor: '#171d27',
+        backgroundColor: 'var(--dark3)',
         zIndex: 999,
     },
     arrow: {
@@ -15,7 +15,7 @@ export const DefaultTooltip = withStyles({
 
 export const TextOnlyTooltip = withStyles({
     tooltip: {
-        color: 'black',
+        color: '#ffffff',
         backgroundColor: 'transparent',
         zIndex: 999,
     },

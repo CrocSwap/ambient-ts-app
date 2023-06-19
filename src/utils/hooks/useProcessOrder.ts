@@ -5,32 +5,36 @@ import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+
 import {
     concPosSlot,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
+
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import moment from 'moment';
+import { getChainExplorer } from '../data/chains';
+import { getElapsedTime } from '../../App/functions/getElapsedTime';
+import { diffHashSig } from '../functions/diffHashSig';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
-    account: string,
-    isOnPortfolioPage = false,
+    account = '',
+    isAccountView = false,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = 'https://goerli.etherscan.io/';
-
-    // eslint-disable-next-line
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
+    const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
 
     const baseTokenSymbol = limitOrder.baseSymbol;
     const quoteTokenSymbol = limitOrder.quoteSymbol;
+
+    const baseTokenName = limitOrder.baseName;
+    const quoteTokenName = limitOrder.quoteName;
 
     const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
     const baseTokenLogo = limitOrder.baseTokenLogoURI;
@@ -44,10 +48,7 @@ export const useProcessOrder = (
         : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = limitOrder.claimableLiq !== '0';
-    // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
-
-    // const posHash = limitOrder.limitOrderIdentifier?.slice(42);
+    const isOrderFilled = limitOrder.claimableLiq > 0;
 
     const posHash =
         limitOrder.user &&
@@ -61,7 +62,7 @@ export const useProcessOrder = (
                   limitOrder.quote,
                   limitOrder.bidTick,
                   limitOrder.askTick,
-                  36000,
+                  limitOrder.poolIdx,
               ).toString()
             : '…';
 
@@ -112,9 +113,157 @@ export const useProcessOrder = (
     const [finishPriceDisplay, setFinishPriceDisplay] = useState<
         string | undefined
     >();
+    const [initialTokenQty, setInitialTokenQty] = useState<string | undefined>(
+        undefined,
+    );
+
+    const isBid = limitOrder.isBid;
+
+    const priceType =
+        (isDenomBase && !isBid) || (!isDenomBase && isBid)
+            ? 'priceBuy'
+            : 'priceSell';
+
+    const sideType = isAccountView
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? isBid
+                ? 'buy'
+                : 'sell'
+            : isBid
+            ? 'sell'
+            : 'buy'
+        : (isDenomBase && isBid) || (!isDenomBase && !isBid)
+        ? 'sell'
+        : 'buy';
+
+    const type = 'limit';
+
+    const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
+    const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
+
+    const baseTokenAddressTruncated = trimString(
+        baseTokenAddressLowerCase,
+        6,
+        4,
+        '…',
+    );
+    const quoteTokenAddressTruncated = trimString(
+        quoteTokenAddressLowerCase,
+        6,
+        4,
+        '…',
+    );
+
+    const orderMatchesSelectedTokens =
+        selectedBaseToken === baseTokenAddressLowerCase &&
+        selectedQuoteToken === quoteTokenAddressLowerCase;
+
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.claimableLiqBaseDecimalCorrected;
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.claimableLiqQuoteDecimalCorrected;
+
+    const baseQty = !liqBaseNum
+        ? '0'
+        : liqBaseNum < 0.0001
+        ? liqBaseNum.toExponential(2)
+        : liqBaseNum < 2
+        ? liqBaseNum.toPrecision(3)
+        : liqBaseNum >= 100000
+        ? formatAmountOld(liqBaseNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqBaseNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+    const quoteQty = !liqQuoteNum
+        ? '0'
+        : liqQuoteNum < 0.0001
+        ? liqQuoteNum.toExponential(2)
+        : liqQuoteNum < 2
+        ? liqQuoteNum.toPrecision(3)
+        : liqQuoteNum >= 100000
+        ? formatAmountOld(liqQuoteNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqQuoteNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const usdValueNum = limitOrder.totalValueUSD;
+
+    const usdValueTruncated =
+        usdValueNum === undefined
+            ? undefined
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.001
+            ? usdValueNum.toExponential(2) + ' '
+            : usdValueNum >= 99999
+            ? formatAmountOld(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + ' ';
+
+    const usdValueLocaleString =
+        usdValueNum === undefined
+            ? '…'
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.01
+            ? usdValueNum.toPrecision(3)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // -----------------------------------------------------------------------------------------
+
+    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
+
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseQty || '0.00'}`
+        : '…';
+
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteQty || '0.00'}`
+        : '…';
+    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
+
+    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
+    // ------------------------------------------------------------------
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
+    // ----------------------------------------------------------------------
+
+    const positionTime =
+        limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+
+    // ----------------------------------------------------------------------
+
+    const ensNameOrOwnerTruncated = ensName
+        ? ensName.length > 15
+            ? trimString(ensName, 9, 3, '…')
+            : ensName
+        : trimString(ownerId, 7, 4, '…');
+
+    const userNameToDisplay = isOwnerActiveAccount
+        ? 'You'
+        : ensNameOrOwnerTruncated;
 
     useEffect(() => {
-        // console.log({ limitOrder });
         if (
             limitOrder.limitPriceDecimalCorrected &&
             limitOrder.invLimitPriceDecimalCorrected
@@ -189,7 +338,6 @@ export const useProcessOrder = (
             limitOrder.baseDecimals,
             limitOrder.quoteDecimals,
         );
-
         if (
             askTickPrice &&
             askTickInvPrice &&
@@ -198,8 +346,8 @@ export const useProcessOrder = (
         ) {
             const startPriceDisplayNum = isDenomBase
                 ? isBid
-                    ? askTickInvPrice
-                    : bidTickInvPrice
+                    ? bidTickInvPrice
+                    : askTickInvPrice
                 : isBid
                 ? askTickPrice
                 : bidTickPrice;
@@ -227,8 +375,8 @@ export const useProcessOrder = (
                         ? askTickPrice
                         : bidTickPrice
                     : isBid
-                    ? askTickInvPrice
-                    : bidTickInvPrice;
+                    ? bidTickInvPrice
+                    : askTickInvPrice;
 
             const startPriceDisplayDenomByMoneyness =
                 startPriceDenomByMoneyness === 0
@@ -332,226 +480,46 @@ export const useProcessOrder = (
             );
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
+
+            const finalTokenQty = !isBid
+                ? limitOrder.claimableLiqBaseDecimalCorrected
+                : limitOrder.claimableLiqQuoteDecimalCorrected;
+            const intialTokenQtyNum = middlePriceDisplayNum * finalTokenQty;
+            const invIntialTokenQtyNum =
+                (1 / middlePriceDisplayNum) * finalTokenQty;
+            const intialTokenQtyTruncated =
+                intialTokenQtyNum === 0
+                    ? '0'
+                    : intialTokenQtyNum < 0.0001
+                    ? intialTokenQtyNum.toExponential(2)
+                    : intialTokenQtyNum < 2
+                    ? intialTokenQtyNum.toPrecision(3)
+                    : intialTokenQtyNum >= 100000
+                    ? formatAmountOld(intialTokenQtyNum)
+                    : intialTokenQtyNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            const invIntialTokenQtyTruncated =
+                invIntialTokenQtyNum === 0
+                    ? '0'
+                    : invIntialTokenQtyNum < 0.0001
+                    ? invIntialTokenQtyNum.toExponential(2)
+                    : invIntialTokenQtyNum < 2
+                    ? invIntialTokenQtyNum.toPrecision(3)
+                    : invIntialTokenQtyNum >= 100000
+                    ? formatAmountOld(invIntialTokenQtyNum)
+                    : invIntialTokenQtyNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialTokenQty(
+                (isBid && !isDenomBase) || (!isBid && isDenomBase)
+                    ? intialTokenQtyTruncated
+                    : invIntialTokenQtyTruncated,
+            );
         }
-    }, [JSON.stringify(limitOrder), isDenomBase, isOnPortfolioPage]);
-
-    const isBid = limitOrder.isBid;
-
-    const priceType =
-        (isDenomBase && !isBid) || (!isDenomBase && isBid)
-            ? 'priceBuy'
-            : 'priceSell';
-
-    const sideType = isOnPortfolioPage
-        ? isBaseTokenMoneynessGreaterOrEqual
-            ? isBid
-                ? 'buy'
-                : 'sell'
-            : isBid
-            ? 'sell'
-            : 'buy'
-        : (isDenomBase && isBid) || (!isDenomBase && !isBid)
-        ? 'sell'
-        : 'buy';
-
-    const type = 'order';
-
-    const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
-    const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
-
-    const baseTokenAddressTruncated = trimString(
-        baseTokenAddressLowerCase,
-        6,
-        0,
-        '…',
-    );
-    const quoteTokenAddressTruncated = trimString(
-        quoteTokenAddressLowerCase,
-        6,
-        0,
-        '…',
-    );
-
-    const orderMatchesSelectedTokens =
-        selectedBaseToken === baseTokenAddressLowerCase &&
-        selectedQuoteToken === quoteTokenAddressLowerCase;
-
-    const liqBaseNum =
-        limitOrder.positionLiqBaseDecimalCorrected !== 0
-            ? limitOrder.positionLiqBaseDecimalCorrected
-            : limitOrder.claimableLiqBaseDecimalCorrected;
-    const liqQuoteNum =
-        limitOrder.positionLiqQuoteDecimalCorrected !== 0
-            ? limitOrder.positionLiqQuoteDecimalCorrected
-            : limitOrder.claimableLiqQuoteDecimalCorrected;
-
-    const baseQty = !liqBaseNum
-        ? '0'
-        : liqBaseNum < 0.0001
-        ? liqBaseNum.toExponential(2)
-        : liqBaseNum < 2
-        ? liqBaseNum.toPrecision(3)
-        : liqBaseNum >= 100000
-        ? formatAmountOld(liqBaseNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqBaseNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-    const quoteQty = !liqQuoteNum
-        ? '0'
-        : liqQuoteNum < 0.0001
-        ? liqQuoteNum.toExponential(2)
-        : liqQuoteNum < 2
-        ? liqQuoteNum.toPrecision(3)
-        : liqQuoteNum >= 100000
-        ? formatAmountOld(liqQuoteNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqQuoteNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const usdValueNum = limitOrder.totalValueUSD;
-    // const usdValueNum =
-    //     limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
-
-    const usdValueTruncated =
-        usdValueNum === undefined
-            ? undefined
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.001
-            ? usdValueNum.toExponential(2) + ' '
-            : usdValueNum >= 99999
-            ? formatAmountOld(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + ' ';
-
-    const usdValueLocaleString =
-        usdValueNum === undefined
-            ? '…'
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.01
-            ? usdValueNum.toPrecision(3)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    // -----------------------------------------------------------------------------------------
-    // eslint-disable-next-line
-    const [positionLiqTotalUSD, setTotalValueUSD] = useState<
-        number | undefined
-    >();
-
-    // eslint-disable-next-line
-    const [bidTick, setBidTick] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [askTick, setAskTick] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [positionLiquidity, setPositionLiquidity] = useState<
-        string | undefined
-    >();
-    // eslint-disable-next-line
-    const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] =
-        useState<number | undefined>();
-    // eslint-disable-next-line
-    const [posLiqQuoteDecimalCorrected, setPosLiqQuoteDecimalCorrected] =
-        useState<number | undefined>();
-    // eslint-disable-next-line
-    const positionStatsCacheEndpoint =
-        'https://809821320828123.de:5000/position_stats?';
-
-    // useEffect(() => {
-    //     if (
-    //         limitOrder.chainId &&
-    //         limitOrder.poolIdx &&
-    //         limitOrder.user &&
-    //         limitOrder.base &&
-    //         limitOrder.quote &&
-    //         limitOrder.bidTick &&
-    //         limitOrder.askTick
-    //     ) {
-    //         (async () => {
-    //             // console.log('fetching details');
-    //             fetch(
-    //                 positionStatsCacheEndpoint +
-    //                     new URLSearchParams({
-    //                         chainId: limitOrder.chainId,
-    //                         user: limitOrder.user,
-    //                         base: limitOrder.base,
-    //                         quote: limitOrder.quote,
-    //                         poolIdx: limitOrder.poolIdx.toString(),
-    //                         bidTick: limitOrder.bidTick.toString(),
-    //                         askTick: limitOrder.askTick.toString(),
-    //                         addValue: 'true',
-    //                         positionType: 'knockout',
-    //                         isBid: limitOrder.isBid.toString(),
-    //                         omitAPY: 'true',
-    //                         ensResolution: 'true',
-    //                     }),
-    //             )
-    //                 .then((response) => response.json())
-    //                 .then((json) => {
-    //                     const orderData = json?.data;
-    //                     setPosLiqBaseDecimalCorrected(
-    //                         orderData?.positionLiqBaseDecimalCorrected ?? 0,
-    //                     );
-    //                     setPosLiqQuoteDecimalCorrected(
-    //                         orderData?.positionLiqQuoteDecimalCorrected ?? 0,
-    //                     );
-
-    //                     setTotalValueUSD(orderData?.totalValueUSD);
-
-    //                     isDenomBase
-    //                         ? setLowPriceDisplay(orderData.askTickInvPriceDecimalCorrected)
-    //                         : setLowPriceDisplay(orderData.askTickPriceDecimalCorrected);
-    //                     isDenomBase
-    //                         ? setHighPriceDisplay(orderData.bidTickInvPriceDecimalCorrected)
-    //                         : setHighPriceDisplay(orderData.bidTickPriceDecimalCorrected);
-    //                     setPositionLiquidity(orderData.positionLiq);
-    //                     setBidTick(orderData.bidTick);
-    //                     setAskTick(orderData.askTick);
-
-    //                 });
-    //         })();
-    //     }
-    // }, [limitOrder, lastBlockNumber, isDenomBase]);
-
-    // -----------------------------------------------------------------------------------------
-
-    // ------------------------------------------------------------------
-
-    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
-
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseQty || '0.00'}`
-        : '…';
-
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteQty || '0.00'}`
-        : '…';
-    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
-
-    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
-    // ------------------------------------------------------------------
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
-
-    const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 15
-            ? trimString(ensName, 9, 3, '…')
-            : ensName
-        : trimString(ownerId, 7, 4, '…');
-
-    const userNameToDisplay = isOwnerActiveAccount
-        ? 'You'
-        : ensNameOrOwnerTruncated;
+    }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
 
     return {
         // wallet and id data
@@ -588,6 +556,8 @@ export const useProcessOrder = (
         quoteDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         isDenomBase,
         baseTokenAddressLowerCase,
         quoteTokenAddressLowerCase,
@@ -604,19 +574,12 @@ export const useProcessOrder = (
         middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
 
-        // tik
-        bidTick,
-        askTick,
-
-        // liquidity
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
-        positionLiquidity,
-        positionLiqTotalUSD,
-
         // transaction matches selected token
         orderMatchesSelectedTokens,
         isBaseTokenMoneynessGreaterOrEqual,
         blockExplorer,
+
+        elapsedTimeString,
+        initialTokenQty,
     };
 };

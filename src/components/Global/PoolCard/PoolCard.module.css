@@ -9,47 +9,45 @@
     width: 270px;
     height: 120px;
     border-radius: 4px;
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 8px;
     z-index: 1;
     cursor: pointer;
     position: relative;
     transition: all var(--animation-speed) ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
-.pool_card:hover, .pool_card:focus-visible {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-        0px 0px 2px rgba(205, 193, 255, 0.2);
+.pool_card:hover,
+.pool_card:focus-visible {
+    box-shadow: var(--glow-light-box-shadow);
 }
 
 .row {
     display: flex;
     justify-content: space-between;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     align-items: center;
 }
 .column {
-    position: absolute;
-    bottom: 15px;
+    flex: 1;
+
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
+    align-self: flex-end;
 }
 
-.row div {
+.token_images {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.5rem;
 }
 
-.row img {
+.token_images img {
     width: 30px;
-}
-.token_images {
-    margin-top: 3px;
 }
 .tokens_name {
     font-family: var(--font-logo);
@@ -58,7 +56,7 @@
     line-height: 22px;
     display: flex;
     justify-content: center;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .pool_price_change {
@@ -72,11 +70,11 @@
     font-style: normal;
     font-weight: 300;
     font-size: 12px;
-    color: var(--text-grey-white);
+    color: var(--text1);
+    margin-left: 2px;
 }
 
 .row_title {
-    width: 50%;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -91,7 +89,7 @@
 
     /* text/grey light */
 
-    color: #bdbdbd;
+    color: var(--text2);
 }
 
 .apr {
@@ -100,12 +98,7 @@
     line-height: 22px;
     letter-spacing: -0.02em;
 
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
+    background: var(--apr-gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -119,13 +112,12 @@
 
     /* text/white */
 
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .change_positive {
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */
@@ -136,7 +128,6 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */
@@ -149,7 +140,7 @@
     line-height: 30px;
 
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-family: sans-serif;
     /* font-family: var(--mono); */
 }
@@ -165,13 +156,4 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.vol,
-.apr {
-    display: flex;
-    width: 50%;
-    justify-content: flex-end;
-    text-align: end;
-    align-items: flex-end;
 }

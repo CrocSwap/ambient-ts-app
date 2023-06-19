@@ -42,14 +42,29 @@
     border-radius: var(--border-radius);
 }
 .reposition_toggle_container a:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .active_button_toggle {
     color: rgb(0, 0, 0);
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 }
 
 .non_active_button_toggle {
-    color: var(--text-grey-light);
+    color: var(--text2);
     background-color: transparent;
+}
+
+.view_etherscan {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: var(--accent1);
+    cursor: pointer;
+    padding: 8px 0;
 }

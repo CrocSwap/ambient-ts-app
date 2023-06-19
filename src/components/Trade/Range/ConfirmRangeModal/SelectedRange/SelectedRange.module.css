@@ -15,19 +15,19 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: right;
-    color: var(--text-grey-light);
+    color: var(--text2);
     margin: 8px 0;
 }
 
 .button_container button {
     cursor: pointer;
-    background: var(--dark3);
+    background: var(--dark2);
     min-width: 2rem;
     /* padding: 0.1rem; */
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     outline: none;
     border: solid 0.2px transparent;
     border-radius: 50px;
@@ -44,7 +44,7 @@
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
@@ -54,10 +54,10 @@
             rgba(255, 255, 255, 0),
             rgba(255, 255, 255, 0)
         ),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 }
 
@@ -65,7 +65,7 @@
 .price_range_container {
     width: 100%;
 
-    background: var(--dark3);
+    background: var(--dark2);
 
     border-radius: var(--border-radius);
 }
@@ -84,13 +84,13 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
 
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .price_range_amount,
 .currentPrice_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 
     text-align: center;
@@ -104,7 +104,7 @@
 
     text-align: center;
 
-    color: var(--text-accent);
+    color: var(--accent5);
 }
 
 /* SELECTED RANGE */
@@ -118,7 +118,7 @@
     flex-direction: column;
     gap: 10px;
     padding: 8px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
     border-radius: 4px;
 }
 .extra_info_container .row {
@@ -130,7 +130,7 @@
 
 .extra_info_container .row p {
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }

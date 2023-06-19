@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import Button from '../../../Global/Button/Button';
 import styles from './LimitButton.module.css';
 
@@ -6,14 +7,16 @@ interface propsIF {
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
     isBypassConfirmEnabled: boolean;
+    areBothAckd: boolean;
 }
 
-export default function LimitButton(props: propsIF) {
+function LimitButton(props: propsIF) {
     const {
         onClickFn,
         limitAllowed,
         limitButtonErrorMessage,
         isBypassConfirmEnabled,
+        areBothAckd,
     } = props;
 
     // TODO:  @Junior do we need the top-level `<div>` here or can it be eliminated
@@ -23,16 +26,20 @@ export default function LimitButton(props: propsIF) {
         <div className={styles.button_container}>
             <Button
                 title={
-                    limitAllowed
-                        ? isBypassConfirmEnabled
-                            ? 'Send Limit'
-                            : 'Open Confirmation'
-                        : limitButtonErrorMessage
+                    areBothAckd
+                        ? limitAllowed
+                            ? isBypassConfirmEnabled
+                                ? 'Submit Limit Order'
+                                : 'Confirm'
+                            : limitButtonErrorMessage
+                        : 'Acknowledge'
                 }
                 action={onClickFn}
-                disabled={!limitAllowed}
+                disabled={!limitAllowed && areBothAckd}
                 flat
             />
         </div>
     );
 }
+
+export default memo(LimitButton);

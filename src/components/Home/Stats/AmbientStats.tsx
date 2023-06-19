@@ -1,19 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
+import { getChainStats } from '../../../App/functions/getPoolStats';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatAmountOld } from '../../../utils/numbers';
-import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
 
 interface StatCardProps {
     title: string;
     value: string | number;
-}
-
-interface StatsProps {
-    isServerEnabled: boolean;
-    userData: userData;
-    lastBlockNumber: number;
 }
 
 function StatCard(props: StatCardProps) {
@@ -25,16 +23,27 @@ function StatCard(props: StatCardProps) {
             aria-label={ariaDescription}
             tabIndex={0}
         >
-            <div className={styles.title}>{title}</div>
+            <div className={styles.title} style={{ fontWeight: '100' }}>
+                {title}
+            </div>
             <div className={styles.value}>{value}</div>
         </li>
     );
 }
 
-export default function Stats(props: StatsProps) {
-    const { isServerEnabled, userData, lastBlockNumber } = props;
+export default function Stats() {
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { chainId },
+        crocEnv,
+    } = useContext(CrocEnvContext);
 
-    const isUserIdle = userData.isUserIdle;
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const { t } = useTranslation();
 
@@ -47,17 +56,25 @@ export default function Stats(props: StatsProps) {
     >();
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle)
-            getDexStatsFresh().then((dexStats) => {
-                if (dexStats.tvl)
-                    setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
-                if (dexStats.volume)
-                    setTotalVolumeString(
-                        '$' + formatAmountOld(dexStats.volume),
+        if (isServerEnabled && !isUserIdle && crocEnv) {
+            getChainStats(chainId, crocEnv, cachedFetchTokenPrice).then(
+                (dexStats) => {
+                    if (!dexStats) {
+                        return;
+                    }
+
+                    setTotalTvlString(
+                        '$' + formatAmountOld(dexStats.tvlTotalUsd),
                     );
-                if (dexStats.fees)
-                    setTotalFeesString('$' + formatAmountOld(dexStats.fees));
-            });
+                    setTotalVolumeString(
+                        '$' + formatAmountOld(dexStats.volumeTotalUsd),
+                    );
+                    setTotalFeesString(
+                        '$' + formatAmountOld(dexStats.feesTotalUsd),
+                    );
+                },
+            );
+        }
     }, [isServerEnabled, isUserIdle, lastBlockNumber]);
 
     const statCardData = [

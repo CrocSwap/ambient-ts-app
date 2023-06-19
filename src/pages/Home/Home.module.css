@@ -11,22 +11,12 @@
 } */
 
 .home_container {
-    background: var(--body-bg);
+    /* background: var(--dark1); */
+
+    
 }
 
-.pools_container {
-    /* position: relative;
 
-    background: -moz-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: -webkit-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: -o-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, var(--body-bg) 25%);
-
-    background: -ms-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
-
-    background: radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%); */
-}
 .blur_background {
     position: absolute;
     /* top: 5.1em; */
@@ -36,7 +26,7 @@
     width: 30em;
     height: 30em;
     border-radius: 100vw;
-    background-color: #08011a;
+    background-color: var(--dark1);
     background-image: linear-gradient(230deg, #03395d 22%, #0e131a);
     opacity: 1;
     -webkit-filter: blur(180px);
@@ -52,7 +42,7 @@
     width: 30em;
     height: 30em;
     border-radius: 100vw;
-    background-color: #08002a;
+    background-color: var(--dark1);
     background-image: linear-gradient(230deg, #3814c9 22%, #0e131a);
     opacity: 1;
     -webkit-filter: blur(180px);

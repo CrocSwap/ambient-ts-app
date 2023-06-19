@@ -1,60 +1,85 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    pageNames,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface propsIF {
-    tradeData: tradeData;
     pool: topPoolIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
+    cachedFetchTokenPrice: TokenPriceFn;
+    crocEnv: CrocEnv | undefined;
 }
 
 export default function TopPoolsCard(props: propsIF) {
-    const { tradeData, pool, chainId, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { pool, cachedPoolStatsFetch, crocEnv, cachedFetchTokenPrice } =
+        props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
+    const tradeData = useAppSelector((state) => state.tradeData);
     const { pathname } = useLocation();
 
-    const locationSlug = useMemo(() => {
+    const navTarget = useMemo<pageNames>(() => {
+        let output: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
+            pathname.startsWith('/account') ||
+            pathname === '/'
         ) {
-            return '/trade/market';
+            output = 'market';
         } else if (pathname.startsWith('/trade/limit')) {
-            return '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            return '/trade/range';
+            output = 'limit';
+        } else if (pathname.startsWith('/trade/pool')) {
+            output = 'pool';
         } else {
             console.warn(
                 'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
-            return '/trade/market';
+            output = 'market';
         }
+        return output as pageNames;
     }, [pathname]);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenDynamic: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
     const fetchPoolStats = () => {
         (async () => {
+            if (!crocEnv) {
+                return;
+            }
             const poolStatsFresh = await cachedPoolStatsFetch(
                 pool.chainId,
                 pool.base.address,
                 pool.quote.address,
                 pool.poolId,
-                Math.floor(lastBlockNumber / 4),
+                Math.floor(Date.now() / 60000),
+                crocEnv,
+                cachedFetchTokenPrice,
             );
-            const volume = poolStatsFresh?.volumeTotal; // display the total volume for all time
+            const volume = poolStatsFresh?.volumeTotalUsd; // display the total volume for all time
             const volumeString = volume
                 ? '$' + formatAmountOld(volume)
                 : undefined;
             setPoolVolume(volumeString);
-            const tvl = poolStatsFresh?.tvl;
+            const tvl = poolStatsFresh?.tvlTotalUsd;
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
@@ -62,7 +87,7 @@ export default function TopPoolsCard(props: propsIF) {
 
     useEffect(() => {
         fetchPoolStats();
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber, crocEnv, pool]);
 
     const tokenAString =
         pool.base.address.toLowerCase() ===
@@ -79,15 +104,11 @@ export default function TopPoolsCard(props: propsIF) {
     return (
         <Link
             className={styles.container}
-            to={
-                locationSlug +
-                    '/chain=' +
-                    chainId +
-                    '&tokenA=' +
-                    tokenAString +
-                    '&tokenB=' +
-                    tokenBString
-            }
+            to={linkGenDynamic.getFullURL({
+                chain: chainId,
+                tokenA: tokenAString,
+                tokenB: tokenBString,
+            })}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

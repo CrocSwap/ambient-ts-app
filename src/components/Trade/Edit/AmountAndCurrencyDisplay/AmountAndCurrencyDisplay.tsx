@@ -1,7 +1,6 @@
 import styles from './AmountAndCurrencyDisplay.module.css';
 
 interface AmountAndCurrencyDisplayProps {
-    value: string | number;
     tokenImg: string;
     qty: string;
     symbol: string;
@@ -28,7 +27,6 @@ export default function AmountAndCurrencyDisplay(
                 minLength={1}
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
-                required
                 defaultValue={qty}
             />
         </div>

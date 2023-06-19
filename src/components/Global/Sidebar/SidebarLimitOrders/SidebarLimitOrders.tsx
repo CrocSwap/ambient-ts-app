@@ -1,79 +1,73 @@
-import styles from './SidebarLimitOrders.module.css';
+import styles from '../SidebarTable.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
-import { SetStateAction, Dispatch } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    tokenMap: Map<string, TokenIF>;
-    chainId: string;
-    isDenomBase: boolean;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     limitOrderByUser?: LimitOrderIF[];
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
+
 export default function SidebarLimitOrders(props: propsIF) {
+    const { limitOrderByUser } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const {
-        limitOrderByUser,
-        tokenMap,
-        chainId,
-        isDenomBase,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-        isUserLoggedIn,
-        setShowSidebar,
-    } = props;
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { close: closeSidebar },
+    } = useContext(SidebarContext);
+
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
-        // if (onTradeRoute || onAccountRoute) return;
-        // if (onTradeRoute) return;
-        // navigate('/trade');
-
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleLimitOrderClick = (limitOrder: LimitOrderIF) => {
         setOutsideControl(true);
         setSelectedOutsideTab(1);
-        setCurrentPositionActive(limitOrder.limitOrderIdentifier);
-        setIsShowAllEnabled(false);
-        navigate(
-            '/trade/limit/chain=' +
-                chainId +
-                '&tokenA=' +
-                limitOrder.base +
-                '&tokenB=' +
-                limitOrder.quote,
-        );
+        setCurrentPositionActive(limitOrder.limitOrderId);
+        setShowAllData(false);
+        linkGenLimit.navigate({
+            chain: chainId,
+            tokenA: limitOrder.base,
+            tokenB: limitOrder.quote,
+        });
     };
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
-        setShowSidebar(false);
-
-        // props.setIsShowAllEnabled(false);
-        // props.setExpandTradeTable(true);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        closeSidebar();
     };
 
     return (
@@ -91,18 +85,19 @@ export default function SidebarLimitOrders(props: propsIF) {
                                 'Sidebar-Limit-Orders-Card-' +
                                 JSON.stringify(order)
                             }
-                            isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            tokenMap={tokenMap}
                         />
                     ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserLoggedIn && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }

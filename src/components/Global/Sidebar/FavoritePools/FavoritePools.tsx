@@ -1,26 +1,31 @@
-import styles from './FavoritePools.module.css';
+import styles from '../SidebarTable.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
+import { useContext } from 'react';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 
 interface propsIF {
-    favePools: favePoolsMethodsIF;
-    lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
-    chainId: string;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function FavoritePools(props: propsIF) {
-    const { favePools, lastBlockNumber, cachedPoolStatsFetch, chainId } = props;
+    const { cachedPoolStatsFetch } = props;
 
     const { tradeData } = useAppSelector((state) => state);
+    const {
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
+    const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         chainId,
-        36000,
+        poolId,
     );
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
@@ -40,7 +45,7 @@ export default function FavoritePools(props: propsIF) {
                             tradeData.baseToken,
                             tradeData.quoteToken,
                             chainId,
-                            36000,
+                            poolId,
                         )
                     }
                 >
@@ -51,10 +56,9 @@ export default function FavoritePools(props: propsIF) {
                 {favePools.pools.map((pool, idx) => (
                     <FavoritePoolsCard
                         key={idx}
-                        chainId={chainId}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
+                        cachedFetchTokenPrice={props.cachedFetchTokenPrice}
                     />
                 ))}
             </div>

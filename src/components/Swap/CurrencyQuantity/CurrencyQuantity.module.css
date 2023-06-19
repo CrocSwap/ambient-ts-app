@@ -1,8 +1,14 @@
+.token_amount {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .currency_quantity {
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-align: start;
     width: 80%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -20,9 +26,20 @@
 
     font-family: var(--mono);
 }
+
+/* shimmer animation effects */
+
 .currency_quantity::placeholder {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
+}
+
+.circular_progress {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    margin: 8px 2rem;
 }

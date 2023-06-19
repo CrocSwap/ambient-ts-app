@@ -1,36 +1,26 @@
 import styles from './NoTableData.module.css';
 // import { AiFillFolderOpen } from 'react-icons/ai';
-import { Dispatch, SetStateAction } from 'react';
-import { CandleData } from '../../../../utils/state/graphDataSlice';
+import { Dispatch, memo, useContext } from 'react';
+import { IS_LOCAL_ENV } from '../../../../constants';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 interface NoTableDataPropsIF {
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>> | undefined;
     type: string;
-    // setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
-    setSelectedDate?: Dispatch<Date | undefined>;
-    isOnPortfolioPage: boolean;
+    setSelectedDate?: Dispatch<number | undefined>;
+    isAccountView: boolean;
 }
-export default function NoTableData(props: NoTableDataPropsIF) {
-    const {
-        isShowAllEnabled,
-        setIsShowAllEnabled,
-        type,
-        setSelectedDate,
-        isOnPortfolioPage,
-    } = props;
+function NoTableData(props: NoTableDataPropsIF) {
+    const { type, setSelectedDate, isAccountView } = props;
+
+    const { showAllData, setShowAllData } = useContext(TradeTableContext);
 
     const toggleAllEnabled = () => {
-        console.log('setting show all to true');
-        setIsShowAllEnabled ? setIsShowAllEnabled(true) : null;
-        setSelectedDate ? setSelectedDate(undefined) : null;
+        IS_LOCAL_ENV && console.debug('setting show all to true');
+        setShowAllData(true);
+        setSelectedDate && setSelectedDate(undefined);
     };
 
-    const toggleAllEnabledContentOrNull = isOnPortfolioPage ? null : (
+    const toggleAllEnabledContentOrNull = isAccountView ? null : (
         <>
             <p>Consider turning on all {type}</p>
             <button onClick={toggleAllEnabled}>All {type}</button>
@@ -41,7 +31,9 @@ export default function NoTableData(props: NoTableDataPropsIF) {
         <div className={styles.container}>
             {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
             <h2>NO {type.toUpperCase()} FOUND</h2>
-            {!isShowAllEnabled && toggleAllEnabledContentOrNull}
+            {!showAllData && toggleAllEnabledContentOrNull}
         </div>
     );
 }
+
+export default memo(NoTableData);

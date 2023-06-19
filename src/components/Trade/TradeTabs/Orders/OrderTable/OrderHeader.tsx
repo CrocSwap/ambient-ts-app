@@ -1,41 +1,42 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Orders.module.css';
-interface OrderHeaderPropsIF {
+import { LimitSortType } from '../../useSortedLimits';
+
+interface propsIF {
     header: {
         name: string | JSX.Element;
-        // className: string;
         show: boolean;
         slug: string;
         sortable: boolean;
         alignRight?: boolean;
         alignCenter?: boolean;
     };
-
-    sortBy: string;
-    setSortBy: Dispatch<SetStateAction<string>>;
+    sortBy: LimitSortType;
+    setSortBy: Dispatch<SetStateAction<LimitSortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function OrderHeader(props: OrderHeaderPropsIF) {
+
+function OrderHeader(props: propsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignCenter, alignRight } = header;
 
-    function handleClick(slug: string) {
+    function handleClick(slug: LimitSortType): void {
         if (sortable) {
-            console.clear();
             if (sortBy !== slug) {
-                console.log('first click');
+                IS_LOCAL_ENV && console.debug('first click');
                 setSortBy(slug);
             } else if (!reverseSort) {
-                console.log('second click');
+                IS_LOCAL_ENV && console.debug('second click');
                 setReverseSort(true);
             } else if (sortBy === slug && reverseSort) {
-                console.log('third click');
+                IS_LOCAL_ENV && console.debug('third click');
                 setSortBy('default');
                 setReverseSort(false);
             } else {
-                console.warn(
+                console.error(
                     'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
                 );
                 setSortBy('default');
@@ -44,7 +45,7 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
         }
     }
 
-    const arrow = useMemo(() => {
+    const arrow = useMemo<JSX.Element | undefined>(() => {
         if (sortable) {
             if (sortBy !== slug.toLowerCase()) {
                 return <BsSortDown style={{ opacity: '0' }} />;
@@ -68,7 +69,7 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
                     } ${alignCenter && styles.align_center}`}
-                    onClick={() => handleClick(slug.toLowerCase())}
+                    onClick={() => handleClick(slug as LimitSortType)}
                 >
                     {name} {arrow}
                 </li>
@@ -76,3 +77,5 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
         </>
     );
 }
+
+export default OrderHeader;

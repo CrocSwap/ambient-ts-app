@@ -6,36 +6,44 @@ import { MdAccountBox } from 'react-icons/md';
 // import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
-import { useUrlParams } from '../../../App/components/PageHeader/useUrlParams';
 import { BsFillChatDotsFill } from 'react-icons/bs';
-export default function SidebarFooter() {
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
+import { memo } from 'react';
+
+function SidebarFooter() {
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    // console.log({ currentLocation });
 
     const sidebarPositionStyle =
         currentLocation === '/'
             ? styles.position_sticky
             : styles.position_absolute;
 
-    const { paramsSlug } = useUrlParams();
-
     const tradeDestination = location.pathname.includes('trade/market')
-        ? '/trade/market'
+        ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit'
-        : location.pathname.includes('trade/range')
-        ? '/trade/range'
+        ? '/trade/limit/'
+        : location.pathname.includes('trade/pool')
+        ? '/trade/pool/'
         : location.pathname.includes('trade/edit')
-        ? '/trade/edit'
-        : '/trade/market';
+        ? '/trade/edit/'
+        : '/trade/market/';
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const paramsSlug = formSlugForPairParams(
+        tradeData.tokenA.chainId,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    );
 
     const linksData = [
         { title: 'Home', destination: '/', icon: FaHome },
         {
             title: 'Swap',
-            destination: '/swap' + paramsSlug,
+            destination: '/swap/' + paramsSlug,
             icon: RiSwapBoxFill,
         },
         {
@@ -43,8 +51,8 @@ export default function SidebarFooter() {
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
         },
-        { title: 'Account', destination: '/account', icon: MdAccountBox },
-        { title: 'Chat', destination: '/chat', icon: BsFillChatDotsFill },
+        { title: 'Account', destination: '/account/', icon: MdAccountBox },
+        { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
 
     return (
@@ -55,7 +63,7 @@ export default function SidebarFooter() {
                         size={18}
                         color={
                             currentLocation === link.destination
-                                ? 'var(--text-highlight-dark)'
+                                ? 'var(--accent1)'
                                 : 'var(--text-highlight)'
                         }
                     />
@@ -65,3 +73,5 @@ export default function SidebarFooter() {
         </div>
     );
 }
+
+export default memo(SidebarFooter);

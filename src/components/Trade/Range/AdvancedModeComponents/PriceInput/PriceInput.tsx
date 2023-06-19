@@ -1,6 +1,7 @@
 import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface priceInputProps {
     disable?: boolean;
@@ -8,14 +9,12 @@ interface priceInputProps {
     title: string;
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
-    // onFocus: () => void;
-    onBlur: () => void;
+    onBlur: FocusEventHandler<HTMLInputElement>;
     increaseTick: () => void;
     decreaseTick: () => void;
-    isRangeCopied: boolean;
 }
 
-export default function PriceInput(props: priceInputProps) {
+function PriceInput(props: priceInputProps) {
     const {
         disable,
         fieldId,
@@ -25,8 +24,8 @@ export default function PriceInput(props: priceInputProps) {
         onBlur,
         increaseTick,
         decreaseTick,
-        isRangeCopied,
     } = props;
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const priceInput = (
         <input
@@ -34,8 +33,7 @@ export default function PriceInput(props: priceInputProps) {
             className={styles.price_quantity}
             type='text'
             onChange={(event) => handleChangeEvent(event)}
-            // onFocus={onFocus}
-            onBlur={() => onBlur()}
+            onBlur={onBlur}
             inputMode='decimal'
             autoComplete='off'
             autoCorrect='off'
@@ -44,7 +42,6 @@ export default function PriceInput(props: priceInputProps) {
             pattern='^[0-9,]*[.]?[0-9]*$'
             placeholder='0.0'
             disabled={disable}
-            required
             aria-label={`${fieldId} price input quantity.`}
         />
     );
@@ -66,7 +63,11 @@ export default function PriceInput(props: priceInputProps) {
                 >
                     <FaMinus size={16} />
                 </button>
-                <span className={isRangeCopied && styles.pulse_animation}>
+                <span
+                    className={
+                        showRangePulseAnimation && styles.pulse_animation
+                    }
+                >
                     {priceInput}
                 </span>
                 <button
@@ -90,3 +91,5 @@ export default function PriceInput(props: priceInputProps) {
         </div>
     );
 }
+
+export default memo(PriceInput);

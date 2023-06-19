@@ -1,39 +1,33 @@
 import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
-import { ethers } from 'ethers';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-// import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
-
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
-
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../App/functions/getPositionData';
+import { TokenContext } from '../../contexts/TokenContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    cachedQuerySpotPrice: SpotPriceFn;
-    provider: ethers.providers.Provider | undefined;
     position: PositionIF;
-    chainId: string;
     user: string;
     bidTick: number;
     askTick: number;
-    isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
-    baseTokenDecimals: number;
     quoteTokenSymbol: string;
-    quoteTokenDecimals: number;
     lowRangeDisplay: string;
     highRangeDisplay: string;
     isDenomBase: boolean;
@@ -42,57 +36,69 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     positionApy: number;
-    account: string;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    closeGlobalModal: () => void;
-    chainData: ChainSpec;
 }
 
 export default function RangeDetails(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const {
-        crocEnv,
         baseTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
         quoteTokenAddress,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         lowRangeDisplay,
         highRangeDisplay,
-        chainId,
         user,
         bidTick,
         askTick,
         position,
         positionApy,
-        closeGlobalModal,
-        // isPositionInRange,
         isAmbient,
-        cachedQuerySpotPrice,
-        account,
-        isOnPortfolioPage,
+        isAccountView,
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        chainData,
     } = props;
 
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
+    const {
+        globalModal: { close: closeGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyRangeDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
-    const lastBlockNumber = useAppSelector(
-        (state) => state.graphData,
-    ).lastBlock;
 
-    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const { tokens } = useContext(TokenContext);
 
     const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<
         string | undefined
@@ -115,34 +121,21 @@ export default function RangeDetails(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
+    const { crocEnv } = useContext(CrocEnvContext);
 
-    const { posHash } = useProcessRange(position, account);
+    const { posHash } = useProcessRange(position, userAddress);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionId() {
         copy(posHash.toString());
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
-        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
+            GRAPHCACHE_SMALL_URL + '/position_stats?';
 
-        const poolIndex = lookupChain(chainId).poolIndex;
         if (position.positionType) {
             fetch(
                 positionStatsCacheEndpoint +
@@ -160,49 +153,77 @@ export default function RangeDetails(props: propsIF) {
                     }),
             )
                 .then((response) => response?.json())
-                .then((json) => {
-                    const positionStats = json?.data;
+                .then(async (json) => {
+                    if (!crocEnv || !json?.data) {
+                        setBaseCollateralDisplay(undefined);
+                        setQuoteCollateralDisplay(undefined);
+                        setUsdValue(undefined);
+                        setBaseFeesDisplay(undefined);
+                        setQuoteFeesDisplay(undefined);
+                        return;
+                    }
+
+                    const positionPayload = json?.data as PositionServerIF;
+                    const positionStats = await getPositionData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+
+                    const liqBaseDisplay =
+                        liqBaseNum !== undefined
+                            ? liqBaseNum === 0
+                                ? '0'
+                                : liqBaseNum < 2
+                                ? liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqBaseNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay =
+                        liqQuoteNum !== undefined
+                            ? liqQuoteNum === 0
+                                ? '0'
+                                : liqQuoteNum < 2
+                                ? liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 6,
+                                  })
+                                : liqQuoteNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     const usdValue = position.totalValueUSD;
-                    // const usdValue = position.positionLiqTotalUSD;
-
-                    if (usdValue) {
+                    if (usdValue !== undefined) {
                         setUsdValue(
-                            // '$' +
-                            usdValue.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
+                            usdValue === 0
+                                ? '0'
+                                : usdValue.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  }),
                         );
+                    } else {
+                        setUsdValue(undefined);
                     }
 
                     const baseFeeDisplayNum =
@@ -211,7 +232,7 @@ export default function RangeDetails(props: propsIF) {
                         positionStats.feesLiqQuoteDecimalCorrected;
 
                     const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : baseFeeDisplayNum < 0.0001
                         ? baseFeeDisplayNum.toExponential(2)
                         : baseFeeDisplayNum < 2
@@ -226,7 +247,7 @@ export default function RangeDetails(props: propsIF) {
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
                     const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0.00'
+                        ? '0'
                         : quoteFeeDisplayNum < 0.0001
                         ? quoteFeeDisplayNum.toExponential(2)
                         : quoteFeeDisplayNum < 2
@@ -238,73 +259,11 @@ export default function RangeDetails(props: propsIF) {
                               maximumFractionDigits: 2,
                           });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
-
-                    // if (positionStats.apy) {
-                    //     setUpdatedPositionApy(positionStats.apy);
-                    // }
                 })
-                .catch(console.log);
-
-            fetch(
-                apyCacheEndpoint +
-                    new URLSearchParams({
-                        user: user,
-                        bidTick: bidTick.toString(),
-                        askTick: askTick.toString(),
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: poolIndex.toString(),
-                        chainId: chainId,
-                        positionType: position.positionType,
-                        concise: 'true',
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const results = json?.data.results;
-                    const apr = results.apy;
-
-                    if (apr) {
-                        setUpdatedPositionApy(apr);
-                    }
-                })
-                .catch(console.log);
+                .catch(console.error);
         }
-        if (
-            crocEnv &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            baseTokenDecimals &&
-            quoteTokenDecimals &&
-            lastBlockNumber !== 0
-        ) {
-            (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    chainId,
-                    lastBlockNumber,
-                );
+    }, [lastBlockNumber, crocEnv, chainId]);
 
-                if (spotPrice) {
-                    const newDisplayPrice = toDisplayPrice(
-                        spotPrice,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                    );
-                    if (newDisplayPrice !== poolPriceDisplay) {
-                        // console.log({ newDisplayPrice });
-                        setPoolPriceDisplay(newDisplayPrice);
-                    }
-                }
-                //  if (spotPrice !== poolPriceNonDisplay) {
-                //      console.log('dispatching new non-display spot price');
-                //      dispatch(setPoolPriceNonDisplay(spotPrice));
-                //  }
-            })();
-        }
-    }, [lastBlockNumber]);
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         // { slug: 'times', name: 'Show times', checked: false },
@@ -325,8 +284,6 @@ export default function RangeDetails(props: propsIF) {
     //     setControlItems(modifiedControlItems);
     // };
 
-    const [showSettings, setShowSettings] = useState(false);
-
     // const controlDisplay = showSettings ? (
     //     <div className={styles.control_display_container}>
     //         {controlItems.map((item, idx) => (
@@ -334,14 +291,12 @@ export default function RangeDetails(props: propsIF) {
     //         ))}
     //     </div>
     // ) : null;
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        poolPriceDisplay={poolPriceDisplay}
-                        usdValue={usdValue ?? '…'}
+                        usdValue={usdValue !== undefined ? usdValue : '…'}
                         lowRangeDisplay={lowRangeDisplay}
                         highRangeDisplay={highRangeDisplay}
                         baseCollateralDisplay={baseCollateralDisplay}
@@ -353,7 +308,6 @@ export default function RangeDetails(props: propsIF) {
                         baseTokenSymbol={props.baseTokenSymbol}
                         quoteTokenSymbol={props.quoteTokenSymbol}
                         isDenomBase={props.isDenomBase}
-                        controlItems={controlItems}
                         isAmbient={isAmbient}
                         positionApy={positionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
@@ -367,25 +321,19 @@ export default function RangeDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
-                    {/* <RangeGraphDisplay updatedPositionApy={updatedPositionApy} position={position} /> */}
                 </div>
-                {/* <RangeDetailsActions /> */}
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.outer_container}>
             <RangeDetailsHeader
-                position={position}
                 onClose={closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                downloadAsImage={downloadAsImage}
+                copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}
@@ -394,13 +342,12 @@ export default function RangeDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <RangeDetailsSimplify
-                    account={account}
                     position={position}
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
+                    isAccountView={isAccountView}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

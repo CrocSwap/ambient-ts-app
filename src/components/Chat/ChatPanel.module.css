@@ -8,8 +8,8 @@
 .modal_body {
     flex-direction: column-reverse;
     border: solid 1px transparent;
-    background: var(--dark3);
-    cursor: pointer;
+    background: var(--dark2);
+    cursor: default;
 
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
@@ -18,17 +18,16 @@
     aspect-ratio: 5/6;
     transition: all var(--animation-speed) ease-in-out;
     overflow: auto;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border-top: 1px solid var(--text-highlight-dark);
-    border-left: 1px solid var(--text-highlight-dark);
-    border-right: 1px solid var(--text-highlight-dark);
+    box-shadow: 0px 0px 12px rgba(205, 193, 255, 0.2);
+    border-top: 0.5px solid var(--accent1);
+    border-left: 0.5px solid var(--accent1);
+    border-right: 0.5px solid var(--accent1);
 }
 
 .chat_body {
     display: flex;
     flex-direction: column;
     gap: 8px;
-
     height: 100%;
     width: 100%;
     position: sticky;
@@ -45,9 +44,9 @@
     justify-content: space-between;
     padding: 4px 0px 4px 10px;
     letter-spacing: 1px;
-    text-transform: uppercase;
     color: white;
-    background: var(--dark3);
+    background: var(--dark2);
+    cursor: pointer;
 }
 
 .chat_header section {
@@ -58,9 +57,15 @@
 }
 
 .chat_header h2 {
-    font-size: var(--body-size);
+    font-size: var(--header2-size);
     line-height: var(--body-lh);
-    font-weight: 300;
+    font-weight: 100;
+    font-family: var(--font-logo);
+    color: var(--text1);
+}
+
+.chat_header svg {
+    color: var(--text2);
 }
 
 .chat_notification {
@@ -69,6 +74,7 @@
     justify-content: right;
     width: 95%;
     height: 1%;
+    cursor: default;
 }
 
 .text {
@@ -90,6 +96,7 @@
     max-height: unset;
     order: 0;
     align-self: stretch;
+    cursor: default;
 }
 
 /* width */
@@ -115,21 +122,7 @@
     height: 5px;
 
     /* dark/primary */
-    background-image: linear-gradient(
-        to right top,
-        #7371fc,
-        #887ffd,
-        #9a8efe,
-        #ab9dfe,
-        #baacff,
-        #baacff,
-        #baacff,
-        #baacff,
-        #ab9dfe,
-        #9a8efe,
-        #887ffd,
-        #7371fc
-    );
+    background-image: var(--primary-gradient);
     border-radius: 8px;
     transform: rotate(-90deg);
 
@@ -139,7 +132,7 @@
     flex-grow: 0;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 1280px) {
     .main_container {
         display: flex;
     }

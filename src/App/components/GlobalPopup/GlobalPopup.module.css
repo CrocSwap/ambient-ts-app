@@ -9,7 +9,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .container header div {
@@ -23,7 +23,7 @@
     width: auto;
     height: auto;
     position: absolute;
-    background: #171d27;
+    background: var(--dark2);
     border-radius: 15px;
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -47,7 +47,7 @@
     right: 0;
 }
 .global_popup {
-    bottom: 0px;
+    bottom: 10px;
 
     opacity: 0;
     pointer-events: none;

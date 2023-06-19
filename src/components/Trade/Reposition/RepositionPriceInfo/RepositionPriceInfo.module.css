@@ -1,134 +1,142 @@
-/* price info */
-
-.price_info_container {
+/* ------------------------ */
+.price_info_content {
+    /* background: rgb(19, 2, 2); */
+    padding: 8px 16px;
+}
+.apr_display {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.apr_display p:first-of-type {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text1);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.apr_display p:nth-of-type(2) {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    background: var(--apr-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+
+    /* glow/positive */
+
+    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+}
+
+.row_display {
+    /* display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; */
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    height: 20px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.row_display p:first-of-type,
+.row_display p:nth-of-type(3) {
+    color: var(--text1);
+    /* background: red; */
+}
+
+.row_display p:first-of-type {
+    text-align: start;
+}
+.row_display p:nth-of-type(3) {
+    text-align: end;
+}
+.row_display p:nth-of-type(2) {
+    color: var(--text2);
+    text-align: center;
+}
+
+.divider {
+    width: 100%;
+    background: var(--dark3);
+    height: 1px;
+    margin: 6px 8px;
+    border-radius: 9999;
+    color: red;
+    /* padding: 0 8px; */
+}
+
+.gas_pump_dropdown {
+    background: transparent;
+    outline: none;
+    border: none;
+}
+.gas_pump_dropdown button {
+    background: transparent;
+    outline: none;
+    border: none;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    cursor: pointer;
+}
+.gas_pump_dropdown button:hover {
+    color: var(--text1);
+    cursor: pointer;
+}
+.gas_pump_dropdown button:focus-visible {
+    border: 1px solid var(--text1);
+}
+.dropdown_content {
+    border: 1px solid var(--dark3);
+    border-radius: 4px;
+    padding: 8px;
+
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.apr {
-    display: flex;
-    justify-content: center;
-    margin: 10px 0;
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    /* glow/positive */
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-}
-
-.time_in_range {
-    display: flex;
-    justify-content: center;
-    margin: 0 0 10px 0;
-    font-size: var(--header-size);
-    line-height: var(--header2-lh);
-
-    background: linear-gradient(
-        90deg,
-        #15be6f 32.38%,
-        #8fe9bf 51.39%,
-        #15be6f 68.17%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    /* glow/positive */
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-}
-
-.price_info_content {
+.gas_pump_dropdown p {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.extra_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0 10px;
 }
 
-.price_display {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-.price_title {
-    color: var(--text-grey-light);
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-}
-
-.min_price,
-.current_price,
-.max_price {
-    font-size: var(--header2-size);
-    /* font-weight: 400; */
-    line-height: var(--header2-lh);
-    margin: 5px 0;
-}
-
-.min_price {
-    color: #cdc1ff;
-}
-
-.current_price {
-    color: #ffffff;
-    cursor: pointer;
-}
-
-.max_price {
-    color: #7371fc;
-}
-
-.collateral_container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin: 12px 2rem;
-}
-
-.collateral_display {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.collateral_title {
-    color: var(--text-grey-light);
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-}
-.collateral_amount {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    color: var(--text-grey-white);
-    /* font-weight: 400; */
-    margin: 5px 0;
-}
-
-.gas_pump {
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 2rem;
+    gap: 4px;
+    vertical-align: center;
+}
 
+.extra_row p {
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
 }

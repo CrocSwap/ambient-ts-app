@@ -20,13 +20,14 @@
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .main_surplus_container,
 .main_wallet_container {
     display: flex;
     align-items: center;
+    gap: 0.3rem;
 }
 .main_wallet_container {
     justify-content: flex-start;
@@ -36,22 +37,13 @@
     justify-content: flex-end;
 }
 
-/* .surplus_container {
-    margin-right: 15px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2rem;
-} */
-
 .balance_with_pointer {
     display: flex;
     flex-direction: row;
 
     align-items: center;
-    margin-right: 5px;
-    gap: 5px;
+    margin-right: 4px;
+    gap: 4px;
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -61,6 +53,7 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .wallet_logo {
@@ -69,7 +62,7 @@
 }
 
 .enabled_logo {
-    filter: brightness(0) invert(1);
+    filter: contrast(1) brightness(1) saturate(1);
 }
 
 .swapbox_top {
@@ -91,7 +84,7 @@
     width: 65%;
 } */
 .token_select {
-    /* background: var(--dark3); */
+    /* background: var(--dark2); */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -105,44 +98,25 @@
     border: none;
 }
 
-.token_select:hover{
-    background: var(--dark3)
+.token_select:hover {
+    background: var(--dark2);
 }
 
-.token_select:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.token_select:focus-visible {
+    border: 1px solid var(--text1);
 }
 
 .token_select:hover > .token_select svg {
     color: white;
 }
 
-.token_select img {
-    padding: 1px;
-    max-width: 100%;
-}
-
 .token_list_text {
     padding: 1px;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 }
-
-/* bottom info */
-/* .swapbox_bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 33px;
-
-    margin: 6px 10px 0px 10px;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-} */
 
 .swapbox_bottom {
     margin: 6px 10px;
@@ -177,6 +151,10 @@
     filter: grayscale(100%);
 }
 
+.grey_logo_wallet img {
+    filter: grayscale(100%) brightness(60%);
+}
+
 .surplus_toggle {
     display: flex;
     flex-direction: row;
@@ -188,25 +166,22 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text1);
     outline: none;
     border: none;
-    /* background: var(--dark3); */
     background: transparent;
 
     width: 25px;
-    /* margin-right: 8px; */
     max-height: 20px;
-    /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
+
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark3);
 }
 
 .max_button:hover {
-    color: var(--text-grey-white);
+    color: var(--accent1);
 }
 
 /* modal */
@@ -228,7 +203,7 @@
     background: var(--dark2);
 
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 1rem 0;
@@ -240,7 +215,7 @@
 .manage_token_list_container {
     width: 100%;
     padding: 20px;
-    background-color: var(--dark3);
+    background-color: var(--dark2);
     border-top: 1px solid rgb(44, 47, 54);
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -251,7 +226,7 @@
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-highlight);
+    color: var(--accent5);
     gap: 10px;
 }
 
@@ -260,10 +235,7 @@
         box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
         border-radius: var(--border-radius);
     }
-    /* 50% {
-    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
-    border-radius: var(--border-radius);
-  } */
+
     100% {
         box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
         border-radius: var(--border-radius);

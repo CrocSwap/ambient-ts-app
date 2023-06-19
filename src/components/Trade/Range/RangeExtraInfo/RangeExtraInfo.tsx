@@ -1,46 +1,44 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './RangeExtraInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
     poolPriceDisplay: string;
     slippageTolerance: number;
-    liquidityProviderFee: number;
-    quoteTokenIsBuy?: boolean;
+    liquidityProviderFeeString: string;
     rangeGasPriceinDollars: string | undefined;
-    isDenomBase: boolean;
     isTokenABase: boolean;
-    isQtyEntered: boolean;
     showExtraInfoDropdown: boolean;
     isBalancedMode: boolean;
 }
 
 // central react functional component
-export default function RangeExtraInfo(props: propsIF) {
+function RangeExtraInfo(props: propsIF) {
     const {
-        tokenPair,
         rangeGasPriceinDollars,
-        // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
-        liquidityProviderFee,
-        isDenomBase,
+        liquidityProviderFeeString,
         isTokenABase,
-        // isQtyEntered,
         showExtraInfoDropdown,
         isBalancedMode,
     } = props;
+
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -54,8 +52,8 @@ export default function RangeExtraInfo(props: propsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -65,7 +63,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFeeString}%`,
         },
     ];
 
@@ -74,8 +72,8 @@ export default function RangeExtraInfo(props: propsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -85,7 +83,7 @@ export default function RangeExtraInfo(props: propsIF) {
         {
             title: 'Current Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFeeString}%`,
         },
     ];
 
@@ -115,8 +113,8 @@ export default function RangeExtraInfo(props: propsIF) {
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
     const conversionRateDisplay = reverseDisplay
-        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
-        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`;
+        ? `1 ${tokenB.symbol} ≈ ${poolPriceDisplay} ${tokenA.symbol}`
+        : `1 ${tokenA.symbol} ≈ ${poolPriceDisplay} ${tokenB.symbol}`;
 
     const gasCostAriaLabel = `Gas cost is ${rangeGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
 
@@ -145,7 +143,13 @@ export default function RangeExtraInfo(props: propsIF) {
             >
                 {conversionRateDisplay}
             </div>
-            {showExtraInfoDropdown && <RiArrowDownSLine size={27} />}
+
+            {showExtraInfoDropdown && !showExtraDetails && (
+                <RiArrowDownSLine size={22} />
+            )}
+            {showExtraInfoDropdown && showExtraDetails && (
+                <RiArrowUpSLine size={22} />
+            )}
         </button>
     );
 
@@ -156,3 +160,5 @@ export default function RangeExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(RangeExtraInfo);

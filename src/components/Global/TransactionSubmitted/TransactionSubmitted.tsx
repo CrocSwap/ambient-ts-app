@@ -5,6 +5,7 @@ import addTokenToWallet from './addTokenToWallet';
 import Button from '../../Global/Button/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
+import { getChainExplorer } from '../../../utils/data/chains';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -12,9 +13,11 @@ interface TransactionSubmittedProps {
     tokenBSymbol: string;
     tokenBDecimals: number;
     tokenBImage: string;
+    chainId: string | number;
     noAnimation?: boolean;
     limit?: boolean;
     range?: boolean;
+    reposition?: boolean;
 }
 
 export default function TransactionSubmitted(props: TransactionSubmittedProps) {
@@ -27,13 +30,17 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         noAnimation,
         limit,
         range,
+        chainId,
+        reposition,
     } = props;
-    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+
+    const blockExplorer = getChainExplorer(chainId);
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
 
-    const handleAddToMetamask = async () => {
+    const handleAddToMetaMask = async () => {
         await addTokenToWallet(
             tokenBAddress,
             tokenBSymbol,
@@ -42,32 +49,37 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         );
     };
 
-    const addToMetamaskButton = (
+    const addToMetaMaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to Metamask.`}
+            title={`Add ${tokenBSymbol} to MetaMask`}
             // action={props.onClickFn}
-            action={handleAddToMetamask}
+            action={handleAddToMetaMask}
             disabled={false}
         ></Button>
     );
 
     const etherscanButton = (
         <a
-            href={EthersanTx}
+            href={txUrlOnBlockExplorer}
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
+            aria-label='view on etherscan'
         >
-            View on Etherscan.
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            View on Etherscan
+            <FiExternalLink size={20} color='var(--text1)' />
         </a>
     );
     return (
-        <div className={styles.transaction_submitted}>
+        <div
+            className={`${styles.transaction_submitted} ${
+                noAnimation && styles.noAnimation_submitted
+            }`}
+        >
             <div
                 style={{
-                    height: '180px',
+                    height: noAnimation ? 'auto' : '180px',
                 }}
             >
                 {!noAnimation && (
@@ -81,14 +93,20 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 {limit
                     ? 'Limit Transaction Successfully Submitted'
                     : range
-                    ? 'Range Transaction Successfully Submitted'
+                    ? 'Pool Transaction Successfully Submitted'
+                    : reposition
+                    ? 'Reposition Successfully Submitted'
                     : 'Swap Transaction Successfully Submitted'}
             </h2>
-            <div className={styles.action_buttons}>
-                {EthersanTx && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
+            <div
+                className={`${styles.action_buttons} ${
+                    noAnimation && styles.bypass_buttons
+                }`}
+            >
+                {txUrlOnBlockExplorer && etherscanButton}
+                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
                     ? null
-                    : addToMetamaskButton}
+                    : addToMetaMaskButton}
             </div>
         </div>
     );

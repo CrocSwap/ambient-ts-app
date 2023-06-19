@@ -1,14 +1,9 @@
 // START: Import React and Dongles
-import {
-    forwardRef,
-    Dispatch,
-    SetStateAction,
-    ReactNode,
-    SyntheticEvent,
-} from 'react';
+import { forwardRef, memo, SyntheticEvent, useContext } from 'react';
 import { Snackbar } from '@material-ui/core';
-import { Alert, AlertProps, AlertColor } from '@mui/material';
+import { Alert, AlertProps } from '@mui/material';
 import { motion } from 'framer-motion';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     function SnackbarAlert(props, ref) {
@@ -26,31 +21,27 @@ const SnackbarAlert = forwardRef<HTMLDivElement, AlertProps>(
     },
 );
 
-// interface for React functional component props
-interface SnackbarPropsIF {
-    children: ReactNode;
-    severity: AlertColor;
-    setOpenSnackbar: Dispatch<SetStateAction<boolean>>;
-    openSnackbar: boolean;
-}
-
 // React functional component
-export default function SnackbarComponent(props: SnackbarPropsIF) {
-    const { openSnackbar, setOpenSnackbar, children, severity } = props;
+function SnackbarComponent() {
+    const {
+        snackbar: { isOpen: isSnackbarOpen, close, content, severity },
+    } = useContext(AppStateContext);
 
     const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
-        setOpenSnackbar(false);
+        close();
     };
 
     return (
         <motion.div>
             <Snackbar
-                open={openSnackbar}
+                open={isSnackbarOpen}
                 autoHideDuration={8000}
                 onClose={handleClose}
+                // z-index needs to be greater than globalModal and globalPopup
+                style={{ width: '900px', zIndex: 10000000 }}
             >
                 <motion.div
                     initial={{ scale: 0.5 }}
@@ -58,10 +49,12 @@ export default function SnackbarComponent(props: SnackbarPropsIF) {
                     transition={{ duration: 0.3 }}
                 >
                     <SnackbarAlert onClose={handleClose} severity={severity}>
-                        {children}
+                        {content}
                     </SnackbarAlert>
                 </motion.div>
             </Snackbar>
         </motion.div>
     );
 }
+
+export default memo(SnackbarComponent);

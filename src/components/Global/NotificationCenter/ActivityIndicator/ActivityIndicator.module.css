@@ -1,7 +1,7 @@
 .activity_indicator {
     height: 34px;
     width: 34px;
-    background: var(--dark3);
+    background: var(--dark2);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,12 +11,7 @@
 }
 
 .activity_indicator span {
-    background: linear-gradient(
-        90deg,
-        #7371fc 0%,
-        #cdc1ff 49.48%,
-        #7371fc 100%
-    );
+    background: var(--title-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -26,17 +21,18 @@
     position: relative;
     width: 20px;
     height: 20px;
-    background-color: #3498db;
+    background-color: var(--accent4);
     border-radius: 50%;
     position: relative;
     cursor: pointer;
+    display: flex;
 
     outline: none;
     border: none;
     padding: none;
 }
 
-.circle_button{
+.circle_button {
     outline: none;
     padding: none;
     border: none;
@@ -44,7 +40,7 @@
 }
 
 .ring {
-    border: 3px solid #3498db;
+    border: 3px solid var(--accent4);
     border-radius: 30px;
     height: 40px;
     width: 40px;

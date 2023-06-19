@@ -11,6 +11,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
 } from '../../../../utils/state/tradeDataSlice';
+import { IS_LOCAL_ENV } from '../../../../constants';
 
 // interface for React functional component props
 interface EditMinMaxPricePropsIF {
@@ -59,7 +60,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPricePropsIF) {
             const minPriceInput = evt.target.value;
             setMinPriceInputString(minPriceInput);
         } else {
-            console.log('no event');
+            IS_LOCAL_ENV && console.debug('no event');
         }
     };
 
@@ -68,7 +69,7 @@ export default function EditMinMaxPrice(props: EditMinMaxPricePropsIF) {
             const maxPriceInput = evt.target.value;
             setMaxPriceInputString(maxPriceInput);
         } else {
-            console.log('no event');
+            IS_LOCAL_ENV && console.debug('no event');
         }
     };
 

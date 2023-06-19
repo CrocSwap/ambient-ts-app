@@ -12,7 +12,7 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
         <div className={styles.wallet_confirm}>
             {!noAnimation && <div className={styles.loader} />}
             {!noAnimation && <h2>Waiting For Confirmation</h2>}
-            <p>{content}</p>
+            <div>{content}</div>
 
             {/* <span className={styles.waiting_detail}>
                 <p>Please confirm this transaction in your wallet</p>

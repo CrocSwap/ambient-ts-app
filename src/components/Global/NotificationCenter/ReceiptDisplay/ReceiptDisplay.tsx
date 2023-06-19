@@ -8,15 +8,25 @@ import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
+import { getChainExplorer } from '../../../../utils/data/chains';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
     txBlockNumber?: number;
-    lastBlockNumber: number;
     txType: string | undefined;
 }
+
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, lastBlockNumber, txType } = props;
+    const { status, hash, txBlockNumber, txType } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const pending = (
         <div className={styles.pending}>
             <AiOutlineLoading3Quarters />
@@ -44,7 +54,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         } else return '';
     }
 
-    const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const blockExplorer = getChainExplorer(chainId);
+    const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const dispatch = useAppDispatch();
 
@@ -113,9 +124,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     </div>
                 </div>
                 <div className={styles.row}>
-                    <p>
-                        {`${handleTxTextDisplay(status)}  ${elapsedTimeString}`}
-                    </p>
+                    <p>{`${handleTxTextDisplay(
+                        status,
+                    )}  ${elapsedTimeString}`}</p>
                     <a
                         href={EtherscanTx}
                         className={styles.action}

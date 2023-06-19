@@ -1,204 +1,125 @@
-import { ethers } from 'ethers';
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-// import Toggle from '../../Global/Toggle/Toggle';
+
 import {
     useState,
     ChangeEvent,
     Dispatch,
     SetStateAction,
     useEffect,
+    useContext,
+    memo,
 } from 'react';
-import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
-import { MdAccountBalanceWallet } from 'react-icons/md';
+import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
+import walletIcon from '../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceExplanation';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { FiRefreshCw } from 'react-icons/fi';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
-    provider: ethers.providers.Provider | undefined;
-    isUserLoggedIn: boolean | undefined;
-    tokenPair: TokenPairIF;
-    tokensBank: Array<TokenIF>;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    chainId: string;
+    disableReverseTokens: boolean;
     fieldId: string;
     tokenAorB: string | null;
-    direction: string;
     sellToken?: boolean;
     sellQtyString: string;
     setSellQtyString: Dispatch<SetStateAction<string>>;
     buyQtyString: string;
     setBuyQtyString: Dispatch<SetStateAction<string>>;
-    tokenBQtyLocal?: string;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
     tokenBDexBalance: string;
     isSellTokenEth?: boolean;
-    tokenAQtyCoveredByWalletBalance?: number;
-    tokenAQtyCoveredBySurplusBalance?: number;
-    tokenBQtyCoveredByWalletBalance?: number;
-    tokenBQtyCoveredBySurplusBalance?: number;
-    tokenASurplusMinusTokenARemainderNum?: number;
-    tokenAWalletMinusTokenAQtyNum: number;
-    tokenBWalletPlusTokenBQtyNum: number;
-    tokenASurplusMinusTokenAQtyNum: number;
-    tokenBSurplusPlusTokenBQtyNum: number;
     isWithdrawFromDexChecked: boolean;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
+    setIsSellLoading: Dispatch<SetStateAction<boolean>>;
+    setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeEvent: (evt?: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
-    activeTokenListsChanged: boolean;
-    indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    gasPriceInGwei: number | undefined;
-    isSwapCopied?: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    acknowledgeToken: (tkn: TokenIF) => void;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
+    setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    setUserClickedCombinedMax: Dispatch<SetStateAction<boolean>>;
+    userClickedCombinedMax: boolean;
+    isLoading: boolean;
+    handleTokenAChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    handleTokenBChangeEvent?: (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ) => Promise<void>;
+    isTokenAPrimaryLocal?: boolean;
 }
 
-export default function CurrencySelector(props: propsIF) {
+function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
-        provider,
         sellQtyString,
         setSellQtyString,
         buyQtyString,
         setBuyQtyString,
-        isUserLoggedIn,
-        tokenPair,
-        // tokensBank,
-        setImportedTokens,
-        chainId,
-        // direction,
         fieldId,
         tokenAorB,
         handleChangeEvent,
         handleChangeClick,
+        handleTokenAChangeEvent,
+        handleTokenBChangeEvent,
+        isTokenAPrimaryLocal,
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        tokenBQtyLocal,
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        isSwapCopied,
         isSellTokenEth,
-        tokenAQtyCoveredBySurplusBalance,
-        tokenAQtyCoveredByWalletBalance,
-        tokenASurplusMinusTokenARemainderNum,
-        // tokenAWalletMinusTokenAQtyNum,
-        // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
-        // activeTokenListsChanged,
-        // indicateActiveTokenListsChanged,
-        gasPriceInGwei,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
-        importedTokensPlus,
-        addRecentToken,
-        getRecentTokens,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        acknowledgeToken,
-        openGlobalPopup,
-        dexBalancePrefs,
+        setUserOverrodeSurplusWithdrawalDefault,
+        setUserClickedCombinedMax,
+        userClickedCombinedMax,
+        setIsSellLoading,
+        setIsBuyLoading,
+        isLoading,
     } = props;
 
-    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
+    const { setInput } = useContext(TokenContext);
+    const { showSwapPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalSwap } = useContext(UserPreferenceContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isSellTokenSelector = fieldId === 'sell';
-    const thisToken = isSellTokenSelector
-        ? tokenPair.dataTokenA
-        : tokenPair.dataTokenB;
+    const thisToken = isSellTokenSelector ? tokenA : tokenB;
 
-    const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
-    const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
-
-    const handleDexBalanceChange = () => {
-        if (parseFloat(tokenADexBalance) <= 0) {
-            setIsWithdrawFromDexChecked(false);
-        } else if (dexBalancePrefs.swap.drawFromDexBal.isEnabled) {
-            setIsWithdrawFromDexChecked(true);
-        }
-    };
-
-    useEffect(() => {
-        handleDexBalanceChange();
-    }, [tokenADexBalance]);
-
-    // const WithdrawTokensContent = (
-    //     <div className={styles.surplus_toggle}>
-    //         {isSellTokenSelector ? (
-    //             <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isWithdrawFromDexChecked}
-    //                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-    //                     id='sell_token_withdrawal'
-    //                     disabled={false}
-    //                     // disabled={isWithdrawFromDexDisabled}
-    //                 />
-    //             </IconWithTooltip>
-    //         ) : (
-    //             <IconWithTooltip title='Save to Exchange Balance' placement='bottom'>
-    //                 <Toggle2
-    //                     isOn={isSaveAsDexSurplusChecked}
-    //                     handleToggle={() =>
-    //                         setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked)
-    //                     }
-    //                     id='buy_token_withdrawal'
-    //                 />
-    //             </IconWithTooltip>
-    //         )}
-    //     </div>
-    // );
+    const displayAmountToReduceEth = 0.2;
 
     const walletBalanceNonLocaleString = props.sellToken
-        ? tokenABalance && gasPriceInGwei
+        ? tokenABalance
             ? isSellTokenEth
-                ? (
-                      parseFloat(tokenABalance) -
-                      gasPriceInGwei * 400000 * 1e-9
-                  ).toFixed(18)
+                ? parseFloat(tokenABalance).toFixed(18)
                 : tokenABalance
             : ''
         : tokenBBalance
@@ -219,228 +140,210 @@ export default function CurrencySelector(props: propsIF) {
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = props.sellToken
+    const walletAndSurplusBalanceNonLocaleString = props.sellToken
         ? tokenADexBalance
-        : tokenBDexBalance;
-
-    const surplusBalanceNonLocaleStringOffset = props.sellToken
-        ? tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
                 ? (
-                      parseFloat(tokenADexBalance) -
-                      gasPriceInGwei * 400000 * 1e-9
+                      parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                   ).toFixed(18)
-                : tokenADexBalance
+                : (
+                      parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                  ).toString()
             : ''
         : tokenBDexBalance
-        ? parseFloat(tokenBDexBalance).toString()
+        ? (parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)).toString()
         : '';
 
-    const surplusBalanceLocaleString = props.sellToken
+    const walletAndSurplusBalanceLocaleString = props.sellToken
         ? tokenADexBalance
-            ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
+            ? (
+                  parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+              ).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
             : '...'
         : tokenBDexBalance
-        ? parseFloat(tokenBDexBalance).toLocaleString(undefined, {
+        ? (
+              parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+          ).toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
         : '...';
 
-    const sellTokenSurplusChange =
-        tokenAQtyCoveredBySurplusBalance && tokenAQtyCoveredBySurplusBalance > 0
-            ? '(-' +
-              tokenAQtyCoveredBySurplusBalance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const isTokenADexBalanceNonZero =
+        !!tokenADexBalance && parseFloat(tokenADexBalance) > 0;
 
-    const sellTokenWalletBalanceChange =
-        tokenAQtyCoveredByWalletBalance && tokenAQtyCoveredByWalletBalance > 0
-            ? '(-' +
-              tokenAQtyCoveredByWalletBalance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const balanceLocaleString =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+            ? walletBalanceLocaleString
+            : walletAndSurplusBalanceLocaleString;
 
-    const buyTokenSurplusChange =
-        tokenBQtyLocal && isSaveAsDexSurplusChecked
-            ? '(+' +
-              parseFloat(tokenBQtyLocal).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const balanceNonLocaleString =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+            ? walletBalanceNonLocaleString
+            : walletAndSurplusBalanceNonLocaleString;
 
-    const buyTokenWalletBalanceChange =
-        tokenBQtyLocal && !isSaveAsDexSurplusChecked
-            ? '(+' +
-              parseFloat(tokenBQtyLocal).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) +
-              ')'
-            : '';
+    const isCombinedBalanceNonZero = isSellTokenEth
+        ? !!balanceNonLocaleString &&
+          parseFloat(balanceNonLocaleString) - displayAmountToReduceEth > 0
+        : !!balanceNonLocaleString && parseFloat(balanceNonLocaleString) > 0;
+
+    const refreshTokenData = async () => {
+        if (isTokenAPrimaryLocal) {
+            setIsBuyLoading(true);
+            handleTokenAChangeEvent && (await handleTokenAChangeEvent());
+            setIsBuyLoading(false);
+        } else {
+            setIsSellLoading(true);
+            handleTokenBChangeEvent && (await handleTokenBChangeEvent());
+
+            setIsSellLoading(false);
+        }
+    };
 
     // Wallet balance function and styles-----------------------------
 
     function handleWalletBalanceClick() {
         if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.disable();
             setIsWithdrawFromDexChecked(false);
+            if (isTokenADexBalanceNonZero) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
         } else {
-            dexBalancePrefs.swap.outputToDexBal.disable();
+            dexBalSwap.outputToDexBal.disable();
             setIsSaveAsDexSurplusChecked(false);
         }
     }
 
-    const walletLogoColorStyle =
-        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-        (isSellTokenSelector &&
-            isSellTokenEth === false &&
-            isWithdrawFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0)
-            ? 'var(--text-highlight)'
-            : '#555555';
+    const adjustedBalanceNonLocaleString =
+        isSellTokenEth && !!balanceNonLocaleString
+            ? (
+                  parseFloat(balanceNonLocaleString) - displayAmountToReduceEth
+              ).toFixed(18)
+            : balanceNonLocaleString;
 
-    const walletBalanceMaxButton =
-        isSellTokenSelector &&
-        !isWithdrawFromDexChecked &&
-        walletBalanceNonLocaleString !== '0.0' ? (
+    function handleMaxButtonClick() {
+        if (handleChangeClick && isUserConnected) {
+            handleChangeClick(adjustedBalanceNonLocaleString);
+            setUserClickedCombinedMax(true);
+        }
+    }
+
+    const handleAutoMax = () => {
+        if (
+            handleChangeClick &&
+            adjustedBalanceNonLocaleString &&
+            userClickedCombinedMax
+        ) {
+            handleChangeClick(adjustedBalanceNonLocaleString);
+            setDisableReverseTokens(true);
+        }
+    };
+
+    useEffect(() => {
+        handleAutoMax();
+    }, [
+        isWithdrawFromDexChecked,
+        userClickedCombinedMax,
+        balanceNonLocaleString,
+    ]);
+
+    const maxButtonTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() => {
+                isWithdrawFromDexChecked &&
+                !!tokenADexBalance &&
+                parseFloat(tokenADexBalance) > 0
+                    ? openGlobalPopup(
+                          <ExchangeBalanceExplanation />,
+                          'Exchange Balance',
+                          'right',
+                      )
+                    : openGlobalPopup(
+                          <WalletBalanceExplanation />,
+                          'Wallet Balance',
+                          'right',
+                      );
+            }}
+        >
+            {isWithdrawFromDexChecked &&
+            !!tokenADexBalance &&
+            parseFloat(tokenADexBalance) > 0
+                ? 'Use Maximum Wallet + Exchange Balance'
+                : 'Use Maximum Wallet Balance'}
+            <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
+
+    const maxButton = (
+        <DefaultTooltip
+            interactive
+            title={maxButtonTitle}
+            placement={'bottom'}
+            arrow
+            enterDelay={700}
+            leaveDelay={200}
+        >
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(false);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(false);
-                    }
-                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                        handleChangeClick(walletBalanceNonLocaleString);
-                    }
-                }}
+                onClick={handleMaxButtonClick}
             >
                 Max
             </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
-    const surplusContainerColorStyle =
-        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-        (isSellTokenSelector &&
-            isSellTokenEth === false &&
-            isWithdrawFromDexChecked &&
-            tokenASurplusMinusTokenARemainderNum &&
-            tokenASurplusMinusTokenARemainderNum < 0)
-            ? 'var(--text-highlight)'
-            : '#555555';
-
-    const walletContent = (
-        <section
-            className={styles.wallet_container}
-            style={{ color: surplusContainerColorStyle }}
-        >
-            <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
-                <div
-                    className={styles.balance_with_pointer}
-                    onClick={() => handleWalletBalanceClick()}
-                >
-                    <div className={styles.wallet_logo}>
-                        <MdAccountBalanceWallet
-                            size={20}
-                            color={walletLogoColorStyle}
-                        />
-                    </div>
-                    <div className={styles.balance_column}>
-                        <div>
-                            {isUserLoggedIn ? walletBalanceLocaleString : ''}
-                        </div>
-                        <div
-                            style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
-                                fontSize: '9px',
-
-                                // width: '50px'
-                            }}
-                        >
-                            {isSellTokenSelector
-                                ? sellTokenWalletBalanceChange
-                                : buyTokenWalletBalanceChange}
-                        </div>
-                    </div>
-                </div>
-            </IconWithTooltip>
-            {walletBalanceMaxButton}
-        </section>
+        </DefaultTooltip>
     );
-    // End of  Wallet balance function and styles-----------------------------
-
-    // Surplus Content function and styles-----------------------------
-
-    const surplusColorStyle =
-        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-            ? '#555555'
-            : 'var(--text-highlight)';
-
-    function handleSurplusClick() {
-        if (props.sellToken) {
-            dexBalancePrefs.swap.drawFromDexBal.enable();
-            setIsWithdrawFromDexChecked(true);
-        } else {
-            dexBalancePrefs.swap.outputToDexBal.enable();
-            setIsSaveAsDexSurplusChecked(true);
-        }
-    }
-    const sellTokenWalletClassname = isSellTokenSelector
-        ? isWithdrawFromDexChecked
-            ? styles.enabled_logo
-            : null
-        : isSaveAsDexSurplusChecked
-        ? styles.enabled_logo
-        : null;
-
     const sellTokenLogoClassname =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
             ? styles.grey_logo
-            : null;
+            : styles.enabled_logo;
 
-    const surplusMaxButton =
-        isSellTokenSelector &&
-        isWithdrawFromDexChecked &&
-        surplusBalanceNonLocaleString !== '0.0' ? (
-            <button
-                className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    if (props.sellToken) {
-                        setIsWithdrawFromDexChecked(true);
-                    } else {
-                        setIsSaveAsDexSurplusChecked(true);
-                    }
-                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                        handleChangeClick(surplusBalanceNonLocaleStringOffset);
-                    }
-                }}
-            >
-                Max
-            </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
+    function handleSurplusClick() {
+        if (props.sellToken) {
+            setIsWithdrawFromDexChecked(true);
+            if (isTokenADexBalanceNonZero) {
+                setUserOverrodeSurplusWithdrawalDefault(false);
+            }
+        } else {
+            dexBalSwap.outputToDexBal.enable();
+            setIsSaveAsDexSurplusChecked(true);
+        }
+    }
+
+    const walletBalanceTitle = (
+        <p
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+            }}
+            onClick={() =>
+                openGlobalPopup(
+                    <WalletBalanceExplanation />,
+                    'Wallet Balance',
+                    'right',
+                )
+            }
+        >
+            {!isSellTokenSelector
+                ? 'Wallet Balance'
+                : isCombinedBalanceNonZero
+                ? 'Use Maximum Wallet Balance'
+                : 'Wallet Balance'}
+            <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
 
     const exchangeBalanceTitle = (
         <p
@@ -458,66 +361,113 @@ export default function CurrencySelector(props: propsIF) {
                 )
             }
         >
-            Exchange Balance <AiOutlineQuestionCircle size={14} />
+            {isSellTokenSelector
+                ? isCombinedBalanceNonZero
+                    ? 'Use Maximum Wallet + Exchange Balance'
+                    : 'Wallet + Exchange Balance'
+                : 'Wallet + Exchange Balance'}
+            <AiOutlineQuestionCircle size={14} />
         </p>
     );
 
-    const surplusContent = (
-        <div className={styles.surplus_container}>
-            <DefaultTooltip
-                interactive
-                title={exchangeBalanceTitle}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div
-                    className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
-                    style={{ color: surplusColorStyle }}
-                    onClick={() => handleSurplusClick()}
+    const walletContent = (
+        <section className={styles.wallet_container}>
+            <div className={`${styles.balance_with_pointer}`}>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use Wallet Balance Only'
+                            : 'Withdraw to Wallet'
+                    }`}
+                    placement='bottom'
                 >
-                    {surplusMaxButton}
-                    <div className={styles.balance_column}>
-                        {isUserLoggedIn && surplusBalanceLocaleString}
-                        <div
-                            style={{
-                                color: isSellTokenSelector
-                                    ? '#f6385b'
-                                    : '#15be67',
-                                fontSize: '9px',
-                                // width: '50px'
-                            }}
-                        >
-                            {isSellTokenSelector
-                                ? sellTokenSurplusChange
-                                : buyTokenSurplusChange}
-                        </div>
-                    </div>
                     <div
-                        className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}
+                        className={`${styles.wallet_logo}`}
+                        onClick={() => handleWalletBalanceClick()}
                     >
                         <img
-                            src={ambientLogo}
+                            src={
+                                (isSellTokenSelector &&
+                                    !isWithdrawFromDexChecked) ||
+                                (!isSellTokenSelector &&
+                                    !isSaveAsDexSurplusChecked)
+                                    ? walletEnabledIcon
+                                    : walletIcon
+                            }
                             width='20'
-                            alt='surplus'
-                            color='var(--text-highlight)'
                         />
                     </div>
-                </div>
-            </DefaultTooltip>
-        </div>
+                </IconWithTooltip>
+                <IconWithTooltip
+                    title={`${
+                        tokenAorB === 'A'
+                            ? 'Use  Wallet and Exchange Balance'
+                            : 'Add to Exchange Balance'
+                    }`}
+                    placement='bottom'
+                >
+                    <div
+                        className={`${styles.ambient_logo} ${sellTokenLogoClassname}`}
+                        onClick={() => handleSurplusClick()}
+                    >
+                        <img src={ambientLogo} width='20' alt='surplus' />
+                    </div>
+                </IconWithTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={
+                        (isSellTokenSelector && isWithdrawFromDexChecked) ||
+                        (!isSellTokenSelector && isSaveAsDexSurplusChecked)
+                            ? exchangeBalanceTitle
+                            : walletBalanceTitle
+                    }
+                    placement={'bottom'}
+                    arrow
+                    enterDelay={700}
+                    leaveDelay={200}
+                >
+                    <div
+                        className={styles.balance_column}
+                        style={
+                            isSellTokenSelector && isCombinedBalanceNonZero
+                                ? { cursor: 'pointer' }
+                                : { cursor: 'default' }
+                        }
+                        onClick={() => {
+                            if (
+                                handleChangeClick &&
+                                isUserConnected &&
+                                isCombinedBalanceNonZero
+                            ) {
+                                handleChangeClick(balanceNonLocaleString);
+                                setUserClickedCombinedMax(true);
+                            }
+                        }}
+                    >
+                        <div>{isUserConnected ? balanceLocaleString : ''}</div>
+                    </div>
+                </DefaultTooltip>
+                {isCombinedBalanceNonZero && isSellTokenSelector
+                    ? maxButton
+                    : null}
+            </div>
+            {!isSellTokenSelector && (
+                <button
+                    onClick={refreshTokenData}
+                    className={styles.refresh_button}
+                    aria-label='Refresh data'
+                >
+                    <FiRefreshCw size={18} />
+                </button>
+            )}
+        </section>
     );
+    // End of  Wallet balance function and styles-----------------------------
 
-    // End of  Surplus content function and styles-----------------------------
-
-    const swapboxBottomOrNull = !isUserLoggedIn ? (
+    const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
-        <div className={styles.swapbox_bottom}>
-            {walletContent}
-            {surplusContent}
-        </div>
+        <div className={styles.swapbox_bottom}>{walletContent}</div>
     );
 
     const modalCloseCustom = (): void => setInput('');
@@ -541,7 +491,7 @@ export default function CurrencySelector(props: propsIF) {
                 title={thisToken.symbol}
                 placement={'top'}
                 arrow
-                enterDelay={100}
+                enterDelay={700}
                 leaveDelay={200}
             >
                 <div className={styles.token_list_text}>{thisToken.symbol}</div>
@@ -563,30 +513,25 @@ export default function CurrencySelector(props: propsIF) {
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                         setDisableReverseTokens={setDisableReverseTokens}
+                        setIsSellLoading={setIsSellLoading}
+                        setIsBuyLoading={setIsBuyLoading}
+                        isLoading={isLoading}
                     />
                 </div>
                 <button
                     className={`${styles.token_select} ${
-                        isSwapCopied && styles.pulse_animation
+                        showSwapPulseAnimation && styles.pulse_animation
                     }`}
                     onClick={openTokenModal}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
                 >
-                    {thisToken.logoURI ? (
-                        <img
-                            className={styles.token_list_img}
-                            src={thisToken.logoURI}
-                            alt={thisToken.name}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={thisToken.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    )}
+                    <TokenIcon
+                        src={thisToken.logoURI}
+                        alt={thisToken.name}
+                        size='2xl'
+                    />
                     {tokenSymbol}
                     <RiArrowDownSLine size={27} />
                 </button>
@@ -604,32 +549,19 @@ export default function CurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
-                        importedTokens={importedTokensPlus}
-                        setImportedTokens={setImportedTokens}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
-                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}
         </div>
     );
 }
+
+export default memo(CurrencySelector);

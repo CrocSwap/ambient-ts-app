@@ -1,15 +1,15 @@
-import { LimitOrderIF, TokenIF } from '../../../../../utils/interfaces/exports';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,
-    tokenMap: Map<string, TokenIF>,
+    tokens: tokenMethodsIF,
     isDenomBase: boolean,
 ): string => {
-    const baseId = limitOrder.base + '_' + limitOrder.chainId;
-    const quoteId = limitOrder.quote + '_' + limitOrder.chainId;
-    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
-    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
+    const baseToken = tokens.getTokenByAddress(limitOrder.base);
+    const quoteToken = tokens.getTokenByAddress(limitOrder.quote);
 
     const baseTokenCharacter = baseToken?.symbol
         ? getUnicodeCharacter(baseToken?.symbol)
@@ -23,11 +23,12 @@ export const getLimitPrice = (
     if (isDenomBase) {
         const nonTruncatedPrice = limitOrder.invLimitPriceDecimalCorrected;
         const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            nonTruncatedPrice < 0.0001
+                ? nonTruncatedPrice.toExponential(2)
+                : nonTruncatedPrice < 2
+                ? nonTruncatedPrice.toPrecision(3)
+                : nonTruncatedPrice >= 10000
+                ? formatAmountOld(nonTruncatedPrice, 1)
                 : nonTruncatedPrice.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -36,11 +37,12 @@ export const getLimitPrice = (
     } else {
         const nonTruncatedPrice = limitOrder.limitPriceDecimalCorrected;
         const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            nonTruncatedPrice < 0.0001
+                ? nonTruncatedPrice.toExponential(2)
+                : nonTruncatedPrice < 2
+                ? nonTruncatedPrice.toPrecision(3)
+                : nonTruncatedPrice >= 10000
+                ? formatAmountOld(nonTruncatedPrice, 1)
                 : nonTruncatedPrice.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

@@ -14,17 +14,17 @@
     /* outline: none; */
     border: none;
     outline: 1px solid rgb(33, 32, 32);
-    background: var(--dark3);
+    background: var(--dark2);
     border-radius: 4px;
     padding: 2px 3rem;
 
-    color: var(--text-grey-white);
+    color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     text-align: end;
 }
 
 .search_input:focus {
-    outline: 1px solid var(--text-highlight);
+    outline: 1px solid var(--accent5);
 }
 
 .none_found {
@@ -37,7 +37,7 @@
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .listPicker {
@@ -58,18 +58,18 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .menu li {
-    color: var(--text-grey-light);
+    color: var(--text2);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     /* display: block; */
 }
 
 .menu li:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .menu ul {
@@ -91,14 +91,14 @@
 
 .menu button {
     -webkit-appearance: button;
-    background: var(--dark3);
+    background: var(--dark2);
     color: white;
     border: none;
     border-radius: 4px;
     padding: 5px 20px;
     font-size: 14px;
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     cursor: pointer;
     width: 100%;
@@ -109,13 +109,13 @@
 }
 
 .menu button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .menu button path {
-    fill: var(--text-grey-light);
+    fill: var(--text2);
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .menu button:hover > .menu button path {
-    fill: var(--text-grey-white);
+    fill: var(--text1);
 }

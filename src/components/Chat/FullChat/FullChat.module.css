@@ -13,7 +13,7 @@
 }
 
 .right_container {
-    background: var(--dark3);
+    background: var(--dark2);
     padding: 4px 1rem;
 }
 .user_wallet {
@@ -21,7 +21,7 @@
     height: 50px;
     /* justify-content: center; */
     /* align-items: center; */
-    border-bottom: 1px solid var(--text-grey-dark);
+    border-bottom: 1px solid var(--text3);
 
     display: flex;
     flex-direction: row;
@@ -31,10 +31,10 @@
 
 .right_container_header {
     height: 50px;
-    border-bottom: 1px solid var(--text-grey-dark);
+    border-bottom: 1px solid var(--text3);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     display: none;
 }
 
@@ -55,13 +55,13 @@
     text-transform: uppercase;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .options span {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-transform: capitalize;
 }
 
@@ -111,7 +111,7 @@
 
 .pool_display:hover,
 .option_item:hover {
-    background: var(--dark3);
+    background: var(--dark2);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 }
@@ -120,11 +120,11 @@
     font-size: 10px;
     background: var(--dark2);
     padding: 0 4px;
-    color: var(--text-grey-dark);
+    color: var(--text3);
 }
 
 .active_room {
-    background: var(--dark3);
+    background: var(--dark2);
 }
 
 .pool_display img {
@@ -186,7 +186,7 @@
     background: var(--dark2);
     outline: none;
     border: none;
-    color: var(--text-grey-light);
+    color: var(--text2);
     padding: 4px;
     width: 100%;
     cursor: pointer;

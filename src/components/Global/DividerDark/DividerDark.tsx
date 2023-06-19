@@ -4,6 +4,8 @@ interface DividerDarkProps {
     addMarginTop?: boolean;
     addMarginBottom?: boolean;
     changeColor?: boolean;
+    // eslint-disable-next-line
+    style?: any;
 }
 export default function DividerDark(props: DividerDarkProps) {
     //  Future Engineer: This is Junior not wanting to refactor the structure of his component so he decided to make a different styling through margin props. You should never have to do something like this. -Jr

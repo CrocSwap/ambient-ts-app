@@ -3,18 +3,16 @@ import { TokenIF } from '../interfaces/exports';
 
 export interface userData {
     isLoggedIn: boolean | undefined;
-    addressAtLogin: string | undefined;
-    addressCurrent: string | undefined;
+    addressAtLogin: `0x${string}` | undefined;
+    addressCurrent: `0x${string}` | undefined;
     ensNameAtLogin: string | undefined;
     ensNameCurrent: string | undefined;
     ensOrAddressTruncated: string | undefined;
     isUserIdle: boolean;
     tokens: tokenData;
     recentTokens: TokenIF[] | undefined;
-    shouldRecheckLocalStorage: boolean;
     secondaryImageData: string[];
     resolvedAddress: string | undefined;
-    shoulRecheckLocalStorage: boolean;
 }
 
 export interface tokenData {
@@ -35,10 +33,8 @@ const initialState: userData = {
         erc20Tokens: undefined,
     },
     recentTokens: undefined,
-    shouldRecheckLocalStorage: true,
     secondaryImageData: [],
     resolvedAddress: undefined,
-    shoulRecheckLocalStorage: true,
 };
 
 export const userDataSlice = createSlice({
@@ -48,12 +44,12 @@ export const userDataSlice = createSlice({
         setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
             state.isLoggedIn = action.payload;
         },
-        setAddressAtLogin: (state, action: PayloadAction<string>) => {
+        setAddressAtLogin: (state, action: PayloadAction<`0x${string}`>) => {
             state.addressAtLogin = action.payload;
         },
         setAddressCurrent: (
             state,
-            action: PayloadAction<string | undefined>,
+            action: PayloadAction<`0x${string}` | undefined>,
         ) => {
             state.addressCurrent = action.payload;
         },
@@ -145,12 +141,6 @@ export const userDataSlice = createSlice({
             state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
-        setShouldRecheckLocalStorage: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldRecheckLocalStorage = action.payload;
-        },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
@@ -174,7 +164,10 @@ export const userDataSlice = createSlice({
         ) => {
             state.secondaryImageData = action.payload;
         },
-        setResolvedAddressRedux: (state, action: PayloadAction<string>) => {
+        setResolvedAddressRedux: (
+            state,
+            action: PayloadAction<string | undefined>,
+        ) => {
             state.resolvedAddress = action.payload;
         },
     },
@@ -192,8 +185,6 @@ export const {
     setNativeToken,
     setErc20Tokens,
     setRecentTokens,
-    setShouldRecheckLocalStorage,
-    //  addNativeBalance,
     updateNativeTokenWalletBalance,
     updateNativeTokenDexBalance,
     updateErc20TokenWalletBalance,

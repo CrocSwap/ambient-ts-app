@@ -1,28 +1,22 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { tradeData } from '../../../../utils/state/tradeDataSlice';
-import styles from './RecentPools.module.css';
+import styles from '../SidebarTable.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
-import {
-    recentPoolsMethodsIF,
-    SmallerPoolIF,
-} from '../../../../App/hooks/useRecentPools';
+import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+import { memo, useContext } from 'react';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    tradeData: tradeData;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
-    lastBlockNumber: number;
-    recentPools: recentPoolsMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
-export default function RecentPools(props: propsIF) {
-    const {
-        tradeData,
-        chainId,
-        lastBlockNumber,
-        cachedPoolStatsFetch,
-        recentPools,
-    } = props;
+function RecentPools(props: propsIF) {
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
+
+    const { recentPools } = useContext(SidebarContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     return (
         <div className={styles.container}>
@@ -34,15 +28,16 @@ export default function RecentPools(props: propsIF) {
             <div className={styles.content}>
                 {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
-                        tradeData={tradeData}
-                        chainId={chainId}
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        lastBlockNumber={lastBlockNumber}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        crocEnv={crocEnv}
                     />
                 ))}
             </div>
         </div>
     );
 }
+
+export default memo(RecentPools);

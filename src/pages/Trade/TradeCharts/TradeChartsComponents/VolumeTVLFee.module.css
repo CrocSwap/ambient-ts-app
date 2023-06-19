@@ -6,7 +6,7 @@
 }
 
 .volume_tvl_container:not(:last-child) {
-    border-right: 1px solid var(--text-grey-light);
+    border-right: 1px solid var(--text2);
 }
 
 .active_selected_button,
@@ -16,7 +16,7 @@
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     text-align: center;
 
     outline: none;
@@ -28,25 +28,32 @@
 .active_selected_button:hover,
 .non_active_selected_button:hover {
     /* background: var(--title-gradient); */
-    color: var(--text-grey-white);
+    color: var(--text1);
+}
+.volume_tvl_container button:focus-visible {
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .active_selected_button {
     width: 100%;
     height: 100%;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .non_active_selected_button {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .volume_tvl_fee_mobile_button {
-    background: var(--dark3);
-    color: var(--text-grey-white);
+    background: var(--dark2);
+    color: var(--text1);
     padding: 2px 8px;
     border-radius: 4px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--dark3);
 }
 
 .dropdown_menu {
@@ -64,7 +71,7 @@
     padding: 8px;
 
     position: absolute;
-    background: var(--dark3);
+    background: var(--dark2);
 
     border-radius: 4px;
     box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
@@ -82,7 +89,7 @@
     left: 98%;
     top: 0;
     border: 10px solid transparent;
-    border-left: 10px solid var(--dark3);
+    border-left: 10px solid var(--dark2);
 } */
 
 .dropdown_wrapper {

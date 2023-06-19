@@ -7,13 +7,15 @@ import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+import { getChainExplorer } from '../data/chains';
+import moment from 'moment';
 
 export const useProcessRange = (
     position: PositionIF,
-    account: string,
-    isOnPortfolioPage?: boolean,
+    account = '',
+    isAccountView?: boolean,
 ) => {
-    const blockExplorer = 'https://goerli.etherscan.io/';
+    const blockExplorer = getChainExplorer(position.chainId);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -45,6 +47,9 @@ export const useProcessRange = (
     const baseTokenSymbol = position.baseSymbol;
     const quoteTokenSymbol = position.quoteSymbol;
 
+    const baseTokenName = position.baseName;
+    const quoteTokenName = position.quoteName;
+
     const quoteTokenLogo = position.quoteTokenLogoURI;
     const baseTokenLogo = position.baseTokenLogoURI;
 
@@ -70,7 +75,12 @@ export const useProcessRange = (
 
     let posHash;
     if (position.positionType == 'ambient') {
-        posHash = ambientPosSlot(ownerId, position.base, position.quote, 36000);
+        posHash = ambientPosSlot(
+            ownerId,
+            position.base,
+            position.quote,
+            position.poolIdx,
+        );
     } else {
         posHash =
             position.user &&
@@ -84,7 +94,7 @@ export const useProcessRange = (
                       position.quote,
                       position.bidTick,
                       position.askTick,
-                      36000,
+                      position.poolIdx,
                   ).toString()
                 : '…';
     }
@@ -94,7 +104,7 @@ export const useProcessRange = (
 
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    if (!isOnPortfolioPage)
+    if (!isAccountView)
         isPositionInRange =
             position.positionType === 'ambient' ||
             (position.bidTick <= poolPriceInTicks &&
@@ -110,13 +120,13 @@ export const useProcessRange = (
     const baseTokenAddressTruncated = trimString(
         tokenAAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
     const quoteTokenAddressTruncated = trimString(
         tokenBAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
 
@@ -160,25 +170,24 @@ export const useProcessRange = (
     //     ? quoteTokenCharacter + position.highRangeDisplayInBase
     //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientOrMin =
-        position.positionType === 'ambient' ? '0.00' : minRange;
+    const ambientOrMin = position.positionType === 'ambient' ? '0' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const width = (position.askTick - position.bidTick) / 100;
 
-    const usdValueNum = position.totalValueUSD || position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
-        ? undefined
+        ? '0'
         : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + ' '
+        ? usdValueNum.toExponential(2)
         : usdValueNum >= 100000
         ? formatAmountOld(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          }) + ' ';
+          });
 
     const usdValueLocaleString = !usdValueNum
         ? '…'
@@ -193,12 +202,12 @@ export const useProcessRange = (
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
     const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseTokenCharacter}${baseQty || '0.00'}`
+        ? `${baseQty || '0.00'}`
         : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+        ? `${quoteQty || '0.00'}`
         : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
@@ -215,9 +224,32 @@ export const useProcessRange = (
         ? 'You'
         : ensNameOrOwnerTruncated;
 
-    const isPositionEmpty = position.positionLiq === '0';
+    const isPositionEmpty = position.positionLiq === 0;
 
     // if (!position) return null;
+
+    const positionTime = position.latestUpdateTime || position.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. '
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. '
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour '
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
+            : 'Pending...';
 
     return {
         // wallet and id data
@@ -249,6 +281,8 @@ export const useProcessRange = (
         quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplay,
         quoteDisplay,
         tokenAAddressLowerCase,
@@ -271,5 +305,6 @@ export const useProcessRange = (
         isBaseTokenMoneynessGreaterOrEqual,
         width,
         blockExplorer,
+        elapsedTimeString,
     };
 };

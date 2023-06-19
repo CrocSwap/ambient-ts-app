@@ -1,41 +1,29 @@
-import domtoimage from 'dom-to-image';
-const photoName =
-    'ambient-chart' + new Date().toLocaleString().replace(/\s/g, '');
+import { domToBlob } from 'modern-screenshot';
 
-const saveAs = (uri: string, filename: string) => {
-    const link = document.createElement('a');
+const printDomToImage = async (
+    node: HTMLElement,
+    background?: string,
+    additionalStyles?: Partial<CSSStyleDeclaration>,
+) => {
+    const scale = 2;
 
-    if (typeof link.download === 'string') {
-        link.href = uri;
-        link.download = filename;
-
-        // Firefox requires the link to be in the body
-        document.body.appendChild(link);
-
-        // simulate click
-        link.click();
-        // remove the link when done
-        document.body.removeChild(link);
-    } else {
-        window.open(uri);
-    }
-};
-
-const printDomToImage = (node: HTMLElement) => {
-    // if (canvasRef.current) {
-    domtoimage
-        .toJpeg(node)
-        // eslint-disable-next-line
-        .then(function (dataUrl: any) {
-            const img = new Image();
-            img.src = dataUrl;
-            saveAs(dataUrl, photoName);
-        })
-        // eslint-disable-next-line
-        .catch(function (error: any) {
-            console.error('oops, something went wrong!', error);
+    try {
+        const blob = await domToBlob(node, {
+            height: node.offsetHeight * scale,
+            width: node.offsetWidth * scale,
+            backgroundColor: background,
+            style: {
+                transform: 'scale(' + scale + ')',
+                transformOrigin: 'top left',
+                width: node.offsetWidth + 'px',
+                height: node.offsetHeight + 'px',
+                ...additionalStyles,
+            },
         });
-    // }
+        return blob;
+    } catch (e) {
+        console.error('oops, something went wrong!', e);
+    }
 };
 
 export default printDomToImage;

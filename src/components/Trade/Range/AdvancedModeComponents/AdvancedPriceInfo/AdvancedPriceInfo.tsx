@@ -1,38 +1,28 @@
 import styles from './AdvancedPriceInfo.module.css';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { memo } from 'react';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    tokenPair: TokenPairIF;
     poolPriceDisplay: string;
-    isDenomBase: boolean;
     isTokenABase: boolean;
-    minimumSpan: number;
     isOutOfRange: boolean;
     aprPercentage: number | undefined;
-    daysInRange: number | undefined;
 }
 
-export default function AdvancedPriceInfo(props: propsIF) {
+function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const {
-        tokenPair,
-        poolPriceDisplay,
-        isDenomBase,
-        isTokenABase,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        minimumSpan,
-        isOutOfRange,
-        aprPercentage,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        daysInRange,
-    } = props;
+    const { poolPriceDisplay, isTokenABase, isOutOfRange, aprPercentage } =
+        props;
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const reverseDisplay =
         (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
     const currentPriceValue = reverseDisplay
-        ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-        : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`;
+        ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+        : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`;
 
     const currentPrice = (
         <div
@@ -75,3 +65,5 @@ export default function AdvancedPriceInfo(props: propsIF) {
         </div>
     );
 }
+
+export default memo(AdvancedPriceInfo);

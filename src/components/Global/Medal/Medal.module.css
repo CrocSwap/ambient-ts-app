@@ -70,7 +70,7 @@
 
 .quiz_medal__circle__simple {
     box-shadow: inset 0 0 0 #a7b2b8, 2px 2px 0 rgba(0, 0, 0, 0.08);
-    border-color: var(--dark3);
+    border-color: var(--dark2);
     text-shadow: 0px 0px 4px #98a6ad;
     background: linear-gradient(to bottom right, #00070b 50%, #000e14 50%);
 }

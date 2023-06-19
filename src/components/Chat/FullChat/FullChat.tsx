@@ -1,5 +1,11 @@
 import styles from './FullChat.module.css';
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
+import {
+    useState,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useContext,
+} from 'react';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
 import {
     TbLayoutSidebarLeftCollapse,
@@ -12,24 +18,24 @@ import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { useMediaQuery } from '@material-ui/core';
-import { topPoolsMethodsIF } from '../../../App/hooks/useTopPools';
+import { defaultTokens } from '../../../utils/data/defaultTokens';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
     chatNotification: JSX.Element;
     messageInput: JSX.Element;
-    room: string;
     setRoom: Dispatch<SetStateAction<string>>;
     setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
     userName: string;
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
-    favePools: favePoolsMethodsIF;
     userCurrentPool: string;
     favoritePoolsArray: PoolIF[];
     // eslint-disable-next-line
     setFavoritePoolsArray: any;
-    topPools: topPoolsMethodsIF;
+    setIsChatOpen: (val: boolean) => void;
 }
 
 interface ChannelDisplayPropsIF {
@@ -39,14 +45,20 @@ interface ChannelDisplayPropsIF {
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
-    const { topPools } = props;
+    const { setIsChatOpen } = props;
     const { params } = useParams();
+    const { topPools: rooms } = useContext(CrocEnvContext);
+    const { favePools } = useContext(UserPreferenceContext);
     const reconstructedReadableRoom =
         params && !params.includes('global')
-            ? params.replace('&', '/').toUpperCase()
+            ? params.replace('&', ' / ').toUpperCase()
             : params && params.includes('global')
             ? 'Global'
             : 'Global';
+
+    useEffect(() => {
+        setIsChatOpen(true);
+    }, []);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;
@@ -55,7 +67,7 @@ export default function FullChat(props: FullChatPropsIF) {
         currencies && currencies.length === 2
             ? (() => {
                   const [currency1, currency2] = currencies;
-                  return currency1 + '/' + currency2;
+                  return currency1 + ' / ' + currency2;
               })()
             : params && params.includes('global')
             ? 'Global'
@@ -65,7 +77,7 @@ export default function FullChat(props: FullChatPropsIF) {
         currencies && currencies.length === 2
             ? (() => {
                   const [currency1, currency2] = currencies;
-                  return (currency2 + '/' + currency1).toUpperCase();
+                  return (currency2 + ' / ' + currency1).toUpperCase();
               })()
             : swappedReconstructedReadableRoom &&
               swappedReconstructedReadableRoom.includes('global')
@@ -83,42 +95,96 @@ export default function FullChat(props: FullChatPropsIF) {
     } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
 
+    const [isRoomInRoomArray, setIsRoomInRoomArray] = useState(false);
+
+    const [roomArray] = useState<PoolIF[]>([]);
+
     const [readableRoomName, setReadableName] = useState(
         reconstructedReadableRoom || 'Global',
     );
 
     // eslint-disable-next-line
-    const [readableRoom, setReadableRoom] = useState<any>();
+    const [readableRoom, setReadableRoom] = useState<PoolIF | undefined>(
+        undefined,
+    );
+
+    const [currentPoolInfo, setCurrentPoolInfo] = useState<PoolIF | undefined>(
+        undefined,
+    );
     const [showChannelsDropdown, setShowChannelsDropdown] = useState(false);
 
     useEffect(() => {
-        if (topPools.onActiveChain.some(({ name }) => name === reconstructedReadableRoom)) {
-            setReadableName(reconstructedReadableRoom);
+        if (roomArray.some(({ name }) => name === reconstructedReadableRoom)) {
+            const found = roomArray.find(
+                (name) => name.name === reconstructedReadableRoom,
+            );
+            setReadableRoom(found);
             props.setRoom(reconstructedReadableRoom);
-            setReadableName(readableRoomName);
+            setReadableName(reconstructedReadableRoom);
+            setIsRoomInRoomArray(true);
         } else {
             if (
-                topPools.onActiveChain.some(
+                roomArray.some(
                     ({ name }) => name === reSwappedReconstructedReadableRoom,
                 )
             ) {
+                const found = roomArray.find(
+                    (name) => name.name === reSwappedReconstructedReadableRoom,
+                );
+                setReadableRoom(found);
                 setReadableName(reSwappedReconstructedReadableRoom);
                 props.setRoom(reSwappedReconstructedReadableRoom);
                 setReadableName(reSwappedReconstructedReadableRoom);
+                setIsRoomInRoomArray(true);
             } else {
-                setReadableName('Global');
-                props.setRoom('Global');
-                setReadableName('Global');
+                if (
+                    currencies &&
+                    currencies[0] !== currencies[1] &&
+                    defaultTokens.some(
+                        ({ symbol }) =>
+                            symbol === currencies[0].toUpperCase() &&
+                            defaultTokens.some(
+                                ({ symbol }) =>
+                                    symbol === currencies[1].toUpperCase(),
+                            ),
+                    )
+                ) {
+                    setReadableName(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                    props.setRoom(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                    setReadableName(
+                        currencies[0].toUpperCase() +
+                            ' / ' +
+                            currencies[1].toUpperCase(),
+                    );
+                    setIsRoomInRoomArray(false);
+                } else {
+                    setReadableName('Global');
+                    props.setRoom('Global');
+                    setReadableName('Global');
+                    setIsRoomInRoomArray(false);
+                }
             }
         }
-    }, [reconstructedReadableRoom]);
+    }, [
+        reconstructedReadableRoom,
+        reSwappedReconstructedReadableRoom,
+        rooms.length === 0,
+    ]);
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
-        const roomName = pool.base.symbol + '/' + pool.quote.symbol;
+        const roomName = pool.base.symbol + ' / ' + pool.quote.symbol;
         props.setRoom(roomName);
 
-        const readableRoomName = `${pool.base.symbol}/${pool.quote.symbol}`;
+        const readableRoomName = `${pool.base.symbol} / ${pool.quote.symbol}`;
         setReadableName(readableRoomName);
         setReadableRoom(pool);
 
@@ -132,25 +198,29 @@ export default function FullChat(props: FullChatPropsIF) {
             props.setShowCurrentPoolButton(true);
         }
 
-        if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
+        if (roomArray.some(({ name }) => name === readableRoomName)) {
+            setIsRoomInRoomArray(true);
+        } else {
+            setIsRoomInRoomArray(false);
+        }
 
-        // handleDropdownMenu();
+        if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
     }
 
     // eslint-disable-next-line
     function findSpeed(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
-            case 'ETH/USDC':
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+            case 'ETH / USDC':
                 return 0 as number;
-            case 'ETH/WBTC':
+            case 'ETH / WBTC':
                 return 5;
-            case 'USDC/DAI':
+            case 'USDC / DAI':
                 return -2;
-            case 'ETH/DAI':
+            case 'ETH / DAI':
                 return -2;
-            case 'USDC/WBTC':
+            case 'USDC / WBTC':
                 return -2;
-            case 'WBTC/DAI':
+            case 'WBTC / DAI':
                 return -2;
             default:
                 return 10;
@@ -159,24 +229,30 @@ export default function FullChat(props: FullChatPropsIF) {
 
     // eslint-disable-next-line
     function findId(pool: any) {
-        switch (pool.base.symbol + '/' + pool.quote.symbol) {
-            case 'ETH/USDC':
+        switch (pool.base.symbol + ' / ' + pool.quote.symbol) {
+            case 'ETH / USDC':
                 return 1;
-            case 'ETH/WBTC':
+            case 'ETH / WBTC':
                 return 3;
-            case 'USDC/DAI':
+            case 'USDC / DAI':
                 return 4;
-            case 'ETH/DAI':
+            case 'ETH / DAI':
                 return 2;
-            case 'USDC/WBTC':
+            case 'USDC / WBTC':
                 return 5;
-            case 'WBTC/DAI':
+            case 'WBTC / DAI':
                 return 6;
             default:
                 return 10;
         }
     }
+
     useEffect(() => {
+        rooms?.map((pool: PoolIF) => {
+            if (!roomArray.some(({ name }) => name === pool.name)) {
+                roomArray.push(pool);
+            }
+        });
         const fave:
             | PoolIF[]
             | {
@@ -202,10 +278,9 @@ export default function FullChat(props: FullChatPropsIF) {
                   speed: number;
                   id: number;
               }[] = [];
-
-        props.favePools.pools.map((pool: PoolIF) => {
+        favePools.pools.forEach((pool: PoolIF) => {
             const favPool = {
-                name: pool.base.symbol + '/' + pool.quote.symbol,
+                name: pool.base.symbol + ' / ' + pool.quote.symbol,
                 base: {
                     name: pool.base.name,
                     address: pool.base.address,
@@ -228,23 +303,23 @@ export default function FullChat(props: FullChatPropsIF) {
                 id: findId(pool),
             };
 
-            if (!topPools.onActiveChain.some(({ name }) => name === favPool.name)) {
-                topPools.onActiveChain.push(favPool);
+            if (!roomArray.some(({ name }) => name === favPool.name)) {
+                roomArray.push(favPool);
             }
 
-            for (let x = 0; x < topPools.onActiveChain.length; x++) {
-                if (favPool.name === topPools.onActiveChain[x].name) {
-                    topPools.onActiveChain.push(topPools.onActiveChain.splice(x, 1)[0]);
-                } else {
-                    // do nothing
+            for (let x = 0; x < roomArray.length; x++) {
+                if (favPool.name === roomArray[x].name) {
+                    roomArray.push(roomArray.splice(x, 1)[0]);
                 }
             }
             fave.push(favPool);
-            props.setFavoritePoolsArray(() => {
-                return fave;
-            });
         });
-    }, []);
+        props.setFavoritePoolsArray(() => {
+            return fave;
+        });
+        const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
+        props.favoritePoolsArray.splice(0, middleIndex);
+    }, [favePools, rooms.length === 0]);
 
     function handleGlobalClick() {
         props.setRoom('Global');
@@ -254,6 +329,17 @@ export default function FullChat(props: FullChatPropsIF) {
     function handleCurrentPoolClick() {
         props.setRoom(userCurrentPool);
         setReadableName(userCurrentPool);
+        setReadableRoom(currentPoolInfo);
+        if (roomArray.some(({ name }) => name === userCurrentPool)) {
+            setIsRoomInRoomArray(true);
+        } else {
+            setIsRoomInRoomArray(false);
+        }
+    }
+
+    function setCurrentPoolInfo_(pool: PoolIF) {
+        setCurrentPoolInfo(pool);
+        return '';
     }
 
     function ChannelDisplay(props: ChannelDisplayPropsIF) {
@@ -265,7 +351,7 @@ export default function FullChat(props: FullChatPropsIF) {
         const activePoolIsCurrentPool =
             poolIsCurrentPool && pool?.name === readableRoomName;
         const smallScrenView = useMediaQuery('(max-width: 968px)');
-        const isButtonFavorited = props.favePools.check(
+        const isButtonFavorited = favePools.check(
             pool.base.address,
             pool.quote.address,
             pool.chainId,
@@ -318,16 +404,19 @@ export default function FullChat(props: FullChatPropsIF) {
                 </div>
                 <span>{pool?.name}</span>
                 {poolIsCurrentPool && (
-                    <p
-                        className={styles.current_pool}
-                        style={{
-                            color: activePoolIsCurrentPool
-                                ? 'var(--text-grey-white)'
-                                : 'var(--text-grey-dark)',
-                        }}
-                    >
-                        Current Pool
-                    </p>
+                    <div>
+                        <p
+                            className={styles.current_pool}
+                            style={{
+                                color: activePoolIsCurrentPool
+                                    ? 'var(--text1)'
+                                    : 'var(--text3)',
+                            }}
+                        >
+                            Current Pool
+                        </p>
+                        <div>{setCurrentPoolInfo_(pool)}</div>
+                    </div>
                 )}
             </div>
         );
@@ -374,7 +463,7 @@ export default function FullChat(props: FullChatPropsIF) {
             <header>
                 <h3>OPTIONS</h3>
 
-                <IoOptions size={20} color='var(--text-grey-light)' />
+                <IoOptions size={20} color='var(--text2)' />
             </header>
             {chatOptionData.map((item, idx) => (
                 <div key={idx} className={styles.option_item}>
@@ -391,12 +480,14 @@ export default function FullChat(props: FullChatPropsIF) {
         <section className={styles.options}>
             <header>
                 <h3>CHANNELS</h3>
-                <MdOutlineChat size={20} color='var(--text-grey-light)' />
+                <MdOutlineChat size={20} color='var(--text2)' />
             </header>
 
             <div
                 className={styles.option_item}
-                onClick={handleCurrentPoolClick}
+                onClick={() => {
+                    handleCurrentPoolClick();
+                }}
             >
                 <FiAtSign size={20} color='var(--text-highlight)' />
                 <span> Current Pool</span>
@@ -404,7 +495,7 @@ export default function FullChat(props: FullChatPropsIF) {
             <div
                 className={styles.option_item}
                 style={{
-                    background: currentRoomIsGlobal ? 'var(--dark3)' : '',
+                    background: currentRoomIsGlobal ? 'var(--dark2)' : '',
                 }}
                 onClick={handleGlobalClick}
             >
@@ -412,13 +503,13 @@ export default function FullChat(props: FullChatPropsIF) {
                 <span> Global</span>
             </div>
 
-            {topPools.onActiveChain.map((pool, idx) => (
+            {roomArray.map((pool, idx) => (
                 <ChannelDisplay
                     pool={pool}
                     key={idx}
                     isDropdown={false}
                     favoritePoolsArray={props.favoritePoolsArray}
-                    favePools={props.favePools}
+                    favePools={favePools}
                 />
             ))}
         </section>
@@ -440,15 +531,16 @@ export default function FullChat(props: FullChatPropsIF) {
                             : styles.channel_dropdown_items_containers
                     }
                 >
-                    {topPools.onActiveChain.map((pool, idx) => (
+                    {roomArray.map((pool, idx) => (
                         <ChannelDisplay
                             pool={pool}
                             key={idx}
                             isDropdown={true}
                             favoritePoolsArray={props.favoritePoolsArray}
-                            favePools={props.favePools}
+                            favePools={favePools}
                         />
                     ))}
+                    {rooms.length}
                 </div>
             )}
         </div>
@@ -464,67 +556,72 @@ export default function FullChat(props: FullChatPropsIF) {
         </div>
     );
 
-    const isButtonFavorited = props.favePools.check(
-        readableRoom?.base.address,
-        readableRoom?.quote.address,
-        readableRoom?.chainId,
-        readableRoom?.poolId,
-    );
+    const isButtonFavorited =
+        readableRoom &&
+        favePools.check(
+            readableRoom.base.address,
+            readableRoom.quote.address,
+            readableRoom.chainId,
+            readableRoom.poolId,
+        );
     function handleFavButton() {
-        isButtonFavorited
-            ? props.favePools.remove(
-                  readableRoom.quote,
-                  readableRoom.base,
-                  readableRoom?.chainId,
-                  36000,
-              )
-            : props.favePools.add(
-                  readableRoom.quote,
-                  readableRoom.base,
-                  readableRoom?.chainId,
-                  36000,
-              );
+        if (readableRoom) {
+            isButtonFavorited
+                ? favePools.remove(
+                      readableRoom.quote,
+                      readableRoom.base,
+                      readableRoom.chainId,
+                      readableRoom.poolId,
+                  )
+                : favePools.add(
+                      readableRoom.quote,
+                      readableRoom.base,
+                      readableRoom.chainId,
+                      readableRoom.poolId,
+                  );
+        }
     }
 
-    const favButton = !currentRoomIsGlobal ? (
-        <button
-            className={styles.favorite_button}
-            onClick={handleFavButton}
-            id='trade_fav_button'
-        >
-            {
-                <svg
-                    width={smallScrenView ? '20px' : '30px'}
-                    height={smallScrenView ? '20px' : '30px'}
-                    viewBox='0 0 15 15'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                >
-                    <g clipPath='url(#clip0_1874_47746)'>
-                        <path
-                            d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
-                            fill={isButtonFavorited ? '#EBEBFF' : 'none'}
-                            stroke='#EBEBFF'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                        />
-                    </g>
-                    <defs>
-                        <clipPath id='clip0_1874_47746'>
-                            <rect
-                                width='14'
-                                height='14'
-                                fill='white'
-                                transform='translate(0.600098 0.599976)'
+    const favButton =
+        !currentRoomIsGlobal && isRoomInRoomArray ? (
+            <button
+                className={styles.favorite_button}
+                onClick={handleFavButton}
+                id='trade_fav_button'
+            >
+                {
+                    <svg
+                        width={smallScrenView ? '20px' : '30px'}
+                        height={smallScrenView ? '20px' : '30px'}
+                        viewBox='0 0 15 15'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <g clipPath='url(#clip0_1874_47746)'>
+                            <path
+                                d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+                                fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+                                stroke='#EBEBFF'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
                             />
-                        </clipPath>
-                    </defs>
-                </svg>
-            }
-        </button>
-    ) : (
-        ''
-    );
+                        </g>
+                        <defs>
+                            <clipPath id='clip0_1874_47746'>
+                                <rect
+                                    width='14'
+                                    height='14'
+                                    fill='white'
+                                    transform='translate(0.600098 0.599976)'
+                                />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                }
+            </button>
+        ) : (
+            ''
+        );
 
     return (
         <div

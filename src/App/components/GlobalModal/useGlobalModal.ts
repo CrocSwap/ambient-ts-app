@@ -1,37 +1,48 @@
-import React, { useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
+
+export interface globalModalMethodsIF {
+    isOpen: boolean;
+    open: (content: ReactNode, title?: string, bd?: string) => void;
+    close: () => void;
+    currentContent: ReactNode;
+    title: string;
+}
 
 export const useGlobalModal = (initialMode = false) => {
     // create a useState hook to track if the modal should be rendered
-    const [isGlobalModalOpen, setIsGlobalModalOpen] =
-        useState<boolean>(initialMode);
+    const [isOpen, setIsOpen] = useState<boolean>(initialMode);
 
-    const [currentContent, setCurrentContent] = useState<React.ReactNode>(
+    const [currentContent, setCurrentContent] = useState<ReactNode>(
         'I am example content',
     );
 
     const [title, setTitle] = useState<string>('');
 
     // click handlers to to open and close the modal
-    const openGlobalModal = (content: React.ReactNode, title?: string) => {
-        setIsGlobalModalOpen(true);
+    const open = (content: ReactNode, title?: string) => {
+        setIsOpen(true);
         setCurrentContent(content);
 
         if (title) {
             setTitle(title);
         }
     };
-    const closeGlobalModal = () => {
+
+    const close = () => {
         setCurrentContent('');
         setTitle('');
-        setIsGlobalModalOpen(false);
+        setIsOpen(false);
     };
 
     // return all data and functions needed for local use
-    return [
-        isGlobalModalOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        currentContent,
-        title,
-    ] as const;
+    return useMemo(
+        () => ({
+            isOpen,
+            open,
+            close,
+            currentContent,
+            title,
+        }),
+        [isOpen, currentContent, title, initialMode],
+    );
 };

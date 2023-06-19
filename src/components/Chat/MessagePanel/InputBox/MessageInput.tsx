@@ -1,72 +1,45 @@
 import { useAccount } from 'wagmi';
-import useSocket from '../../Service/useSocket';
-import { BsEmojiSmileFill } from 'react-icons/bs';
+import useChatSocket from '../../Service/useChatSocket';
+import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 interface MessageInputProps {
+    currentUser: string;
     message?: Message;
     room: string;
-    currentUser: string;
     ensName: string;
     appPage?: boolean;
 }
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitPrice: string;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
-}
 
-export interface ChatProps {
-    chatStatus: boolean;
-    onClose: () => void;
-    favePools: PoolIF[];
-    currentPool: currentPoolInfo;
-    isFullScreen?: boolean;
-    setChatStatus: Dispatch<SetStateAction<boolean>>;
-}
-
-export default function MessageInput(
-    props: MessageInputProps,
-    prop: ChatProps,
-) {
+export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
+    const {
+        chat: { isOpen: isChatOpen },
+        subscriptions: { isEnabled: isSubscriptionsEnabled },
+    } = useContext(AppStateContext);
 
-    const { sendMsg } = useSocket(props.room.toUpperCase());
+    const { sendMsg } = useChatSocket(
+        props.room.toUpperCase(),
+        isSubscriptionsEnabled,
+        isChatOpen,
+    );
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
-    const roomId =
-        props.room === 'Current Pool'
-            ? prop.currentPool.baseToken.symbol.toUpperCase() +
-              prop.currentPool.quoteToken.symbol.toUpperCase()
-            : props.room;
+    const roomId = props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -99,7 +72,6 @@ export default function MessageInput(
         messageInputText();
     }, [isConnected, address]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
         setMessage('');
@@ -115,21 +87,21 @@ export default function MessageInput(
         }
     };
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function openEmojiPanel(e: any) {
         if (e.keyCode === 88 && e.altKey) {
             setShowEmojiPicker(true);
         }
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function closeEmojiPanel(e: any) {
         if (e.keyCode === 81 && e.altKey) {
             setShowEmojiPicker(false);
         }
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function openInfo(e: any) {
         if (e.keyCode === 77 && e.ctrlKey) {
             setShowEmojiPicker(true);
@@ -147,8 +119,7 @@ export default function MessageInput(
         };
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSendMsg = async (msg: string, roomId: any) => {
+    const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && address) {
             sendMsg(props.currentUser, message, roomId, props.ensName, address);
         }
@@ -170,6 +141,9 @@ export default function MessageInput(
                 isInput={true}
                 isPosition={isPosition}
                 setIsPosition={setIsPosition}
+                walletExplorer={
+                    props.ensName === undefined ? address : props.ensName
+                }
             />
 
             <div
@@ -195,13 +169,21 @@ export default function MessageInput(
                     autoFocus={props.appPage}
                 />
 
-                <BsEmojiSmileFill
-                    className={styles.svgButton}
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                <BsEmojiSmile
+                    className={
+                        isUserLoggedIn
+                            ? styles.svgButton
+                            : styles.not_LoggedIn_svgButton
+                    }
                     onClick={handleEmojiPickerHideShow}
                 />
+                {}
                 <div
-                    className={styles.send_message_button}
+                    className={
+                        isUserLoggedIn
+                            ? styles.send_message_button
+                            : styles.not_LoggedIn_send_message_button
+                    }
                     onClick={() => handleSendMessageButton()}
                 >
                     <svg
@@ -217,7 +199,11 @@ export default function MessageInput(
                             strokeOpacity='0.25'
                             strokeLinecap='round'
                             strokeLinejoin='round'
-                            className={styles.svgButton}
+                            className={
+                                isUserLoggedIn
+                                    ? styles.svgButton
+                                    : styles.not_LoggedIn_svgButton
+                            }
                             id='send message button'
                         />
                         <title>Send Message</title>
@@ -232,11 +218,13 @@ export default function MessageInput(
                             title='Close Emoji Picker'
                             onClick={() => setShowEmojiPicker(false)}
                             id='close emoji panel button'
+                            style={{ cursor: 'pointer' }}
                         />
                     </span>
                     <span
                         className={styles.emoji_close_button}
                         onClick={() => setIsInfoPressed(!isInfoPressed)}
+                        style={{ cursor: 'pointer' }}
                     >
                         <RiInformationLine title='Info' id='info' />
                     </span>

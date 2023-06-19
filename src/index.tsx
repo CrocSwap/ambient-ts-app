@@ -5,93 +5,89 @@ import { store } from './utils/state/store';
 import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
-import reportWebVitals from './reportWebVitals';
-// import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
-import { avalanche, goerli, avalancheFuji } from 'wagmi/chains';
 
 import { infuraProvider } from 'wagmi/providers/infura';
-// import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { publicProvider } from 'wagmi/providers/public';
 
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
 import { InjectedConnector } from 'wagmi/connectors/injected';
-// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { getWagmiChains } from './utils/data/chains';
+import Moralis from 'moralis/.';
+import { MORALIS_KEY } from './constants';
+import { GlobalContexts } from './contexts/GlobalContexts';
 
-// console.log(process.env.NODE_ENV);
-// console.log(process.env.REACT_APP_INFURA_KEY);
-
-const { chains, provider, webSocketProvider } = configureChains(
-    [goerli, avalanche, avalancheFuji],
-    [
-        infuraProvider({
-            apiKey:
-                process.env.REACT_APP_INFURA_KEY ||
-                '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
-        }),
-        // alchemyProvider({
-        //     apiKey: process.env.REACT_APP_ALCHEMY_ID || '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS',
-        // }),
-        publicProvider(),
-    ],
+/* Perform a single forcible reload when the page first loads. Without this, there
+ * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
+ * cost of higher load times, especially when pre-loading isn't happening. See:
+ * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042 */
+const doReload = JSON.parse(
+    localStorage.getItem('ambiAppReloadTrigger') || 'true',
 );
+if (doReload) {
+    localStorage.setItem('ambiAppReloadTrigger', 'false');
+    location.reload();
+} else {
+    localStorage.setItem('ambiAppReloadTrigger', 'true');
+}
 
-// Set up client
-const client = createClient({
-    autoConnect: true,
-    connectors: [
-        new MetaMaskConnector({ chains }),
-        // new CoinbaseWalletConnector({
-        //     chains,
-        //     options: {
-        //         appName: 'Ambient Finance',
-        //     },
-        // }),
-        // new WalletConnectConnector({
-        //     chains,
-        //     options: {
-        //         qrcode: true,
-        //     },
-        // }),
-        new InjectedConnector({
-            chains,
-            options: {
-                name: 'Brave',
-                shimDisconnect: true,
-            },
-        }),
-    ],
-    provider,
-    webSocketProvider,
-});
+// Don't bother rendering page if this is a reload, because it'll slow down the full load
+if (!doReload) {
+    const { chains, provider, webSocketProvider } = configureChains(
+        getWagmiChains(),
+        [
+            infuraProvider({
+                apiKey:
+                    process.env.REACT_APP_INFURA_KEY ||
+                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            }),
+        ],
+    );
 
-// const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
-// const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
-// const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
-// const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
+    // Set up client
+    const client = createClient({
+        autoConnect: true,
+        connectors: [
+            new MetaMaskConnector({ chains }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'Brave',
+                    shimDisconnect: true,
+                },
+            }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'Injected Wallet',
+                    shimDisconnect: true,
+                },
+            }),
+        ],
+        provider,
+        webSocketProvider,
+    });
 
-const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement,
-);
+    Moralis.start({
+        apiKey: MORALIS_KEY,
+    });
 
-root.render(
-    <React.StrictMode>
-        <WagmiConfig client={client}>
-            <Provider store={store}>
-                {/* <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}> */}
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-                {/* </MoralisProvider> */}
-            </Provider>
-        </WagmiConfig>
-    </React.StrictMode>,
-);
+    const root = ReactDOM.createRoot(
+        document.getElementById('root') as HTMLElement,
+    );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+    root.render(
+        <React.StrictMode>
+            <WagmiConfig client={client}>
+                <Provider store={store}>
+                    <BrowserRouter>
+                        <GlobalContexts>
+                            <App />
+                        </GlobalContexts>
+                    </BrowserRouter>
+                </Provider>
+            </WagmiConfig>
+        </React.StrictMode>,
+    );
+}

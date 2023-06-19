@@ -5,23 +5,24 @@ import {
     TempPoolIF,
     TransactionIF,
 } from '../../../utils/interfaces/exports';
-import { ackTokensMethodsIF } from '../../hooks/useAckTokens';
+import { tokenMethodsIF } from '../../hooks/useTokens';
+
+export interface sidebarSearchIF {
+    setInput: Dispatch<SetStateAction<string>>;
+    isInputValid: boolean;
+    pools: TempPoolIF[];
+    positions: PositionIF[];
+    txs: TransactionIF[];
+    limits: LimitOrderIF[];
+}
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
     positionList: PositionIF[],
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
-    verifyToken: (addr: string, chn: string) => boolean,
-    ackTokens: ackTokensMethodsIF,
-): [
-    Dispatch<SetStateAction<string>>,
-    boolean,
-    TempPoolIF[],
-    PositionIF[],
-    TransactionIF[],
-    LimitOrderIF[],
-] => {
+    tokens: tokenMethodsIF,
+): sidebarSearchIF => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -74,37 +75,6 @@ export const useSidebarSearch = (
         return output;
     }, [dbInput]);
 
-    // sub-array of pools in which both tokens have been verified
-    const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
-
-    // memoized list of pools where both tokens can be verified
-    // can be a useMemo because poolList will initialize as empty array
-    useEffect(() => {
-        const verifyPools = (): void => {
-            // function to verify token either in token map or in acknowledged tokens
-            const checkToken = (addr: string, chn: string): boolean => {
-                // check if token can be verified in token map
-                const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
-                // check if token was previously acknowledged by user
-                const isAcknowledged: boolean = ackTokens.check(
-                    addr.toLowerCase(),
-                    chn,
-                );
-                // return true if either verification passed
-                return isKnown || isAcknowledged;
-            };
-            // filter array of tokens where both tokens can be verified
-            const checkedPools = poolList.filter(
-                (pool: TempPoolIF) =>
-                    checkToken(pool.base, pool.chainId) &&
-                    checkToken(pool.quote, pool.chainId),
-            );
-            // return array of pools with both verified tokens
-            setVerifiedPools(checkedPools);
-        };
-        verifyPools();
-    }, [ackTokens, poolList.length]);
-
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
 
@@ -112,26 +82,38 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): TempPoolIF[] =>
-            verifiedPools.filter(
+            poolList.filter(
                 (pool: TempPoolIF) =>
                     pool.base.toLowerCase() === addr.toLowerCase() ||
                     pool.quote.toLowerCase() === addr.toLowerCase(),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
         const searchBySymbol = (symb: string): TempPoolIF[] =>
-            verifiedPools.filter((pool: TempPoolIF) =>
-                symb.length === 2
-                    ? pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                      pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : pool.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      pool.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
-            );
+            poolList
+                .filter((pool: TempPoolIF) =>
+                    symb.length === 2
+                        ? pool.baseSymbol.toLowerCase() ===
+                              symb.toLowerCase() ||
+                          pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                        : pool.baseSymbol
+                              .toLowerCase()
+                              .includes(symb.toLowerCase()) ||
+                          pool.quoteSymbol
+                              .toLowerCase()
+                              .includes(symb.toLowerCase()),
+                )
+                .filter(
+                    (pool: TempPoolIF) =>
+                        tokens.verifyToken(pool.base) &&
+                        tokens.verifyToken(pool.quote),
+                );
         // fn to return list of verified pools with no search filtering
-        const noSearch = (): TempPoolIF[] => verifiedPools;
+        const noSearch = (): TempPoolIF[] =>
+            poolList.filter(
+                (pool: TempPoolIF) =>
+                    tokens.verifyToken(pool.base) &&
+                    tokens.verifyToken(pool.quote),
+            );
         // variable to hold the list of pools generated by the search
         let filteredPools: TempPoolIF[];
         // logic router to apply the relevant search function
@@ -147,7 +129,7 @@ export const useSidebarSearch = (
                 filteredPools = noSearch();
         }
         setOutputPools(filteredPools);
-    }, [verifiedPools.length, validatedInput]);
+    }, [validatedInput]);
 
     // array of range positions to output from the hook
     const [outputPositions, setOutputPositions] = useState<PositionIF[]>([]);
@@ -158,25 +140,32 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter range positions by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): PositionIF[] =>
-            positionList.filter(
-                (position: PositionIF) =>
-                    position.base.toLowerCase() === addr.toLowerCase() ||
-                    position.quote.toLowerCase() === addr.toLowerCase(),
-            );
+            positionList
+                .filter(
+                    (position: PositionIF) =>
+                        position.base.toLowerCase() === addr.toLowerCase() ||
+                        position.quote.toLowerCase() === addr.toLowerCase(),
+                )
+                // remove empty positions from search results
+                .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to filter range positions by symbol (must be exact IF input is two characters)
         const searchBySymbol = (symb: string): PositionIF[] =>
-            positionList.filter((position: PositionIF) =>
-                symb.length === 2
-                    ? position.baseSymbol.toLowerCase() ===
-                          symb.toLowerCase() ||
-                      position.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : position.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      position.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
-            );
+            positionList
+                .filter((position: PositionIF) =>
+                    symb.length === 2
+                        ? position.baseSymbol.toLowerCase() ===
+                              symb.toLowerCase() ||
+                          position.quoteSymbol.toLowerCase() ===
+                              symb.toLowerCase()
+                        : position.baseSymbol
+                              .toLowerCase()
+                              .includes(symb.toLowerCase()) ||
+                          position.quoteSymbol
+                              .toLowerCase()
+                              .includes(symb.toLowerCase()),
+                )
+                // remove empty positions from search results
+                .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to return list of range positions with no search filtering
         const noSearch = (): PositionIF[] => positionList;
         // output variable to hold the array of range positions generated by the search filter
@@ -291,12 +280,12 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
-    return [
-        setRawInput,
-        !!searchAs,
-        outputPools,
-        outputPositions,
-        outputTxs,
-        outputLimits,
-    ];
+    return {
+        setInput: setRawInput,
+        isInputValid: !!searchAs,
+        pools: outputPools,
+        positions: outputPositions,
+        txs: outputTxs,
+        limits: outputLimits,
+    };
 };

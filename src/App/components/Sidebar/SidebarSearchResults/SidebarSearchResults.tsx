@@ -1,99 +1,41 @@
-import { Dispatch, SetStateAction } from 'react';
-import {
-    LimitOrderIF,
-    PositionIF,
-    TokenIF,
-    TokenPairIF,
-    TempPoolIF,
-    TransactionIF,
-} from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
-import { ackTokensMethodsIF } from '../../../hooks/useAckTokens';
+import { sidebarSearchIF } from '../useSidebarSearch';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
 
 interface propsIF {
-    searchedPools: TempPoolIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    tokenPair: TokenPairIF;
-    chainId: string;
-    isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
-    searchedPositions: PositionIF[];
-    isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    searchedTxs: TransactionIF[];
-    searchedLimitOrders: LimitOrderIF[];
-    ackTokens: ackTokensMethodsIF;
+    cachedFetchTokenPrice: TokenPriceFn;
+    searchData: sidebarSearchIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
-    const {
-        searchedPools,
-        getTokenByAddress,
-        tokenPair,
-        chainId,
-        isConnected,
-        cachedPoolStatsFetch,
-        searchedPositions,
-        isDenomBase,
-        setOutsideControl,
-        setSelectedOutsideTab,
-        setCurrentPositionActive,
-        setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
-        searchedTxs,
-        searchedLimitOrders,
-        ackTokens,
-    } = props;
+    const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     return (
         <div className={styles.container}>
             <div className={styles.search_result_title}>Search Results</div>
             <PoolsSearchResults
-                searchedPools={searchedPools}
-                getTokenByAddress={getTokenByAddress}
-                tokenPair={tokenPair}
-                chainId={chainId}
+                searchedPools={searchData.pools}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
-                ackTokens={ackTokens}
+                cachedFetchTokenPrice={cachedFetchTokenPrice}
             />
-            {isConnected && (
+            {isUserConnected && (
                 <>
-                    <TxSearchResults
-                        chainId={chainId}
-                        searchedTxs={searchedTxs}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentTxActiveInTransactions={
-                            setCurrentTxActiveInTransactions
-                        }
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                    />
+                    <TxSearchResults searchedTxs={searchData.txs} />
                     <OrdersSearchResults
-                        chainId={chainId}
-                        searchedLimitOrders={searchedLimitOrders}
-                        isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
+                        searchedLimitOrders={searchData.limits}
                     />
                     <PositionsSearchResults
-                        chainId={chainId}
-                        searchedPositions={searchedPositions}
-                        isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
+                        searchedPositions={searchData.positions}
                     />
                 </>
             )}

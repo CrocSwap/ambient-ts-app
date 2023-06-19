@@ -1,52 +1,26 @@
 import styles from './AppOverlay.module.css';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, useContext, memo } from 'react';
 import OverlayComponent from '../OverlayComponent/OverlayComponent';
 import {
     MdOutlineArrowBackIosNew,
     MdOutlineArrowForwardIos,
 } from 'react-icons/md';
 import { VscClose } from 'react-icons/vsc';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
-// import { useNavigate } from 'react-router-dom';
+function AppOverlay() {
+    const {
+        appOverlay: {
+            isActive: isAppOverlayActive,
+            setIsActive: setIsAppOverlayActive,
+        },
+    } = useContext(AppStateContext);
 
-interface AppOverlayPropsIf {
-    isAppOverlayActive: boolean;
-
-    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-}
-export default function AppOverlay(props: AppOverlayPropsIf) {
-    // const navigate = useNavigate();
-
-    const { isAppOverlayActive, setIsAppOverlayActive } = props;
-
-    // console.log(isAppOverlayActive);
     const [page, setPage] = useState(0);
-
-    // useEffect(() => {
-    //     if (page === 4) {
-    //         () => navigate('/trade/limit')
-    //         console.log(page)
-    //     } else if (page === 5) {
-    //        () =>  navigate('/trade/range')
-    //     } else return
-    // }, [page])
-
-    // function handleRedirect() {
-    //     if (page === 4) {
-    //        navigate('/trade/limit')
-    //         console.log(page)
-    //     } else if (page === 5) {
-    //      navigate('/trade/range')
-    //     } else return
-    // }
 
     const page1Overlays = (
         <div>
-            <OverlayComponent
-                top='70px'
-                // left='1200px'
-                left='85vw'
-            >
+            <OverlayComponent top='70px' left='85vw'>
                 Navbar Overlay
             </OverlayComponent>
         </div>
@@ -174,3 +148,5 @@ export default function AppOverlay(props: AppOverlayPropsIf) {
         </div>
     );
 }
+
+export default memo(AppOverlay);

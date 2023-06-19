@@ -1,26 +1,21 @@
 .tab_window {
     width: 100%;
     height: 100%;
-    border-radius: 4px;
     background: var(--dark1);
     overflow: hidden;
-    margin: 0 -5px;
     display: flex;
     flex-direction: column;
 }
 
 .tab_nav {
-    padding: 5px 5px 0;
+    padding-right: 8px;
     border-radius: 4px;
-    /* border-radius: 10px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0; */
 }
 .main_tab_content {
-    flex-grow: 1;
     user-select: none;
     margin-top: 6px;
-    height: 100%;
+    flex: 1;
+    overflow: hidden;
 }
 
 .tab_ul,
@@ -56,20 +51,28 @@
     position: relative;
     user-select: none;
     list-style: none;
-    color: #a8a5a5;
+    color: var(--text2);
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
 
+.label_button {
+    outline: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
 .tab_ul li.selected,
 .menu_content li.selected,
 .tab_ul_left li.selected {
-    color: #7371fc;
+    color: var(--accent1);
 }
 
 .tab_ul_left li {
-    width: 100%;
+    max-width: 25%;
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,9 +81,31 @@
 
 .tab_ul li:hover,
 .tab_ul_left li:hover,
-.menu_content li:hover {
-    color: #7371fc;
+.menu_content li:hover,
+.selected {
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.selected button,
+.non_selected button {
+    font-family: var(--font-family);
+    font-weight: 500;
+    line-height: 19px;
+}
+
+.selected button {
+    color: var(--accent1);
+    font-size: 15px;
+}
+
+.non_selected button {
+    color: var(--text3);
+    font-size: 13px;
+}
+
+.non_selected:hover button {
+    color: var(--accent1);
 }
 
 .underline {
@@ -89,7 +114,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #7371fc;
+    background: var(--accent1);
 }
 .tab_with_option_container {
     display: flex;
@@ -114,20 +139,42 @@
     display: none;
 }
 
+.item_label:focus-visible {
+    border-bottom: 1px solid var(--text1);
+}
+@media (min-width: 800px) {
+    .tab_icon {
+        display: none;
+    }
+}
+
 @media (min-width: 500px) {
     .item_label {
         display: flex;
+
+        background: transparent;
+        outline: none;
+        border: none;
+
+        cursor: pointer;
     }
 
-    .tab_icon {
-        display: none;
+    .selected {
+        color: var(--accent1);
     }
 
     .tab_ul li,
     .menu_content li,
     .tab_ul_left li {
-        padding: 10px 15px;
+        padding: 8px 10px;
+    }
+
+    .justify_content_flex_start li {
         justify-content: flex-start;
+    }
+
+    .justify_content_center li {
+        justify-content: center;
     }
 
     .tab_ul_left {

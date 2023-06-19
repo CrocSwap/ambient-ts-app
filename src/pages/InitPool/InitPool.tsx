@@ -1,27 +1,15 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
-import { CrocEnv } from '@crocswap-libs/sdk';
-import Moralis from 'moralis';
-// import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useUrlParams } from './useUrlParams';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import {
-    TokenIF,
-    TokenListIF,
-    TokenPairIF,
-} from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import {
     addPendingTx,
     addReceipt,
@@ -33,42 +21,37 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-
-// interface for props
-interface propsIF {
-    isUserLoggedIn: boolean | undefined;
-    crocEnv: CrocEnv | undefined;
-    showSidebar: boolean;
-    tokenPair: TokenPairIF;
-    tokenAAllowance: string;
-    setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
-    tokenBAllowance: string;
-    setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
-    openModalWallet: () => void;
-    ethMainnetUsdPrice?: number;
-    gasPriceInGwei: number | undefined;
-}
+import { IS_LOCAL_ENV } from '../../constants';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { useAccount } from 'wagmi';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // react functional component
-export default function InitPool(props: propsIF) {
+export default function InitPool() {
     const {
-        openModalWallet,
-        isUserLoggedIn,
+        wagmiModal: { open: openWagmiModalWallet },
+    } = useContext(AppStateContext);
+    const {
         crocEnv,
-
-        tokenPair,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-        ethMainnetUsdPrice,
-        gasPriceInGwei,
-    } = props;
+    } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
 
-    // URL parameters
-    const { chain, baseAddr, quoteAddr } = useUrlParams();
+    const { isConnected } = useAccount();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
@@ -77,12 +60,17 @@ export default function InitPool(props: propsIF) {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
+    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
+        (state) => state.tradeData,
+    );
+    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
-                .pool(baseAddr as string, quoteAddr as string)
+                .pool(baseToken.address, quoteToken.address)
                 .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
@@ -95,104 +83,7 @@ export default function InitPool(props: propsIF) {
         }
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
-    }, [crocEnv]);
-
-    const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
-    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    // useEffect(() => console.log(tokenALocal), [tokenALocal]);
-    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(
-        null,
-    );
-    // useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
-    useEffect(() => {
-        tokenALocal && dispatch(setTokenA(tokenALocal));
-        tokenBLocal && dispatch(setTokenB(tokenBLocal));
-    }, [tokenALocal, tokenBLocal]);
-
-    useEffect(() => {
-        // get allTokenLists from local storage
-        function check() {
-            const tokenListsFromStorage = localStorage.getItem('allTokenLists');
-            if (tokenListsFromStorage !== null) {
-                const tokenLists = JSON.parse(tokenListsFromStorage as string);
-                const ambientList = tokenLists.find(
-                    (list: TokenListIF) => list.name === 'Ambient Token List',
-                );
-                const tokens = ambientList.tokens;
-                // console.log(tokens);
-                setTokenList(tokens);
-            } else {
-                setTimeout(check, 100);
-            }
-        }
-        setTimeout(check, 100);
-    }, []);
-
-    useEffect(() => {
-        // console.log(tokenList, baseAddr, quoteAddr);
-        if (tokenList && baseAddr && quoteAddr) {
-            // console.log('running!');
-            const findToken = (addr: string) =>
-                tokenList.find(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() === addr.toLowerCase(),
-                );
-
-            // console.log(tokenList);
-            // console.log(baseAddr, quoteAddr);
-            const dataTokenA = findToken(baseAddr);
-            const dataTokenB = findToken(quoteAddr);
-            // console.log(dataTokenA, dataTokenB);
-            setTokenALocal(dataTokenA);
-            setTokenBLocal(dataTokenB);
-        }
-    }, [tokenList, baseAddr, quoteAddr]);
-
-    useEffect(() => {
-        // TODO: find a way to correctly type this return
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function setTokenFromChain(addr: string, target: string): any {
-            const setTarget = (data: TokenIF, whichToken: string) => {
-                switch (whichToken) {
-                    case 'tokenALocal':
-                        setTokenALocal(data);
-                        break;
-                    case 'tokenBLocal':
-                        setTokenBLocal(data);
-                        break;
-                }
-            };
-            const promise = Moralis.EvmApi.token.getTokenMetadata({
-                addresses: [addr],
-                chain,
-            });
-            // const promise = Moralis.Web3API.token.getTokenMetadata({
-            //     chain: chain as '0x5',
-            //     addresses: [addr],
-            // });
-
-            Promise.resolve(promise)
-                .then((res) => res?.result[0].token)
-                .then((token) => {
-                    // console.log({ token });
-                    return {
-                        name: token.name,
-                        chainId: token.chain.decimal,
-                        address: token.contractAddress.lowercase,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        logoURI: token.logo ?? '',
-                        fromList: 'urlParam',
-                    };
-                })
-                .then((res) => setTarget(res, target));
-        }
-        tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
-        tokenBLocal === undefined &&
-            setTokenFromChain(quoteAddr, 'tokenBLocal');
-    }, [tokenALocal, tokenBLocal]);
+    }, [crocEnv, sessionReceipts.length]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -236,10 +127,6 @@ export default function InitPool(props: propsIF) {
 
     const [valueDisplayString, setValueDisplayString] = useState<string>('');
 
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-        (state) => state.tradeData,
-    );
-
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
@@ -266,17 +153,17 @@ export default function InitPool(props: propsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
-    const approve = async (tokenAddress: string) => {
+    const approve = async (token: TokenIF) => {
         if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
+            const tx = await crocEnv.token(token.address).approve();
             if (tx) dispatch(addPendingTx(tx?.hash));
             if (tx?.hash)
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                        txType: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -284,20 +171,20 @@ export default function InitPool(props: propsIF) {
                 if (tx) receipt = await tx.wait();
             } catch (e) {
                 const error = e as TransactionError;
-                console.log({ error });
-                // The user used "speed up" or something similar
+                console.error({ error });
+                // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
-                    console.log('repriced');
+                    IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
 
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
-                    console.log({ newTransactionHash });
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
-                    // console.log({ error });
+                    console.error({ error });
                     receipt = error.receipt;
                 }
             }
@@ -309,7 +196,7 @@ export default function InitPool(props: propsIF) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
-            console.log({ error });
+            console.error({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -317,8 +204,13 @@ export default function InitPool(props: propsIF) {
         }
     };
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
     const sendInit = () => {
-        console.log(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at 
+        IS_LOCAL_ENV &&
+            console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
         an initial price of ${initialPriceInBaseDenom}`);
         if (initialPriceInBaseDenom) {
             (async () => {
@@ -326,10 +218,7 @@ export default function InitPool(props: propsIF) {
                 try {
                     setIsInitPending(true);
                     tx = await crocEnv
-                        ?.pool(
-                            tokenPair.dataTokenA.address,
-                            tokenPair.dataTokenB.address,
-                        )
+                        ?.pool(baseToken.address, quoteToken.address)
                         .initPool(initialPriceInBaseDenom);
 
                     if (tx) dispatch(addPendingTx(tx?.hash));
@@ -337,7 +226,7 @@ export default function InitPool(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: 'Pool Initialization',
+                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;
@@ -345,18 +234,19 @@ export default function InitPool(props: propsIF) {
                         if (tx) receipt = await tx.wait();
                     } catch (e) {
                         const error = e as TransactionError;
-                        console.log({ error });
-                        // The user used "speed up" or something similar
+                        console.error({ error });
+                        // The user used 'speed up' or something similar
                         // in their client, but we now have the updated info
                         if (isTransactionReplacedError(error)) {
-                            console.log('repriced');
+                            IS_LOCAL_ENV && console.debug('repriced');
                             dispatch(removePendingTx(error.hash));
 
                             const newTransactionHash = error.replacement.hash;
                             dispatch(addPendingTx(newTransactionHash));
 
                             //    setNewSwapTransactionHash(newTransactionHash);
-                            console.log({ newTransactionHash });
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
                             receipt = error.receipt;
                         } else if (isTransactionFailedError(error)) {
                             receipt = error.receipt;
@@ -365,15 +255,11 @@ export default function InitPool(props: propsIF) {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        navigate(
-                            '/trade/range/chain=0x5&tokenA=' +
-                                baseAddr +
-                                '&tokenB=' +
-                                quoteAddr,
-                            {
-                                replace: true,
-                            },
-                        );
+                        linkGenPool.navigate({
+                            chain: chainId,
+                            tokenA: baseToken.address,
+                            tokenB: quoteToken.address,
+                        });
                     }
                 } catch (error) {
                     if (
@@ -394,12 +280,12 @@ export default function InitPool(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenA.symbol}`
-                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenA.address);
+                await approve(tokenA);
             }}
             flat={true}
         />
@@ -409,212 +295,230 @@ export default function InitPool(props: propsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? `Approve ${tokenPair.dataTokenB.symbol}`
-                    : `${tokenPair.dataTokenB.symbol} Approval Pending`
+                    ? `Approve ${tokenB.symbol}`
+                    : `${tokenB.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenPair.dataTokenB.address);
+                await approve(tokenB);
             }}
             flat={true}
         />
     );
 
+    const placeholderText = `e.g. ${placeHolderPrice} (${
+        isDenomBase ? baseToken.symbol : quoteToken.symbol
+    }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isValid =
+            event.target.value === '' || event.target.validity.valid;
+        const targetValue = event.target.value.replaceAll(',', '');
+        const input = targetValue.startsWith('.')
+            ? '0' + targetValue
+            : targetValue;
+        const targetValueNum = parseFloat(input);
+
+        isValid && setValueDisplayString(input);
+
+        if (
+            isValid &&
+            ((!isNaN(targetValueNum) && targetValueNum !== 0) ||
+                event.target.value === '')
+        ) {
+            if (event.target.value === '') {
+                setInitialPrice(undefined);
+            } else {
+                setInitialPrice(targetValueNum);
+            }
+        }
+    };
+
+    const initialPriceInput = (
+        <input
+            id='initial-pool-price-quantity'
+            className={styles.currency_quantity}
+            placeholder={placeholderText}
+            type='string'
+            onChange={handleInputChange}
+            value={valueDisplayString}
+            inputMode='decimal'
+            autoComplete='off'
+            autoCorrect='off'
+            min='0'
+            minLength={1}
+            pattern='^[0-9,]*[.]?[0-9]*$'
+        />
+    );
+
+    const ButtonToRender = () => {
+        let buttonContent;
+
+        switch (true) {
+            case poolExists:
+                // Display button for an already initialized pool
+                buttonContent = (
+                    <Button
+                        title='Pool Already Initialized'
+                        disabled={true}
+                        action={() => {
+                            IS_LOCAL_ENV && console.debug('clicked');
+                        }}
+                        flat={true}
+                    />
+                );
+                break;
+
+            case isConnected || !connectButtonDelayElapsed:
+                // Display different buttons based on various conditions
+                if (!isTokenAAllowanceSufficient) {
+                    // Display token A approval button
+                    buttonContent = tokenAApprovalButton;
+                } else if (!isTokenBAllowanceSufficient) {
+                    // Display token B approval button
+                    buttonContent = tokenBApprovalButton;
+                } else if (initialPrice === undefined || initialPrice <= 0) {
+                    // Display button to enter an initial price
+                    buttonContent = (
+                        <Button
+                            title='Enter an Initial Price'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else if (isInitPending === true) {
+                    // Display button for pending initialization
+                    buttonContent = (
+                        <Button
+                            title='Initialization Pending'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else {
+                    // Display confirm button for final step
+                    buttonContent = (
+                        <Button title='Confirm' action={sendInit} flat={true} />
+                    );
+                }
+                break;
+
+            default:
+                // Display button to connect wallet if no conditions match
+                buttonContent = (
+                    <Button
+                        title='Connect Wallet'
+                        action={openWagmiModalWallet}
+                        flat={true}
+                    />
+                );
+                break;
+        }
+
+        return buttonContent;
+    };
+
+    const tokenADisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenA &&
+                    (tokenA.logoURI ? (
+                        <img
+                            src={tokenA.logoURI}
+                            alt={tokenA.symbol}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenA.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenA && <h3>{tokenA.symbol}</h3>}
+            </div>
+            {tokenA && <p>{tokenA.name}</p>}
+        </div>
+    );
+
+    const tokenBDisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                {tokenB &&
+                    (tokenB.logoURI ? (
+                        <img
+                            src={tokenB.logoURI}
+                            alt={tokenB.symbol}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon
+                            tokenInitial={tokenB.symbol.charAt(0)}
+                            width='30px'
+                        />
+                    ))}
+                {tokenB && <h3>{tokenB.symbol}</h3>}
+            </div>
+            {tokenB && <p>{tokenB.name}</p>}
+        </div>
+    );
+
+    const navigateToMarket = (
+        <Navigate
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: baseToken.address,
+                tokenB: quoteToken.address,
+            })}
+            replace={true}
+        />
+    );
+
     return (
         <section className={styles.main}>
-            {poolExists && (
-                <Navigate
-                    to={
-                        '/trade/market/chain=0x5&tokenA=' +
-                        baseAddr +
-                        '&tokenB=' +
-                        quoteAddr
-                    }
-                    replace={true}
-                />
-            )}
+            {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
-                <div className={styles.back_button}>
-                    <VscClose size={30} onClick={() => navigate(-1)} />
-                </div>
                 <div className={styles.top_content}>
-                    <ContentContainer>
-                        <header>
-                            <h1>INITIALIZE POOL</h1>
-                        </header>
-                        <div className={styles.pool_display_container}>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {/* <img src={tokenA.logoURI} alt='token a' /> */}
-                                    {tokenA &&
-                                        (tokenA.logoURI ? (
-                                            <img
-                                                src={tokenA.logoURI}
-                                                alt={tokenA.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenA.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenA && <h3>{tokenA.symbol}</h3>}
-                                </div>
-                                {tokenA && <p>{tokenA.name}</p>}
-                            </div>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {tokenB &&
-                                        (tokenB.logoURI ? (
-                                            <img
-                                                src={tokenB.logoURI}
-                                                alt={tokenB.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenB.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenB && <h3>{tokenB.symbol}</h3>}
-                                </div>
-                                {tokenB && <p>{tokenB.name}</p>}
-                            </div>
-                            <div className={styles.padding_center}>
-                                <div className={styles.pool_price_container}>
-                                    <span>Initial Price</span>
-                                    <section style={{ width: '100%%' }}>
-                                        <input
-                                            id={'initial-pool-price-quantity'}
-                                            className={styles.currency_quantity}
-                                            placeholder={`e.g. ${placeHolderPrice} (${
-                                                isDenomBase
-                                                    ? baseToken.symbol
-                                                    : quoteToken.symbol
-                                            }/${
-                                                isDenomBase
-                                                    ? quoteToken.symbol
-                                                    : baseToken.symbol
-                                            })`}
-                                            type='string'
-                                            onChange={(event) => {
-                                                const isValid =
-                                                    event.target.value === '' ||
-                                                    event.target.validity.valid;
-                                                const targetValue =
-                                                    event.target.value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                    );
-                                                const input =
-                                                    targetValue.startsWith('.')
-                                                        ? '0' + targetValue
-                                                        : targetValue;
-                                                const targetValueNum =
-                                                    parseFloat(input);
-                                                isValid &&
-                                                    setValueDisplayString(
-                                                        input,
-                                                    );
-                                                if (
-                                                    isValid &&
-                                                    ((!isNaN(targetValueNum) &&
-                                                        targetValueNum !== 0) ||
-                                                        event.target.value ===
-                                                            '')
-                                                ) {
-                                                    if (
-                                                        event.target.value ===
-                                                        ''
-                                                    ) {
-                                                        setInitialPrice(
-                                                            undefined,
-                                                        );
-                                                    } else {
-                                                        setInitialPrice(
-                                                            targetValueNum,
-                                                        );
-                                                    }
-                                                }
-                                            }}
-                                            value={valueDisplayString}
-                                            inputMode='decimal'
-                                            autoComplete='off'
-                                            autoCorrect='off'
-                                            min='0'
-                                            minLength={1}
-                                            pattern='^[0-9,]*[.]?[0-9]*$'
-                                            required
-                                        />
-                                    </section>
-                                </div>
-                                <InitPoolExtraInfo
-                                    initialPrice={initialPrice}
-                                    isDenomBase={isDenomBase}
-                                    initGasPriceinDollars={
-                                        initGasPriceinDollars
-                                    }
-                                    baseToken={baseToken}
-                                    quoteToken={quoteToken}
-                                    setIsDenomBase={setIsDenomBase}
-                                    invertInitialPrice={invertInitialPrice}
-                                />
-                            </div>
+                    <header>
+                        <p />
+                        <h1>Initialize Pool</h1>
+                        <VscClose
+                            size={25}
+                            onClick={() => navigate(-1)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    </header>
+                    <div className={styles.pool_display_container}>
+                        {tokenADisplay}
+                        {tokenBDisplay}
 
-                            <footer>
-                                {poolExists ? (
-                                    <Button
-                                        title='Pool Already Initialized'
-                                        disabled={true}
-                                        action={() => console.log('clicked')}
-                                        flat={true}
-                                    />
-                                ) : isUserLoggedIn ||
-                                  !connectButtonDelayElapsed ? (
-                                    !isTokenAAllowanceSufficient ? (
-                                        tokenAApprovalButton
-                                    ) : !isTokenBAllowanceSufficient ? (
-                                        tokenBApprovalButton
-                                    ) : initialPrice === undefined ||
-                                      initialPrice <= 0 ? (
-                                        <Button
-                                            title='Enter an Initial Price'
-                                            disabled={true}
-                                            action={() =>
-                                                console.log('clicked')
-                                            }
-                                            flat={true}
-                                        />
-                                    ) : isInitPending === true ? (
-                                        <Button
-                                            title='Initialization Pending'
-                                            disabled={true}
-                                            action={() =>
-                                                console.log('clicked')
-                                            }
-                                            flat={true}
-                                        />
-                                    ) : (
-                                        <Button
-                                            title='Open Confirmation'
-                                            action={sendInit}
-                                            flat={true}
-                                        />
-                                    )
-                                ) : (
-                                    <Button
-                                        title='Login'
-                                        action={openModalWallet}
-                                        flat={true}
-                                    />
-                                )}
-                            </footer>
+                        <div className={styles.padding_center}>
+                            <div className={styles.pool_price_container}>
+                                <span>Initial Price</span>
+                                <section style={{ width: '100%' }}>
+                                    {initialPriceInput}
+                                </section>
+                            </div>
+                            <InitPoolExtraInfo
+                                initialPrice={initialPrice}
+                                isDenomBase={isDenomBase}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                baseToken={baseToken}
+                                quoteToken={quoteToken}
+                                setIsDenomBase={setIsDenomBase}
+                                invertInitialPrice={invertInitialPrice}
+                            />
                         </div>
-                    </ContentContainer>
+
+                        <footer>
+                            <ButtonToRender />
+                        </footer>
+                    </div>
                 </div>
             </div>
         </section>

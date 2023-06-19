@@ -51,7 +51,7 @@ export default useKeyboardShortcuts;
 
 // function MyComponent() {
 //   useKeyboardShortcuts({ modifierKeys: ['Control'], key: 'c' }, () => {
-//     console.log('Control + c pressed');
+//     console.debug('Control + c pressed');
 //   });
 
 //   return (

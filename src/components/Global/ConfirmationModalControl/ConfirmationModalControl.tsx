@@ -20,13 +20,13 @@ export default function ConfirmationModalControl(props: propsIF) {
     const moduleName = pathname.includes('swap')
         ? 'Swaps'
         : pathname.includes('market')
-        ? 'Market Orders'
-        : pathname.includes('limit')
-        ? 'Limit Orders'
-        : pathname.includes('range')
-        ? 'Range Orders'
+        ? 'Swaps'
+        : pathname.includes('pool')
+        ? 'Pool Orders'
         : pathname.includes('reposition')
         ? 'Repositions'
+        : pathname.includes('limit')
+        ? 'Limit Orders'
         : 'unhandled';
 
     const toggleAriaLabel = `${

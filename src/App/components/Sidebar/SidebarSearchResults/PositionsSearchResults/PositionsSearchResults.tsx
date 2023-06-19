@@ -1,26 +1,26 @@
-import { Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import styles from '../SidebarSearchResults.module.css';
 import { getRangeDisplay, getValueUSD } from './functions/exports';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
-    chainId: string;
     searchedPositions: PositionIF[];
-    isDenomBase: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 interface PositionLiPropsIF {
     position: PositionIF;
-    isDenomBase: boolean;
     handleClick: (position: PositionIF) => void;
 }
 
 function PositionLI(props: PositionLiPropsIF) {
-    const { position, isDenomBase, handleClick } = props;
+    const { position, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // fn to generate human-readable range output (from X to Y)
     const rangeDisplay = getRangeDisplay(position, isDenomBase);
@@ -45,31 +45,31 @@ function PositionLI(props: PositionLiPropsIF) {
 }
 
 export default function PositionsSearchResults(props: propsIF) {
+    const { searchedPositions } = props;
+
     const {
-        chainId,
-        searchedPositions,
-        isDenomBase,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
+        setCurrentPositionActive,
+        setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
-    } = props;
+    } = useContext(TradeTableContext);
 
-    const navigate = useNavigate();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleClick = (position: PositionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(2);
-        setCurrentPositionActive(position.positionStorageSlot);
-        setIsShowAllEnabled(false);
-        navigate(
-            '/trade/range/chain=' +
-                chainId +
-                '&tokenA=' +
-                position.base +
-                '&tokenB=' +
-                position.quote,
-        );
+        setCurrentPositionActive(position.lastMintTx);
+        setShowAllData(false);
+        linkGenPool.navigate({
+            chain: chainId,
+            tokenA: position.base,
+            tokenB: position.quote,
+        });
     };
 
     return (
@@ -91,7 +91,6 @@ export default function PositionsSearchResults(props: propsIF) {
                                         position,
                                     )}`}
                                     position={position}
-                                    isDenomBase={isDenomBase}
                                     handleClick={handleClick}
                                 />
                             ))}

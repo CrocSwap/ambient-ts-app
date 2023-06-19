@@ -12,25 +12,21 @@ import {
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
-import { FiCopy } from 'react-icons/fi';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 
 interface propsIF {
     message: string;
     isInput: boolean;
     isPosition: boolean;
     setIsPosition: Dispatch<SetStateAction<boolean>>;
+    walletExplorer: any;
+    isCurrentUser?: boolean;
+    showAvatar?: boolean;
 }
 
 export default function PositionBox(props: propsIF) {
-    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [value, copy] = useCopyToClipboard();
     const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
-    const [hashMsg, setHashMsg] = useState('');
     const isInput = props.isInput;
     const [position, setPosition] = useState<TransactionIF | undefined>(
         undefined,
@@ -43,34 +39,35 @@ export default function PositionBox(props: propsIF) {
     >();
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
+
     const transactionsData = graphData?.changesByPool?.changes;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
-        useSortedPositions('lastUpdate', graphData?.positionsByPool?.positions);
+    const positionData = graphData?.positionsByPool?.positions;
+
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();
     const [apy, setApy] = useState<any | undefined>();
 
-    useEffect(() => {
+    const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
+    const txFingerprint = transactionsData.map((tx) => tx.txHash).join('|');
+
+    const updateIsPosition = () => {
         if (message && message.includes('0x')) {
             const hashMsg = message
                 .split(' ')
                 .find((item) => item.includes('0x'));
-            setHashMsg(hashMsg as string);
-            if (transactionsData.find((item) => item.tx === hashMsg)) {
+            if (transactionsData.find((item) => item.txHash === hashMsg)) {
                 setPosition(
-                    transactionsData.find((item) => item.tx === hashMsg),
+                    transactionsData.find((item) => item.txHash === hashMsg),
                 );
                 props.setIsPosition(true);
             } else if (
-                sortedPositions.find(
-                    (item: PositionIF) => item.positionStorageSlot === hashMsg,
+                positionData.find(
+                    (item: PositionIF) => item.firstMintTx === hashMsg,
                 )
             ) {
                 setSPosition(
-                    sortedPositions.find(
-                        (item: PositionIF) =>
-                            item.positionStorageSlot === hashMsg,
+                    positionData.find(
+                        (item: PositionIF) => item.firstMintTx === hashMsg,
                     ),
                 );
                 props.setIsPosition(true);
@@ -80,7 +77,11 @@ export default function PositionBox(props: propsIF) {
             setSPosition(undefined);
             props.setIsPosition(false);
         }
-    }, [message, sortedPositions, transactionsData]);
+    };
+
+    useEffect(() => {
+        updateIsPosition();
+    }, [message, posFingerprint, txFingerprint]);
 
     function financial(x: any) {
         return Number.parseFloat(x).toFixed(2);
@@ -127,13 +128,13 @@ export default function PositionBox(props: propsIF) {
                 }
             } else {
                 if (
-                    position.priceDecimalCorrected &&
-                    position.invPriceDecimalCorrected
+                    position.swapPriceDecimalCorrected &&
+                    position.swapInvPriceDecimalCorrected
                 ) {
                     const priceDecimalCorrected =
-                        position.priceDecimalCorrected;
+                        position.swapPriceDecimalCorrected;
                     const invPriceDecimalCorrected =
-                        position.invPriceDecimalCorrected;
+                        position.swapInvPriceDecimalCorrected;
 
                     const nonInvertedPriceTruncated =
                         priceDecimalCorrected === 0
@@ -183,29 +184,12 @@ export default function PositionBox(props: propsIF) {
 
     function getPositionAdress() {
         if (position) {
-            return trimString(position.tx, 6, 4, '…');
+            return trimString(position.txHash, 6, 4, '…');
         }
 
         if (sPositions) {
-            return trimString(sPositions.positionStorageSlot, 6, 4, '…');
+            return trimString(sPositions.firstMintTx, 6, 4, '…');
         }
-    }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {hashMsg && hashMsg.split(' ') && trimString(hashMsg, 6, 4, '…')}{' '}
-            copied
-        </SnackbarComponent>
-    );
-
-    function handleCopyAddress() {
-        const hashMsg = message.split(' ').find((item) => item.includes('0x'));
-
-        copy(hashMsg as string);
-        setOpenSnackbar(true);
     }
 
     function getRestOfMessagesIfAny() {
@@ -222,10 +206,31 @@ export default function PositionBox(props: propsIF) {
             }
         }
     }
+
+    function handleOpenExplorer() {
+        if (sPositions === undefined && position !== undefined) {
+            const hashMsg = message
+                .split(' ')
+                .find((item) => item.includes('0x'));
+            const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
+            window.open(explorerUrl);
+        } else {
+            const walletUrl = props.isCurrentUser
+                ? '/account'
+                : `/account/${props.walletExplorer}`;
+            window.open(walletUrl);
+        }
+    }
     return props.isPosition ? (
         position !== undefined && !isInput ? (
             <motion.div className={styles.animate_position_box}>
-                <div className={styles.position_main_box}>
+                <div
+                    className={
+                        props.showAvatar
+                            ? styles.position_main_box
+                            : styles.position_main_box_without_avatar
+                    }
+                >
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
@@ -237,33 +242,33 @@ export default function PositionBox(props: propsIF) {
                                 </div>
 
                                 <div style={{ cursor: 'pointer' }}>
-                                    <FiCopy
-                                        size={19}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                        onClick={handleCopyAddress}
-                                    />
-                                </div>
-                                <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
-                                        size={20}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        size={16}
+                                        onClick={handleOpenExplorer}
+                                        title='Explorer'
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
+                            <div className={styles.tokens_type}>
                                 {sideType} Price
                             </div>
 
-                            <div className={styles.price}>
+                            <div
+                                className={
+                                    sideType === 'Buy'
+                                        ? styles.buy_price
+                                        : styles.sell_price
+                                }
+                            >
                                 {truncatedDisplayPrice}
                             </div>
                         </div>
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         Range
                                     </div>
 
@@ -293,7 +298,6 @@ export default function PositionBox(props: propsIF) {
                             <></>
                         )}
                     </div>
-                    {snackbarContent}
                 </div>
                 <p className={styles.position_message}>
                     {getRestOfMessagesIfAny()}
@@ -322,19 +326,10 @@ export default function PositionBox(props: propsIF) {
                                 <div className={styles.address}>
                                     {getPositionAdress()}
                                 </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                    />
-                                </div>
-                                <div>
-                                    <FiCopy onClick={handleCopyAddress} />
-                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
+                            <div className={styles.tokens_type}>
                                 {sideType} Price
                             </div>
 
@@ -345,7 +340,7 @@ export default function PositionBox(props: propsIF) {
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         Range
                                     </div>
 
@@ -357,7 +352,7 @@ export default function PositionBox(props: propsIF) {
                                     </div>
                                 </div>
                                 <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
+                                    <div className={styles.tokens_type}>
                                         APY
                                     </div>
                                     <div
@@ -375,7 +370,6 @@ export default function PositionBox(props: propsIF) {
                             <></>
                         )}
                     </div>
-                    {snackbarContent}
                 </div>
                 <div>
                     <p className={styles.position_message}>
@@ -386,7 +380,6 @@ export default function PositionBox(props: propsIF) {
         ) : sPositions !== undefined && !isInput ? (
             <motion.div className={styles.animate_position_box}>
                 <div className={styles.position_main_box}>
-                    {snackbarContent}
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
@@ -399,17 +392,15 @@ export default function PositionBox(props: propsIF) {
                                 </div>
                                 <div style={{ cursor: 'pointer' }}>
                                     <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
+                                        size={16}
+                                        onClick={handleOpenExplorer}
+                                        title='Wallet'
                                     />
-                                </div>
-                                <div style={{ cursor: 'pointer' }}>
-                                    <FiCopy onClick={handleCopyAddress} />
                                 </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_type}>Range</div>
                             <div className={styles.tokens_min_price}>
                                 ${minPrice}
                             </div>
@@ -418,7 +409,7 @@ export default function PositionBox(props: propsIF) {
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_type}>APY</div>
                             <div className={styles.tokens_apy}>
                                 {financial(apy)}%
                             </div>
@@ -443,7 +434,6 @@ export default function PositionBox(props: propsIF) {
                 transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
             >
                 <div className={styles.position_main_box}>
-                    {snackbarContent}
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
@@ -454,19 +444,10 @@ export default function PositionBox(props: propsIF) {
                                 <div className={styles.address}>
                                     {getPositionAdress()}
                                 </div>
-                                <div>
-                                    <HiOutlineExternalLink
-                                        size={22}
-                                        color='rgba(235, 235, 255, 0.4)'
-                                    />
-                                </div>
-                                <div>
-                                    <FiCopy onClick={handleCopyAddress} />
-                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_type}>Range</div>
                             <div className={styles.tokens_min_price}>
                                 ${minPrice}
                             </div>
@@ -475,7 +456,7 @@ export default function PositionBox(props: propsIF) {
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_type}>APY</div>
                             <div className={styles.tokens_apy}>
                                 {financial(apy)}%
                             </div>

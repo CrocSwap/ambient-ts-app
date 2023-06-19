@@ -1,5 +1,5 @@
 import styles from './TransactionDetails.module.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
@@ -7,34 +7,36 @@ import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetail
 import { TransactionIF } from '../../../utils/interfaces/exports';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../SnackbarComponent/SnackbarComponent';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import modalBackground from '../../../assets/images/backgrounds/background.png';
 
 interface propsIF {
-    account: string;
     tx: TransactionIF;
-    closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    chainData: ChainSpec;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetails(props: propsIF) {
+    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView } = props;
     const {
-        account,
-        tx,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-        chainData,
-    } = props;
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyTransactionDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
 
@@ -44,52 +46,19 @@ export default function TransactionDetails(props: propsIF) {
         { slug: 'value', name: 'Show value', checked: true },
     ]);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyAddress() {
-        const txHash = tx.tx;
+        const txHash = tx.txHash;
         copy(txHash);
-        setOpenSnackbar(true);
+        openSnackbar(`${txHash} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
-
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) {
-    //             item.checked = !item.checked;
-    //         }
-
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
 
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <TransactionDetailsPriceInfo
-                        account={account}
                         tx={tx}
                         controlItems={controlItems}
                     />
@@ -98,12 +67,10 @@ export default function TransactionDetails(props: propsIF) {
                     <TransactionDetailsGraph
                         tx={tx}
                         transactionType={tx.entityType}
-                        useTx={true}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -111,29 +78,27 @@ export default function TransactionDetails(props: propsIF) {
         </div>
     );
 
+    const transactionDetailsHeaderProps = {
+        showSettings,
+        setShowSettings,
+        copyTransactionDetailsToClipboard,
+        setShowShareComponent,
+        showShareComponent,
+        handleCopyAddress,
+    };
+
     return (
-        <div className={styles.tx_details_container}>
-            <TransactionDetailsHeader
-                tx={tx}
-                onClose={props.closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                downloadAsImage={downloadAsImage}
-                setShowShareComponent={setShowShareComponent}
-                showShareComponent={showShareComponent}
-                handleCopyAddress={handleCopyAddress}
-            />
+        <div className={styles.outer_container}>
+            <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
 
             {showShareComponent ? (
                 shareComponent
             ) : (
                 <TransactionDetailsSimplify
-                    account={account}
                     tx={tx}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

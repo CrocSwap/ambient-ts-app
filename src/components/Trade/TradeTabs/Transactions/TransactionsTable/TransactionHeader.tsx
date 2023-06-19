@@ -1,10 +1,12 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
+import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Transactions.module.css';
+import { TxSortType } from '../../useSortedTxs';
+
 interface TransactionHeaderPropsIF {
     header: {
         name: string | JSX.Element;
-        // className: string;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -12,30 +14,29 @@ interface TransactionHeaderPropsIF {
         alignCenter?: boolean;
     };
 
-    sortBy: string;
-    setSortBy: Dispatch<SetStateAction<string>>;
+    sortBy: TxSortType;
+    setSortBy: Dispatch<SetStateAction<TxSortType>>;
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function TransactionHeader(props: TransactionHeaderPropsIF) {
+function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
-    function handleClick(slug: string) {
+    function handleClick(slug: TxSortType) {
         if (sortable) {
-            console.clear();
             if (sortBy !== slug) {
-                console.log('first click');
+                IS_LOCAL_ENV && console.debug('first click');
                 setSortBy(slug);
             } else if (!reverseSort) {
-                console.log('second click');
+                IS_LOCAL_ENV && console.debug('second click');
                 setReverseSort(true);
             } else if (sortBy === slug && reverseSort) {
-                console.log('third click');
+                IS_LOCAL_ENV && console.debug('third click');
                 setSortBy('default');
                 setReverseSort(false);
             } else {
-                console.warn(
+                console.error(
                     'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
                 );
                 setSortBy('default');
@@ -69,7 +70,7 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
                     } ${alignCenter && styles.align_center}`}
-                    onClick={() => handleClick(slug.toLowerCase())}
+                    onClick={() => handleClick(slug as TxSortType)}
                 >
                     {name} {arrow}
                 </li>
@@ -77,3 +78,5 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
         </>
     );
 }
+
+export default memo(TransactionHeader);

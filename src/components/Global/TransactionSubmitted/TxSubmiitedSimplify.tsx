@@ -3,6 +3,8 @@ import Animation from '../../Global/Animation/Animation';
 import completed from '../../../assets/animations/completed.json';
 
 import { FiExternalLink } from 'react-icons/fi';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface TransactionSubmittedProps {
     hash: string;
@@ -12,7 +14,11 @@ interface TransactionSubmittedProps {
 
 export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
     const { hash, content, noAnimation } = props;
-    const EthersanTx = `https://goerli.etherscan.io/tx/${hash}`;
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+
+    const EthersanTx = `${blockExplorer}tx/${hash}`;
 
     const etherscanButton = (
         <a
@@ -20,9 +26,10 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
             target='_blank'
             rel='noreferrer'
             className={styles.view_etherscan}
+            aria-label='view on etherscan'
         >
             View on Etherscan
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            <FiExternalLink size={20} color='var(--text1)' />
         </a>
     );
     return (

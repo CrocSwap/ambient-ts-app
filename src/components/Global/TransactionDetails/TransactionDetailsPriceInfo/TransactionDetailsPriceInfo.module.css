@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    padding: 1rem 0;
 }
 
 .price_info_container {
@@ -13,8 +14,7 @@
 
 .info_container {
     width: 100%;
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+
     /* Note: backdrop-filter has minimal browser support */
     /* background: red; */
     border-radius: 4px;
@@ -27,7 +27,7 @@
     padding: 1rem;
 
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -36,9 +36,7 @@
     height: 1px;
     margin: 1rem 0;
 
-    /* dark/secondary */
-
-    background: #171d27;
+   
 }
 .info_text {
     display: flex;
@@ -62,13 +60,12 @@
     flex-direction: column;
     gap: 4px;
     align-items: center;
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+    
 }
 
 .min_max_price p {
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -81,7 +78,7 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .min_price,
 .max_price {
@@ -92,10 +89,10 @@
 }
 
 .max_price {
-    color: #7371fc;
+    color: var(--accent1);
 }
 .min_price {
-    color: #cdc1ff;
+    color: var(--accent5);
 }
 
 /* TOKEN PAIR DETAILS */
@@ -111,12 +108,11 @@
 .token_pair_details p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
-    font-weight: 100;
+    color: var(--text1);
+    font-weight: 300;
 }
 .tx_details {
-    background: rgba(23, 29, 39, 0.3);
-    backdrop-filter: blur(10px);
+   
     /* cursor: pointer; */
     display: flex;
     flex-direction: column;
@@ -132,10 +128,10 @@
     gap: 8px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .tx_details p {
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     font-weight: 300;
@@ -146,9 +142,6 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-}
-.token_pair_images img {
-    width: 30px;
 }
 
 .align_center {
