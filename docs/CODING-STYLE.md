@@ -15,8 +15,8 @@ Please follow these items as close to as possible for your PR. Please add a desc
 - [ ] Do functions return a value through a single exit point?
 - [ ] Does the app compile without errors or warnings?
 - [ ] Has commented-out code been deleted or marked with a note to request preservation?
-- [ ] Does error handling use `console.warn` or `console.error` for handled and unhandled exceptions, respectively? Does this logging reference the generating file
-- [ ] Do any new async methods/functions have a name ending with `'Async'`? eg: `function fetchPoolDataAsync() {}`
+- [ ] Does error handling use `console.warn` or `console.error` for handled and unhandled exceptions, respectively? Does this logging reference the generating file?
+- [ ] Have console commands been restricted with environmental variables (eg, dev environment only) as appropriate?
 
 #### TypeScript
 - [ ] Are all functions given a typed return?
