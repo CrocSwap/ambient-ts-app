@@ -34,6 +34,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -456,11 +457,10 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(3)
-                    : truncateDecimals(rawTokenBQty, 2)
-                : '';
+            const truncatedTokenBQty = getFormattedTokenBalance({
+                balance: rawTokenBQty,
+                nullDisplay: '',
+            });
 
             setTokenBQtyLocal(truncatedTokenBQty);
             setBuyQtyString(truncatedTokenBQty);
@@ -499,11 +499,10 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(3)
-                    : truncateDecimals(rawTokenBQty, 2)
-                : '';
+            const truncatedTokenBQty = getFormattedTokenBalance({
+                balance: rawTokenBQty,
+                nullDisplay: '',
+            });
 
             setTokenBQtyLocal(truncatedTokenBQty);
             setBuyQtyString(truncatedTokenBQty);
@@ -541,11 +540,11 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
             }
 
-            const truncatedTokenAQty = rawTokenAQty
-                ? rawTokenAQty < 2
-                    ? rawTokenAQty.toPrecision(3)
-                    : truncateDecimals(rawTokenAQty, 2)
-                : '';
+            const truncatedTokenAQty = getFormattedTokenBalance({
+                balance: rawTokenAQty,
+                nullDisplay: '',
+            });
+
             setTokenAQtyLocal(truncatedTokenAQty);
             setSellQtyString(truncatedTokenAQty);
         },

@@ -18,6 +18,7 @@ import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -167,62 +168,26 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
-    const baseQty = !liqBaseNum
-        ? '0'
-        : liqBaseNum < 0.0001
-        ? liqBaseNum.toExponential(2)
-        : liqBaseNum < 2
-        ? liqBaseNum.toPrecision(3)
-        : liqBaseNum >= 100000
-        ? formatAmountOld(liqBaseNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqBaseNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-    const quoteQty = !liqQuoteNum
-        ? '0'
-        : liqQuoteNum < 0.0001
-        ? liqQuoteNum.toExponential(2)
-        : liqQuoteNum < 2
-        ? liqQuoteNum.toPrecision(3)
-        : liqQuoteNum >= 100000
-        ? formatAmountOld(liqQuoteNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqQuoteNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const baseQty = getFormattedTokenBalance({
+        balance: liqBaseNum,
+        zeroDisplay: '0',
+    });
+
+    const quoteQty = getFormattedTokenBalance({
+        balance: liqQuoteNum,
+        zeroDisplay: '0',
+    });
 
     const usdValueNum = limitOrder.totalValueUSD;
 
-    const usdValueTruncated =
-        usdValueNum === undefined
-            ? undefined
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.001
-            ? usdValueNum.toExponential(2) + ' '
-            : usdValueNum >= 99999
-            ? formatAmountOld(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + ' ';
+    const usdValueTruncated = getFormattedTokenBalance({
+        balance: usdValueNum,
+        suffix: ' ',
+    });
 
-    const usdValueLocaleString =
-        usdValueNum === undefined
-            ? '…'
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.01
-            ? usdValueNum.toPrecision(3)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const usdValueLocaleString = getFormattedTokenBalance({
+        balance: usdValueNum,
+    });
 
     // -----------------------------------------------------------------------------------------
 
@@ -272,33 +237,15 @@ export const useProcessOrder = (
             const invPriceDecimalCorrected =
                 limitOrder.invLimitPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmountOld(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const nonInvertedPriceTruncated = getFormattedTokenBalance({
+                balance: priceDecimalCorrected,
+                zeroDisplay: '0',
+            });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmountOld(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const invertedPriceTruncated = getFormattedTokenBalance({
+                balance: invPriceDecimalCorrected,
+                zeroDisplay: '0',
+            });
 
             const truncatedDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -352,6 +299,7 @@ export const useProcessOrder = (
                 ? askTickPrice
                 : bidTickPrice;
 
+            // TODO: clarify precision 5
             const startPriceDisplay =
                 startPriceDisplayNum === 0
                     ? '0'
@@ -378,6 +326,7 @@ export const useProcessOrder = (
                     ? bidTickInvPrice
                     : askTickInvPrice;
 
+            // TODO: clarify precision 5
             const startPriceDisplayDenomByMoneyness =
                 startPriceDenomByMoneyness === 0
                     ? '0'
@@ -403,6 +352,7 @@ export const useProcessOrder = (
                 ? priceHalfBelow
                 : priceHalfAbove;
 
+            // TODO: clarify precision 5
             const middlePriceDisplay =
                 middlePriceDisplayNum === 0
                     ? '0'
@@ -429,6 +379,7 @@ export const useProcessOrder = (
                     ? 1 / priceHalfBelow
                     : 1 / priceHalfAbove;
 
+            // TODO: clarify precision 5
             const middlePriceDisplayDenomByMoneyness =
                 middlePriceDenomByMoneyness === 0
                     ? '0'
@@ -454,6 +405,7 @@ export const useProcessOrder = (
                 ? bidTickPrice
                 : askTickPrice;
 
+            // TODO: clarify precision 5
             const finishPriceDisplay =
                 finishPriceDisplayNum === 0
                     ? '0'
@@ -487,32 +439,17 @@ export const useProcessOrder = (
             const intialTokenQtyNum = middlePriceDisplayNum * finalTokenQty;
             const invIntialTokenQtyNum =
                 (1 / middlePriceDisplayNum) * finalTokenQty;
-            const intialTokenQtyTruncated =
-                intialTokenQtyNum === 0
-                    ? '0'
-                    : intialTokenQtyNum < 0.0001
-                    ? intialTokenQtyNum.toExponential(2)
-                    : intialTokenQtyNum < 2
-                    ? intialTokenQtyNum.toPrecision(3)
-                    : intialTokenQtyNum >= 100000
-                    ? formatAmountOld(intialTokenQtyNum)
-                    : intialTokenQtyNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            const invIntialTokenQtyTruncated =
-                invIntialTokenQtyNum === 0
-                    ? '0'
-                    : invIntialTokenQtyNum < 0.0001
-                    ? invIntialTokenQtyNum.toExponential(2)
-                    : invIntialTokenQtyNum < 2
-                    ? invIntialTokenQtyNum.toPrecision(3)
-                    : invIntialTokenQtyNum >= 100000
-                    ? formatAmountOld(invIntialTokenQtyNum)
-                    : invIntialTokenQtyNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+
+            const intialTokenQtyTruncated = getFormattedTokenBalance({
+                balance: intialTokenQtyNum,
+                zeroDisplay: '0',
+            });
+
+            const invIntialTokenQtyTruncated = getFormattedTokenBalance({
+                balance: invIntialTokenQtyNum,
+                zeroDisplay: '0',
+            });
+
             setInitialTokenQty(
                 (isBid && !isDenomBase) || (!isBid && isDenomBase)
                     ? intialTokenQtyTruncated

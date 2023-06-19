@@ -74,6 +74,6 @@ const formatSubscript = (balance: number, precision = 3) => {
                 balance * 10 ** (zeros + precision),
             ).toPrecision(precision)}`;
         default:
-            return '...';
+            return '…';
     }
 };

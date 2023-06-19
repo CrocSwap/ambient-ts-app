@@ -1,7 +1,6 @@
 import styles from './RemoveRangeInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-// import { formatAmountOld } from '../../../utils/numbers';
 
 interface IRemoveRangeInfoProps {
     baseTokenSymbol: string;

@@ -1,5 +1,4 @@
 import { formatAmountOld } from '../../../../../../utils/numbers';
-import { getFormattedTokenBalance } from '../../../../../functions/getFormattedTokenBalance';
 
 // TODO: consolidate duplicates of this function
 export const getValueUSD = (value: number): string => {

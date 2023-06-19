@@ -3,6 +3,7 @@ import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
@@ -28,19 +29,8 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         reset,
     } = props;
 
-    function formattedCurrentData(data: number | undefined): string {
-        if (data) {
-            if (data > 2) {
-                return data.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
-            } else {
-                return data.toPrecision(3);
-            }
-        }
-
-        return '-';
+    function formattedCurrentData(data: number | undefined) {
+        return getFormattedTokenBalance({ balance: data, zeroDisplay: '-' });
     }
 
     const tradeData = useAppSelector((state) => state.tradeData);

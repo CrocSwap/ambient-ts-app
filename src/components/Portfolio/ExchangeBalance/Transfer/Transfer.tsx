@@ -33,6 +33,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -75,18 +76,9 @@ export default function Transfer(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
-        ? tokenExchangeDepositsDisplayNum < 0.0001
-            ? tokenExchangeDepositsDisplayNum.toExponential(2)
-            : tokenExchangeDepositsDisplayNum < 2
-            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : // : tokenDexBalanceNum >= 100000
-              // ? formatAmountOld(tokenDexBalanceNum)
-              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenDexBalanceTruncated = getFormattedTokenBalance({
+        balance: tokenExchangeDepositsDisplayNum,
+    });
 
     const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<
         string | undefined

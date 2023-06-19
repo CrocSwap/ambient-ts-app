@@ -15,6 +15,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     pool: topPoolIF;
@@ -96,27 +97,9 @@ export default function PoolCard(props: propsIF) {
                         : displayPrice;
 
                     // TODO: consolidate formatting
-                    const displayPriceWithFormatting: string | undefined =
-                        displayPriceWithInversion === undefined
-                            ? undefined
-                            : displayPriceWithInversion === 0
-                            ? '0.00'
-                            : displayPriceWithInversion < 0.001
-                            ? displayPriceWithInversion.toExponential(2)
-                            : displayPriceWithInversion < 0.5
-                            ? displayPriceWithInversion.toPrecision(3)
-                            : displayPriceWithInversion < 2
-                            ? displayPriceWithInversion.toPrecision(6)
-                            : displayPriceWithInversion >= 100000
-                            ? formatAmountOld(displayPriceWithInversion, 1)
-                            : // ? baseLiqDisplayNum.toExponential(2)
-                              displayPriceWithInversion.toLocaleString(
-                                  undefined,
-                                  {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  },
-                              );
+                    const displayPriceWithFormatting = getFormattedTokenBalance(
+                        { balance: displayPriceWithInversion },
+                    );
 
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {

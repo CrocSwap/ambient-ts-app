@@ -19,6 +19,7 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     position: PositionIF;
@@ -231,33 +232,16 @@ export default function RangeDetails(props: propsIF) {
                     const quoteFeeDisplayNum =
                         positionStats.feesLiqQuoteDecimalCorrected;
 
-                    const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0'
-                        : baseFeeDisplayNum < 0.0001
-                        ? baseFeeDisplayNum.toExponential(2)
-                        : baseFeeDisplayNum < 2
-                        ? baseFeeDisplayNum.toPrecision(3)
-                        : baseFeeDisplayNum >= 100000
-                        ? formatAmountOld(baseFeeDisplayNum)
-                        : // ? baseLiqDisplayNum.toExponential(2)
-                          baseFeeDisplayNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+                    const baseFeeDisplayTruncated = getFormattedTokenBalance({
+                        balance: baseFeeDisplayNum,
+                        zeroDisplay: '0',
+                    });
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-                    const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0'
-                        : quoteFeeDisplayNum < 0.0001
-                        ? quoteFeeDisplayNum.toExponential(2)
-                        : quoteFeeDisplayNum < 2
-                        ? quoteFeeDisplayNum.toPrecision(3)
-                        : quoteFeeDisplayNum >= 100000
-                        ? formatAmountOld(quoteFeeDisplayNum)
-                        : quoteFeeDisplayNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+                    const quoteFeesDisplayTruncated = getFormattedTokenBalance({
+                        balance: quoteFeeDisplayNum,
+                        zeroDisplay: '0',
+                    });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);

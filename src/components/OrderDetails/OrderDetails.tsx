@@ -9,7 +9,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';

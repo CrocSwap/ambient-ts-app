@@ -85,6 +85,7 @@ export const useProcessTransaction = (
             const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
 
+            // TODO: clarify precision 5
             const nonInvertedPriceTruncated =
                 priceDecimalCorrected === 0
                     ? '0.00'
@@ -101,6 +102,7 @@ export const useProcessTransaction = (
                           maximumFractionDigits: 2,
                       });
 
+            // TODO: clarify precision 5
             const invertedPriceTruncated =
                 invPriceDecimalCorrected === 0
                     ? '0.00'

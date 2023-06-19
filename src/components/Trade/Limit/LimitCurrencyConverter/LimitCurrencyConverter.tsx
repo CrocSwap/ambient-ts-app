@@ -38,6 +38,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 // interface for component props
 interface propsIF {
@@ -324,12 +325,10 @@ function LimitCurrencyConverter(props: propsIF) {
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
 
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
-
+        const truncatedTokenBQty = getFormattedTokenBalance({
+            balance: rawTokenBQty,
+            nullDisplay: '',
+        });
         setTokenBInputQty(truncatedTokenBQty);
     };
 
@@ -356,11 +355,10 @@ function LimitCurrencyConverter(props: propsIF) {
                 : limitTickDisplayPrice * parseFloat(input);
         }
 
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
+        const truncatedTokenBQty = getFormattedTokenBalance({
+            balance: rawTokenBQty,
+            nullDisplay: '',
+        });
         handleLimitButtonMessage(parseFloat(input));
 
         setTokenBInputQty(truncatedTokenBQty);
@@ -419,12 +417,10 @@ function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(userSetTokenBToZero ? 0 : rawTokenAQty);
         }
-        const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(3)
-                : truncateDecimals(rawTokenAQty, 2)
-            : '';
-
+        const truncatedTokenAQty = getFormattedTokenBalance({
+            balance: rawTokenAQty,
+            nullDisplay: '',
+        });
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
     };
