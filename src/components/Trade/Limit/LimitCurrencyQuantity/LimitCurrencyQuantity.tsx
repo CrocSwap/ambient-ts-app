@@ -2,6 +2,7 @@
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     disable?: boolean;
@@ -21,18 +22,10 @@ function LimitCurrencyQuantity(props: propsIF) {
     }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (event && fieldId === 'sell') {
-        //     setTokenBInputQty('');
-        // } else if (event && fieldId === 'buy') {
-        //     setTokenAInputQty('');
-        // }
-
         handleChangeEvent(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
-
         setDisplayValue(input);
     };
 
@@ -40,7 +33,6 @@ function LimitCurrencyQuantity(props: propsIF) {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
     };
 
@@ -68,7 +60,7 @@ function LimitCurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>

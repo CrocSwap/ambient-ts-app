@@ -4,13 +4,11 @@ import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-import RemoveRange from '../../../../RemoveRange/RemoveRange';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import {
@@ -35,6 +33,7 @@ import {
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -292,7 +291,8 @@ export default function RangesMenu(props: propsIF) {
             {dropdownRangesMenu}
             {isHarvestModalOpen && (
                 <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
-                    <HarvestPosition
+                    <RangeActionModal
+                        type='Harvest'
                         handleModalClose={handleModalClose}
                         position={position}
                         {...rangeDetailsProps}
@@ -305,7 +305,8 @@ export default function RangesMenu(props: propsIF) {
                     title='Remove Position'
                     noHeader
                 >
-                    <RemoveRange
+                    <RangeActionModal
+                        type='Remove'
                         position={position}
                         handleModalClose={handleModalClose}
                         {...rangeDetailsProps}

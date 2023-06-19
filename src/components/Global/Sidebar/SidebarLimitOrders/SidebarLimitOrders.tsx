@@ -1,4 +1,4 @@
-import styles from './SidebarLimitOrders.module.css';
+import styles from '../SidebarTable.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -89,12 +89,15 @@ export default function SidebarLimitOrders(props: propsIF) {
                             handleClick={handleLimitOrderClick}
                         />
                     ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserConnected && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }
