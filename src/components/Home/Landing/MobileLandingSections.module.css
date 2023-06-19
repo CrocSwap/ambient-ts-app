@@ -1,0 +1,214 @@
+
+
+.main_container{
+
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+    height: 100dvh;
+    width: 100%;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-x: hidden;
+    max-width: 100dvw;
+
+    /* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
+background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));   */
+background: var(--dark1);
+}
+
+.main_container::-webkit-scrollbar{
+    display: none;
+}
+/* hero */
+
+.hero {
+  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
+   url('../../../assets/images/home/home_wallpaper.png') no-repeat
+  center center;
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  
+ height: 100vh;
+ margin-top: 5rem !important;
+ gap: 1rem;
+
+
+padding: 0 2rem;
+
+
+}
+
+.hero img {
+  width: 100%;
+  max-width: 70dvw; 
+  height: auto;
+}
+
+.tagline{
+  font-weight: 100;
+  max-width: 780px;
+  font-size: 24px;
+  text-align: start;
+  
+}
+
+
+
+
+
+/* end of hero */
+.mobile_card {
+    height: 100dvh;
+
+    /* background: var(--dark2);  */
+/* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
+background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 12px 0;
+
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    scroll-snap-align: center;
+    align-items: center;
+    
+    
+  }
+
+  
+  .mobile_card:nth-of-type(2){
+  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
+   url( '../../../assets/images/home/home2.png') no-repeat
+  center center;
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+}
+  .mobile_card:nth-of-type(3){
+  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
+   url( '../../../assets/images/home/home3.png') no-repeat
+  center center;
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+}
+  .mobile_card:nth-of-type(4){
+  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
+   url( '../../../assets/images/home/home4.png') no-repeat
+  center center;
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+}
+  .mobile_card:nth-of-type(5){
+  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
+   url( '../../../assets/images/home/home2.png') no-repeat
+  center center;
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+}
+
+.mobile_card .scroll_button{
+    position: absolute;
+    bottom: 20px;
+    background: transparent;
+    outline: none;
+    border: none;
+    color: white;
+}
+
+.mobile_card:not(:last-of-type){
+      scroll-snap-align: center;
+
+  }
+.mobile_card{
+  text-align: center;
+}
+ 
+  /* .mobile_card_img_container_left{
+    display: flex;
+    justify-content: flex-start;
+
+    
+  }
+  .mobile_card_img_container_right{
+    display: flex;
+    justify-content: flex-end;
+  } */
+
+  .smaller_image{
+    width: 160px !important;
+  }
+  .mobile_card h1 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+  
+  .mobile_card h2 {
+    font-size: 20px;
+    font-weight: 200;
+    color: var(--text1);
+    margin-bottom: 10px;
+  }
+
+  
+  .mobile_card p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text2);
+    font-weight: 100;
+  }
+
+
+  /* footer */
+
+  .footer_section{
+    width: 100%;
+    height: 100%;
+
+    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../../assets/images/home/home3.png') no-repeat center center
+    ;
+    background: var(--dark1);
+    
+    
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    padding-top: 6rem;
+    background-size: cover;
+  }
+
+ .investors{
+  background: radial-gradient(ellipse at top, var(--dark1), transparent),         
+       radial-gradient(ellipse at bottom, var(--dark3), transparent);
+ }
+
+ .investors h3, .pools h3{
+  color: var(--text3)
+ }
