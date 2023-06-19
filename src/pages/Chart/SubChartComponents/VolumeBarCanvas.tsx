@@ -114,7 +114,6 @@ export default function VolumeBarCanvas(props: propsIF) {
             style={{
                 position: 'relative',
                 height: '50%',
-                top: '50%',
                 marginBottom: '0',
                 marginTop: 'auto',
             }}
