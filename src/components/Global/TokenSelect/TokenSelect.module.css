@@ -11,11 +11,12 @@
     outline: none;
     border: none;
     border-radius: var(--border-radius);
+    padding: 0 8px;
 }
 
 .main_container:hover,
 .main_container:focus-visible {
-    background: var(--dark1);
+    background: var(--dark2);
 
     cursor: pointer;
 }
