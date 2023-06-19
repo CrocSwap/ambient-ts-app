@@ -24,6 +24,8 @@ interface MessageInputProps {
         room: string,
         ensName: string,
         walletID: string | null,
+        mentionedName: string | null,
+        mentionedWalletID: string | null,
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
@@ -93,24 +95,25 @@ export default function MessageInput(props: MessageInputProps) {
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
         setMessage('');
+        setMentUser(null);
+        setPossibleMentUser(null);
         dontShowEmojiPanel();
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
-        console.log('..............................................');
-        console.log(mentPanelActive);
         if (e.key === 'Enter') {
             // send msg if ment panel is not active
             if (!mentPanelActive) {
                 handleSendMsg(e.target.value, roomId);
+                setMentUser(null);
+                setPossibleMentUser(null);
                 setMessage('');
                 dontShowEmojiPanel();
-                setPossibleMentUser(null);
             }
             // assign user for ment
             else {
-                console.log('assigning user for ment');
+                console.log('>>>>>>>>>>>>>>>>>assigning user for ment');
                 setMentUser(possibleMentUser);
 
                 const reg = /@([^\s]*)/g;
@@ -128,18 +131,18 @@ export default function MessageInput(props: MessageInputProps) {
             e.preventDefault();
             if (possibleMentUser === null) {
                 setPossibleMentUser(
-                    props.users[
-                        e.key === 'ArrowUp' ? props.users.length - 1 : 0
+                    filteredUsers[
+                        e.key === 'ArrowUp' ? filteredUsers.length - 1 : 0
                     ],
                 );
             } else {
-                const index = props.users.indexOf(possibleMentUser);
+                const index = filteredUsers.indexOf(possibleMentUser);
                 const targetIndex = e.key === 'ArrowUp' ? index - 1 : index + 1;
                 setPossibleMentUser(
-                    props.users[
+                    filteredUsers[
                         targetIndex < 0
-                            ? props.users.length - 1
-                            : targetIndex == props.users.length
+                            ? filteredUsers.length - 1
+                            : targetIndex == filteredUsers.length
                             ? 0
                             : targetIndex
                     ],
@@ -160,6 +163,10 @@ export default function MessageInput(props: MessageInputProps) {
         // }else if(e.key === 'ArrowDown' && mentPanelActive) {
         //     e.preventDefault();
         // }
+
+        console.log('..............................................');
+        console.log('mentPanelActive', mentPanelActive);
+        console.log('possibleMentUser', possibleMentUser);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,6 +209,8 @@ export default function MessageInput(props: MessageInputProps) {
                 roomId,
                 props.ensName,
                 address,
+                mentUser ? userLabelForFilter(mentUser) : null,
+                mentUser ? mentUser.walletID : null,
             );
         }
     };
@@ -210,12 +219,18 @@ export default function MessageInput(props: MessageInputProps) {
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
 
-        console.log(possibleMentUser);
-
-        if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
-            setMentPanelActive(true);
+        // if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
+        if (e.target.value.indexOf('@') !== -1) {
+            if (possibleMentUser === null) {
+                setMentPanelActive(true);
+            }
             // setMentPanelQueryStr();
-            setFilteredUsers(filterUsers(e.target.value.split('@')[1]));
+            const filteredUsers = filterUsers(e.target.value.split('@')[1]);
+            setFilteredUsers(filteredUsers);
+            if (filteredUsers.length < 1) {
+                setPossibleMentUser(null);
+                setMentPanelActive(false);
+            }
         } else {
             if (mentPanelActive) setMentPanelActive(false);
             setPossibleMentUser(null);

@@ -117,6 +117,8 @@ const useChatSocket = (
         room: string,
         ensName: string,
         walletID: string | null,
+        mentionedName: string | null,
+        mentionedWalletID: string | null,
     ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
@@ -124,6 +126,9 @@ const useChatSocket = (
             roomInfo: room,
             ensName: ensName,
             walletID: walletID,
+            mentionedName: mentionedName,
+            isMentionMessage: mentionedName ? true : false,
+            mentionedWalletID,
         });
     }
 
