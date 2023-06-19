@@ -11,7 +11,6 @@ import {
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
-
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
