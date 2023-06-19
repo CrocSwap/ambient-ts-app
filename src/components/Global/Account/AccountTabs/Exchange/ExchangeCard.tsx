@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     token?: TokenIF;
@@ -87,13 +88,13 @@ export default function ExchangeCard(props: propsIF) {
         >
             <div className={styles.token_icon}>
                 <img
-                    src={
+                    src={uriToHttp(
                         tokenFromMap?.logoURI
                             ? tokenFromMap?.logoURI
                             : token?.logoURI
                             ? token?.logoURI
-                            : 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png'
-                    }
+                            : 'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png',
+                    )}
                     alt=''
                     width='30px'
                 />

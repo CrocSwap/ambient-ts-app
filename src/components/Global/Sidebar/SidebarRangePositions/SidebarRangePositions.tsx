@@ -1,4 +1,4 @@
-import styles from './SidebarRangePositions.module.css';
+import styles from '../SidebarTable.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
@@ -86,12 +86,15 @@ export default function SidebarRangePositions(props: propsIF) {
                             handleClick={handleRangePositionClick}
                         />
                     ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserConnected && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }

@@ -51,7 +51,7 @@ export default function SidebarAccordion(props: propsIF) {
 
     const openStateContent = (
         <motion.div
-            className={styles.accordion_container}
+            className={styles.accordion_content}
             key='content'
             initial='collapsed'
             animate='open'
@@ -61,13 +61,9 @@ export default function SidebarAccordion(props: propsIF) {
                 collapsed: { opacity: 0, height: 0 },
             }}
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 1] }}
+            onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
         >
-            <div
-                className={styles.sidebar_item_content}
-                onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
-            >
-                {item.data}
-            </div>
+            {item.data}
         </motion.div>
     );
 
@@ -109,14 +105,21 @@ export default function SidebarAccordion(props: propsIF) {
         );
 
     return (
-        <>
+        <div className={styles.accordion_container}>
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
                 onClick={() => handleAccordionClick()}
             >
                 <div>
-                    <div className={styles.sidebar_link}>
+                    <div
+                        className={styles.sidebar_link}
+                        style={{
+                            justifyContent: !sidebar.isOpen
+                                ? 'center'
+                                : 'flex-start',
+                        }}
+                    >
                         {sidebar.isOpen && (
                             <MdPlayArrow
                                 size={12}
@@ -132,6 +135,6 @@ export default function SidebarAccordion(props: propsIF) {
             <AnimatePresence>
                 {isOpen && accordionContentToShow}
             </AnimatePresence>
-        </>
+        </div>
     );
 }

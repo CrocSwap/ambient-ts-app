@@ -75,12 +75,6 @@ export default function SoloTokenImport(props: propsIF) {
                 title='Acknowledge'
                 action={() => chooseToken(customToken, true)}
             />
-            {/* <div className={styles.import_button}>
-                
-                <button onClick={() => chooseToken(customToken, true)}>
-                    Acknowledge
-                </button>
-            </div> */}
         </div>
     );
 }
