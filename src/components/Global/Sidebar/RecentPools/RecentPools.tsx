@@ -1,5 +1,5 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import styles from './RecentPools.module.css';
+import styles from '../SidebarTable.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { memo, useContext } from 'react';

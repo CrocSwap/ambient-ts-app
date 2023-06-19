@@ -11,6 +11,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { exponentialNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -44,29 +45,28 @@ export default function LimitRate(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const limitTick = tradeData.limitTick;
+    const isDenomBase: boolean = tradeData.isDenomBase;
+    const limitTick: number | undefined = tradeData.limitTick;
 
-    const increaseTick = () => {
+    const increaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick + gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const decreaseTick = () => {
+    const decreaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick - gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const handleLimitChange = (value: string) => {
+    const handleLimitChange = (value: string): void => {
         IS_LOCAL_ENV && console.debug({ value });
         const limitNonDisplay = isDenomBase
             ? pool?.fromDisplayPrice(parseFloat(value))
             : pool?.fromDisplayPrice(1 / parseFloat(value));
-
         limitNonDisplay?.then((limit) => {
             const pinnedTick: number = isSellTokenBase
                 ? pinTickLower(limit, gridSize)
@@ -75,70 +75,6 @@ export default function LimitRate(props: propsIF) {
             setPriceInputFieldBlurred(true);
         });
     };
-
-    const rateInput = (
-        <div className={styles.token_amount}>
-            <input
-                id={`${fieldId}-quantity`}
-                onFocus={() => {
-                    const limitRateInputField = document.getElementById(
-                        'limit-rate-quantity',
-                    );
-
-                    (limitRateInputField as HTMLInputElement).select();
-                }}
-                onChange={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    isValid ? setDisplayPrice(event.target.value) : null;
-                }}
-                className={styles.currency_quantity}
-                placeholder='0.0'
-                onBlur={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    const targetValue = event.target.value;
-                    if (isValid && targetValue !== previousDisplayPrice) {
-                        handleLimitChange(targetValue.replaceAll(',', ''));
-                        setPreviousDisplayPrice(targetValue);
-                    }
-                }}
-                value={displayPrice === 'NaN' ? '...' : displayPrice}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
-                disabled={disable}
-                tabIndex={0}
-                aria-label='Limit Price.'
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='all'
-            />
-        </div>
-    );
-
-    const buttonControls = (
-        <div className={styles.button_controls}>
-            <button
-                onClick={!isDenomBase ? increaseTick : decreaseTick}
-                aria-label='Increase limit tick.'
-            >
-                <HiPlus />
-            </button>
-            <button>
-                <HiMinus
-                    onClick={!isDenomBase ? decreaseTick : increaseTick}
-                    aria-label='Decrease limit tick.'
-                />
-            </button>
-        </div>
-    );
 
     return (
         <div
@@ -158,8 +94,91 @@ export default function LimitRate(props: propsIF) {
                 <p>Price</p>
             </span>
             <div className={styles.swap_input} id='limit_rate'>
-                {rateInput}
-                {buttonControls}
+                <div className={styles.token_amount}>
+                    <input
+                        id={`${fieldId}-quantity`}
+                        onFocus={() => {
+                            const limitRateInputField = document.getElementById(
+                                'limit-rate-quantity',
+                            );
+
+                            (limitRateInputField as HTMLInputElement).select();
+                        }}
+                        onChange={(event) => {
+                            const isValid =
+                                event.target.value === '' ||
+                                event.target.value === '.' ||
+                                event.target.validity.valid;
+                            const input = event.target.value.startsWith('.')
+                                ? '0' + event.target.value
+                                : event.target.value;
+                            isValid ? setDisplayPrice(input) : null;
+                        }}
+                        className={styles.currency_quantity}
+                        placeholder='0.0'
+                        onBlur={(event) => {
+                            const isValid =
+                                event.target.value === '' ||
+                                event.target.validity.valid;
+                            const targetValue = event.target.value;
+                            if (
+                                isValid &&
+                                targetValue !== previousDisplayPrice
+                            ) {
+                                // current value of input allowing sanitation
+                                let targetValPositive = targetValue.trim();
+                                // fn to determine if input has invalid leading char
+                                const checkFirstCharValid = (): boolean => {
+                                    return (
+                                        targetValPositive.startsWith('-') ||
+                                        targetValPositive.startsWith('+') ||
+                                        targetValPositive.startsWith(',') ||
+                                        targetValPositive.startsWith('%') ||
+                                        targetValPositive.startsWith('e') ||
+                                        targetValPositive.startsWith('E')
+                                    );
+                                };
+                                // remove all leading invalid character from input string
+                                while (checkFirstCharValid()) {
+                                    targetValPositive =
+                                        targetValPositive.substring(1);
+                                }
+                                handleLimitChange(
+                                    targetValPositive.replaceAll(',', ''),
+                                );
+                                setPreviousDisplayPrice(targetValPositive);
+                            }
+                        }}
+                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        type='text'
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        pattern={exponentialNumRegEx.source}
+                        disabled={disable}
+                        tabIndex={0}
+                        aria-label='Limit Price.'
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                    />
+                </div>
+                <div className={styles.button_controls}>
+                    <button
+                        onClick={!isDenomBase ? increaseTick : decreaseTick}
+                        aria-label='Increase limit tick.'
+                    >
+                        <HiPlus />
+                    </button>
+                    <button>
+                        <HiMinus
+                            onClick={!isDenomBase ? decreaseTick : increaseTick}
+                            aria-label='Decrease limit tick.'
+                        />
+                    </button>
+                </div>
             </div>
         </div>
     );

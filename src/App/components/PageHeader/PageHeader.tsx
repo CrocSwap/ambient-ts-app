@@ -233,7 +233,8 @@ const PageHeader = function () {
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
-            document.title = 'Home ~ Ambient';
+            document.title =
+                'Ambient | A New Zero-to-One Decentralized Trading Protocol';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
