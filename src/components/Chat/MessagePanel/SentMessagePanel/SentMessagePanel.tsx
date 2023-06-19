@@ -378,9 +378,6 @@ function SentMessagePanel(props: SentMessageProps) {
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
                             showAvatar={showAvatar}
-                            connectedAccountActive={
-                                props.connectedAccountActive
-                            }
                         />
                         {!isPosition && mentionedMessage()}
                     </div>
