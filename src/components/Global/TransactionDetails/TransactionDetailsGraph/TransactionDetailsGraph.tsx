@@ -84,7 +84,9 @@ export default function TransactionDetailsGraph(
     const [lineSeries, setLineSeries] = useState<any>();
     const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
-    const [triangle, setTriangle] = useState();
+    const [limitPriceLine, setLimitPriceLine] = useState();
+    const [triangleRange, setTriangleRange] = useState();
+    const [triangleLimit, setTriangleLimit] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
 
     const [yAxis, setYaxis] = useState<any>();
@@ -254,7 +256,39 @@ export default function TransactionDetailsGraph(
                 return priceLine;
             });
 
-            const triangle = d3fc
+            const limitPriceLine = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.y)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
+
+            limitPriceLine.decorate((selection: any, d: any) => {
+                if (d[0].x?.timeFirstMint) {
+                    selection.nodes().forEach((context: any) => {
+                        d3.select(context).attr(
+                            'transform',
+                            'translate(' +
+                                scaleData.xScale(d[0].x?.timeFirstMint * 1000) +
+                                ',' +
+                                scaleData?.yScale(d[0].y) +
+                                ')',
+                        );
+                    });
+                }
+
+                selection.enter().select('g.right-handle').remove();
+                selection
+                    .enter()
+                    .select('line')
+                    .attr('class', 'limitPriceLine');
+                selection.select('g.left-handle').remove();
+            });
+
+            setLimitPriceLine(() => {
+                return limitPriceLine;
+            });
+
+            const triangleRange = d3fc
                 .seriesSvgPoint()
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
@@ -286,8 +320,35 @@ export default function TransactionDetailsGraph(
                     });
                 });
 
-            setTriangle(() => {
-                return triangle;
+            setTriangleRange(() => {
+                return triangleRange;
+            });
+
+            const triangleLimit = d3fc
+                .seriesSvgPoint()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .crossValue(() => {
+                    return scaleData.xScale.domain()[0];
+                })
+                .mainValue((d: any) => d.y)
+                .size(90)
+                .type(d3.symbolTriangle)
+                .decorate((context: any, d: any) => {
+                    context.nodes().forEach((selection: any) => {
+                        d3.select(selection).attr(
+                            'transform',
+                            'translate(' +
+                                scaleData.xScale(d[0].x?.timeFirstMint * 1000) +
+                                ',' +
+                                scaleData?.yScale(d[0].y) +
+                                ') rotate(90)',
+                        );
+                    });
+                });
+
+            setTriangleLimit(() => {
+                return triangleLimit;
             });
 
             const crossPoint = d3fc
@@ -612,7 +673,9 @@ export default function TransactionDetailsGraph(
             lineSeries !== undefined &&
             crossPoint !== undefined &&
             horizontalBand !== undefined &&
-            triangle !== undefined &&
+            triangleRange !== undefined &&
+            triangleLimit !== undefined &&
+            limitPriceLine !== undefined &&
             priceLine !== undefined
         ) {
             drawChart(
@@ -620,20 +683,24 @@ export default function TransactionDetailsGraph(
                 scaleData,
                 lineSeries,
                 priceLine,
+                limitPriceLine,
                 crossPoint,
                 horizontalBand,
-                triangle,
+                triangleRange,
+                triangleLimit,
             );
         }
     }, [
         scaleData,
         lineSeries,
         priceLine,
+        limitPriceLine,
         graphData,
         crossPoint,
         transactionType,
         horizontalBand,
-        triangle,
+        triangleRange,
+        triangleLimit,
     ]);
 
     const drawChart = useCallback(
@@ -642,9 +709,11 @@ export default function TransactionDetailsGraph(
             scaleData: any,
             lineSeries: any,
             priceLine: any,
+            limitPriceLine: any,
             crossPoint: any,
             horizontalBand: any,
-            triangle: any,
+            triangleRange: any,
+            triangleLimit: any,
         ) => {
             if (graphData.length > 0) {
                 const buffer =
@@ -679,7 +748,9 @@ export default function TransactionDetailsGraph(
                 const horizontalBandData: any[] = [];
 
                 const rangelinesJoin = d3fc.dataJoin('g', 'rangeLines');
-                const triangleJoin = d3fc.dataJoin('g', 'triangle');
+                const limitPriceLineJoin = d3fc.dataJoin('g', 'limitPriceLine');
+                const triangleRangeJoin = d3fc.dataJoin('g', 'triangleRange');
+                const triangleLimitJoin = d3fc.dataJoin('g', 'triangleLimit');
 
                 d3.select(d3PlotGraph.current).on(
                     'measure',
@@ -702,25 +773,26 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            horizontalBandData[0] = [
-                                (
-                                    !isAccountView
-                                        ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.bidTickInvPriceDecimalCorrected
-                                    : tx.bidTickPriceDecimalCorrected,
-                                (
-                                    !isAccountView
-                                        ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.askTickInvPriceDecimalCorrected
-                                    : tx.askTickPriceDecimalCorrected,
+                            const limitLine = [
+                                {
+                                    y: (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.askTickInvPriceDecimalCorrected
+                                        : tx.askTickPriceDecimalCorrected,
+
+                                    x: tx,
+                                },
                             ];
 
-                            horizontalBandJoin(svg, [horizontalBandData]).call(
-                                horizontalBand,
+                            limitPriceLineJoin(svg, [limitLine]).call(
+                                limitPriceLine,
+                            );
+
+                            triangleLimitJoin(svg, [limitLine]).call(
+                                triangleLimit,
                             );
                         }
 
@@ -764,8 +836,8 @@ export default function TransactionDetailsGraph(
                                     priceLine,
                                 );
 
-                                triangleJoin(svg, [triangleData]).call(
-                                    triangle,
+                                triangleRangeJoin(svg, [triangleData]).call(
+                                    triangleRange,
                                 );
                             }
                         }
