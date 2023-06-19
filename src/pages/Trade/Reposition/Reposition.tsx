@@ -759,8 +759,16 @@ function Reposition() {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={position?.lowRangeDisplayInBase}
-                    currentMaxPrice={position?.highRangeDisplayInBase}
+                    currentMinPrice={
+                        isDenomBase
+                            ? position?.lowRangeDisplayInBase
+                            : position?.lowRangeDisplayInQuote
+                    }
+                    currentMaxPrice={
+                        isDenomBase
+                            ? position?.highRangeDisplayInBase
+                            : position?.highRangeDisplayInQuote
+                    }
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (
