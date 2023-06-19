@@ -128,7 +128,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '0'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
@@ -138,7 +139,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '∞'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
         : '...';
 
     const isDenomTokenA =
