@@ -440,16 +440,7 @@ function TradeTabs2(props: propsIF) {
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div
-            ref={tabComponentRef}
-            className={styles.trade_tab_container}
-            style={{
-                padding:
-                    expandTradeTable || showActiveMobileComponent
-                        ? '0px'
-                        : '8px',
-            }}
-        >
+        <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <div
                 className={
                     !expandTradeTable
