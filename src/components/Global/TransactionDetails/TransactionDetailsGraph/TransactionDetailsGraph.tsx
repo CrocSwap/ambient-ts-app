@@ -263,12 +263,12 @@ export default function TransactionDetailsGraph(
                 .yScale(scaleData?.yScale);
 
             limitPriceLine.decorate((selection: any, d: any) => {
-                if (d[0].x?.timeFirstMint) {
+                if (d[0].x) {
                     selection.nodes().forEach((context: any) => {
                         d3.select(context).attr(
                             'transform',
                             'translate(' +
-                                scaleData.xScale(d[0].x?.timeFirstMint * 1000) +
+                                scaleData.xScale(d[0].x * 1000) +
                                 ',' +
                                 scaleData?.yScale(d[0].y) +
                                 ')',
@@ -336,14 +336,16 @@ export default function TransactionDetailsGraph(
                 .type(d3.symbolTriangle)
                 .decorate((context: any, d: any) => {
                     context.nodes().forEach((selection: any) => {
-                        d3.select(selection).attr(
-                            'transform',
-                            'translate(' +
-                                scaleData.xScale(d[0].x?.timeFirstMint * 1000) +
-                                ',' +
-                                scaleData?.yScale(d[0].y) +
-                                ') rotate(90)',
-                        );
+                        if (d[0].x) {
+                            d3.select(selection).attr(
+                                'transform',
+                                'translate(' +
+                                    scaleData.xScale(d[0].x * 1000) +
+                                    ',' +
+                                    scaleData?.yScale(d[0].y) +
+                                    ') rotate(90)',
+                            );
+                        }
                     });
                 });
 
@@ -773,27 +775,48 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            const limitLine = [
-                                {
-                                    y: (
-                                        !isAccountView
-                                            ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.askTickInvPriceDecimalCorrected
-                                        : tx.askTickPriceDecimalCorrected,
+                            if (tx.claimableLiq > 0) {
+                                const limitLine = [
+                                    {
+                                        y: (
+                                            !isAccountView
+                                                ? denominationsInBase
+                                                : !isBaseTokenMoneynessGreaterOrEqual
+                                        )
+                                            ? tx.askTickInvPriceDecimalCorrected
+                                            : tx.askTickPriceDecimalCorrected,
 
-                                    x: tx,
-                                },
-                            ];
+                                        x: tx.timeFirstMint
+                                            ? tx.timeFirstMint
+                                            : tx.txTime,
+                                    },
+                                ];
 
-                            limitPriceLineJoin(svg, [limitLine]).call(
-                                limitPriceLine,
-                            );
+                                limitPriceLineJoin(svg, [limitLine]).call(
+                                    limitPriceLine,
+                                );
 
-                            triangleLimitJoin(svg, [limitLine]).call(
-                                triangleLimit,
-                            );
+                                triangleLimitJoin(svg, [limitLine]).call(
+                                    triangleLimit,
+                                );
+                            } else {
+                                crossPointJoin(svg, [
+                                    [
+                                        {
+                                            x: tx.timeFirstMint
+                                                ? tx.timeFirstMint * 1000
+                                                : tx.txTime * 1000,
+                                            y: (
+                                                !isAccountView
+                                                    ? denominationsInBase
+                                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                            )
+                                                ? tx.askTickInvPriceDecimalCorrected
+                                                : tx.askTickPriceDecimalCorrected,
+                                        },
+                                    ],
+                                ]).call(crossPoint);
+                            }
                         }
 
                         if (
