@@ -102,26 +102,21 @@ export default function TransactionSettings(props: propsIF) {
                     />
                 </section>
                 <div className={styles.button_container}>
-                    {module !== 'Limit Order' ? (
-                        <Button
-                            title={
-                                currentSlippage > 0
-                                    ? 'Submit'
-                                    : 'Enter a Valid Slippage'
-                            }
-                            action={updateSettings}
-                            disabled={!(currentSlippage > 0)}
-                            flat
-                            customAriaLabel={confirmAriaLabel}
-                        />
-                    ) : (
-                        <Button
-                            title='Submit Settings'
-                            action={updateSettings}
-                            flat
-                            customAriaLabel={confirmAriaLabel}
-                        />
-                    )}
+                    <Button
+                        title={
+                            module === 'Limit Order'
+                                ? 'Submit Settings'
+                                : currentSlippage > 0
+                                ? 'Submit'
+                                : 'Enter a Valid Slippage'
+                        }
+                        action={updateSettings}
+                        disabled={
+                            module !== 'Limit Order' && currentSlippage <= 0
+                        }
+                        flat
+                        customAriaLabel={confirmAriaLabel}
+                    />
                 </div>
             </div>
         </section>

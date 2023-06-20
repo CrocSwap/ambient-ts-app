@@ -60,7 +60,7 @@
     cursor: pointer;
   
     width: 42px;
-   height: 25px;
+    height: 25px;
 
  
     border: 1px solid var(--dark3);
@@ -70,7 +70,7 @@
     line-height: var(--body-lh);
     color: var(--text1);
 
-    padding: 5px 8px;
+    padding: 0.25rem 0.5rem;
     transition: all var(--animation-speed) ease-in-out;
 
 
