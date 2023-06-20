@@ -10,6 +10,7 @@ const useChatSocket = (
     isChatOpen = true,
     address?: string,
     ensName?: string | null,
+    onlyMentions = false,
 ) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();

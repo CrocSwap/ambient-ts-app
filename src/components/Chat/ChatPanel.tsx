@@ -16,6 +16,7 @@ import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import Toggle2 from '../Global/Toggle/Toggle2';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -23,6 +24,7 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
+    const [onlyMentions, setOnlyMentions] = useState(false);
     const { isFullScreen } = props;
     const {
         chat: {
@@ -496,10 +498,34 @@ function ChatPanel(props: propsIF) {
 
     return (
         <div
-            className={styles.main_container}
+            className={`${styles.main_container} ${
+                isChatOpen ? styles.chat_open : ''
+            }`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
+            {isChatOpen && (
+                <div className={styles.only_mentions_wrapper}>
+                    <span
+                        className={`${styles.only_mentions_text} ${
+                            onlyMentions ? styles.only_mentions_text_active : ''
+                        }`}
+                    >
+                        Only Mentions{' '}
+                    </span>
+                    <span className={styles.only_mentions_toggle_wrapper}>
+                        <Toggle2
+                            key={'only_mentions_toggle'}
+                            isOn={onlyMentions}
+                            disabled={false}
+                            handleToggle={() => setOnlyMentions(!onlyMentions)}
+                            id='only_mentions_toggle_id'
+                            aria-label={'only_mentions_toggle_aria_label'}
+                        />
+                    </span>
+                </div>
+            )}
+
             <div
                 className={styles.modal_body}
                 style={{ height: contentHeight, width: '100%' }}
