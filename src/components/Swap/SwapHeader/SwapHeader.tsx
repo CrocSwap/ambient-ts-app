@@ -64,13 +64,13 @@ export default function SwapHeader(props: propsIF) {
     const tradeRouteHeader = (
         <ContentHeader>
             <AiOutlineShareAlt
-                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 id='swap_share_button'
+                className={styles.share_button}
                 role='button'
+                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
                 tabIndex={0}
                 aria-label='Share button'
             />
-
             <div
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
@@ -78,12 +78,11 @@ export default function SwapHeader(props: propsIF) {
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
             </div>
-
             <IconWithTooltip title='Settings' placement='left'>
                 <div
                     onClick={openModal}
                     style={{ cursor: 'pointer' }}
-                    className={`${styles.settings_container} ${styles.settings_icon}`}
+                    className={`${styles.settings_icon}`}
                     id='swap_settings_button'
                     role='button'
                     tabIndex={0}
@@ -98,8 +97,8 @@ export default function SwapHeader(props: propsIF) {
     const mainHeader = (
         <ContentHeader>
             <button
-                className={styles.share_button}
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
             >
                 <AiOutlineShareAlt
                     id='swap_share_button'

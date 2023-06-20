@@ -1,11 +1,8 @@
-.settings_container svg {
-    margin: 0 5px;
-}
-
 .share_button {
     background: transparent;
     outline: none;
     border: none;
+    height: 20px;
 }
 .settings_icon,
 .share_button {
