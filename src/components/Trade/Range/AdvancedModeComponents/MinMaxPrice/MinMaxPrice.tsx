@@ -16,6 +16,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -30,8 +31,6 @@ interface MinMaxPriceIF {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    // setRangeLowTick: Dispatch<SetStateAction<number>>;
-    // setRangeHighTick: Dispatch<SetStateAction<number>>;
     maxPrice: number;
     minPrice: number;
     setMaxPrice: Dispatch<SetStateAction<number>>;
@@ -50,8 +49,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        // setRangeLowTick,
-        // setRangeHighTick,
         maxPrice,
         minPrice,
         setMaxPrice,
@@ -85,9 +82,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+            const isValid = exponentialNumRegEx.test(input);
+
             if (isValid) {
                 handleSetMinTarget(targetValue);
             }
@@ -98,9 +98,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+
+            const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 handleSetMaxTarget(targetValue);
             }
@@ -120,32 +123,23 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         if (maxPrice !== undefined && minPrice !== undefined) {
             const high = maxPrice;
             const low = minPrice;
-
             setMaxPriceInputString(
                 high !== undefined ? high.toString() : '0.0',
             );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
-
-            // lowBoundOnBlur();
-            // highBoundOnBlur();
         }
     }, [maxPrice, minPrice]);
 
     const increaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick + tickSize);
-
         dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
     };
     const increaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick + tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
     };
     const decreaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick - tickSize);
         dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
     };
     const decreaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick - tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
     };
 
