@@ -554,11 +554,6 @@ function Transactions(props: propsIF) {
             className={`${styles.main_list_container} ${
                 expandTradeTable && styles.main_list_expanded
             }`}
-            style={
-                isCandleSelected && !expandTradeTable && !showViewMoreButton
-                    ? { height: '80%' }
-                    : undefined
-            }
         >
             <div>{headerColumnsDisplay}</div>
 
