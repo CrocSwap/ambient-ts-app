@@ -1,3 +1,4 @@
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 import styles from './AmountAndCurrencyDisplay.module.css';
 
 interface AmountAndCurrencyDisplayProps {
@@ -18,14 +19,13 @@ export default function AmountAndCurrencyDisplay(
                 id={`${fieldId}-edit-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                // onChange={(e) => updateOtherQuantity(e)}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
                 defaultValue={qty}
             />

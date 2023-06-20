@@ -197,7 +197,7 @@ function Range() {
     const displayPriceString =
         displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
             ? '…'
-            : displayPriceWithDenom < 0.00001
+            : displayPriceWithDenom < 0.0001
             ? displayPriceWithDenom.toExponential(2)
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toPrecision(3)
@@ -1079,7 +1079,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1097,7 +1097,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1115,7 +1115,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1133,7 +1133,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,

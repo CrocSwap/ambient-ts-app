@@ -1,7 +1,7 @@
 import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
-// import { GoCircleSlash } from 'react-icons/go';
+import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     value: string;
@@ -29,17 +29,14 @@ function RangeCurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         updateOtherQuantity(event);
-
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
-
         setDisplayValue(input);
     };
 
     const disabledContent = (
         <div className={styles.overlay_container}>
-            {/* <GoCircleSlash size={15} /> */}
             <div className={styles.disabled_text}>
                 The market is outside your specified range.
                 <div className={styles.warning_text}>
@@ -53,7 +50,6 @@ function RangeCurrencyQuantity(props: propsIF) {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
     };
     return (
@@ -81,7 +77,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>

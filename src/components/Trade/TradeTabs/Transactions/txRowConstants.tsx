@@ -285,7 +285,7 @@ export const txRowConstants = (props: Props) => {
         (tx.entityType.toLowerCase() === 'limitorder'
             ? '/trade/limit/'
             : tx.entityType.toLowerCase() === 'liqchange'
-            ? '/trade/range/'
+            ? '/trade/pool/'
             : '/trade/market/') +
         formSlugForPairParams(tx.chainId, tx.quote, tx.base);
 

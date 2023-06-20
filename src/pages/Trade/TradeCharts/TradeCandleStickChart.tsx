@@ -725,9 +725,19 @@ function TradeCandleStickChart(props: propsIF) {
                 const d1 = domainCenter + newDiffDomain / 2;
                 const d0 = domainCenter - newDiffDomain / 2;
 
-                const fethcingCandles = d1 > Date.now() ? Date.now() : d1;
+                const domainRight =
+                    domain[1] < Date.now()
+                        ? d1
+                        : Date.now() + (newDiffDomain / 10) * 3;
+                const domainLeft =
+                    domain[1] < Date.now()
+                        ? d0
+                        : Date.now() - (newDiffDomain / 10) * 7;
 
-                scaleData.xScale.domain([d0, d1]);
+                const fethcingCandles =
+                    domainRight > Date.now() ? Date.now() : domainRight;
+
+                scaleData.xScale.domain([domainLeft, domainRight]);
 
                 const diffResetLeft = Math.abs(
                     Date.now() - scaleData.xScaleCopy.domain()[0],
@@ -756,9 +766,9 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const firstTime = Math.floor(fethcingCandles / 1000);
 
-                if (firstTime > minDate && fethcingCandles > d0) {
+                if (firstTime > minDate && fethcingCandles > domainLeft) {
                     const nCandle = Math.floor(
-                        (fethcingCandles - d0) / (period * 1000),
+                        (fethcingCandles - domainLeft) / (period * 1000),
                     );
 
                     setCandleScale((prev: candleScale) => {

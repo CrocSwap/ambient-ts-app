@@ -162,11 +162,15 @@ function Transactions(props: propsIF) {
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1600px)');
-    const max1700px = useMediaQuery('(max-width: 1800px)');
+    const showTimestamp = useMediaQuery('(min-width: 1000px)');
 
-    const showColumns =
-        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
+    const showColumns = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1850px)')
+            : useMediaQuery('(max-width: 1500px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1850px)')
+        : useMediaQuery('(max-width: 1600px)');
 
     const getCandleData = () =>
         crocEnv &&
@@ -249,7 +253,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: !showColumns,
+            show: showTimestamp,
 
             slug: 'time',
             sortable: true,
@@ -449,6 +453,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -459,6 +464,7 @@ function Transactions(props: propsIF) {
             tx={tx}
             ipadView={ipadView}
             showColumns={showColumns}
+            showTimestamp={showTimestamp}
             showPair={showPair}
             isAccountView={isAccountView}
         />
@@ -492,6 +498,14 @@ function Transactions(props: propsIF) {
         }
     };
 
+    const showViewMoreButton =
+        !expandTradeTable &&
+        !isAccountView &&
+        sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+
+    const gridTxStyle =
+        showViewMoreButton && isCandleSelected ? styles.show_more_grid : '';
+
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -499,24 +513,21 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction}>
+        <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
             <ul ref={listRef} id='current_row_scroll'>
                 {currentRowItemContent}
             </ul>
+            {showViewMoreButton && (
+                <div className={styles.view_more_container}>
+                    <button
+                        className={styles.view_more_button}
+                        onClick={() => setExpandTradeTable(true)}
+                    >
+                        View More
+                    </button>
+                </div>
+            )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-            {!expandTradeTable &&
-                !isAccountView &&
-                sortedRowItemContent.length >
-                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                    <div className={styles.view_more_container}>
-                        <button
-                            className={styles.view_more_button}
-                            onClick={() => setExpandTradeTable(true)}
-                        >
-                            View More
-                        </button>
-                    </div>
-                )}
         </div>
     );
 

@@ -160,7 +160,7 @@ export default function App() {
         S: '/swap',
         T: '/trade',
         M: 'trade/market',
-        R: 'trade/range',
+        R: 'trade/pool',
         L: 'trade/limit',
         P: '/account',
         C: '/chat',
@@ -244,20 +244,20 @@ export default function App() {
                             />
                             <Route path='limit/:params' element={<Limit />} />
                             <Route
-                                path='range'
+                                path='pool'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }
                             />
-                            <Route path='range/:params' element={<Range />} />
+                            <Route path='pool/:params' element={<Range />} />
                             <Route
                                 path='reposition'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useRef, useContext, memo } from 'react';
+import { useState, useRef, useContext, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
@@ -28,7 +28,6 @@ import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -54,16 +53,6 @@ function Sidebar() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
-
-    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
-
-    useEffect(() => {
-        overflowSidebarMQ
-            ? sidebar.close()
-            : sidebar.isOpen
-            ? sidebar.open()
-            : null;
-    }, [overflowSidebarMQ, sidebar.isOpen]);
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainId;
@@ -227,7 +216,10 @@ function Sidebar() {
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
@@ -329,7 +321,7 @@ function Sidebar() {
                 </div>
             ) : (
                 <BiSearch
-                    size={18}
+                    size={20}
                     color='#CDC1FF'
                     onClick={() => sidebar.open(true)}
                 />
@@ -342,8 +334,8 @@ function Sidebar() {
         ? styles.sidebar_active
         : styles.sidebar;
 
-    const topElementsDisplay = (
-        <div style={{ width: '100%' }}>
+    const regularSidebarDisplay = (
+        <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -377,11 +369,7 @@ function Sidebar() {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
-    );
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}>
+            <div style={{ margin: 'auto' }} />
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -418,15 +406,8 @@ function Sidebar() {
         </div>
     );
 
-    const regularSidebarDisplay = (
-        <>
-            {topElementsDisplay}
-            {bottomElementsDisplay}
-        </>
-    );
-
     return (
-        <div ref={sidebarRef}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
