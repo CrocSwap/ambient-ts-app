@@ -69,3 +69,7 @@
     min-width: 100%;
     max-width: min-content;
 }
+
+.button_container{
+    padding: 0 16px;
+}
