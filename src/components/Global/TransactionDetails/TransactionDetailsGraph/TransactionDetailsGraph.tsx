@@ -776,6 +776,23 @@ export default function TransactionDetailsGraph(
                             tx !== undefined
                         ) {
                             if (tx.claimableLiq > 0) {
+                                crossPointJoin(svg, [
+                                    [
+                                        {
+                                            x: tx.timeFirstMint
+                                                ? tx.timeFirstMint * 1000
+                                                : tx.txTime * 1000,
+                                            y: (
+                                                !isAccountView
+                                                    ? denominationsInBase
+                                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                            )
+                                                ? tx.askTickInvPriceDecimalCorrected
+                                                : tx.askTickPriceDecimalCorrected,
+                                        },
+                                    ],
+                                ]).call(crossPoint);
+                            } else {
                                 const limitLine = [
                                     {
                                         y: (
@@ -799,23 +816,6 @@ export default function TransactionDetailsGraph(
                                 triangleLimitJoin(svg, [limitLine]).call(
                                     triangleLimit,
                                 );
-                            } else {
-                                crossPointJoin(svg, [
-                                    [
-                                        {
-                                            x: tx.timeFirstMint
-                                                ? tx.timeFirstMint * 1000
-                                                : tx.txTime * 1000,
-                                            y: (
-                                                !isAccountView
-                                                    ? denominationsInBase
-                                                    : !isBaseTokenMoneynessGreaterOrEqual
-                                            )
-                                                ? tx.askTickInvPriceDecimalCorrected
-                                                : tx.askTickPriceDecimalCorrected,
-                                        },
-                                    ],
-                                ]).call(crossPoint);
                             }
                         }
 
