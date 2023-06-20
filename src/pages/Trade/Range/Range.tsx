@@ -196,7 +196,6 @@ function Range() {
 
     const displayPriceString = getFormattedTokenBalance({
         balance: displayPriceWithDenom,
-        zeroDisplay: '…',
     });
 
     const tokenADecimals = tokenA.decimals;
@@ -1070,7 +1069,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1088,7 +1087,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1106,7 +1105,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -1124,7 +1123,7 @@ function Range() {
                 defaultLowTick,
                 defaultHighTick,
                 gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
         [
             baseTokenDecimals,
             quoteTokenDecimals,

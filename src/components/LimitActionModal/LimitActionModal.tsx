@@ -28,6 +28,7 @@ import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { CrocPositionView } from '@crocswap-libs/sdk';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -62,6 +63,12 @@ export default function LimitActionModal(props: propsIF) {
     const [showSettings, setShowSettings] = useState(false);
     const [networkFee, setNetworkFee] = useState<string | undefined>(undefined);
 
+    const [currentLiquidity, setCurrentLiquidity] = useState<
+        BigNumber | undefined
+    >();
+
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTxHash('');
@@ -74,9 +81,32 @@ export default function LimitActionModal(props: propsIF) {
         }
     }, [txErrorCode]);
 
-    const dispatch = useAppDispatch();
+    const updateLiq = async () => {
+        try {
+            if (!crocEnv || !limitOrder) return;
+            const pool = crocEnv.pool(limitOrder.base, limitOrder.quote);
+            const pos = new CrocPositionView(pool, limitOrder.user);
 
-    const positionLiquidity = limitOrder.positionLiq;
+            const liqBigNum = (
+                await pos.queryKnockoutLivePos(
+                    limitOrder.isBid,
+                    limitOrder.bidTick,
+                    limitOrder.askTick,
+                )
+            ).liq;
+            setCurrentLiquidity(liqBigNum);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (crocEnv && limitOrder) {
+            updateLiq();
+        }
+    }, [crocEnv, lastBlockNumber, limitOrder?.limitOrderId]);
+
+    const dispatch = useAppDispatch();
 
     const averageGasUnitsForHarvestTx = type === 'Remove' ? 90069 : 68309;
     const numGweiInWei = 1e-9;
@@ -100,12 +130,11 @@ export default function LimitActionModal(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const removeFn = async () => {
+        if (!currentLiquidity) return;
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
             IS_LOCAL_ENV && { limitOrder };
-
-            const liqToRemove = BigNumber.from(positionLiquidity);
 
             let tx;
             try {
@@ -113,7 +142,7 @@ export default function LimitActionModal(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -127,7 +156,7 @@ export default function LimitActionModal(props: propsIF) {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        .burnLiq(liqToRemove);
+                        .burnLiq(currentLiquidity);
                     setNewTxHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                     if (tx?.hash)
@@ -407,7 +436,7 @@ export default function LimitActionModal(props: propsIF) {
                     <LimitActionInfo {...limitInfoProps} />
                     <LimitActionButton
                         onClick={type === 'Remove' ? removeFn : claimFn}
-                        disabled={false}
+                        disabled={currentLiquidity === undefined}
                         title={
                             type === 'Remove'
                                 ? 'Remove Limit Order'

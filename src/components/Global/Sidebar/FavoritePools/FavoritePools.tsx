@@ -1,4 +1,4 @@
-import styles from './FavoritePools.module.css';
+import styles from '../SidebarTable.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';

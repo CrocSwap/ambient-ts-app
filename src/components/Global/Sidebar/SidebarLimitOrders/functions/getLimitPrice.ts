@@ -2,6 +2,7 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
 import { getFormattedTokenBalance } from '../../../../../App/functions/getFormattedTokenBalance';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,

@@ -56,10 +56,15 @@ export const useProcessRange = (
 
     const apy = position.apy ?? undefined;
     const apyString = apy
-        ? apy.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + '%'
+        ? apy >= 1000
+            ? apy.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              }) + '%+'
+            : apy.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
         : undefined;
 
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';

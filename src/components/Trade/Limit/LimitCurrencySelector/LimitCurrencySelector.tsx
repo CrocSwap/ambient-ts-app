@@ -91,7 +91,7 @@ function LimitCurrencySelector(props: propsIF) {
     // IMPORTANT!  The Limit Order module is the one only transaction configurator
     // ... in the app which has an input field with no token selector.  For that
     // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
-    // ... from its counterparts in the Swap/Market/Range modules, even if we use
+    // ... from its counterparts in the Swap/Market/Pool modules, even if we use
     // ... a common element for those modules in the future.
 
     const modalCloseCustom = (): void => setInput('');

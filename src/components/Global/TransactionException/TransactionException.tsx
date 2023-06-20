@@ -4,15 +4,15 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../constants';
 import DividerDark from '../DividerDark/DividerDark';
 
-interface TransactionSubmittedProps {
+interface propsIF {
     resetConfirmation: () => void;
     initiateTx?: () => void;
 }
 
-export default function TransactionException(props: TransactionSubmittedProps) {
+export default function TransactionException(props: propsIF) {
     const { resetConfirmation, initiateTx } = props;
 
-    const rangeModuleActive = location.pathname.includes('/trade/range');
+    const rangeModuleActive = location.pathname.includes('/trade/pool');
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isEthSecondary =

@@ -143,6 +143,18 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
+*::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--text2);
+    opacity: 1; /* Firefox */
+  }
+  
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: var(--text2);
+  }
+  
+  ::-ms-input-placeholder { /* Microsoft Edge */
+    color: var(--text2);
+  }
 
 [data-theme='light'] {
     --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);
