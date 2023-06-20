@@ -101,7 +101,9 @@ export default function TransactionDetailsSimplify(
             onClick={handleOpenExplorer}
             style={{ cursor: 'pointer' }}
         >
-            <p>{showFullAddresses ? txHash : txHashTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? txHash : txHashTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -112,7 +114,7 @@ export default function TransactionDetailsSimplify(
             onClick={handleOpenWallet}
             style={{ cursor: 'pointer' }}
         >
-            <p>
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
                 {showFullAddresses
                     ? ensName
                         ? ensName
@@ -129,7 +131,9 @@ export default function TransactionDetailsSimplify(
             className={styles.link_row}
             style={{ cursor: 'pointer' }}
         >
-            <p>{showFullAddresses ? tx.base : baseTokenAddressTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.base : baseTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -139,7 +143,9 @@ export default function TransactionDetailsSimplify(
             className={styles.link_row}
             style={{ cursor: 'pointer' }}
         >
-            <p>{showFullAddresses ? tx.quote : quoteTokenAddressTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.quote : quoteTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
