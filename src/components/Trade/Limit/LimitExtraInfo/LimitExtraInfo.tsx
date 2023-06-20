@@ -161,21 +161,23 @@ function LimitExtraInfo(props: propsIF) {
     ];
 
     const limitExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
+        <div className={styles.extra_details_container}>
+            <div className={styles.extra_details}>
+                {extraInfoData.map((item, idx) => (
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.tooltipTitle} />
+                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 

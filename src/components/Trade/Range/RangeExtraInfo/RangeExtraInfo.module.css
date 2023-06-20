@@ -1,7 +1,9 @@
 .main_container{
     padding: 0 25px 0 32px;
 }
-
+.extra_details_container{
+    padding: 8px 0;
+}
 
 .extra_info_content {
     width: 100%;
@@ -14,6 +16,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     height: 33px;
+    padding: 0 8px;
 
     background: transparent;
     outline: none;
