@@ -33,10 +33,21 @@ export function getFormattedTokenBalance({
         tokenBalance = zeroDisplay;
     } else if (balance === Infinity) {
         tokenBalance = '∞';
-    } else if (balance < 0.0001) {
+
+        // TODO: undecided what this threshold should be
+    } else if (balance < 0.001) {
         tokenBalance = formatSubscript(balance);
+    } else if (balance < 1) {
+        tokenBalance = balance.toLocaleString(undefined, {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3,
+        });
     } else if (balance >= 1000) {
-        tokenBalance = formatSecondaryBalance(secondaryBalance ?? balance);
+        const zeros = Math.ceil(Math.log10(secondaryBalance ?? balance)) - 1;
+        tokenBalance = formatSecondaryBalance(
+            secondaryBalance ?? balance,
+            zeros,
+        );
     } else {
         tokenBalance = balance.toLocaleString(undefined, {
             minimumFractionDigits: minFracDigits,
