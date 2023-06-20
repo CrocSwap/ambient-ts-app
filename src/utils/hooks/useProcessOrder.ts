@@ -1,7 +1,6 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -18,7 +17,7 @@ import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -168,25 +167,22 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
-    const baseQty = getFormattedTokenBalance({
-        balance: liqBaseNum,
+    const baseQty = getFormattedNumber({
+        value: liqBaseNum,
         zeroDisplay: '0',
     });
 
-    const quoteQty = getFormattedTokenBalance({
-        balance: liqQuoteNum,
+    const quoteQty = getFormattedNumber({
+        value: liqQuoteNum,
         zeroDisplay: '0',
     });
 
     const usdValueNum = limitOrder.totalValueUSD;
 
-    const usdValueTruncated = getFormattedTokenBalance({
-        balance: usdValueNum,
-        suffix: ' ',
-    });
-
-    const usdValueLocaleString = getFormattedTokenBalance({
-        balance: usdValueNum,
+    const usdValue = getFormattedNumber({
+        value: usdValueNum,
+        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
@@ -204,8 +200,6 @@ export const useProcessOrder = (
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
     // ------------------------------------------------------------------
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
-    // ----------------------------------------------------------------------
 
     const positionTime =
         limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
@@ -237,13 +231,13 @@ export const useProcessOrder = (
             const invPriceDecimalCorrected =
                 limitOrder.invLimitPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated = getFormattedTokenBalance({
-                balance: priceDecimalCorrected,
+            const nonInvertedPriceTruncated = getFormattedNumber({
+                value: priceDecimalCorrected,
                 zeroDisplay: '0',
             });
 
-            const invertedPriceTruncated = getFormattedTokenBalance({
-                balance: invPriceDecimalCorrected,
+            const invertedPriceTruncated = getFormattedNumber({
+                value: invPriceDecimalCorrected,
                 zeroDisplay: '0',
             });
 
@@ -299,8 +293,8 @@ export const useProcessOrder = (
                 ? askTickPrice
                 : bidTickPrice;
 
-            const startPriceDisplay = getFormattedTokenBalance({
-                balance: startPriceDisplayNum,
+            const startPriceDisplay = getFormattedNumber({
+                value: startPriceDisplayNum,
             });
 
             const startPriceDenomByMoneyness =
@@ -312,8 +306,8 @@ export const useProcessOrder = (
                     ? bidTickInvPrice
                     : askTickInvPrice;
 
-            const startPriceDisplayDenomByMoneyness = getFormattedTokenBalance({
-                balance: startPriceDenomByMoneyness,
+            const startPriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: startPriceDenomByMoneyness,
             });
 
             const middlePriceDisplayNum = isDenomBase
@@ -324,8 +318,8 @@ export const useProcessOrder = (
                 ? priceHalfBelow
                 : priceHalfAbove;
 
-            const middlePriceDisplay = getFormattedTokenBalance({
-                balance: middlePriceDisplayNum,
+            const middlePriceDisplay = getFormattedNumber({
+                value: middlePriceDisplayNum,
             });
 
             const middlePriceDenomByMoneyness =
@@ -337,9 +331,9 @@ export const useProcessOrder = (
                     ? 1 / priceHalfBelow
                     : 1 / priceHalfAbove;
 
-            const middlePriceDisplayDenomByMoneyness = getFormattedTokenBalance(
-                { balance: middlePriceDenomByMoneyness },
-            );
+            const middlePriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: middlePriceDenomByMoneyness,
+            });
 
             const finishPriceDisplayNum = isDenomBase
                 ? isBid
@@ -349,8 +343,8 @@ export const useProcessOrder = (
                 ? bidTickPrice
                 : askTickPrice;
 
-            const finishPriceDisplay = getFormattedTokenBalance({
-                balance: finishPriceDisplayNum,
+            const finishPriceDisplay = getFormattedNumber({
+                value: finishPriceDisplayNum,
             });
 
             setStartPriceDisplay(startPriceDisplay);
@@ -370,13 +364,13 @@ export const useProcessOrder = (
             const invIntialTokenQtyNum =
                 (1 / middlePriceDisplayNum) * finalTokenQty;
 
-            const intialTokenQtyTruncated = getFormattedTokenBalance({
-                balance: intialTokenQtyNum,
+            const intialTokenQtyTruncated = getFormattedNumber({
+                value: intialTokenQtyNum,
                 zeroDisplay: '0',
             });
 
-            const invIntialTokenQtyTruncated = getFormattedTokenBalance({
-                balance: invIntialTokenQtyNum,
+            const invIntialTokenQtyTruncated = getFormattedNumber({
+                value: invIntialTokenQtyNum,
                 zeroDisplay: '0',
             });
 
@@ -408,7 +402,6 @@ export const useProcessOrder = (
 
         // Value data
         usdValue,
-        usdValueLocaleString,
 
         // Token Qty data
         baseQty,

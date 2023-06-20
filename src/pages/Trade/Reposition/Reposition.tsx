@@ -56,8 +56,7 @@ import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
-import { formatAmountOld } from '../../../utils/numbers';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 function Reposition() {
@@ -178,11 +177,11 @@ function Reposition() {
         quoteTokenDecimals,
     );
 
-    const truncatedCurrentPoolDisplayPriceInBase = getFormattedTokenBalance({
-        balance: currentPoolDisplayPriceInBase,
+    const truncatedCurrentPoolDisplayPriceInBase = getFormattedNumber({
+        value: currentPoolDisplayPriceInBase,
     });
-    const truncatedCurrentPoolDisplayPriceInQuote = getFormattedTokenBalance({
-        balance: currentPoolDisplayPriceInQuote,
+    const truncatedCurrentPoolDisplayPriceInQuote = getFormattedNumber({
+        value: currentPoolDisplayPriceInQuote,
     });
 
     const currentPoolPriceDisplay =
@@ -447,13 +446,13 @@ function Reposition() {
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
                     positionStats.positionLiqQuoteDecimalCorrected;
-                const liqBaseDisplay = getFormattedTokenBalance({
-                    balance: liqBaseNum,
+                const liqBaseDisplay = getFormattedNumber({
+                    value: liqBaseNum,
                 });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
-                const liqQuoteDisplay = getFormattedTokenBalance({
-                    balance: liqQuoteNum,
+                const liqQuoteDisplay = getFormattedNumber({
+                    value: liqQuoteNum,
                 });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
@@ -590,8 +589,8 @@ function Reposition() {
                 gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

@@ -72,7 +72,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 function Range() {
     const {
@@ -194,8 +194,8 @@ function Range() {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedTokenBalance({
-        balance: displayPriceWithDenom,
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
     });
 
     const tokenADecimals = tokenA.decimals;
@@ -1030,8 +1030,8 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

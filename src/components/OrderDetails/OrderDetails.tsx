@@ -20,7 +20,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -117,8 +117,8 @@ export default function OrderDetails(props: propsIF) {
         ? baseDisplayFrontendNum * parsedLimitPriceNum
         : baseDisplayFrontendNum / parsedLimitPriceNum;
 
-    const approximateSellQtyTruncated = getFormattedTokenBalance({
-        balance: approximateSellQty,
+    const approximateSellQtyTruncated = getFormattedNumber({
+        value: approximateSellQty,
         zeroDisplay: '0',
     });
 
@@ -138,8 +138,8 @@ export default function OrderDetails(props: propsIF) {
         ? quoteDisplayFrontendNum / parsedLimitPriceNum
         : quoteDisplayFrontendNum * parsedLimitPriceNum;
 
-    const approximateBuyQtyTruncated = getFormattedTokenBalance({
-        balance: approximateBuyQty,
+    const approximateBuyQtyTruncated = getFormattedNumber({
+        value: approximateBuyQty,
         zeroDisplay: '0',
     });
 
@@ -195,12 +195,12 @@ export default function OrderDetails(props: propsIF) {
                     const isOrderClaimable = positionStats.claimableLiq !== 0;
                     setIsClaimable(isOrderClaimable);
 
-                    const liqBaseDisplay = getFormattedTokenBalance({
-                        balance: liqBaseNum,
+                    const liqBaseDisplay = getFormattedNumber({
+                        value: liqBaseNum,
                     });
 
-                    const claimableBaseDisplay = getFormattedTokenBalance({
-                        balance: claimableBaseNum,
+                    const claimableBaseDisplay = getFormattedNumber({
+                        value: claimableBaseNum,
                     });
 
                     isOrderFilled
@@ -209,12 +209,12 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
-                    const liqQuoteDisplay = getFormattedTokenBalance({
-                        balance: liqQuoteNum,
+                    const liqQuoteDisplay = getFormattedNumber({
+                        value: liqQuoteNum,
                     });
 
-                    const claimableQuoteDisplay = getFormattedTokenBalance({
-                        balance: claimableQuoteNum,
+                    const claimableQuoteDisplay = getFormattedNumber({
+                        value: claimableQuoteNum,
                     });
 
                     isOrderFilled
@@ -224,8 +224,8 @@ export default function OrderDetails(props: propsIF) {
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
                     setUsdValue(
-                        getFormattedTokenBalance({
-                            balance: positionStats.totalValueUSD,
+                        getFormattedNumber({
+                            value: positionStats.totalValueUSD,
                             isUSD: true,
                         }),
                     );

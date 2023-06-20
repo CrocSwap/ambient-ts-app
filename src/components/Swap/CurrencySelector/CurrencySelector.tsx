@@ -29,7 +29,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -127,8 +127,8 @@ function CurrencySelector(props: propsIF) {
         ? tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = getFormattedTokenBalance({
-        balance: props.sellToken
+    const walletBalanceLocaleString = getFormattedNumber({
+        value: props.sellToken
             ? parseFloat(tokenABalance)
             : parseFloat(tokenBBalance),
         isUSD: true,
@@ -148,8 +148,8 @@ function CurrencySelector(props: propsIF) {
         ? (parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = getFormattedTokenBalance({
-        balance: props.sellToken
+    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
+        value: props.sellToken
             ? tokenADexBalance
                 ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 : undefined

@@ -57,7 +57,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export default function Limit() {
     const {
@@ -178,8 +178,8 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                     setEndDisplayPrice(displayPriceWithDenom);
 
-                    const limitRateTruncated = getFormattedTokenBalance({
-                        balance: displayPriceWithDenom,
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
                     });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
@@ -244,8 +244,8 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                     setEndDisplayPrice(displayPriceWithDenom);
-                    const limitRateTruncated = getFormattedTokenBalance({
-                        balance: displayPriceWithDenom,
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
                     });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
@@ -584,8 +584,8 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

@@ -14,7 +14,7 @@ import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
-import { getFormattedTokenBalance } from './getFormattedTokenBalance';
+import { getFormattedNumber } from './getFormattedNumber';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -142,39 +142,38 @@ export const getPositionData = async (
     newPosition.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newPosition.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
-    newPosition.lowRangeDisplayInBase = getFormattedTokenBalance({
-        balance: lowerPriceDisplayInBase,
+    newPosition.lowRangeDisplayInBase = getFormattedNumber({
+        value: lowerPriceDisplayInBase,
     });
-    newPosition.highRangeDisplayInBase = getFormattedTokenBalance({
-        balance: upperPriceDisplayInBase,
-    });
-
-    newPosition.lowRangeDisplayInQuote = getFormattedTokenBalance({
-        balance: lowerPriceDisplayInQuote,
-    });
-    newPosition.highRangeDisplayInQuote = getFormattedTokenBalance({
-        balance: upperPriceDisplayInQuote,
+    newPosition.highRangeDisplayInBase = getFormattedNumber({
+        value: upperPriceDisplayInBase,
     });
 
-    // TODO (#1569): we should be re-using a token formatting function here and below
-    newPosition.lowRangeShortDisplayInBase = getFormattedTokenBalance({
-        balance: lowerPriceDisplayInBase,
+    newPosition.lowRangeDisplayInQuote = getFormattedNumber({
+        value: lowerPriceDisplayInQuote,
+    });
+    newPosition.highRangeDisplayInQuote = getFormattedNumber({
+        value: upperPriceDisplayInQuote,
+    });
+
+    newPosition.lowRangeShortDisplayInBase = getFormattedNumber({
+        value: lowerPriceDisplayInBase,
         minFracDigits: 0,
         maxFracDigits: 0,
     });
-    newPosition.lowRangeShortDisplayInQuote = getFormattedTokenBalance({
-        balance: lowerPriceDisplayInQuote,
+    newPosition.lowRangeShortDisplayInQuote = getFormattedNumber({
+        value: lowerPriceDisplayInQuote,
         minFracDigits: 0,
         maxFracDigits: 0,
     });
 
-    newPosition.highRangeShortDisplayInBase = getFormattedTokenBalance({
-        balance: upperPriceDisplayInBase,
+    newPosition.highRangeShortDisplayInBase = getFormattedNumber({
+        value: upperPriceDisplayInBase,
         minFracDigits: 0,
         maxFracDigits: 0,
     });
-    newPosition.highRangeShortDisplayInQuote = getFormattedTokenBalance({
-        balance: upperPriceDisplayInQuote,
+    newPosition.highRangeShortDisplayInQuote = getFormattedNumber({
+        value: upperPriceDisplayInQuote,
         minFracDigits: 0,
         maxFracDigits: 0,
     });
@@ -227,14 +226,14 @@ export const getPositionData = async (
         newPosition.positionLiqQuote / Math.pow(10, quoteTokenDecimals);
 
     const liqBaseNum = newPosition.positionLiqBaseDecimalCorrected;
-    newPosition.positionLiqBaseTruncated = getFormattedTokenBalance({
-        balance: liqBaseNum,
+    newPosition.positionLiqBaseTruncated = getFormattedNumber({
+        value: liqBaseNum,
         zeroDisplay: '0',
     });
 
     const liqQuoteNum = newPosition.positionLiqQuoteDecimalCorrected;
-    newPosition.positionLiqQuoteTruncated = getFormattedTokenBalance({
-        balance: liqQuoteNum,
+    newPosition.positionLiqQuoteTruncated = getFormattedNumber({
+        value: liqQuoteNum,
         zeroDisplay: '0',
     });
 

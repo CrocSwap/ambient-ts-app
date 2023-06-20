@@ -15,7 +15,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     pool: topPoolIF;
@@ -96,10 +96,9 @@ export default function PoolCard(props: propsIF) {
                         ? 1 / displayPrice
                         : displayPrice;
 
-                    // TODO: confirm precision case for 0.5 > x > 2 here is okay
-                    const displayPriceWithFormatting = getFormattedTokenBalance(
-                        { balance: displayPriceWithInversion },
-                    );
+                    const displayPriceWithFormatting = getFormattedNumber({
+                        value: displayPriceWithInversion,
+                    });
 
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {

@@ -17,7 +17,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ZERO_ADDRESS } from '../../../../constants';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -166,8 +166,8 @@ function RangePriceInfo(props: propsIF) {
             poolPriceNum = spotPriceNum * tokenAMainnetPrice;
         }
 
-        const displayUsdPriceString = getFormattedTokenBalance({
-            balance: poolPriceNum,
+        const displayUsdPriceString = getFormattedNumber({
+            value: poolPriceNum,
             zeroDisplay: '…',
             prefix: '~$',
         });
@@ -247,15 +247,15 @@ function RangePriceInfo(props: propsIF) {
                 parseFloat(pinnedMaxPrice) * (tokenAMainnetPrice || 0);
         }
 
-        const minDisplayUsdPriceString = getFormattedTokenBalance({
-            balance: minPriceNum,
+        const minDisplayUsdPriceString = getFormattedNumber({
+            value: minPriceNum,
             zeroDisplay: '…',
             prefix: '~$',
         });
         setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
-        const maxDisplayUsdPriceString = getFormattedTokenBalance({
-            balance: maxPriceNum,
+        const maxDisplayUsdPriceString = getFormattedNumber({
+            value: maxPriceNum,
             zeroDisplay: '…',
             prefix: '~$',
         });

@@ -19,7 +19,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     simplifyVersion?: boolean;
@@ -71,8 +71,8 @@ function TradeChartsTokenInfo(props: propsIF) {
             : poolPriceDisplay
         : 0;
 
-    const truncatedPoolPrice = getFormattedTokenBalance({
-        balance: poolPriceDisplayWithDenom,
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
     });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');

@@ -30,7 +30,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 
 // react functional component
@@ -107,8 +107,8 @@ export default function InitPool() {
                 gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

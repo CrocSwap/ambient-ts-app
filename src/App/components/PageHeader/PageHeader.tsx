@@ -32,7 +32,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { getFormattedTokenBalance } from '../../functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
@@ -179,8 +179,8 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice = getFormattedTokenBalance({
-        balance: poolPriceDisplayWithDenom,
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
     });
 
     useEffect(() => {

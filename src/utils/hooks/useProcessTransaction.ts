@@ -1,6 +1,5 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
@@ -8,7 +7,7 @@ import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -66,10 +65,8 @@ export const useProcessTransaction = (
     let truncatedLowDisplayPriceDenomByMoneyness;
     let truncatedHighDisplayPriceDenomByMoneyness;
 
-    let baseFlowDisplayLong;
-    let quoteFlowDisplayLong;
-    let baseFlowDisplayShort;
-    let quoteFlowDisplayShort;
+    let baseFlowDisplay;
+    let quoteFlowDisplay;
 
     let isBaseFlowPositive = false;
     let isQuoteFlowPositive = false;
@@ -86,11 +83,11 @@ export const useProcessTransaction = (
             const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated = getFormattedTokenBalance({
-                balance: priceDecimalCorrected,
+            const nonInvertedPriceTruncated = getFormattedNumber({
+                value: priceDecimalCorrected,
             });
-            const invertedPriceTruncated = getFormattedTokenBalance({
-                balance: invPriceDecimalCorrected,
+            const invertedPriceTruncated = getFormattedNumber({
+                value: invPriceDecimalCorrected,
             });
 
             truncatedDisplayPriceDenomByMoneyness =
@@ -119,17 +116,17 @@ export const useProcessTransaction = (
                 tx.askTickPriceDecimalCorrected;
             const askTickInvPriceDecimalCorrected =
                 tx.askTickInvPriceDecimalCorrected;
-            const nonInvertedBidPriceTruncated = getFormattedTokenBalance({
-                balance: bidTickPriceDecimalCorrected,
+            const nonInvertedBidPriceTruncated = getFormattedNumber({
+                value: bidTickPriceDecimalCorrected,
             });
-            const invertedBidPriceTruncated = getFormattedTokenBalance({
-                balance: bidTickInvPriceDecimalCorrected,
+            const invertedBidPriceTruncated = getFormattedNumber({
+                value: bidTickInvPriceDecimalCorrected,
             });
-            const nonInvertedAskPriceTruncated = getFormattedTokenBalance({
-                balance: askTickPriceDecimalCorrected,
+            const nonInvertedAskPriceTruncated = getFormattedNumber({
+                value: askTickPriceDecimalCorrected,
             });
-            const invertedAskPriceTruncated = getFormattedTokenBalance({
-                balance: askTickInvPriceDecimalCorrected,
+            const invertedAskPriceTruncated = getFormattedNumber({
+                value: askTickInvPriceDecimalCorrected,
             });
 
             truncatedLowDisplayPrice = isDenomBase
@@ -155,11 +152,11 @@ export const useProcessTransaction = (
         const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
         const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
 
-        const nonInvertedPriceTruncated = getFormattedTokenBalance({
-            balance: priceDecimalCorrected,
+        const nonInvertedPriceTruncated = getFormattedNumber({
+            value: priceDecimalCorrected,
         });
-        const invertedPriceTruncated = getFormattedTokenBalance({
-            balance: invPriceDecimalCorrected,
+        const invertedPriceTruncated = getFormattedNumber({
+            value: invPriceDecimalCorrected,
         });
 
         truncatedDisplayPriceDenomByMoneyness =
@@ -179,15 +176,11 @@ export const useProcessTransaction = (
         const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
         const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
         isBaseFlowPositive = baseFlowDisplayNum > 0;
-        const baseFlowDisplayTruncatedShort = getFormattedTokenBalance({
-            balance: baseFlowAbsNum,
-        });
-        baseFlowDisplayShort = baseFlowDisplayTruncatedShort;
 
-        const baseFlowDisplayTruncatedLong = getFormattedTokenBalance({
-            balance: baseFlowAbsNum,
+        baseFlowDisplay = getFormattedNumber({
+            value: baseFlowAbsNum,
+            zeroDisplay: '0',
         });
-        baseFlowDisplayLong = baseFlowDisplayTruncatedLong;
     }
     if (
         tx.quoteFlowDecimalCorrected !== undefined &&
@@ -196,14 +189,11 @@ export const useProcessTransaction = (
         const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
         const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
         isQuoteFlowPositive = quoteFlowDisplayNum > 0;
-        const quoteFlowDisplayTruncatedShort = getFormattedTokenBalance({
-            balance: quoteFlowAbsNum,
+
+        quoteFlowDisplay = getFormattedNumber({
+            value: quoteFlowAbsNum,
+            zeroDisplay: '0',
         });
-        quoteFlowDisplayShort = quoteFlowDisplayTruncatedShort;
-        const quoteFlowDisplayTruncatedLong = getFormattedTokenBalance({
-            balance: quoteFlowAbsNum,
-        });
-        quoteFlowDisplayLong = quoteFlowDisplayTruncatedLong;
     }
 
     const priceType =
@@ -267,76 +257,31 @@ export const useProcessTransaction = (
     const sideTypeStyle = `${sideType}_style`;
 
     const usdValueNum = tx.totalValueUSD;
-    const totalValueUSD = tx.totalValueUSD;
-    const totalFlowUSD = tx.totalValueUSD;
+    const totalFlowUSDNum = tx.totalValueUSD;
     const totalFlowAbsNum =
-        totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
+        totalFlowUSDNum !== undefined ? Math.abs(totalFlowUSDNum) : undefined;
 
-    const usdValueTruncated = getFormattedTokenBalance({
-        balance: usdValueNum,
+    const usdValueString = getFormattedNumber({
+        value: usdValueNum,
         isUSD: true,
-    });
-    const usdValueLocaleString = getFormattedTokenBalance({
-        balance: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
-    const totalValueUSDTruncated = getFormattedTokenBalance({
-        balance: totalValueUSD,
+    const totalFlowUSD = getFormattedNumber({
+        value: totalFlowAbsNum,
         isUSD: true,
-    });
-    const totalValueUSDLocaleString = getFormattedTokenBalance({
-        balance: totalValueUSD,
-        isUSD: true,
-    });
-
-    const totalFlowUSDTruncated = getFormattedTokenBalance({
-        balance: totalFlowAbsNum,
-        isUSD: true,
-    });
-    const totalFlowUSDLocaleString = getFormattedTokenBalance({
-        balance: totalFlowAbsNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // --------------------------------------------------------
 
-    const usdValue =
-        totalFlowUSDTruncated !== undefined
-            ? '$' + totalFlowUSDTruncated
-            : totalValueUSDTruncated
-            ? '$' + totalValueUSDTruncated
-            : usdValueTruncated
-            ? '$' + usdValueTruncated
-            : '…';
+    const usdValue = totalFlowUSD ?? usdValueString;
 
-    const txUsdValueLocaleString = totalFlowUSDLocaleString
-        ? '$' + totalFlowUSDLocaleString
-        : totalValueUSDLocaleString
-        ? '$' + totalValueUSDLocaleString
-        : usdValueLocaleString
-        ? '$' + usdValueLocaleString
-        : '…';
+    const baseQuantityDisplay =
+        baseFlowDisplay !== undefined ? `${baseFlowDisplay || '0'}` : '…';
 
-    const quantitiesAvailable =
-        baseFlowDisplayShort !== undefined ||
-        quoteFlowDisplayShort !== undefined;
-
-    const baseQuantityDisplayLong = quantitiesAvailable
-        ? baseFlowDisplayLong || '0'
-        : '…';
-
-    const quoteQuantityDisplayLong = quantitiesAvailable
-        ? quoteFlowDisplayLong || '0'
-        : '…';
-
-    const baseQuantityDisplayShort = quantitiesAvailable
-        ? `${baseFlowDisplayShort || '0'}`
-        : '…';
-
-    const quoteQuantityDisplayShort = quantitiesAvailable
-        ? `${quoteFlowDisplayShort || '0'}`
-        : '…';
+    const quoteQuantityDisplay =
+        quoteFlowDisplay !== undefined ? `${quoteFlowDisplay || '0'}` : '…';
 
     // --------------------------------------------------------
 
@@ -390,13 +335,13 @@ export const useProcessTransaction = (
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
     const positiveDisplayStyle =
-        baseQuantityDisplayShort === '0' ||
+        baseQuantityDisplay === '0' ||
         !valueArrows ||
         (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
             ? styles.light_grey
             : styles.positive_value;
     const negativeDisplayStyle =
-        quoteQuantityDisplayShort === '0' ||
+        quoteQuantityDisplay === '0' ||
         !valueArrows ||
         (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
             ? styles.light_grey
@@ -433,7 +378,6 @@ export const useProcessTransaction = (
 
         // Value data
         usdValue,
-        txUsdValueLocaleString,
 
         positiveArrow,
         negativeArrow,
@@ -441,11 +385,9 @@ export const useProcessTransaction = (
 
         // Token Qty data
         baseTokenCharacter,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
-        baseQuantityDisplayLong,
-        quoteQuantityDisplayLong,
         quoteTokenCharacter,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         // baseFlowDisplay,
         // quoteFlowDisplay,
         baseTokenSymbol,

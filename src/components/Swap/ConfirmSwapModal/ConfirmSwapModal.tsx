@@ -25,7 +25,7 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -257,11 +257,11 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${getFormattedTokenBalance({
-                                  balance: effectivePriceWithDenom,
+                            ? `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
                               })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${getFormattedTokenBalance({
-                                  balance: effectivePriceWithDenom,
+                            : `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
                               })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>

@@ -37,7 +37,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -85,8 +85,8 @@ export default function Withdraw(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated = getFormattedTokenBalance({
-        balance: tokenExchangeDepositsDisplayNum,
+    const tokenDexBalanceTruncated = getFormattedNumber({
+        value: tokenExchangeDepositsDisplayNum,
     });
 
     const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<
@@ -358,8 +358,8 @@ export default function Withdraw(props: propsIF) {
                     : averageGasUnitsForErc20Withdrawal);
 
             setWithdrawGasPriceinDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

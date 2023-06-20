@@ -1,7 +1,7 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface IRemoveRangeInfoProps {
     baseTokenSymbol: string;
@@ -33,23 +33,23 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         isAmbient,
     } = props;
 
-    const liqBaseDisplay = getFormattedTokenBalance({
-        balance: posLiqBaseDecimalCorrected,
+    const liqBaseDisplay = getFormattedNumber({
+        value: posLiqBaseDecimalCorrected,
     });
-    const liqQuoteDisplay = getFormattedTokenBalance({
-        balance: posLiqQuoteDecimalCorrected,
+    const liqQuoteDisplay = getFormattedNumber({
+        value: posLiqQuoteDecimalCorrected,
     });
-    const feeLiqBaseDisplay = getFormattedTokenBalance({
-        balance: feeLiqBaseDecimalCorrected,
+    const feeLiqBaseDisplay = getFormattedNumber({
+        value: feeLiqBaseDecimalCorrected,
     });
-    const feeLiqQuoteDisplay = getFormattedTokenBalance({
-        balance: feeLiqQuoteDecimalCorrected,
+    const feeLiqQuoteDisplay = getFormattedNumber({
+        value: feeLiqQuoteDecimalCorrected,
     });
-    const baseRemovalString = getFormattedTokenBalance({
-        balance: baseRemovalNum,
+    const baseRemovalString = getFormattedNumber({
+        value: baseRemovalNum,
     });
-    const quoteRemovalString = getFormattedTokenBalance({
-        balance: quoteRemovalNum,
+    const quoteRemovalString = getFormattedNumber({
+        value: quoteRemovalNum,
     });
 
     const rewardsEarnedSection = !isAmbient ? (

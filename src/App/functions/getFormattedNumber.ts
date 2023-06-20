@@ -1,7 +1,7 @@
 import numbro from 'numbro';
 
 type FormatParams = {
-    balance?: number;
+    value?: number;
     nullDisplay?: string;
     zeroDisplay?: string;
     prefix?: string;
@@ -9,10 +9,11 @@ type FormatParams = {
     minFracDigits?: number;
     maxFracDigits?: number;
     isUSD?: boolean;
+    isInput?: boolean;
 };
 
-export function getFormattedTokenBalance({
-    balance,
+export function getFormattedNumber({
+    value,
     nullDisplay = '…',
     zeroDisplay = '0.00',
     prefix = '',
@@ -20,31 +21,37 @@ export function getFormattedTokenBalance({
     minFracDigits = 2,
     maxFracDigits = 2,
     isUSD = false,
+    isInput = false,
 }: FormatParams) {
-    let tokenBalance = '';
-    if (balance === 0) {
-        tokenBalance = zeroDisplay;
-    } else if (!balance) {
+    let valueString = '';
+    if (value === 0) {
+        valueString = zeroDisplay;
+    } else if (!value) {
         return nullDisplay;
-    } else if (balance === Infinity) {
-        tokenBalance = '∞';
+    } else if (value === Infinity) {
+        valueString = '∞';
     } else if (isUSD) {
-        tokenBalance = balance.toFixed(2);
-    } else if (balance <= 0.0001) {
-        tokenBalance = formatSubscript(balance);
-    } else if (balance < 1) {
-        tokenBalance = balance.toPrecision(3);
-    } else if (balance < 2) {
-        tokenBalance = balance.toFixed(3);
-    } else if (balance >= 10000) {
-        tokenBalance = formatAbbrev(balance);
+        valueString = value.toFixed(2);
+    } else if (value <= 0.0001) {
+        if (isInput)
+            valueString = Number(value?.toPrecision(3)).toLocaleString(
+                undefined,
+                { maximumFractionDigits: 20 },
+            );
+        else valueString = formatSubscript(value);
+    } else if (value < 1) {
+        valueString = value.toPrecision(3);
+    } else if (value < 2) {
+        valueString = value.toFixed(3);
+    } else if (value >= 10000) {
+        valueString = formatAbbrev(value);
     } else {
-        tokenBalance = balance.toLocaleString(undefined, {
+        valueString = value.toLocaleString(undefined, {
             minimumFractionDigits: minFracDigits,
             maximumFractionDigits: maxFracDigits,
         });
     }
-    return `${prefix}${tokenBalance}${suffix}`;
+    return `${prefix}${valueString}${suffix}`;
 }
 
 const subscriptUnicode = [

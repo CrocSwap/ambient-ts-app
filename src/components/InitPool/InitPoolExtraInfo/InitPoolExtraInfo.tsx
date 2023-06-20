@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
@@ -33,8 +33,8 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
 
-    const initialPriceLocaleString = getFormattedTokenBalance({
-        balance: initialPrice,
+    const initialPriceLocaleString = getFormattedNumber({
+        value: initialPrice,
     });
 
     const priceDisplayString = isDenomBase

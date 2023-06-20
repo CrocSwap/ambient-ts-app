@@ -11,7 +11,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -62,19 +62,19 @@ export default function ConfirmLimitModal(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPoolPriceString = getFormattedTokenBalance({
-        balance: displayPoolPriceWithDenom,
+    const displayPoolPriceString = getFormattedNumber({
+        value: displayPoolPriceWithDenom,
     });
 
     const txApproved = newLimitOrderTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeSellString = getFormattedTokenBalance({
-        balance: parseFloat(tokenAInputQty),
+    const localeSellString = getFormattedNumber({
+        value: parseFloat(tokenAInputQty),
     });
-    const localeBuyString = getFormattedTokenBalance({
-        balance: parseFloat(tokenBInputQty),
+    const localeBuyString = getFormattedNumber({
+        value: parseFloat(tokenBInputQty),
     });
 
     const sellTokenData = tradeData.tokenA;
@@ -109,14 +109,14 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
-    const startPriceString = getFormattedTokenBalance({
-        balance: startDisplayPrice,
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
     });
-    const middlePriceString = getFormattedTokenBalance({
-        balance: middleDisplayPrice,
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
     });
-    const endPriceString = getFormattedTokenBalance({
-        balance: endDisplayPrice,
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
     });
 
     // this is the starting state for the bypass confirmation toggle switch

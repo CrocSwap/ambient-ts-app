@@ -36,7 +36,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -323,9 +323,10 @@ function LimitCurrencyConverter(props: propsIF) {
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
 
-        const truncatedTokenBQty = getFormattedTokenBalance({
-            balance: rawTokenBQty,
+        const truncatedTokenBQty = getFormattedNumber({
+            value: rawTokenBQty,
             nullDisplay: '',
+            isInput: true,
         });
         setTokenBInputQty(truncatedTokenBQty);
     };
@@ -353,9 +354,10 @@ function LimitCurrencyConverter(props: propsIF) {
                 : limitTickDisplayPrice * parseFloat(input);
         }
 
-        const truncatedTokenBQty = getFormattedTokenBalance({
-            balance: rawTokenBQty,
+        const truncatedTokenBQty = getFormattedNumber({
+            value: rawTokenBQty,
             nullDisplay: '',
+            isInput: true,
         });
         handleLimitButtonMessage(parseFloat(input));
 
@@ -415,9 +417,10 @@ function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(userSetTokenBToZero ? 0 : rawTokenAQty);
         }
-        const truncatedTokenAQty = getFormattedTokenBalance({
-            balance: rawTokenAQty,
+        const truncatedTokenAQty = getFormattedNumber({
+            value: rawTokenAQty,
             nullDisplay: '',
+            isInput: true,
         });
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);

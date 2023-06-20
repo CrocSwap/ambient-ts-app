@@ -14,7 +14,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
-import { getFormattedTokenBalance } from '../../../functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 
 interface propsIF {
     nativeBalance: string | undefined;
@@ -82,8 +82,8 @@ export default function Account(props: propsIF) {
             ? ethMainnetUsdPrice * parseFloat(nativeBalance.replaceAll(',', ''))
             : undefined;
 
-    const ethMainnetUsdValueTruncated = getFormattedTokenBalance({
-        balance: ethMainnetUsdValue,
+    const ethMainnetUsdValueTruncated = getFormattedNumber({
+        value: ethMainnetUsdValue,
         prefix: '$',
     });
 

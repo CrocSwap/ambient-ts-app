@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { getDisplayPrice } from './functions/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -10,7 +9,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
-import { getFormattedTokenBalance } from '../../../../functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -33,14 +32,14 @@ function LimitOrderLI(props: limitOrderPropsIF) {
             : '',
     };
 
-    const displayPrice = getFormattedTokenBalance({
-        balance: isDenomBase
+    const displayPrice = getFormattedNumber({
+        value: isDenomBase
             ? limitOrder.invLimitPriceDecimalCorrected
             : limitOrder.limitPriceDecimalCorrected,
         prefix: isDenomBase ? symbols.quote : symbols.base,
     });
-    const valueUSD = getFormattedTokenBalance({
-        balance: limitOrder.totalValueUSD,
+    const valueUSD = getFormattedNumber({
+        value: limitOrder.totalValueUSD,
     });
 
     return (

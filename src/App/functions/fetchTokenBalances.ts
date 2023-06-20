@@ -7,7 +7,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
-import { getFormattedTokenBalance } from './getFormattedTokenBalance';
+import { getFormattedNumber } from './getFormattedNumber';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -75,14 +75,14 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-    const combinedBalanceDisplayTruncated = getFormattedTokenBalance({
-        balance: combinedBalanceDisplayNum ?? nativeWalletBalanceDisplayNum,
+    const combinedBalanceDisplayTruncated = getFormattedNumber({
+        value: combinedBalanceDisplayNum ?? nativeWalletBalanceDisplayNum,
     });
-    const nativeDexBalanceDisplayTruncated = getFormattedTokenBalance({
-        balance: nativeDexBalanceDisplayNum,
+    const nativeDexBalanceDisplayTruncated = getFormattedNumber({
+        value: nativeDexBalanceDisplayNum,
     });
-    const nativeWalletBalanceDisplayTruncated = getFormattedTokenBalance({
-        balance: nativeWalletBalanceDisplayNum,
+    const nativeWalletBalanceDisplayTruncated = getFormattedNumber({
+        value: nativeWalletBalanceDisplayNum,
     });
 
     const updatedNativeToken: TokenIF = {
@@ -146,8 +146,8 @@ export const fetchErc20TokenBalances = async (
             moralisErc20BalanceDisplay,
         );
 
-        const moralisErc20BalanceDisplayTruncated = getFormattedTokenBalance({
-            balance: moralisErc20BalanceDisplayNum,
+        const moralisErc20BalanceDisplayTruncated = getFormattedNumber({
+            value: moralisErc20BalanceDisplayNum,
         });
 
         return {
@@ -177,8 +177,8 @@ export const fetchErc20TokenBalances = async (
         const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
             ? parseFloat(erc20DexBalanceDisplay)
             : undefined;
-        const erc20DexBalanceDisplayTruncated = getFormattedTokenBalance({
-            balance: erc20DexBalanceDisplayNum,
+        const erc20DexBalanceDisplayTruncated = getFormattedNumber({
+            value: erc20DexBalanceDisplayNum,
         });
 
         return {
@@ -240,10 +240,9 @@ export const fetchErc20TokenBalances = async (
                         combinedBalanceDisplay,
                     );
 
-                    const combinedBalanceDisplayTruncated =
-                        getFormattedTokenBalance({
-                            balance: combinedBalanceDisplayNum,
-                        });
+                    const combinedBalanceDisplayTruncated = getFormattedNumber({
+                        value: combinedBalanceDisplayNum,
+                    });
 
                     updatedToken.dexBalance = newToken.dexBalance;
                     updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;

@@ -8,7 +8,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
 interface propsIF {
@@ -129,8 +129,8 @@ export default function WalletCard(props: propsIF) {
         <div className={styles.wallet_row}>
             {tokenInfo}
             <p className={styles.value}>
-                {getFormattedTokenBalance({
-                    balance: tokenUsdPrice * walletBalanceNum,
+                {getFormattedNumber({
+                    value: tokenUsdPrice * walletBalanceNum,
                     isUSD: true,
                     prefix: '$',
                 })}

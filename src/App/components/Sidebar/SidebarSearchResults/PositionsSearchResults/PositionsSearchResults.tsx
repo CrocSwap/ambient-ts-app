@@ -9,7 +9,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
-import { getFormattedTokenBalance } from '../../../../functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -27,8 +27,8 @@ function PositionLI(props: PositionLiPropsIF) {
     const rangeDisplay = getRangeDisplay(position, isDenomBase);
 
     // fn to generate human-readable version of total position value
-    const positionValue = getFormattedTokenBalance({
-        balance: position.totalValueUSD,
+    const positionValue = getFormattedNumber({
+        value: position.totalValueUSD,
     });
 
     return (

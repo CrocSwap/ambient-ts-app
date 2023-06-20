@@ -13,7 +13,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../../contexts/PoolContext';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -51,17 +51,17 @@ function LimitExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedTokenBalance({
-        balance: displayPriceWithDenom,
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
     });
-    const startPriceString = getFormattedTokenBalance({
-        balance: startDisplayPrice,
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
     });
-    const middlePriceString = getFormattedTokenBalance({
-        balance: middleDisplayPrice,
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
     });
-    const endPriceString = getFormattedTokenBalance({
-        balance: endDisplayPrice,
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
     });
 
     const extraInfoData = [

@@ -18,7 +18,7 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 interface propsIF {
     position: PositionIF;
@@ -180,19 +180,19 @@ export default function RangeDetails(props: propsIF) {
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
 
-                    const liqBaseDisplay = getFormattedTokenBalance({
-                        balance: liqBaseNum,
+                    const liqBaseDisplay = getFormattedNumber({
+                        value: liqBaseNum,
                     });
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay = getFormattedTokenBalance({
-                        balance: liqQuoteNum,
+                    const liqQuoteDisplay = getFormattedNumber({
+                        value: liqQuoteNum,
                     });
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     setUsdValue(
-                        getFormattedTokenBalance({
-                            balance: position.totalValueUSD,
+                        getFormattedNumber({
+                            value: position.totalValueUSD,
                             isUSD: true,
                         }),
                     );
@@ -202,14 +202,14 @@ export default function RangeDetails(props: propsIF) {
                     const quoteFeeDisplayNum =
                         positionStats.feesLiqQuoteDecimalCorrected;
 
-                    const baseFeeDisplayTruncated = getFormattedTokenBalance({
-                        balance: baseFeeDisplayNum,
+                    const baseFeeDisplayTruncated = getFormattedNumber({
+                        value: baseFeeDisplayNum,
                         zeroDisplay: '0',
                     });
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-                    const quoteFeesDisplayTruncated = getFormattedTokenBalance({
-                        balance: quoteFeeDisplayNum,
+                    const quoteFeesDisplayTruncated = getFormattedNumber({
+                        value: quoteFeeDisplayNum,
                         zeroDisplay: '0',
                     });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);

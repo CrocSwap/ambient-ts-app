@@ -33,7 +33,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -76,8 +76,8 @@ export default function Transfer(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated = getFormattedTokenBalance({
-        balance: tokenExchangeDepositsDisplayNum,
+    const tokenDexBalanceTruncated = getFormattedNumber({
+        value: tokenExchangeDepositsDisplayNum,
     });
 
     const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<
@@ -318,8 +318,8 @@ export default function Transfer(props: propsIF) {
                     : averageGasUnitsForErc20Transfer);
 
             setTransferGasPriceinDollars(
-                getFormattedTokenBalance({
-                    balance: gasPriceInDollarsNum,
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
                     isUSD: true,
                     prefix: '$',
                 }),

@@ -31,7 +31,7 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -139,8 +139,8 @@ function LimitCurrencySelector(props: propsIF) {
                 : tokenABalance
             : '';
 
-    const walletBalanceLocaleString = getFormattedTokenBalance({
-        balance: tokenABalance ? parseFloat(tokenABalance) : undefined,
+    const walletBalanceLocaleString = getFormattedNumber({
+        value: tokenABalance ? parseFloat(tokenABalance) : undefined,
     });
 
     const walletAndSurplusBalanceNonLocaleString =
@@ -156,8 +156,8 @@ function LimitCurrencySelector(props: propsIF) {
                   ).toString()
             : '';
 
-    const walletAndSurplusBalanceLocaleString = getFormattedTokenBalance({
-        balance: tokenADexBalance
+    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
+        value: tokenADexBalance
             ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
             : undefined,
     });

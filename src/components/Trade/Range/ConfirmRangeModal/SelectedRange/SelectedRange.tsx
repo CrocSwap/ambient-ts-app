@@ -2,7 +2,7 @@ import styles from './SelectedRange.module.css';
 import { memo, useContext, useState } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { getFormattedTokenBalance } from '../../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -46,8 +46,8 @@ function SelectedRange(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedTokenBalance({
-        balance: displayPriceWithDenom,
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
     });
 
     // PRICE RANGE DISPLAY

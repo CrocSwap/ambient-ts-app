@@ -5,14 +5,13 @@ import { HiOutlineExternalLink } from 'react-icons/hi';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../utils/functions/trimString';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { formatAmount } from '../../../../utils/numbers';
 import {
     PositionIF,
     TransactionIF,
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     message: string;
@@ -137,13 +136,11 @@ export default function PositionBox(props: propsIF) {
                     const invPriceDecimalCorrected =
                         position.swapInvPriceDecimalCorrected;
 
-                    const nonInvertedPriceTruncated = getFormattedTokenBalance({
-                        balance: priceDecimalCorrected,
-                        formatSecondaryBalance: formatAmount,
+                    const nonInvertedPriceTruncated = getFormattedNumber({
+                        value: priceDecimalCorrected,
                     });
-                    const invertedPriceTruncated = getFormattedTokenBalance({
-                        balance: invPriceDecimalCorrected,
-                        formatSecondaryBalance: formatAmount,
+                    const invertedPriceTruncated = getFormattedNumber({
+                        value: invPriceDecimalCorrected,
                     });
 
                     const truncatedDisplayPrice = tradeData.isDenomBase

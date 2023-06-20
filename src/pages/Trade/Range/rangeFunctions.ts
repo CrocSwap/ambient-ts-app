@@ -7,7 +7,7 @@ import {
 } from '@crocswap-libs/sdk';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;
@@ -86,12 +86,12 @@ export function getPinnedPriceValuesFromTicks(
                 : truncateDecimals(highPriceDisplay, 6)
             : truncateDecimals(highPriceDisplay, 2);
 
-    const lowPriceDisplayTruncatedWithCommas = getFormattedTokenBalance({
-        balance: lowPriceDisplay,
+    const lowPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: lowPriceDisplay,
         nullDisplay: '',
     });
-    const highPriceDisplayTruncatedWithCommas = getFormattedTokenBalance({
-        balance: highPriceDisplay,
+    const highPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: highPriceDisplay,
         nullDisplay: '',
     });
 

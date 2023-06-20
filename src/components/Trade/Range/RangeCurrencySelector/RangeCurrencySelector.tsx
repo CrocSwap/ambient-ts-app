@@ -26,7 +26,7 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     fieldId: string;
@@ -121,8 +121,8 @@ function RangeCurrencySelector(props: propsIF) {
               ).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = getFormattedTokenBalance({
-        balance: isTokenASelector
+    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
+        value: isTokenASelector
             ? tokenADexBalance
                 ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 : undefined
@@ -150,8 +150,8 @@ function RangeCurrencySelector(props: propsIF) {
             : tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = getFormattedTokenBalance({
-        balance: isTokenASelector
+    const walletBalanceLocaleString = getFormattedNumber({
+        value: isTokenASelector
             ? parseFloat(tokenABalance)
             : parseFloat(tokenBBalance),
         isUSD: true,

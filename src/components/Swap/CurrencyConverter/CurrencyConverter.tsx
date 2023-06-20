@@ -33,7 +33,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
-import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -456,9 +456,10 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = getFormattedTokenBalance({
-                balance: rawTokenBQty,
+            const truncatedTokenBQty = getFormattedNumber({
+                value: rawTokenBQty,
                 nullDisplay: '',
+                isInput: true,
             });
 
             setTokenBQtyLocal(truncatedTokenBQty);
@@ -498,9 +499,10 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = getFormattedTokenBalance({
-                balance: rawTokenBQty,
+            const truncatedTokenBQty = getFormattedNumber({
+                value: rawTokenBQty,
                 nullDisplay: '',
+                isInput: true,
             });
 
             setTokenBQtyLocal(truncatedTokenBQty);
@@ -539,9 +541,10 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
             }
 
-            const truncatedTokenAQty = getFormattedTokenBalance({
-                balance: rawTokenAQty,
+            const truncatedTokenAQty = getFormattedNumber({
+                value: rawTokenAQty,
                 nullDisplay: '',
+                isInput: true,
             });
 
             setTokenAQtyLocal(truncatedTokenAQty);

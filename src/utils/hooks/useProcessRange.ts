@@ -2,14 +2,13 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
-import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -183,12 +182,8 @@ export const useProcessRange = (
 
     const usdValueNum = position.totalValueUSD;
 
-    const usdValueTruncated = getFormattedTokenBalance({
-        balance: usdValueNum,
-    });
-
-    const usdValueLocaleString = getFormattedTokenBalance({
-        balance: usdValueNum,
+    const usdValue = getFormattedNumber({
+        value: usdValueNum,
     });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
@@ -202,8 +197,6 @@ export const useProcessRange = (
         ? `${quoteQty || '0.00'}`
         : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
-
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 15
@@ -258,7 +251,6 @@ export const useProcessRange = (
 
         // value
         usdValue,
-        usdValueLocaleString,
 
         // Token Qty data
         baseQty,
