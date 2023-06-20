@@ -604,6 +604,8 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(truncateString(base));
             setNewQuoteQtyDisplay(truncateString(quote));

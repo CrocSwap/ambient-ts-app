@@ -1,5 +1,5 @@
 .price_info_container {
-    padding: 0.5rem 0;
+    padding: 0.5rem 0 0;
 }
 
 .price_info_content {
@@ -82,7 +82,7 @@
     background: transparent;
     outline: none;
     border: none;
-    margin: 0.25rem 2rem;
+    margin: 0.25rem 2rem 0;
 }
 .gas_pump_dropdown button {
     background: transparent;
@@ -99,7 +99,7 @@
     line-height: var(--body-lh);
 
     cursor: pointer;
-    margin: 0.25rem auto;
+    margin: 0.5rem auto;
     margin-bottom: 0.5rem;
     padding: 0 0.25rem;
 }
