@@ -85,9 +85,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text1);
-    background: transparent;
     outline: none;
-    border: none;
 }
 
 .dropdown_menu button:hover {

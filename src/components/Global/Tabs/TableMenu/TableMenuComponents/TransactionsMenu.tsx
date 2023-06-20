@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
@@ -320,17 +320,17 @@ export default function TransactionsMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
-    // useEffect(() => {
-    //     if (
-    //         showDropdownMenu &&
-    //         document.activeElement !== menuItemRef.current
-    //     ) {
-    //         const interval = setTimeout(() => {
-    //             setShowDropdownMenu(false);
-    //         }, 5000);
-    //         return () => clearTimeout(interval);
-    //     } else return;
-    // }, [showDropdownMenu]);
+    useEffect(() => {
+        if (
+            showDropdownMenu &&
+            document.activeElement !== menuItemRef.current
+        ) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
