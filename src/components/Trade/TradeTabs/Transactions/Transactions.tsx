@@ -555,7 +555,7 @@ function Transactions(props: propsIF) {
                 expandTradeTable && styles.main_list_expanded
             }`}
             style={
-                isCandleSelected && !showViewMoreButton
+                isCandleSelected && !expandTradeTable && !showViewMoreButton
                     ? { height: '80%' }
                     : undefined
             }
