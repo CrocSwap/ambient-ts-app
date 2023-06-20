@@ -10,12 +10,12 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { scaleData } from '../Trade/TradeCharts/TradeCandleStickChart';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
     setBandwidth: React.Dispatch<number>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    scaleData: any;
+    scaleData: scaleData;
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
@@ -79,34 +79,6 @@ export default function CandleChart(props: candlePropsIF) {
         if (scaleData !== undefined) {
             const canvasCandlestick = d3fc
                 .autoBandwidth(d3fc.seriesCanvasCandlestick())
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .decorate((context: any, d: any) => {
-                    const close = denomInBase
-                        ? d.invPriceCloseExclMEVDecimalCorrected
-                        : d.priceCloseExclMEVDecimalCorrected;
-
-                    const open = denomInBase
-                        ? d.invPriceOpenExclMEVDecimalCorrected
-                        : d.priceOpenExclMEVDecimalCorrected;
-
-                    context.fillStyle =
-                        selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#24243e';
-
-                    context.strokeStyle =
-                        selectedDate !== undefined &&
-                        selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#7371FC';
-
-                    context.cursorStyle = 'pointer';
-                })
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale)
                 .crossValue((d: CandleData) => d.time * 1000)
@@ -134,7 +106,39 @@ export default function CandleChart(props: candlePropsIF) {
             setCandlestick(() => canvasCandlestick);
             renderCanvasArray([d3CanvasCandle]);
         }
-    }, [diffHashSig(scaleData), selectedDate]);
+    }, [diffHashSig(scaleData)]);
+
+    useEffect(() => {
+        if (candlestick) {
+            candlestick.decorate(
+                (context: CanvasRenderingContext2D, d: CandleData) => {
+                    const close = denomInBase
+                        ? d.invPriceCloseExclMEVDecimalCorrected
+                        : d.priceCloseExclMEVDecimalCorrected;
+
+                    const open = denomInBase
+                        ? d.invPriceOpenExclMEVDecimalCorrected
+                        : d.priceOpenExclMEVDecimalCorrected;
+
+                    context.fillStyle =
+                        selectedDate !== undefined &&
+                        selectedDate === d.time * 1000
+                            ? '#E480FF'
+                            : close > open
+                            ? '#CDC1FF'
+                            : '#24243e';
+
+                    context.strokeStyle =
+                        selectedDate !== undefined &&
+                        selectedDate === d.time * 1000
+                            ? '#E480FF'
+                            : close > open
+                            ? '#CDC1FF'
+                            : '#7371FC';
+                },
+            );
+        }
+    }, [candlestick, selectedDate]);
 
     useEffect(() => {
         const canvas = d3
@@ -151,8 +155,7 @@ export default function CandleChart(props: candlePropsIF) {
                         candlestick(data);
                     }
                 })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('measure', (event: any) => {
+                .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candlestick.context(ctx);
