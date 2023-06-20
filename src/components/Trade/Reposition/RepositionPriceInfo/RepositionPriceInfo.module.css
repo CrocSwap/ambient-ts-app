@@ -1,4 +1,7 @@
-/* ------------------------ */
+.price_info_container {
+    padding: 0.5rem 0;
+}
+
 .price_info_content {
     /* background: rgb(19, 2, 2); */
     padding: 0.5rem 1.5rem;
