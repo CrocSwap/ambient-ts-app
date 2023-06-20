@@ -35,13 +35,9 @@
 }
 
 .swapbox_bottom {
-    margin: 6px 10px;
-    height: 33px;
-
     display: grid;
     gap: 4px;
-
-    padding: 0 4px;
+    padding: 16px;
 }
 .wallet_container,
 .surplus_container,

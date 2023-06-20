@@ -1,9 +1,9 @@
-.main_container{
+/* .main_container{
     padding: 0 25px 0 32px;
-}
-.extra_details_container{
+} */
+/* .extra_details_container{
     padding: 8px 0;
-}
+} */
 
 .extra_info_content {
     width: 100%;
@@ -22,7 +22,8 @@
     border: none;
     border-radius: var(--border-radius);
 
-    padding: 0 8px;
+    padding: 0 16px;
+    margin-bottom: 16px;
 
 
 }
