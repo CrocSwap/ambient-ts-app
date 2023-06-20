@@ -263,7 +263,7 @@ p:focus-visible {
         transition: all var(--animation-speed) ease-in-out;
 
         display: grid;
-        grid-template-columns: 31px auto;
+        grid-template-columns: 32px auto;
     }
 
     .content-container {
