@@ -19,10 +19,10 @@
     width: 100%;
     height: 30px;
     background: var(--dark2);
-    color: var(--text1);
     outline: none;
     border: none;
     padding: 0 4px;
+    margin-bottom: 8px;
     border-radius: 4px;
     /* text-align: center; */
 }
@@ -67,4 +67,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.weth_text{
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+  text-align: center;
+  color: var(--text1);
+  padding: 1rem;  
+}
+@media only screen and (min-width: 768px) {
+.container{
+ width: 448px;   
+}
 }
