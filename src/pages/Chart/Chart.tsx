@@ -3728,7 +3728,7 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             drawChart(scaleData, selectedDate);
         }
-    }, [denomInBase, selectedDate, isSidebarOpen, liqMode]);
+    }, [denomInBase, selectedDate, isSidebarOpen, liqMode, location.pathname]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData?.xScale.invert(
