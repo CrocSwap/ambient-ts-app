@@ -56,6 +56,7 @@ import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 function Reposition() {
     // current URL parameter string
@@ -176,30 +177,12 @@ function Reposition() {
         quoteTokenDecimals,
     );
 
-    const truncatedCurrentPoolDisplayPriceInBase = currentPoolDisplayPriceInBase
-        ? currentPoolDisplayPriceInBase < 2
-            ? currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '0.00';
-
-    const truncatedCurrentPoolDisplayPriceInQuote =
-        currentPoolDisplayPriceInQuote
-            ? currentPoolDisplayPriceInQuote < 2
-                ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0.00';
+    const truncatedCurrentPoolDisplayPriceInBase = getFormattedTokenBalance({
+        balance: currentPoolDisplayPriceInBase,
+    });
+    const truncatedCurrentPoolDisplayPriceInQuote = getFormattedTokenBalance({
+        balance: currentPoolDisplayPriceInQuote,
+    });
 
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
@@ -463,30 +446,14 @@ function Reposition() {
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
                     positionStats.positionLiqQuoteDecimalCorrected;
-                const liqBaseDisplay = liqBaseNum
-                    ? liqBaseNum < 2
-                        ? liqBaseNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : liqBaseNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
-                    : undefined;
+                const liqBaseDisplay = getFormattedTokenBalance({
+                    balance: liqBaseNum,
+                });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
-                const liqQuoteDisplay = liqQuoteNum
-                    ? liqQuoteNum < 2
-                        ? liqQuoteNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : liqQuoteNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
-                    : undefined;
+                const liqQuoteDisplay = getFormattedTokenBalance({
+                    balance: liqQuoteNum,
+                });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);
@@ -495,11 +462,6 @@ function Reposition() {
     useEffect(() => {
         fetchCurrentCollateral();
     }, [lastBlockNumber, JSON.stringify(position)]);
-
-    // const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
-    // const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
-    // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
-    // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
@@ -627,11 +589,11 @@ function Reposition() {
                 gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

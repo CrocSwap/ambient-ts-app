@@ -349,11 +349,11 @@ export default function Deposit(props: propsIF) {
                     : averageGasUnitsForErc20Deposit);
 
             setDepositGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);

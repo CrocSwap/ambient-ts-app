@@ -29,6 +29,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -126,19 +127,12 @@ function CurrencySelector(props: propsIF) {
         ? tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = props.sellToken
-        ? tokenABalance
-            ? parseFloat(tokenABalance).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '...'
-        : tokenBBalance
-        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletBalanceLocaleString = getFormattedTokenBalance({
+        balance: props.sellToken
+            ? parseFloat(tokenABalance)
+            : parseFloat(tokenBBalance),
+        isUSD: true,
+    });
 
     const walletAndSurplusBalanceNonLocaleString = props.sellToken
         ? tokenADexBalance
@@ -154,23 +148,16 @@ function CurrencySelector(props: propsIF) {
         ? (parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = props.sellToken
-        ? tokenADexBalance
-            ? (
-                  parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-              ).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '...'
-        : tokenBDexBalance
-        ? (
-              parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-          ).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletAndSurplusBalanceLocaleString = getFormattedTokenBalance({
+        balance: props.sellToken
+            ? tokenADexBalance
+                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : undefined
+            : tokenBDexBalance
+            ? parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+            : undefined,
+        isUSD: true,
+    });
 
     const isTokenADexBalanceNonZero =
         !!tokenADexBalance && parseFloat(tokenADexBalance) > 0;

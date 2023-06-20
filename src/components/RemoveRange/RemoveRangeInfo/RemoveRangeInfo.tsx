@@ -1,6 +1,7 @@
 import styles from './RemoveRangeInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 interface IRemoveRangeInfoProps {
     baseTokenSymbol: string;
@@ -32,91 +33,24 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         isAmbient,
     } = props;
 
-    const liqBaseDisplay =
-        posLiqBaseDecimalCorrected !== undefined
-            ? posLiqBaseDecimalCorrected !== 0
-                ? posLiqBaseDecimalCorrected < 2
-                    ? posLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
-                    : posLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const liqQuoteDisplay =
-        posLiqQuoteDecimalCorrected !== undefined
-            ? posLiqQuoteDecimalCorrected !== 0
-                ? posLiqQuoteDecimalCorrected < 2
-                    ? posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
-                    : posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const feeLiqBaseDisplay =
-        feeLiqBaseDecimalCorrected !== undefined
-            ? feeLiqBaseDecimalCorrected !== 0
-                ? feeLiqBaseDecimalCorrected < 2
-                    ? feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
-                    : feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const feeLiqQuoteDisplay =
-        feeLiqQuoteDecimalCorrected !== undefined
-            ? feeLiqQuoteDecimalCorrected !== 0
-                ? feeLiqQuoteDecimalCorrected < 2
-                    ? feeLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 6,
-                      })
-                    : feeLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const baseRemovalString =
-        baseRemovalNum !== 0
-            ? baseRemovalNum < 2
-                ? baseRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : baseRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0';
-
-    const quoteRemovalString =
-        quoteRemovalNum !== 0
-            ? quoteRemovalNum < 2
-                ? quoteRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : quoteRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0';
+    const liqBaseDisplay = getFormattedTokenBalance({
+        balance: posLiqBaseDecimalCorrected,
+    });
+    const liqQuoteDisplay = getFormattedTokenBalance({
+        balance: posLiqQuoteDecimalCorrected,
+    });
+    const feeLiqBaseDisplay = getFormattedTokenBalance({
+        balance: feeLiqBaseDecimalCorrected,
+    });
+    const feeLiqQuoteDisplay = getFormattedTokenBalance({
+        balance: feeLiqQuoteDecimalCorrected,
+    });
+    const baseRemovalString = getFormattedTokenBalance({
+        balance: baseRemovalNum,
+    });
+    const quoteRemovalString = getFormattedTokenBalance({
+        balance: quoteRemovalNum,
+    });
 
     const rewardsEarnedSection = !isAmbient ? (
         <div>

@@ -1,11 +1,8 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import {
-    getPositionValue,
-    getRangeDisplay,
-    getSymbols,
-} from './functions/exports';
+import { getRangeDisplay, getSymbols } from './functions/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     position: PositionIF;
@@ -30,7 +27,10 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     );
 
     // human-readable string showing total value of the position
-    const value = getPositionValue(position.totalValueUSD);
+    const value = getFormattedTokenBalance({
+        balance: position.totalValueUSD,
+        prefix: '$',
+    });
 
     return (
         <div className={styles.container} onClick={() => handleClick(position)}>

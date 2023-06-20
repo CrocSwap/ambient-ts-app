@@ -41,6 +41,7 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     provider: ethers.providers.Provider;
@@ -127,11 +128,11 @@ export default function HarvestPosition(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setHarvestGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

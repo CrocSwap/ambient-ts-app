@@ -76,8 +76,7 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
     const combinedBalanceDisplayTruncated = getFormattedTokenBalance({
-        balance: combinedBalanceDisplayNum,
-        secondaryBalance: nativeWalletBalanceDisplayNum,
+        balance: combinedBalanceDisplayNum ?? nativeWalletBalanceDisplayNum,
     });
     const nativeDexBalanceDisplayTruncated = getFormattedTokenBalance({
         balance: nativeDexBalanceDisplayNum,

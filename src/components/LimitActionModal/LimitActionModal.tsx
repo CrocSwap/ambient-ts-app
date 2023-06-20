@@ -27,6 +27,7 @@ import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -89,11 +90,11 @@ export default function LimitActionModal(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setNetworkFee(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

@@ -17,7 +17,7 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
-import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 // interface for props in this file
 interface propsIF {
@@ -115,12 +115,12 @@ function ExtraInfo(props: propsIF) {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
-                ? `${getDisplayableEffectivePriceString(
-                      effectivePriceWithDenom,
-                  )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${getDisplayableEffectivePriceString(
-                      effectivePriceWithDenom,
-                  )} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${getFormattedTokenBalance({
+                      balance: effectivePriceWithDenom,
+                  })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${getFormattedTokenBalance({
+                      balance: effectivePriceWithDenom,
+                  })} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
         {

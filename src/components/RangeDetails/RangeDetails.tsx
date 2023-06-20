@@ -180,51 +180,22 @@ export default function RangeDetails(props: propsIF) {
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
 
-                    const liqBaseDisplay =
-                        liqBaseNum !== undefined
-                            ? liqBaseNum === 0
-                                ? '0'
-                                : liqBaseNum < 2
-                                ? liqBaseNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                  })
-                                : liqBaseNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
+                    const liqBaseDisplay = getFormattedTokenBalance({
+                        balance: liqBaseNum,
+                    });
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay =
-                        liqQuoteNum !== undefined
-                            ? liqQuoteNum === 0
-                                ? '0'
-                                : liqQuoteNum < 2
-                                ? liqQuoteNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                  })
-                                : liqQuoteNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
+                    const liqQuoteDisplay = getFormattedTokenBalance({
+                        balance: liqQuoteNum,
+                    });
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
-                    const usdValue = position.totalValueUSD;
-                    if (usdValue !== undefined) {
-                        setUsdValue(
-                            usdValue === 0
-                                ? '0'
-                                : usdValue.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }),
-                        );
-                    } else {
-                        setUsdValue(undefined);
-                    }
+                    setUsdValue(
+                        getFormattedTokenBalance({
+                            balance: position.totalValueUSD,
+                            isUSD: true,
+                        }),
+                    );
 
                     const baseFeeDisplayNum =
                         positionStats.feesLiqBaseDecimalCorrected;

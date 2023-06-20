@@ -195,29 +195,13 @@ export default function OrderDetails(props: propsIF) {
                     const isOrderClaimable = positionStats.claimableLiq !== 0;
                     setIsClaimable(isOrderClaimable);
 
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqBaseDisplay = getFormattedTokenBalance({
+                        balance: liqBaseNum,
+                    });
 
-                    const claimableBaseDisplay = claimableBaseNum
-                        ? claimableBaseNum < 2
-                            ? claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableBaseDisplay = getFormattedTokenBalance({
+                        balance: claimableBaseNum,
+                    });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -225,29 +209,13 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay = getFormattedTokenBalance({
+                        balance: liqQuoteNum,
+                    });
 
-                    const claimableQuoteDisplay = claimableQuoteNum
-                        ? claimableQuoteNum < 2
-                            ? claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableQuoteDisplay = getFormattedTokenBalance({
+                        balance: claimableQuoteNum,
+                    });
 
                     isOrderFilled
                         ? setQuoteCollateralDisplay(
@@ -255,18 +223,12 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
-                    const usdValue = positionStats.totalValueUSD;
-
-                    if (usdValue) {
-                        setUsdValue(
-                            usdValue.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
-                        );
-                    } else {
-                        setUsdValue('0.00');
-                    }
+                    setUsdValue(
+                        getFormattedTokenBalance({
+                            balance: positionStats.totalValueUSD,
+                            isUSD: true,
+                        }),
+                    );
                 })
                 .catch(console.error);
         }

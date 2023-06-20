@@ -1,9 +1,10 @@
 import styles from './SidebarLimitOrdersCard.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { getLimitPrice, getLimitValue } from './functions/exports';
+import { getLimitPrice } from './functions/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     order: LimitOrderIF;
@@ -18,7 +19,10 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     const price = getLimitPrice(order, tokens, isDenomBase);
 
     // human-readable limit order value to display in the DOM
-    const value = getLimitValue(order);
+    const value = getFormattedTokenBalance({
+        balance: order.totalValueUSD,
+        prefix: '$',
+    });
 
     return (
         <div className={styles.container} onClick={() => handleClick(order)}>

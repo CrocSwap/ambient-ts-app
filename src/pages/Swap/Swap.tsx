@@ -53,6 +53,7 @@ import { formSlugForPairParams } from '../../App/functions/urlSlugs';
 import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../App/hooks/useTradeData';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -417,11 +418,11 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

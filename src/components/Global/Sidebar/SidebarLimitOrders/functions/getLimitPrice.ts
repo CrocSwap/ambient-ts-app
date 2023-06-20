@@ -1,6 +1,7 @@
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
+import { getFormattedTokenBalance } from '../../../../../App/functions/getFormattedTokenBalance';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,
@@ -21,29 +22,15 @@ export const getLimitPrice = (
 
     if (isDenomBase) {
         const nonTruncatedPrice = limitOrder.invLimitPriceDecimalCorrected;
-        const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        const truncatedPrice = getFormattedTokenBalance({
+            balance: nonTruncatedPrice,
+        });
         output = quoteTokenCharacter + truncatedPrice;
     } else {
         const nonTruncatedPrice = limitOrder.limitPriceDecimalCorrected;
-        const truncatedPrice =
-            nonTruncatedPrice < 2
-                ? nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : nonTruncatedPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+        const truncatedPrice = getFormattedTokenBalance({
+            balance: nonTruncatedPrice,
+        });
         output = baseTokenCharacter + truncatedPrice;
     }
 

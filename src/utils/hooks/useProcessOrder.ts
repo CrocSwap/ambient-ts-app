@@ -299,23 +299,9 @@ export const useProcessOrder = (
                 ? askTickPrice
                 : bidTickPrice;
 
-            // TODO: clarify precision 5
-            const startPriceDisplay =
-                startPriceDisplayNum === 0
-                    ? '0'
-                    : startPriceDisplayNum < 0.0001
-                    ? startPriceDisplayNum.toExponential(2)
-                    : startPriceDisplayNum < 1
-                    ? startPriceDisplayNum.toPrecision(3)
-                    : startPriceDisplayNum < 2
-                    ? startPriceDisplayNum.toPrecision(5)
-                    : startPriceDisplayNum >= 100000
-                    ? formatAmountOld(startPriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      startPriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const startPriceDisplay = getFormattedTokenBalance({
+                balance: startPriceDisplayNum,
+            });
 
             const startPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -326,23 +312,9 @@ export const useProcessOrder = (
                     ? bidTickInvPrice
                     : askTickInvPrice;
 
-            // TODO: clarify precision 5
-            const startPriceDisplayDenomByMoneyness =
-                startPriceDenomByMoneyness === 0
-                    ? '0'
-                    : startPriceDenomByMoneyness < 0.0001
-                    ? startPriceDenomByMoneyness.toExponential(2)
-                    : startPriceDenomByMoneyness < 1
-                    ? startPriceDenomByMoneyness.toPrecision(3)
-                    : startPriceDenomByMoneyness < 2
-                    ? startPriceDenomByMoneyness.toPrecision(5)
-                    : startPriceDenomByMoneyness >= 100000
-                    ? formatAmountOld(startPriceDenomByMoneyness)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      startPriceDenomByMoneyness.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const startPriceDisplayDenomByMoneyness = getFormattedTokenBalance({
+                balance: startPriceDenomByMoneyness,
+            });
 
             const middlePriceDisplayNum = isDenomBase
                 ? isBid
@@ -352,23 +324,9 @@ export const useProcessOrder = (
                 ? priceHalfBelow
                 : priceHalfAbove;
 
-            // TODO: clarify precision 5
-            const middlePriceDisplay =
-                middlePriceDisplayNum === 0
-                    ? '0'
-                    : middlePriceDisplayNum < 0.0001
-                    ? middlePriceDisplayNum.toExponential(2)
-                    : middlePriceDisplayNum < 1
-                    ? middlePriceDisplayNum.toPrecision(3)
-                    : middlePriceDisplayNum < 2
-                    ? middlePriceDisplayNum.toPrecision(5)
-                    : middlePriceDisplayNum >= 100000
-                    ? formatAmountOld(middlePriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      middlePriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const middlePriceDisplay = getFormattedTokenBalance({
+                balance: middlePriceDisplayNum,
+            });
 
             const middlePriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -379,23 +337,9 @@ export const useProcessOrder = (
                     ? 1 / priceHalfBelow
                     : 1 / priceHalfAbove;
 
-            // TODO: clarify precision 5
-            const middlePriceDisplayDenomByMoneyness =
-                middlePriceDenomByMoneyness === 0
-                    ? '0'
-                    : middlePriceDenomByMoneyness < 0.0001
-                    ? middlePriceDenomByMoneyness.toExponential(2)
-                    : middlePriceDenomByMoneyness < 1
-                    ? middlePriceDenomByMoneyness.toPrecision(3)
-                    : middlePriceDenomByMoneyness < 2
-                    ? middlePriceDenomByMoneyness.toPrecision(5)
-                    : middlePriceDenomByMoneyness >= 100000
-                    ? formatAmountOld(middlePriceDenomByMoneyness)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      middlePriceDenomByMoneyness.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const middlePriceDisplayDenomByMoneyness = getFormattedTokenBalance(
+                { balance: middlePriceDenomByMoneyness },
+            );
 
             const finishPriceDisplayNum = isDenomBase
                 ? isBid
@@ -405,23 +349,9 @@ export const useProcessOrder = (
                 ? bidTickPrice
                 : askTickPrice;
 
-            // TODO: clarify precision 5
-            const finishPriceDisplay =
-                finishPriceDisplayNum === 0
-                    ? '0'
-                    : finishPriceDisplayNum < 0.0001
-                    ? finishPriceDisplayNum.toExponential(2)
-                    : finishPriceDisplayNum < 1
-                    ? finishPriceDisplayNum.toPrecision(3)
-                    : startPriceDisplayNum < 2
-                    ? startPriceDisplayNum.toPrecision(5)
-                    : finishPriceDisplayNum >= 100000
-                    ? formatAmountOld(finishPriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      finishPriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const finishPriceDisplay = getFormattedTokenBalance({
+                balance: finishPriceDisplayNum,
+            });
 
             setStartPriceDisplay(startPriceDisplay);
             setStartPriceDisplayDenomByMoneyness(

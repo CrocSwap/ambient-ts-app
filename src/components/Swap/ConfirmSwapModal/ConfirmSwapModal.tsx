@@ -24,8 +24,8 @@ import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -257,12 +257,12 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                            ? `${getFormattedTokenBalance({
+                                  balance: effectivePriceWithDenom,
+                              })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${getFormattedTokenBalance({
+                                  balance: effectivePriceWithDenom,
+                              })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>
                 <div className={styles.row}>

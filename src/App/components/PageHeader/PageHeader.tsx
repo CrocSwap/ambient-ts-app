@@ -32,6 +32,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { getFormattedTokenBalance } from '../../functions/getFormattedTokenBalance';
 
 const PageHeader = function () {
     const {
@@ -178,22 +179,9 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice =
-        !poolPriceDisplayWithDenom ||
-        poolPriceDisplayWithDenom === Infinity ||
-        poolPriceDisplayWithDenom === 0
-            ? ''
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedTokenBalance({
+        balance: poolPriceDisplayWithDenom,
+    });
 
     useEffect(() => {
         const path = location.pathname;

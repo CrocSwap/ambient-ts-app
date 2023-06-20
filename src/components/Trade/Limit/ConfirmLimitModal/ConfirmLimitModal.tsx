@@ -11,6 +11,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -61,38 +62,20 @@ export default function ConfirmLimitModal(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPoolPriceString =
-        displayPoolPriceWithDenom === Infinity ||
-        displayPoolPriceWithDenom === 0
-            ? '…'
-            : displayPoolPriceWithDenom < 2
-            ? displayPoolPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPoolPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPoolPriceString = getFormattedTokenBalance({
+        balance: displayPoolPriceWithDenom,
+    });
 
     const txApproved = newLimitOrderTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeSellString =
-        parseFloat(tokenAInputQty) > 999
-            ? parseFloat(tokenAInputQty).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAInputQty;
-    const localeBuyString =
-        parseFloat(tokenBInputQty) > 999
-            ? parseFloat(tokenBInputQty).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBInputQty;
+    const localeSellString = getFormattedTokenBalance({
+        balance: parseFloat(tokenAInputQty),
+    });
+    const localeBuyString = getFormattedTokenBalance({
+        balance: parseFloat(tokenBInputQty),
+    });
 
     const sellTokenData = tradeData.tokenA;
     const buyTokenData = tradeData.tokenB;
@@ -126,41 +109,15 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const startPriceString = getFormattedTokenBalance({
+        balance: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedTokenBalance({
+        balance: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedTokenBalance({
+        balance: endDisplayPrice,
+    });
 
     // this is the starting state for the bypass confirmation toggle switch
     // if this modal is being shown, we can assume bypass is disabled

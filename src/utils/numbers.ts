@@ -38,7 +38,7 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
         abbreviations: {
             million: 'M',
             billion: 'B',
-            thousand: 'K',
+            thousand: 'k',
         },
     });
 };

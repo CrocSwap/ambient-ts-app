@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { getFormattedTokenBalance } from '../../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     token?: TokenIF;
@@ -133,14 +134,11 @@ export default function ExchangeCard(props: propsIF) {
         <div className={styles.exchange_row}>
             {tokenInfo}
             <p className={styles.value}>
-                $
-                {(tokenUsdPrice * exchangeBalanceNum).toLocaleString(
-                    undefined,
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    },
-                )}
+                {getFormattedTokenBalance({
+                    balance: tokenUsdPrice * exchangeBalanceNum,
+                    isUSD: true,
+                    prefix: '$',
+                })}
             </p>
             <p className={styles.amount}>{exchangeBalanceTruncated}</p>
         </div>

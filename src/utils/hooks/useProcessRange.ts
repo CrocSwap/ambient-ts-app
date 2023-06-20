@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
+import { getFormattedTokenBalance } from '../../App/functions/getFormattedTokenBalance';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -177,27 +178,13 @@ export const useProcessRange = (
 
     const usdValueNum = position.totalValueUSD;
 
-    const usdValueTruncated = !usdValueNum
-        ? '0'
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const usdValueTruncated = getFormattedTokenBalance({
+        balance: usdValueNum,
+    });
 
-    const usdValueLocaleString = !usdValueNum
-        ? '…'
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const usdValueLocaleString = getFormattedTokenBalance({
+        balance: usdValueNum,
+    });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 

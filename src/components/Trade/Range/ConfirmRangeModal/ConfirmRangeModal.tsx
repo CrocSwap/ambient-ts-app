@@ -17,6 +17,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -72,21 +73,12 @@ function ConfirmRangeModal(props: propsIF) {
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeTokenAString =
-        tokenAQtyLocal > 999
-            ? tokenAQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAQtyLocal.toString();
-
-    const localeTokenBString =
-        tokenBQtyLocal > 999
-            ? tokenBQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBQtyLocal.toString();
+    const localeTokenAString = getFormattedTokenBalance({
+        balance: tokenAQtyLocal,
+    });
+    const localeTokenBString = getFormattedTokenBalance({
+        balance: tokenBQtyLocal,
+    });
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />

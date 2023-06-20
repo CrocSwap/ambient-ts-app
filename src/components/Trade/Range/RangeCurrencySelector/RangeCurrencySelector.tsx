@@ -26,6 +26,7 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedTokenBalance } from '../../../../App/functions/getFormattedTokenBalance';
 
 interface propsIF {
     fieldId: string;
@@ -120,23 +121,16 @@ function RangeCurrencySelector(props: propsIF) {
               ).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = isTokenASelector
-        ? tokenADexBalance
-            ? (
-                  parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-              ).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '...'
-        : tokenBDexBalance
-        ? (
-              parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-          ).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletAndSurplusBalanceLocaleString = getFormattedTokenBalance({
+        balance: isTokenASelector
+            ? tokenADexBalance
+                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : undefined
+            : tokenBDexBalance
+            ? parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+            : undefined,
+        isUSD: true,
+    });
 
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
@@ -156,19 +150,12 @@ function RangeCurrencySelector(props: propsIF) {
             : tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = isTokenASelector
-        ? tokenABalance
-            ? parseFloat(tokenABalance).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '...'
-        : tokenBBalance
-        ? parseFloat(tokenBBalance).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletBalanceLocaleString = getFormattedTokenBalance({
+        balance: isTokenASelector
+            ? parseFloat(tokenABalance)
+            : parseFloat(tokenBBalance),
+        isUSD: true,
+    });
 
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||

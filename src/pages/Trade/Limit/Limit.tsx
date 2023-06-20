@@ -57,6 +57,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedTokenBalance } from '../../../App/functions/getFormattedTokenBalance';
 
 export default function Limit() {
     const {
@@ -177,18 +178,9 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                     setEndDisplayPrice(displayPriceWithDenom);
 
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedTokenBalance({
+                        balance: displayPriceWithDenom,
+                    });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -252,18 +244,9 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                     setEndDisplayPrice(displayPriceWithDenom);
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedTokenBalance({
+                        balance: displayPriceWithDenom,
+                    });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -601,11 +584,11 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedTokenBalance({
+                    balance: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
