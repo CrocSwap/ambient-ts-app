@@ -84,18 +84,21 @@ export default function Withdraw(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
-        ? tokenExchangeDepositsDisplayNum < 0.0001
-            ? tokenExchangeDepositsDisplayNum.toExponential(2)
-            : tokenExchangeDepositsDisplayNum < 2
-            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : // : tokenDexBalanceNum >= 100000
-              // ? formatAmountOld(tokenDexBalanceNum)
-              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenDexBalanceTruncated =
+        tokenExchangeDepositsDisplayNum !== undefined
+            ? tokenExchangeDepositsDisplayNum === 0
+                ? '0.00'
+                : tokenExchangeDepositsDisplayNum < 0.0001
+                ? tokenExchangeDepositsDisplayNum.toExponential(2)
+                : tokenExchangeDepositsDisplayNum < 2
+                ? tokenExchangeDepositsDisplayNum.toPrecision(3)
+                : // : tokenDexBalanceNum >= 100000
+                  // ? formatAmountOld(tokenDexBalanceNum)
+                  tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<
         string | undefined
@@ -396,7 +399,7 @@ export default function Withdraw(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenDexBalanceTruncated || '0.0'}
+                    {tokenDexBalanceTruncated || '...'}
                     {tokenDexBalance !== '0' ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}

@@ -94,16 +94,19 @@ export default function Deposit(props: propsIF) {
         ? parseFloat(tokenWalletBalanceDisplay)
         : undefined;
 
-    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
-        ? tokenWalletBalanceDisplayNum < 0.0001
-            ? 0.0
-            : tokenWalletBalanceDisplayNum < 2
-            ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenWalletBalanceTruncated =
+        tokenWalletBalanceDisplayNum !== undefined
+            ? tokenWalletBalanceDisplayNum === 0
+                ? '0.00'
+                : tokenWalletBalanceDisplayNum < 0.0001
+                ? 0.0
+                : tokenWalletBalanceDisplayNum < 2
+                ? tokenWalletBalanceDisplayNum.toPrecision(3)
+                : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
         string | undefined
@@ -399,7 +402,7 @@ export default function Deposit(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenWalletBalanceTruncated || '0.0'}
+                    {tokenWalletBalanceTruncated || '...'}
                     {isWalletBalanceSufficientToCoverDeposit ? (
                         <button
                             className={`${styles.max_button} ${styles.max_button_enable}`}
