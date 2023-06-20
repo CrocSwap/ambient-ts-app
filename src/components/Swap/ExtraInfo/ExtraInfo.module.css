@@ -5,6 +5,9 @@
     padding: 8px 0;
 } */
 
+.extra_details_container{
+    padding-bottom: 0.5rem;
+}
 .extra_info_content {
     width: 100%;
     display: flex;
@@ -55,7 +58,7 @@
 
 .extra_details {
     /* background-color: var(--dark2); */
-    padding: 8px;
+    padding: 8px 16px;
     border: 1px solid var(--dark3);
   
 
@@ -64,6 +67,7 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+  
 }
 
 .price_impact {
