@@ -5,8 +5,8 @@
 
 .modal_footer {
     width: 100%;
-    padding: 0 20px;
-    margin-top: 10px;
+    padding: 0 1rem;
+    margin-top: 0.5rem;
 }
 
 .modal_content {

@@ -182,13 +182,13 @@ function Reposition() {
             ? currentPoolDisplayPriceInBase.toExponential(2)
             : currentPoolDisplayPriceInBase < 2
             ? currentPoolDisplayPriceInBase.toPrecision(3)
-            : currentPoolDisplayPriceInBase >= 10000
+            : currentPoolDisplayPriceInBase >= 100000
             ? formatAmountOld(currentPoolDisplayPriceInBase, 1)
             : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
-        : '0.00';
+        : '...';
 
     const truncatedCurrentPoolDisplayPriceInQuote =
         currentPoolDisplayPriceInQuote
@@ -196,17 +196,17 @@ function Reposition() {
                 ? currentPoolDisplayPriceInQuote.toExponential(2)
                 : currentPoolDisplayPriceInQuote < 2
                 ? currentPoolDisplayPriceInQuote.toPrecision(3)
-                : currentPoolDisplayPriceInQuote >= 10000
+                : currentPoolDisplayPriceInQuote >= 100000
                 ? formatAmountOld(currentPoolDisplayPriceInQuote, 1)
                 : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   })
-            : '0.00';
+            : '...';
 
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
-            ? '0'
+            ? '...'
             : isDenomBase
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
@@ -404,11 +404,12 @@ function Reposition() {
 
     function truncateString(qty?: number): string {
         return qty
-            ? qty < 2
-                ? qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            ? qty < 0.0001
+                ? qty.toExponential(2)
+                : qty < 2
+                ? qty.toPrecision(3)
+                : qty >= 100000
+                ? formatAmountOld(qty, 1)
                 : qty.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -603,6 +604,8 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(truncateString(base));
             setNewQuoteQtyDisplay(truncateString(quote));
@@ -762,8 +765,16 @@ function Reposition() {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={position?.lowRangeDisplayInBase}
-                    currentMaxPrice={position?.highRangeDisplayInBase}
+                    currentMinPrice={
+                        isDenomBase
+                            ? position?.lowRangeDisplayInBase
+                            : position?.lowRangeDisplayInQuote
+                    }
+                    currentMaxPrice={
+                        isDenomBase
+                            ? position?.highRangeDisplayInBase
+                            : position?.highRangeDisplayInQuote
+                    }
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (
