@@ -205,7 +205,7 @@ function ExtraInfo(props: propsIF) {
     const extraDetailsDropdown = (
         <button
             className={`${styles.extra_info_content} ${
-                priceImpact && styles.extra_info_content_active
+                isQtyEntered && styles.extra_info_content_active
             }`}
             onClick={
                 priceImpact

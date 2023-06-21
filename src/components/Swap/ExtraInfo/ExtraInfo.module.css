@@ -35,9 +35,16 @@
 .extra_info_content:hover,
 .extra_info_content:focus-visible {
     border-radius: var(--border-radius);
-    background: var(--dark2) !important;
+    cursor: default;
+    background: transparent;
+    /* background: var(--dark2) !important; */
 }
 
+.extra_info_content_active:hover{
+    cursor: pointer !important;
+    background: var(--dark2) !important;
+
+}
 .extra_info_content_active:focus-visible {
     border: 1px solid var(--text1);
 }
@@ -52,6 +59,10 @@
     margin-right: 5px;
 }
 
+.token_amount:hover{
+    color: var(--accent1);
+    cursor: pointer;
+}
 .token_amount svg {
     margin-left: 1rem;
 }
