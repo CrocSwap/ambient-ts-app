@@ -388,15 +388,16 @@ export default function Withdraw(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenDexBalanceTruncated || '0.0'}
-                    {tokenDexBalance !== '0' ? (
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={handleBalanceClick}
-                        >
-                            Max
-                        </button>
-                    ) : null}
+                    {tokenDexBalanceTruncated || '...'}
+                    <button
+                        className={`${styles.max_button} ${
+                            tokenDexBalance !== '0' && styles.max_button_enabled
+                        }`}
+                        onClick={handleBalanceClick}
+                        disabled={tokenDexBalance === '0'}
+                    >
+                        Max
+                    </button>
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>

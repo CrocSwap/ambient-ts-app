@@ -75,12 +75,10 @@ export default function Deposit(props: propsIF) {
                   .toString()
             : tokenWalletBalance;
 
-    const tokenWalletBalanceDisplay = useDebounce(
-        tokenWalletBalance
-            ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
-            : undefined,
-        500,
-    );
+    const tokenWalletBalanceDisplay = tokenWalletBalance
+        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+        : undefined;
+
     const adjustedTokenWalletBalanceDisplay = useDebounce(
         tokenWalletBalanceAdjustedNonDisplayString
             ? toDisplayQty(
@@ -393,15 +391,17 @@ export default function Deposit(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenWalletBalanceTruncated || '0.0'}
-                    {isWalletBalanceSufficientToCoverDeposit ? (
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={handleBalanceClick}
-                        >
-                            Max
-                        </button>
-                    ) : null}
+                    {tokenWalletBalanceTruncated || '...'}
+                    <button
+                        className={`${styles.max_button} ${
+                            isWalletBalanceSufficientToCoverDeposit &&
+                            styles.max_button_enabled
+                        }`}
+                        onClick={handleBalanceClick}
+                        disabled={!isWalletBalanceSufficientToCoverDeposit}
+                    >
+                        Max
+                    </button>
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>
