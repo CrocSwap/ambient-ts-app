@@ -13,7 +13,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 export default function LandingSections() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
-    const secondRowDefault = (
+    const secondRow = (
         <div
             className={`${styles.slide_container} ${styles.height_medium} ${styles.home2}`}
         >
@@ -33,21 +33,8 @@ export default function LandingSections() {
             </div>
         </div>
     );
-    const secondRowMobile = (
-        <div className={styles.mobile_card}>
-            <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
-            <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
-                Faster, Easier, and Cheaper
-            </h2>
-            <p tabIndex={0}>
-                Ambient runs the entire DEX inside a single smart contract,
-                allowing for low-fee transactions, greater liquidity rewards,
-                and a fairer trading experience.
-            </p>
-        </div>
-    );
-    const secondRow = showMobileVersion ? secondRowMobile : secondRowDefault;
-    const thirdRowDefault = (
+
+    const thirdRow = (
         <div className={`${styles.slide_container} ${styles.height_large}`}>
             <div className={`${styles.row_container} ${styles.column_reverse}`}>
                 <img
@@ -70,26 +57,7 @@ export default function LandingSections() {
         </div>
     );
 
-    const thirdRowMobile = (
-        <div className={styles.mobile_card}>
-            <div className={styles.mobile_card_img_container_left}>
-                <img
-                    src={liquidityImage}
-                    alt='concentrated and ambient liquidity'
-                />
-            </div>
-            <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
-            <p tabIndex={0}>
-                Ambient is built for diversified, sustainable liquidity that
-                fixes the broken LP economics of AMMs. It is also the only DEX
-                to support concentrated (‘V3’), ambient (‘V2’) and knock-out
-                liquidity in the same liquidity pool.
-            </p>
-        </div>
-    );
-    const thirdRow = showMobileVersion ? thirdRowMobile : thirdRowDefault;
-
-    const fourthRowDefault = (
+    const fourthRow = (
         <div
             className={`${styles.slide_container} ${styles.height_large} ${styles.home3}`}
         >
@@ -117,31 +85,8 @@ export default function LandingSections() {
             </div>
         </div>
     );
-    const fourthRowMobile = (
-        <div className={styles.mobile_card}>
-            <div className={styles.mobile_card_img_container_right}>
-                <img
-                    src={orderImage}
-                    alt='range and limit orders'
-                    width='90px'
-                    className={styles.smaller_image}
-                />
-            </div>
-            <h2 tabIndex={0}>Bridge the Gap Between Trading and LP’ing</h2>
-            <p tabIndex={0}>
-                Make your LP position a trading position – and vice versa –
-                using our range and limit orders.
-            </p>
-            <p tabIndex={0}>
-                Ambient combines liquidity in a single pool, allowing for
-                greater rewards for liquidity providers, and less impact for
-                traders.
-            </p>
-        </div>
-    );
-    const fourthRow = showMobileVersion ? fourthRowMobile : fourthRowDefault;
 
-    const fifthRowDefault = (
+    const fifthRow = (
         <div
             className={`${styles.slide_container} ${styles.height_large} ${styles.home4}`}
         >
@@ -160,20 +105,6 @@ export default function LandingSections() {
             </div>
         </div>
     );
-
-    const fifthRowMobile = (
-        <div className={styles.mobile_card}>
-            <h2 tabIndex={0}>Better than CEX</h2>
-            <p tabIndex={0}>
-                Built for traders and market makers of all kinds, Ambient
-                introduces novel DeFi-native features and an array of
-                quality-of-life improvements allowing for a best-in-class user
-                experience.
-            </p>
-        </div>
-    );
-
-    const fifthRow = showMobileVersion ? fifthRowMobile : fifthRowDefault;
 
     return (
         <div className={styles.main_container}>

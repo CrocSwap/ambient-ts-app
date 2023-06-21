@@ -67,3 +67,45 @@
     color: var(--text1);
     font-family: var(--mono);
 }
+
+@media only screen and (max-width: 600px)  {
+
+    .container{
+        width: 100%;
+    }
+    
+    .main_title{
+        display: none;
+    }
+        .stat_card_container{
+            width: 100%;
+            height: 70px;
+            padding: 8px;
+        }
+        .stat_card_container{
+            justify-content: flex-start;
+           
+            background: var(--dark1);  
+            background: -webkit-linear-gradient(to right, var(--dark2), var(--body-bg));  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, var(--dark2), var(--dark1)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            
+    
+        }
+        .stat_card_container:hover{
+            box-shadow: none;
+        }
+    
+        .content {
+          
+        
+            list-style-type: none;
+        
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        
+        }

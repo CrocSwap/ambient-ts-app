@@ -88,7 +88,7 @@ background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));
   }
 
   
-  .mobile_card:nth-of-type(2){
+  /* .mobile_card:nth-of-type(2){
   background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
    url( '../../../assets/images/home/home2.png') no-repeat
   center center;
@@ -131,7 +131,7 @@ background-size: cover;
 -o-background-size: cover;
 background-size: cover;
 
-}
+} */
 
 .mobile_card .scroll_button{
     position: absolute;
@@ -186,23 +186,30 @@ background-size: cover;
   }
 
 
+
   /* footer */
 
   .footer_section{
     width: 100%;
     height: 100%;
 
-    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../../assets/images/home/home3.png') no-repeat center center
+
     ;
     background: var(--dark1);
     
-    
+    background: url('../../../assets/images/home/home3.png') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     padding-top: 6rem;
     background-size: cover;
   }
+
+
 
  .investors{
   background: radial-gradient(ellipse at top, var(--dark1), transparent),         
@@ -212,3 +219,28 @@ background-size: cover;
  .investors h3, .pools h3{
   color: var(--text3)
  }
+
+ .section6{
+
+  background: url('../../../assets/images/home/home4.png') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+/* .section5{
+
+  background: url('../../../assets/images/home/home3.png') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.section4{
+
+  background: url('../../../assets/images/home/home2.png') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+} */

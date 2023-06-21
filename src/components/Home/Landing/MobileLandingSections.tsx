@@ -4,7 +4,9 @@ import logoText from '../../../assets/images/logos/logo_text.png';
 
 import Footer from '../../Footer/Footer';
 import { useRef } from 'react';
-import { BsChevronDown } from 'react-icons/bs';
+import liquidityImage from '../../../assets/images/home/liquidity.png';
+import orderImage from '../../../assets/images/home/orders.png';
+
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
@@ -40,13 +42,6 @@ export default function MobileLandingSections() {
             </>
 
             <TradeNowButton />
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section2)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
     const topPoolsSection = (
@@ -59,13 +54,6 @@ export default function MobileLandingSections() {
                 <h3> {t('topPools')}</h3>
                 <TopPools noTitle gap='8px' />
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section3)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
@@ -85,23 +73,24 @@ export default function MobileLandingSections() {
                     rewards, and a fairer trading experience.
                 </p>
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section4)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
     const thirdRow = (
-        <div className={styles.mobile_card} ref={section4}>
+        <div
+            className={`${styles.mobile_card} ${styles.section4}`}
+            ref={section4}
+        >
             {/* <div className={styles.mobile_card_img_container_left}>
                 <img src={row2Image} alt='concentrated and ambient liquidity' />
             </div> */}
 
             <>
+                <img
+                    src={liquidityImage}
+                    alt='concentrated and ambient liquidity'
+                    width='200px'
+                />
                 <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
                 <p tabIndex={0}>
                     Ambient is built for diversified, sustainable liquidity that
@@ -110,18 +99,14 @@ export default function MobileLandingSections() {
                     knock-out liquidity in the same liquidity pool.
                 </p>
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section5)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
     const fourthRow = (
-        <div className={styles.mobile_card} ref={section5}>
+        <div
+            className={`${styles.mobile_card} ${styles.section5}`}
+            ref={section5}
+        >
             {/* <div className={styles.mobile_card_img_container_right}>
                 <img
                     src={row3Image}
@@ -132,6 +117,12 @@ export default function MobileLandingSections() {
             </div> */}
 
             <>
+                <img
+                    src={orderImage}
+                    alt='range and limit orders'
+                    width='150px'
+                />
+
                 <h2 tabIndex={0}>Bridge the Gap Between Trading and LP’ing</h2>
                 <p tabIndex={0}>
                     Make your LP position a trading position – and vice versa –
@@ -143,18 +134,14 @@ export default function MobileLandingSections() {
                     traders.
                 </p>
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section6)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
     const fifthRow = (
-        <div className={styles.mobile_card} ref={section6}>
+        <div
+            className={`${styles.mobile_card} ${styles.section6}`}
+            ref={section6}
+        >
             <>
                 <h2 tabIndex={0}>Better than CEX</h2>
                 <p tabIndex={0}>
@@ -164,13 +151,6 @@ export default function MobileLandingSections() {
                     user experience.
                 </p>
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section7)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
@@ -183,13 +163,6 @@ export default function MobileLandingSections() {
                 <h3>Investors</h3>
                 <Investors />
             </>
-
-            <button
-                className={styles.scroll_button}
-                onClick={() => scrollTo(section8)}
-            >
-                <BsChevronDown size={30} />
-            </button>
         </div>
     );
 
