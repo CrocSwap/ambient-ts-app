@@ -11,6 +11,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 import Spinner from '../../Global/Spinner/Spinner';
 import { decimalNumRegEx } from '../../../utils/regex/exports';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     disable?: boolean;
@@ -43,16 +44,13 @@ function CurrencyQuantity(props: propsIF) {
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
+    useEffect(() => {
+        setDisplayValue(value);
+    }, [value]);
+
     const [lastEvent, setLastEvent] = useState<
         ChangeEvent<HTMLInputElement> | undefined
     >();
-
-    useEffect(() => {
-        const valueWithLeadingZero = value.startsWith('.')
-            ? '0' + value
-            : value;
-        setDisplayValue(valueWithLeadingZero);
-    }, [value]);
 
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastEvent = useDebounce(lastEvent, 750);
@@ -63,24 +61,23 @@ function CurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        const inputValue = value.startsWith('.') ? '0' + value : value;
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsBuyLoading(true);
-                setSellQtyString(inputValue);
+                setSellQtyString(value);
             }
             value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsSellLoading(true);
-                setBuyQtyString(inputValue);
+                setBuyQtyString(value);
             }
             value || setIsSellLoading(false);
         }
 
-        setDisplayValue(inputValue);
+        setDisplayValue(value);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };
@@ -92,24 +89,31 @@ function CurrencyQuantity(props: propsIF) {
         return 0;
     };
 
-    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const targetValue = event.target.value.replace(',', '.');
+    // TODO: consolidate all the currency quantities/converters/selectors
+    const parseInput = (event: ChangeEvent<HTMLInputElement>) => {
+        let parsedInput = event.target.value.replaceAll(',', '');
+        parsedInput = parsedInput.startsWith('.')
+            ? '0' + parsedInput
+            : parsedInput;
         const isPrecisionGreaterThanDecimals =
-            precisionOfInput(targetValue) > thisToken.decimals;
+            precisionOfInput(parsedInput) > thisToken.decimals;
         const isUserInputValid =
             !isPrecisionGreaterThanDecimals &&
             (event.target.value === '' || event.target.validity.valid);
-        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
-            let valueWithDecimal = targetValue;
-            if (valueWithDecimal.includes(',')) {
-                const parts = valueWithDecimal.split(',');
-                const lastPart = parts.pop();
-                const firstPart = parts.join('');
-                valueWithDecimal = `${firstPart}.${lastPart}`;
-            }
+        if (isUserInputValid) {
+            // don't format 0, '', or numbers that end with .
+            let formattedInput = parsedInput;
+            if (parsedInput && !parsedInput.endsWith('.'))
+                formattedInput = getFormattedNumber({
+                    value: Number(parsedInput),
+                    isInput: true,
+                    minFracDigits: 0,
+                    maxFracDigits: 20,
+                    zeroDisplay: '0',
+                });
             handleEventLocal({
                 ...event,
-                target: { ...event.target, value: valueWithDecimal },
+                target: { ...event.target, value: formattedInput },
             });
         }
     };
@@ -132,7 +136,7 @@ function CurrencyQuantity(props: propsIF) {
                 aria-live={ariaLive}
                 aria-label={`Enter ${fieldId} amount`}
                 onChange={(event) => {
-                    handleOnChange(event);
+                    parseInput(event);
                 }}
                 value={isLoading ? '' : displayValue}
                 type='text'
@@ -141,6 +145,7 @@ function CurrencyQuantity(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
+                maxLength={20}
                 pattern={decimalNumRegEx.source}
                 disabled={disable}
             />

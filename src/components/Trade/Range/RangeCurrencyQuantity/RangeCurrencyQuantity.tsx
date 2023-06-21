@@ -2,6 +2,7 @@ import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 import { decimalNumRegEx } from '../../../../utils/regex/exports';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     value: string;
@@ -52,6 +53,36 @@ function RangeCurrencyQuantity(props: propsIF) {
         }
         return 0;
     };
+
+    // TODO: consolidate all the currency quantities/converters/selectors
+    const parseInput = (event: ChangeEvent<HTMLInputElement>) => {
+        let parsedInput = event.target.value.replaceAll(',', '');
+        parsedInput = parsedInput.startsWith('.')
+            ? '0' + parsedInput
+            : parsedInput;
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(parsedInput) > thisToken.decimals;
+        const isUserInputValid =
+            !isPrecisionGreaterThanDecimals &&
+            (event.target.value === '' || event.target.validity.valid);
+        if (isUserInputValid) {
+            // don't format 0, '', or numbers that end with .
+            let formattedInput = parsedInput;
+            if (parsedInput && !parsedInput.endsWith('.'))
+                formattedInput = getFormattedNumber({
+                    value: Number(parsedInput),
+                    isInput: true,
+                    minFracDigits: 0,
+                    maxFracDigits: 20,
+                    zeroDisplay: '0',
+                });
+            handleEventLocal({
+                ...event,
+                target: { ...event.target, value: formattedInput },
+            });
+        }
+    };
+
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -61,14 +92,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
+                    parseInput(event);
                 }}
                 value={displayValue}
                 type='string'

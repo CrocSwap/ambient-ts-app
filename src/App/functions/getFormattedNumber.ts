@@ -32,14 +32,20 @@ export function getFormattedNumber({
         valueString = '∞';
     } else if (isUSD) {
         valueString = value.toFixed(2);
-    } else if (value <= 0.0001) {
-        if (isInput)
+    } else if (isInput) {
+        if (value <= 10)
             // prevent scientific notation for inputs
             valueString = Number(value?.toPrecision(3)).toLocaleString(
                 undefined,
                 { maximumFractionDigits: 20 },
             );
-        else valueString = formatSubscript(value);
+        else
+            valueString = value.toLocaleString(undefined, {
+                minimumFractionDigits: minFracDigits,
+                maximumFractionDigits: maxFracDigits,
+            });
+    } else if (value <= 0.0001) {
+        valueString = formatSubscript(value);
     } else if (value < 1) {
         valueString = value.toPrecision(3);
     } else if (value < 2) {
