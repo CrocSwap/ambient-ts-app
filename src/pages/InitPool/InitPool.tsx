@@ -31,6 +31,7 @@ import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
+import uriToHttp from '../../utils/functions/uriToHttp';
 
 // react functional component
 export default function InitPool() {
@@ -423,7 +424,7 @@ export default function InitPool() {
                 {tokenA &&
                     (tokenA.logoURI ? (
                         <img
-                            src={tokenA.logoURI}
+                            src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.symbol}
                             width='30px'
                         />
@@ -445,7 +446,7 @@ export default function InitPool() {
                 {tokenB &&
                     (tokenB.logoURI ? (
                         <img
-                            src={tokenB.logoURI}
+                            src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.symbol}
                             width='30px'
                         />

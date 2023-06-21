@@ -12,6 +12,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     position: PositionIF;
@@ -171,12 +172,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
-                            src={tokenA.logoURI}
+                            src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.name}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenB.logoURI}
+                            src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.name}
                             size='2xl'
                         />
