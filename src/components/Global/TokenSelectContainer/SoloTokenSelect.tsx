@@ -21,6 +21,8 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { handleWETH } from '../../../utils/data/handleWETH';
+import { ZERO_ADDRESS } from '../../../constants';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -268,6 +270,21 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
+            {handleWETH.check(validatedInput) && (
+                <p className={styles.weth_text}>{handleWETH.message}</p>
+            )}
+            {handleWETH.check(validatedInput) &&
+                [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
+                    (token: TokenIF) => (
+                        <TokenSelect
+                            key={JSON.stringify(token)}
+                            token={token}
+                            chooseToken={chooseToken}
+                            fromListsText=''
+                        />
+                    ),
+                )}
+
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect

@@ -121,16 +121,14 @@ export default function Deposit(props: propsIF) {
         [tokenAllowance, depositQtyNonDisplay],
     );
 
-    const isWalletBalanceSufficientToCoverGas = useMemo(
-        () =>
-            isTokenEth
-                ? tokenWalletBalance
-                    ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
-                    : false
-                : true,
-
-        [tokenWalletBalance, amountToReduceEth],
-    );
+    const isWalletBalanceSufficientToCoverGas = useMemo(() => {
+        if (selectedToken.address !== ZERO_ADDRESS) {
+            return true;
+        }
+        return tokenWalletBalance
+            ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+            : false;
+    }, [tokenWalletBalance, amountToReduceEth]);
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
