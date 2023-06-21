@@ -58,6 +58,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { formatAmountOld } from '../../../utils/numbers';
 
 function Reposition() {
     // current URL parameter string
@@ -376,21 +377,6 @@ function Reposition() {
         setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
-    function truncateString(qty?: number): string {
-        return qty
-            ? qty < 0.0001
-                ? qty.toExponential(2)
-                : qty < 2
-                ? qty.toPrecision(3)
-                : qty >= 100000
-                ? formatAmountOld(qty, 1)
-                : qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0.00';
-    }
-
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
     const [
@@ -560,8 +546,8 @@ function Reposition() {
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
-            setNewBaseQtyDisplay(truncateString(base));
-            setNewQuoteQtyDisplay(truncateString(quote));
+            setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
+            setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
         });
     }, [
         crocEnv,
