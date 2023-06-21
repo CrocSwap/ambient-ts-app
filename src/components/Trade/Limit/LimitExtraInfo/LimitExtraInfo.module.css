@@ -45,11 +45,18 @@
     border: 1px solid var(--text1);
 }
 
+.non_hovered_arrow{
+    color: var(--text2) !important
+}
+
 .gas_pump,
 .token_amount {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.gas_pump{
+    pointer-events: none;
 }
 .gas_pump svg {
     margin-right: 5px;

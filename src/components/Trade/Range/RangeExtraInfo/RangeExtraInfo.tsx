@@ -114,6 +114,8 @@ function RangeExtraInfo(props: propsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
+    const [isConvHovered, setIsConHovered] = useState(false);
+
     const conversionRateDisplay = reverseDisplay
         ? `1 ${tokenB.symbol} ≈ ${poolPriceDisplay} ${tokenA.symbol}`
         : `1 ${tokenA.symbol} ≈ ${poolPriceDisplay} ${tokenB.symbol}`;
@@ -142,15 +144,31 @@ function RangeExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
 
             {showExtraInfoDropdown && !showExtraDetails && (
-                <RiArrowDownSLine size={22} />
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
             {showExtraInfoDropdown && showExtraDetails && (
-                <RiArrowUpSLine size={22} />
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
         </button>
     );

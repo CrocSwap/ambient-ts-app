@@ -187,13 +187,7 @@ function ExtraInfo(props: propsIF) {
         </div>
     );
 
-    const dropDownOrNull =
-        priceImpact && isQtyEntered ? (
-            <div style={{ cursor: 'pointer', marginTop: '4px' }}>
-                {!showExtraDetails && <RiArrowDownSLine size={22} />}
-                {showExtraDetails && <RiArrowUpSLine size={22} />}
-            </div>
-        ) : null;
+    const [isConvHovered, setIsConHovered] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -227,11 +221,32 @@ function ExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
 
-            {dropDownOrNull}
+            {isQtyEntered && !showExtraDetails && (
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
+            {isQtyEntered && showExtraDetails && (
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
         </button>
     );
 

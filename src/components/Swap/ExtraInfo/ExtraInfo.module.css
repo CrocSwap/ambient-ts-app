@@ -40,11 +40,19 @@
     /* background: var(--dark2) !important; */
 }
 
+
+
+.non_hovered_arrow{
+    color: var(--text2) !important
+}
+
 .extra_info_content_active:hover{
     cursor: pointer !important;
     background: var(--dark2) !important;
 
 }
+
+
 .extra_info_content_active:focus-visible {
     border: 1px solid var(--text1);
 }
@@ -58,6 +66,14 @@
 .gas_pump svg {
     margin-right: 5px;
 }
+.gas_pump_icon:hover{
+    color: var(--text2) !important
+    
+}
+
+.gas_pump{
+    pointer-events: none;
+}
 
 .token_amount:hover{
     color: var(--accent1);
@@ -66,6 +82,8 @@
 .token_amount svg {
     margin-left: 1rem;
 }
+
+
 
 .extra_details {
     /* background-color: var(--dark2); */

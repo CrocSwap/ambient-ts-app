@@ -183,14 +183,8 @@ function LimitExtraInfo(props: propsIF) {
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    const dropDownOrNull = isQtyEntered ? (
-        <div style={{ cursor: 'pointer' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
-
     const dispatch = useAppDispatch();
+    const [isConvHovered, setIsConHovered] = useState(false);
 
     const conversionRateDisplay = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
@@ -212,7 +206,7 @@ function LimitExtraInfo(props: propsIF) {
             aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
+                <FaGasPump size={15} className={styles.non_hoverable} />{' '}
                 {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
             </div>
             <div
@@ -221,11 +215,32 @@ function LimitExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
-            {dropDownOrNull}
+            {isQtyEntered && !showExtraDetails && (
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
+            {isQtyEntered && showExtraDetails && (
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
         </button>
     );
     return (

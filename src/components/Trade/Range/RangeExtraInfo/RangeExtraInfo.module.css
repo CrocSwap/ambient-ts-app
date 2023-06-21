@@ -40,6 +40,13 @@
     border: 1px solid var(--text1);
 }
 
+.gas_pump{
+    pointer-events: none;
+}
+.non_hovered_arrow{
+    color: var(--text2) !important
+}
+
 .gas_pump,
 .token_amount {
     display: flex;
