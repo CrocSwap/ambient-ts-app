@@ -14,15 +14,19 @@
 .settings_title {
     display: flex;
     justify-content: space-between;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 30px;
-    padding: 10px 20px;
+    padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
     background: var(--dark1);
 }
 
 .settings_title span {
     cursor: pointer;
+}
+
+.settings_title svg {
+    align-self: center;
 }
 
 .settings_title svg:hover {

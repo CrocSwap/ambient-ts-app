@@ -5,7 +5,6 @@
     justify-content: space-between;
     padding: 0;
     background-color: transparent;
-    letter-spacing: 1px;
     text-transform: capitalize;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
@@ -14,7 +13,6 @@
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 
-    /* padding: 8px 20px; */
     padding: 8px 0;
 }
 

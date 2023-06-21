@@ -19,8 +19,7 @@
 
 .username_base_color {
     color: var(--text1);
-    font-family: monospace;
-    font-weight: 300;
+    font-family: var(--roboto);
 }
 
 .order_sell {
