@@ -103,15 +103,18 @@ export default function ExchangeBalance(props: propsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     useEffect(() => {
+        setTokenWalletBalance('');
+        setTokenDexBalance('');
+    }, [selectedToken.address, userAddress]);
+
+    useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
-            setTokenWalletBalance('');
             crocEnv
                 .token(selectedToken.address)
                 .wallet(userAddress)
                 .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
                 .catch(console.error);
 
-            setTokenDexBalance('');
             crocEnv
                 .token(selectedToken.address)
                 .balance(userAddress)
