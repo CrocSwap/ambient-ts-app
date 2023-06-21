@@ -498,9 +498,8 @@ function Reposition() {
     // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
     // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
-    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
-        useState<string>('0.00');
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
