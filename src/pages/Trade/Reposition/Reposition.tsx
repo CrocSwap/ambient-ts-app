@@ -281,13 +281,7 @@ function Reposition() {
             setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-    }, [
-        rangeWidthPercentage,
-        currentPoolPriceTick,
-        currentPoolPriceDisplay,
-        position?.base,
-        position?.quote,
-    ]);
+    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
     function mintArgsForReposition(
         lowTick: number,
@@ -505,9 +499,8 @@ function Reposition() {
     // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
     // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
 
-    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
-        useState<string>('0.00');
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
@@ -586,7 +579,6 @@ function Reposition() {
 
     useEffect(() => {
         if (
-            isPositionInRange ||
             !crocEnv ||
             !debouncedLowTick ||
             !debouncedHighTick ||
@@ -596,6 +588,8 @@ function Reposition() {
         ) {
             return;
         }
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -611,16 +605,11 @@ function Reposition() {
             setNewQuoteQtyDisplay(truncateString(quote));
         });
     }, [
-        isPositionInRange,
         crocEnv,
+        concLiq,
         debouncedLowTick, // Debounce because effect involves on-chain call
         debouncedHighTick,
-        position.baseSymbol,
-        position.quoteSymbol,
         currentPoolPriceTick,
-        position.positionLiq,
-        position.bidTick,
-        position.askTick,
     ]);
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
