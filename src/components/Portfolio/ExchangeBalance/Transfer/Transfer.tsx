@@ -364,14 +364,15 @@ export default function Transfer(props: propsIF) {
                 >
                     <div className={styles.available_text}>Available:</div>
                     {tokenDexBalanceTruncated || '...'}
-                    {tokenDexBalance !== '0' ? (
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={handleBalanceClick}
-                        >
-                            Max
-                        </button>
-                    ) : null}
+                    <button
+                        className={`${styles.max_button} ${
+                            tokenDexBalance !== '0' && styles.max_button_enabled
+                        }`}
+                        onClick={handleBalanceClick}
+                        disabled={tokenDexBalance === '0'}
+                    >
+                        Max
+                    </button>
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>
