@@ -66,14 +66,24 @@ const subscriptUnicode = [
     '0\u{2087}',
     '0\u{2088}',
     '0\u{2089}',
+    '0\u{2081}\u{2080}',
+    '0\u{2081}\u{2081}',
+    '0\u{2081}\u{2082}',
+    '0\u{2081}\u{2083}',
+    '0\u{2081}\u{2084}',
+    '0\u{2081}\u{2085}',
+    '0\u{2081}\u{2086}',
+    '0\u{2081}\u{2087}',
+    '0\u{2081}\u{2088}',
+    '0\u{2081}\u{2089}',
+    '0\u{2082}\u{2080}',
 ];
 
 const formatSubscript = (value: number, precision = 3) => {
     const zeros = Math.ceil(Math.log10(1 / value)) - 1;
     const valueNonZero = Math.round(value * 10 ** (zeros + precision));
-    if (zeros > 9) {
-        console.error('Math error computing subscript!');
-        return '...';
+    if (zeros > 20) {
+        return '0';
     }
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`.replace(/0+$/, '');
 };
