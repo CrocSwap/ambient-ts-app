@@ -9,8 +9,7 @@ import {
 import * as d3 from 'd3';
 import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import { createAreaSeries } from '../LiquiditySeries/AreaSeries';
-import { createLineSeries } from '../LiquiditySeries/LineSeries';
+
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
@@ -19,6 +18,14 @@ import {
     liquidityChartData,
     scaleData,
 } from '../../Trade/TradeCharts/TradeCandleStickChart';
+import {
+    createAreaSeries,
+    decorateForLiquidityArea,
+} from '../LiquiditySeries/AreaSeries';
+import {
+    createLineSeries,
+    decorateForLiquidityLine,
+} from '../LiquiditySeries/LineSeries';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -45,7 +52,8 @@ type nearestLiquidity = {
 export default function LiquidityChart(props: liquidityPropsIF) {
     const d3CanvasLiq = useRef<HTMLInputElement | null>(null);
     const d3CanvasLiqHover = useRef<HTMLInputElement | null>(null);
-    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
+    const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
+        useContext(PoolContext);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -62,7 +70,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineLiqSeries, setLineLiqSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [lineBidDepthSeries, setLineBidDepthSeries] = useState<any>();
+    const [lineDepthSeries, setLineDepthSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqDepthSeries, setLiqDepthSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,10 +123,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
-    const threshold =
-        liqMode === 'curve'
-            ? liquidityData?.liqTransitionPointforCurve
-            : liquidityData?.liqTransitionPointforDepth;
+
     useEffect(() => {
         if (
             scaleData !== undefined &&
@@ -128,7 +133,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             const d3CanvasLiqChart = createAreaSeries(
                 liquidityScale,
                 scaleData?.yScale,
-                threshold,
                 'curve',
             );
             setLiqSeries(() => d3CanvasLiqChart);
@@ -136,7 +140,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             const d3CanvasLiqChartDepth = createAreaSeries(
                 liquidityDepthScale,
                 scaleData?.yScale,
-                threshold,
                 'depth',
             );
 
@@ -145,7 +148,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             const d3CanvasLiqChartLine = createLineSeries(
                 liquidityScale,
                 scaleData?.yScale,
-                threshold,
                 'curve',
             );
             setLineLiqSeries(() => d3CanvasLiqChartLine);
@@ -153,14 +155,33 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             const d3CanvasLiqChartDepthLine = createLineSeries(
                 liquidityDepthScale,
                 scaleData?.yScale,
-                threshold,
                 'depth',
             );
-            setLineBidDepthSeries(() => d3CanvasLiqChartDepthLine);
+            setLineDepthSeries(() => d3CanvasLiqChartDepthLine);
 
             renderCanvasArray([d3CanvasLiq]);
         }
-    }, [diffHashSig(scaleData), liquidityScale, liquidityDepthScale]);
+    }, [diffHashSig(scaleData), liquidityScale, pool, liquidityDepthScale]);
+
+    useEffect(() => {
+        const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
+        const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
+
+        if (liqSeries) {
+            decorateForLiquidityArea(liqSeries, thresholdCurve);
+            decorateForLiquidityLine(lineLiqSeries, thresholdCurve);
+        }
+        if (liqDepthSeries) {
+            decorateForLiquidityArea(liqDepthSeries, thresholdDepth);
+            decorateForLiquidityLine(lineDepthSeries, thresholdDepth);
+        }
+    }, [
+        liqMode,
+        liquidityData?.liqTransitionPointforCurve,
+        liquidityData?.liqTransitionPointforDepth,
+        liqSeries === undefined,
+        liqDepthSeries === undefined,
+    ]);
 
     const clipCanvas = (
         low: number,
@@ -214,9 +235,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             location.pathname.includes('reposition');
         if (isRange) {
             clipHighlightedLines(canvas);
-            lineBidDepthSeries(liqDataDepthAsk);
-
-            lineBidDepthSeries(liqDataDepthBid);
+            lineDepthSeries(liqDataDepthAsk);
+            lineDepthSeries(liqDataDepthBid);
         }
     };
 
@@ -400,7 +420,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 .on('measure', (event: CustomEvent) => {
                     liqSeries.context(ctx);
                     liqDepthSeries.context(ctx);
-                    lineBidDepthSeries.context(ctx);
+                    lineDepthSeries.context(ctx);
                     lineLiqSeries.context(ctx);
                     liquidityScale.range([
                         event.detail.width,
@@ -429,6 +449,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
+        const threshold =
+            liqMode === 'curve'
+                ? liquidityData?.liqTransitionPointforCurve
+                : liquidityData?.liqTransitionPointforDepth;
         const canvas = d3
             .select(d3CanvasLiqHover.current)
             .select('canvas')

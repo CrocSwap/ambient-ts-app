@@ -4,10 +4,10 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { renderCanvasArray, setCanvasResolution } from '../Chart';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    scaleData: any;
+    scaleData: scaleData;
     selectedDate: number | undefined;
     denomInBase: boolean;
     volumeData: Array<CandleData>;
@@ -27,8 +27,20 @@ export default function VolumeBarCanvas(props: propsIF) {
         if (scaleData !== undefined) {
             const canvasBarChart = d3fc
                 .autoBandwidth(d3fc.seriesCanvasBar())
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .decorate((context: any, d: any) => {
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.volumeScale)
+                .crossValue((d: CandleData) => d.time * 1000)
+                .mainValue((d: CandleData) => (d.volumeUSD ? d.volumeUSD : 0));
+
+            setBarSeries(() => canvasBarChart);
+            renderCanvasArray([d3CanvasBar]);
+        }
+    }, [scaleData]);
+
+    useEffect(() => {
+        if (barSeries) {
+            barSeries.decorate(
+                (context: CanvasRenderingContext2D, d: CandleData) => {
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;
@@ -56,20 +68,10 @@ export default function VolumeBarCanvas(props: propsIF) {
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
-
-                    context.cursorStyle = 'pointer';
-                })
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.volumeScale)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .crossValue((d: any) => d.time * 1000)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .mainValue((d: any) => (d.volumeUSD ? d.volumeUSD : 0));
-
-            setBarSeries(() => canvasBarChart);
-            renderCanvasArray([d3CanvasBar]);
+                },
+            );
         }
-    }, [scaleData, selectedDate]);
+    }, [barSeries, selectedDate]);
 
     useEffect(() => {
         if (showVolume) {
@@ -96,8 +98,7 @@ export default function VolumeBarCanvas(props: propsIF) {
                     setCanvasResolution(canvas);
                     barSeries(volumeData);
                 })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('measure', (event: any) => {
+                .on('measure', (event: CustomEvent) => {
                     scaleData?.volumeScale.range([
                         event.detail.height,
                         event.detail.height - event.detail.height / 5,

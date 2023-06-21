@@ -3728,7 +3728,7 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             drawChart(scaleData, selectedDate);
         }
-    }, [denomInBase, selectedDate, isSidebarOpen, liqMode]);
+    }, [denomInBase, selectedDate, isSidebarOpen, liqMode, location.pathname]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData?.xScale.invert(
@@ -4254,28 +4254,28 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div className='chart_grid'>
-                        <CandleChart
-                            chartItemStates={props.chartItemStates}
-                            data={unparsedCandleData}
-                            denomInBase={denomInBase}
-                            lastCandleData={lastCandleData}
-                            period={period}
-                            scaleData={scaleData}
-                            selectedDate={selectedDate}
-                            showLatest={showLatest}
-                            setBandwidth={setBandwidth}
-                        />
+                    {scaleData && (
+                        <div className='chart_grid'>
+                            <CandleChart
+                                chartItemStates={props.chartItemStates}
+                                data={unparsedCandleData}
+                                denomInBase={denomInBase}
+                                lastCandleData={lastCandleData}
+                                period={period}
+                                scaleData={scaleData}
+                                selectedDate={selectedDate}
+                                showLatest={showLatest}
+                                setBandwidth={setBandwidth}
+                            />
 
-                        <VolumeBarCanvas
-                            scaleData={scaleData}
-                            volumeData={unparsedCandleData}
-                            denomInBase={denomInBase}
-                            selectedDate={selectedDate}
-                            showVolume={showVolume}
-                        />
+                            <VolumeBarCanvas
+                                scaleData={scaleData}
+                                volumeData={unparsedCandleData}
+                                denomInBase={denomInBase}
+                                selectedDate={selectedDate}
+                                showVolume={showVolume}
+                            />
 
-                        {scaleData && (
                             <LiquidityChart
                                 liqMode={liqMode}
                                 liquidityData={liquidityData}
@@ -4291,35 +4291,36 @@ export default function Chart(props: propsIF) {
                                     mainCanvasBoundingClientRect
                                 }
                             />
-                        )}
-                        <d3fc-canvas
-                            ref={d3CanvasCrosshair}
-                            className='cr-canvas'
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasMarketLine}
-                            className='market-line-canvas'
-                        ></d3fc-canvas>
 
-                        <RangeLineCanvas {...rangeCanvasProps} />
+                            <d3fc-canvas
+                                ref={d3CanvasCrosshair}
+                                className='cr-canvas'
+                            ></d3fc-canvas>
+                            <d3fc-canvas
+                                ref={d3CanvasMarketLine}
+                                className='market-line-canvas'
+                            ></d3fc-canvas>
 
-                        <LimitLineCanvas {...limitCanvasProps} />
+                            <RangeLineCanvas {...rangeCanvasProps} />
 
-                        <d3fc-canvas
-                            ref={d3CanvasMain}
-                            className='main-canvas'
-                        ></d3fc-canvas>
+                            <LimitLineCanvas {...limitCanvasProps} />
 
-                        <d3fc-canvas
-                            className='y-axis-canvas'
-                            ref={d3Yaxis}
-                            style={{
-                                width: yAxisWidth,
-                                gridColumn: 4,
-                                gridRow: 3,
-                            }}
-                        ></d3fc-canvas>
-                    </div>
+                            <d3fc-canvas
+                                ref={d3CanvasMain}
+                                className='main-canvas'
+                            ></d3fc-canvas>
+
+                            <d3fc-canvas
+                                className='y-axis-canvas'
+                                ref={d3Yaxis}
+                                style={{
+                                    width: yAxisWidth,
+                                    gridColumn: 4,
+                                    gridRow: 3,
+                                }}
+                            ></d3fc-canvas>
+                        </div>
+                    )}
                     {showFeeRate && (
                         <>
                             <hr />
