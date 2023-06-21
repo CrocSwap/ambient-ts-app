@@ -1,6 +1,6 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAccount, useProvider, useSigner } from 'wagmi';
+import { mainnet, useAccount, useProvider, useSigner } from 'wagmi';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
@@ -62,8 +62,7 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const mainnetProvider =
-        chainData.chainId === '0x1' ? useProvider() : useMainnetProvider();
+    const mainnetProvider = useMainnetProvider();
 
     const crocEnvContext = {
         crocEnv,
@@ -73,7 +72,8 @@ export const CrocEnvContextProvider = (props: {
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
-        mainnetProvider,
+        mainnetProvider:
+            chainData.chainId === '0x1' ? provider : mainnetProvider,
     };
 
     useBlacklist(userAddress);
