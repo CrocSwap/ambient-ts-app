@@ -103,10 +103,12 @@
     background-color: var(--dark2);
 
     transition: all var(--animation-speed) ease-in-out;
+    border: 1px solid transparent;
 }
 
 .percentage_option_buttons:hover {
-    color: var(--text1);
+    color: var(--accent1);
+    border: 1px solid var(--accent1)
 }
 .percentage_option_buttons:focus-visible,
 .percentage_input:focus-visible {
