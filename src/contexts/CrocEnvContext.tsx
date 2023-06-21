@@ -1,6 +1,6 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { mainnet, useAccount, useProvider, useSigner } from 'wagmi';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
@@ -38,7 +38,6 @@ export const CrocEnvContextProvider = (props: {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const { address: userAddress, isConnected } = useAccount();
-    const provider = useProvider();
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
@@ -62,6 +61,7 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
+    const provider = useProvider();
     const mainnetProvider = useMainnetProvider();
 
     const crocEnvContext = {
