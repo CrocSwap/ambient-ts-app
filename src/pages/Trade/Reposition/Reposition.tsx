@@ -58,7 +58,6 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { formatAmountOld } from '../../../utils/numbers';
 
 function Reposition() {
     // current URL parameter string
