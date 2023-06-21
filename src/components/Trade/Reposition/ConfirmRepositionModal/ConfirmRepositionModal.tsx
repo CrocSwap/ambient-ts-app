@@ -176,8 +176,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenA.logoURI}
-                            alt={tokenA.name}
+                            src={tokenB.logoURI}
+                            alt={tokenB.name}
                             size='2xl'
                         />
                     </div>

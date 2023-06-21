@@ -186,7 +186,7 @@ function Reposition() {
 
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
-            ? '0'
+            ? '...'
             : isDenomBase
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
@@ -261,13 +261,7 @@ function Reposition() {
             setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-    }, [
-        rangeWidthPercentage,
-        currentPoolPriceTick,
-        currentPoolPriceDisplay,
-        position?.base,
-        position?.quote,
-    ]);
+    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
     function mintArgsForReposition(
         lowTick: number,
@@ -384,11 +378,12 @@ function Reposition() {
 
     function truncateString(qty?: number): string {
         return qty
-            ? qty < 2
-                ? qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
+            ? qty < 0.0001
+                ? qty.toExponential(2)
+                : qty < 2
+                ? qty.toPrecision(3)
+                : qty >= 100000
+                ? formatAmountOld(qty, 1)
                 : qty.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -463,9 +458,8 @@ function Reposition() {
         fetchCurrentCollateral();
     }, [lastBlockNumber, JSON.stringify(position)]);
 
-    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
-        useState<string>('0.00');
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
@@ -544,7 +538,6 @@ function Reposition() {
 
     useEffect(() => {
         if (
-            isPositionInRange ||
             !crocEnv ||
             !debouncedLowTick ||
             !debouncedHighTick ||
@@ -554,6 +547,8 @@ function Reposition() {
         ) {
             return;
         }
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -562,21 +557,18 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
             setNewBaseQtyDisplay(truncateString(base));
             setNewQuoteQtyDisplay(truncateString(quote));
         });
     }, [
-        isPositionInRange,
         crocEnv,
+        concLiq,
         debouncedLowTick, // Debounce because effect involves on-chain call
         debouncedHighTick,
-        position.baseSymbol,
-        position.quoteSymbol,
         currentPoolPriceTick,
-        position.positionLiq,
-        position.bidTick,
-        position.askTick,
     ]);
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
@@ -721,8 +713,16 @@ function Reposition() {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={position?.lowRangeDisplayInBase}
-                    currentMaxPrice={position?.highRangeDisplayInBase}
+                    currentMinPrice={
+                        isDenomBase
+                            ? position?.lowRangeDisplayInBase
+                            : position?.lowRangeDisplayInQuote
+                    }
+                    currentMaxPrice={
+                        isDenomBase
+                            ? position?.highRangeDisplayInBase
+                            : position?.highRangeDisplayInQuote
+                    }
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (
