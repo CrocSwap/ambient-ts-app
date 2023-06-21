@@ -1,7 +1,6 @@
 .range_width_container {
     width: 100%;
     /* margin-bottom: 1rem; */
- 
 
     border: 1px solid var(--border-color);
     border-radius: 16px;
@@ -12,19 +11,15 @@
 .range_width_content {
     display: flex;
     flex-direction: column;
-  
-
-    
 }
 .range_width_input {
     display: flex;
     flex-direction: row;
     align-items: center;
-   padding: 0 4rem;
-   height: 40px;
-  
+    padding: 0 4rem;
+    height: 40px;
 
-   justify-content: center;
+    justify-content: center;
 }
 
 .range_width_input span {
@@ -64,8 +59,7 @@
 }
 .percentage_options {
     display: flex;
-  height: 25px;
- 
+    height: 25px;
 
     width: 100%;
 
@@ -108,7 +102,7 @@
 
 .percentage_option_buttons:hover {
     color: var(--accent1);
-    border: 1px solid var(--accent1)
+    border: 1px solid var(--accent1);
 }
 .percentage_option_buttons:focus-visible,
 .percentage_input:focus-visible {
@@ -117,6 +111,11 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+}
+
+.matching_percentage_button {
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
 }
 .percentage_input {
     /* padding: 15px 0px;  */
