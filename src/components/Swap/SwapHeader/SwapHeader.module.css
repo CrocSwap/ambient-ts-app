@@ -9,6 +9,14 @@
     cursor: pointer;
 }
 
+
+.hoverable_icon{
+    fill: var(--text2) !important;
+    color: var(--text2) !important
+}
+.hoverable_icon:hover{
+    fill: var(--accent1) !important
+}
 .token_info {
     cursor: pointer;
     font-size: var(--header1-size);

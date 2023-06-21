@@ -276,6 +276,10 @@
     cursor: pointer;
 }
 
+.refresh_button:hover > svg{
+    color: var(--accent1)
+}
+
 .refresh_button:focus-visible {
     color: var(--text1);
     cursor: pointer;
