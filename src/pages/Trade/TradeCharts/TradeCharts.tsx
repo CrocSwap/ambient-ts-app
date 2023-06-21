@@ -165,31 +165,11 @@ function TradeCharts(props: propsIF) {
         };
     });
 
-    const saveImageContent = (
-        <div
-            className={styles.save_image_content}
-            onClick={copyChartToClipboard}
-            role='button'
-            tabIndex={0}
-            aria-label='Download chart image button'
-        >
-            Copy to Clipboard
-            <FiCopy />
-        </div>
-    );
-
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <DefaultTooltip
                 interactive
-                title={
-                    <div
-                        className={styles.save_image_content}
-                        onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    >
-                        Toggle Full Screen Chart
-                    </div>
-                }
+                title={'Toggle Full Screen Chart'}
                 enterDelay={500}
             >
                 <button
@@ -205,7 +185,7 @@ function TradeCharts(props: propsIF) {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={saveImageContent}
+                title={'Copy to Clipboard'}
                 enterDelay={500}
             >
                 <button
