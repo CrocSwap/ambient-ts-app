@@ -45,9 +45,9 @@ export const useProcessTransaction = (
     const quoteTokenSymbol = tx.quoteSymbol;
 
     const baseTokenAddress = tx.base;
-    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 0, '…');
+    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 4, '…');
     const quoteTokenAddress = tx.quote;
-    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 0, '…');
+    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 4, '…');
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
