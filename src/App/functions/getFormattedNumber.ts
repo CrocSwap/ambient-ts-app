@@ -34,6 +34,7 @@ export function getFormattedNumber({
         valueString = value.toFixed(2);
     } else if (value <= 0.0001) {
         if (isInput)
+            // prevent scientific notation for inputs
             valueString = Number(value?.toPrecision(3)).toLocaleString(
                 undefined,
                 { maximumFractionDigits: 20 },
@@ -43,7 +44,7 @@ export function getFormattedNumber({
         valueString = value.toPrecision(3);
     } else if (value < 2) {
         valueString = value.toFixed(3);
-    } else if (value >= 10000) {
+    } else if (value >= 10000 && !isInput) {
         valueString = formatAbbrev(value);
     } else {
         valueString = value.toLocaleString(undefined, {
@@ -85,6 +86,7 @@ const formatAbbrev = (value: number) => {
             thousand: 'k',
             million: 'M',
             billion: 'B',
+            trillion: 'T',
         },
     });
 };
