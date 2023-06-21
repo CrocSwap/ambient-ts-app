@@ -8,9 +8,7 @@ import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
-export const useAppChain = (
-    isUserLoggedIn: boolean | undefined,
-): [
+export const useAppChain = (): [
     ChainSpec,
     boolean,
     Dispatch<SetStateAction<string>>,
@@ -75,7 +73,7 @@ export const useAppChain = (
         // the app, since there's a lot of downstream dependencies to the provider
         if (
             validateChainId(nextChain) &&
-            validateChainId(currentChain) &&
+            !validateChainId(currentChain) &&
             nextChain !== currentChain
         ) {
             nukeAndReloadApp();
@@ -89,7 +87,7 @@ export const useAppChain = (
         } else {
             setIsChainSupported(false);
         }
-    }, [nextChain, isUserLoggedIn]);
+    }, [nextChain, currentChain]);
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated

@@ -37,12 +37,12 @@ export const CrocEnvContextProvider = (props: {
 }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const { address: userAddress, isConnected } = useAccount();
+    const { address: userAddress } = useAccount();
     const provider = useProvider();
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-    const [chainData, isChainSupported] = useAppChain(isConnected);
+    const [chainData, isChainSupported] = useAppChain();
     const topPools: topPoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
