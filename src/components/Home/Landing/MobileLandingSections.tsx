@@ -10,7 +10,6 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
 import { useTranslation } from 'react-i18next';
-import { Reveal } from '../../Global/Reveal/Reveal';
 export default function MobileLandingSections() {
     const section1 = useRef(null);
     const section2 = useRef(null);
@@ -29,18 +28,17 @@ export default function MobileLandingSections() {
 
     const heroSection = (
         <div className={`${styles.mobile_card} ${styles.hero} `} ref={section1}>
-            <Reveal>
-                <>
-                    <div style={{ paddingBottom: '2rem' }}>
-                        <img src={logoText} alt='ambient' />
+            <>
+                <div style={{ paddingBottom: '2rem' }}>
+                    <img src={logoText} alt='ambient' />
 
-                        <p className={styles.tagline}>
-                            Zero-to-One Decentralized Trading Protocol.
-                        </p>
-                    </div>
-                    <Stats />
-                </>
-            </Reveal>
+                    <p className={styles.tagline}>
+                        Zero-to-One Decentralized Trading Protocol.
+                    </p>
+                </div>
+                <Stats />
+            </>
+
             <TradeNowButton />
 
             <button
@@ -57,12 +55,10 @@ export default function MobileLandingSections() {
             ref={section2}
             style={{ width: '100vw' }}
         >
-            <Reveal>
-                <>
-                    <h3> {t('topPools')}</h3>
-                    <TopPools noTitle gap='8px' />
-                </>
-            </Reveal>
+            <>
+                <h3> {t('topPools')}</h3>
+                <TopPools noTitle gap='8px' />
+            </>
 
             <button
                 className={styles.scroll_button}
@@ -78,21 +74,18 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.right_align}`}
             ref={section3}
         >
-            <Reveal>
-                <>
-                    <h1 tabIndex={0}>
-                        Zero-to-One Decentralized Trading Protocol
-                    </h1>
-                    <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
-                        Faster, Easier, and Cheaper
-                    </h2>
-                    <p tabIndex={0}>
-                        Ambient runs the entire DEX inside a single smart
-                        contract, allowing for low-fee transactions, greater
-                        liquidity rewards, and a fairer trading experience.
-                    </p>
-                </>
-            </Reveal>
+            <>
+                <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
+                <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
+                    Faster, Easier, and Cheaper
+                </h2>
+                <p tabIndex={0}>
+                    Ambient runs the entire DEX inside a single smart contract,
+                    allowing for low-fee transactions, greater liquidity
+                    rewards, and a fairer trading experience.
+                </p>
+            </>
+
             <button
                 className={styles.scroll_button}
                 onClick={() => scrollTo(section4)}
@@ -107,18 +100,17 @@ export default function MobileLandingSections() {
             {/* <div className={styles.mobile_card_img_container_left}>
                 <img src={row2Image} alt='concentrated and ambient liquidity' />
             </div> */}
-            <Reveal>
-                <>
-                    <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
-                    <p tabIndex={0}>
-                        Ambient is built for diversified, sustainable liquidity
-                        that fixes the broken LP economics of AMMs. It is also
-                        the only DEX to support concentrated (‘V3’), ambient
-                        (‘V2’) and knock-out liquidity in the same liquidity
-                        pool.
-                    </p>
-                </>
-            </Reveal>
+
+            <>
+                <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
+                <p tabIndex={0}>
+                    Ambient is built for diversified, sustainable liquidity that
+                    fixes the broken LP economics of AMMs. It is also the only
+                    DEX to support concentrated (‘V3’), ambient (‘V2’) and
+                    knock-out liquidity in the same liquidity pool.
+                </p>
+            </>
+
             <button
                 className={styles.scroll_button}
                 onClick={() => scrollTo(section5)}
@@ -138,22 +130,20 @@ export default function MobileLandingSections() {
                     className={styles.smaller_image}
                 />
             </div> */}
-            <Reveal>
-                <>
-                    <h2 tabIndex={0}>
-                        Bridge the Gap Between Trading and LP’ing
-                    </h2>
-                    <p tabIndex={0}>
-                        Make your LP position a trading position – and vice
-                        versa – using our range and limit orders.
-                    </p>
-                    <p tabIndex={0}>
-                        Ambient combines liquidity in a single pool, allowing
-                        for greater rewards for liquidity providers, and less
-                        impact for traders.
-                    </p>
-                </>
-            </Reveal>
+
+            <>
+                <h2 tabIndex={0}>Bridge the Gap Between Trading and LP’ing</h2>
+                <p tabIndex={0}>
+                    Make your LP position a trading position – and vice versa –
+                    using our range and limit orders.
+                </p>
+                <p tabIndex={0}>
+                    Ambient combines liquidity in a single pool, allowing for
+                    greater rewards for liquidity providers, and less impact for
+                    traders.
+                </p>
+            </>
+
             <button
                 className={styles.scroll_button}
                 onClick={() => scrollTo(section6)}
@@ -165,17 +155,16 @@ export default function MobileLandingSections() {
 
     const fifthRow = (
         <div className={styles.mobile_card} ref={section6}>
-            <Reveal>
-                <>
-                    <h2 tabIndex={0}>Better than CEX</h2>
-                    <p tabIndex={0}>
-                        Built for traders and market makers of all kinds,
-                        Ambient introduces novel DeFi-native features and an
-                        array of quality-of-life improvements allowing for a
-                        best-in-class user experience.
-                    </p>
-                </>
-            </Reveal>
+            <>
+                <h2 tabIndex={0}>Better than CEX</h2>
+                <p tabIndex={0}>
+                    Built for traders and market makers of all kinds, Ambient
+                    introduces novel DeFi-native features and an array of
+                    quality-of-life improvements allowing for a best-in-class
+                    user experience.
+                </p>
+            </>
+
             <button
                 className={styles.scroll_button}
                 onClick={() => scrollTo(section7)}
@@ -190,12 +179,11 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.investors}`}
             ref={section7}
         >
-            <Reveal>
-                <>
-                    <h3>Investors</h3>
-                    <Investors />
-                </>
-            </Reveal>
+            <>
+                <h3>Investors</h3>
+                <Investors />
+            </>
+
             <button
                 className={styles.scroll_button}
                 onClick={() => scrollTo(section8)}
@@ -210,9 +198,7 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.footer_section}`}
             ref={section8}
         >
-            <Reveal>
-                <Footer />
-            </Reveal>
+            <Footer />
         </div>
     );
 
