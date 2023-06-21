@@ -5,6 +5,7 @@ import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TokenIcon from '../TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
@@ -41,7 +42,7 @@ export default function SoloTokenImport(props: propsIF) {
             <div className={styles.token_display}>
                 <div>
                     <TokenIcon
-                        src={customToken.logoURI}
+                        src={uriToHttp(customToken.logoURI)}
                         alt={customToken.name}
                         size='2xl'
                     />

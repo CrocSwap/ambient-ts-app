@@ -113,7 +113,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
+                            src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.name}
                             size='m'
                         />
@@ -125,7 +125,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
+                            src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.name}
                             size='m'
                         />
@@ -138,7 +138,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
+                            src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.name}
                             size='m'
                         />
@@ -149,7 +149,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
+                            src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.name}
                             size='m'
                         />

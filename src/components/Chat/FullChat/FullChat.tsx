@@ -21,6 +21,7 @@ import { useMediaQuery } from '@material-ui/core';
 import { defaultTokens } from '../../../utils/data/defaultTokens';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -399,8 +400,11 @@ export default function FullChat(props: FullChatPropsIF) {
                 )}
 
                 <div className={styles.token_logos}>
-                    <img src={pool?.base.logoURI} alt='base token' />
-                    <img src={pool?.quote.logoURI} alt='quote token' />
+                    <img src={uriToHttp(pool?.base.logoURI)} alt='base token' />
+                    <img
+                        src={uriToHttp(pool?.quote.logoURI)}
+                        alt='quote token'
+                    />
                 </div>
                 <span>{pool?.name}</span>
                 {poolIsCurrentPool && (

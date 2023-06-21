@@ -102,7 +102,7 @@ function ConfirmRangeModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             range
         />

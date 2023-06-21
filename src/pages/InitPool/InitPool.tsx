@@ -29,9 +29,9 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 // react functional component
 export default function InitPool() {
@@ -421,19 +421,11 @@ export default function InitPool() {
     const tokenADisplay = (
         <div className={styles.pool_display}>
             <div>
-                {tokenA &&
-                    (tokenA.logoURI ? (
-                        <img
-                            src={uriToHttp(tokenA.logoURI)}
-                            alt={tokenA.symbol}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenA.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    ))}
+                <TokenIcon
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='2xl'
+                />
                 {tokenA && <h3>{tokenA.symbol}</h3>}
             </div>
             {tokenA && <p>{tokenA.name}</p>}
@@ -443,19 +435,11 @@ export default function InitPool() {
     const tokenBDisplay = (
         <div className={styles.pool_display}>
             <div>
-                {tokenB &&
-                    (tokenB.logoURI ? (
-                        <img
-                            src={uriToHttp(tokenB.logoURI)}
-                            alt={tokenB.symbol}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenB.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    ))}
+                <TokenIcon
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='2xl'
+                />
                 {tokenB && <h3>{tokenB.symbol}</h3>}
             </div>
             {tokenB && <p>{tokenB.name}</p>}
