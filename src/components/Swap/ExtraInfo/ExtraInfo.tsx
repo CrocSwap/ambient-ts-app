@@ -112,8 +112,9 @@ function ExtraInfo(props: propsIF) {
 
     const extraInfoData = [
         {
-            title: 'Conversion Rate',
-            tooltipTitle: 'After Price Impact and Provider Fee',
+            title: 'Avg. Rate',
+            tooltipTitle:
+                'Expected Conversion Rate After Price Impact and Provider Fee',
             data: isDenomBase
                 ? `${getDisplayableEffectivePriceString(
                       effectivePriceWithDenom,
@@ -124,19 +125,19 @@ function ExtraInfo(props: propsIF) {
             placement: 'bottom',
         },
         {
+            title: 'Final Price',
+            tooltipTitle: 'Expected Pool Price After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+            placement: 'bottom',
+        },
+        {
             title: 'Price Impact',
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
             // eslint-disable-next-line no-irregular-whitespace
             data: `${getPriceImpactString(priceImpactNum)} %`,
-            placement: 'bottom',
-        },
-        {
-            title: 'Final Price',
-            tooltipTitle: 'Expected Price After Swap',
-            data: isDenomBase
-                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             placement: 'bottom',
         },
     ];
