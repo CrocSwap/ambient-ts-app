@@ -420,24 +420,28 @@ export default function InitPool() {
 
     const tokenADisplay = (
         <div className={styles.pool_display}>
-            <TokenIcon
-                src={uriToHttp(tokenA.logoURI)}
-                alt={tokenA.symbol}
-                size='2xl'
-            />
-            {tokenA && <h3>{tokenA.symbol}</h3>}
+            <div>
+                <TokenIcon
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='2xl'
+                />
+                {tokenA && <h3>{tokenA.symbol}</h3>}
+            </div>
             {tokenA && <p>{tokenA.name}</p>}
         </div>
     );
 
     const tokenBDisplay = (
         <div className={styles.pool_display}>
-            <TokenIcon
-                src={uriToHttp(tokenB.logoURI)}
-                alt={tokenB.symbol}
-                size='2xl'
-            />
-            {tokenB && <h3>{tokenB.symbol}</h3>}
+            <div>
+                <TokenIcon
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='2xl'
+                />
+                {tokenB && <h3>{tokenB.symbol}</h3>}
+            </div>
             {tokenB && <p>{tokenB.name}</p>}
         </div>
     );
