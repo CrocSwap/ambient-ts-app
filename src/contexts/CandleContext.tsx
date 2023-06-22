@@ -267,7 +267,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
 
-        return candleNumber > 999 ? 999 : candleNumber;
+        return candleNumber > 2999 ? 2999 : candleNumber;
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
     const candleSeriesCacheEndpoint = GRAPHCACHE_URL + '/candle_series?';
@@ -369,7 +369,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
     useEffect(() => {
         if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
+        if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
