@@ -102,21 +102,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         </div>
     );
 
-    const actionContent = (
-        <div className={styles.actions_container}>
-            <NavLink
-                to={'/account'}
-                aria-label='Go to the account page '
-                tabIndex={0}
-                onClick={clickOutsideHandler}
-            >
-                <CgProfile />
-                My Account
-            </NavLink>
-            <button onClick={clickLogout}>Logout</button>
-        </div>
-    );
-
     function TokenAmountDisplay(props: TokenAmountDisplayPropsIF) {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
@@ -127,12 +112,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 tabIndex={0}
                 aria-label={ariaLabel}
             >
-                {/* row */}
                 <div className={styles.logo_name}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
                 </div>
-
                 <div className={styles.token_amount}>
                     <h3>{amount}</h3>
                     <h6>{value}</h6>
@@ -172,7 +155,18 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     />
                 ))}
             </section>
-            {actionContent}
+            <div className={styles.actions_container}>
+                <NavLink
+                    to={'/account'}
+                    aria-label='Go to the account page '
+                    tabIndex={0}
+                    onClick={clickOutsideHandler}
+                >
+                    <CgProfile />
+                    My Account
+                </NavLink>
+                <button onClick={clickLogout}>Logout</button>
+            </div>
         </div>
     );
 }
