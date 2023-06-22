@@ -393,6 +393,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
+                                n: '50',
                             }),
                     )
                         .then((response) => response?.json())
@@ -424,8 +425,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 updatedLimitOrderStates,
                                         }),
                                     );
-                                    console.log('setting to false');
-
                                     dispatch(
                                         setDataLoadingStatus({
                                             datasetName: 'poolOrderData',
@@ -434,7 +433,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     );
                                 });
                             } else {
-                                console.log('setting to false');
                                 dispatch(
                                     setLimitOrdersByPool({
                                         dataReceived: false,
