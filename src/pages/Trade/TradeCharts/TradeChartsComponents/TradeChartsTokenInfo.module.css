@@ -76,25 +76,6 @@
     cursor: pointer;
 }
 
-.mono_space_tooltip {
-    color: var(--text1);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 340px;
-    padding: 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    background: var(--dark3);
-}
-
-.mono_space_tooltip p {
-    font-family: monospace !important;
-}
-.mono_space_tooltip svg {
-    cursor: pointer;
-}
 .tokens_images,
 .tokens_name,
 .fav_button,
