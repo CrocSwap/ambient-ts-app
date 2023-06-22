@@ -58,8 +58,8 @@ export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 // External links
 export const DOCS_LINK = 'https://docs.ambient.finance/';
 export const GITHUB_LINK = 'https://github.com/CrocSwap';
-export const TWITTER_LINK = 'https://twitter.com/crocswap';
-export const DISCORD_LINK = 'https://discord.com/invite/crocswap';
+export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
+export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;

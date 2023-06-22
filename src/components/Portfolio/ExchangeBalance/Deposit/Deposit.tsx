@@ -64,7 +64,7 @@ export default function Deposit(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const amountToReduceEth = BigNumber.from(1).mul('100000000000000000'); // .1 ETH
+    const amountToReduceEth = BigNumber.from(25).mul('1000000000000000'); // .025 ETH
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
@@ -74,12 +74,10 @@ export default function Deposit(props: propsIF) {
                   .toString()
             : tokenWalletBalance;
 
-    const tokenWalletBalanceDisplay = useDebounce(
-        tokenWalletBalance
-            ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
-            : undefined,
-        500,
-    );
+    const tokenWalletBalanceDisplay = tokenWalletBalance
+        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+        : undefined;
+
     const adjustedTokenWalletBalanceDisplay = useDebounce(
         tokenWalletBalanceAdjustedNonDisplayString
             ? toDisplayQty(
@@ -94,16 +92,19 @@ export default function Deposit(props: propsIF) {
         ? parseFloat(tokenWalletBalanceDisplay)
         : undefined;
 
-    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
-        ? tokenWalletBalanceDisplayNum < 0.0001
-            ? 0.0
-            : tokenWalletBalanceDisplayNum < 2
-            ? tokenWalletBalanceDisplayNum.toPrecision(3)
-            : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenWalletBalanceTruncated =
+        tokenWalletBalanceDisplayNum !== undefined
+            ? tokenWalletBalanceDisplayNum === 0
+                ? '0.00'
+                : tokenWalletBalanceDisplayNum < 0.0001
+                ? 0.0
+                : tokenWalletBalanceDisplayNum < 2
+                ? tokenWalletBalanceDisplayNum.toPrecision(3)
+                : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
         string | undefined
@@ -121,7 +122,16 @@ export default function Deposit(props: propsIF) {
         [tokenAllowance, depositQtyNonDisplay],
     );
 
-    const isWalletBalanceSufficient = useMemo(
+    const isWalletBalanceSufficientToCoverGas = useMemo(() => {
+        if (selectedToken.address !== ZERO_ADDRESS) {
+            return true;
+        }
+        return tokenWalletBalance
+            ? BigNumber.from(tokenWalletBalance).gt(amountToReduceEth)
+            : false;
+    }, [tokenWalletBalance, amountToReduceEth]);
+
+    const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
             tokenWalletBalanceAdjustedNonDisplayString && !!depositQtyNonDisplay
                 ? BigNumber.from(
@@ -157,11 +167,17 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
-        } else if (!isWalletBalanceSufficient) {
+        } else if (!isWalletBalanceSufficientToCoverGas) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
-                `${selectedToken.symbol} Wallet Balance Insufficient`,
+                `${selectedToken.symbol} Wallet Balance Insufficient To Cover Gas`,
+            );
+        } else if (!isWalletBalanceSufficientToCoverDeposit) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage(
+                `${selectedToken.symbol} Wallet Balance Insufficient to Cover Deposit`,
             );
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
@@ -176,7 +192,8 @@ export default function Deposit(props: propsIF) {
         isApprovalPending,
         isDepositPending,
         isTokenAllowanceSufficient,
-        isWalletBalanceSufficient,
+        isWalletBalanceSufficientToCoverDeposit,
+        isWalletBalanceSufficientToCoverGas,
         isDepositQtyValid,
         selectedToken.symbol,
     ]);
@@ -383,15 +400,17 @@ export default function Deposit(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenWalletBalanceTruncated || '0.0'}
-                    {isWalletBalanceSufficient ? (
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={handleBalanceClick}
-                        >
-                            Max
-                        </button>
-                    ) : null}
+                    {tokenWalletBalanceTruncated || '...'}
+                    <button
+                        className={`${styles.max_button} ${
+                            isWalletBalanceSufficientToCoverDeposit &&
+                            styles.max_button_enabled
+                        }`}
+                        onClick={handleBalanceClick}
+                        disabled={!isWalletBalanceSufficientToCoverDeposit}
+                    >
+                        Max
+                    </button>
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>

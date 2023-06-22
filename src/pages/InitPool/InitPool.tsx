@@ -29,7 +29,9 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
+import { exponentialNumRegEx } from '../../utils/regex/exports';
+import uriToHttp from '../../utils/functions/uriToHttp';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 
 // react functional component
 export default function InitPool() {
@@ -118,6 +120,7 @@ export default function InitPool() {
     const [isInitPending, setIsInitPending] = useState(false);
 
     const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
 
     const defaultInitialPrice = 2000;
@@ -125,20 +128,26 @@ export default function InitPool() {
     const [placeHolderPrice, setPlaceholderPrice] =
         useState<number>(defaultInitialPrice);
 
-    const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
     const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
-        if (initialPrice) setInitialPrice(1 / initialPrice);
+        if (initialPrice) {
+            const invertedPriceNum = 1 / initialPrice;
+
+            const invertedPriceTruncated =
+                invertedPriceNum < 0.0001
+                    ? invertedPriceNum.toExponential(2)
+                    : invertedPriceNum < 2
+                    ? invertedPriceNum.toPrecision(3)
+                    : invertedPriceNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialPrice(invertedPriceNum);
+            setInitialPriceForDOM(invertedPriceTruncated);
+        }
         setPlaceholderPrice(1 / placeHolderPrice);
     };
-
-    useEffect(() => {
-        if (initialPrice !== undefined) {
-            setValueDisplayString(initialPrice.toString() || '');
-        }
-    }, [initialPrice]);
 
     useEffect(() => {
         if (initialPrice) {
@@ -312,14 +321,16 @@ export default function InitPool() {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const isValid =
-            event.target.value === '' || event.target.validity.valid;
+            event.target.value === '' ||
+            event.target.value === '.' ||
+            event.target.validity.valid;
         const targetValue = event.target.value.replaceAll(',', '');
         const input = targetValue.startsWith('.')
             ? '0' + targetValue
             : targetValue;
         const targetValueNum = parseFloat(input);
 
-        isValid && setValueDisplayString(input);
+        isValid && setInitialPriceForDOM(input);
 
         if (
             isValid &&
@@ -333,23 +344,6 @@ export default function InitPool() {
             }
         }
     };
-
-    const initialPriceInput = (
-        <input
-            id='initial-pool-price-quantity'
-            className={styles.currency_quantity}
-            placeholder={placeholderText}
-            type='string'
-            onChange={handleInputChange}
-            value={valueDisplayString}
-            inputMode='decimal'
-            autoComplete='off'
-            autoCorrect='off'
-            min='0'
-            minLength={1}
-            pattern='^[0-9,]*[.]?[0-9]*$'
-        />
-    );
 
     const ButtonToRender = () => {
         let buttonContent;
@@ -427,19 +421,11 @@ export default function InitPool() {
     const tokenADisplay = (
         <div className={styles.pool_display}>
             <div>
-                {tokenA &&
-                    (tokenA.logoURI ? (
-                        <img
-                            src={tokenA.logoURI}
-                            alt={tokenA.symbol}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenA.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    ))}
+                <TokenIcon
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='2xl'
+                />
                 {tokenA && <h3>{tokenA.symbol}</h3>}
             </div>
             {tokenA && <p>{tokenA.name}</p>}
@@ -449,19 +435,11 @@ export default function InitPool() {
     const tokenBDisplay = (
         <div className={styles.pool_display}>
             <div>
-                {tokenB &&
-                    (tokenB.logoURI ? (
-                        <img
-                            src={tokenB.logoURI}
-                            alt={tokenB.symbol}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={tokenB.symbol.charAt(0)}
-                            width='30px'
-                        />
-                    ))}
+                <TokenIcon
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='2xl'
+                />
                 {tokenB && <h3>{tokenB.symbol}</h3>}
             </div>
             {tokenB && <p>{tokenB.name}</p>}
@@ -496,12 +474,32 @@ export default function InitPool() {
                     <div className={styles.pool_display_container}>
                         {tokenADisplay}
                         {tokenBDisplay}
-
                         <div className={styles.padding_center}>
                             <div className={styles.pool_price_container}>
                                 <span>Initial Price</span>
                                 <section style={{ width: '100%' }}>
-                                    {initialPriceInput}
+                                    <input
+                                        id='initial-pool-price-quantity'
+                                        className={styles.currency_quantity}
+                                        placeholder={placeholderText}
+                                        type='string'
+                                        onChange={handleInputChange}
+                                        onBlur={() =>
+                                            initialPrice &&
+                                            setInitialPriceForDOM(
+                                                parseFloat(
+                                                    initialPrice.toString(),
+                                                ).toString(),
+                                            )
+                                        }
+                                        value={initialPriceForDOM}
+                                        inputMode='decimal'
+                                        autoComplete='off'
+                                        autoCorrect='off'
+                                        min='0'
+                                        minLength={1}
+                                        pattern={exponentialNumRegEx.source}
+                                    />
                                 </section>
                             </div>
                             <InitPoolExtraInfo

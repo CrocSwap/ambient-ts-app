@@ -1,0 +1,98 @@
+.main_content {
+    width: 400px;
+    height: 100%;
+    transition: all var(--animation-speed) ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--dark1);
+    /* padding: 1rem; */
+    /* padding: 0 2rem; */
+}
+
+.remove_range_container {
+    position: relative;
+    padding: 16px;
+    padding-top: 0px;
+    background: var(--dark1)
+}
+
+.settings_button {
+    cursor: pointer;
+}
+
+.remove_range_settings_container {
+    position: absolute;
+
+    top: 40px;
+}
+.header_container {
+    padding: 0 16px;
+}
+
+.settings_icon {
+    cursor: pointer;
+    animation: all 500ms ease-in-out;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.confirmation_container {
+    width: 400px;
+    /* height: 500px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--dark1);
+    /* padding: 1rem; */
+    /* align-items: center; */
+}
+
+.confirmation_content {
+    padding: 1rem;
+}
+
+.button {
+    cursor: pointer;
+}
+
+.confirmation_container header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.confirmation_container header div {
+    cursor: pointer;
+}
+
+.info_container {
+    padding: 0 16px;
+}
+
+.extra_info_container {
+    border: 1px solid var(--dark2);
+    border-radius: var(--border-radius);
+    padding: 8px 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    font-weight: 300;
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.extra_info_container div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.button_container {
+    padding: 0 16px;
+}
