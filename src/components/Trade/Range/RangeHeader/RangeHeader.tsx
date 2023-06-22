@@ -46,7 +46,7 @@ function RangeHeader(props: propsIF) {
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
-    const settinsSvg = (
+    const settingsSvg = (
         <svg
             width='14'
             height='14'
@@ -79,6 +79,7 @@ function RangeHeader(props: propsIF) {
         <ContentHeader>
             <AiOutlineShareAlt
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
                 id='range_share_button'
                 role='button'
                 tabIndex={0}
@@ -102,7 +103,7 @@ function RangeHeader(props: propsIF) {
                     tabIndex={0}
                     aria-label='Settings button'
                 >
-                    {settinsSvg}
+                    {settingsSvg}
                 </div>
             </IconWithTooltip>
             {isModalOpen && (

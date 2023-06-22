@@ -37,7 +37,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={
                         rangeWidthPercentage === 5
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -54,7 +54,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={
                         rangeWidthPercentage === 10
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -71,7 +71,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={
                         rangeWidthPercentage === 25
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -88,7 +88,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={
                         rangeWidthPercentage === 50
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -106,7 +106,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={
                         rangeWidthPercentage === 100
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -164,44 +164,40 @@ function RangeWidth(props: RangeWidthPropsIF) {
 
     return (
         <div className={styles.range_width_container} id='range_width'>
-            <div className={styles.range_width_content}>
-                {PercentageOptionContent}
-                <span
-                    className={`${styles.percentage_amount} ${
-                        showRangePulseAnimation && styles.pulse_animation
-                    }`}
-                    id='percentage-output'
-                    aria-live='polite'
-                    aria-atomic='true'
-                    aria-relevant='all'
-                >
-                    {rangeWidthPercentage === 100
-                        ? 'Ambient'
-                        : '± ' + rangeWidthPercentage + '%'}
-                    {rangeWidthTooltip}
-                </span>
-                <div className={styles.range_width_input}>
-                    <input
-                        size={28}
-                        aria-labelledby='input slider'
-                        aria-label='Input slider for range width'
-                        id='input-slider-range'
-                        min='1'
-                        max='100'
-                        step='1'
-                        defaultValue={rangeWidthPercentage}
-                        type='range'
-                        className={styles.percentage_input}
-                        onChange={(event) =>
-                            handleRangeSlider(event, setRangeWidthPercentage)
-                        }
-                        onClick={() => {
-                            setRescaleRangeBoundariesWithSlider(true);
-                        }}
-                    />
-                </div>
-
-                <div className={styles.percentage_container}></div>
+            {PercentageOptionContent}
+            <span
+                className={`${styles.percentage_amount} ${
+                    showRangePulseAnimation && styles.pulse_animation
+                }`}
+                id='percentage-output'
+                aria-live='polite'
+                aria-atomic='true'
+                aria-relevant='all'
+            >
+                {rangeWidthPercentage === 100
+                    ? 'Ambient'
+                    : '± ' + rangeWidthPercentage + '%'}
+                {rangeWidthTooltip}
+            </span>
+            <div className={styles.range_width_input}>
+                <input
+                    size={28}
+                    aria-labelledby='input slider'
+                    aria-label='Input slider for range width'
+                    id='input-slider-range'
+                    min='1'
+                    max='100'
+                    step='1'
+                    defaultValue={rangeWidthPercentage}
+                    type='range'
+                    className={styles.percentage_input}
+                    onChange={(event) =>
+                        handleRangeSlider(event, setRangeWidthPercentage)
+                    }
+                    onClick={() => {
+                        setRescaleRangeBoundariesWithSlider(true);
+                    }}
+                />
             </div>
         </div>
     );

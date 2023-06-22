@@ -502,7 +502,6 @@ function CurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity

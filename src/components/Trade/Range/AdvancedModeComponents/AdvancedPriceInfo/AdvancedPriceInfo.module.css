@@ -8,7 +8,7 @@
     transition: all var(--animation-speed) ease-in-out;
     /* background: var(--dark2); */
   
-    padding: 0 2rem;
+    padding: 0 16px;
     border-radius: var(--border-radius);
     color: var(--text2);
     font-size: var(--body-size);
@@ -48,9 +48,9 @@
     line-height: var(--header2-lh);
     background: linear-gradient(
         90deg,
-        #fafc71 32.38%,
-        #b9e98f 51.39%,
-        #fafc71 68.17%
+        #15BE6F 100%,
+        #8FE9BF 100%,
+        #15BE6F 100%,
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

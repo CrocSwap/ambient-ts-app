@@ -1222,12 +1222,7 @@ function Range() {
     };
 
     const baseModeContent = (
-        <div>
-            <RangeCurrencyConverter
-                {...rangeCurrencyConverterProps}
-                isAdvancedMode={false}
-            />
-            {advancedModeToggle}
+        <div className={styles.info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1236,16 +1231,10 @@ function Range() {
                 <RangeWidth {...rangeWidthProps} />
             </motion.div>
             <RangePriceInfo {...rangePriceInfoProps} />
-            <RangeExtraInfo {...rangeExtraInfoProps} />
         </div>
     );
     const advancedModeContent = (
-        <>
-            <RangeCurrencyConverter
-                {...rangeCurrencyConverterProps}
-                isAdvancedMode
-            />
-            {advancedModeToggle}
+        <div className={styles.advanced_info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1278,8 +1267,7 @@ function Range() {
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
             />
-            <RangeExtraInfo {...rangeExtraInfoProps} />
-        </>
+        </div>
     );
 
     const isTokenAAllowanceSufficient =
@@ -1438,6 +1426,11 @@ function Range() {
                     isTokenABase={isTokenABase}
                 />
                 {navigationMenu}
+                <RangeCurrencyConverter
+                    {...rangeCurrencyConverterProps}
+                    isAdvancedMode
+                />
+                {advancedModeToggle}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -1445,88 +1438,95 @@ function Range() {
                 >
                     {advancedMode ? advancedModeContent : baseModeContent}
                 </motion.div>
-                {isUserConnected === undefined ? null : isUserConnected ===
-                  true ? (
-                    poolPriceNonDisplay !== 0 &&
-                    parseFloat(tokenAInputQty) > 0 &&
-                    !isTokenAAllowanceSufficient ? (
-                        tokenAApprovalButton
-                    ) : poolPriceNonDisplay !== 0 &&
-                      parseFloat(tokenBInputQty) > 0 &&
-                      !isTokenBAllowanceSufficient ? (
-                        tokenBApprovalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassConfirmRangeButton
-                            {...bypassConfirmButtonProps}
-                        />
-                    ) : (
-                        <>
-                            <RangeButton
-                                onClickFn={
-                                    areBothAckd
-                                        ? bypassConfirmRange.isEnabled
-                                            ? handleRangeButtonClickWithBypass
-                                            : openConfirmationModal
-                                        : ackAsNeeded
-                                }
-                                rangeAllowed={
-                                    isPoolInitialized === true &&
-                                    rangeAllowed &&
-                                    !isInvalidRange
-                                }
-                                rangeButtonErrorMessage={
-                                    rangeButtonErrorMessage
-                                }
-                                isAmbient={isAmbient}
-                                isAdd={isAdd}
-                                areBothAckd={areBothAckd}
+                <div className={styles.info_button_container}>
+                    <RangeExtraInfo {...rangeExtraInfoProps} />
+                    {isUserConnected === undefined ? null : isUserConnected ===
+                      true ? (
+                        poolPriceNonDisplay !== 0 &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        !isTokenAAllowanceSufficient ? (
+                            tokenAApprovalButton
+                        ) : poolPriceNonDisplay !== 0 &&
+                          parseFloat(tokenBInputQty) > 0 &&
+                          !isTokenBAllowanceSufficient ? (
+                            tokenBApprovalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassConfirmRangeButton
+                                {...bypassConfirmButtonProps}
                             />
-                            {ackTokenMessage && (
-                                <p
-                                    className={styles.acknowledge_text}
-                                    dangerouslySetInnerHTML={{
-                                        __html: formattedAckTokenMessage,
-                                    }}
-                                ></p>
-                            )}
+                        ) : (
+                            <>
+                                <RangeButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirmRange.isEnabled
+                                                ? handleRangeButtonClickWithBypass
+                                                : openConfirmationModal
+                                            : ackAsNeeded
+                                    }
+                                    rangeAllowed={
+                                        isPoolInitialized === true &&
+                                        rangeAllowed &&
+                                        !isInvalidRange
+                                    }
+                                    rangeButtonErrorMessage={
+                                        rangeButtonErrorMessage
+                                    }
+                                    isAmbient={isAmbient}
+                                    isAdd={isAdd}
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
 
-                            <div className={styles.acknowledge_etherscan_links}>
-                                {needConfirmTokenA && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenA.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenA.symbol}
-                                    >
-                                        {tokenA.symbol || tokenA.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                                {needConfirmTokenB && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenB.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenB.symbol}
-                                    >
-                                        {tokenB.symbol || tokenB.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                            </div>
-                        </>
-                    )
-                ) : (
-                    loginButton
-                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenA.symbol}
+                                        >
+                                            {tokenA.symbol || tokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenB.symbol}
+                                        >
+                                            {tokenB.symbol || tokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
+                        )
+                    ) : (
+                        loginButton
+                    )}
+                </div>
             </ContentContainer>
             {isConfirmationModalOpen && (
                 <Modal

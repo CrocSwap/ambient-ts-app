@@ -1,10 +1,3 @@
-.main_container{
-    padding: 0 25px 0 32px;
-}
-.extra_details_container{
-    padding: 8px 0;
-}
-
 .extra_info_content {
     width: 100%;
     display: flex;
@@ -15,13 +8,13 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    height: 33px;
-    padding: 0 8px;
 
     background: transparent;
     outline: none;
     border: none;
     border-radius: var(--border-radius);
+
+    padding: 4px;
 }
 
 .extra_info_content:hover,
@@ -53,6 +46,10 @@
     flex-direction: row;
     align-items: center;
 }
+.gas_pump{
+    pointer-events: none;
+    padding-left: 4px;
+}
 .gas_pump svg {
     margin-right: 5px;
 }
@@ -73,12 +70,11 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    padding: 8px;
+    padding: 8px 16px;
 }
 
 .extra_row {
     display: flex;
-    /* flex-direction: column; */
     padding: 5px 0;
     justify-content: space-between;
     align-items: center;
@@ -96,8 +92,6 @@
     .data {
         text-align: end;
     }
-
-   
 
     .extra_row {
         flex-direction: row;

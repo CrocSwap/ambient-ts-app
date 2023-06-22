@@ -29,7 +29,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 <button
                     className={
                         removalPercentage === 10
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -41,7 +41,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 <button
                     className={
                         removalPercentage === 25
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -53,7 +53,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 <button
                     className={
                         removalPercentage === 50
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
@@ -66,7 +66,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 <button
                     className={
                         removalPercentage === 100
-                            ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                            ? `${styles.matching_percentage_button}`
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {

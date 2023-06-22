@@ -40,6 +40,25 @@
     list-style: none;
 }
 
+.info_button_container {
+    margin-top: 8px;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info_container {
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.advanced_info_container {
+    padding: 0 32px;
+}
+
 .control_title {
     color: var(--text2);
 }
@@ -121,7 +140,7 @@
 .acknowledge_text {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    border: 1px var(--border);
+    border: 1px var(--dark3);
     border-radius: var(--border-radius);
     border: 0.1px solid var(--text3);
     text-align: center;

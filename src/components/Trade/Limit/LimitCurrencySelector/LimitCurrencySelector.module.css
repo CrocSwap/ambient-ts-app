@@ -12,11 +12,6 @@
     background-color: var(--dark2);
 }
 
-.direction {
-    padding: 0.4.5px 0;
-    margin: 10px 0;
-}
-.direction,
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -38,7 +33,6 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    padding-right: 5px;
     color: var(--text1);
 }
 
@@ -109,13 +103,9 @@
 
 /* bottom info */
 .swapbox_bottom {
-    margin: 6px;
-    height: 33px;
-
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    padding: 0 2rem;
+    padding: 8px 16px;
 }
 .token_select_button {
     cursor: pointer;

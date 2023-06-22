@@ -71,6 +71,8 @@
 .add_minus_icons svg:nth-of-type(2) {
     margin-top: -13px;
 }
+
+.matching_percentage_button,
 .percentage_option_buttons {
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -108,8 +110,8 @@
 }
 
 .matching_percentage_button {
-    color: var(--accent1);
-    border: 1px solid var(--accent1);
+    background-color: var(--accent1);
+    color: var(--dark1);
 }
 .percentage_input {
     /* padding: 15px 0px;  */

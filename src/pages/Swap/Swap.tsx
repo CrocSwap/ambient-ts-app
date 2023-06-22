@@ -484,22 +484,20 @@ function Swap(props: propsIF) {
 
     const liquidityInsufficientWarningOrNull = isLiquidityInsufficient ? (
         <div className={styles.price_impact}>
-            <div className={styles.extra_row}>
-                <div className={styles.align_center}>
-                    <div
-                        style={{
-                            color: '#f6385b',
-                        }}
-                    >
-                        Current Pool Liquidity is Insufficient for this Swap
-                    </div>
+            <div className={styles.align_center}>
+                <div
+                    style={{
+                        color: '#f6385b',
+                    }}
+                >
+                    Current Pool Liquidity is Insufficient for this Swap
                 </div>
-                <div>
-                    <TooltipComponent
-                        title='Current Pool Liquidity is Insufficient for this Swap'
-                        placement='bottom'
-                    />
-                </div>
+            </div>
+            <div>
+                <TooltipComponent
+                    title='Current Pool Liquidity is Insufficient for this Swap'
+                    placement='bottom'
+                />
             </div>
         </div>
     ) : null;
@@ -507,17 +505,15 @@ function Swap(props: propsIF) {
     const priceImpactWarningOrNull =
         !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
             <div className={styles.price_impact}>
-                <div className={styles.extra_row}>
-                    <div className={styles.align_center}>
-                        <div>Price Impact Warning</div>
-                        <TooltipComponent
-                            title='Difference Between Current (Spot) Price and Final Price'
-                            placement='bottom'
-                        />
-                    </div>
-                    <div className={styles.data}>
-                        {getPriceImpactString(priceImpactNum)}%
-                    </div>
+                <div className={styles.align_center}>
+                    <div>Price Impact Warning</div>
+                    <TooltipComponent
+                        title='Difference Between Current (Spot) Price and Final Price'
+                        placement='bottom'
+                    />
+                </div>
+                <div className={styles.data}>
+                    {getPriceImpactString(priceImpactNum)}%
                 </div>
             </div>
         ) : null;
@@ -636,128 +632,125 @@ function Swap(props: propsIF) {
             )}
             <div className={`${swapContainerStyle}`}>
                 {poolNotInitializedContent}
-                <ContentContainer
-                    isOnTradeRoute={isOnTradeRoute}
-                    padding='0.25rem 1rem 1rem'
-                    // padding={isOnTradeRoute ? '0 1rem' : '1rem'}
-                >
+                <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader isOnTradeRoute={isOnTradeRoute} />
                     {navigationMenu}
-                    <div style={{ padding: isOnTradeRoute ? '0' : '0 1rem' }}>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <CurrencyConverter {...currencyConverterProps} />
-                        </motion.div>
-                        <div style={{ padding: '0 2rem' }}>
-                            <ExtraInfo
-                                priceImpact={priceImpact}
-                                effectivePriceWithDenom={
-                                    effectivePriceWithDenom
-                                }
-                                slippageTolerance={slippageTolerancePercentage}
-                                liquidityProviderFeeString={
-                                    liquidityProviderFeeString
-                                }
-                                swapGasPriceinDollars={swapGasPriceinDollars}
-                                isQtyEntered={tradeData?.primaryQuantity !== ''}
-                            />
-                            {isUserConnected ===
-                            undefined ? null : isUserConnected === true ? (
-                                isPoolInitialized &&
-                                !isTokenAAllowanceSufficient &&
-                                parseFloat(sellQtyString) > 0 &&
-                                sellQtyString !== 'Infinity' ? (
-                                    approvalButton
-                                ) : (
-                                    <>
-                                        {!showBypassConfirm ? (
-                                            // user has hide confirmation modal off
-                                            <SwapButton
-                                                onClickFn={
-                                                    areBothAckd
-                                                        ? bypassConfirmSwap.isEnabled
-                                                            ? handleSwapButtonClickWithBypass
-                                                            : openModal
-                                                        : ackAsNeeded
-                                                }
-                                                swapAllowed={
-                                                    swapAllowed &&
-                                                    sellQtyString !== '' &&
-                                                    buyQtyString !== ''
-                                                }
-                                                swapButtonErrorMessage={
-                                                    swapButtonErrorMessage
-                                                }
-                                                bypassConfirmSwap={
-                                                    bypassConfirmSwap
-                                                }
-                                                areBothAckd={areBothAckd}
-                                            />
-                                        ) : (
-                                            // user has hide confirmation modal on
-                                            <BypassConfirmSwapButton
-                                                {...confirmSwapModalProps}
-                                            />
-                                        )}
-                                        {ackTokenMessage && (
-                                            <p
-                                                className={
-                                                    styles.acknowledge_text
-                                                }
-                                                dangerouslySetInnerHTML={{
-                                                    __html: formattedAckTokenMessage,
-                                                }}
-                                            ></p>
-                                        )}
-                                        <div
-                                            className={
-                                                styles.acknowledge_etherscan_links
-                                            }
-                                        >
-                                            {needConfirmTokenA && (
-                                                <a
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenA.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenA.symbol}`}
-                                                >
-                                                    {tokenA.symbol ||
-                                                        tokenA.name}{' '}
-                                                    <FiExternalLink />
-                                                </a>
-                                            )}
-                                            {needConfirmTokenB && (
-                                                <a
-                                                    href={
-                                                        blockExplorer +
-                                                        'token/' +
-                                                        tokenB.address
-                                                    }
-                                                    rel={'noopener noreferrer'}
-                                                    target='_blank'
-                                                    aria-label={`approve ${tokenB.symbol}`}
-                                                >
-                                                    {tokenB.symbol ||
-                                                        tokenB.name}{' '}
-                                                    <FiExternalLink />
-                                                </a>
-                                            )}
-                                        </div>
-                                    </>
-                                )
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <CurrencyConverter {...currencyConverterProps} />
+                    </motion.div>
+                    <div className={styles.info_button_container}>
+                        <ExtraInfo
+                            priceImpact={priceImpact}
+                            effectivePriceWithDenom={effectivePriceWithDenom}
+                            slippageTolerance={slippageTolerancePercentage}
+                            liquidityProviderFeeString={
+                                liquidityProviderFeeString
+                            }
+                            swapGasPriceinDollars={swapGasPriceinDollars}
+                            isQtyEntered={tradeData?.primaryQuantity !== ''}
+                        />
+                        {isUserConnected ===
+                        undefined ? null : isUserConnected === true ? (
+                            isPoolInitialized &&
+                            !isTokenAAllowanceSufficient &&
+                            parseFloat(sellQtyString) > 0 &&
+                            sellQtyString !== 'Infinity' ? (
+                                approvalButton
                             ) : (
-                                loginButton
-                            )}
-                            {priceImpactWarningOrNull}
-                            {liquidityInsufficientWarningOrNull}
-                        </div>
+                                <>
+                                    {!showBypassConfirm ? (
+                                        // user has hide confirmation modal off
+                                        <SwapButton
+                                            onClickFn={
+                                                areBothAckd
+                                                    ? bypassConfirmSwap.isEnabled
+                                                        ? handleSwapButtonClickWithBypass
+                                                        : openModal
+                                                    : ackAsNeeded
+                                            }
+                                            swapAllowed={
+                                                swapAllowed &&
+                                                sellQtyString !== '' &&
+                                                buyQtyString !== ''
+                                            }
+                                            swapButtonErrorMessage={
+                                                swapButtonErrorMessage
+                                            }
+                                            bypassConfirmSwap={
+                                                bypassConfirmSwap
+                                            }
+                                            areBothAckd={areBothAckd}
+                                        />
+                                    ) : (
+                                        // user has hide confirmation modal on
+                                        <BypassConfirmSwapButton
+                                            {...confirmSwapModalProps}
+                                        />
+                                    )}
+                                    {ackTokenMessage && (
+                                        <p
+                                            className={styles.acknowledge_text}
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></p>
+                                    )}
+                                    {needConfirmTokenA ||
+                                        (needConfirmTokenB && (
+                                            <div
+                                                className={
+                                                    styles.acknowledge_etherscan_links
+                                                }
+                                            >
+                                                {needConfirmTokenA && (
+                                                    <a
+                                                        href={
+                                                            blockExplorer +
+                                                            'token/' +
+                                                            tokenA.address
+                                                        }
+                                                        rel={
+                                                            'noopener noreferrer'
+                                                        }
+                                                        target='_blank'
+                                                        aria-label={`approve ${tokenA.symbol}`}
+                                                    >
+                                                        {tokenA.symbol ||
+                                                            tokenA.name}{' '}
+                                                        <FiExternalLink />
+                                                    </a>
+                                                )}
+                                                {needConfirmTokenB && (
+                                                    <a
+                                                        href={
+                                                            blockExplorer +
+                                                            'token/' +
+                                                            tokenB.address
+                                                        }
+                                                        rel={
+                                                            'noopener noreferrer'
+                                                        }
+                                                        target='_blank'
+                                                        aria-label={`approve ${tokenB.symbol}`}
+                                                    >
+                                                        {tokenB.symbol ||
+                                                            tokenB.name}{' '}
+                                                        <FiExternalLink />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                </>
+                            )
+                        ) : (
+                            loginButton
+                        )}
+                        {priceImpactWarningOrNull}
+                        {liquidityInsufficientWarningOrNull}
                     </div>
                 </ContentContainer>
                 {confirmSwapModalOrNull}

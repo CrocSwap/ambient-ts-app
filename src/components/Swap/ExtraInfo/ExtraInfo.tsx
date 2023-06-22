@@ -256,10 +256,10 @@ function ExtraInfo(props: propsIF) {
             : null;
 
     return (
-        <div className={styles.main_container}>
+        <>
             {extraDetailsDropdown}
             {extraDetailsOrNull}
-        </div>
+        </>
     );
 }
 

@@ -36,14 +36,14 @@ function AdvancedPriceInfo(props: propsIF) {
     );
 
     const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+        ? `${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
 
     const estimatedAPRValue = isOutOfRange ? (
-        <p className={styles.apr_display_out_of_range}>Est. APR | 0%</p>
+        <p className={styles.apr_display_out_of_range}>0%</p>
     ) : (
         <p className={styles.apr_display_in_range}>{aprPercentageString}</p>
     );

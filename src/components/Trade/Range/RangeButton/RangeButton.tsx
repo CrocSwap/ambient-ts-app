@@ -1,4 +1,3 @@
-import styles from './RangeButton.module.css';
 import Button from '../../../Global/Button/Button';
 import { memo, useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
@@ -25,28 +24,24 @@ function RangeButton(props: propsIF) {
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
 
     return (
-        <div className={styles.button_container}>
-            <Button
-                title={
-                    areBothAckd
-                        ? rangeAllowed
-                            ? bypassConfirmRange.isEnabled
-                                ? isAdd
-                                    ? `Add ${
-                                          isAmbient ? 'Ambient' : ''
-                                      } Liquidity`
-                                    : `Submit ${
-                                          isAmbient ? 'Ambient' : ''
-                                      } Liquidity`
-                                : 'Confirm'
-                            : rangeButtonErrorMessage
-                        : 'Acknowledge'
-                }
-                action={onClickFn}
-                disabled={!rangeAllowed && areBothAckd}
-                flat={true}
-            />
-        </div>
+        <Button
+            title={
+                areBothAckd
+                    ? rangeAllowed
+                        ? bypassConfirmRange.isEnabled
+                            ? isAdd
+                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                                : `Submit ${
+                                      isAmbient ? 'Ambient' : ''
+                                  } Liquidity`
+                            : 'Confirm'
+                        : rangeButtonErrorMessage
+                    : 'Acknowledge'
+            }
+            action={onClickFn}
+            disabled={!rangeAllowed && areBothAckd}
+            flat={true}
+        />
     );
 }
 

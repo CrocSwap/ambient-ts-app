@@ -21,3 +21,6 @@
 .share_button {
     cursor: pointer;
 }
+.share_button:hover {
+    color: var(--accent1) !important;
+}

@@ -60,7 +60,7 @@ export default function SwapHeader(props: propsIF) {
         };
     }, []);
 
-    const settinsSvg = (
+    const settingsSvg = (
         <svg
             width='14'
             height='14'
@@ -116,46 +116,48 @@ export default function SwapHeader(props: propsIF) {
                     tabIndex={0}
                     aria-label='Settings button'
                 >
-                    {settinsSvg}
+                    {settingsSvg}
                 </div>
             </IconWithTooltip>
         </ContentHeader>
     );
 
-    const mainHeader = (
-        <ContentHeader>
-            <button
-                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                className={styles.share_button}
-            >
-                <AiOutlineShareAlt
-                    id='swap_share_button'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Share button'
-                />
-            </button>
-            <span className={styles.title}>Swap</span>
-            <IconWithTooltip title='Settings' placement='left'>
-                <div
-                    className={`${styles.settings_container}
-                    ${styles.settings_icon}`}
-                    onClick={openModal}
-                    style={{ cursor: 'pointer' }}
-                    id='swap_settings_button'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Open Swap Settings'
+    const swapPageHeader = (
+        <div className={styles.swap_page_header}>
+            <ContentHeader>
+                <button
+                    onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                    className={styles.share_button}
                 >
-                    {settinsSvg}
-                </div>
-            </IconWithTooltip>
-        </ContentHeader>
+                    <AiOutlineShareAlt
+                        id='swap_share_button'
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Share button'
+                    />
+                </button>
+                <span className={styles.title}>Swap</span>
+                <IconWithTooltip title='Settings' placement='left'>
+                    <div
+                        className={`${styles.settings_container}
+                    ${styles.settings_icon}`}
+                        onClick={openModal}
+                        style={{ cursor: 'pointer' }}
+                        id='swap_settings_button'
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Open Swap Settings'
+                    >
+                        {settingsSvg}
+                    </div>
+                </IconWithTooltip>
+            </ContentHeader>
+        </div>
     );
 
     return (
         <>
-            {isOnTradeRoute ? tradeRouteHeader : mainHeader}
+            {isOnTradeRoute ? tradeRouteHeader : swapPageHeader}
             {isModalOpen && (
                 <Modal
                     noHeader

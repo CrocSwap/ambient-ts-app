@@ -4,6 +4,9 @@
     border: none;
     height: 20px;
 }
+.share_button:hover {
+    color: var(--accent1) !important;
+}
 .settings_icon,
 .share_button {
     cursor: pointer;
@@ -28,4 +31,8 @@
 
 .title {
     color: var(--text1);
+}
+
+.swap_page_header {
+    padding-bottom: 16px;;
 }

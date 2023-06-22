@@ -37,7 +37,7 @@ function LimitHeader() {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const settinsSvg = (
+    const settingsSvg = (
         <svg
             width='14'
             height='14'
@@ -94,7 +94,7 @@ function LimitHeader() {
                     tabIndex={0}
                     aria-label='Settings button'
                 >
-                    {settinsSvg}
+                    {settingsSvg}
                 </div>
             </IconWithTooltip>
             {isModalOpen && (

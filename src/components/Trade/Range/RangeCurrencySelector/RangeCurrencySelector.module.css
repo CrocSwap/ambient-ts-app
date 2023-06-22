@@ -5,18 +5,12 @@
     flex-direction: column;
     overflow-y: hidden;
     color: var(--text1);
-   
 }
 
 .modalSwapbox {
     background-color: var(--dark2);
 }
 
-.direction {
-    padding: 0.4.5px 0;
-    margin: 10px 0;
-}
-.direction,
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -27,7 +21,7 @@
 .main_wallet_container {
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 4px;
 }
 .main_wallet_container {
     justify-content: flex-start;
@@ -53,12 +47,21 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    cursor: pointer;
+    color: var(--text1);
 }
 
 .wallet_logo {
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    padding-top: 1.5px;
+}
+
+.ambient_logo {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding-left: 4px;
+    padding-right: 5px;
+    padding-top: 2.5px;
 }
 
 .enabled_logo {
@@ -119,13 +122,9 @@
 }
 
 .swapbox_bottom {
-    margin: 6px 0px;
-    height: 33px;
-
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    padding: 0 1rem;
+    padding: 8px 16px;
 }
 
 .token_select_button {
