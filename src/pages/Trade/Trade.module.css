@@ -273,7 +273,7 @@ background-size: 300% 100%;
 .mobile_trades_dropdown {
     width: 100%;
     position: relative;
-    z-index: 999;
+    z-index: 99;
     width: 370px;
     text-align: end;
     border-radius: var(--border-radius);

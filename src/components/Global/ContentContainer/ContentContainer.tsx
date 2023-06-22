@@ -22,7 +22,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
         ? styles.customWidthAuto
         : styles.container;
 
-    const paddingStyle = padding ? padding : '0 1rem';
+    const paddingStyle = padding ?? '0 1rem';
 
     // TODO:   @Junior do we need the wrapper in the return below?  -Emily
     return (

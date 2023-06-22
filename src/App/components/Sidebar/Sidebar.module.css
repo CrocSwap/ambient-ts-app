@@ -10,8 +10,13 @@
     transition: all var(--animation-speed) ease-in-out;
 
     overflow: hidden;
-    padding: 0 4px;
     z-index: 9999;
+
+    width: 32px;
+    height: calc(100vh - 56px);
+    border-top: 1px solid var(--dark2);
+    padding-top: 4px;
+    padding-bottom: 8px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -273,13 +278,6 @@ input:-webkit-autofill:active {
 /* Large screens */
 /* THIS CODE WAS ORIGINALLY FOR DESKTOP DEVICES ONLY */
 /* @media only screen and (min-width: 500px) { */
-.sidebar {
-    width: 32px;
-    height: calc(100vh - 56px);
-    border-top: 1px solid var(--dark2);
-    padding-top: 4px;
-    padding-bottom: 8px;
-}
 
 .sidebar::-webkit-scrollbar-track {
     background: transparent;
@@ -321,7 +319,6 @@ input:-webkit-autofill:active {
 }
 
 .search_container:hover .search__icon {
-    /* transform: scale(1.03); */
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -359,6 +356,10 @@ input:-webkit-autofill:active {
 }
 
 @media only screen and (max-width: 600px) {
+    .sidebar {
+        height: calc(100vh - 124px);
+    }
+
     .sidebar_content_container {
         overflow: auto;
     }

@@ -1,6 +1,6 @@
 .dropdown_menu_container {
     min-width: 100px;
-    z-index: 99999;
+    z-index: 999;
     background-color: var(--dark2);
    
     border-radius: 4px;
@@ -20,7 +20,7 @@
     line-height: var(--header2-lh);
     letter-spacing: -0.02em;
     color: var(--text2);
-    z-index: 999;
+    z-index: 9999;
 }
 .selector_select_container {
     position: relative;
@@ -60,7 +60,7 @@
     z-index: 2;
     background: var(--dark2);
     border-radius: var(--border-radius);
-    z-index: 999;
+    z-index: 9999;
 }
 
 .menu_content ul,

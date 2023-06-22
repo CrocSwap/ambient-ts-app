@@ -3,7 +3,9 @@
 .sidebar_footer {
     z-index: 999;
     width: 100vw;
+    position: fixed;
     bottom: 0;
+
 
     transition: width var(--animation-speed) ease;
 
@@ -17,8 +19,8 @@
 }
 
 .position_absolute {
-    margin-left: 15px;
     position: absolute;
+    width: 100dvw !important;
 }
 .sidebar_footer a {
     cursor: pointer;
@@ -48,15 +50,6 @@
 
 /* Small screens */
 @media only screen and (max-width: 800px) {
-    .sidebar {
-        display: none;
-
-        bottom: 0;
-        width: 100vw;
-        height: 5rem;
-        background: var(--dark2);
-        z-index: 2;
-    }
     .sidebar_footer {
         display: flex;
     }

@@ -111,6 +111,7 @@
     position: relative;
 }
 
+/* TODO: fix alignment on mobile */
 .wallet_wrapper,
 .wallet_wrapper_active {
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -121,7 +122,7 @@
     width: 347px;
     height: 220px;
     right: -40px;
-    z-index: 9999;
+    z-index: 999;
     padding: 8px 1rem;
 
     display: flex;
