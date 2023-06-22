@@ -8,6 +8,7 @@ export interface graphData {
     lastBlock: number;
     lastBlockPoll?: NodeJS.Timer;
     positionsByUser: PositionsByUser;
+    userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -16,6 +17,7 @@ export interface graphData {
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
     limitOrdersByUser: LimitOrdersByUser;
+    userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
 }
@@ -103,11 +105,13 @@ export interface ChangesByPool {
 const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
+    userPositionsByPool: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
+    userLimitOrdersByPool: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
@@ -181,6 +185,12 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setUserPositionsByPool: (
+            state,
+            action: PayloadAction<PositionsByPool>,
+        ) => {
+            state.userPositionsByPool = action.payload;
+        },
         setLeaderboardByPool: (
             state,
             action: PayloadAction<PositionsByPool>,
@@ -192,6 +202,12 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<LimitOrdersByUser>,
         ) => {
             state.limitOrdersByUser = action.payload;
+        },
+        setUserLimitOrdersByPool: (
+            state,
+            action: PayloadAction<LimitOrdersByPool>,
+        ) => {
+            state.userLimitOrdersByPool = action.payload;
         },
         setLimitOrdersByPool: (
             state,
@@ -595,6 +611,7 @@ export const {
     setLastBlockPoll,
     setPositionsByUser,
     addPositionsByUser,
+    setUserPositionsByPool,
     setPositionsByPool,
     setLeaderboardByPool,
     updateLeaderboard,
@@ -604,6 +621,7 @@ export const {
     setCandles,
     addCandles,
     setLimitOrdersByUser,
+    setUserLimitOrdersByPool,
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,

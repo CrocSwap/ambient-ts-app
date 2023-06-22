@@ -66,7 +66,7 @@ function Orders(props: propsIF) {
         if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
         else if (!showAllData)
             setLimitOrderData(
-                graphData?.limitOrdersByUser?.limitOrders.filter(
+                graphData?.userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
                         order.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -81,7 +81,7 @@ function Orders(props: propsIF) {
     }, [
         showAllData,
         activeAccountLimitOrderData,
-        graphData?.limitOrdersByUser,
+        graphData?.userLimitOrdersByPool,
         graphData?.limitOrdersByPool,
     ]);
 
