@@ -3,8 +3,7 @@ import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import { AppStateContext } from '../../contexts/AppStateContext';
+
 import {
     DISCORD_LINK,
     DOCS_LINK,

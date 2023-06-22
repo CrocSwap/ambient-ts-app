@@ -8,6 +8,7 @@ import NavItem from './NavItem/NavItem';
 import { FiMenu } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { Link, useLocation } from 'react-router-dom';
+import { ExchangeBalanceModal } from './ExchangeBalanceModal/ExchangeBalanceModal';
 
 interface PropsIF {
     clickLogout: () => Promise<void>;
@@ -70,6 +71,7 @@ const PageHeaderMobile = (props: PropsIF) => {
                         openWagmiModal={openWagmiModal}
                     />
                 </NavItem>
+                {isUserLoggedIn && <ExchangeBalanceModal />}
             </div>
         </div>
     );

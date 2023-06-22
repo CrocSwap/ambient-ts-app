@@ -14,14 +14,7 @@
     height: 100%;
     width: 100%;
     align-items: center;
-    /* height: calc(100vh - 17rem); */
-    /* justify-content: center; */
-    /* align-items: center; */
 
-    /* height: 100%; */
-
-    /* position: relative; */
-    /* height: calc(100% / 3); */
 }
 
 .control_container {
@@ -129,6 +122,16 @@ ul.tab_navs {
     /* .info_text {
         display: none;
     } */
+}
+@media only screen and (max-width: 600px) {
+
+    .container{
+        border-radius: 4px;
+    }
+    .main_container{
+        border-radius: 4px;
+    }
+
 }
 
 @media only screen and (min-width: 1200px) {

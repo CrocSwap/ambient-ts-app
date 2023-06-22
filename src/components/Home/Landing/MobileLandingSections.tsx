@@ -6,6 +6,7 @@ import Footer from '../../Footer/Footer';
 import { useRef } from 'react';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
+import { Fade } from 'react-reveal';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -62,7 +63,7 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.right_align}`}
             ref={section3}
         >
-            <>
+            <Fade up>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
                 <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
                     Faster, Easier, and Cheaper
@@ -72,7 +73,7 @@ export default function MobileLandingSections() {
                     allowing for low-fee transactions, greater liquidity
                     rewards, and a fairer trading experience.
                 </p>
-            </>
+            </Fade>
         </div>
     );
 
@@ -85,7 +86,7 @@ export default function MobileLandingSections() {
                 <img src={row2Image} alt='concentrated and ambient liquidity' />
             </div> */}
 
-            <>
+            <Fade up>
                 <img
                     src={liquidityImage}
                     alt='concentrated and ambient liquidity'
@@ -98,7 +99,7 @@ export default function MobileLandingSections() {
                     DEX to support concentrated (‘V3’), ambient (‘V2’) and
                     knock-out liquidity in the same liquidity pool.
                 </p>
-            </>
+            </Fade>
         </div>
     );
 
@@ -116,7 +117,7 @@ export default function MobileLandingSections() {
                 />
             </div> */}
 
-            <>
+            <Fade up>
                 <img
                     src={orderImage}
                     alt='range and limit orders'
@@ -133,7 +134,7 @@ export default function MobileLandingSections() {
                     greater rewards for liquidity providers, and less impact for
                     traders.
                 </p>
-            </>
+            </Fade>
         </div>
     );
 
@@ -142,7 +143,7 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.section6}`}
             ref={section6}
         >
-            <>
+            <Fade up>
                 <h2 tabIndex={0}>Better than CEX</h2>
                 <p tabIndex={0}>
                     Built for traders and market makers of all kinds, Ambient
@@ -150,7 +151,7 @@ export default function MobileLandingSections() {
                     quality-of-life improvements allowing for a best-in-class
                     user experience.
                 </p>
-            </>
+            </Fade>
         </div>
     );
 
@@ -159,10 +160,10 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.investors}`}
             ref={section7}
         >
-            <>
+            <Fade up>
                 <h3>Investors</h3>
                 <Investors />
-            </>
+            </Fade>
         </div>
     );
 
@@ -171,7 +172,9 @@ export default function MobileLandingSections() {
             className={`${styles.mobile_card} ${styles.footer_section}`}
             ref={section8}
         >
-            <Footer />
+            <Fade up>
+                <Footer />
+            </Fade>
         </div>
     );
 

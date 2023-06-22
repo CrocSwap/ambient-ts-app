@@ -24,20 +24,20 @@ background: var(--dark1);
 /* hero */
 
 .hero {
-  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
-   url('../../../assets/images/home/home_wallpaper.png') no-repeat
-  center center;
+  /* background:   linear-gradient(to bottom, rgba(13, 17, 23, 0.12), rgba(13, 17, 23, 1)),
+
+   url('../../../assets/images/home/home_wallpaper.png') no-repeat center center fixed;
 
 -webkit-background-size: cover;
 -moz-background-size: cover;
 -o-background-size: cover;
-background-size: cover;
+background-size: cover; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  
- height: 100vh;
+
+
  margin-top: 5rem !important;
  gap: 1rem;
 
@@ -57,7 +57,7 @@ padding: 0 2rem;
   font-weight: 100;
   max-width: 780px;
   font-size: 24px;
-  text-align: start;
+  text-align: center;
   
 }
 
@@ -69,9 +69,6 @@ padding: 0 2rem;
 .mobile_card {
     height: 100dvh;
 
-    /* background: var(--dark2);  */
-/* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
-background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  */
     padding: 20px;
     border-radius: 8px;
     margin: 12px 0;
