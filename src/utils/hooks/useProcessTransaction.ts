@@ -45,9 +45,9 @@ export const useProcessTransaction = (
     const quoteTokenSymbol = tx.quoteSymbol;
 
     const baseTokenAddress = tx.base;
-    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 0, '…');
+    const baseTokenAddressTruncated = trimString(baseTokenAddress, 6, 4, '…');
     const quoteTokenAddress = tx.quote;
-    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 0, '…');
+    const quoteTokenAddressTruncated = trimString(quoteTokenAddress, 6, 4, '…');
 
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
@@ -537,9 +537,9 @@ export const useProcessTransaction = (
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 13
-            ? trimString(ensName, 8, 3, '…')
+            ? trimString(ensName, 8, 4, '…')
             : ensName
-        : trimString(ownerId, 8, 3, '…');
+        : trimString(ownerId, 8, 4, '…');
 
     const txHashTruncated = trimString(txHash, 6, 4, '…');
 
