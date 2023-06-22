@@ -1687,17 +1687,53 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        setRanges((prevState) => {
-            const newTargets = [...prevState];
+        if (!tradeData.advancedMode && simpleRangeWidth === 100) {
+            const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
+            const highTick = currentPoolPriceTick + simpleRangeWidth * 100;
 
-            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                maxPrice !== undefined ? maxPrice : 0;
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                lowTick,
+                highTick,
+                lookupChain(chainId).gridSize,
+            );
 
-            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                minPrice !== undefined ? minPrice : 0;
+            const low = 0;
+            const high = parseFloat(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
 
-            return newTargets;
-        });
+            setRanges(() => {
+                const newTargets = [
+                    {
+                        name: 'Min',
+                        value: low,
+                    },
+                    {
+                        name: 'Max',
+                        value: high,
+                    },
+                ];
+
+                return newTargets;
+            });
+        } else {
+            setRanges((prevState) => {
+                const newTargets = [...prevState];
+
+                newTargets.filter(
+                    (target: any) => target.name === 'Max',
+                )[0].value = maxPrice !== undefined ? maxPrice : 0;
+
+                newTargets.filter(
+                    (target: any) => target.name === 'Min',
+                )[0].value = minPrice !== undefined ? minPrice : 0;
+
+                return newTargets;
+            });
+        }
     }, [denomInBase]);
 
     const setAdvancedLines = () => {
