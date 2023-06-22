@@ -53,6 +53,7 @@ import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactStr
 import { useTradeData } from '../../App/hooks/useTradeData';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import uriToHttp from '../../utils/functions/uriToHttp';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -600,12 +601,12 @@ function Swap(props: propsIF) {
                         >
                             Initialize Pool
                             <TokenIcon
-                                src={tokenA.logoURI}
+                                src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.symbol}
                                 size='m'
                             />
                             <TokenIcon
-                                src={tokenB.logoURI}
+                                src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.symbol}
                                 size='m'
                             />

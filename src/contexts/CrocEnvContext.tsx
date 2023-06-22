@@ -38,7 +38,6 @@ export const CrocEnvContextProvider = (props: {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const { address: userAddress, isConnected } = useAccount();
-    const provider = useProvider();
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
@@ -62,8 +61,8 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const mainnetProvider =
-        chainData.chainId === '0x1' ? useProvider() : useMainnetProvider();
+    const provider = useProvider();
+    const mainnetProvider = useMainnetProvider();
 
     const crocEnvContext = {
         crocEnv,
@@ -73,7 +72,8 @@ export const CrocEnvContextProvider = (props: {
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
-        mainnetProvider,
+        mainnetProvider:
+            chainData.chainId === '0x1' ? provider : mainnetProvider,
     };
 
     useBlacklist(userAddress);

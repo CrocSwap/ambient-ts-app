@@ -1,6 +1,7 @@
 .trade_tab_container {
     position: relative;
     height: 100%;
+    padding: 8px;
 }
 
 .show_tx_message {

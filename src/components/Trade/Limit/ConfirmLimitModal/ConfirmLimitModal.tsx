@@ -11,6 +11,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -103,7 +104,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={buyTokenData.logoURI}
+                    src={uriToHttp(buyTokenData.logoURI)}
                     alt={buyTokenData.symbol}
                     size='3xl'
                 />
@@ -117,7 +118,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={sellTokenData.logoURI}
+                    src={uriToHttp(sellTokenData.logoURI)}
                     alt={sellTokenData.symbol}
                     size='3xl'
                 />
@@ -241,7 +242,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             limit
         />
