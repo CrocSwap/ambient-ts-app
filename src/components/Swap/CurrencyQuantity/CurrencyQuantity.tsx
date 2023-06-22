@@ -66,14 +66,14 @@ function CurrencyQuantity(props: propsIF) {
         const inputValue = value.startsWith('.') ? '0' + value : value;
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue) {
+            if (inputValue && parseFloat(inputValue) !== 0) {
                 setIsBuyLoading(true);
                 setSellQtyString(inputValue);
             }
             value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue) {
+            if (inputValue && parseFloat(inputValue) !== 0) {
                 setIsSellLoading(true);
                 setBuyQtyString(inputValue);
             }

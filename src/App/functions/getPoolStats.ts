@@ -220,8 +220,8 @@ const get24hChange = async (
 
     if (ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0) {
         return denomInBase
-            ? nowPrice / ydayPrice - 1.0
-            : ydayPrice / nowPrice - 1.0;
+            ? ydayPrice / nowPrice - 1.0
+            : nowPrice / ydayPrice - 1.0;
     } else {
         return 0.0;
     }
