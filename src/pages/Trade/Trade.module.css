@@ -402,6 +402,7 @@ background-size: 300% 100%;
         background: var(--dark2);
 
         display: grid;
+        gap: 8px;
         grid-template-rows: auto 300px;
 
         position: relative;
@@ -439,6 +440,7 @@ background-size: 300% 100%;
         height: 100%;
         overflow: auto;
         padding: 8px;
+        padding-bottom: 0px;
     }
     .main__chart_container::-webkit-scrollbar {
         display: none;
