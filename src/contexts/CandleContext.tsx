@@ -81,9 +81,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         lastCandleDate: undefined,
         domainBoundry: undefined,
     });
-    const domainBoundaryInSeconds = Math.floor(
-        (candleDomains?.domainBoundry || 0) / 1000,
-    );
 
     const [candleScale, setCandleScale] = useState<candleScale>({
         lastCandleDate: undefined,
@@ -233,6 +230,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             // setExpandTradeTable(true);
         }
     };
+
+    const domainBoundaryInSeconds = Math.floor(
+        (candleDomains?.domainBoundry || 0) / 1000,
+    );
+
     const domainBoundaryInSecondsDebounced = useDebounce(
         domainBoundaryInSeconds,
         500,
@@ -261,10 +263,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
-        return Math.floor(
+        const candleNumber = Math.floor(
             (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
         );
+
+        return candleNumber > 2999 ? 2999 : candleNumber;
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
+
     const candleSeriesCacheEndpoint = GRAPHCACHE_URL + '/candle_series?';
 
     function capNumDurations(numDurations: number): string {
@@ -364,7 +369,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
     useEffect(() => {
         if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
+        if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);

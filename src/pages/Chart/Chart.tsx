@@ -1996,10 +1996,11 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage =
+                                    rangeWidthPercentage = Math.floor(
                                         Math.abs(
                                             pinnedTick - currentPoolPriceTick,
-                                        ) / 100;
+                                        ) / 100,
+                                    );
 
                                     rangeWidthPercentage =
                                         rangeWidthPercentage < 1
@@ -2033,10 +2034,11 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage =
+                                    rangeWidthPercentage = Math.floor(
                                         Math.abs(
                                             currentPoolPriceTick - pinnedTick,
-                                        ) / 100;
+                                        ) / 100,
+                                    );
 
                                     rangeWidthPercentage =
                                         rangeWidthPercentage < 1
@@ -3353,8 +3355,9 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage =
-                            Math.abs(tickValue - currentPoolPriceTick) / 100;
+                        rangeWidthPercentage = Math.floor(
+                            Math.abs(tickValue - currentPoolPriceTick) / 100,
+                        );
 
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
@@ -3368,8 +3371,10 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage =
-                            Math.abs(currentPoolPriceTick - tickValue) / 100;
+                        rangeWidthPercentage = Math.floor(
+                            Math.abs(currentPoolPriceTick - tickValue) / 100,
+                        );
+
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     }
