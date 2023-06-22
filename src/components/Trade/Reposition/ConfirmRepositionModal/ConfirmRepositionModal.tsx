@@ -12,6 +12,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     position: PositionIF;
@@ -79,7 +80,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             reposition
         />
@@ -112,7 +113,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
+                            src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.name}
                             size='m'
                         />
@@ -124,7 +125,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
+                            src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.name}
                             size='m'
                         />
@@ -137,7 +138,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
+                            src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.name}
                             size='m'
                         />
@@ -148,7 +149,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
+                            src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.name}
                             size='m'
                         />
@@ -171,12 +172,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
-                            src={tokenA.logoURI}
+                            src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.name}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenB.logoURI}
+                            src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.name}
                             size='2xl'
                         />
