@@ -424,6 +424,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 updatedLimitOrderStates,
                                         }),
                                     );
+                                    console.log('setting to false');
 
                                     dispatch(
                                         setDataLoadingStatus({
@@ -432,6 +433,20 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         }),
                                     );
                                 });
+                            } else {
+                                console.log('setting to false');
+                                dispatch(
+                                    setLimitOrdersByPool({
+                                        dataReceived: false,
+                                        limitOrders: [],
+                                    }),
+                                );
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
                             }
                         })
                         .catch(console.error);
@@ -482,7 +497,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             dispatch(
                                                 setDataLoadingStatus({
                                                     datasetName:
-                                                        'poolRangeData',
+                                                        'connectedUserPoolRangeData',
                                                     loadingStatus: false,
                                                 }),
                                             );
@@ -497,7 +512,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     );
                                     dispatch(
                                         setDataLoadingStatus({
-                                            datasetName: 'poolRangeData',
+                                            datasetName:
+                                                'connectedUserPoolRangeData',
                                             loadingStatus: false,
                                         }),
                                     );
@@ -553,7 +569,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
                                         dispatch(
                                             setDataLoadingStatus({
-                                                datasetName: 'poolOrderData',
+                                                datasetName:
+                                                    'connectedUserPoolOrderData',
                                                 loadingStatus: false,
                                             }),
                                         );
@@ -567,7 +584,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     );
                                     dispatch(
                                         setDataLoadingStatus({
-                                            datasetName: 'poolOrderData',
+                                            datasetName:
+                                                'connectedUserPoolOrderData',
                                             loadingStatus: false,
                                         }),
                                     );

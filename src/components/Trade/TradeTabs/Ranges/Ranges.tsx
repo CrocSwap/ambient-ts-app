@@ -96,13 +96,15 @@ function Ranges(props: propsIF) {
             );
         else if (!showAllData)
             setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+                graphData?.dataLoadingStatus
+                    .isConnectedUserPoolRangeDataLoading,
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
         graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
         graphData?.dataLoadingStatus.isPoolRangeDataLoading,
     ]);

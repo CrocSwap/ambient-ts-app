@@ -32,7 +32,9 @@ export interface PoolRequestParams {
 export interface DataLoadingStatus {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserPoolOrderDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
+    isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
     isLookupUserOrderDataLoading: boolean;
     isLookupUserRangeDataLoading: boolean;
@@ -119,7 +121,9 @@ const initialState: graphData = {
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
+        isConnectedUserPoolOrderDataLoading: true,
         isConnectedUserRangeDataLoading: true,
+        isConnectedUserPoolRangeDataLoading: true,
         isLookupUserTxDataLoading: true,
         isLookupUserOrderDataLoading: true,
         isLookupUserRangeDataLoading: true,
@@ -546,8 +550,16 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
+                case 'connectedUserPoolOrderData':
+                    state.dataLoadingStatus.isConnectedUserPoolOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
                 case 'connectedUserRangeData':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserPoolRangeData':
+                    state.dataLoadingStatus.isConnectedUserPoolRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
                 case 'lookupUserTxData':

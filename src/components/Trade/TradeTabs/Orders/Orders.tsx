@@ -96,13 +96,15 @@ function Orders(props: propsIF) {
             );
         else if (!showAllData)
             setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+                graphData?.dataLoadingStatus
+                    .isConnectedUserPoolOrderDataLoading,
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
     }, [
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+        graphData?.dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
         graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
         graphData?.dataLoadingStatus.isPoolOrderDataLoading,
     ]);
