@@ -122,13 +122,10 @@
     color: var(--dark1);
 }
 .percentage_input {
-    /* padding: 15px 0px;  */
-    /* appearance: none;  */
     width: 100%;
-
     cursor: pointer;
-
-    background: transparent;
+    background: none !important;
+    box-shadow: none !important;
 }
 input[type='range'] {
     width: 100%; /* Specific width is required for Firefox. */

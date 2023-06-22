@@ -1234,30 +1234,32 @@ function Range() {
         </div>
     );
     const advancedModeContent = (
-        <div className={styles.advanced_info_container}>
+        <>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <MinMaxPrice
-                    minPricePercentage={minPriceDifferencePercentage}
-                    maxPricePercentage={maxPriceDifferencePercentage}
-                    minPriceInputString={minPriceInputString}
-                    maxPriceInputString={maxPriceInputString}
-                    setMinPriceInputString={setMinPriceInputString}
-                    setMaxPriceInputString={setMaxPriceInputString}
-                    isDenomBase={isDenomBase}
-                    highBoundOnBlur={highBoundOnBlur}
-                    lowBoundOnBlur={lowBoundOnBlur}
-                    rangeLowTick={defaultLowTick}
-                    rangeHighTick={defaultHighTick}
-                    disable={isInvalidRange || !isPoolInitialized}
-                    maxPrice={maxPrice}
-                    minPrice={minPrice}
-                    setMaxPrice={setMaxPrice}
-                    setMinPrice={setMinPrice}
-                />
+                <div className={styles.advanced_info_container}>
+                    <MinMaxPrice
+                        minPricePercentage={minPriceDifferencePercentage}
+                        maxPricePercentage={maxPriceDifferencePercentage}
+                        minPriceInputString={minPriceInputString}
+                        maxPriceInputString={maxPriceInputString}
+                        setMinPriceInputString={setMinPriceInputString}
+                        setMaxPriceInputString={setMaxPriceInputString}
+                        isDenomBase={isDenomBase}
+                        highBoundOnBlur={highBoundOnBlur}
+                        lowBoundOnBlur={lowBoundOnBlur}
+                        rangeLowTick={defaultLowTick}
+                        rangeHighTick={defaultHighTick}
+                        disable={isInvalidRange || !isPoolInitialized}
+                        maxPrice={maxPrice}
+                        minPrice={minPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
+                    />
+                </div>
             </motion.div>
             <DividerDark addMarginTop />
 
@@ -1267,7 +1269,7 @@ function Range() {
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
             />
-        </div>
+        </>
     );
 
     const isTokenAAllowanceSufficient =
@@ -1426,18 +1428,18 @@ function Range() {
                     isTokenABase={isTokenABase}
                 />
                 {navigationMenu}
-                <RangeCurrencyConverter
-                    {...rangeCurrencyConverterProps}
-                    isAdvancedMode
-                />
-                {advancedModeToggle}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {advancedMode ? advancedModeContent : baseModeContent}
+                    <RangeCurrencyConverter
+                        {...rangeCurrencyConverterProps}
+                        isAdvancedMode
+                    />
+                    {advancedModeToggle}
                 </motion.div>
+                {advancedMode ? advancedModeContent : baseModeContent}
                 <div className={styles.info_button_container}>
                     <RangeExtraInfo {...rangeExtraInfoProps} />
                     {isUserConnected === undefined ? null : isUserConnected ===

@@ -61,10 +61,8 @@ function AdvancedPriceInfo(props: propsIF) {
 
     return (
         <div className={styles.price_info_container}>
-            <div className={styles.price_info_content}>
-                {currentPrice}
-                {estimatedAPR}
-            </div>
+            {currentPrice}
+            {estimatedAPR}
         </div>
     );
 }
