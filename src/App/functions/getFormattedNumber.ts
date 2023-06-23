@@ -31,6 +31,7 @@ export function getFormattedNumber({
     } else if (value === Infinity) {
         valueString = '∞';
     } else if (isUSD) {
+        // only display two decimal points for USD values
         valueString = value.toFixed(2);
     } else if (isInput) {
         if (value <= 10)
@@ -45,12 +46,16 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
     } else if (value <= 0.0001) {
+        // use subscript format for small numbers
         valueString = formatSubscript(value);
     } else if (value < 1) {
+        // show 3 significant digits (after 0s)
         valueString = value.toPrecision(3);
     } else if (value < 2) {
+        // restrict to 3 places after decimal
         valueString = value.toFixed(3);
     } else if (value >= 10000 && !isInput) {
+        // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value);
     } else {
         valueString = value.toLocaleString(undefined, {
@@ -61,6 +66,7 @@ export function getFormattedNumber({
     return `${prefix}${valueString}${suffix}`;
 }
 
+// unicode for subscript - currently support up to 20
 const subscriptUnicode = [
     '',
     '0',
@@ -86,6 +92,7 @@ const subscriptUnicode = [
 ];
 
 const formatSubscript = (value: number, precision = 3) => {
+    // math to find number of 0s after the decimal
     const zeros = Math.ceil(Math.log10(1 / value)) - 1;
     const valueNonZero = Math.round(value * 10 ** (zeros + precision));
     if (zeros > 20) {
