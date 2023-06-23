@@ -159,6 +159,9 @@ aside.emoji-picker-react {
     outline: 1px solid transparent !important;
 }
 
+.MuiPaginationItem-root:hover{
+    color: var(--text1) !important;
+} 
 .Mui-selected.MuiPaginationItem-root {
     color: var(--text1) !important;
     background: transparent !important;
