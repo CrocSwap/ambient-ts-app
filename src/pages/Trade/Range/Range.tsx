@@ -73,6 +73,7 @@ import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { formatAmountOld } from '../../../utils/numbers';
 
 function Range() {
     const {
@@ -194,9 +195,19 @@ function Range() {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedNumber({
-        value: displayPriceWithDenom,
-    });
+    const displayPriceString =
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '…'
+            : displayPriceWithDenom < 0.0001
+            ? displayPriceWithDenom.toExponential(2)
+            : displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toPrecision(3)
+            : displayPriceWithDenom >= 100000
+            ? formatAmountOld(displayPriceWithDenom, 1)
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;

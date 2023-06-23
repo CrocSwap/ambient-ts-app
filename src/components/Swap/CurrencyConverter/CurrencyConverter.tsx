@@ -21,6 +21,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { calcImpact } from '../../../App/functions/calcImpact';
@@ -33,7 +34,6 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -456,11 +456,11 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = getFormattedNumber({
-                value: rawTokenBQty,
-                nullDisplay: '',
-                isInput: true,
-            });
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(3)
+                    : truncateDecimals(rawTokenBQty, 2)
+                : '';
 
             setTokenBQtyLocal(truncatedTokenBQty);
             setBuyQtyString(truncatedTokenBQty);
@@ -499,11 +499,11 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
 
-            const truncatedTokenBQty = getFormattedNumber({
-                value: rawTokenBQty,
-                nullDisplay: '',
-                isInput: true,
-            });
+            const truncatedTokenBQty = rawTokenBQty
+                ? rawTokenBQty < 2
+                    ? rawTokenBQty.toPrecision(3)
+                    : truncateDecimals(rawTokenBQty, 2)
+                : '';
 
             setTokenBQtyLocal(truncatedTokenBQty);
             setBuyQtyString(truncatedTokenBQty);
@@ -541,12 +541,11 @@ function CurrencyConverter(props: propsIF) {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
             }
 
-            const truncatedTokenAQty = getFormattedNumber({
-                value: rawTokenAQty,
-                nullDisplay: '',
-                isInput: true,
-            });
-
+            const truncatedTokenAQty = rawTokenAQty
+                ? rawTokenAQty < 2
+                    ? rawTokenAQty.toPrecision(3)
+                    : truncateDecimals(rawTokenAQty, 2)
+                : '';
             setTokenAQtyLocal(truncatedTokenAQty);
             setSellQtyString(truncatedTokenAQty);
         },
