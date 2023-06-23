@@ -11,8 +11,9 @@ import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { USDC, ChainTypesUSDC } from '../../../../../utils/tokens/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import { USDC } from '../../../../../utils/tokens/exports';
+import { tokenData } from '../../../../../utils/state/userDataSlice';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -58,8 +59,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const erc20Tokens: TokenIF[] =
-        useAppSelector((state) => state.userData.tokens.erc20Tokens) ?? [];
+
+    const tokenDataFromRTK: tokenData = useAppSelector(
+        (state) => state.userData.tokens,
+    );
+    const erc20Tokens: TokenIF[] = tokenDataFromRTK.erc20Tokens ?? [];
     const usdcAddr: string = USDC[chainId as '0x1'];
     const usdcData: TokenIF | undefined = erc20Tokens.find(
         (tkn: TokenIF) =>
@@ -93,7 +97,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const [usdcVal, setUsdcVal] = useState<string>('…');
     useEffect(() => {
-        console.log(chainId);
         const usdBal = parseFloat(usdcData?.combinedBalanceDisplay ?? '0');
         Promise.resolve(
             cachedFetchTokenPrice(

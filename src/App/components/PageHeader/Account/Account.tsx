@@ -83,7 +83,7 @@ export default function Account(props: propsIF) {
 
     const ethMainnetUsdValueTruncated =
         ethMainnetUsdValue === undefined
-            ? '…'
+            ? '...'
             : ethMainnetUsdValue === 0
             ? '$0.00'
             : ethMainnetUsdValue < 0.0001
