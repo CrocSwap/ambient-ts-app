@@ -2,7 +2,6 @@
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     disable?: boolean;
