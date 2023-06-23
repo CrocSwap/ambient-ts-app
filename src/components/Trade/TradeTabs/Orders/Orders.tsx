@@ -80,9 +80,10 @@ function Orders(props: propsIF) {
         }
     }, [
         showAllData,
+        isAccountView,
         activeAccountLimitOrderData,
-        graphData?.userLimitOrdersByPool,
         graphData?.limitOrdersByPool,
+        graphData?.userLimitOrdersByPool,
     ]);
 
     useEffect(() => {
@@ -102,6 +103,7 @@ function Orders(props: propsIF) {
         else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
     }, [
         showAllData,
+        isAccountView,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
         graphData?.dataLoadingStatus.isConnectedUserPoolOrderDataLoading,

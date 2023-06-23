@@ -80,6 +80,7 @@ function Ranges(props: propsIF) {
         }
     }, [
         showAllData,
+        isAccountView,
         activeAccountPositionData,
         graphData?.positionsByUser,
         graphData?.userPositionsByPool,
@@ -102,6 +103,7 @@ function Ranges(props: propsIF) {
         else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
+        isAccountView,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
         graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
