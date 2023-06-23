@@ -27,8 +27,6 @@ export function createAreaSeries(
 export function decorateForLiquidityArea(series: any, threshold: number) {
     series.decorate(
         (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            console.log({ d });
-
             if (d[0]?.liqPrices > threshold) {
                 context.fillStyle = liqBidColor;
             } else {
