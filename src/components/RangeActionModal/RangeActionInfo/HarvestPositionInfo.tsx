@@ -1,6 +1,5 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
-import { formatAmountOld } from '../../../utils/numbers';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface IHarvestPositionInfoProps {
