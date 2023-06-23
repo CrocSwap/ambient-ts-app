@@ -118,7 +118,6 @@ export default function Account(props: propsIF) {
         <section
             className={styles.wallet_display}
             ref={walletDropdownItemRef}
-            // tabIndex={0}
             aria-label={mainAriaLabel}
         >
             <button

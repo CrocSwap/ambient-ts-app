@@ -3,12 +3,16 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { getChainExplorer } from '../../../../../utils/data/chains';
-import { useContext } from 'react';
+import {
+    getChainExplorer,
+    mktDataChainId,
+} from '../../../../../utils/data/chains';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
-import { USDC } from '../../../../../utils/tokens/exports';
+import { USDC, ChainTypesUSDC } from '../../../../../utils/tokens/exports';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -62,6 +66,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
             tkn.chainId === parseInt(chainId),
     );
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(chainId);
 
@@ -86,6 +91,43 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         );
     }
 
+    const [usdcVal, setUsdcVal] = useState<string>('…');
+    useEffect(() => {
+        console.log(chainId);
+        const usdBal = parseFloat(usdcData?.combinedBalanceDisplay ?? '0');
+        Promise.resolve(
+            cachedFetchTokenPrice(
+                USDC[mktDataChainId(chainId) as '0x1'],
+                chainId,
+            ),
+        ).then((price) => {
+            let newPriceString: string;
+            if (price?.usdPrice) {
+                const priceString: string = (
+                    (price && price?.usdPrice * usdBal) ??
+                    0
+                )
+                    .toFixed(2)
+                    .toString();
+                const parts: string[] = priceString.split('.');
+                const intPart = parts[0];
+                const decimalPart = parts[1] || '';
+                const intWithCommas = intPart.replace(
+                    /\B(?=(\d{3})+(?!\d))/g,
+                    ',',
+                );
+                newPriceString =
+                    intWithCommas +
+                    (decimalPart.length > 0 ? '.' + decimalPart : '');
+            } else {
+                newPriceString = '…';
+            }
+            if (usdcVal !== newPriceString) {
+                setUsdcVal(newPriceString);
+            }
+        });
+    }, [chainId]);
+
     const tokensData = [
         {
             symbol: 'ETH',
@@ -96,7 +138,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         {
             symbol: 'USDC',
             amount: usdcData?.combinedBalanceDisplayTruncated ?? '0',
-            value: '$' + (usdcData?.combinedBalanceDisplayTruncated ?? '0'),
+            value: '$' + usdcVal,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
