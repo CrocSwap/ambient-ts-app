@@ -9,6 +9,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { USDC } from '../../../../../utils/tokens/exports';
+import { tokenData } from '../../../../../utils/state/userDataSlice';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -54,8 +55,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const erc20Tokens: TokenIF[] =
-        useAppSelector((state) => state.userData.tokens.erc20Tokens) ?? [];
+
+    const tokenDataFromRTK: tokenData = useAppSelector(
+        (state) => state.userData.tokens,
+    );
+    const erc20Tokens: TokenIF[] = tokenDataFromRTK.erc20Tokens ?? [];
     const usdcAddr: string = USDC[chainId as '0x1'];
     const usdcData: TokenIF | undefined = erc20Tokens.find(
         (tkn: TokenIF) =>
@@ -95,8 +99,20 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         },
         {
             symbol: 'USDC',
-            amount: usdcData?.combinedBalanceDisplayTruncated ?? '0',
-            value: '$' + (usdcData?.combinedBalanceDisplayTruncated ?? '0'),
+            amount:
+                tokenDataFromRTK.erc20Tokens === undefined
+                    ? '...'
+                    : !usdcData?.combinedBalanceDisplayTruncated ||
+                      usdcData?.combinedBalanceDisplayTruncated === '0'
+                    ? '0.00'
+                    : usdcData?.combinedBalanceDisplayTruncated,
+            value:
+                tokenDataFromRTK.erc20Tokens === undefined
+                    ? '...'
+                    : !usdcData?.combinedBalanceDisplayTruncated ||
+                      usdcData?.combinedBalanceDisplayTruncated === '0'
+                    ? '$' + '0.00'
+                    : '$' + usdcData?.combinedBalanceDisplayTruncated,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
