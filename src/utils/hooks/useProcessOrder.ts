@@ -18,6 +18,7 @@ import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
+import uriToHttp from '../functions/uriToHttp';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -36,8 +37,8 @@ export const useProcessOrder = (
     const baseTokenName = limitOrder.baseName;
     const quoteTokenName = limitOrder.quoteName;
 
-    const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
-    const baseTokenLogo = limitOrder.baseTokenLogoURI;
+    const quoteTokenLogo = uriToHttp(limitOrder.quoteTokenLogoURI);
+    const baseTokenLogo = uriToHttp(limitOrder.baseTokenLogoURI);
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();

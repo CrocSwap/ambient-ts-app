@@ -15,6 +15,7 @@ import TransactionException from '../../../Global/TransactionException/Transacti
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     newRangeTransactionHash: string;
@@ -99,7 +100,7 @@ export default function BypassConfirmRangeButton(props: propsIF) {
             tokenBSymbol={tokenA.symbol}
             tokenBAddress={tokenA.address}
             tokenBDecimals={tokenA.decimals}
-            tokenBImage={tokenA.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenA.chainId}
             noAnimation
         />
