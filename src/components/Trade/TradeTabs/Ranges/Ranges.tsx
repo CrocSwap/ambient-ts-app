@@ -66,7 +66,7 @@ function Ranges(props: propsIF) {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.positionsByUser?.positions.filter(
+                graphData?.userPositionsByPool?.positions.filter(
                     (position) =>
                         position.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -80,9 +80,10 @@ function Ranges(props: propsIF) {
         }
     }, [
         showAllData,
+        isAccountView,
         activeAccountPositionData,
         graphData?.positionsByUser,
-        graphData?.positionsByPool,
+        graphData?.userPositionsByPool,
     ]);
 
     useEffect(() => {
@@ -96,13 +97,16 @@ function Ranges(props: propsIF) {
             );
         else if (!showAllData)
             setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+                graphData?.dataLoadingStatus
+                    .isConnectedUserPoolRangeDataLoading,
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
+        isAccountView,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
         graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
         graphData?.dataLoadingStatus.isPoolRangeDataLoading,
     ]);
