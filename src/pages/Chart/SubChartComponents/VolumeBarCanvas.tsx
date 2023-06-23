@@ -7,7 +7,7 @@ import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
-    scaleData: scaleData;
+    scaleData: scaleData | undefined;
     selectedDate: number | undefined;
     denomInBase: boolean;
     volumeData: Array<CandleData>;

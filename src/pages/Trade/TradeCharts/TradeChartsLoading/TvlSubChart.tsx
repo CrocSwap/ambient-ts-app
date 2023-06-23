@@ -336,7 +336,7 @@ function TvlSubChart(props: TvlData) {
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
-    }, [diffHashSig(scaleData), diffHashSig(tvlyScale), tvlGradient]);
+    }, [diffHashSigScaleData(scaleData), diffHashSig(tvlyScale), tvlGradient]);
 
     useEffect(() => {
         const canvas = d3

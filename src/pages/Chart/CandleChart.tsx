@@ -5,7 +5,10 @@ import {
     setCanvasResolution,
 } from './Chart';
 import { IS_LOCAL_ENV } from '../../constants';
-import { diffHashSig } from '../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
@@ -15,7 +18,7 @@ import { scaleData } from '../Trade/TradeCharts/TradeCandleStickChart';
 interface candlePropsIF {
     chartItemStates: chartItemStates;
     setBandwidth: React.Dispatch<number>;
-    scaleData: scaleData;
+    scaleData: scaleData | undefined;
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
@@ -46,7 +49,7 @@ export default function CandleChart(props: candlePropsIF) {
         IS_LOCAL_ENV && console.debug('re-rending chart');
         if (expandTradeTable) return;
 
-        if (data && data.length > 0) {
+        if (data && data.length > 0 && scaleData) {
             if (!showLatest && firstCandle && data[0].time !== firstCandle) {
                 // setIsCandleAdded(false);
                 setFirstCandle(() => {
@@ -77,7 +80,7 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
-    }, [data]);
+    }, [diffHashSigScaleData(scaleData)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -110,7 +113,7 @@ export default function CandleChart(props: candlePropsIF) {
             setCandlestick(() => canvasCandlestick);
             renderCanvasArray([d3CanvasCandle]);
         }
-    }, [diffHashSig(scaleData)]);
+    }, []);
 
     useEffect(() => {
         if (candlestick) {
@@ -160,6 +163,8 @@ export default function CandleChart(props: candlePropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
+                    console.log(event.detail.height, event.detail.width);
+
                     scaleData?.xScale.range([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candlestick.context(ctx);

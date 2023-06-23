@@ -8,7 +8,10 @@ import {
 } from 'react';
 import * as d3 from 'd3';
 import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../utils/functions/diffHashSig';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -30,7 +33,7 @@ import {
 interface liquidityPropsIF {
     liqMode: string;
     liquidityData: liquidityChartData;
-    scaleData: scaleData;
+    scaleData: scaleData | undefined;
     liquidityScale: d3.ScaleLinear<number, number> | undefined;
     liquidityDepthScale: d3.ScaleLinear<number, number> | undefined;
     ranges: lineValue[];
@@ -161,22 +164,13 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             renderCanvasArray([d3CanvasLiq]);
         }
-    }, [diffHashSig(scaleData), liquidityScale, pool, liquidityDepthScale]);
+    }, [scaleData === undefined, liquidityScale, pool, liquidityDepthScale]);
 
     useEffect(() => {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
         if (liqSeries) {
-            console.log(
-                liqSeries,
-                thresholdCurve,
-                liqDataAsk,
-                liqDataBid,
-                liquidityScale?.domain(),
-                scaleData.yScale.domain(),
-            );
-
             decorateForLiquidityArea(liqSeries, thresholdCurve);
             decorateForLiquidityLine(lineLiqSeries, thresholdCurve);
         }
@@ -216,7 +210,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const low = _low > _high ? _high : _low;
         const high = _low > _high ? _low : _high;
 
-        clipCanvas(scaleData?.yScale(low), scaleData?.yScale(high), canvas);
+        if (scaleData) {
+            clipCanvas(scaleData?.yScale(low), scaleData?.yScale(high), canvas);
+        }
     };
 
     useEffect(() => {
@@ -418,7 +414,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     if (liqMode === 'curve') {
                         liqSeries(liqDataAsk);
                         liqSeries(liqDataBid);
-                        // drawCurveLines(canvas);
+                        drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
                         liqDepthSeries(liqDataDepthBid);
@@ -427,10 +423,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
-                    liqSeries.context(ctx);
-                    liqDepthSeries.context(ctx);
-                    lineDepthSeries.context(ctx);
-                    lineLiqSeries.context(ctx);
                     liquidityScale.range([
                         event.detail.width,
                         (event.detail.width / 10) * 6,
@@ -440,6 +432,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         event.detail.width,
                         event.detail.width * 0.5,
                     ]);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+
+                    liqSeries.context(ctx);
+                    liqDepthSeries.context(ctx);
+                    lineDepthSeries.context(ctx);
+                    lineLiqSeries.context(ctx);
                 });
         }
     }, [
@@ -450,10 +448,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         tradeData.advancedMode,
         liqSeries,
         liquidityScale,
-        scaleData?.yScale,
+        diffHashSigScaleData(scaleData),
         liqMode,
-        scaleData,
-        location,
+        location.pathname,
         ranges,
     ]);
 
@@ -471,7 +468,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             d3.select(d3CanvasLiqHover.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    if (liquidityMouseMoveActive !== 'none') {
+                    if (liquidityMouseMoveActive !== 'none' && scaleData) {
                         const rectCanvas = canvas.getBoundingClientRect();
                         const offsetY =
                             liqDataHoverEvent.clientY - rectCanvas.top;
@@ -574,120 +571,130 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liqTooltipSelectedLiqBar, liqMode, liquidityMouseMoveActive]);
 
     const bidAreaFunc = (event: MouseEvent) => {
-        const canvas = d3
-            .select(d3CanvasLiq.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
+        if (scaleData) {
+            const canvas = d3
+                .select(d3CanvasLiq.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-        const rect = canvas.getBoundingClientRect();
-        const leftSpaceRelativeToMainCanvas = mainCanvasBoundingClientRect.left;
-        const offsetY = event.clientY - rect.top;
-        const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
+            const rect = canvas.getBoundingClientRect();
+            const leftSpaceRelativeToMainCanvas =
+                mainCanvasBoundingClientRect.left;
+            const offsetY = event.clientY - rect.top;
+            const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
 
-        currentPriceData[0] = {
-            value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
-        };
+            currentPriceData[0] = {
+                value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
+            };
 
-        const filtered =
-            liquidityData?.liqBidData.length > 1
-                ? liquidityData?.liqBidData.filter(
-                      (d: LiquidityDataLocal) => d.liqPrices != null,
-                  )
-                : liquidityData?.liqBidData;
+            const filtered =
+                liquidityData?.liqBidData.length > 1
+                    ? liquidityData?.liqBidData.filter(
+                          (d: LiquidityDataLocal) => d.liqPrices != null,
+                      )
+                    : liquidityData?.liqBidData;
 
-        const mousePosition = scaleData?.yScale.invert(offsetY);
+            const mousePosition = scaleData?.yScale.invert(offsetY);
 
-        let closest = filtered.find(
-            (item: LiquidityDataLocal) =>
-                item.liqPrices ===
-                d3.min(filtered, (d: LiquidityDataLocal) => d.liqPrices),
-        );
+            let closest = filtered.find(
+                (item: LiquidityDataLocal) =>
+                    item.liqPrices ===
+                    d3.min(filtered, (d: LiquidityDataLocal) => d.liqPrices),
+            );
 
-        filtered.map((data: LiquidityDataLocal) => {
-            if (
-                mousePosition > data.liqPrices &&
-                data.liqPrices > closest?.liqPrices
-            ) {
-                closest = data;
-            }
-        });
-
-        if (closest) {
-            setLiqTooltipSelectedLiqBar(() => {
-                return closest;
-            });
-
-            const pinnedTick = closest?.upperBound;
-
-            const percentage = parseFloat(
-                (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
-            ).toFixed(1);
-
-            liqTooltip
-                ?.style(
-                    'visibility',
-                    percentage !== '0.0' ? 'visible' : 'hidden',
-                )
-                .style('top', event.pageY - 80 + 'px')
-                .style('left', offsetX - 80 + 'px');
-        }
-    };
-
-    const askAreaFunc = (event: MouseEvent) => {
-        const canvas = d3
-            .select(d3CanvasLiq.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-
-        const rect = canvas.getBoundingClientRect();
-        const leftSpaceRelativeToMainCanvas = mainCanvasBoundingClientRect.left;
-        const offsetY = event.clientY - rect.top;
-        const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
-
-        currentPriceData[0] = {
-            value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
-        };
-
-        const filtered =
-            liquidityData?.liqAskData.length > 1
-                ? liquidityData?.liqAskData.filter(
-                      (d: LiquidityDataLocal) => d.liqPrices != null,
-                  )
-                : liquidityData?.liqAskData;
-
-        const mousePosition = scaleData?.yScale.invert(offsetY);
-
-        let closest = filtered.find(
-            (item: LiquidityDataLocal) =>
-                item.liqPrices ===
-                d3.max(filtered, (d: LiquidityDataLocal) => d.liqPrices),
-        );
-        if (closest !== undefined) {
             filtered.map((data: LiquidityDataLocal) => {
                 if (
-                    mousePosition < data.liqPrices &&
-                    data.liqPrices < closest?.liqPrices
+                    mousePosition > data.liqPrices &&
+                    data.liqPrices > closest?.liqPrices
                 ) {
                     closest = data;
                 }
             });
-            setLiqTooltipSelectedLiqBar(() => {
-                return closest;
-            });
 
-            const pinnedTick = closest?.lowerBound;
+            if (closest) {
+                setLiqTooltipSelectedLiqBar(() => {
+                    return closest;
+                });
 
-            const percentage = parseFloat(
-                (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
-            ).toFixed(1);
+                const pinnedTick = closest?.upperBound;
 
-            liqTooltip
-                ?.style(
-                    'visibility',
-                    percentage !== '0.0' ? 'visible' : 'hidden',
-                )
-                .style('top', event.pageY - 80 + 'px')
-                .style('left', offsetX - 80 + 'px');
+                const percentage = parseFloat(
+                    (
+                        Math.abs(pinnedTick - currentPoolPriceTick) / 100
+                    ).toString(),
+                ).toFixed(1);
+
+                liqTooltip
+                    ?.style(
+                        'visibility',
+                        percentage !== '0.0' ? 'visible' : 'hidden',
+                    )
+                    .style('top', event.pageY - 80 + 'px')
+                    .style('left', offsetX - 80 + 'px');
+            }
+        }
+    };
+
+    const askAreaFunc = (event: MouseEvent) => {
+        if (scaleData) {
+            const canvas = d3
+                .select(d3CanvasLiq.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rect = canvas.getBoundingClientRect();
+            const leftSpaceRelativeToMainCanvas =
+                mainCanvasBoundingClientRect.left;
+            const offsetY = event.clientY - rect.top;
+            const offsetX = event.clientX - leftSpaceRelativeToMainCanvas;
+
+            currentPriceData[0] = {
+                value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
+            };
+
+            const filtered =
+                liquidityData?.liqAskData.length > 1
+                    ? liquidityData?.liqAskData.filter(
+                          (d: LiquidityDataLocal) => d.liqPrices != null,
+                      )
+                    : liquidityData?.liqAskData;
+
+            const mousePosition = scaleData?.yScale.invert(offsetY);
+
+            let closest = filtered.find(
+                (item: LiquidityDataLocal) =>
+                    item.liqPrices ===
+                    d3.max(filtered, (d: LiquidityDataLocal) => d.liqPrices),
+            );
+            if (closest !== undefined) {
+                filtered.map((data: LiquidityDataLocal) => {
+                    if (
+                        mousePosition < data.liqPrices &&
+                        data.liqPrices < closest?.liqPrices
+                    ) {
+                        closest = data;
+                    }
+                });
+                setLiqTooltipSelectedLiqBar(() => {
+                    return closest;
+                });
+
+                const pinnedTick = closest?.lowerBound;
+
+                const percentage = parseFloat(
+                    (
+                        Math.abs(pinnedTick - currentPoolPriceTick) / 100
+                    ).toString(),
+                ).toFixed(1);
+
+                liqTooltip
+                    ?.style(
+                        'visibility',
+                        percentage !== '0.0' ? 'visible' : 'hidden',
+                    )
+                    .style('top', event.pageY - 80 + 'px')
+                    .style('left', offsetX - 80 + 'px');
+            }
         }
     };
 
@@ -714,17 +721,18 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         } catch (error) {
             console.error({ error });
         }
-    }, [
-        scaleData && scaleData?.yScale.domain()[0],
-        scaleData && scaleData?.yScale.domain()[1],
-    ]);
+    }, [diffHashSigScaleData(scaleData, 'y')]);
 
     useEffect(() => {
         if (liqDataHoverEvent) {
             liqDataHover(liqDataHoverEvent);
             renderCanvasArray([d3CanvasLiqHover]);
         }
-    }, [liqDataHoverEvent, mainCanvasBoundingClientRect]);
+    }, [
+        liqDataHoverEvent,
+        mainCanvasBoundingClientRect,
+        diffHashSigScaleData(scaleData),
+    ]);
 
     useEffect(() => {
         if (liquidityMouseMoveActive !== 'none') {
@@ -752,11 +760,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         }
     }, [liquidityMouseMoveActive]);
 
-    useEffect(() => {
-        // if (scaleData !== undefined) {
-        renderCanvasArray([d3CanvasLiq]);
-        // }
-    }, [diffHashSig(scaleData), diffHashSig(liquidityData), location, ranges]);
+    // useEffect(() => {
+    //     renderCanvasArray([d3CanvasLiq]);
+    // }, [diffHashSigScaleData(scaleData), diffHashSig(liquidityData), location, ranges]);
 
     return (
         <>
