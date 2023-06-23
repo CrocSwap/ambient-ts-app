@@ -135,15 +135,9 @@ export default function InitPool() {
         if (initialPrice) {
             const invertedPriceNum = 1 / initialPrice;
 
-            const invertedPriceTruncated =
-                invertedPriceNum < 0.0001
-                    ? invertedPriceNum.toExponential(2)
-                    : invertedPriceNum < 2
-                    ? invertedPriceNum.toPrecision(3)
-                    : invertedPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const invertedPriceTruncated = getFormattedNumber({
+                value: invertedPriceNum,
+            });
             setInitialPrice(invertedPriceNum);
             setInitialPriceForDOM(invertedPriceTruncated);
         }

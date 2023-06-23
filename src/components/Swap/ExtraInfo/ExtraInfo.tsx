@@ -56,39 +56,15 @@ function ExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
 
     const finalPriceWithDenom = !isDenomBase
         ? 1 / (priceImpact?.finalPrice || 1)
         : priceImpact?.finalPrice || 1;
 
-    const finalPriceString =
-        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
-            ? '…'
-            : finalPriceWithDenom < 0.0001
-            ? finalPriceWithDenom.toExponential(2)
-            : finalPriceWithDenom < 2
-            ? finalPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : finalPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const finalPriceString = getFormattedNumber({ value: finalPriceWithDenom });
 
     const priceImpactNum = !priceImpact?.percentChange
         ? undefined

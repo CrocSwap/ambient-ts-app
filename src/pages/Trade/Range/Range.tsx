@@ -1061,7 +1061,9 @@ function Range() {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
-        spotPriceDisplay: displayPriceString,
+        spotPriceDisplay: getFormattedNumber({
+            value: Number(displayPriceString),
+        }),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         aprPercentage: aprPercentage,
@@ -1211,7 +1213,9 @@ function Range() {
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
-        poolPriceDisplay: displayPriceString,
+        poolPriceDisplay: getFormattedNumber({
+            value: Number(displayPriceString),
+        }),
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFeeString: liquidityProviderFeeString,
         quoteTokenIsBuy: true,
@@ -1274,7 +1278,9 @@ function Range() {
             <DividerDark addMarginTop />
 
             <AdvancedPriceInfo
-                poolPriceDisplay={displayPriceString}
+                poolPriceDisplay={getFormattedNumber({
+                    value: Number(displayPriceString),
+                })}
                 isTokenABase={isTokenABase}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
@@ -1538,7 +1544,9 @@ function Range() {
                     <ConfirmRangeModal
                         tokenAQtyLocal={tokenAQtyLocal}
                         tokenBQtyLocal={tokenBQtyLocal}
-                        spotPriceDisplay={displayPriceString}
+                        spotPriceDisplay={getFormattedNumber({
+                            value: Number(displayPriceString),
+                        })}
                         isTokenABase={isTokenABase}
                         isAmbient={isAmbient}
                         isAdd={isAdd}
