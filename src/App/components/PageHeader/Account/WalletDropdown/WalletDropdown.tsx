@@ -95,6 +95,13 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         );
     }
 
+    let usdcBalForDOM: string;
+    if (tokenDataFromRTK.erc20Tokens) {
+        usdcBalForDOM = usdcData?.combinedBalanceDisplay ?? '0';
+    } else {
+        usdcBalForDOM = '…';
+    }
+
     const [usdcVal, setUsdcVal] = useState<string>('…');
     useEffect(() => {
         const usdBal: number = parseFloat(
@@ -142,7 +149,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         },
         {
             symbol: 'USDC',
-            amount: usdcData?.combinedBalanceDisplayTruncated ?? '0',
+            amount: usdcBalForDOM,
             value: '$' + usdcVal,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
