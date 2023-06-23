@@ -32,6 +32,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 // interface for component props
 interface propsIF {
@@ -120,7 +121,7 @@ function LimitCurrencySelector(props: propsIF) {
             id='limit_token_selector'
         >
             <TokenIcon
-                src={thisToken.logoURI}
+                src={uriToHttp(thisToken.logoURI)}
                 alt={thisToken.name + 'token logo'}
                 size='2xl'
             />

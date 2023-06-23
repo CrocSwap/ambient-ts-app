@@ -30,6 +30,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -515,7 +516,7 @@ function CurrencySelector(props: propsIF) {
                     id='swap_token_selector'
                 >
                     <TokenIcon
-                        src={thisToken.logoURI}
+                        src={uriToHttp(thisToken.logoURI)}
                         alt={thisToken.name}
                         size='2xl'
                     />

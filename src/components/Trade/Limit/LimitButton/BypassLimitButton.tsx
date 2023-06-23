@@ -13,6 +13,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 // import { CrocImpact } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -104,7 +105,7 @@ function BypassLimitButton(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             noAnimation
         />

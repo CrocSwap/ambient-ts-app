@@ -18,6 +18,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -93,7 +94,7 @@ function ConfirmRangeModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             range
         />
@@ -113,12 +114,12 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
-                            src={tokenA.logoURI}
+                            src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.name}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenB.logoURI}
+                            src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.name}
                             size='2xl'
                         />
@@ -138,7 +139,7 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
-                                src={tokenA.logoURI}
+                                src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.name}
                                 size='m'
                             />
@@ -153,7 +154,7 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
-                                src={tokenB.logoURI}
+                                src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.name}
                                 size='m'
                             />

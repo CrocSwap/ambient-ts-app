@@ -162,7 +162,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             }
         }
     }, [
-        props.receiptCount,
         rtkMatchesParams,
         tradeData.tokenA.address,
         tradeData.tokenB.address,
