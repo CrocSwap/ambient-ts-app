@@ -13,8 +13,6 @@
     overflow-x: hidden;
     max-width: 100dvw;
 
-    /* background: -webkit-linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));  
-background: linear-gradient(to right, var(--dark2), var(--dark1), var(--dark3));   */
 background: var(--dark1);
 }
 
@@ -24,14 +22,7 @@ background: var(--dark1);
 /* hero */
 
 .hero {
-  /* background:   linear-gradient(to bottom, rgba(13, 17, 23, 0.12), rgba(13, 17, 23, 1)),
 
-   url('../../../assets/images/home/home_wallpaper.png') no-repeat center center fixed;
-
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -85,50 +76,7 @@ padding: 0 2rem;
   }
 
   
-  /* .mobile_card:nth-of-type(2){
-  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
-   url( '../../../assets/images/home/home2.png') no-repeat
-  center center;
 
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover;
-
-}
-  .mobile_card:nth-of-type(3){
-  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
-   url( '../../../assets/images/home/home3.png') no-repeat
-  center center;
-
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover;
-
-}
-  .mobile_card:nth-of-type(4){
-  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
-   url( '../../../assets/images/home/home4.png') no-repeat
-  center center;
-
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover;
-
-}
-  .mobile_card:nth-of-type(5){
-  background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%),
-   url( '../../../assets/images/home/home2.png') no-repeat
-  center center;
-
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover;
-
-} */
 
 .mobile_card .scroll_button{
     position: absolute;
@@ -147,16 +95,6 @@ background-size: cover;
   text-align: center;
 }
  
-  /* .mobile_card_img_container_left{
-    display: flex;
-    justify-content: flex-start;
-
-    
-  }
-  .mobile_card_img_container_right{
-    display: flex;
-    justify-content: flex-end;
-  } */
 
   .smaller_image{
     width: 160px !important;
@@ -225,19 +163,3 @@ background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
-/* .section5{
-
-  background: url('../../../assets/images/home/home3.png') no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
-.section4{
-
-  background: url('../../../assets/images/home/home2.png') no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-} */

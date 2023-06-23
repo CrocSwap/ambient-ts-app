@@ -3,7 +3,6 @@ import styles from './MobileLandingSections.module.css';
 import logoText from '../../../assets/images/logos/logo_text.png';
 
 import Footer from '../../Footer/Footer';
-import { useRef } from 'react';
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
@@ -14,15 +13,6 @@ import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
 import { useTranslation } from 'react-i18next';
 export default function MobileLandingSections() {
-    const section1 = useRef(null);
-    const section2 = useRef(null);
-    const section3 = useRef(null);
-    const section4 = useRef(null);
-    const section5 = useRef(null);
-    const section6 = useRef(null);
-    const section7 = useRef(null);
-    const section8 = useRef(null);
-
     const { t } = useTranslation();
     // eslint-disable-next-line
     function scrollTo(section: any) {
@@ -30,7 +20,7 @@ export default function MobileLandingSections() {
     }
 
     const heroSection = (
-        <div className={`${styles.mobile_card} ${styles.hero} `} ref={section1}>
+        <div className={`${styles.mobile_card} ${styles.hero} `}>
             <>
                 <div style={{ paddingBottom: '2rem' }}>
                     <img src={logoText} alt='ambient' />
@@ -48,7 +38,6 @@ export default function MobileLandingSections() {
     const topPoolsSection = (
         <div
             className={`${styles.mobile_card} ${styles.pools} `}
-            ref={section2}
             style={{ width: '100vw' }}
         >
             <>
@@ -59,10 +48,7 @@ export default function MobileLandingSections() {
     );
 
     const secondRow = (
-        <div
-            className={`${styles.mobile_card} ${styles.right_align}`}
-            ref={section3}
-        >
+        <div className={`${styles.mobile_card} ${styles.right_align}`}>
             <Fade up>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
                 <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
@@ -78,14 +64,7 @@ export default function MobileLandingSections() {
     );
 
     const thirdRow = (
-        <div
-            className={`${styles.mobile_card} ${styles.section4}`}
-            ref={section4}
-        >
-            {/* <div className={styles.mobile_card_img_container_left}>
-                <img src={row2Image} alt='concentrated and ambient liquidity' />
-            </div> */}
-
+        <div className={`${styles.mobile_card} ${styles.section4}`}>
             <Fade up>
                 <img
                     src={liquidityImage}
@@ -104,19 +83,7 @@ export default function MobileLandingSections() {
     );
 
     const fourthRow = (
-        <div
-            className={`${styles.mobile_card} ${styles.section5}`}
-            ref={section5}
-        >
-            {/* <div className={styles.mobile_card_img_container_right}>
-                <img
-                    src={row3Image}
-                    alt='range and limit orders'
-                    width='90px'
-                    className={styles.smaller_image}
-                />
-            </div> */}
-
+        <div className={`${styles.mobile_card} ${styles.section5}`}>
             <Fade up>
                 <img
                     src={orderImage}
@@ -139,10 +106,7 @@ export default function MobileLandingSections() {
     );
 
     const fifthRow = (
-        <div
-            className={`${styles.mobile_card} ${styles.section6}`}
-            ref={section6}
-        >
+        <div className={`${styles.mobile_card} ${styles.section6}`}>
             <Fade up>
                 <h2 tabIndex={0}>Better than CEX</h2>
                 <p tabIndex={0}>
@@ -156,10 +120,7 @@ export default function MobileLandingSections() {
     );
 
     const investorsSections = (
-        <div
-            className={`${styles.mobile_card} ${styles.investors}`}
-            ref={section7}
-        >
+        <div className={`${styles.mobile_card} ${styles.investors}`}>
             <Fade up>
                 <h3>Investors</h3>
                 <Investors />
@@ -168,10 +129,7 @@ export default function MobileLandingSections() {
     );
 
     const footerSection = (
-        <div
-            className={`${styles.mobile_card} ${styles.footer_section}`}
-            ref={section8}
-        >
+        <div className={`${styles.mobile_card} ${styles.footer_section}`}>
             <Fade up>
                 <Footer />
             </Fade>
