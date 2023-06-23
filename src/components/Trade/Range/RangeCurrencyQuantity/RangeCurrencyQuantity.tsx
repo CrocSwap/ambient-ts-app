@@ -1,8 +1,6 @@
 import { ChangeEvent, memo, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
-import { decimalNumRegEx } from '../../../../utils/regex/exports';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     value: string;
@@ -54,32 +52,13 @@ function RangeCurrencyQuantity(props: propsIF) {
         return 0;
     };
 
-    // TODO: consolidate all the currency quantities/converters/selectors
-    const parseInput = (event: ChangeEvent<HTMLInputElement>) => {
-        let parsedInput = event.target.value.replaceAll(',', '');
-        parsedInput = parsedInput.startsWith('.')
-            ? '0' + parsedInput
-            : parsedInput;
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
         const isPrecisionGreaterThanDecimals =
-            precisionOfInput(parsedInput) > thisToken.decimals;
+            precisionOfInput(event.target.value) > thisToken.decimals;
         const isUserInputValid =
-            !isPrecisionGreaterThanDecimals &&
-            (event.target.value === '' || event.target.validity.valid);
-        if (isUserInputValid) {
-            // don't format 0, '', or numbers that end with .
-            let formattedInput = parsedInput;
-            if (parsedInput && !parsedInput.endsWith('.'))
-                formattedInput = getFormattedNumber({
-                    value: Number(parsedInput),
-                    isInput: true,
-                    minFracDigits: 0,
-                    maxFracDigits: 20,
-                    zeroDisplay: '0',
-                });
-            handleEventLocal({
-                ...event,
-                target: { ...event.target, value: formattedInput },
-            });
+            !isPrecisionGreaterThanDecimals && !isNaN(+event.target.value);
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+            handleEventLocal(event);
         }
     };
 
@@ -92,16 +71,15 @@ function RangeCurrencyQuantity(props: propsIF) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    parseInput(event);
+                    handleOnChange(event);
                 }}
                 value={displayValue}
-                type='string'
+                type='number'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>
