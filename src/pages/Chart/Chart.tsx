@@ -388,34 +388,6 @@ export default function Chart(props: propsIF) {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
 
-    useEffect(() => {
-        if (
-            minPrice !== 0 &&
-            maxPrice !== 0 &&
-            !isNaN(maxPrice) &&
-            !isNaN(minPrice)
-        ) {
-            setRanges((prevState) => {
-                const newTargets = [...prevState];
-                newTargets.filter(
-                    (target: lineValue) => target.name === 'Max',
-                )[0].value =
-                    !tradeData.advancedMode && simpleRangeWidth === 100
-                        ? liquidityData?.topBoundary
-                        : maxPrice;
-
-                newTargets.filter(
-                    (target: lineValue) => target.name === 'Min',
-                )[0].value =
-                    !tradeData.advancedMode && simpleRangeWidth === 100
-                        ? 0
-                        : minPrice;
-
-                return newTargets;
-            });
-        }
-    }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const standardDeviation = (arr: any, usePopulation = false) => {
         const mean =
@@ -3693,10 +3665,9 @@ export default function Chart(props: propsIF) {
 
                         scaleData?.yScale.domain(domain);
                     }
-
-                    render();
                 }
             }
+            render();
         }
     }
 
@@ -3728,7 +3699,15 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             drawChart(scaleData, selectedDate);
         }
-    }, [denomInBase, selectedDate, isSidebarOpen, liqMode, location.pathname]);
+    }, [
+        denomInBase,
+        selectedDate,
+        isSidebarOpen,
+        liqMode,
+        location.pathname,
+        scaleData,
+        unparsedCandleData?.length,
+    ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData?.xScale.invert(
@@ -3948,6 +3927,10 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    useEffect(() => {
+        render();
+    }, [diffHashSig(scaleData)]);
+
     // Draw Chart
     const drawChart = useCallback(
         (scaleData: any, selectedDate: any) => {
@@ -4083,6 +4066,7 @@ export default function Chart(props: propsIF) {
             });
         },
         [
+            scaleData,
             limit,
             ranges,
             location.pathname,
@@ -4254,73 +4238,76 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    {scaleData && (
-                        <div className='chart_grid'>
-                            <CandleChart
-                                chartItemStates={props.chartItemStates}
-                                data={unparsedCandleData}
-                                denomInBase={denomInBase}
-                                lastCandleData={lastCandleData}
-                                period={period}
-                                scaleData={scaleData}
-                                selectedDate={selectedDate}
-                                showLatest={showLatest}
-                                setBandwidth={setBandwidth}
-                            />
+                    <div className='chart_grid'>
+                        {scaleData && (
+                            <>
+                                <CandleChart
+                                    chartItemStates={props.chartItemStates}
+                                    data={unparsedCandleData}
+                                    denomInBase={denomInBase}
+                                    lastCandleData={lastCandleData}
+                                    period={period}
+                                    scaleData={scaleData}
+                                    selectedDate={selectedDate}
+                                    showLatest={showLatest}
+                                    setBandwidth={setBandwidth}
+                                />
 
-                            <VolumeBarCanvas
-                                scaleData={scaleData}
-                                volumeData={unparsedCandleData}
-                                denomInBase={denomInBase}
-                                selectedDate={selectedDate}
-                                showVolume={showVolume}
-                            />
+                                <VolumeBarCanvas
+                                    scaleData={scaleData}
+                                    volumeData={unparsedCandleData}
+                                    denomInBase={denomInBase}
+                                    selectedDate={selectedDate}
+                                    showVolume={showVolume}
+                                />
 
-                            <LiquidityChart
-                                liqMode={liqMode}
-                                liquidityData={liquidityData}
-                                liquidityScale={liquidityScale}
-                                scaleData={scaleData}
-                                liquidityDepthScale={liquidityDepthScale}
-                                ranges={ranges}
-                                liqDataHoverEvent={liqDataHoverEvent}
-                                liqTooltip={liqTooltip}
-                                mouseLeaveEvent={mouseLeaveEvent}
-                                isActiveDragOrZoom={isChartZoom || isLineDrag}
-                                mainCanvasBoundingClientRect={
-                                    mainCanvasBoundingClientRect
-                                }
-                            />
+                                <LiquidityChart
+                                    liqMode={liqMode}
+                                    liquidityData={liquidityData}
+                                    liquidityScale={liquidityScale}
+                                    scaleData={scaleData}
+                                    liquidityDepthScale={liquidityDepthScale}
+                                    ranges={ranges}
+                                    liqDataHoverEvent={liqDataHoverEvent}
+                                    liqTooltip={liqTooltip}
+                                    mouseLeaveEvent={mouseLeaveEvent}
+                                    isActiveDragOrZoom={
+                                        isChartZoom || isLineDrag
+                                    }
+                                    mainCanvasBoundingClientRect={
+                                        mainCanvasBoundingClientRect
+                                    }
+                                />
+                            </>
+                        )}
+                        <d3fc-canvas
+                            ref={d3CanvasCrosshair}
+                            className='cr-canvas'
+                        ></d3fc-canvas>
+                        <d3fc-canvas
+                            ref={d3CanvasMarketLine}
+                            className='market-line-canvas'
+                        ></d3fc-canvas>
 
-                            <d3fc-canvas
-                                ref={d3CanvasCrosshair}
-                                className='cr-canvas'
-                            ></d3fc-canvas>
-                            <d3fc-canvas
-                                ref={d3CanvasMarketLine}
-                                className='market-line-canvas'
-                            ></d3fc-canvas>
+                        <RangeLineCanvas {...rangeCanvasProps} />
 
-                            <RangeLineCanvas {...rangeCanvasProps} />
+                        <LimitLineCanvas {...limitCanvasProps} />
 
-                            <LimitLineCanvas {...limitCanvasProps} />
+                        <d3fc-canvas
+                            ref={d3CanvasMain}
+                            className='main-canvas'
+                        ></d3fc-canvas>
 
-                            <d3fc-canvas
-                                ref={d3CanvasMain}
-                                className='main-canvas'
-                            ></d3fc-canvas>
-
-                            <d3fc-canvas
-                                className='y-axis-canvas'
-                                ref={d3Yaxis}
-                                style={{
-                                    width: yAxisWidth,
-                                    gridColumn: 4,
-                                    gridRow: 3,
-                                }}
-                            ></d3fc-canvas>
-                        </div>
-                    )}
+                        <d3fc-canvas
+                            className='y-axis-canvas'
+                            ref={d3Yaxis}
+                            style={{
+                                width: yAxisWidth,
+                                gridColumn: 4,
+                                gridRow: 3,
+                            }}
+                        ></d3fc-canvas>
+                    </div>
                     {showFeeRate && (
                         <>
                             <hr />

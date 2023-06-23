@@ -76,6 +76,10 @@ export default function CandleChart(props: candlePropsIF) {
     ]);
 
     useEffect(() => {
+        renderCanvasArray([d3CanvasCandle]);
+    }, [data]);
+
+    useEffect(() => {
         if (scaleData !== undefined) {
             const canvasCandlestick = d3fc
                 .autoBandwidth(d3fc.seriesCanvasCandlestick())

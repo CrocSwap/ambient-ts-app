@@ -11,10 +11,10 @@ import { RangeContext } from '../../../contexts/RangeContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { createTriangle } from '../ChartUtils/triangle';
+import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    scaleData: any;
+    scaleData: scaleData | undefined;
     tokenA: TokenIF;
     tokenB: TokenIF;
     isDenomBase: boolean;
@@ -26,11 +26,9 @@ interface propsIF {
     isTokenABase: boolean;
     chainId: string;
     topBoundary: number | undefined;
-    /* eslint-disable @typescript-eslint/no-explicit-any */
     period: number;
     ranges: Array<lineValue>;
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    setRanges: any;
+    setRanges: React.Dispatch<React.SetStateAction<lineValue[]>>;
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
@@ -134,8 +132,39 @@ export default function RangeLineCanvas(props: propsIF) {
             setHorizontalBand(() => {
                 return horizontalBand;
             });
+
+            renderCanvasArray([d3CanvasRangeLine]);
         }
     }, [diffHashSig(scaleData)]);
+
+    useEffect(() => {
+        if (
+            minPrice !== 0 &&
+            maxPrice !== 0 &&
+            !isNaN(maxPrice) &&
+            !isNaN(minPrice) &&
+            topBoundary !== undefined
+        ) {
+            setRanges((prevState: lineValue[]) => {
+                const newTargets = [...prevState];
+                newTargets.filter(
+                    (target: lineValue) => target.name === 'Max',
+                )[0].value =
+                    !tradeData.advancedMode && simpleRangeWidth === 100
+                        ? topBoundary
+                        : maxPrice;
+
+                newTargets.filter(
+                    (target: lineValue) => target.name === 'Min',
+                )[0].value =
+                    !tradeData.advancedMode && simpleRangeWidth === 100
+                        ? 0
+                        : minPrice;
+
+                return newTargets;
+            });
+        }
+    }, [minPrice, maxPrice, tradeData.advancedMode, simpleRangeWidth]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -200,7 +229,7 @@ export default function RangeLineCanvas(props: propsIF) {
                     });
             }
         }
-    }, [diffHashSig(ranges), horizontalLine, location.pathname]);
+    }, [ranges, horizontalLine, location.pathname]);
 
     useEffect(() => {
         const passValue =
@@ -238,7 +267,14 @@ export default function RangeLineCanvas(props: propsIF) {
                 context.fillStyle = 'transparent';
             });
         }
-    }, [horizontalLine, ranges, triangle, location.pathname]);
+    }, [
+        horizontalLine,
+        ranges,
+        triangle,
+        location.pathname,
+        liqMode,
+        liqTransitionPointforCurve,
+    ]);
 
     useEffect(() => {
         displayHorizontalLines();
@@ -280,17 +316,17 @@ export default function RangeLineCanvas(props: propsIF) {
                     lookupChain(position.chainId).gridSize,
                 );
 
-                setRanges((prevState: any) => {
+                setRanges((prevState: lineValue[]) => {
                     const newTargets = [...prevState];
 
                     newTargets.filter(
-                        (target: any) => target.name === 'Max',
+                        (target: lineValue) => target.name === 'Max',
                     )[0].value = Number(
                         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                     );
 
                     newTargets.filter(
-                        (target: any) => target.name === 'Min',
+                        (target: lineValue) => target.name === 'Min',
                     )[0].value = Number(
                         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                     );
@@ -304,15 +340,15 @@ export default function RangeLineCanvas(props: propsIF) {
                 if (simpleRangeWidth === 100) {
                     setDefaultRangeData();
                 } else {
-                    setRanges((prevState: any) => {
+                    setRanges((prevState: lineValue[]) => {
                         const newTargets = [...prevState];
 
                         newTargets.filter(
-                            (target: any) => target.name === 'Max',
+                            (target: lineValue) => target.name === 'Max',
                         )[0].value = maxPrice !== undefined ? maxPrice : 0;
 
                         newTargets.filter(
-                            (target: any) => target.name === 'Min',
+                            (target: lineValue) => target.name === 'Min',
                         )[0].value = minPrice !== undefined ? minPrice : 0;
 
                         if (
@@ -340,17 +376,17 @@ export default function RangeLineCanvas(props: propsIF) {
                     highTick,
                     lookupChain(chainId).gridSize,
                 );
-                setRanges((prevState: any) => {
+                setRanges((prevState: lineValue[]) => {
                     const newTargets = [...prevState];
 
                     newTargets.filter(
-                        (target: any) => target.name === 'Max',
+                        (target: lineValue) => target.name === 'Max',
                     )[0].value = Number(
                         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                     );
 
                     newTargets.filter(
-                        (target: any) => target.name === 'Min',
+                        (target: lineValue) => target.name === 'Min',
                     )[0].value = Number(
                         pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                     );
@@ -369,7 +405,7 @@ export default function RangeLineCanvas(props: propsIF) {
         if (scaleData) {
             const maxPrice = topBoundary !== undefined ? topBoundary : Infinity;
 
-            setRanges((prevState: any) => {
+            setRanges((prevState: lineValue[]) => {
                 const newTargets = [...prevState];
                 newTargets.filter(
                     (target: lineValue) => target.name === 'Max',

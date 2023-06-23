@@ -168,6 +168,15 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
         if (liqSeries) {
+            console.log(
+                liqSeries,
+                thresholdCurve,
+                liqDataAsk,
+                liqDataBid,
+                liquidityScale?.domain(),
+                scaleData.yScale.domain(),
+            );
+
             decorateForLiquidityArea(liqSeries, thresholdCurve);
             decorateForLiquidityLine(lineLiqSeries, thresholdCurve);
         }
@@ -409,7 +418,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     if (liqMode === 'curve') {
                         liqSeries(liqDataAsk);
                         liqSeries(liqDataBid);
-                        drawCurveLines(canvas);
+                        // drawCurveLines(canvas);
                     }
                     if (liqMode === 'depth') {
                         liqDepthSeries(liqDataDepthBid);
@@ -744,10 +753,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liquidityMouseMoveActive]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
-            renderCanvasArray([d3CanvasLiq]);
-        }
-    }, [scaleData, liquidityData, location, ranges]);
+        // if (scaleData !== undefined) {
+        renderCanvasArray([d3CanvasLiq]);
+        // }
+    }, [diffHashSig(scaleData), diffHashSig(liquidityData), location, ranges]);
 
     return (
         <>
