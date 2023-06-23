@@ -9,7 +9,6 @@
 }
 
 .arrow_container {
-    cursor: pointer;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -17,8 +16,8 @@
     padding-bottom: 16px;
 }
 
-.arrow_container_disabled {
-    cursor: wait;
+.arrow_container_disabled svg:hover {
+    cursor: wait !important;
 }
 
 .arrow_container img {
