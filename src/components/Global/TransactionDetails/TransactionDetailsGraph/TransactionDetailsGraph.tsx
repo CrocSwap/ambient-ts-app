@@ -775,7 +775,28 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            if (tx.claimableLiq > 0) {
+                            if (tx.timeFirstMint === undefined) {
+                                horizontalBandData[0] = [
+                                    (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.bidTickInvPriceDecimalCorrected
+                                        : tx.bidTickPriceDecimalCorrected,
+                                    (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.askTickInvPriceDecimalCorrected
+                                        : tx.askTickPriceDecimalCorrected,
+                                ];
+
+                                horizontalBandJoin(svg, [
+                                    horizontalBandData,
+                                ]).call(horizontalBand);
+                            } else if (tx.claimableLiq > 0) {
                                 crossPointJoin(svg, [
                                     [
                                         {
@@ -803,9 +824,7 @@ export default function TransactionDetailsGraph(
                                             ? tx.askTickInvPriceDecimalCorrected
                                             : tx.askTickPriceDecimalCorrected,
 
-                                        x: tx.timeFirstMint
-                                            ? tx.timeFirstMint
-                                            : tx.txTime,
+                                        x: tx.timeFirstMint,
                                     },
                                 ];
 
