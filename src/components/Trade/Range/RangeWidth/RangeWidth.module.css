@@ -102,7 +102,7 @@
 
 .matching_percentage_button {
     background-color: var(--accent1);
-    color: var(--dark1);
+    color: var(--text1);
 }
 .percentage_input {
     width: 100%;
