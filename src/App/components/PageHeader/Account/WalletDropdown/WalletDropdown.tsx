@@ -97,7 +97,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const [usdcVal, setUsdcVal] = useState<string>('…');
     useEffect(() => {
-        const usdBal = parseFloat(usdcData?.combinedBalanceDisplay ?? '0');
+        const usdBal: number = parseFloat(
+            usdcData?.combinedBalanceDisplay ?? '0',
+        );
         Promise.resolve(
             cachedFetchTokenPrice(
                 USDC[mktDataChainId(chainId) as '0x1'],
@@ -113,9 +115,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     .toFixed(2)
                     .toString();
                 const parts: string[] = priceString.split('.');
-                const intPart = parts[0];
-                const decimalPart = parts[1] || '';
-                const intWithCommas = intPart.replace(
+                const intPart: string = parts[0];
+                const decimalPart: string = parts[1] || '';
+                const intWithCommas: string = intPart.replace(
                     /\B(?=(\d{3})+(?!\d))/g,
                     ',',
                 );
