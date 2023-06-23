@@ -6,6 +6,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { USDC } from '../../../../../utils/tokens/USDC';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -52,6 +56,14 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const erc20Tokens: TokenIF[] =
+        useAppSelector((state) => state.userData.tokens.erc20Tokens) ?? [];
+    const usdcAddr: string = USDC[chainId as '0x1'];
+    const usdcData: TokenIF | undefined = erc20Tokens.find(
+        (tkn: TokenIF) =>
+            tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
+            tkn.chainId === parseInt(chainId),
+    );
 
     const jazziconsSeed = accountAddressFull.toLowerCase();
 
@@ -117,7 +129,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 tabIndex={0}
                 aria-label={ariaLabel}
             >
-                {/* row */}
                 <div className={styles.logo_name}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
@@ -140,6 +151,22 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             value: ethValue,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
+        {
+            symbol: 'USDC',
+            amount: getFormattedNumber({
+                value: parseFloat(
+                    usdcData?.combinedBalanceDisplayTruncated ?? '0',
+                ),
+            }),
+            value:
+                '$' +
+                getFormattedNumber({
+                    value: parseFloat(
+                        usdcData?.combinedBalanceDisplayTruncated ?? '0',
+                    ),
+                }),
+            logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        },
     ];
 
     return (
@@ -155,15 +182,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={idx}
                     />
                 ))}
-                {/* {walletDropdownTokenData?.map((token, idx) => (
-                    <TokenAmountDisplay
-                        amount={token.amount ?? ''}
-                        value={'$' + token.value ?? ''}
-                        symbol={token.symbol ?? ''}
-                        logo={token.logo ?? ''}
-                        key={idx}
-                    />
-                ))} */}
             </section>
             {actionContent}
         </div>
