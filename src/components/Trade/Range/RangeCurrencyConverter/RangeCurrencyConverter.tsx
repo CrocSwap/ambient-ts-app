@@ -36,6 +36,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -246,13 +247,11 @@ function RangeCurrencyConverter(props: propsIF) {
 
         handleSecondaryTokenQty('B', value, qtyTokenB);
 
-        const truncatedTokenBQty = qtyTokenB
-            ? qtyTokenB < 0.00001
-                ? truncateDecimals(qtyTokenB, tradeData.tokenA.decimals)
-                : qtyTokenB < 2
-                ? qtyTokenB.toPrecision(3)
-                : truncateDecimals(qtyTokenB, 2)
-            : '';
+        const truncatedTokenBQty = getFormattedNumber({
+            value: qtyTokenB,
+            nullDisplay: '',
+            isInput: true,
+        });
 
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
@@ -302,13 +301,11 @@ function RangeCurrencyConverter(props: propsIF) {
 
         handleSecondaryTokenQty('A', value, qtyTokenA);
 
-        const truncatedTokenAQty = qtyTokenA
-            ? qtyTokenA < 0.00001
-                ? truncateDecimals(qtyTokenA, tradeData.tokenA.decimals)
-                : qtyTokenA < 2
-                ? qtyTokenA.toPrecision(3)
-                : truncateDecimals(qtyTokenA, 2)
-            : '';
+        const truncatedTokenAQty = getFormattedNumber({
+            value: qtyTokenA,
+            nullDisplay: '',
+            isInput: true,
+        });
 
         if (truncatedTokenAQty !== '0' && truncatedTokenAQty !== '') {
             if (primaryQuantityRange !== value.toString()) {

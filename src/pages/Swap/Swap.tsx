@@ -52,6 +52,7 @@ import { VscClose } from 'react-icons/vsc';
 import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../App/hooks/useTradeData';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 
@@ -418,11 +419,11 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

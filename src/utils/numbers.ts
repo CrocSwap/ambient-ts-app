@@ -38,7 +38,7 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
         abbreviations: {
             million: 'M',
             billion: 'B',
-            thousand: 'K',
+            thousand: 'k',
         },
     });
 };
@@ -160,6 +160,7 @@ export const formatAmountOld = (num: number | undefined, digits = 1) => {
         mantissa: num < 100 ? 2 : digits,
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {
+            thousand: 'k',
             million: 'M',
             billion: 'B',
         },

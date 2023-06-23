@@ -42,13 +42,12 @@ export default function TransactionDetailsSimplify(
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        txUsdValueLocaleString,
         isDenomBase,
-        baseQuantityDisplayLong,
-        quoteQuantityDisplayLong,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         baseTokenAddress,
         quoteTokenAddress,
-
+        usdValue,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -227,8 +226,8 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
-                        ? `${baseQuantityDisplayLong}${baseTokenSymbol}`
-                        : `${quoteQuantityDisplayLong}${quoteTokenSymbol}`}
+                        ? `${baseQuantityDisplay}${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay}${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:
@@ -252,8 +251,8 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
-                        ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
-                        : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`}
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:
@@ -299,11 +298,7 @@ export default function TransactionDetailsSimplify(
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: (
-                <div style={{ cursor: 'default' }}>
-                    {txUsdValueLocaleString}
-                </div>
-            ),
+            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
             explanation: 'The appoximate US dollar value of the transaction',
         });
     } else {
@@ -323,11 +318,7 @@ export default function TransactionDetailsSimplify(
             },
             {
                 title: 'Value ',
-                content: (
-                    <div style={{ cursor: 'default' }}>
-                        {txUsdValueLocaleString}
-                    </div>
-                ),
+                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
                 explanation:
                     'The appoximate US dollar value of the transaction',
             },

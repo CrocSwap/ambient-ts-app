@@ -32,6 +32,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -139,12 +140,9 @@ function LimitCurrencySelector(props: propsIF) {
                 : tokenABalance
             : '';
 
-    const walletBalanceLocaleString = tokenABalance
-        ? parseFloat(tokenABalance).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletBalanceLocaleString = getFormattedNumber({
+        value: tokenABalance ? parseFloat(tokenABalance) : undefined,
+    });
 
     const walletAndSurplusBalanceNonLocaleString =
         tokenADexBalance && gasPriceInGwei
@@ -159,14 +157,12 @@ function LimitCurrencySelector(props: propsIF) {
                   ).toString()
             : '';
 
-    const walletAndSurplusBalanceLocaleString = tokenADexBalance
-        ? (
-              parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-          ).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
-        : '...';
+    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
+        value: tokenADexBalance
+            ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+            : undefined,
+    });
+    tokenADexBalance;
 
     const balanceLocaleString =
         isSellTokenSelector && !isWithdrawFromDexChecked

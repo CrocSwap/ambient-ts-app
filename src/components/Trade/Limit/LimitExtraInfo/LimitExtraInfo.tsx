@@ -13,6 +13,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -50,62 +51,18 @@ function LimitExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 0.0001
-        ? startDisplayPrice.toExponential(2)
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 0.0001
-        ? middleDisplayPrice.toExponential(2)
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 0.0001
-        ? endDisplayPrice.toExponential(2)
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
+    });
 
     const extraInfoData = [
         {

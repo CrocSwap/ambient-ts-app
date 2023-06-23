@@ -20,8 +20,6 @@ import {
     setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
-
 // START: Import React Functional Components
 import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
 import LimitRate from '../LimitRate/LimitRate';
@@ -38,6 +36,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -324,12 +323,11 @@ function LimitCurrencyConverter(props: propsIF) {
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
         }
 
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
-
+        const truncatedTokenBQty = getFormattedNumber({
+            value: rawTokenBQty,
+            nullDisplay: '',
+            isInput: true,
+        });
         setTokenBInputQty(truncatedTokenBQty);
     };
 
@@ -356,11 +354,11 @@ function LimitCurrencyConverter(props: propsIF) {
                 : limitTickDisplayPrice * parseFloat(input);
         }
 
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
+        const truncatedTokenBQty = getFormattedNumber({
+            value: rawTokenBQty,
+            nullDisplay: '',
+            isInput: true,
+        });
         handleLimitButtonMessage(parseFloat(input));
 
         setTokenBInputQty(truncatedTokenBQty);
@@ -419,12 +417,11 @@ function LimitCurrencyConverter(props: propsIF) {
 
             handleLimitButtonMessage(userSetTokenBToZero ? 0 : rawTokenAQty);
         }
-        const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(3)
-                : truncateDecimals(rawTokenAQty, 2)
-            : '';
-
+        const truncatedTokenAQty = getFormattedNumber({
+            value: rawTokenAQty,
+            nullDisplay: '',
+            isInput: true,
+        });
         setTokenAQtyLocal(truncatedTokenAQty);
         setTokenAInputQty(truncatedTokenAQty);
     };

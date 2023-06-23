@@ -59,7 +59,6 @@ import {
     rangeTutorialSteps,
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
-import { formatAmountOld } from '../../../utils/numbers';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
@@ -73,6 +72,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 function Range() {
     const {
@@ -194,19 +194,9 @@ function Range() {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toPrecision(3)
-            : displayPriceWithDenom >= 100000
-            ? formatAmountOld(displayPriceWithDenom, 1)
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
 
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
@@ -1040,11 +1030,11 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
