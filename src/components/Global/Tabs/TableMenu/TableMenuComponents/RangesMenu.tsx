@@ -66,7 +66,8 @@ export default function RangesMenu(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const { setSimpleRangeWidth, setCurrentRangeInReposition } =
+        useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
@@ -137,6 +138,7 @@ export default function RangesMenu(props: propsIF) {
                 highTick: position.askTick.toString(),
             })}
             state={{ position: position }}
+            onClick={() => setCurrentRangeInReposition(position.positionId)}
         >
             Reposition
         </Link>

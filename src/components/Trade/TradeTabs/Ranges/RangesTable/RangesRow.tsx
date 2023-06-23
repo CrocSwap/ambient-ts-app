@@ -14,6 +14,7 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     showPair: boolean;
@@ -43,6 +44,8 @@ function RangesRow(props: propsIF) {
         currentPositionActive,
         setCurrentPositionActive,
     } = useContext(TradeTableContext);
+
+    const { currentRangeInReposition } = useContext(RangeContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -184,7 +187,8 @@ function RangesRow(props: propsIF) {
             : 'username_base_color';
 
     const activePositionStyle =
-        position.firstMintTx === currentPositionActive
+        position.firstMintTx === currentPositionActive ||
+        position.positionId === currentRangeInReposition
             ? styles.active_position_style
             : '';
 

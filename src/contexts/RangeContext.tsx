@@ -16,6 +16,8 @@ interface RangeContextIF {
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     chartTriggeredBy: string;
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
+    currentRangeInReposition: string;
+    setCurrentRangeInReposition: Dispatch<SetStateAction<string>>;
 }
 
 export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
@@ -24,6 +26,9 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
+
+    const [currentRangeInReposition, setCurrentRangeInReposition] =
+        useState<string>('');
 
     const [
         rescaleRangeBoundariesWithSlider,
@@ -42,6 +47,8 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setRescaleRangeBoundariesWithSlider,
         chartTriggeredBy,
         setChartTriggeredBy,
+        currentRangeInReposition,
+        setCurrentRangeInReposition,
     };
 
     return (
