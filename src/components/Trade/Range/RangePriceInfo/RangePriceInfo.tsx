@@ -11,8 +11,7 @@ import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
-import AprExplanation from '../../../Global/Informational/AprExplanation';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
@@ -53,6 +52,7 @@ function RangePriceInfo(props: propsIF) {
         isAmbient,
     } = props;
     const {
+        // eslint-disable-next-line
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -66,17 +66,25 @@ function RangePriceInfo(props: propsIF) {
     const dispatch = useAppDispatch();
 
     const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+        ? `${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
     // JSX frag for estimated APR of position
 
-    const apr = (
-        <span className={styles.apr}>
-            {aprPercentageString}{' '}
-            <AiOutlineQuestionCircle
+    const aprDisplay = (
+        <div className={styles.price_display}>
+            <h4 className={styles.price_title}>Est. APR</h4>
+            <span
+                className={styles.apr_price}
+                onClick={() => {
+                    dispatch(toggleDidUserFlipDenom());
+                    setUserFlippedMaxMinDisplay(false);
+                }}
+            >
+                {aprPercentageString}
+                {/* <AiOutlineQuestionCircle
                 size={14}
                 onClick={() =>
                     openGlobalPopup(
@@ -86,8 +94,9 @@ function RangePriceInfo(props: propsIF) {
                         'right',
                     )
                 }
-            />
-        </span>
+            /> */}
+            </span>
+        </div>
     );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
@@ -105,7 +114,7 @@ function RangePriceInfo(props: propsIF) {
 
     const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
         useState<string>('');
-
+    // eslint-disable-next-line
     const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
         useState<string>('');
 
@@ -119,7 +128,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '0'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
@@ -129,7 +139,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '∞'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
         : '...';
 
     const isDenomTokenA =
@@ -385,11 +396,11 @@ function RangePriceInfo(props: propsIF) {
 
     return (
         <div className={styles.price_info_container}>
-            {apr}
             <div className={styles.price_info_content}>
+                {aprDisplay}
                 {minimumPrice}
-                {currentPoolPrice}
                 {maximumPrice}
+                {currentPoolPrice}
             </div>
         </div>
     );

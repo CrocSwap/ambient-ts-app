@@ -704,93 +704,98 @@ export default function Limit() {
                 >
                     <LimitCurrencyConverter {...currencyConverterProps} />
                 </motion.div>
-                <div className={styles.header_container}></div>
-                <LimitExtraInfo
-                    isQtyEntered={
-                        tokenAInputQty !== '' || tokenBInputQty !== ''
-                    }
-                    orderGasPriceInDollars={orderGasPriceInDollars}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
-                    isTokenABase={isSellTokenBase}
-                    startDisplayPrice={startDisplayPrice}
-                    middleDisplayPrice={middleDisplayPrice}
-                    endDisplayPrice={endDisplayPrice}
-                />
-                {isUserConnected === undefined ? null : isUserConnected ===
-                  true ? (
-                    !isTokenAAllowanceSufficient &&
-                    parseFloat(tokenAInputQty) > 0 ? (
-                        approvalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassLimitButton {...bypassLimitProps} />
+                <div className={styles.info_button_container}>
+                    <LimitExtraInfo
+                        isQtyEntered={
+                            tokenAInputQty !== '' || tokenBInputQty !== ''
+                        }
+                        orderGasPriceInDollars={orderGasPriceInDollars}
+                        liquidityProviderFeeString={liquidityProviderFeeString}
+                        isTokenABase={isSellTokenBase}
+                        startDisplayPrice={startDisplayPrice}
+                        middleDisplayPrice={middleDisplayPrice}
+                        endDisplayPrice={endDisplayPrice}
+                    />
+                    {isUserConnected === undefined ? null : isUserConnected ===
+                      true ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 ? (
+                            approvalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassLimitButton {...bypassLimitProps} />
+                        ) : (
+                            <>
+                                <LimitButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirmLimit.isEnabled
+                                                ? handleLimitButtonClickWithBypass
+                                                : openModal
+                                            : ackAsNeeded
+                                    }
+                                    limitAllowed={
+                                        isOrderValid &&
+                                        poolPriceNonDisplay !== 0 &&
+                                        limitAllowed
+                                    }
+                                    limitButtonErrorMessage={
+                                        limitButtonErrorMessage
+                                    }
+                                    isBypassConfirmEnabled={
+                                        bypassConfirmLimit.isEnabled
+                                    }
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={`approve ${tokenA.symbol}`}
+                                        >
+                                            {tokenA.symbol || tokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenB.symbol}
+                                        >
+                                            {tokenB.symbol || tokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
+                        )
                     ) : (
-                        <>
-                            <LimitButton
-                                onClickFn={
-                                    areBothAckd
-                                        ? bypassConfirmLimit.isEnabled
-                                            ? handleLimitButtonClickWithBypass
-                                            : openModal
-                                        : ackAsNeeded
-                                }
-                                limitAllowed={
-                                    isOrderValid &&
-                                    poolPriceNonDisplay !== 0 &&
-                                    limitAllowed
-                                }
-                                limitButtonErrorMessage={
-                                    limitButtonErrorMessage
-                                }
-                                isBypassConfirmEnabled={
-                                    bypassConfirmLimit.isEnabled
-                                }
-                                areBothAckd={areBothAckd}
-                            />
-                            {ackTokenMessage && (
-                                <p
-                                    className={styles.acknowledge_text}
-                                    dangerouslySetInnerHTML={{
-                                        __html: formattedAckTokenMessage,
-                                    }}
-                                ></p>
-                            )}
-                            <div className={styles.acknowledge_etherscan_links}>
-                                {needConfirmTokenA && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenA.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={`approve ${tokenA.symbol}`}
-                                    >
-                                        {tokenA.symbol || tokenA.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                                {needConfirmTokenB && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenB.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenB.symbol}
-                                    >
-                                        {tokenB.symbol || tokenB.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                            </div>
-                        </>
-                    )
-                ) : (
-                    loginButton
-                )}
+                        loginButton
+                    )}
+                </div>
             </ContentContainer>
             {isModalOpen && (
                 <Modal

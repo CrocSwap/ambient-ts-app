@@ -30,38 +30,39 @@ function AdvancedPriceInfo(props: propsIF) {
             tabIndex={0}
             aria-label={`Current price is ${currentPriceValue}. `}
         >
-            <div>Current Price: </div>
-            <div className={styles.current_price}>{currentPriceValue}</div>
+            <p className={styles.row_label}>Current Price </p>
+            <p className={styles.current_price}>{currentPriceValue}</p>
         </div>
     );
 
     const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+        ? `${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
 
-    const estimatedAPR = isOutOfRange ? (
-        <div className={styles.apr_display_out_of_range}>
-            <div>Est. APR | 0%</div>
-        </div>
+    const estimatedAPRValue = isOutOfRange ? (
+        <p className={styles.apr_display_out_of_range}>0%</p>
     ) : (
+        <p className={styles.apr_display_in_range}>{aprPercentageString}</p>
+    );
+
+    const estimatedAPR = (
         <div
-            className={styles.apr_display_in_range}
+            className={styles.price_info_row}
             tabIndex={aprPercentage ? 0 : -1}
             aria-label={`Estimated APR is ${aprPercentageString} percent.`}
         >
-            <div>{aprPercentageString}</div>
+            <p className={styles.row_label}>Est. APR </p>
+            {estimatedAPRValue}
         </div>
     );
 
     return (
         <div className={styles.price_info_container}>
-            <div className={styles.price_info_content}>
-                {currentPrice}
-                {estimatedAPR}
-            </div>
+            {currentPrice}
+            {estimatedAPR}
         </div>
     );
 }

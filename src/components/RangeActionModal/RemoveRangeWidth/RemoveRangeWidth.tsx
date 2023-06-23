@@ -27,7 +27,11 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                     {removalPercentage}%
                 </span>
                 <button
-                    className={styles.percentage_option_buttons}
+                    className={
+                        removalPercentage === 10
+                            ? `${styles.matching_percentage_button}`
+                            : styles.percentage_option_buttons
+                    }
                     onClick={() => {
                         handlePercentageUpdate(10);
                     }}
@@ -35,7 +39,11 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                     10%
                 </button>
                 <button
-                    className={styles.percentage_option_buttons}
+                    className={
+                        removalPercentage === 25
+                            ? `${styles.matching_percentage_button}`
+                            : styles.percentage_option_buttons
+                    }
                     onClick={() => {
                         handlePercentageUpdate(25);
                     }}
@@ -43,7 +51,11 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                     25%
                 </button>
                 <button
-                    className={styles.percentage_option_buttons}
+                    className={
+                        removalPercentage === 50
+                            ? `${styles.matching_percentage_button}`
+                            : styles.percentage_option_buttons
+                    }
                     onClick={() => {
                         handlePercentageUpdate(50);
                     }}
@@ -52,7 +64,11 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 </button>
 
                 <button
-                    className={styles.percentage_option_buttons}
+                    className={
+                        removalPercentage === 100
+                            ? `${styles.matching_percentage_button}`
+                            : styles.percentage_option_buttons
+                    }
                     onClick={() => {
                         handlePercentageUpdate(100);
                     }}

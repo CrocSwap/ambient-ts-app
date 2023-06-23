@@ -332,7 +332,6 @@ function LimitCurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}> </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='limit_sell_qty'>
                     <LimitCurrencyQuantity
