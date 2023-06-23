@@ -678,7 +678,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 tokenAorB={'A'}
             />
             <div className={styles.arrow_container}>
-                <img src={tokenArrow} alt='plus sign' />
+                <img src={tokenArrow} height={28} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>

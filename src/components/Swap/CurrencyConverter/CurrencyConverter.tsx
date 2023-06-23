@@ -563,11 +563,7 @@ function CurrencyConverter(props: propsIF) {
     );
 
     return (
-        <section
-            className={`${styles.currency_converter} ${
-                switchBoxes ? styles.currency_converter_switch : null
-            }`}
-        >
+        <section className={`${styles.currency_converter}`}>
             <CurrencySelector
                 disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
@@ -600,14 +596,16 @@ function CurrencyConverter(props: propsIF) {
                 setIsBuyLoading={setIsBuyLoading}
             />
             <div
-                className={
-                    disableReverseTokens
-                        ? styles.arrow_container_disabled
-                        : styles.arrow_container
-                }
-                onClick={reverseTokens}
+                className={`${styles.arrow_container} ${
+                    disableReverseTokens && styles.arrow_container_disabled
+                }`}
             >
-                {isLiq ? null : <TokensArrow disabled={disableReverseTokens} />}
+                {isLiq ? null : (
+                    <TokensArrow
+                        disabled={disableReverseTokens}
+                        onClick={reverseTokens}
+                    />
+                )}
             </div>
             <div id='swap_currency_converter'>
                 <CurrencySelector
