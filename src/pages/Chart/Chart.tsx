@@ -395,6 +395,7 @@ export default function Chart(props: propsIF) {
             !isNaN(maxPrice) &&
             !isNaN(minPrice)
         ) {
+            // console.log(1, {minPrice, maxPrice})
             setRanges((prevState) => {
                 const newTargets = [...prevState];
                 newTargets.filter(
@@ -1704,7 +1705,7 @@ export default function Chart(props: propsIF) {
             const high = parseFloat(
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
-
+            // console.log(2)
             setRanges(() => {
                 const newTargets = [
                     {
@@ -1719,25 +1720,12 @@ export default function Chart(props: propsIF) {
 
                 return newTargets;
             });
-        } else {
-            setRanges((prevState) => {
-                const newTargets = [...prevState];
-
-                newTargets.filter(
-                    (target: any) => target.name === 'Max',
-                )[0].value = maxPrice !== undefined ? maxPrice : 0;
-
-                newTargets.filter(
-                    (target: any) => target.name === 'Min',
-                )[0].value = minPrice !== undefined ? minPrice : 0;
-
-                return newTargets;
-            });
         }
     }, [denomInBase]);
 
     const setAdvancedLines = () => {
         if (minPrice !== undefined && maxPrice !== undefined) {
+            // console.log(4)
             setRanges(() => {
                 const newTargets = [
                     {
@@ -2004,7 +1992,7 @@ export default function Chart(props: propsIF) {
                                           liquidityData?.lowBoundary
                                         ? dragedValue
                                         : 0;
-
+                                // console.log(5)
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
 
@@ -2099,6 +2087,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 if (pinnedDisplayPrices !== undefined) {
+                                    // console.log(6)
                                     setRanges((prevState) => {
                                         const newTargets = [...prevState];
 
@@ -2175,6 +2164,7 @@ export default function Chart(props: propsIF) {
                             }
                             // to:do fix when advanced is fixed AdvancedPepe
                             setRanges((prevState) => {
+                                // console.log(7)
                                 const newTargets = [...prevState];
 
                                 if (draggingLine === 'Max') {
@@ -2233,6 +2223,7 @@ export default function Chart(props: propsIF) {
                             oldRangeMinValue !== undefined &&
                             oldRangeMaxValue !== undefined
                         ) {
+                            // console.log(8)
                             setRanges([
                                 {
                                     name: 'Min',
@@ -2278,6 +2269,7 @@ export default function Chart(props: propsIF) {
                             oldRangeMinValue !== undefined &&
                             oldRangeMaxValue !== undefined
                         ) {
+                            // console.log(9)
                             setRanges([
                                 {
                                     name: 'Min',
@@ -3352,6 +3344,8 @@ export default function Chart(props: propsIF) {
                 lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
             }
 
+            console.log(tradeData.advancedMode);
+
             if (
                 !tradeData.advancedMode ||
                 location.pathname.includes('reposition')
@@ -3364,7 +3358,7 @@ export default function Chart(props: propsIF) {
                     clickedValue < liquidityData?.lowBoundary
                 ) {
                     rangeWidthPercentage = 100;
-
+                    // console.log(10)
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
 
@@ -3430,6 +3424,7 @@ export default function Chart(props: propsIF) {
                     scaleData?.yScale.invert(event.offsetY) < 0
                         ? 0.1
                         : scaleData?.yScale.invert(event.offsetY);
+
                 let pinnedDisplayPrices: {
                     pinnedMinPriceDisplay: string;
                     pinnedMaxPriceDisplay: string;
@@ -3440,6 +3435,7 @@ export default function Chart(props: propsIF) {
                     pinnedMinPriceNonDisplay: number;
                     pinnedMaxPriceNonDisplay: number;
                 };
+
                 if (lineToBeSet === 'Max') {
                     pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                         denomInBase,
@@ -3468,6 +3464,7 @@ export default function Chart(props: propsIF) {
                 );
 
                 (async () => {
+                    // console.log(11)
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
 
