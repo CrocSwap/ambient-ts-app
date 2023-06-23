@@ -4,7 +4,13 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -29,6 +35,10 @@ interface MessageInputProps {
     users: User[];
     isLinkInCrocodileLabsLinks(word: string): boolean;
     isLink(url: string): boolean;
+    filterMessage(message: string): boolean;
+    showPopUp: boolean;
+    setShowPopUp: Dispatch<SetStateAction<boolean>>;
+    formatURL(url: string): void;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -83,15 +93,23 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
+        console.log(
+            'message: ',
+            message,
+            ' filtered: ',
+            props.filterMessage(message),
+        );
+        console.log(props.isLinkInCrocodileLabsLinks(message));
         if (
-            props.isLink(message) &&
+            (props.isLink(message) || props.filterMessage(message)) &&
             !props.isLinkInCrocodileLabsLinks(message)
         ) {
-            // console.log('--------------------------DONT-------------------');
+            props.setShowPopUp(true);
         } else {
-            handleSendMsg(message, roomId);
+            handleSendMsg(props.formatURL(message), roomId);
             setMessage('');
             dontShowEmojiPanel();
+            props.setShowPopUp(false);
         }
     };
 
@@ -99,16 +117,15 @@ export default function MessageInput(props: MessageInputProps) {
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             if (
-                props.isLink(message) &&
+                (props.isLink(message) || props.filterMessage(message)) &&
                 !props.isLinkInCrocodileLabsLinks(message)
             ) {
-                // console.log(
-                //     '--------------------------DONT-------------------',
-                // );
+                props.setShowPopUp(true);
             } else {
                 handleSendMsg(message, roomId);
                 setMessage('');
                 dontShowEmojiPanel();
+                props.setShowPopUp(false);
             }
         } else if (
             mentPanelActive &&
@@ -198,12 +215,14 @@ export default function MessageInput(props: MessageInputProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
-
+        props.setShowPopUp(false);
         if (e.target.value.indexOf('@') !== -1) {
             setMentPanelActive(true);
             setMentPanelQueryStr(e.target.value.split('@')[1]);
         } else {
-            if (mentPanelActive) setMentPanelActive(false);
+            if (mentPanelActive) {
+                setMentPanelActive(false);
+            }
         }
     };
 
@@ -230,7 +249,6 @@ export default function MessageInput(props: MessageInputProps) {
                 walletExplorer={
                     props.ensName === undefined ? address : props.ensName
                 }
-                connectedAccountActive={address as string}
             />
 
             <div

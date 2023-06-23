@@ -77,12 +77,10 @@ const useChatSocket = (
         getRest();
 
         if (socketRef && socketRef.current) {
+            // eslint-disable-next-line
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
-                    // setLastMessage(messagesRef.current[messagesRef.current.length-1]);
-                    // setLastMessageText(messagesRef.current[messagesRef.current.length-1].message);
-                    // setMessageUser(messagesRef.current[messagesRef.current.length-1].sender);
                     setLastMessage(data);
                     setLastMessageText(data.message);
                     setMessageUser(data.sender);

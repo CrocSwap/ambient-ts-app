@@ -59,6 +59,7 @@
 
     /* Inside auto layout */
     order: 0;
+    margin-top: 8px;
 }
 
 .separator {
@@ -111,7 +112,7 @@
     font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
-    margin: 10px;
+    margin: 2px 10px;
     width: 85%;
     color: var(--text1);
     white-space: pre-line;
@@ -177,6 +178,8 @@
     order: 4;
     align-self: stretch;
     cursor: default;
+    padding-top: 10px;
+    
 }
 
 .sent_message_body_with_mention {

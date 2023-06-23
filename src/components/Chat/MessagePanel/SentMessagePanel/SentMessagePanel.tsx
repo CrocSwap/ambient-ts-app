@@ -26,6 +26,8 @@ interface SentMessageProps {
     nextMessage: any;
     deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
+    filterMessage(message: string): boolean;
+    formatURL(url: string): void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -42,6 +44,7 @@ function SentMessagePanel(props: SentMessageProps) {
     const location = useLocation();
 
     useEffect(() => {
+        //   console.log('eeee: ',props.filterMessage(props.message.message))
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
         const nextMessageDate = new Date(props.nextMessage?.createdAt);
@@ -159,6 +162,11 @@ function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
+    function returnDomain(word: string) {
+        const url = new URL(word);
+        return url.hostname + url.pathname;
+    }
+
     function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
@@ -190,7 +198,7 @@ function SentMessagePanel(props: SentMessageProps) {
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
                         onClick={() => handleOpenExplorer(url)}
                     >
-                        {url}
+                        {returnDomain(url)}
                     </p>
                 );
             } else {
@@ -378,9 +386,6 @@ function SentMessagePanel(props: SentMessageProps) {
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
                             showAvatar={showAvatar}
-                            connectedAccountActive={
-                                props.connectedAccountActive
-                            }
                         />
                         {!isPosition && mentionedMessage()}
                     </div>
@@ -401,7 +406,9 @@ function SentMessagePanel(props: SentMessageProps) {
 
                     {/* {snackbarContent} */}
                 </div>
-                {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
+                <div>
+                    {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
+                </div>
             </div>
         </div>
     );

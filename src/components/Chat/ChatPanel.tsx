@@ -47,6 +47,7 @@ function ChatPanel(props: propsIF) {
     const [userCurrentPool, setUserCurrentPool] = useState(
         currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
     );
+    const [showPopUp, setShowPopUp] = useState(false);
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -77,22 +78,33 @@ function ChatPanel(props: propsIF) {
 
     function isLink(url: string) {
         const urlPattern =
-            /.*(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+            /.*(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,8})(:[0-9]{1,5})?(\/.*)?$/i;
         return urlPattern.test(url);
     }
 
+    const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+
+    function filterMessage(message: string) {
+        return blockPattern.test(message);
+    }
+
+    function formatURL(url: string) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            console.log(url);
+            return url;
+        }
+        return url;
+    }
+
     const crocodileLabsLinks = [
-        'https://www.crocswap.com/',
-        'https://twitter.com/CrocSwap',
-        'https://crocswap.medium.com/',
-        'https://www.linkedin.com/company/crocodile-labs/',
-        'https://github.com/CrocSwap',
-        'https://discord.com/invite/CrocSwap', // etherscan , ambient.finance //remove http
-        'https://www.crocswap.com/whitepaper',
+        'https://twitter.com/',
+        'https://docs.ambient.finance/',
+        'https://ambient.finance/',
     ];
 
     function isLinkInCrocodileLabsLinks(word: string) {
-        return crocodileLabsLinks.includes(word);
+        return crocodileLabsLinks.some((link) => word.includes(link));
     }
 
     // eslint-disable-next-line
@@ -358,6 +370,8 @@ function ChatPanel(props: propsIF) {
                         previousMessage={i === 0 ? null : messages[i - 1]}
                         deleteMsgFromList={deleteMsgFromList}
                         isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
+                        filterMessage={filterMessage}
+                        formatURL={formatURL}
                     />
                 ))}
         </div>
@@ -450,6 +464,12 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
+    const sendingLink = (
+        <div className={styles.chat_notification}>
+            {showPopUp ? 'You cannot send that link.' : ''}
+        </div>
+    );
+
     const messageInput = (
         <MessageInput
             currentUser={currentUser as string}
@@ -468,6 +488,10 @@ function ChatPanel(props: propsIF) {
             users={users}
             isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
             isLink={isLink}
+            showPopUp={showPopUp}
+            setShowPopUp={setShowPopUp}
+            filterMessage={filterMessage}
+            formatURL={formatURL}
         />
     );
 
@@ -527,7 +551,7 @@ function ChatPanel(props: propsIF) {
                     <DividerDark changeColor addMarginTop addMarginBottom />
 
                     {messageList}
-
+                    {sendingLink}
                     {chatNotification}
 
                     {messageInput}
