@@ -38,6 +38,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 
 // interface for component props
 interface propsIF {
@@ -278,24 +279,24 @@ function LimitCurrencyConverter(props: propsIF) {
         let rawTokenBQty: number;
 
         if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+            const input = evt.target.value.replaceAll(',', '');
+            const parsedInput =
+                parseFloat(input) === 0
+                    ? ''
+                    : precisionOfInput(input) <= tradeData.tokenA.decimals
+                    ? input
+                    : truncateDecimals(
+                          parseFloat(input),
+                          tradeData.tokenA.decimals,
+                      );
 
-            const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setLimitAllowed(false);
-                setLimitButtonErrorMessage('Enter an Amount');
-                setTokenAQtyLocal('');
-                setTokenAInputQty(input);
-                if (input !== '') return;
-            }
+            if (isNaN(parseFloat(input))) return;
 
-            setTokenAQtyLocal(input);
-            setTokenAInputQty(input);
+            setTokenAInputQty(parseFloat(parsedInput).toString());
+            setTokenAQtyLocal(parseFloat(parsedInput).toString());
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
-            dispatch(setPrimaryQuantity(input));
+            dispatch(setPrimaryQuantity(parseFloat(parsedInput).toString()));
 
             if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -372,23 +373,25 @@ function LimitCurrencyConverter(props: propsIF) {
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
         if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+            const input = evt.target.value.replaceAll(',', '');
+            const parsedInput =
+                parseFloat(input) === 0
+                    ? ''
+                    : precisionOfInput(input) <= tradeData.tokenB.decimals
+                    ? input
+                    : truncateDecimals(
+                          parseFloat(input),
+                          tradeData.tokenB.decimals,
+                      );
 
-            const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setLimitAllowed(false);
-                setLimitButtonErrorMessage('Enter an Amount');
-                setUserSetTokenBToZero(true);
-                if (input !== '') return;
-            }
+            if (isNaN(parseFloat(input))) return;
+
+            setTokenBInputQty(parseFloat(parsedInput).toString());
             setUserSetTokenBToZero(false);
-
-            setTokenBInputQty(input);
+            setTokenBInputQty(parseFloat(parsedInput).toString());
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
-            dispatch(setPrimaryQuantity(input));
+            dispatch(setPrimaryQuantity(parseFloat(parsedInput).toString()));
 
             if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase

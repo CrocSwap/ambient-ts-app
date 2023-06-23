@@ -10,10 +10,6 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 import Spinner from '../../Global/Spinner/Spinner';
-import {
-    decimalNumRegEx,
-    exponentialNumRegEx,
-} from '../../../utils/regex/exports';
 
 interface propsIF {
     disable?: boolean;
