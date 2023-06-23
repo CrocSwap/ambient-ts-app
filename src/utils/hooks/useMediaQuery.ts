@@ -22,19 +22,9 @@ function useMediaQuery(query: string): boolean {
         handleChange();
 
         // Listen matchMedia
-        if (matchMedia.addEventListener) {
-            matchMedia.addEventListener('change', handleChange);
-        } else {
-            matchMedia.addEventListener('change', handleChange);
-        }
+        matchMedia.addEventListener('change', handleChange);
 
-        return () => {
-            if (matchMedia.addEventListener) {
-                matchMedia.addEventListener('change', handleChange);
-            } else {
-                matchMedia.removeEventListener('change', handleChange);
-            }
-        };
+        return () => matchMedia.removeEventListener('change', handleChange);
     }, [query]);
 
     return matches;
