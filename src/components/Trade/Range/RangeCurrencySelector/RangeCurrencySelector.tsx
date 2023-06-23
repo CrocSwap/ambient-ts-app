@@ -26,6 +26,7 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     fieldId: string;
@@ -378,7 +379,7 @@ function RangeCurrencySelector(props: propsIF) {
                     aria-label={`Open range ${fieldId} token modal.`}
                 >
                     <TokenIcon
-                        src={thisToken.logoURI}
+                        src={uriToHttp(thisToken.logoURI)}
                         alt={thisToken.name + 'token logo'}
                         size='2xl'
                     />

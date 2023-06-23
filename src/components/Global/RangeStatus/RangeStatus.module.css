@@ -9,7 +9,6 @@
     border: unset;
     min-width: 1rem;
     padding: 4px 8px;
-    margin-right: 4px;
     border-radius: 100px;
     color: var(--text1);
     display: inline-flex;
@@ -20,7 +19,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 200;
-    font-size: 18px;
+    font-size: 1.125rem;
     line-height: 22px;
 }
 
@@ -67,8 +66,8 @@
 }
 
 .large {
-    width: 18px;
-    height: 18px;
+    width: 0.625rem;
+    height: 0.625rem;
 }
 
 /* 

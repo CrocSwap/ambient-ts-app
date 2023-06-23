@@ -1968,10 +1968,11 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage =
+                                    rangeWidthPercentage = Math.floor(
                                         Math.abs(
                                             pinnedTick - currentPoolPriceTick,
-                                        ) / 100;
+                                        ) / 100,
+                                    );
 
                                     rangeWidthPercentage =
                                         rangeWidthPercentage < 1
@@ -2005,10 +2006,11 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage =
+                                    rangeWidthPercentage = Math.floor(
                                         Math.abs(
                                             currentPoolPriceTick - pinnedTick,
-                                        ) / 100;
+                                        ) / 100,
+                                    );
 
                                     rangeWidthPercentage =
                                         rangeWidthPercentage < 1
@@ -3325,8 +3327,9 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage =
-                            Math.abs(tickValue - currentPoolPriceTick) / 100;
+                        rangeWidthPercentage = Math.floor(
+                            Math.abs(tickValue - currentPoolPriceTick) / 100,
+                        );
 
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
@@ -3340,8 +3343,10 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage =
-                            Math.abs(currentPoolPriceTick - tickValue) / 100;
+                        rangeWidthPercentage = Math.floor(
+                            Math.abs(currentPoolPriceTick - tickValue) / 100,
+                        );
+
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     }
@@ -3615,25 +3620,65 @@ export default function Chart(props: propsIF) {
                         location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')
                     ) {
-                        const min = ranges.filter(
-                            (target: any) => target.name === 'Min',
-                        )[0].value;
-                        const max = ranges.filter(
-                            (target: any) => target.name === 'Max',
-                        )[0].value;
+                        if (
+                            simpleRangeWidth !== 100 ||
+                            tradeData.advancedMode
+                        ) {
+                            const min = ranges.filter(
+                                (target: any) => target.name === 'Min',
+                            )[0].value;
+                            const max = ranges.filter(
+                                (target: any) => target.name === 'Max',
+                            )[0].value;
 
-                        const low = Math.min(Math.min(min, max), minYBoundary);
+                            const low = Math.min(min, max, minYBoundary);
 
-                        const high = Math.max(Math.max(min, max), maxYBoundary);
+                            const high = Math.max(min, max, maxYBoundary);
 
-                        const bufferForRange = Math.abs(
-                            (low - high) / (simpleRangeWidth !== 100 ? 6 : 90),
-                        );
-                        const domain = [
-                            Math.min(low, high) - bufferForRange,
-                            Math.max(low, high) + bufferForRange / 2,
-                        ];
-                        scaleData?.yScale.domain(domain);
+                            const bufferForRange = Math.abs(
+                                (low - high) /
+                                    (simpleRangeWidth !== 100 ? 6 : 90),
+                            );
+
+                            const domain = [
+                                Math.min(low, high) - bufferForRange,
+                                Math.max(low, high) + bufferForRange / 2,
+                            ];
+
+                            scaleData?.yScale.domain(domain);
+                        } else {
+                            const lowTick =
+                                currentPoolPriceTick - simpleRangeWidth * 100;
+                            const highTick =
+                                currentPoolPriceTick + simpleRangeWidth * 100;
+
+                            const pinnedDisplayPrices =
+                                getPinnedPriceValuesFromTicks(
+                                    isDenomBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    lowTick,
+                                    highTick,
+                                    lookupChain(chainId).gridSize,
+                                );
+
+                            const low = 0;
+                            const high = parseFloat(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            );
+
+                            const bufferForRange = Math.abs(
+                                (low - high) /
+                                    (simpleRangeWidth !== 100 ? 6 : 90),
+                            );
+
+                            const domain = [
+                                Math.min(low, high) - bufferForRange,
+                                Math.max(low, high) + bufferForRange / 2,
+                            ];
+
+                            scaleData?.yScale.domain(domain);
+                        }
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
                         const low = Math.min(
