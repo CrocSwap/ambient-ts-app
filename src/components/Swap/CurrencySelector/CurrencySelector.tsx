@@ -30,7 +30,6 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -128,12 +127,19 @@ function CurrencySelector(props: propsIF) {
         ? tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = getFormattedNumber({
-        value: props.sellToken
-            ? parseFloat(tokenABalance)
-            : parseFloat(tokenBBalance),
-        isUSD: true,
-    });
+    const walletBalanceLocaleString = props.sellToken
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const walletAndSurplusBalanceNonLocaleString = props.sellToken
         ? tokenADexBalance
@@ -149,16 +155,23 @@ function CurrencySelector(props: propsIF) {
         ? (parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
-        value: props.sellToken
-            ? tokenADexBalance
-                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                : undefined
-            : tokenBDexBalance
-            ? parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-            : undefined,
-        isUSD: true,
-    });
+    const walletAndSurplusBalanceLocaleString = props.sellToken
+        ? tokenADexBalance
+            ? (
+                  parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+              ).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBDexBalance
+        ? (
+              parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+          ).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const isTokenADexBalanceNonZero =
         !!tokenADexBalance && parseFloat(tokenADexBalance) > 0;

@@ -11,8 +11,8 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;

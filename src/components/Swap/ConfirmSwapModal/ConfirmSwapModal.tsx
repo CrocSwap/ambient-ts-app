@@ -25,8 +25,8 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateSwapMethod: () => void;

@@ -17,8 +17,8 @@ import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
-import uriToHttp from '../functions/uriToHttp';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import uriToHttp from '../functions/uriToHttp';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,

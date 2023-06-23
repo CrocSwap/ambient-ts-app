@@ -27,7 +27,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     fieldId: string;
@@ -122,16 +121,23 @@ function RangeCurrencySelector(props: propsIF) {
               ).toString()
         : '';
 
-    const walletAndSurplusBalanceLocaleString = getFormattedNumber({
-        value: isTokenASelector
-            ? tokenADexBalance
-                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                : undefined
-            : tokenBDexBalance
-            ? parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-            : undefined,
-        isUSD: true,
-    });
+    const walletAndSurplusBalanceLocaleString = isTokenASelector
+        ? tokenADexBalance
+            ? (
+                  parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+              ).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBDexBalance
+        ? (
+              parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+          ).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
@@ -151,12 +157,19 @@ function RangeCurrencySelector(props: propsIF) {
             : tokenBBalance
         : '';
 
-    const walletBalanceLocaleString = getFormattedNumber({
-        value: isTokenASelector
-            ? parseFloat(tokenABalance)
-            : parseFloat(tokenBBalance),
-        isUSD: true,
-    });
+    const walletBalanceLocaleString = isTokenASelector
+        ? tokenABalance
+            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '...'
+        : tokenBBalance
+        ? parseFloat(tokenBBalance).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          })
+        : '...';
 
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
