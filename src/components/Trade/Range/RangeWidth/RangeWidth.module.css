@@ -1,25 +1,24 @@
 .range_width_container {
     width: 100%;
-    /* margin-bottom: 1rem; */
-    padding: 0 5px;
 
     border: 1px solid var(--border-color);
     border-radius: 16px;
     background-color: var(--content-bg);
     transition: all var(--animation-speed) ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.range_width_content {
-    display: grid;
-
-    grid-auto-rows: auto;
-    row-gap: 12px;
-}
 .range_width_input {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 12%;
+    padding: 0 16px;
+    height: 40px;
+
+    justify-content: center;
 }
 
 .range_width_input span {
@@ -53,16 +52,17 @@
     color: var(--text1);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
+    font-weight: 100;
 }
 .percentage_options {
     display: flex;
-    padding: 10px 0rem;
 
     width: 100%;
 
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 4px;
 }
 
 .add_minus_icons {
@@ -74,30 +74,22 @@
 .add_minus_icons svg:nth-of-type(2) {
     margin-top: -5px;
 }
+.matching_percentage_button,
 .percentage_option_buttons {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-
-    overflow: hidden;
-
-    margin: 4px !important;
-    background: var(--dark2);
-    padding: 0.5rem 1%;
-
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     cursor: pointer;
-
     color: var(--text2);
-    border: none;
-
     border-radius: 50px;
-    padding: 5px 7px;
+    padding: 4px 8px;
     background-color: var(--dark2);
-
     transition: all var(--animation-speed) ease-in-out;
+    border: 1px solid transparent;
 }
 
 .percentage_option_buttons:hover {
-    color: var(--text1);
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
 }
 .percentage_option_buttons:focus-visible,
 .percentage_input:focus-visible {
@@ -107,23 +99,25 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
+
+.matching_percentage_button {
+    background-color: var(--accent1);
+    color: var(--text1);
+}
 .percentage_input {
-    /* padding: 15px 0px;  */
-    /* appearance: none;  */
     width: 100%;
-
     cursor: pointer;
-
-    background: transparent;
+    background: none !important;
+    box-shadow: none !important;
 }
 input[type='range'] {
     width: 100%; /* Specific width is required for Firefox. */
-    height: 100%;
+    height: 10px;
     border-radius: 10px;
     outline: none;
     box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
 
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }
@@ -132,6 +126,9 @@ input[type='range'] {
     background: transparent;
     outline: none;
     border: none;
+
+    display: flex;
+    justify-content: center;
 }
 
 .explanation_button:focus-visible {
@@ -160,7 +157,7 @@ input[type='range']::-ms-track {
 input[type='range']::-webkit-slider-thumb {
     background: var(--dark2);
     width: 20px;
-    height: 35px;
+    height: 36px;
     margin-top: -14px;
     cursor: pointer;
 
@@ -207,13 +204,13 @@ input[type='range']::-webkit-slider-runnable-track {
     border: var(--dark-border);
     border-radius: 10px;
 
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 
     box-shadow: var(--dark-box-shadow);
 }
 
 input[type='range']:focus::-webkit-slider-runnable-track {
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
     border-radius: 10px;
 }
 
@@ -225,7 +222,7 @@ input[type='range']::-moz-range-track {
 
     border: var(--dark-border);
     border-radius: 1.3px;
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 
     box-shadow: var(--dark-box-shadow);
 }
@@ -245,7 +242,7 @@ input[type='range']::-ms-fill-lower {
     border: var(--dark-border);
     border-radius: 10px;
 
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 
     box-shadow: var(--dark-box-shadow);
 }
@@ -256,12 +253,12 @@ input[type='range']::-ms-fill-upper {
     /* border: var(--dark-border); */
     border-radius: 10px;
 
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 
     box-shadow: var(--dark-box-shadow);
 }
 input[type='range']:focus::-ms-fill-upper {
-    background: var(--title-gradient); /* Otherwise white in Chrome */
+    background: var(--accent1); /* Otherwise white in Chrome */
 }
 
 @keyframes shadow-pulse {
