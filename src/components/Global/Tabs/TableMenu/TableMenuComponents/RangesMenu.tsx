@@ -140,6 +140,7 @@ export default function RangesMenu(props: propsIF) {
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
+            onClick={() => setSimpleRangeWidth(10)}
             state={{ position: position }}
             onClick={() => setCurrentRangeInReposition(position.positionId)}
         >
