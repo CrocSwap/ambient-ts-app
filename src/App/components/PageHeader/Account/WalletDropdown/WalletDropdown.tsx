@@ -25,7 +25,7 @@ interface WalletDropdownPropsIF {
     walletWrapperStyle: string;
     accountAddressFull: string;
     ethAmount: string;
-    ethValue: string;
+    ethValue: string | undefined;
     walletDropdownTokenData:
         | {
               logo: string;
@@ -40,7 +40,7 @@ interface TokenAmountDisplayPropsIF {
     logo: string;
     symbol: string;
     amount: string;
-    value: string;
+    value?: string;
 }
 
 export default function WalletDropdown(props: WalletDropdownPropsIF) {
@@ -89,7 +89,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 </div>
                 <div className={styles.token_amount}>
                     <h3>{amount}</h3>
-                    <h6>{value}</h6>
+                    <h6>{value !== undefined ? '$' + value : '...'}</h6>
                 </div>
             </section>
         );
@@ -97,48 +97,56 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     let usdcBalForDOM: string;
     if (tokenDataFromRTK.erc20Tokens) {
-        usdcBalForDOM = usdcData?.combinedBalanceDisplay ?? '0';
+        usdcBalForDOM = usdcData?.combinedBalanceDisplayTruncated ?? '0.00';
     } else {
         usdcBalForDOM = '…';
     }
 
-    const [usdcVal, setUsdcVal] = useState<string>('…');
+    const [usdcVal, setUsdcVal] = useState<string | undefined>();
     useEffect(() => {
+        if (tokenDataFromRTK.erc20Tokens === undefined) {
+            setUsdcVal(undefined);
+            return;
+        }
         const usdBal: number = parseFloat(
-            usdcData?.combinedBalanceDisplay ?? '0',
+            usdcData?.combinedBalanceDisplay ?? '0.00',
         );
-        Promise.resolve(
-            cachedFetchTokenPrice(
-                USDC[mktDataChainId(chainId) as '0x1'],
-                chainId,
-            ),
-        ).then((price) => {
-            let newPriceString: string;
-            if (price?.usdPrice) {
-                const priceString: string = (
-                    (price && price?.usdPrice * usdBal) ??
-                    0
-                )
-                    .toFixed(2)
-                    .toString();
-                const parts: string[] = priceString.split('.');
-                const intPart: string = parts[0];
-                const decimalPart: string = parts[1] || '';
-                const intWithCommas: string = intPart.replace(
-                    /\B(?=(\d{3})+(?!\d))/g,
-                    ',',
-                );
-                newPriceString =
-                    intWithCommas +
-                    (decimalPart.length > 0 ? '.' + decimalPart : '');
-            } else {
-                newPriceString = '…';
-            }
-            if (usdcVal !== newPriceString) {
-                setUsdcVal(newPriceString);
-            }
-        });
-    }, [chainId]);
+        if (tokenDataFromRTK.erc20Tokens !== undefined) {
+            Promise.resolve(
+                cachedFetchTokenPrice(
+                    USDC[mktDataChainId(chainId) as '0x1'],
+                    chainId,
+                ),
+            ).then((price) => {
+                let newPriceString: string;
+                if (price?.usdPrice !== undefined) {
+                    const priceString: string = (
+                        (price && price?.usdPrice * usdBal) ??
+                        0
+                    )
+                        .toFixed(2)
+                        .toString();
+                    const parts: string[] = priceString.split('.');
+                    const intPart: string = parts[0];
+                    const decimalPart: string = parts[1] || '';
+                    const intWithCommas: string = intPart.replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ',',
+                    );
+                    newPriceString =
+                        intWithCommas +
+                        (decimalPart.length > 0 ? '.' + decimalPart : '');
+                    setUsdcVal(newPriceString);
+                } else {
+                    setUsdcVal(undefined);
+                }
+            });
+        }
+    }, [
+        chainId,
+        usdcData?.combinedBalanceDisplay,
+        tokenDataFromRTK.erc20Tokens === undefined,
+    ]);
 
     const tokensData = [
         {
@@ -150,7 +158,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         {
             symbol: 'USDC',
             amount: usdcBalForDOM,
-            value: '$' + usdcVal,
+            value: usdcVal,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
