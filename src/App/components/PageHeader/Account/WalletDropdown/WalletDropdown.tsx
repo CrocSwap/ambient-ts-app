@@ -117,25 +117,21 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 chainId,
             ),
         ).then((price) => {
-            let newPriceString: string;
             if (price?.usdPrice !== undefined) {
-                const priceString: string = (
-                    (price && price?.usdPrice * usdBal) ??
-                    0
-                )
-                    .toFixed(2)
-                    .toString();
-                const parts: string[] = priceString.split('.');
-                const intPart: string = parts[0];
-                const decimalPart: string = parts[1] || '';
-                const intWithCommas: string = intPart.replace(
-                    /\B(?=(\d{3})+(?!\d))/g,
-                    ',',
-                );
-                newPriceString =
-                    intWithCommas +
-                    (decimalPart.length > 0 ? '.' + decimalPart : '');
-                setUsdcVal(newPriceString);
+                const usdValueNum: number =
+                    (price && price?.usdPrice * usdBal) ?? 0;
+                const usdValueTruncated =
+                    usdValueNum === 0
+                        ? '0.00'
+                        : usdValueNum < 0.0001
+                        ? usdValueNum.toExponential(2)
+                        : usdValueNum < 2
+                        ? usdValueNum.toPrecision(3)
+                        : usdValueNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setUsdcVal(usdValueTruncated);
             } else {
                 setUsdcVal(undefined);
             }
