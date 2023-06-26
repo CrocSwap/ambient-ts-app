@@ -83,7 +83,7 @@
             padding: 8px;
         }
         .stat_card_container{
-            justify-content: flex-start;
+            justify-content: center;
            
             background: var(--dark1);  
             background: -webkit-linear-gradient(to right, var(--dark2), var(--body-bg));  /* Chrome 10-25, Safari 5.1-6 */
